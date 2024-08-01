@@ -1,7 +1,7 @@
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveNodeUIState } from "@/pageEditor/slices/editorSelectors";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { selectActiveBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import React from "react";
 
 const ConnectedCollapsibleFieldSection = ({
@@ -11,13 +11,17 @@ const ConnectedCollapsibleFieldSection = ({
 }: {
   children: React.ReactNode;
   title: string;
-  bodyRef?: React.MutableRefObject<HTMLDivElement>;
+  bodyRef?: React.MutableRefObject<HTMLDivElement | null>;
   initialExpanded?: boolean;
 }) => {
   const dispatch = useDispatch();
-  const UIState = useSelector(selectActiveNodeUIState);
+  const brickConfigurationUIState = useSelector(
+    selectActiveBrickConfigurationUIState,
+  );
   // Allow to fail gracefully using nullish coalescing operator
-  const isExpanded = UIState?.expandedFieldSections?.[title] ?? initialExpanded;
+  const isExpanded =
+    brickConfigurationUIState?.expandedFieldSections?.[title] ??
+    initialExpanded;
 
   return (
     <CollapsibleFieldSection

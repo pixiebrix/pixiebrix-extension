@@ -30,7 +30,7 @@ import {
   type MergeStrategy,
   type StateNamespace,
   StateNamespaces,
-} from "@/platform/state/stateController";
+} from "@/platform/state/stateTypes";
 
 /**
  * Namespace options for use in oneOf.
@@ -148,17 +148,13 @@ export class SetPageState extends TransformerABC {
       namespace?: StateNamespace;
       mergeStrategy?: MergeStrategy;
     }>,
-    { logger, platform }: BrickOptions,
+    { meta: { modComponentRef }, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId, extensionId } = logger.context;
-
     return platform.state.setState({
       namespace,
       data,
       mergeStrategy,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
-      modComponentId: extensionId!,
-      modId: blueprintId,
+      modComponentRef,
     });
   }
 }
@@ -203,14 +199,11 @@ export class GetPageState extends TransformerABC {
     {
       namespace = StateNamespaces.MOD,
     }: BrickArgs<{ namespace?: StateNamespace }>,
-    { logger, platform }: BrickOptions,
+    { meta: { modComponentRef }, platform }: BrickOptions,
   ): Promise<JsonObject> {
-    const { blueprintId: modId, extensionId: modComponentId } = logger.context;
-
     return platform.state.getState({
       namespace,
-      modId,
-      modComponentId,
+      modComponentRef,
     });
   }
 }

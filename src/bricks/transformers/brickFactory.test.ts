@@ -21,37 +21,37 @@ import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { isUserDefinedBrick } from "@/types/brickTypes";
 import { MappingTransformer } from "./mapping";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
   OptionsBrick,
   optionsBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import { cloneDeep, partial } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-
 import { toExpression } from "@/utils/expressionUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 TEST_setContext("contentScript");
 
-const fromJS = partial(nativeFromJS, blockRegistry);
+const fromJS = partial(nativeFromJS, brickRegistry);
 
 beforeAll(() => {
   registerBuiltinBricks();
 });
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([contextBrick, optionsBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([contextBrick, optionsBrick]);
   ContextBrick.clearContexts();
   OptionsBrick.clearOptions();
 });
@@ -155,7 +155,7 @@ test("inner pipelines receive correct context", async () => {
   };
 
   const block = fromJS(json);
-  blockRegistry.register([block, new Run()]);
+  brickRegistry.register([block, new Run()]);
 
   const pipeline = {
     id: block.id,
@@ -174,7 +174,7 @@ test("inner pipelines receive correct context", async () => {
   await reducePipeline(
     pipeline,
     simpleInput({ customInput: "Closure Environment" }),
-    testOptions("v3"),
+    reduceOptionsFactory("v3"),
   );
 
   expect(ContextBrick.contexts[0]).toStrictEqual({
@@ -360,7 +360,7 @@ describe("tracing", () => {
     };
 
     const block = fromJS(json);
-    blockRegistry.register([block, new Run()]);
+    brickRegistry.register([block, new Run()]);
 
     const pipeline = {
       id: block.id,
@@ -377,7 +377,8 @@ describe("tracing", () => {
     };
 
     const runId = uuidv4();
-    const extensionId = uuidv4();
+    const modComponentRef = modComponentRefFactory();
+
     // Provide initial value to ensure it's preserved
     const initialBranches = [{ key: "body", counter: 1 }];
 
@@ -385,22 +386,22 @@ describe("tracing", () => {
       pipeline,
       simpleInput({ customInput: "Closure Environment" }),
       {
-        ...testOptions("v3"),
+        ...reduceOptionsFactory("v3"),
         runId,
-        extensionId,
+        modComponentRef,
         branches: initialBranches,
       },
     );
 
     expect(OptionsBrick.options[0].meta).toStrictEqual({
       runId,
-      extensionId,
+      modComponentRef,
       branches: initialBranches,
     });
 
     expect(OptionsBrick.options[1].meta).toStrictEqual({
       runId,
-      extensionId,
+      modComponentRef,
       branches: [
         ...initialBranches,
         // Branch is added by the @pixiebrix/run brick

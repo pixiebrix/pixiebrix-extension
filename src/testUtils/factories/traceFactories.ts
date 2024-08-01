@@ -26,19 +26,19 @@ import { type RenderedArgs } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
 
-const TEST_BLOCK_ID = validateRegistryId("testing/block-id");
+const TEST_BRICK_ID = validateRegistryId("testing/block-id");
 
 export const traceRecordFactory = define<TraceRecord>({
   timestamp: timestampFactory,
-  extensionId: uuidSequence,
+  modComponentId: uuidSequence,
   runId: uuidSequence,
   branches(): TraceRecord["branches"] {
     return [];
   },
   // XXX: callId should be derived from branches
   callId: objectHash([]),
-  blockInstanceId: uuidSequence,
-  blockId: TEST_BLOCK_ID,
+  brickInstanceId: uuidSequence,
+  brickId: TEST_BRICK_ID,
   templateContext(): TraceRecord["templateContext"] {
     return {};
   },
@@ -46,9 +46,9 @@ export const traceRecordFactory = define<TraceRecord>({
     return {} as RenderedArgs;
   },
   renderError: null,
-  blockConfig(): BrickConfig {
+  brickConfig(): BrickConfig {
     return {
-      id: TEST_BLOCK_ID,
+      id: TEST_BRICK_ID,
       config: {},
     };
   },

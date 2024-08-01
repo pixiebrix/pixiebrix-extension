@@ -18,7 +18,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import notify from "@/utils/notify";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
@@ -34,77 +34,114 @@ import {
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
+import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { openSidePanel } from "@/utils/sidePanelUtils";
+import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
+import { type ModMetadata } from "@/types/modComponentTypes";
 
-type AddNewModComponent = (config: ModComponentFormStateAdapter) => void;
+export type AddNewModComponent = (
+  adapter: ModComponentFormStateAdapter,
+) => void;
 
-function useAddNewModComponent(): AddNewModComponent {
+function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
+  const { setInsertingStarterBrickType } = useInsertPane();
+  // XXX: useFlags is async. The flag query might not be initialized by the time the callback is called. Ensure
+  // useFlags has already been used on the page, e.g., the AddStarterBrickButton, to ensure the flags have loaded by
+  // the time the returned callback is called.
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements ?? false,
   );
 
+  const getInitialModComponentFormState = useCallback(
+    async (
+      adapter: ModComponentFormStateAdapter,
+    ): Promise<ModComponentFormState> => {
+      let element = null;
+      if (adapter.selectNativeElement) {
+        setInsertingStarterBrickType(adapter.starterBrickType);
+        element = await adapter.selectNativeElement(
+          inspectedTab,
+          suggestElements,
+        );
+        setInsertingStarterBrickType(null);
+      }
+
+      const url = await getCurrentInspectedURL();
+      const metadata = internalStarterBrickMetaFactory();
+      const initialFormState = adapter.fromNativeElement(
+        url,
+        metadata,
+        element,
+      );
+
+      initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
+        adapter.starterBrickType,
+      );
+
+      if (modMetadata) {
+        initialFormState.modMetadata = modMetadata;
+      }
+
+      return initialFormState as ModComponentFormState;
+    },
+    [modMetadata, setInsertingStarterBrickType, suggestElements],
+  );
+
   return useCallback(
-    async (modComponentFormStateAdapter: ModComponentFormStateAdapter) => {
-      if (
-        modComponentFormStateAdapter.flag &&
-        flagOff(modComponentFormStateAdapter.flag)
-      ) {
+    async (adapter: ModComponentFormStateAdapter) => {
+      if (adapter.flag && flagOff(adapter.flag)) {
         dispatch(actions.betaError());
         return;
       }
 
-      dispatch(actions.toggleInsert(modComponentFormStateAdapter.elementType));
-
-      if (!modComponentFormStateAdapter.selectNativeElement) {
-        // If the foundation is not for a native element, stop after toggling insertion mode
-        return;
-      }
-
       try {
-        const element = await modComponentFormStateAdapter.selectNativeElement(
-          inspectedTab,
-          suggestElements,
-        );
-        const url = await getCurrentInspectedURL();
+        const initialFormState = await getInitialModComponentFormState(adapter);
 
-        const metadata = internalStarterBrickMetaFactory();
-
-        const initialState = modComponentFormStateAdapter.fromNativeElement(
-          url,
-          metadata,
-          element,
-        );
+        dispatch(actions.addModComponentFormState(initialFormState));
+        dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          modComponentFormStateAdapter.asDraftModComponent(initialState),
+          adapter.asDraftModComponent(initialFormState),
         );
 
-        dispatch(
-          actions.addModComponentFormState(
-            initialState as ModComponentFormState,
-          ),
-        );
-        dispatch(actions.checkActiveModComponentAvailability());
-
-        reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
-          type: modComponentFormStateAdapter.elementType,
-        });
+        if (adapter.starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
+          // For convenience, open the side panel if it's not already open so that the user doesn't
+          // have to manually toggle it
+          void openSidePanel(inspectedTab.tabId);
+        }
       } catch (error) {
         if (isSpecificError(error, CancelError)) {
           return;
         }
 
         notify.error({
-          message: `Error adding ${modComponentFormStateAdapter.label.toLowerCase()}`,
+          message: `Error adding ${adapter.label.toLowerCase()}`,
           error,
         });
-      } finally {
-        dispatch(actions.toggleInsert(null));
+      }
+
+      if (modMetadata) {
+        reportEvent(Events.MOD_ADD_STARTER_BRICK, {
+          starterBrickType: adapter.starterBrickType,
+          modId: modMetadata.id,
+        });
+      } else {
+        reportEvent(Events.MOD_CREATE_NEW, {
+          type: adapter.starterBrickType,
+        });
       }
     },
-    [dispatch, flagOff, suggestElements],
+    [
+      dispatch,
+      flagOff,
+      suggestElements,
+      getInitialModComponentFormState,
+      setInsertingStarterBrickType,
+    ],
   );
 }
 

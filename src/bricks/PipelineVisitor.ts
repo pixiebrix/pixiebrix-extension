@@ -30,12 +30,12 @@ import {
   getSubPipelineFlavor,
 } from "@/bricks/brickFilterHelpers";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
 
 export const ROOT_POSITION = Object.freeze({
-  path: PIPELINE_BLOCKS_FIELD_NAME,
+  path: PIPELINE_BRICKS_FIELD_NAME,
 }) as BrickPosition;
 
 export function nestedPosition(
@@ -79,7 +79,7 @@ export type VisitPipelineExtra = {
   pipelinePropName?: string | undefined;
 };
 type VisitRootPipelineExtra = {
-  extensionPointType: StarterBrickType;
+  starterBrickType: StarterBrickType;
 };
 
 /**
@@ -88,7 +88,7 @@ type VisitRootPipelineExtra = {
 class PipelineVisitor {
   /**
    * Visit a configured block.
-   * @param position the position in the extension
+   * @param position the position in the mod component
    * @param blockConfig the block configuration
    */
   public visitBrick(
@@ -152,7 +152,7 @@ class PipelineVisitor {
 
   /**
    * Run the visitor on a pipeline; loop over the blocks
-   * @param position Position of the pipeline in the extension
+   * @param position Position of the pipeline in the modComponent
    * @param pipeline The pipeline to analyze
    * @param extra Extra information about the pipeline
    */
@@ -176,8 +176,8 @@ class PipelineVisitor {
     pipeline: BrickConfig[],
     extra?: VisitRootPipelineExtra,
   ): void {
-    const flavor = extra?.extensionPointType
-      ? getRootPipelineFlavor(extra.extensionPointType)
+    const flavor = extra?.starterBrickType
+      ? getRootPipelineFlavor(extra.starterBrickType)
       : PipelineFlavor.AllBricks;
     this.visitPipeline(ROOT_POSITION, pipeline, { flavor });
   }

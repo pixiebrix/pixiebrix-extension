@@ -24,13 +24,13 @@ import { waitFor } from "@testing-library/react";
 jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 
 describe("PermissionsPane", () => {
-  test("it renders", () => {
+  it("renders", () => {
     jest.mocked(useCurrentInspectedUrl).mockReturnValue("https://test.url");
     const { asFragment } = render(<NoTabAccessPane />);
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders right copy when the URL isn't available", async () => {
+  it("renders right copy when the URL isn't available", async () => {
     jest.mocked(useCurrentInspectedUrl).mockReturnValue(undefined);
     render(<NoTabAccessPane />);
 

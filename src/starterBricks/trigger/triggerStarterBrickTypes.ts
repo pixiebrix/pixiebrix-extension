@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type ValueOf } from "type-fest";
+
 export type AttachMode =
   // Attach handlers once (for any elements available at the time of attaching handlers) (default)
   | "once"
@@ -29,46 +31,56 @@ export type TargetMode =
   // The element the trigger is attached to
   | "root";
 
+export const ReportModes = {
+  // Events (trigger/error) reported only once per mod component per page
+  ONCE: "once",
+  // Only errors are reported once per mod component per page
+  ERROR_ONCE: "error-once",
+  // Never reports events
+  NEVER: "never",
+  // Report all events
+  ALL: "all",
+} as const;
+
 /**
  * The report mode. Used to prevent repeat events (e.g., interval triggers) from flooding telemetry.
  */
-export type ReportMode =
-  // Events (trigger/error) reported only once per extension per page
-  | "once"
-  // Only errors are reported once per extension per page
-  | "error-once"
-  // Never reports events
-  | "never"
-  // Report all events
-  | "all";
+export type ReportMode = ValueOf<typeof ReportModes>;
 
-export type Trigger =
+export const Triggers = {
   // `load` is page load
-  | "load"
+  LOAD: "load",
   // `interval` is a fixed interval
-  | "interval"
+  INTERVAL: "interval",
   // `appear` is triggered when an element enters the user's viewport
-  | "appear"
+  APPEAR: "appear",
   // `initialize` is triggered when an element is added to the DOM
-  | "initialize"
-  | "blur"
-  | "click"
-  | "dblclick"
-  | "mouseover"
+  INITIALIZE: "initialize",
+  BLUR: "blur",
+  CLICK: "click",
+  DOUBLE_CLICK: "dblclick",
+  MOUSEOVER: "mouseover",
   // https://ux.stackexchange.com/questions/109288/how-long-in-milliseconds-is-long-enough-to-decide-a-user-is-actually-hovering
-  | "hover"
-  | "keydown"
-  | "keyup"
-  | "keypress"
-  | "change"
+  HOVER: "hover",
+  KEYDOWN: "keydown",
+  KEYUP: "keyup",
+  KEYPRESS: "keypress",
+  CHANGE: "change",
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  | "selectionchange"
+  SELECTION_CHANGE: "selectionchange",
   // The PixieBrix page state changed
-  | "statechange"
+  STATE_CHANGE: "statechange",
   // A custom event configured by the user. Can also be an external event from the page
-  | "custom";
+  CUSTOM: "custom",
+} as const;
 
-export const KEYBOARD_TRIGGERS: Trigger[] = ["keydown", "keyup", "keypress"];
+export type Trigger = ValueOf<typeof Triggers>;
+
+export const KEYBOARD_TRIGGERS: Trigger[] = [
+  Triggers.KEYDOWN,
+  Triggers.KEYUP,
+  Triggers.KEYPRESS,
+];
 
 /**
  * Triggers considered user actions for the purpose of defaulting the reportMode if not provided.
@@ -80,11 +92,11 @@ export const KEYBOARD_TRIGGERS: Trigger[] = ["keydown", "keyup", "keypress"];
  * @see getDefaultReportModeForTrigger
  */
 export const USER_ACTION_TRIGGERS: Trigger[] = [
-  "click",
-  "dblclick",
-  "blur",
-  "mouseover",
-  "hover",
+  Triggers.CLICK,
+  Triggers.DOUBLE_CLICK,
+  Triggers.BLUR,
+  Triggers.MOUSEOVER,
+  Triggers.HOVER,
 ];
 
 export type IntervalArgs = {

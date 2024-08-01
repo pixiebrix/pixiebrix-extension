@@ -26,7 +26,7 @@ import modDefinitionRegistry from "@/modDefinitions/registry";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
 import modComponentsSlice from "@/store/extensionsSlice";
 
@@ -34,12 +34,6 @@ const modId = validateRegistryId("@test/mod");
 
 jest.mock("@/utils/notify");
 jest.mock("@/contentScript/messenger/api");
-jest.mock("@/components/ConfirmationModal", () => ({
-  __esModule: true,
-  useModals: () => ({
-    showConfirmation: jest.fn().mockResolvedValue(true),
-  }),
-}));
 
 describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {

@@ -7,6 +7,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
   >
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -17,7 +18,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.trigger"
+        for="starterBrick.definition.trigger"
       >
         Trigger Event
       </label>
@@ -26,8 +27,8 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       >
         <select
           class="form-control"
-          id="extensionPoint.definition.trigger"
-          name="extensionPoint.definition.trigger"
+          id="starterBrick.definition.trigger"
+          name="starterBrick.definition.trigger"
         >
           <option
             value="load"
@@ -121,6 +122,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -131,7 +133,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.customEvent.eventName"
+        for="starterBrick.definition.customEvent.eventName"
       >
         Custom Event
       </label>
@@ -192,7 +194,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
                   autocomplete="off"
                   autocorrect="off"
                   class=""
-                  id="extensionPoint.definition.customEvent.eventName"
+                  id="starterBrick.definition.customEvent.eventName"
                   role="combobox"
                   spellcheck="false"
                   style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
@@ -287,6 +289,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -297,7 +300,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.background"
+        for="starterBrick.definition.background"
       >
         Run in Background
       </label>
@@ -336,6 +339,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -346,7 +350,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.isAvailable.allFrames"
+        for="starterBrick.definition.isAvailable.allFrames"
       >
         Run in All Frames
       </label>
@@ -385,6 +389,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -395,7 +400,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.rootSelector"
+        for="starterBrick.definition.rootSelector"
       >
         Element Selector
       </label>
@@ -459,6 +464,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -469,7 +475,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.attachMode"
+        for="starterBrick.definition.attachMode"
       >
         Attach Mode
       </label>
@@ -478,8 +484,8 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       >
         <select
           class="form-control"
-          id="extensionPoint.definition.attachMode"
-          name="extensionPoint.definition.attachMode"
+          id="starterBrick.definition.attachMode"
+          name="starterBrick.definition.attachMode"
           title="Attach Mode"
         >
           <option
@@ -512,6 +518,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -522,7 +529,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.targetMode"
+        for="starterBrick.definition.targetMode"
       >
         Target Mode
       </label>
@@ -531,8 +538,8 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       >
         <select
           class="form-control"
-          id="extensionPoint.definition.targetMode"
-          name="extensionPoint.definition.targetMode"
+          id="starterBrick.definition.targetMode"
+          name="starterBrick.definition.targetMode"
           title="Target Mode"
         >
           <option
@@ -565,6 +572,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -618,6 +626,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -628,7 +637,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.isAvailable.matchPatterns"
+        for="starterBrick.definition.isAvailable.matchPatterns"
       >
         Sites
       </label>
@@ -670,55 +679,78 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="list-group mb-2"
         >
           <li
-            class="list-group-item py-1"
+            class="list-group-item py-1 d-flex pl-1"
           >
+            <div>
+              <button
+                class="moveButton btn btn-link"
+                disabled=""
+                title="Move up"
+                type="button"
+              >
+                <test-file-stub />
+              </button>
+              <button
+                class="moveButton btn btn-link"
+                disabled=""
+                title="Move down"
+                type="button"
+              >
+                <test-file-stub />
+              </button>
+            </div>
             <div
-              class="formGroup mb-0 form-group"
+              class="flex-grow-1"
             >
               <div
-                class="mb-2 w-100 collapse"
+                class="formGroup mb-0 form-group"
+                data-testid="field-template-form-group"
               >
                 <div
-                  class="annotationPlaceholder"
-                />
-              </div>
-              <div
-                class="formField"
-              >
-                <div
-                  class="root"
+                  class="mb-2 w-100 collapse"
                 >
                   <div
-                    class="field"
-                  >
-                    <textarea
-                      class="form-control"
-                      id="extensionPoint.definition.isAvailable.matchPatterns.0"
-                      name="extensionPoint.definition.isAvailable.matchPatterns.0"
-                      rows="1"
-                    >
-                      https://test.com/*
-                    </textarea>
-                  </div>
+                    class="annotationPlaceholder"
+                  />
+                </div>
+                <div
+                  class="formField"
+                >
                   <div
-                    class="dropdown dropdown"
-                    data-test-selected="Text"
-                    data-testid="toggle-extensionPoint.definition.isAvailable.matchPatterns.0"
+                    class="root"
                   >
-                    <button
-                      aria-expanded="false"
-                      aria-haspopup="true"
-                      class="dropdown-toggle btn btn-link"
-                      type="button"
+                    <div
+                      class="field"
                     >
-                      <span
-                        class="symbol"
+                      <textarea
+                        class="form-control"
+                        id="starterBrick.definition.isAvailable.matchPatterns.0"
+                        name="starterBrick.definition.isAvailable.matchPatterns.0"
+                        rows="1"
                       >
-                        <test-file-stub
-                          classname="root"
-                        />
-                      </span>
-                    </button>
+                        https://test.com/*
+                      </textarea>
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Text"
+                      data-testid="toggle-starterBrick.definition.isAvailable.matchPatterns.0"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -753,6 +785,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -763,7 +796,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.showErrors"
+        for="starterBrick.definition.showErrors"
       >
         Show Error Notifications
       </label>
@@ -802,6 +835,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
     </div>
     <div
       class="formGroup form-group"
+      data-testid="field-template-form-group"
     >
       <div
         class="mb-2 w-100 collapse"
@@ -812,7 +846,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
       <label
         class="label form-label"
-        for="extensionPoint.definition.reportMode"
+        for="starterBrick.definition.reportMode"
       >
         Telemetry Mode
       </label>
@@ -821,8 +855,8 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       >
         <select
           class="form-control"
-          id="extensionPoint.definition.reportMode"
-          name="extensionPoint.definition.reportMode"
+          id="starterBrick.definition.reportMode"
+          name="starterBrick.definition.reportMode"
           title="Telemetry Mode"
         >
           <option
@@ -886,6 +920,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -896,7 +931,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.urlPatterns"
+            for="starterBrick.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
@@ -931,6 +966,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         </div>
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -941,7 +977,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.selectors"
+            for="starterBrick.definition.isAvailable.selectors"
           >
             Selectors
           </label>
@@ -1003,6 +1039,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"

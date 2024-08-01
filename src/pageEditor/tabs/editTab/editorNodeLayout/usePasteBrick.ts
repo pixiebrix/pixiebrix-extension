@@ -16,10 +16,10 @@
  */
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectCopiedBrick } from "@/pageEditor/slices/editorSelectors";
+import { selectCopiedBrick } from "@/pageEditor/store/editor/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { assertNotNullish } from "@/utils/nullishUtils";
 

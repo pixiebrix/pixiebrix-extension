@@ -25,11 +25,11 @@ import {
 } from "@/testUtils/factories/brickFactories";
 import type { AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { AnnotationType } from "@/types/annotationTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import { toExpression } from "@/utils/expressionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
-import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 
 describe("ConnectedFieldTemplate", () => {
   it("shows formik error only when touched", async () => {
@@ -87,18 +87,17 @@ describe("ConnectedFieldTemplate", () => {
       );
 
     it("shows analysis error", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
             },
           }),
         ),
-      );
+      });
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const analysisAnnotation: AnalysisAnnotation = {
         analysisId: "test",
@@ -115,7 +114,7 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,
@@ -136,18 +135,17 @@ describe("ConnectedFieldTemplate", () => {
     });
 
     it("shows both formik and analysis error", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
             },
           }),
         ),
-      );
+      });
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const analysisAnnotation: AnalysisAnnotation = {
         analysisId: "test",
@@ -168,8 +166,8 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           initialErrors: {
-            extension: {
-              blockPipeline: [
+            modComponent: {
+              brickPipeline: [
                 {
                   config: {
                     testField: "test formik error",
@@ -179,7 +177,7 @@ describe("ConnectedFieldTemplate", () => {
             },
           },
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,
@@ -201,18 +199,17 @@ describe("ConnectedFieldTemplate", () => {
     });
 
     it("shows multiple analysis errors", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: "test value",
             },
           }),
         ),
-      );
+      });
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const analysisAnnotation1: AnalysisAnnotation = {
         analysisId: "test1",
@@ -239,7 +236,7 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,
@@ -270,18 +267,17 @@ describe("ConnectedFieldTemplate", () => {
     });
 
     it("does not show analysis error annotation when the annotation detail does not match the field value", async () => {
-      const formState = formStateFactory(
-        undefined,
-        pipelineFactory(
+      const formState = formStateFactory({
+        brickPipeline: pipelineFactory(
           brickConfigFactory({
             config: {
               testField: toExpression("var", "@mod."),
             },
           }),
         ),
-      );
+      });
 
-      const path = "extension.blockPipeline[0].config.testField";
+      const path = "modComponent.brickPipeline[0].config.testField";
 
       const annotations: AnalysisAnnotation[] = [
         // The annotation appears normally when detail matches the field value
@@ -339,7 +335,7 @@ describe("ConnectedFieldTemplate", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(actions.selectInstalled(formState));
+            dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
                 extensionId: formState.uuid,

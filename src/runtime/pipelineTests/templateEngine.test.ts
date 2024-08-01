@@ -15,23 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickConfig } from "@/bricks/types";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-  testOptions,
-} from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
 import { selectSpecificError } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { toExpression } from "@/utils/expressionUtils";
 import { type TemplateEngine } from "@/types/runtimeTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
@@ -47,7 +43,7 @@ describe.each([["mustache"], ["handlebars"], ["nunjucks"]])(
       const result = await reducePipeline(
         pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
-        testOptions("v1"),
+        reduceOptionsFactory("v1"),
       );
       expect(result).toStrictEqual({ message: "hello" });
     });
@@ -63,7 +59,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ message: "hello" });
   });
@@ -77,7 +73,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ message: "HELLO" });
   });
@@ -92,7 +88,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ message: "{{@input.inputArg}}" });
   });
@@ -113,7 +109,7 @@ describe("apiVersion: v3", () => {
       const result = await reducePipeline(
         pipeline,
         simpleInput({ inputArg: "hello" }),
-        testOptions("v3"),
+        reduceOptionsFactory("v3"),
       );
       expect(result).toStrictEqual({ message: "hello" });
     });
@@ -131,7 +127,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ message: "" });
   });
@@ -147,7 +143,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline as BrickConfig,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ message: "HELLO" });
   });
@@ -162,7 +158,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ message: "hello" });
   });
@@ -180,7 +176,7 @@ describe("Error handling", () => {
       await reducePipeline(
         pipeline as BrickConfig,
         simpleInput({ inputArg: "hello" }),
-        testOptions("v3"),
+        reduceOptionsFactory("v3"),
       );
       throw new Error("reducePipeline should have thrown");
     } catch (error: any) {

@@ -36,7 +36,6 @@ import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
-import { selectModComponentContext } from "@/starterBricks/helpers";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
@@ -51,7 +50,11 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import pluralize from "@/utils/pluralize";
@@ -72,6 +75,10 @@ import {
   type ContextMenuDefinition,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -137,8 +144,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   abstract readonly contexts: Menus.ContextType[];
 
-  public get kind(): "contextMenu" {
-    return "contextMenu";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.CONTEXT_MENU;
   }
 
   readonly capabilities: PlatformCapability[] = ["contextMenu"];
@@ -250,7 +257,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     );
 
     await getPlatform().contextMenus.register({
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
       contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
@@ -272,8 +279,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         reportError(error, {
           context: {
             deploymentId: modComponent._deployment?.id,
-            extensionPointId: modComponent.extensionPointId,
-            extensionId: modComponent.id,
+            starterBrickId: modComponent.extensionPointId,
+            modComponentId: modComponent.id,
           },
         });
         throw error;
@@ -331,7 +338,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     } = modComponent.config;
 
     const modComponentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     const handler = async (
@@ -369,6 +376,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
         await reduceModComponentPipeline(actionConfig, initialValues, {
           logger: modComponentLogger,
+          modComponentRef: getModComponentRef(modComponent),
           ...apiVersionOptions(modComponent.apiVersion),
         });
 
@@ -485,7 +493,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike<ContextMenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "contextMenu") {
+  if (type !== StarterBrickTypes.CONTEXT_MENU) {
     throw new Error(`Expected type=contextMenu, got ${type}`);
   }
 

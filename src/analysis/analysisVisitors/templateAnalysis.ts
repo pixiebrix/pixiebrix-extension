@@ -55,9 +55,9 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.annotations;
   }
 
-  async run(extension: ModComponentFormState): Promise<void> {
-    this.visitRootPipeline(extension.extension.blockPipeline, {
-      extensionPointType: extension.type,
+  async run(formState: ModComponentFormState): Promise<void> {
+    this.visitRootPipeline(formState.modComponent.brickPipeline, {
+      starterBrickType: formState.starterBrick.definition.type,
     });
 
     await Promise.all(this.nunjucksValidationPromises);

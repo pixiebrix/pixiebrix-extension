@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectEditorUpdateKey,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Alert } from "react-bootstrap";
 import Centered from "@/components/Centered";
 import EditorTabLayout, {
@@ -45,7 +45,7 @@ const ModEditorPane: React.VFC = () => {
 
   useEffect(() => {
     const messageContext: MessageContext = {
-      blueprintId: activeModId,
+      modId: activeModId,
     };
     dispatch(logActions.setContext(messageContext));
   }, [dispatch, activeModId]);
@@ -83,7 +83,7 @@ const ModEditorPane: React.VFC = () => {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-testid="modEditorPane">
       <EditorTabLayout key={layoutKey} tabs={tabItems} />
     </div>
   );

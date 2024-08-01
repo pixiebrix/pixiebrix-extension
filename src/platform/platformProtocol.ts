@@ -15,15 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PlatformCapability } from "@/platform/capabilities";
+import type { PlatformCapability } from "@/platform/capabilities";
 import type { ElementReference } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { FormDefinition } from "@/platform/forms/formTypes";
-import type { UUID } from "@/types/stringTypes";
-import type { RegistryId, SemVerString } from "@/types/registryTypes";
+import type { SemVerString } from "@/types/registryTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Logger } from "@/types/loggerTypes";
 import type { AudioProtocol } from "@/platform/platformTypes/audioProtocol";
@@ -38,6 +37,8 @@ import type { SnippetShortcutMenuProtocol } from "@/platform/platformTypes/snipp
 import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
+import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
 
 /**
  * A protocol for the platform/environment running the mods.
@@ -90,7 +91,7 @@ export interface PlatformProtocol {
   form: (
     definition: FormDefinition,
     controller: AbortController,
-    context: { componentId: UUID; modId?: RegistryId },
+    modComponentRef: ModComponentRef,
   ) => Promise<unknown>;
 
   /**
@@ -135,6 +136,12 @@ export interface PlatformProtocol {
    * @since 1.8.10
    */
   get audio(): AudioProtocol;
+
+  /**
+   * The audio/screen capture protocol for the platform.
+   * @since 2.0.7
+   */
+  get capture(): CaptureProtocol;
 
   /**
    * The clipboard protocol for the platform.

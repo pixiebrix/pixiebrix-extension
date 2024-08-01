@@ -5,6 +5,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
   <form
     autocomplete="off"
     class="form full-height"
+    data-testid="editorPane"
     novalidate=""
   >
     <div
@@ -90,6 +91,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
         >
           <div
             class="nodePanel"
+            data-testid="brickActionsPanel"
           >
             <div
               class="nodeHeader"
@@ -567,9 +569,11 @@ exports[`renders a mod component with sub pipeline 1`] = `
           </div>
           <div
             class="configPanel"
+            data-testid="brickConfigurationPanel"
           >
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"
@@ -597,6 +601,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
             </div>
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"
@@ -607,7 +612,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extension.heading"
+                for="modComponent.heading"
               >
                 Tab Title
               </label>
@@ -616,8 +621,8 @@ exports[`renders a mod component with sub pipeline 1`] = `
               >
                 <input
                   class="form-control"
-                  id="extension.heading"
-                  name="extension.heading"
+                  id="modComponent.heading"
+                  name="modComponent.heading"
                   value=""
                 />
                 <small
@@ -631,6 +636,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
             </div>
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"
@@ -641,7 +647,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extensionPoint.definition.isAvailable.matchPatterns"
+                for="starterBrick.definition.isAvailable.matchPatterns"
               >
                 <span>
                   Sites 
@@ -669,55 +675,78 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   class="list-group mb-2"
                 >
                   <li
-                    class="list-group-item py-1"
+                    class="list-group-item py-1 d-flex pl-1"
                   >
+                    <div>
+                      <button
+                        class="moveButton btn btn-link"
+                        disabled=""
+                        title="Move up"
+                        type="button"
+                      >
+                        <test-file-stub />
+                      </button>
+                      <button
+                        class="moveButton btn btn-link"
+                        disabled=""
+                        title="Move down"
+                        type="button"
+                      >
+                        <test-file-stub />
+                      </button>
+                    </div>
                     <div
-                      class="formGroup mb-0 form-group"
+                      class="flex-grow-1"
                     >
                       <div
-                        class="mb-2 w-100 collapse"
+                        class="formGroup mb-0 form-group"
+                        data-testid="field-template-form-group"
                       >
                         <div
-                          class="annotationPlaceholder"
-                        />
-                      </div>
-                      <div
-                        class="formField"
-                      >
-                        <div
-                          class="root"
+                          class="mb-2 w-100 collapse"
                         >
                           <div
-                            class="field"
-                          >
-                            <textarea
-                              class="form-control"
-                              id="extensionPoint.definition.isAvailable.matchPatterns.0"
-                              name="extensionPoint.definition.isAvailable.matchPatterns.0"
-                              rows="1"
-                            >
-                              https://www.mySite1.com/*
-                            </textarea>
-                          </div>
+                            class="annotationPlaceholder"
+                          />
+                        </div>
+                        <div
+                          class="formField"
+                        >
                           <div
-                            class="dropdown dropdown"
-                            data-test-selected="Text"
-                            data-testid="toggle-extensionPoint.definition.isAvailable.matchPatterns.0"
+                            class="root"
                           >
-                            <button
-                              aria-expanded="false"
-                              aria-haspopup="true"
-                              class="dropdown-toggle btn btn-link"
-                              type="button"
+                            <div
+                              class="field"
                             >
-                              <span
-                                class="symbol"
+                              <textarea
+                                class="form-control"
+                                id="starterBrick.definition.isAvailable.matchPatterns.0"
+                                name="starterBrick.definition.isAvailable.matchPatterns.0"
+                                rows="1"
                               >
-                                <test-file-stub
-                                  classname="root"
-                                />
-                              </span>
-                            </button>
+                                https://www.mySite1.com/*
+                              </textarea>
+                            </div>
+                            <div
+                              class="dropdown dropdown"
+                              data-test-selected="Text"
+                              data-testid="toggle-starterBrick.definition.isAvailable.matchPatterns.0"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                class="dropdown-toggle btn btn-link"
+                                type="button"
+                              >
+                                <span
+                                  class="symbol"
+                                >
+                                  <test-file-stub
+                                    classname="root"
+                                  />
+                                </span>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -752,6 +781,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
             </div>
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"
@@ -762,7 +792,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extensionPoint.definition.trigger"
+                for="starterBrick.definition.trigger"
               >
                 <span>
                   Trigger 
@@ -789,8 +819,8 @@ exports[`renders a mod component with sub pipeline 1`] = `
                 <select
                   class="form-control"
                   disabled=""
-                  id="extensionPoint.definition.trigger"
-                  name="extensionPoint.definition.trigger"
+                  id="starterBrick.definition.trigger"
+                  name="starterBrick.definition.trigger"
                 >
                   <option
                     value="load"
@@ -829,6 +859,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
             </div>
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"
@@ -928,6 +959,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               >
                 <div
                   class="formGroup form-group"
+                  data-testid="field-template-form-group"
                 >
                   <div
                     class="mb-2 w-100 collapse"
@@ -938,7 +970,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extensionPoint.definition.isAvailable.urlPatterns"
+                    for="starterBrick.definition.isAvailable.urlPatterns"
                   >
                     <span>
                       URL Patterns 
@@ -990,6 +1022,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                 </div>
                 <div
                   class="formGroup form-group"
+                  data-testid="field-template-form-group"
                 >
                   <div
                     class="mb-2 w-100 collapse"
@@ -1000,7 +1033,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extensionPoint.definition.isAvailable.selectors"
+                    for="starterBrick.definition.isAvailable.selectors"
                   >
                     <span>
                       Selectors 
@@ -1079,6 +1112,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
               >
                 <div
                   class="formGroup form-group"
+                  data-testid="field-template-form-group"
                 >
                   <div
                     class="mb-2 w-100 collapse"
@@ -1150,6 +1184,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
           </div>
           <div
             class="collapseWrapper"
+            data-testid="dataPanel"
           >
             <button
               class="toggle active"
@@ -1187,32 +1222,19 @@ exports[`renders a mod component with sub pipeline 1`] = `
                     <a
                       aria-selected="false"
                       class="nav-link"
-                      data-rb-event-key="context"
+                      data-rb-event-key="input"
                       href="#"
                       role="tab"
                     >
-                      Context
+                      Input
                     </a>
                   </div>
                   <div
                     class="tabNav nav-item"
                   >
                     <a
-                      aria-selected="false"
-                      class="nav-link"
-                      data-rb-event-key="rendered"
-                      href="#"
-                      role="tab"
-                    >
-                      Rendered
-                    </a>
-                  </div>
-                  <div
-                    class="tabNav nav-item"
-                  >
-                    <a
-                      aria-selected="false"
-                      class="nav-link"
+                      aria-selected="true"
+                      class="nav-link active"
                       data-rb-event-key="output"
                       href="#"
                       role="tab"
@@ -1224,26 +1246,13 @@ exports[`renders a mod component with sub pipeline 1`] = `
                     class="tabNav nav-item"
                   >
                     <a
-                      aria-selected="true"
-                      class="nav-link active"
-                      data-rb-event-key="preview"
-                      href="#"
-                      role="tab"
-                    >
-                      Preview
-                    </a>
-                  </div>
-                  <div
-                    class="tabNav nav-item"
-                  >
-                    <a
                       aria-selected="false"
                       class="nav-link"
-                      data-rb-event-key="pageState"
+                      data-rb-event-key="modVariables"
                       href="#"
                       role="tab"
                     >
-                      Page State
+                      Mod Variables
                     </a>
                   </div>
                 </div>
@@ -1251,38 +1260,132 @@ exports[`renders a mod component with sub pipeline 1`] = `
                   class="tab-content"
                 >
                   <div
-                    aria-hidden="true"
-                    class="fade tabPane tab-pane"
-                    role="tabpanel"
-                  >
-                    <div
-                      class="text-muted"
-                    >
-                      This is the first step in the execution flow, so it does not receive inputs from any other brick.
-                    </div>
-                  </div>
-                  <div
-                    aria-hidden="true"
-                    class="fade tabPane tab-pane"
-                    role="tabpanel"
-                  >
-                    <div
-                      class="text-muted"
-                    >
-                      This is the first step in the execution flow, so it does not receive inputs from any other brick.
-                    </div>
-                  </div>
-                  <div
                     aria-hidden="false"
                     class="fade tabPane tab-pane active show"
                     role="tabpanel"
                   >
+                    <div
+                      class="formGroup formGroup form-group"
+                      data-testid="field-template-form-group"
+                    >
+                      <div
+                        class="mb-2 w-100 collapse"
+                      >
+                        <div
+                          class="annotationPlaceholder"
+                        />
+                      </div>
+                      <label
+                        class="label form-label"
+                        for="viewMode"
+                      >
+                        View
+                      </label>
+                      <div
+                        class="formField"
+                      >
+                        <div
+                          class="viewToggle"
+                        >
+                          <div
+                            class="form-check"
+                          >
+                            <input
+                              checked=""
+                              class="form-check-input"
+                              id="viewMode-actual"
+                              name="viewMode"
+                              type="radio"
+                              value="actual"
+                            />
+                            <label
+                              class="form-check-label"
+                              for="viewMode-actual"
+                              title=""
+                            >
+                              <span>
+                                <span
+                                  class="span"
+                                >
+                                  <span
+                                    class="label"
+                                  >
+                                    Latest Run
+                                  </span>
+                                   
+                                  <svg
+                                    aria-hidden="true"
+                                    class="svg-inline--fa fa-info-circle fa-w-16 "
+                                    data-icon="info-circle"
+                                    data-prefix="fas"
+                                    focusable="false"
+                                    role="img"
+                                    viewBox="0 0 512 512"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                </span>
+                              </span>
+                            </label>
+                          </div>
+                          <div
+                            class="form-check"
+                          >
+                            <input
+                              class="form-check-input"
+                              id="viewMode-preview"
+                              name="viewMode"
+                              type="radio"
+                              value="preview"
+                            />
+                            <label
+                              class="form-check-label"
+                              for="viewMode-preview"
+                              title=""
+                            >
+                              <span>
+                                <span
+                                  class="span"
+                                >
+                                  <span
+                                    class="label"
+                                  >
+                                    Live Preview
+                                  </span>
+                                   
+                                  <svg
+                                    aria-hidden="true"
+                                    class="svg-inline--fa fa-info-circle fa-w-16 "
+                                    data-icon="info-circle"
+                                    data-prefix="fas"
+                                    focusable="false"
+                                    role="img"
+                                    viewBox="0 0 512 512"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                </span>
+                              </span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <div>
                       <div
                         class="root"
                       >
                         <div
                           class="formGroup form-group"
+                          data-testid="field-template-form-group"
                         >
                           <div
                             class="mb-2 w-100 collapse"
@@ -1292,7 +1395,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                             />
                           </div>
                           <label
-                            class="label labelFitContent form-label"
+                            class="label form-label"
                             for="traceSearch"
                           >
                             Search
@@ -1310,7 +1413,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                           </div>
                         </div>
                         <span>
-                          Output Preview 
+                          Live Preview 
                           <a
                             aria-label="copy data"
                             class="copyPath p-0 btn btn-text"
@@ -1406,6 +1509,7 @@ exports[`renders the first selected node 1`] = `
   <form
     autocomplete="off"
     class="form full-height"
+    data-testid="editorPane"
     novalidate=""
   >
     <div
@@ -1491,6 +1595,7 @@ exports[`renders the first selected node 1`] = `
         >
           <div
             class="nodePanel"
+            data-testid="brickActionsPanel"
           >
             <div
               class="nodeHeader"
@@ -1821,6 +1926,7 @@ exports[`renders the first selected node 1`] = `
           </div>
           <div
             class="configPanel"
+            data-testid="brickConfigurationPanel"
           >
             <h6
               class="mb-3 d-flex justify-content-between flex-wrap gap-2"
@@ -1835,6 +1941,7 @@ exports[`renders the first selected node 1`] = `
               >
                 <div
                   class="formGroup flex-grow-1 form-group"
+                  data-testid="field-template-form-group"
                 >
                   <div
                     class="mb-2 w-100 collapse"
@@ -1845,7 +1952,7 @@ exports[`renders the first selected node 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extension.blockPipeline.0.label"
+                    for="modComponent.brickPipeline.0.label"
                   >
                     Step Name
                   </label>
@@ -1854,8 +1961,8 @@ exports[`renders the first selected node 1`] = `
                   >
                     <input
                       class="form-control"
-                      id="extension.blockPipeline.0.label"
-                      name="extension.blockPipeline.0.label"
+                      id="modComponent.brickPipeline.0.label"
+                      name="modComponent.brickPipeline.0.label"
                       placeholder="Echo Brick"
                       value=""
                     />
@@ -1863,6 +1970,7 @@ exports[`renders the first selected node 1`] = `
                 </div>
                 <div
                   class="formGroup flex-grow-1 form-group"
+                  data-testid="field-template-form-group"
                 >
                   <div
                     class="mb-2 w-100 collapse"
@@ -1873,7 +1981,7 @@ exports[`renders the first selected node 1`] = `
                   </div>
                   <label
                     class="label form-label"
-                    for="extension.blockPipeline.0.outputKey"
+                    for="modComponent.brickPipeline.0.outputKey"
                   >
                     <span
                       class="span"
@@ -1881,7 +1989,7 @@ exports[`renders the first selected node 1`] = `
                       <span
                         class="label"
                       >
-                        Output
+                        Output Variable
                       </span>
                        
                       <svg
@@ -1918,8 +2026,10 @@ exports[`renders the first selected node 1`] = `
                       </div>
                       <input
                         class="form-control"
-                        id="extension.blockPipeline.0.outputKey"
-                        name="extension.blockPipeline.0.outputKey"
+                        disabled=""
+                        id="modComponent.brickPipeline.0.outputKey"
+                        name="modComponent.brickPipeline.0.outputKey"
+                        placeholder="Not supported for brick"
                         value="echoOutput"
                       />
                     </div>
@@ -1929,6 +2039,7 @@ exports[`renders the first selected node 1`] = `
             </div>
             <div
               class="formGroup form-group"
+              data-testid="field-template-form-group"
             >
               <div
                 class="mb-2 w-100 collapse"
@@ -1939,7 +2050,7 @@ exports[`renders the first selected node 1`] = `
               </div>
               <label
                 class="label form-label"
-                for="extension.blockPipeline.0.config.message"
+                for="modComponent.brickPipeline.0.config.message"
               >
                 Message
               </label>
@@ -1954,15 +2065,15 @@ exports[`renders the first selected node 1`] = `
                   >
                     <textarea
                       class="form-control"
-                      id="extension.blockPipeline.0.config.message"
-                      name="extension.blockPipeline.0.config.message"
+                      id="modComponent.brickPipeline.0.config.message"
+                      name="modComponent.brickPipeline.0.config.message"
                       rows="1"
                     />
                   </div>
                   <div
                     class="dropdown dropdown"
                     data-test-selected="Text"
-                    data-testid="toggle-extension.blockPipeline.0.config.message"
+                    data-testid="toggle-modComponent.brickPipeline.0.config.message"
                   >
                     <button
                       aria-expanded="false"
@@ -2021,6 +2132,7 @@ exports[`renders the first selected node 1`] = `
           </div>
           <div
             class="collapseWrapper"
+            data-testid="dataPanel"
           >
             <button
               class="toggle active"
@@ -2059,24 +2171,11 @@ exports[`renders the first selected node 1`] = `
                       <a
                         aria-selected="false"
                         class="nav-link"
-                        data-rb-event-key="context"
+                        data-rb-event-key="input"
                         href="#"
                         role="tab"
                       >
-                        Context
-                      </a>
-                    </div>
-                    <div
-                      class="tabNav nav-item"
-                    >
-                      <a
-                        aria-selected="false"
-                        class="nav-link"
-                        data-rb-event-key="rendered"
-                        href="#"
-                        role="tab"
-                      >
-                        Rendered
+                        Input
                       </a>
                     </div>
                     <div
@@ -2098,11 +2197,11 @@ exports[`renders the first selected node 1`] = `
                       <a
                         aria-selected="false"
                         class="nav-link"
-                        data-rb-event-key="preview"
+                        data-rb-event-key="modVariables"
                         href="#"
                         role="tab"
                       >
-                        Preview
+                        Mod Variables
                       </a>
                     </div>
                     <div
@@ -2128,21 +2227,125 @@ exports[`renders the first selected node 1`] = `
                       role="tabpanel"
                     >
                       <div
+                        class="formGroup formGroup form-group"
+                        data-testid="field-template-form-group"
+                      >
+                        <div
+                          class="mb-2 w-100 collapse"
+                        >
+                          <div
+                            class="annotationPlaceholder"
+                          />
+                        </div>
+                        <label
+                          class="label form-label"
+                          for="viewMode"
+                        >
+                          View
+                        </label>
+                        <div
+                          class="formField"
+                        >
+                          <div
+                            class="viewToggle"
+                          >
+                            <div
+                              class="form-check"
+                            >
+                              <input
+                                checked=""
+                                class="form-check-input"
+                                id="viewMode-actual"
+                                name="viewMode"
+                                type="radio"
+                                value="actual"
+                              />
+                              <label
+                                class="form-check-label"
+                                for="viewMode-actual"
+                                title=""
+                              >
+                                <span>
+                                  <span
+                                    class="span"
+                                  >
+                                    <span
+                                      class="label"
+                                    >
+                                      Latest Run
+                                    </span>
+                                     
+                                    <svg
+                                      aria-hidden="true"
+                                      class="svg-inline--fa fa-info-circle fa-w-16 "
+                                      data-icon="info-circle"
+                                      data-prefix="fas"
+                                      focusable="false"
+                                      role="img"
+                                      viewBox="0 0 512 512"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                                        fill="currentColor"
+                                      />
+                                    </svg>
+                                  </span>
+                                </span>
+                              </label>
+                            </div>
+                            <div
+                              class="form-check"
+                            >
+                              <input
+                                class="form-check-input"
+                                id="viewMode-preview"
+                                name="viewMode"
+                                type="radio"
+                                value="preview"
+                              />
+                              <label
+                                class="form-check-label"
+                                for="viewMode-preview"
+                                title=""
+                              >
+                                <span>
+                                  <span
+                                    class="span"
+                                  >
+                                    <span
+                                      class="label"
+                                    >
+                                      Live Preview
+                                    </span>
+                                     
+                                    <svg
+                                      aria-hidden="true"
+                                      class="svg-inline--fa fa-info-circle fa-w-16 "
+                                      data-icon="info-circle"
+                                      data-prefix="fas"
+                                      focusable="false"
+                                      role="img"
+                                      viewBox="0 0 512 512"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"
+                                        fill="currentColor"
+                                      />
+                                    </svg>
+                                  </span>
+                                </span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
                         class="text-muted"
                       >
-                        No trace available. Run the mod to generate data
+                        No runs available. Run the brick to view output
                       </div>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="fade tabPane tab-pane"
-                      role="tabpanel"
-                    >
-                      <textarea
-                        class="form-control"
-                        name="extension.blockPipeline.0.comments"
-                        rows="1"
-                      />
                     </div>
                   </div>
                 </div>

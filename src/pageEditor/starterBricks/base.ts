@@ -57,7 +57,7 @@ import {
   type BaseModComponentState,
   type BaseFormState,
   type SingleLayerReaderConfig,
-} from "@/pageEditor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import {
   type Availability,
@@ -123,7 +123,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
-  | "recipe"
+  | "modMetadata"
 > & { type: T } {
   return {
     uuid: config.id,
@@ -135,7 +135,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     type,
-    recipe: config._recipe,
+    modMetadata: config._recipe,
   };
 }
 
@@ -146,9 +146,9 @@ export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
   modComponentFormState: TFormState,
   modDefinitions: ModDefinition[],
 ) {
-  if (modComponentFormState.recipe?.id) {
+  if (modComponentFormState.modMetadata?.id) {
     const mod = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.recipe?.id,
+      (x) => x.metadata.id === modComponentFormState.modMetadata?.id,
     );
 
     if (mod?.options == null) {
@@ -175,8 +175,8 @@ export function baseSelectModComponent({
   optionsArgs,
   integrationDependencies,
   permissions,
-  extensionPoint,
-  recipe,
+  starterBrick,
+  modMetadata: mod,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -191,8 +191,8 @@ export function baseSelectModComponent({
   return {
     id: uuid,
     apiVersion,
-    extensionPointId: extensionPoint.metadata.id,
-    _recipe: recipe,
+    extensionPointId: starterBrick.metadata.id,
+    _recipe: mod,
     label,
     integrationDependencies,
     permissions,
@@ -202,17 +202,17 @@ export function baseSelectModComponent({
 
 export function makeInitialBaseState(
   uuid: UUID = uuidv4(),
-): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "label" | "starterBrick"> {
   return {
     uuid,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
-    extension: {
-      blockPipeline: [],
+    modComponent: {
+      brickPipeline: [],
     },
-    recipe: undefined,
+    modMetadata: undefined,
   };
 }
 
@@ -321,7 +321,7 @@ export async function lookupStarterBrick<
 export function baseSelectStarterBrick(
   formState: BaseFormState,
 ): Except<StarterBrickDefinitionLike, "definition"> {
-  const { metadata } = formState.extensionPoint;
+  const { metadata } = formState.starterBrick;
 
   return {
     apiVersion: formState.apiVersion,
@@ -404,11 +404,16 @@ export function getImplicitReader(
     { element: validateRegistryId("@pixiebrix/html/element") },
   ] as const;
 
-  if (type === "trigger") {
+  if (type === StarterBrickTypes.TRIGGER) {
     return readerTypeHack([...base, ...elementAddons]);
   }
 
-  if (type === "quickBar" || type === "quickBarProvider") {
+  if (
+    [
+      StarterBrickTypes.QUICK_BAR_ACTION,
+      StarterBrickTypes.DYNAMIC_QUICK_BAR,
+    ].includes(type)
+  ) {
     return readerTypeHack([
       ...base,
       ...elementAddons,
@@ -416,7 +421,7 @@ export function getImplicitReader(
     ]);
   }
 
-  if (type === "contextMenu") {
+  if (type === StarterBrickTypes.CONTEXT_MENU) {
     // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by
     // the contextMenu starter brick.
     return readerTypeHack([...base, ...elementAddons]);
@@ -451,7 +456,7 @@ export async function modComponentWithNormalizedPipeline<
 ): Promise<BaseModComponentState & Omit<T, Prop>> {
   const { [pipelineProp]: pipeline, ...rest } = { ...config };
   return {
-    blockPipeline: await normalizePipelineForEditor(
+    brickPipeline: await normalizePipelineForEditor(
       castArray(pipeline) as BrickPipeline,
     ),
     ...defaults,

@@ -21,7 +21,7 @@ import {
   selectActiveModId,
   selectDirtyOptionsDefinitionsForModId,
   selectDirtyOptionValuesForModId,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
@@ -36,13 +36,13 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { collectModOptions } from "@/store/extensionsUtils";
 import useAsyncModOptionsValidationSchema from "@/hooks/useAsyncModOptionsValidationSchema";
 import Effect from "@/components/Effect";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -56,6 +56,7 @@ const NoModOptions: React.FC = () => (
 const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
+
   const {
     data: mod,
     isFetching: isFetchingMod,

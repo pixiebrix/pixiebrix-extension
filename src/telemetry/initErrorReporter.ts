@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect";
 import { addAuthListener } from "@/auth/authStorage";
 import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
@@ -25,8 +25,8 @@ import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
-  type TelemetryUser,
 } from "@/telemetry/telemetryHelpers";
+import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;

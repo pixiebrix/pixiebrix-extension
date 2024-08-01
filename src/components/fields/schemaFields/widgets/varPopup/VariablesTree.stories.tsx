@@ -59,13 +59,13 @@ const knownVars = {
       },
     },
   },
-  "extension.blockPipeline.0": {
+  "modComponent.brickPipeline.0": {
     "@data": {},
   },
-  "extension.blockPipeline.1": {
+  "modComponent.brickPipeline.1": {
     "@ifElseOutput": {},
   },
-  "extension.blockPipeline.2": {
+  "modComponent.brickPipeline.2": {
     "@forEachOutput": {},
   },
 };
@@ -73,7 +73,14 @@ const knownVars = {
 const Template: Story<typeof VariablesTree> = () => {
   const source = "root:Array Composite Reader";
   const vars = knownVars[source];
-  return <VariablesTree vars={vars} onVarSelect={noop} likelyVariable={null} />;
+  return (
+    <VariablesTree
+      vars={vars}
+      onVarSelect={noop}
+      likelyVariable={null}
+      activeKeyPath={null}
+    />
+  );
 };
 
 export const Default = Template.bind({});

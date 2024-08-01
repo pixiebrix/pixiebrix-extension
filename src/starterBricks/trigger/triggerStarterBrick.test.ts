@@ -26,7 +26,7 @@ import {
   RootReader,
   tick,
 } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   fromJS,
   getDefaultAllowInactiveFramesForTrigger,
@@ -50,8 +50,12 @@ import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { screen } from "@testing-library/react";
-import type { Trigger } from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import {
+  ReportModes,
+  type Trigger,
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 let hidden = false;
 
@@ -88,7 +92,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<TriggerDefinition>({
-      type: "trigger",
+      type: StarterBrickTypes.TRIGGER,
       background: derive<TriggerDefinition, boolean>((x) =>
         getDefaultAllowInactiveFramesForTrigger(x.trigger!),
       ),
@@ -128,8 +132,8 @@ beforeEach(() => {
   reportEventMock.mockReset();
   showNotificationMock.mockReset();
   notifyContextInvalidatedMock.mockReset();
-  blockRegistry.clear();
-  blockRegistry.register([
+  brickRegistry.clear();
+  brickRegistry.register([
     rootReader,
     new InvalidContextReader(),
     throwBrick,
@@ -557,7 +561,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "once",
+        reportMode: ReportModes.ONCE,
         showErrors: true,
       })({}),
     );
@@ -581,7 +585,7 @@ describe("triggerStarterBrick", () => {
 
     // Does not report successful event only once
     expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
     });
 
     // Reports an error once
@@ -599,7 +603,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "error-once",
+        reportMode: ReportModes.ERROR_ONCE,
         showErrors: true,
       })({}),
     );
@@ -637,7 +641,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "never",
+        reportMode: ReportModes.NEVER,
         showErrors: true,
       })({}),
     );
@@ -664,7 +668,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "all",
+        reportMode: ReportModes.ALL,
         showErrors: true,
       })({}),
     );
@@ -693,7 +697,7 @@ describe("triggerStarterBrick", () => {
       getPlatform(),
       starterBrickFactory({
         trigger: "load",
-        reportMode: "all",
+        reportMode: ReportModes.ALL,
         // Testing the default of false, for backward compatability
         // showErrors: false,
       })({}),

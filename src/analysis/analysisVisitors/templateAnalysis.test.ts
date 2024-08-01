@@ -27,18 +27,18 @@ const position: BrickPosition = {
   path: "test.path.property",
 };
 
-function blockExtensionFactory(expression: Expression<unknown>) {
-  const extension = triggerFormStateFactory();
-  extension.extension.blockPipeline = [
+function httpBrickModComponentFactory(expression: Expression<unknown>) {
+  const formState = triggerFormStateFactory();
+  formState.modComponent.brickPipeline = [
     brickConfigFactory({
-      id: RemoteMethod.BLOCK_ID,
+      id: RemoteMethod.BRICK_ID,
       config: {
         url: expression,
       },
     }),
   ];
 
-  return extension;
+  return formState;
 }
 
 describe("TemplateAnalysis", () => {
@@ -66,11 +66,11 @@ describe("TemplateAnalysis", () => {
     "accepts valid mustache [%s]",
     async (template) => {
       const analysis = new TemplateAnalysis();
-      const extension = blockExtensionFactory(
+      const formState = httpBrickModComponentFactory(
         toExpression("mustache", template),
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       expect(analysis.getAnnotations()).toHaveLength(0);
     },
@@ -80,11 +80,11 @@ describe("TemplateAnalysis", () => {
     "rejects mustache template in non-mustache expression [%s]",
     async (template) => {
       const analysis = new TemplateAnalysis();
-      const extension = blockExtensionFactory(
+      const formState = httpBrickModComponentFactory(
         toExpression("nunjucks", template),
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       expect(analysis.getAnnotations()).toHaveLength(1);
     },
@@ -96,11 +96,11 @@ describe("TemplateAnalysis", () => {
     "rejects invalid nunjucks [%s]",
     async (template) => {
       const analysis = new TemplateAnalysis();
-      const extension = blockExtensionFactory(
+      const formState = httpBrickModComponentFactory(
         toExpression("nunjucks", template),
       );
 
-      await analysis.run(extension);
+      await analysis.run(formState);
 
       expect(analysis.getAnnotations()).toHaveLength(1);
     },

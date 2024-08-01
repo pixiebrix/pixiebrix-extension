@@ -41,10 +41,10 @@ import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleMod
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
-import { services, registry } from "@/background/messenger/api";
+import { integrationConfigLocator, registry } from "@/background/messenger/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { refreshServices } from "@/background/locator";
+import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
 import { type WizardValues } from "@/activation/wizardTypes";
 import useActivateMod, {
   type ActivateResult,
@@ -52,7 +52,7 @@ import useActivateMod, {
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");
@@ -94,7 +94,9 @@ let activateModSpy: jest.MockedFunction<
 beforeAll(() => {
   registerDefaultWidgets();
   // Wire up registry for integrated testing
-  jest.mocked(services.refresh).mockImplementation(refreshServices);
+  jest
+    .mocked(integrationConfigLocator.refresh)
+    .mockImplementation(refreshIntegrationConfigs);
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);
@@ -162,7 +164,7 @@ function setupMocksAndRender(
   appApiMock.onGet().reply(200, []);
 
   const entry = sidebarEntryFactory("activateMods", {
-    modIds: [modDefinition.metadata.id],
+    mods: [{ modId: modDefinition.metadata.id, initialOptions: {} }],
     heading: "Activate Mod",
   });
 
@@ -269,7 +271,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: [],
@@ -313,7 +315,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: ["service1"],
@@ -358,7 +360,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: [],
@@ -402,7 +404,7 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
             },
             required: ["service1"],
@@ -445,10 +447,10 @@ describe("ActivateModPanel", () => {
           services: {
             properties: {
               service1: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
               },
               service2: {
-                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
+                $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
               },
             },
             required: ["service1"],

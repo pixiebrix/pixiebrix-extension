@@ -26,8 +26,7 @@ import {
   saveModComponentState,
 } from "@/store/extensionsStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { forEachTab } from "@/utils/extensionUtils";
-import { queueReloadFrameMods } from "@/contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
@@ -61,6 +60,7 @@ import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTy
 import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
@@ -117,7 +117,7 @@ function closeStarterModTabs({
 }): SidebarState {
   const actionPanelDefinitions = getAllModComponentDefinitionsWithType(
     modDefinition,
-    "actionPanel",
+    StarterBrickTypes.SIDEBAR_PANEL,
   );
   const activatedModComponents = selectModComponentsForMod(
     modDefinition.metadata.id,
@@ -261,7 +261,9 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
     saveModComponentState(optionsState),
     saveSidebarState(sidebarState),
   ]);
-  await forEachTab(queueReloadFrameMods);
+
+  reloadModsEveryTab();
+
   return newModConfigs.length > 0;
 }
 

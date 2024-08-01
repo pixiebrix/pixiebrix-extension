@@ -49,8 +49,8 @@ describe("WaitElementEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test.each([undefined, false])(
-    "it wait element isRootAware: %s",
+  it.each([undefined, false])(
+    "wait element isRootAware: %s",
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
@@ -59,7 +59,7 @@ describe("WaitElementEffect", () => {
     },
   );
 
-  test("it wait element for isRootAware: true", async () => {
+  it("wait element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
       brickOptionsFactory({

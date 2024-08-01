@@ -1,7 +1,7 @@
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { render } from "@/pageEditor/testHelpers";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { screen } from "@testing-library/react";
 import React from "react";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
@@ -40,7 +40,7 @@ describe("FormRendererOptions", () => {
 
     render(
       <FormRendererOptions
-        name="extension.blockPipeline.0"
+        name="modComponent.brickPipeline.0"
         configKey="config"
       />,
       {
@@ -65,7 +65,7 @@ describe("FormRendererOptions", () => {
 
     render(
       <FormRendererOptions
-        name="extension.blockPipeline.0"
+        name="modComponent.brickPipeline.0"
         configKey="config"
       />,
       {
@@ -98,7 +98,7 @@ describe("FormRendererOptions", () => {
 
     render(
       <FormRendererOptions
-        name="extension.blockPipeline.0"
+        name="modComponent.brickPipeline.0"
         configKey="config"
       />,
       {

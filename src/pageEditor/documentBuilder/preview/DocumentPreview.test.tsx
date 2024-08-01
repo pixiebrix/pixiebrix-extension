@@ -26,33 +26,41 @@ import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPrevie
 import userEvent from "@testing-library/user-event";
 import { render } from "@/pageEditor/testHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { uuidv4 } from "@/types/helpers";
+import useReduxState from "@/hooks/useReduxState";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
-  const formState = formStateFactory(undefined, [
-    {
-      id: DocumentRenderer.BRICK_ID,
-      config: {
-        body: [documentBuilderElement],
+  const formState = formStateFactory({
+    brickPipeline: [
+      {
+        id: DocumentRenderer.BRICK_ID,
+        config: {
+          body: [documentBuilderElement],
+        },
+        instanceId: uuidv4(),
       },
-      instanceId: uuidv4(),
-    },
-  ]);
+    ],
+  });
 
   const PreviewContainer = () => {
-    const [activeElement, setActiveElement] = useState<string | null>(null);
+    const [activeElement, setActiveElement] = useReduxState(
+      selectActiveBuilderPreviewElement,
+      actions.setActiveBuilderPreviewElement,
+    );
+
     return (
       <DocumentPreview
-        documentBodyName="extension.blockPipeline[0].config.body"
+        documentBodyName="modComponent.brickPipeline[0].config.body"
         activeElement={activeElement}
         setActiveElement={setActiveElement}
       />
@@ -66,7 +74,7 @@ function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId,
+          formState.modComponent.brickPipeline[0].instanceId,
         ),
       );
     },
@@ -78,8 +86,8 @@ const temporaryDisplayBlock = new DisplayTemporaryInfo();
 
 beforeAll(async () => {
   registerDefaultWidgets();
-  blockRegistry.clear();
-  blockRegistry.register([documentBlock, temporaryDisplayBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([documentBlock, temporaryDisplayBlock]);
 });
 
 describe("Add new element", () => {
@@ -95,41 +103,30 @@ describe("Add new element", () => {
 
     const { container } = renderDocumentPreview(containerElement);
 
+    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
     // Select a dropdown inside a Col in List and open it
-    await userEvent.click(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    );
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    ).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(firstDropdown);
+
+    expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
 
     // Hover over the Col in the list
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     fireEvent.mouseOver(container.querySelector(".col .col"));
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    ).toHaveAttribute("aria-expanded", "true");
+    expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
 
     // Hover over the Container of the List, .root.root - is the Document root element
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     fireEvent.mouseOver(container.querySelector(".root.root > .container"));
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-      container.querySelector(".col .col .addElement button"),
-    ).toHaveAttribute("aria-expanded", "true");
+    expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
   });
 
   test("can add an element to a container", async () => {
-    const { container } = renderDocumentPreview(
-      createNewDocumentBuilderElement("container"),
-    );
+    renderDocumentPreview(createNewDocumentBuilderElement("container"));
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-    await userEvent.click(container.querySelector(".col .addElement button"));
-    await userEvent.click(screen.getByText("Header", { selector: "a" }));
+    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
+
+    await userEvent.click(firstDropdown);
+    await userEvent.click(screen.getByRole("menuitem", { name: "Header" }));
 
     const header = screen.getByRole("heading", { level: 1 });
 
@@ -153,37 +150,39 @@ describe("Show live preview", () => {
 
   function renderPreviewInTemporaryDisplayPipeline() {
     const containerElement = createNewDocumentBuilderElement("container");
-    const formState = formStateFactory(undefined, [
-      {
-        id: DisplayTemporaryInfo.BRICK_ID,
-        instanceId: uuidSequence(1),
-        config: {
-          title: toExpression("nunjucks", "Test Tab"),
-          body: toExpression("pipeline", [
-            {
-              id: DocumentRenderer.BRICK_ID,
-              instanceId: uuidSequence(2),
-              config: {
-                body: [containerElement],
+    const formState = formStateFactory({
+      brickPipeline: [
+        {
+          id: DisplayTemporaryInfo.BRICK_ID,
+          instanceId: uuidSequence(1),
+          config: {
+            title: toExpression("nunjucks", "Test Tab"),
+            body: toExpression("pipeline", [
+              {
+                id: DocumentRenderer.BRICK_ID,
+                instanceId: uuidSequence(2),
+                config: {
+                  body: [containerElement],
+                },
               },
-            },
-          ]),
+            ]),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const PreviewContainer = () => {
       const [activeElement, setActiveElement] = useState<string | null>(null);
       return (
         <DocumentPreview
-          documentBodyName="extension.blockPipeline[0].config.body.__value__[0].config.body"
+          documentBodyName="modComponent.brickPipeline[0].config.body.__value__[0].config.body"
           activeElement={activeElement}
           setActiveElement={setActiveElement}
         />
       );
     };
 
-    const pipelineField = formState.extension.blockPipeline[0].config
+    const pipelineField = formState.modComponent.brickPipeline[0].config
       .body as PipelineExpression;
 
     return render(<PreviewContainer />, {
@@ -198,7 +197,7 @@ describe("Show live preview", () => {
     });
   }
 
-  test("it renders the button", async () => {
+  it("renders the button", async () => {
     renderPreviewInTemporaryDisplayPipeline();
     await waitForEffect();
     jest.runOnlyPendingTimers();

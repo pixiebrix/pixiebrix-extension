@@ -22,7 +22,7 @@ import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type Metadata } from "@/types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 import { type ValueOf } from "type-fest";
 
@@ -30,8 +30,8 @@ import { type ValueOf } from "type-fest";
  * Constants for starter brick types/kinds. Used to update names in code to match UI display names without migrating
  * persisted values.
  */
+// Match terminology in the Page Editor UI
 export const StarterBrickTypes = {
-  // Match terminology in the Page Editor UI
   SIDEBAR_PANEL: "actionPanel",
   BUTTON: "menuItem",
   TRIGGER: "trigger",
@@ -55,7 +55,7 @@ export type Location =
 /**
  * A StarterBrick entity on a page that can ModComponents can be added to.
  */
-export interface StarterBrick extends Metadata {
+export interface StarterBrick extends PackageInstance {
   /**
    * The kind of StarterBrick.
    */

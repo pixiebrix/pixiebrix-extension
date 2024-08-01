@@ -17,7 +17,7 @@
 
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
@@ -25,7 +25,7 @@ import {
   isRendererLoadingPayload,
   type PanelContext,
   type PanelPayload,
-  type PanelRunMeta,
+  type PanelRunMetadata,
 } from "@/types/sidebarTypes";
 import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
@@ -51,19 +51,19 @@ import { mapPathToTraceBranches } from "@/pageEditor/documentBuilder/utils";
 import { getPlatform } from "@/platform/platformContext";
 
 type BodyProps = {
-  blockId?: RegistryId;
+  brickId?: RegistryId;
   body?: RendererOutput;
-  meta?: PanelRunMeta;
+  meta?: PanelRunMetadata;
 };
 
 const BodyContainer: React.FC<
   // In the future, may want to support providing isFetching to show a loading indicator/badge over the previous content
   BodyProps & { onAction?: (action: SubmitPanelAction) => void }
-> = ({ blockId, body, onAction, meta }) => (
+> = ({ brickId, body, onAction, meta }) => (
   // Use a shadow dom to prevent the webpage styles from affecting the sidebar
-  <EmotionShadowRoot className="full-height" data-testid={blockId}>
+  <EmotionShadowRoot className="full-height" data-testid={brickId}>
     <RendererComponent
-      blockId={blockId}
+      brickId={brickId}
       body={body}
       meta={meta}
       onAction={onAction}
@@ -169,20 +169,20 @@ const PanelBody: React.FunctionComponent<{
         dispatch(slice.actions.reactivate());
 
         const {
-          blockId,
+          brickId,
           ctxt: brickArgsContext,
           args,
           runId,
-          extensionId,
+          modComponentRef,
         } = payload;
 
         console.debug("Running panel body for panel payload", payload);
 
-        const block = await blockRegistry.lookup(blockId);
+        const block = await brickRegistry.lookup(brickId);
 
         const logger = platform.logger.childLogger({
           ...context,
-          blockId,
+          brickId,
         });
 
         const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
@@ -192,7 +192,7 @@ const PanelBody: React.FunctionComponent<{
           ctxt: brickArgsContext as UnknownObject,
           meta: {
             runId,
-            extensionId,
+            modComponentRef,
             branches,
           },
           logger,
@@ -216,7 +216,7 @@ const PanelBody: React.FunctionComponent<{
               options: apiVersionOptions("v3"),
               messageContext: logger.context,
               meta: {
-                extensionId,
+                modComponentRef,
                 runId,
                 branches: [...branches, branch],
               },
@@ -229,12 +229,6 @@ const PanelBody: React.FunctionComponent<{
           },
         });
 
-        if (!runId || !extensionId) {
-          console.warn("PanelBody requires runId in RendererPayload", {
-            payload,
-          });
-        }
-
         if (!isMounted()) {
           return;
         }
@@ -242,9 +236,9 @@ const PanelBody: React.FunctionComponent<{
         dispatch(
           slice.actions.success({
             data: {
-              blockId,
+              brickId,
               body: body as RendererOutput,
-              meta: { runId, extensionId },
+              meta: { runId, modComponentRef },
             },
           }),
         );

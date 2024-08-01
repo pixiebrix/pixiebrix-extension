@@ -15,24 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runStarterBrickReaderPreview } from "@/contentScript/messenger/api";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import {
-  type ModComponentFormState,
-  type TriggerFormState,
-} from "@/pageEditor/starterBricks/formStateTypes";
+import { isTriggerStarterBrick } from "@/pageEditor/starterBricks/formStateTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { useSelector } from "react-redux";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import { useAsyncEffect } from "use-async-effect";
 
 type PreviewState = {
   isRunning: boolean;
@@ -47,7 +48,7 @@ const initialState: PreviewState = {
 };
 
 const previewSlice = createSlice({
-  name: "extensionPointPreview",
+  name: "starterBrickPreview",
   initialState,
   reducers: {
     startRun(state) {
@@ -66,61 +67,57 @@ const previewSlice = createSlice({
   },
 });
 
-const StarterBrickPreview: React.FunctionComponent<{
-  modComponentFormState: ModComponentFormState;
-  previewRefreshMillis?: 250;
-}> = ({ modComponentFormState, previewRefreshMillis }) => {
+const StarterBrickPreview: React.FC = () => {
   const [{ isRunning, output, error }, dispatch] = useReducer(
     previewSlice.reducer,
     initialState,
   );
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+  assertNotNullish(
+    activeModComponentFormState,
+    "StarterBrickPreview cannot be rendered without an activeModComponentFormState",
+  );
+  const { starterBrick } = activeModComponentFormState;
 
-  const run = useCallback(
-    async (modComponentFormState: ModComponentFormState) => {
-      dispatch(previewSlice.actions.startRun());
-      try {
-        const adapter = ADAPTERS.get(modComponentFormState.type);
-        assertNotNullish(
-          adapter,
-          `Adapter not found for ${modComponentFormState.type}`,
-        );
-        const { asDraftModComponent: factory } = adapter;
+  const run = useCallback(async () => {
+    dispatch(previewSlice.actions.startRun());
+    try {
+      const { asDraftModComponent } = adapterForComponent(
+        activeModComponentFormState,
+      );
 
-        // Handle click/blur/etc.-based triggers which expect to be run a subset of elements on the page and pass through
-        // data about the element that caused the trigger
-        let rootSelector: Nullishable<string> = null;
-        if (
-          (modComponentFormState as TriggerFormState).extensionPoint.definition
-            .rootSelector
-        ) {
-          rootSelector = (modComponentFormState as TriggerFormState)
-            .extensionPoint.definition.rootSelector;
-        }
-
-        const data = await runStarterBrickReaderPreview(
-          inspectedTab,
-          factory(modComponentFormState),
-          rootSelector,
-        );
-        dispatch(previewSlice.actions.runSuccess({ "@input": data }));
-      } catch (error) {
-        dispatch(previewSlice.actions.runError(error));
+      // Handle click/blur/etc.-based triggers which expect to be run a subset of elements on the page and pass through
+      // data about the element that caused the trigger
+      let rootSelector: Nullishable<string> = null;
+      if (
+        isTriggerStarterBrick(starterBrick) &&
+        starterBrick.definition.rootSelector
+      ) {
+        rootSelector = starterBrick.definition.rootSelector;
       }
-    },
-    [],
-  );
 
-  const debouncedRun = useDebouncedCallback(
-    async (modComponentFormState: ModComponentFormState) =>
-      run(modComponentFormState),
-    previewRefreshMillis,
-    { trailing: true, leading: false },
-  );
+      const data = await runStarterBrickReaderPreview(
+        inspectedTab,
+        asDraftModComponent(activeModComponentFormState),
+        rootSelector,
+      );
+      dispatch(previewSlice.actions.runSuccess({ "@input": data }));
+    } catch (error) {
+      dispatch(previewSlice.actions.runError(error));
+    }
+  }, [activeModComponentFormState, starterBrick]);
 
-  useEffect(() => {
-    void debouncedRun(modComponentFormState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
-  }, [debouncedRun, modComponentFormState.extensionPoint]);
+  const debouncedRun = useDebouncedCallback(run, 250, {
+    trailing: true,
+    leading: false,
+  });
+
+  useAsyncEffect(debouncedRun, [
+    debouncedRun,
+    activeModComponentFormState.starterBrick,
+  ]);
 
   if (isRunning) {
     return (
@@ -130,15 +127,17 @@ const StarterBrickPreview: React.FunctionComponent<{
     );
   }
 
+  const { definition: starterBrickDefinition } = starterBrick;
+
   const reloadTrigger =
-    modComponentFormState.type === "trigger" &&
-    modComponentFormState.extensionPoint.definition.trigger !== "load" ? (
+    starterBrickDefinition.type === StarterBrickTypes.TRIGGER &&
+    starterBrickDefinition.trigger !== "load" ? (
       <div className="text-info">
         <AsyncButton
           variant="info"
           size="sm"
           className="mr-2"
-          onClick={async () => run(modComponentFormState)}
+          onClick={async () => run()}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh
         </AsyncButton>
@@ -147,13 +146,13 @@ const StarterBrickPreview: React.FunctionComponent<{
     ) : null;
 
   const reloadContextMenu =
-    modComponentFormState.type === "contextMenu" ? (
+    starterBrickDefinition.type === StarterBrickTypes.CONTEXT_MENU ? (
       <div className="text-info">
         <AsyncButton
           variant="info"
           size="sm"
           className="mr-2"
-          onClick={async () => run(modComponentFormState)}
+          onClick={async () => run()}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh
         </AsyncButton>
@@ -179,8 +178,8 @@ const StarterBrickPreview: React.FunctionComponent<{
         data={output ?? {}}
         searchable
         copyable
-        tabKey={DataPanelTabKey.Preview}
-        label="Output Preview"
+        tabKey={DataPanelTabKey.Output}
+        label="Live Preview"
       />
     </div>
   );

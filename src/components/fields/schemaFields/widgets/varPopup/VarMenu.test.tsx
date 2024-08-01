@@ -19,7 +19,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import React, { type MutableRefObject } from "react";
 import VarMenu from "@/components/fields/schemaFields/widgets/varPopup/VarMenu";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import analysisSlice from "@/analysis/analysisSlice";
@@ -75,7 +75,7 @@ describe("VarMenu", () => {
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
             editorActions.setActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0].instanceId,
             ),
           );
         },
@@ -110,7 +110,7 @@ describe("VarMenu", () => {
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
             editorActions.setActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0].instanceId,
             ),
           );
 
@@ -155,7 +155,7 @@ describe("VarMenu", () => {
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
             editorActions.setActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0].instanceId,
             ),
           );
 

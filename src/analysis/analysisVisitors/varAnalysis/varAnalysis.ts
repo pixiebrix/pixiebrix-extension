@@ -34,13 +34,12 @@ import {
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
-import recipesRegistry from "@/modDefinitions/registry";
-import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
+import modRegistry from "@/modDefinitions/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
   isDocumentBuilderElementArray,
   type ListElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
 import { type Schema } from "@/types/schemaTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
@@ -57,6 +56,7 @@ import makeIntegrationsContextFromDependencies from "@/integrations/util/makeInt
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { BusinessError } from "@/errors/businessErrors";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -133,22 +133,17 @@ async function setIntegrationDependencyVars(
 }
 
 /**
- * Set the input variables from the ExtensionPoint definition (aka starter brick).
+ * Set the input variables from the starter brick definition.
  */
 async function setInputVars(
-  extension: ModComponentFormState,
+  formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  const adapter = ADAPTERS.get(extension.extensionPoint.definition.type);
-  assertNotNullish(
-    adapter,
-    `Adapter not found for ${extension.extensionPoint.definition.type}`,
-  );
-  const config = adapter.selectStarterBrickDefinition(extension);
+  const { selectStarterBrickDefinition } = adapterForComponent(formState);
 
-  const extensionPoint = fromJS(config);
+  const starterBrick = fromJS(selectStarterBrickDefinition(formState));
 
-  const reader = await extensionPoint.defaultReader();
+  const reader = await starterBrick.defaultReader();
 
   setVarsFromSchema({
     schema: reader?.outputSchema ?? {
@@ -193,7 +188,7 @@ type SetVarsFromSchemaArgs = {
  * Helper method to set variables based on a JSON Schema.
  *
  * Examples:
- * - Blueprint input schema
+ * - Mod input schema
  * - Brick output schema
  * - Integration configuration schema
  */
@@ -304,24 +299,24 @@ function setVarsFromSchema({
 }
 
 /**
- * Set the options variables from the blueprint option definitions.
+ * Set the options variables from the mod option definitions.
  */
 async function setOptionsVars(
-  extension: ModComponentFormState,
+  formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  if (extension.recipe == null) {
+  if (formState.modMetadata == null) {
     return;
   }
 
-  const recipeId = extension.recipe.id;
-  const recipe = await recipesRegistry.lookup(recipeId);
-  const optionsSchema = recipe?.options?.schema;
+  const modId = formState.modMetadata.id;
+  const mod = await modRegistry.lookup(modId);
+  const optionsSchema = mod?.options?.schema;
   if (isEmpty(optionsSchema)) {
     return;
   }
 
-  const source = `${KnownSources.OPTIONS}:${recipeId}`;
+  const source = `${KnownSources.OPTIONS}:${modId}`;
   const optionsOutputKey = "@options";
 
   setVarsFromSchema({
@@ -332,7 +327,7 @@ async function setOptionsVars(
   });
 
   // Options currently only supports primitives, so don't need to recurse
-  for (const optionName of Object.keys(extension.optionsArgs ?? {})) {
+  for (const optionName of Object.keys(formState.optionsArgs ?? {})) {
     contextVars.setExistence({
       source,
       path: [optionsOutputKey, optionName],
@@ -452,7 +447,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   }
 
   /**
-   * @param trace the trace for the latest run of the extension
+   * @param trace the trace for the latest run of the mod component
    * @param modState the current mod page state
    * @param modVariables statically-inferred mod variable names
    * @see CollectNamesVisitor
@@ -495,7 +490,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     const traceRecord = this.trace.find(
       (x) =>
-        x.blockInstanceId === blockConfig.instanceId &&
+        x.brickInstanceId === blockConfig.instanceId &&
         x.templateContext != null,
     );
 
@@ -682,23 +677,23 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     this.contextStack.pop();
   }
 
-  async run(extension: ModComponentFormState): Promise<void> {
-    this.allBlocks = await blockRegistry.allTyped();
+  async run(formState: ModComponentFormState): Promise<void> {
+    this.allBlocks = await brickRegistry.allTyped();
 
     // Order of the following calls will determine the order of the sources in the UI
     const contextVars = new VarMap();
-    await setOptionsVars(extension, contextVars);
+    await setOptionsVars(formState, contextVars);
     await setModVariables(this.modVariables, this.modState, contextVars);
-    await setIntegrationDependencyVars(extension, contextVars);
-    await setInputVars(extension, contextVars);
+    await setIntegrationDependencyVars(formState, contextVars);
+    await setInputVars(formState, contextVars);
 
     this.contextStack.push({
       vars: contextVars,
       blockOutputVars: new VarMap(),
     });
 
-    this.visitRootPipeline(extension.extension.blockPipeline, {
-      extensionPointType: extension.type,
+    this.visitRootPipeline(formState.modComponent.brickPipeline, {
+      starterBrickType: formState.starterBrick.definition.type,
     });
   }
 

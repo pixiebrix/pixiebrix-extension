@@ -17,19 +17,16 @@
 
 import AddQuickBarAction from "@/bricks/effects/AddQuickBarAction";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import {
+  brickOptionsFactory,
+  runMetadataFactory,
+} from "@/testUtils/factories/runtimeFactories";
 import { platformMock } from "@/testUtils/platformMock";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 const brick = new AddQuickBarAction();
 
 const platform = platformMock;
-
-const logger = new ConsoleLogger({
-  extensionId: uuidv4(),
-  extensionPointId: validateRegistryId("test/test"),
-});
 
 describe("AddQuickBarAction", () => {
   beforeEach(() => {
@@ -47,19 +44,20 @@ describe("AddQuickBarAction", () => {
   test("adds root action", async () => {
     const abortController = new AbortController();
 
+    const modComponentRef = modComponentRefFactory();
+
     await brick.run(
       unsafeAssumeValidArg({ title: "test" }),
       brickOptionsFactory({
         platform,
-        logger,
-        root: document,
+        meta: runMetadataFactory({ modComponentRef }),
         abortSignal: abortController.signal,
       }),
     );
+
     expect(platform.quickBar.addAction).toHaveBeenCalledWith({
       id: expect.toBeString(),
-      extensionPointId: logger.context.extensionPointId,
-      extensionId: logger.context.extensionId,
+      modComponentRef,
       name: "test",
       icon: expect.anything(),
       perform: expect.toBeFunction(),

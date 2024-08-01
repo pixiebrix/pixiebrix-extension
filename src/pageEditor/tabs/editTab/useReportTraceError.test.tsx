@@ -20,9 +20,9 @@ import React from "react";
 import {
   editorSlice,
   initialState as editorInitialState,
-} from "@/pageEditor/slices/editorSlice";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
+} from "@/pageEditor/store/editor/editorSlice";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { type TraceRecord } from "@/telemetry/trace";
 import { uuidv4 } from "@/types/helpers";
@@ -84,7 +84,7 @@ beforeEach(() => {
 });
 
 describe("useReportTraceError", () => {
-  test("it reports an error", () => {
+  it("reports an error", () => {
     renderUseReportTraceError([traceErrorFactory()]);
     expect(reportEvent).toHaveBeenCalledWith(
       "PageEditorExtensionError",

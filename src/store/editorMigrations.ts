@@ -15,22 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PersistedState, type MigrationManifest } from "redux-persist";
+import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
-} from "@/pageEditor/baseFormStateTypes";
+  type BaseFormStateV3,
+  type BaseFormStateV4,
+  type BaseModComponentStateV1,
+  type BaseModComponentStateV2,
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import {
-  type EditorStateV2,
   type EditorStateV1,
+  type EditorStateV2,
   type EditorStateV3,
-} from "@/pageEditor/pageEditorTypes";
+  type EditorStateV4,
+  type EditorStateV5,
+  type EditorStateV6,
+  type EditorStateV7,
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { produce } from "immer";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { makeInitialDataTabState } from "@/pageEditor/store/editor/uiState";
+import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -39,6 +51,10 @@ export const migrations: MigrationManifest = {
   1: (state) => state,
   2: (state: EditorStateV1 & PersistedState) => migrateEditorStateV1(state),
   3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
+  4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
+  5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
+  6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
+  7: (state: EditorStateV6 & PersistedState) => migrateEditorStateV6(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -104,7 +120,7 @@ export function migrateEditorStateV2({
     activeModComponentId: activeElementId,
     activeModId: activeRecipeId,
     expandedModId: expandedRecipeId,
-    modComponentFormStates: elements as ModComponentFormState[],
+    modComponentFormStates: elements,
     knownEditableBrickIds: knownEditable,
     brickPipelineUIStateById: elementUIStates,
     copiedBrick: copiedBlock,
@@ -112,13 +128,98 @@ export function migrateEditorStateV2({
     dirtyModMetadataById: dirtyRecipeMetadataById,
     addBrickLocation: addBlockLocation,
     keepLocalCopyOnCreateMod: keepLocalCopyOnCreateRecipe,
-    deletedModComponentFormStatesByModId: deletedElementsByRecipeId as Record<
-      string,
-      ModComponentFormState[]
-    >,
+    deletedModComponentFormStatesByModId: deletedElementsByRecipeId,
     availableActivatedModComponentIds: availableInstalledIds,
     isPendingAvailableActivatedModComponents: isPendingInstalledExtensions,
     availableDraftModComponentIds: availableDynamicIds,
     isPendingDraftModComponents: isPendingDynamicExtensions,
   };
+}
+
+function migrateModComponentStateV1(
+  state: BaseModComponentStateV1,
+): BaseModComponentStateV2 {
+  return {
+    brickPipeline: state.blockPipeline,
+  };
+}
+
+function migrateFormStateV2(state: BaseFormStateV2): BaseFormStateV3 {
+  return {
+    ...omit(state, "recipe", "extension", "extensionPoint"),
+    modComponent: migrateModComponentStateV1(state.extension),
+    starterBrick: state.extensionPoint,
+    modMetadata: state.recipe,
+  };
+}
+
+export function migrateEditorStateV3({
+  modComponentFormStates,
+  deletedModComponentFormStatesByModId,
+  ...rest
+}: EditorStateV3 & PersistedState): EditorStateV4 & PersistedState {
+  return {
+    ...rest,
+    modComponentFormStates: modComponentFormStates.map((element) =>
+      migrateFormStateV2(element),
+    ),
+    deletedModComponentFormStatesByModId: mapValues(
+      deletedModComponentFormStatesByModId,
+      (formStates) => formStates.map((element) => migrateFormStateV2(element)),
+    ),
+  };
+}
+
+function migrateFormStateV3({
+  type,
+  ...rest
+}: BaseFormStateV3): BaseFormStateV4 {
+  return rest;
+}
+
+export function migrateEditorStateV4({
+  inserting,
+  modComponentFormStates,
+  deletedModComponentFormStatesByModId,
+  ...rest
+}: EditorStateV4 & PersistedState): EditorStateV5 & PersistedState {
+  return {
+    ...rest,
+    insertingStarterBrickType: inserting,
+    modComponentFormStates: modComponentFormStates.map((element) =>
+      migrateFormStateV3(element),
+    ) as ModComponentFormState[],
+    deletedModComponentFormStatesByModId: mapValues(
+      deletedModComponentFormStatesByModId,
+      (formStates) => formStates.map((element) => migrateFormStateV3(element)),
+    ) as Record<string, ModComponentFormState[]>,
+  };
+}
+
+export function migrateEditorStateV5({
+  insertingStarterBrickType,
+  ...rest
+}: EditorStateV5 & PersistedState): EditorStateV6 & PersistedState {
+  return rest;
+}
+
+export function migrateEditorStateV6(
+  state: EditorStateV6 & PersistedState,
+): EditorStateV7 & PersistedState {
+  // Reset the Data Panel state using the current set of DataPanelTabKeys
+  return produce(state, (draft) => {
+    for (const uiState of Object.values(draft.brickPipelineUIStateById)) {
+      for (const nodeUiState of Object.values(uiState.nodeUIStates ?? {})) {
+        nodeUiState.dataPanel = {
+          ...Object.fromEntries(
+            Object.values(DataPanelTabKey).map((tabKey) => [
+              tabKey,
+              makeInitialDataTabState(),
+            ]),
+          ),
+          activeTabKey: null,
+        } as BrickConfigurationUIState["dataPanel"];
+      }
+    }
+  });
 }

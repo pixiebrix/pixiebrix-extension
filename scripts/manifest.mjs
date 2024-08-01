@@ -54,6 +54,7 @@ function getVersionName(env, isProduction) {
     return `${env.npm_package_version}`;
   }
 
+  // Can't use nowTimestamp helper in webpack helpers
   return `${env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 

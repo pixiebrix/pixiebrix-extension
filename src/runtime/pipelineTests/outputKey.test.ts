@@ -16,22 +16,19 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-  testOptions,
-} from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import CommentEffect from "@/bricks/effects/comment";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick, new CommentEffect()]);
 });
 
 describe("apiVersion: v1", () => {
@@ -50,17 +47,17 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "bar" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ message: "hello, bar" });
   });
 
-  test("outputKey passes through previous value", async () => {
+  it("passes through previous value if outputKey is present", async () => {
     const initialContext = { inputArg: "bar" };
     const pipeline = [
       {
         id: echoBrick.id,
-        // Is only block in pipeline and how an outputKey, so the original input value is returned
+        // Is only brick in pipeline and has an outputKey, so the original input value is returned
         outputKey: validateOutputKey("foo"),
         config: { message: "inputArg" },
       },
@@ -69,8 +66,9 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput(cloneDeep(initialContext)),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
+
     expect(result).toStrictEqual(initialContext);
   });
 });
@@ -78,13 +76,15 @@ describe("apiVersion: v1", () => {
 describe.each([["v1"], ["v2"], ["v3"]])(
   "apiVersion: %s",
   (apiVersion: ApiVersion) => {
-    test("block outputKey takes precedence over @input", async () => {
+    test("brick outputKey takes precedence over @input", async () => {
+      const message = "First brick";
+
       const pipeline = [
         {
           id: echoBrick.id,
           outputKey: validateOutputKey("input"),
           config: {
-            message: "First block",
+            message,
           },
         },
         {
@@ -95,14 +95,110 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const result = await reducePipeline(
         pipeline,
         simpleInput({}),
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       );
 
       expect(result).toStrictEqual({
-        "@input": { message: "First block" },
+        "@input": { message },
         "@options": {},
         ...extraEmptyModStateContext(apiVersion),
       });
+    });
+  },
+);
+
+describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
+  test("allow ignoring transformer brick output", async () => {
+    const message = "First brick";
+
+    const pipeline = [
+      {
+        id: echoBrick.id,
+        outputKey: validateOutputKey("input"),
+        config: {
+          message,
+        },
+      },
+      {
+        id: echoBrick.id,
+        config: {
+          message: "Another message",
+        },
+      },
+      {
+        id: contextBrick.id,
+        config: {},
+      },
+    ];
+    const result = await reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory(apiVersion),
+    );
+
+    expect(result).toStrictEqual({
+      "@input": { message },
+      "@options": {},
+      ...extraEmptyModStateContext(apiVersion),
+    });
+  });
+});
+
+describe.each([["v2"], ["v3"]])(
+  "apiVersion: %s pipeline return values",
+  (apiVersion: ApiVersion) => {
+    it("returns transformer brick value", async () => {
+      const pipeline = [
+        {
+          id: echoBrick.id,
+          outputKey: validateOutputKey("output"),
+          config: {
+            message: "original message",
+          },
+        },
+        {
+          id: echoBrick.id,
+          config: {
+            message: "new message",
+          },
+        },
+      ];
+      const result = await reducePipeline(
+        pipeline,
+        simpleInput({}),
+        reduceOptionsFactory(apiVersion),
+      );
+
+      expect(result).toStrictEqual({
+        message: "new message",
+      });
+    });
+
+    it("returns input context for effect brick in last position", async () => {
+      const pipeline = [
+        {
+          id: echoBrick.id,
+          outputKey: validateOutputKey("output"),
+          config: {
+            message: "original message",
+          },
+        },
+        {
+          // For backward compatability, there's still a subtle difference in behavior for effect bricks in the
+          // last position in the pipeline
+          id: CommentEffect.BRICK_ID,
+          config: {},
+        },
+      ];
+
+      const result = await reducePipeline(
+        pipeline,
+        simpleInput({ foo: 42 }),
+        reduceOptionsFactory(apiVersion),
+      );
+
+      // In apiVersion: 2+, an empty object is provided as the initial implicit output
+      expect(result).toStrictEqual({});
     });
   },
 );

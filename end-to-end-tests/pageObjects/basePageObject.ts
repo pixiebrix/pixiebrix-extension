@@ -24,8 +24,9 @@ import { type Locator, type Page } from "playwright";
  *
  * @example
  * class LoginPage extends BasePageObject {
- *   const usernameInput = this.getByPlaceholder('Username');
- *   const passwordInput = this.getByPlaceholder('Password');
+ *   // define common locators at the top.
+ *   usernameInput = this.getByPlaceholder('Username');
+ *   passwordInput = this.getByPlaceholder('Password');
  *
  *   async login(username, password) {
  *     await usernameInput.fill(username);
@@ -56,7 +57,7 @@ import { type Locator, type Page } from "playwright";
  * const username = await dashboardPage.userProfile.getUsername();
  *
  * @param {Locator|Page} rootLocatorOrPage The root locator scoping this page object.
- * If a Page is provided, the root locator will be the body.
+ * If a Page is provided, the root locator will be `locator("html")`.
  */
 export class BasePageObject {
   readonly root: Locator;
@@ -70,13 +71,15 @@ export class BasePageObject {
   readonly getByTestId: Locator["getByTestId"];
   readonly getByText: Locator["getByText"];
   readonly getByTitle: Locator["getByTitle"];
+  readonly filter: Locator["filter"];
+  readonly click: Locator["click"];
 
   constructor(rootLocatorOrPage: Locator | Page) {
     if ("page" in rootLocatorOrPage) {
       this.root = rootLocatorOrPage;
       this.page = rootLocatorOrPage.page();
     } else {
-      this.root = rootLocatorOrPage.locator("body");
+      this.root = rootLocatorOrPage.locator("html");
       this.page = rootLocatorOrPage;
     }
 
@@ -88,5 +91,12 @@ export class BasePageObject {
     this.getByTestId = this.root.getByTestId.bind(this.root);
     this.getByText = this.root.getByText.bind(this.root);
     this.getByTitle = this.root.getByTitle.bind(this.root);
+    this.filter = this.root.filter.bind(this.root);
+    this.click = this.root.click.bind(this.root);
   }
+
+  // The switch component that we use does not connect the label properly connected with the control element,
+  // so we can't use `getByLabel` here, and also does not have a "role"
+  getSwitchByLabel = (label: string) =>
+    this.locator(`.switch:near(:text("${label}"))`);
 }

@@ -29,7 +29,10 @@ import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
@@ -113,7 +116,7 @@ const WAIT_LOADED_INTERVAL_MS = 25;
  * Install and run a starter brick and specified mod components.
  * @param starterBrick the starter to install and run
  * @param reason the reason code for the run
- * @param extensionIds the mod components to run on the starter brick, or undefined to run all mod components
+ * @param modComponentIds the mod components to run on the starter brick, or undefined to run all mod components
  * @param abortSignal abort signal to cancel the installation/run
  * @see StarterBrick.runModComponents
  */
@@ -121,9 +124,9 @@ async function runStarterBrick(
   starterBrick: StarterBrick,
   {
     reason,
-    extensionIds,
+    modComponentIds,
     abortSignal,
-  }: { reason: RunReason; extensionIds?: UUID[]; abortSignal: AbortSignal },
+  }: { reason: RunReason; modComponentIds?: UUID[]; abortSignal: AbortSignal },
 ): Promise<void> {
   // Could potentially call _runningStarterBricks.delete here, but assume the starter brick is still available
   // until we know for sure that it's not
@@ -141,7 +144,7 @@ async function runStarterBrick(
     kind: starterBrick.kind,
     name: starterBrick.name,
     permissions: starterBrick.permissions,
-    modComponentIds: extensionIds,
+    modComponentIds,
     reason,
   };
 
@@ -186,7 +189,7 @@ async function runStarterBrick(
     details,
   );
 
-  await starterBrick.runModComponents({ reason, extensionIds });
+  await starterBrick.runModComponents({ reason, modComponentIds });
   _runningStarterBricks.add(starterBrick);
 
   console.debug(
@@ -307,9 +310,12 @@ export function removeDraftModComponents(
       console.debug(`lifecycle:clearDraftModComponent: ${modComponentId}`);
       const starterBrick =
         _draftModComponentStarterBrickMap.get(modComponentId);
-      assertNotNullish(starterBrick, "extensionPoint must be defined");
+      assertNotNullish(starterBrick, "starterBrick must be defined");
 
-      if (starterBrick.kind === "actionPanel" && preserveSidebar) {
+      if (
+        starterBrick.kind === StarterBrickTypes.SIDEBAR_PANEL &&
+        preserveSidebar
+      ) {
         const sidebar = starterBrick as SidebarStarterBrickABC;
         sidebar.HACK_uninstallExceptModComponent(modComponentId);
       } else {
@@ -318,7 +324,7 @@ export function removeDraftModComponents(
 
       _runningStarterBricks.delete(starterBrick);
       _draftModComponentStarterBrickMap.delete(modComponentId);
-      sidebar.removeExtensions([modComponentId]);
+      sidebar.removeModComponents([modComponentId]);
     } else {
       console.debug(
         `No draft mod component exists for uuid: ${modComponentId}`,
@@ -333,7 +339,7 @@ export function removeDraftModComponents(
       try {
         starterBrick.uninstall({ global: true });
         _runningStarterBricks.delete(starterBrick);
-        sidebar.removeExtensionPoint(starterBrick.id);
+        sidebar.removeStarterBrick(starterBrick.id);
       } catch (error) {
         reportError(error);
       }
@@ -380,7 +386,7 @@ export async function runDraftModComponent(
   await runStarterBrick(starterBrick, {
     // The Page Editor is the only caller for runDynamic
     reason: RunReason.PAGE_EDITOR,
-    extensionIds: [modComponentId],
+    modComponentIds: [modComponentId],
     abortSignal: navigationListeners.signal,
   });
 
@@ -433,14 +439,14 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
   // - draft mod components: these are already installed on the page via the Page Editor
-  const activeModComponents = options.extensions.filter((modComponent) => {
+  const modComponentsToActivate = options.extensions.filter((modComponent) => {
     if (_draftModComponentStarterBrickMap.has(modComponent.id)) {
       const draftStarterBrick = _draftModComponentStarterBrickMap.get(
         modComponent.id,
       );
-      // Include sidebar (i.e. "actionPanel") starter brick kind as those are replaced
+      // Include sidebar starter brick kind as those are replaced
       // by the sidebar itself, automatically replacing old panels keyed by mod component id
-      return draftStarterBrick?.kind === "actionPanel";
+      return draftStarterBrick?.kind === StarterBrickTypes.SIDEBAR_PANEL;
     }
 
     // Exclude disabled deployments
@@ -450,7 +456,7 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
   const hydratedActiveModComponents = await logPromiseDuration(
     "loadActivatedModComponents:hydrateDefinitions",
     Promise.all(
-      activeModComponents.map(async (x) =>
+      modComponentsToActivate.map(async (x) =>
         hydrateModComponentInnerDefinitions(x),
       ),
     ),

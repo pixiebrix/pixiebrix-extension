@@ -39,7 +39,7 @@ import useActivateMod from "@/activation/useActivateMod";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useActivateModWizard, {
-  type UseActivateRecipeWizardResult,
+  type UseActivateModWizardResult,
 } from "@/activation/useActivateModWizard";
 import RequireMods, {
   type RequiredModDefinition,
@@ -53,6 +53,7 @@ import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const { actions } = sidebarSlice;
 
@@ -72,7 +73,7 @@ type ActivationState = {
   /**
    * The error message if the recipe failed to activate, or null if there is no error
    */
-  activationError: string | null;
+  activationError: Nullishable<string>;
 };
 
 const initialState: ActivationState = {
@@ -98,7 +99,7 @@ const activationSlice = createSlice({
       state.isActivating = false;
       state.isActivated = true;
     },
-    activateError(state, action: PayloadAction<string>) {
+    activateError(state, action: PayloadAction<string | undefined>) {
       state.activationError = action.payload;
       state.isActivating = false;
     },
@@ -116,7 +117,9 @@ async function reloadMarketplaceEnhancements() {
   void reloadMarketplaceEnhancementsInContentScript(topFrame);
 }
 
-const ShortcutKeys: React.FC<{ shortcut: string | null }> = ({ shortcut }) => {
+const ShortcutKeys: React.FC<{ shortcut: string | undefined }> = ({
+  shortcut,
+}) => {
   const separator = shortcut?.includes("+") ? "+" : "";
   const shortcutKeys = shortcut?.split(separator) ?? [];
   return (
@@ -212,7 +215,7 @@ export const SuccessPanel: React.FC<{
 );
 
 const ActivateModPanelContent: React.FC<
-  RequiredModDefinition & UseActivateRecipeWizardResult
+  RequiredModDefinition & UseActivateModWizardResult
 > = ({
   modDefinition,
   includesQuickBar,
@@ -223,7 +226,7 @@ const ActivateModPanelContent: React.FC<
   isActive,
 }) => {
   const reduxDispatch = useDispatch();
-  const marketplaceActivateRecipe = useActivateMod("marketplace");
+  const marketplaceActivateMod = useActivateMod("marketplace");
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
@@ -268,7 +271,7 @@ const ActivateModPanelContent: React.FC<
 
     stateDispatch(activateStart());
 
-    const { success, error } = await marketplaceActivateRecipe(
+    const { success, error } = await marketplaceActivateMod(
       formValuesRef.current,
       modDefinition,
     );
@@ -280,7 +283,7 @@ const ActivateModPanelContent: React.FC<
       stateDispatch(activateError(error));
     }
   }, [
-    marketplaceActivateRecipe,
+    marketplaceActivateMod,
     modDefinition,
     state.isActivated,
     state.isActivating,
@@ -390,7 +393,8 @@ const ActivateModPanel: React.FC<{ mod: ModActivationConfig }> = ({ mod }) => {
 
   return (
     <RequireMods mods={memoizedMods}>
-      {(modDefinitions) => <ActivateModWizardPanel {...modDefinitions[0]} />}
+      {/* eslint-disable-next-line  @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Wrapped in RequireMods */}
+      {(modDefinitions) => <ActivateModWizardPanel {...modDefinitions[0]!} />}
     </RequireMods>
   );
 };

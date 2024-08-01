@@ -15,26 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
   echoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "./pipelineTestHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
-import ConsoleLogger from "@/utils/ConsoleLogger";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors/genericErrors";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick, throwBrick]);
   jest.mocked(sendDeploymentAlert).mockReset();
 });
 
@@ -54,7 +53,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             },
           },
           simpleInput({ inputArg: "hello" }),
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
       }).rejects.toThrow();
 
@@ -65,7 +64,8 @@ describe.each([["v1"], ["v2"], ["v3"]])(
     test("send deployment alert", async () => {
       const deploymentId = uuidv4();
 
-      const logger = new ConsoleLogger({ deploymentId });
+      const options = reduceOptionsFactory(apiVersion);
+      const logger = options.logger.childLogger({ deploymentId });
 
       const pipeline = reducePipeline(
         {
@@ -78,7 +78,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           },
         },
         simpleInput({ inputArg: "hello" }),
-        { ...testOptions(apiVersion), logger },
+        { ...reduceOptionsFactory(apiVersion), logger },
       );
 
       await expect(pipeline).rejects.toThrow(ContextError);

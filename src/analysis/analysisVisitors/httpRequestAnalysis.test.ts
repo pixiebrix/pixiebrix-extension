@@ -33,7 +33,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "get",
           url: "https://example.com/?foo=42",
@@ -59,7 +59,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "get",
           url: toExpression("nunjucks", "https://example.com/?foo={{ @foo }}"),
@@ -76,7 +76,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "get",
           url: "https://example.com",
@@ -105,7 +105,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "post",
           url: "https://example.com",
@@ -137,7 +137,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "post",
           url: "https://example.com",
@@ -160,7 +160,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "get",
           url: "https://example.com",
@@ -189,7 +189,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "get",
           url: "https://example.com",
@@ -209,7 +209,7 @@ describe("httpRequestAnalysis", () => {
     analysis.visitBrick(
       position,
       {
-        id: RemoteMethod.BLOCK_ID,
+        id: RemoteMethod.BRICK_ID,
         config: {
           method: "post",
           url: "https://example.com",

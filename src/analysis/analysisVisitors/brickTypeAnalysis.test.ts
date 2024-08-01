@@ -19,7 +19,7 @@ import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import brickRegistry from "@/bricks/registry";
 import CommentEffect from "@/bricks/effects/comment";
 import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import CancelEffect from "@/bricks/effects/CancelEffect";
 import { ALERT_EFFECT_ID, AlertEffect } from "@/bricks/effects/alert";
@@ -36,16 +36,16 @@ beforeAll(() => {
 
 describe("BrickTypeAnalysis", () => {
   test("disallow effect in renderer", async () => {
-    const modComponent = sidebarPanelFormStateFactory();
+    const formState = sidebarPanelFormStateFactory();
 
-    modComponent.extension.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       createNewConfiguredBrick(ALERT_EFFECT_ID),
       createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
 
-    await analysis.run(modComponent);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toHaveLength(1);
   });
@@ -55,16 +55,16 @@ describe("BrickTypeAnalysis", () => {
     CancelEffect.BRICK_ID,
     ErrorEffect.BRICK_ID,
   ])("allow %s in renderer", async (brickId) => {
-    const modComponent = sidebarPanelFormStateFactory();
+    const formState = sidebarPanelFormStateFactory();
 
-    modComponent.extension.blockPipeline = [
+    formState.modComponent.brickPipeline = [
       createNewConfiguredBrick(brickId),
       createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
 
-    await analysis.run(modComponent);
+    await analysis.run(formState);
 
     expect(analysis.getAnnotations()).toHaveLength(0);
   });

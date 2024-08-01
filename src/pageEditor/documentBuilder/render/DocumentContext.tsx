@@ -24,9 +24,10 @@ import {
   type BrickOptions,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { UNSET_UUID } from "@/types/helpers";
-
+import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
 import { uninitializedPlatform } from "@/platform/platformContext";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { INNER_SCOPE } from "@/types/registryTypes";
 
 type DocumentState = {
   onAction?: (action: { type: string; detail: JsonObject }) => void;
@@ -38,6 +39,12 @@ const BLANK_CONTEXT = {
   "@options": {},
 } as BrickArgsContext;
 
+const UNINITIALIZED_MOD_COMPONENT_REF = {
+  modComponentId: UNSET_UUID,
+  modId: validateRegistryId(`${INNER_SCOPE}/unset`),
+  starterBrickId: validateRegistryId(`${INNER_SCOPE}/unset`),
+} satisfies ModComponentRef;
+
 export const initialValue: DocumentState = {
   onAction() {
     throw new BusinessError("Panel actions not available for panel type");
@@ -46,7 +53,7 @@ export const initialValue: DocumentState = {
     platform: uninitializedPlatform,
     meta: {
       runId: null,
-      extensionId: UNSET_UUID,
+      modComponentRef: UNINITIALIZED_MOD_COMPONENT_REF,
       branches: [],
     },
     ctxt: BLANK_CONTEXT,

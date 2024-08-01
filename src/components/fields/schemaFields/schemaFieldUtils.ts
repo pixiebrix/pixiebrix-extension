@@ -44,7 +44,7 @@ type FieldConfig = {
   prop: string;
   isRequired?: boolean;
   fieldSchema: Schema;
-  propUiSchema: unknown;
+  propUiSchema: UiSchema;
 };
 
 /**
@@ -108,7 +108,7 @@ export function sortedFields(
     )
     .map(([prop, fieldSchema]) => {
       // eslint-disable-next-line security/detect-object-injection -- Fine because coming from Object.entries for the schema
-      const propUiSchema = uiSchema?.[prop];
+      const propUiSchema = uiSchema?.[prop] as UiSchema;
 
       return {
         prop,

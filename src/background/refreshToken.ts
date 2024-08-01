@@ -21,7 +21,7 @@ import {
   type Integration,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
-import { locator as serviceLocator } from "@/background/locator";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import {
   getCachedAuthData,
   setCachedAuthData,

@@ -20,10 +20,10 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { type Metadata } from "@/types/registryTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import type { DraftModComponent } from "@/contentScript/pageEditor/types";
+import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
-import { type BaseFormState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
@@ -36,7 +36,7 @@ export interface ModComponentFormStateAdapter<
   /**
    * The internal starter brick type, e.g., menuItem, contextMenu, etc.
    */
-  readonly elementType: StarterBrickType;
+  readonly starterBrickType: StarterBrickType;
 
   /**
    * The StarterBrickConfig class corresponding to the starter brick
@@ -120,5 +120,6 @@ export interface ModComponentFormStateAdapter<
    */
   readonly selectModComponent: (
     modComponentFormState: TState,
-  ) => ModComponentBase;
+  ) => // XXX: refine type to enforce starter brick reference is the registry id and not an inner definition reference
+  ModComponentBase;
 }

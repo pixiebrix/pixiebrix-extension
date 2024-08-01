@@ -20,13 +20,13 @@ import {
   DeferredEchoBrick,
   echoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import pDefer from "p-defer";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const runBlock = new Run();
 
@@ -52,7 +52,7 @@ describe("Run", () => {
     };
 
     return expect(
-      reducePipeline(pipeline, simpleInput({}), testOptions("v3")),
+      reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory("v3")),
     ).rejects.toThrow();
   });
 
@@ -74,7 +74,7 @@ describe("Run", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({
@@ -105,7 +105,7 @@ describe("Run", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({});

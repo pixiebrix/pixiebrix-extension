@@ -18,7 +18,10 @@
 import { expect, test } from "../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
+import {
+  ActivateModPage,
+  ModsPage,
+} from "../pageObjects/extensionConsole/modsPage";
 import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
 import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 
@@ -32,40 +35,62 @@ test("create, run, package, and update mod", async ({
   const pageEditorPage = await newPageEditorPage(page.url());
 
   const { modComponentName, modUuid } =
-    await pageEditorPage.addStarterBrick("Button");
+    await pageEditorPage.modListingPanel.addStarterBrick("Button");
 
   await test.step("Configure the Button brick", async () => {
-    await page.bringToFront();
-    await page.getByRole("button", { name: "Action #3" }).click();
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("button", { name: "Action #3" }),
+    );
 
-    await pageEditorPage.bringToFront();
-    await pageEditorPage.getByLabel("Button text").fill("Search Youtube");
-    await pageEditorPage.setStarterBrickName(modComponentName);
+    await pageEditorPage.brickConfigurationPanel.fillField(
+      "Button text",
+      "Search Youtube",
+    );
+    await pageEditorPage.brickConfigurationPanel.fillField(
+      "name",
+      modComponentName,
+    );
   });
 
   await test.step("Add the Extract from Page brick and configure it", async () => {
-    await pageEditorPage.addBrickToModComponent("extract from page");
+    await pageEditorPage.brickActionsPanel.addBrick("extract from page");
 
-    await pageEditorPage.getByPlaceholder("Property name").fill("searchText");
-    await expect(pageEditorPage.getByPlaceholder("Property name")).toHaveValue(
+    await pageEditorPage.brickConfigurationPanel.fillFieldByPlaceholder(
+      "Property name",
       "searchText",
     );
 
-    await pageEditorPage.selectConnectedPageElement(page);
+    // Without focusing first, the click doesn't enable selection tool ¯\_(ツ)_/¯
+    await pageEditorPage.brickConfigurationPanel
+      .getByLabel("Select element")
+      .focus();
+    await pageEditorPage.brickConfigurationPanel
+      .getByLabel("Select element")
+      .click();
+
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("heading", { name: "Transaction Table" }),
+    );
+
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByPlaceholder(
+        "Select an element",
+      ),
+    ).toHaveValue("#root h1");
   });
 
   await test.step("Add the YouTube search brick and configure it", async () => {
-    await pageEditorPage.addBrickToModComponent("YouTube search in new tab", {
-      index: 1,
-    });
+    await pageEditorPage.brickActionsPanel.addBrick(
+      "YouTube search in new tab",
+      {
+        index: 1,
+      },
+    );
 
-    await pageEditorPage.getByLabel("Query").click();
-    await pageEditorPage.fillInBrickField(
+    await pageEditorPage.brickConfigurationPanel.fillField(
       "Query",
       "{{ @data.searchText }} + Foo",
     );
-
-    await pageEditorPage.waitForReduxUpdate();
   });
 
   const { modId } = await pageEditorPage.createModFromModComponent({
@@ -105,22 +130,14 @@ test("create, run, package, and update mod", async ({
     await modsPage.goto();
 
     await modsPage.viewActiveMods();
-    const modListing = modsPage.modTableItemById(modId);
+    const modTableItem = modsPage.modTableItemById(modId);
+    await expect(modTableItem.getByText("version 1.0.1")).toBeVisible();
+    await modTableItem.clickAction("Reactivate");
 
-    await expect(
-      modListing.getByRole("button", { name: "Update" }),
-    ).toBeVisible();
-    await modListing.getByRole("button", { name: "Update" }).click();
+    const modActivatePage = new ActivateModPage(newPage, extensionId, modId);
 
-    await expect(newPage.locator("form")).toContainText(
+    await expect(modActivatePage.locator("form")).toContainText(
       "Created through Playwright Automation",
     );
-
-    await expect(
-      newPage.getByRole("button", { name: "Reactivate" }),
-    ).toBeVisible();
-    await newPage.getByRole("button", { name: "Reactivate" }).click();
-
-    await expect(modListing).toContainText("version 1.0.1");
   });
 });

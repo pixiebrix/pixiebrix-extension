@@ -36,6 +36,7 @@ exports[`MatchRulesSection render empty section 1`] = `
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -46,7 +47,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.urlPatterns"
+            for="starterBrick.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
@@ -81,6 +82,7 @@ exports[`MatchRulesSection render empty section 1`] = `
         </div>
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -91,7 +93,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.selectors"
+            for="starterBrick.definition.isAvailable.selectors"
           >
             Selectors
           </label>
@@ -167,6 +169,7 @@ exports[`MatchRulesSection render populated section 1`] = `
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -177,7 +180,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.urlPatterns"
+            for="starterBrick.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
@@ -188,356 +191,383 @@ exports[`MatchRulesSection render populated section 1`] = `
               class="list-group mb-2"
             >
               <li
-                class="list-group-item py-1"
+                class="list-group-item py-1 d-flex pl-1"
               >
+                <div>
+                  <button
+                    class="moveButton btn btn-link"
+                    disabled=""
+                    title="Move up"
+                    type="button"
+                  >
+                    <test-file-stub />
+                  </button>
+                  <button
+                    class="moveButton btn btn-link"
+                    disabled=""
+                    title="Move down"
+                    type="button"
+                  >
+                    <test-file-stub />
+                  </button>
+                </div>
                 <div
-                  class="formGroup mb-0 form-group"
+                  class="flex-grow-1"
                 >
                   <div
-                    class="mb-2 w-100 collapse"
+                    class="formGroup mb-0 form-group"
+                    data-testid="field-template-form-group"
                   >
                     <div
-                      class="annotationPlaceholder"
-                    />
-                  </div>
-                  <div
-                    class="formField"
-                  >
-                    <div
-                      class="root"
+                      class="mb-2 w-100 collapse"
                     >
                       <div
-                        class="field"
+                        class="annotationPlaceholder"
+                      />
+                    </div>
+                    <div
+                      class="formField"
+                    >
+                      <div
+                        class="root"
                       >
-                        <div>
-                          <table
-                            class="mb-0 table table-sm"
-                          >
-                            <thead>
-                              <tr>
-                                <th
-                                  scope="col"
-                                >
-                                  Property name
-                                </th>
-                                <th
-                                  scope="col"
-                                >
-                                  Value
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <input
-                                    class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.hostname-name"
-                                    readonly=""
-                                    type="text"
-                                    value="hostname"
-                                  />
-                                </td>
-                                <td>
-                                  <div
-                                    class="formGroup mb-0 form-group"
+                        <div
+                          class="field"
+                        >
+                          <div>
+                            <table
+                              class="mb-0 table table-sm"
+                            >
+                              <thead>
+                                <tr>
+                                  <th
+                                    scope="col"
                                   >
-                                    <div
-                                      class="mb-2 w-100 collapse"
-                                    >
-                                      <div
-                                        class="annotationPlaceholder"
-                                      />
-                                    </div>
-                                    <div
-                                      class="formField"
-                                    >
-                                      <div
-                                        class="root"
-                                      >
-                                        <div
-                                          class="field"
-                                        >
-                                          <input
-                                            class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
-                                            readonly=""
-                                            value=""
-                                          />
-                                        </div>
-                                        <div
-                                          class="dropdown dropdown"
-                                          data-test-selected="Exclude"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.hostname"
-                                        >
-                                          <button
-                                            aria-expanded="false"
-                                            aria-haspopup="true"
-                                            class="dropdown-toggle btn btn-link"
-                                            type="button"
-                                          >
-                                            <span
-                                              class="symbol"
-                                            >
-                                              <test-file-stub
-                                                classname="root"
-                                              />
-                                            </span>
-                                          </button>
-                                        </div>
-                                      </div>
-                                      <small
-                                        class="text-muted form-text"
-                                      >
-                                        <span>
-                                          Pattern to match the hostname part of a URL.
-                                        </span>
-                                      </small>
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <input
-                                    class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.pathname-name"
-                                    readonly=""
-                                    type="text"
-                                    value="pathname"
-                                  />
-                                </td>
-                                <td>
-                                  <div
-                                    class="formGroup mb-0 form-group"
+                                    Property name
+                                  </th>
+                                  <th
+                                    scope="col"
                                   >
+                                    Value
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <input
+                                      class="form-control"
+                                      data-testid="starterBrick.definition.isAvailable.urlPatterns.0.hostname-name"
+                                      readonly=""
+                                      type="text"
+                                      value="hostname"
+                                    />
+                                  </td>
+                                  <td>
                                     <div
-                                      class="mb-2 w-100 collapse"
+                                      class="formGroup mb-0 form-group"
+                                      data-testid="field-template-form-group"
                                     >
                                       <div
-                                        class="annotationPlaceholder"
-                                      />
-                                    </div>
-                                    <div
-                                      class="formField"
-                                    >
-                                      <div
-                                        class="root"
+                                        class="mb-2 w-100 collapse"
                                       >
                                         <div
-                                          class="field"
-                                        >
-                                          <input
-                                            class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
-                                            readonly=""
-                                            value=""
-                                          />
-                                        </div>
-                                        <div
-                                          class="dropdown dropdown"
-                                          data-test-selected="Exclude"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.pathname"
-                                        >
-                                          <button
-                                            aria-expanded="false"
-                                            aria-haspopup="true"
-                                            class="dropdown-toggle btn btn-link"
-                                            type="button"
-                                          >
-                                            <span
-                                              class="symbol"
-                                            >
-                                              <test-file-stub
-                                                classname="root"
-                                              />
-                                            </span>
-                                          </button>
-                                        </div>
+                                          class="annotationPlaceholder"
+                                        />
                                       </div>
-                                      <small
-                                        class="text-muted form-text"
-                                      >
-                                        <span>
-                                          Pattern to match the pathname part of a URL.
-                                        </span>
-                                      </small>
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <input
-                                    class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.hash-name"
-                                    readonly=""
-                                    type="text"
-                                    value="hash"
-                                  />
-                                </td>
-                                <td>
-                                  <div
-                                    class="formGroup mb-0 form-group"
-                                  >
-                                    <div
-                                      class="mb-2 w-100 collapse"
-                                    >
                                       <div
-                                        class="annotationPlaceholder"
-                                      />
-                                    </div>
-                                    <div
-                                      class="formField"
-                                    >
-                                      <div
-                                        class="root"
+                                        class="formField"
                                       >
                                         <div
-                                          class="field"
+                                          class="root"
                                         >
-                                          <textarea
-                                            class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.hash"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.hash"
-                                            rows="1"
+                                          <div
+                                            class="field"
                                           >
-                                            /foo/
-                                          </textarea>
-                                        </div>
-                                        <div
-                                          class="dropdown dropdown"
-                                          data-test-selected="Text"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.hash"
-                                        >
-                                          <button
-                                            aria-expanded="false"
-                                            aria-haspopup="true"
-                                            class="dropdown-toggle btn btn-link"
-                                            type="button"
+                                            <input
+                                              class="form-control"
+                                              id="starterBrick.definition.isAvailable.urlPatterns.0.hostname"
+                                              name="starterBrick.definition.isAvailable.urlPatterns.0.hostname"
+                                              readonly=""
+                                              value=""
+                                            />
+                                          </div>
+                                          <div
+                                            class="dropdown dropdown"
+                                            data-test-selected="Exclude"
+                                            data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.hostname"
                                           >
-                                            <span
-                                              class="symbol"
+                                            <button
+                                              aria-expanded="false"
+                                              aria-haspopup="true"
+                                              class="dropdown-toggle btn btn-link"
+                                              type="button"
                                             >
-                                              <test-file-stub
-                                                classname="root"
-                                              />
-                                            </span>
-                                          </button>
+                                              <span
+                                                class="symbol"
+                                              >
+                                                <test-file-stub
+                                                  classname="root"
+                                                />
+                                              </span>
+                                            </button>
+                                          </div>
                                         </div>
+                                        <small
+                                          class="text-muted form-text"
+                                        >
+                                          <span>
+                                            Pattern to match the hostname part of a URL.
+                                          </span>
+                                        </small>
                                       </div>
-                                      <small
-                                        class="text-muted form-text"
-                                      >
-                                        <span>
-                                          Pattern to match the hash part of a URL.
-                                        </span>
-                                      </small>
                                     </div>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <input
-                                    class="form-control"
-                                    data-testid="extensionPoint.definition.isAvailable.urlPatterns.0.search-name"
-                                    readonly=""
-                                    type="text"
-                                    value="search"
-                                  />
-                                </td>
-                                <td>
-                                  <div
-                                    class="formGroup mb-0 form-group"
-                                  >
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <input
+                                      class="form-control"
+                                      data-testid="starterBrick.definition.isAvailable.urlPatterns.0.pathname-name"
+                                      readonly=""
+                                      type="text"
+                                      value="pathname"
+                                    />
+                                  </td>
+                                  <td>
                                     <div
-                                      class="mb-2 w-100 collapse"
+                                      class="formGroup mb-0 form-group"
+                                      data-testid="field-template-form-group"
                                     >
                                       <div
-                                        class="annotationPlaceholder"
-                                      />
-                                    </div>
-                                    <div
-                                      class="formField"
-                                    >
-                                      <div
-                                        class="root"
+                                        class="mb-2 w-100 collapse"
                                       >
                                         <div
-                                          class="field"
-                                        >
-                                          <input
-                                            class="form-control"
-                                            id="extensionPoint.definition.isAvailable.urlPatterns.0.search"
-                                            name="extensionPoint.definition.isAvailable.urlPatterns.0.search"
-                                            readonly=""
-                                            value=""
-                                          />
-                                        </div>
+                                          class="annotationPlaceholder"
+                                        />
+                                      </div>
+                                      <div
+                                        class="formField"
+                                      >
                                         <div
-                                          class="dropdown dropdown"
-                                          data-test-selected="Exclude"
-                                          data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0.search"
+                                          class="root"
                                         >
-                                          <button
-                                            aria-expanded="false"
-                                            aria-haspopup="true"
-                                            class="dropdown-toggle btn btn-link"
-                                            type="button"
+                                          <div
+                                            class="field"
                                           >
-                                            <span
-                                              class="symbol"
+                                            <input
+                                              class="form-control"
+                                              id="starterBrick.definition.isAvailable.urlPatterns.0.pathname"
+                                              name="starterBrick.definition.isAvailable.urlPatterns.0.pathname"
+                                              readonly=""
+                                              value=""
+                                            />
+                                          </div>
+                                          <div
+                                            class="dropdown dropdown"
+                                            data-test-selected="Exclude"
+                                            data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.pathname"
+                                          >
+                                            <button
+                                              aria-expanded="false"
+                                              aria-haspopup="true"
+                                              class="dropdown-toggle btn btn-link"
+                                              type="button"
                                             >
-                                              <test-file-stub
-                                                classname="root"
-                                              />
-                                            </span>
-                                          </button>
+                                              <span
+                                                class="symbol"
+                                              >
+                                                <test-file-stub
+                                                  classname="root"
+                                                />
+                                              </span>
+                                            </button>
+                                          </div>
                                         </div>
+                                        <small
+                                          class="text-muted form-text"
+                                        >
+                                          <span>
+                                            Pattern to match the pathname part of a URL.
+                                          </span>
+                                        </small>
                                       </div>
-                                      <small
-                                        class="text-muted form-text"
-                                      >
-                                        <span>
-                                          Pattern to match the search part of a URL.
-                                        </span>
-                                      </small>
                                     </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <input
+                                      class="form-control"
+                                      data-testid="starterBrick.definition.isAvailable.urlPatterns.0.hash-name"
+                                      readonly=""
+                                      type="text"
+                                      value="hash"
+                                    />
+                                  </td>
+                                  <td>
+                                    <div
+                                      class="formGroup mb-0 form-group"
+                                      data-testid="field-template-form-group"
+                                    >
+                                      <div
+                                        class="mb-2 w-100 collapse"
+                                      >
+                                        <div
+                                          class="annotationPlaceholder"
+                                        />
+                                      </div>
+                                      <div
+                                        class="formField"
+                                      >
+                                        <div
+                                          class="root"
+                                        >
+                                          <div
+                                            class="field"
+                                          >
+                                            <textarea
+                                              class="form-control"
+                                              id="starterBrick.definition.isAvailable.urlPatterns.0.hash"
+                                              name="starterBrick.definition.isAvailable.urlPatterns.0.hash"
+                                              rows="1"
+                                            >
+                                              /foo/
+                                            </textarea>
+                                          </div>
+                                          <div
+                                            class="dropdown dropdown"
+                                            data-test-selected="Text"
+                                            data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.hash"
+                                          >
+                                            <button
+                                              aria-expanded="false"
+                                              aria-haspopup="true"
+                                              class="dropdown-toggle btn btn-link"
+                                              type="button"
+                                            >
+                                              <span
+                                                class="symbol"
+                                              >
+                                                <test-file-stub
+                                                  classname="root"
+                                                />
+                                              </span>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <small
+                                          class="text-muted form-text"
+                                        >
+                                          <span>
+                                            Pattern to match the hash part of a URL.
+                                          </span>
+                                        </small>
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    <input
+                                      class="form-control"
+                                      data-testid="starterBrick.definition.isAvailable.urlPatterns.0.search-name"
+                                      readonly=""
+                                      type="text"
+                                      value="search"
+                                    />
+                                  </td>
+                                  <td>
+                                    <div
+                                      class="formGroup mb-0 form-group"
+                                      data-testid="field-template-form-group"
+                                    >
+                                      <div
+                                        class="mb-2 w-100 collapse"
+                                      >
+                                        <div
+                                          class="annotationPlaceholder"
+                                        />
+                                      </div>
+                                      <div
+                                        class="formField"
+                                      >
+                                        <div
+                                          class="root"
+                                        >
+                                          <div
+                                            class="field"
+                                          >
+                                            <input
+                                              class="form-control"
+                                              id="starterBrick.definition.isAvailable.urlPatterns.0.search"
+                                              name="starterBrick.definition.isAvailable.urlPatterns.0.search"
+                                              readonly=""
+                                              value=""
+                                            />
+                                          </div>
+                                          <div
+                                            class="dropdown dropdown"
+                                            data-test-selected="Exclude"
+                                            data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0.search"
+                                          >
+                                            <button
+                                              aria-expanded="false"
+                                              aria-haspopup="true"
+                                              class="dropdown-toggle btn btn-link"
+                                              type="button"
+                                            >
+                                              <span
+                                                class="symbol"
+                                              >
+                                                <test-file-stub
+                                                  classname="root"
+                                                />
+                                              </span>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <small
+                                          class="text-muted form-text"
+                                        >
+                                          <span>
+                                            Pattern to match the search part of a URL.
+                                          </span>
+                                        </small>
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <button
+                              class="btn btn-primary"
+                              type="button"
+                            >
+                              Add Property
+                            </button>
+                          </div>
+                        </div>
+                        <div
+                          class="dropdown dropdown"
+                          data-test-selected="Object properties"
+                          data-testid="toggle-starterBrick.definition.isAvailable.urlPatterns.0"
+                        >
                           <button
-                            class="btn btn-primary"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            class="dropdown-toggle btn btn-link"
                             type="button"
                           >
-                            Add Property
+                            <span
+                              class="symbol"
+                            >
+                              <test-file-stub
+                                classname="root"
+                              />
+                            </span>
                           </button>
                         </div>
-                      </div>
-                      <div
-                        class="dropdown dropdown"
-                        data-test-selected="Object properties"
-                        data-testid="toggle-extensionPoint.definition.isAvailable.urlPatterns.0"
-                      >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          class="dropdown-toggle btn btn-link"
-                          type="button"
-                        >
-                          <span
-                            class="symbol"
-                          >
-                            <test-file-stub
-                              classname="root"
-                            />
-                          </span>
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -569,6 +599,7 @@ exports[`MatchRulesSection render populated section 1`] = `
         </div>
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -579,7 +610,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           </div>
           <label
             class="label form-label"
-            for="extensionPoint.definition.isAvailable.selectors"
+            for="starterBrick.definition.isAvailable.selectors"
           >
             Selectors
           </label>
@@ -590,55 +621,78 @@ exports[`MatchRulesSection render populated section 1`] = `
               class="list-group mb-2"
             >
               <li
-                class="list-group-item py-1"
+                class="list-group-item py-1 d-flex pl-1"
               >
+                <div>
+                  <button
+                    class="moveButton btn btn-link"
+                    disabled=""
+                    title="Move up"
+                    type="button"
+                  >
+                    <test-file-stub />
+                  </button>
+                  <button
+                    class="moveButton btn btn-link"
+                    disabled=""
+                    title="Move down"
+                    type="button"
+                  >
+                    <test-file-stub />
+                  </button>
+                </div>
                 <div
-                  class="formGroup mb-0 form-group"
+                  class="flex-grow-1"
                 >
                   <div
-                    class="mb-2 w-100 collapse"
+                    class="formGroup mb-0 form-group"
+                    data-testid="field-template-form-group"
                   >
                     <div
-                      class="annotationPlaceholder"
-                    />
-                  </div>
-                  <div
-                    class="formField"
-                  >
-                    <div
-                      class="root"
+                      class="mb-2 w-100 collapse"
                     >
                       <div
-                        class="field"
-                      >
-                        <textarea
-                          class="form-control"
-                          id="extensionPoint.definition.isAvailable.selectors.0"
-                          name="extensionPoint.definition.isAvailable.selectors.0"
-                          rows="1"
-                        >
-                          #foo
-                        </textarea>
-                      </div>
+                        class="annotationPlaceholder"
+                      />
+                    </div>
+                    <div
+                      class="formField"
+                    >
                       <div
-                        class="dropdown dropdown"
-                        data-test-selected="Text"
-                        data-testid="toggle-extensionPoint.definition.isAvailable.selectors.0"
+                        class="root"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          class="dropdown-toggle btn btn-link"
-                          type="button"
+                        <div
+                          class="field"
                         >
-                          <span
-                            class="symbol"
+                          <textarea
+                            class="form-control"
+                            id="starterBrick.definition.isAvailable.selectors.0"
+                            name="starterBrick.definition.isAvailable.selectors.0"
+                            rows="1"
                           >
-                            <test-file-stub
-                              classname="root"
-                            />
-                          </span>
-                        </button>
+                            #foo
+                          </textarea>
+                        </div>
+                        <div
+                          class="dropdown dropdown"
+                          data-test-selected="Text"
+                          data-testid="toggle-starterBrick.definition.isAvailable.selectors.0"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            class="dropdown-toggle btn btn-link"
+                            type="button"
+                          >
+                            <span
+                              class="symbol"
+                            >
+                              <test-file-stub
+                                classname="root"
+                              />
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

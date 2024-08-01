@@ -19,11 +19,11 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import { buildDocumentBuilderBranch } from "./documentTree";
+import { buildDocumentBuilderSubtree } from "./documentTree";
 import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
@@ -41,12 +41,12 @@ const markdownBlock = new MarkdownRenderer();
 
 describe("When rendered in panel", () => {
   beforeEach(() => {
-    blockRegistry.clear();
-    blockRegistry.register([markdownBlock]);
+    brickRegistry.clear();
+    brickRegistry.register([markdownBlock]);
   });
 
   const renderDocument = (config: DocumentBuilderElement) => {
-    const branch = buildDocumentBuilderBranch(config, {
+    const branch = buildDocumentBuilderSubtree(config, {
       staticId: "body",
       branches: [],
     });
@@ -387,7 +387,7 @@ describe("When rendered in panel", () => {
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
     jest.mocked(contentScriptAPI.runRendererPipeline).mockResolvedValueOnce({
-      blockId: markdownBlock.id,
+      brickId: markdownBlock.id,
       key: uuidv4(),
       args: { markdown },
       ctxt: { "@input": {}, "@options": {} },

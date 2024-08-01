@@ -21,16 +21,16 @@ import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorN
 import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import DataPanel from "@/pageEditor/tabs/editTab/dataPanel/DataPanel";
+import BrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
-import FoundationDataPanel from "@/pageEditor/tabs/editTab/dataPanel/FoundationDataPanel";
+import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { useDispatch, useSelector } from "react-redux";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import {
   selectActiveNodeId,
   selectIsDataPanelExpanded,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedRuntimeVersion from "@/pageEditor/tabs/editTab/UnsupportedRuntimeVersion";
 import TooltipIconButton from "@/components/TooltipIconButton";
@@ -43,7 +43,7 @@ import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 import { type UUID } from "@/types/stringTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const EditTab: React.FC<{
@@ -76,7 +76,7 @@ const EditTab: React.FC<{
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
-        <div className={styles.nodePanel}>
+        <div className={styles.nodePanel} data-testid="brickActionsPanel">
           <div className={styles.nodeHeader}>
             <span
               className={cx(styles.nodeHeaderTitle, {
@@ -111,7 +111,10 @@ const EditTab: React.FC<{
             <EditorNodeLayout />
           </div>
         </div>
-        <div className={styles.configPanel}>
+        <div
+          className={styles.configPanel}
+          data-testid="brickConfigurationPanel"
+        >
           <ErrorBoundary
             key={
               // Pass in the activeNodeId as the render key for error boundary so
@@ -131,7 +134,7 @@ const EditTab: React.FC<{
             )}
           </ErrorBoundary>
         </div>
-        <div className={styles.collapseWrapper}>
+        <div className={styles.collapseWrapper} data-testid="dataPanel">
           <button
             className={cx(styles.toggle, {
               [styles.active ?? ""]: isDataPanelExpanded,
@@ -156,9 +159,9 @@ const EditTab: React.FC<{
             <div className={styles.dataPanelWrapper}>
               <div className={styles.dataPanel}>
                 {activeNodeId === FOUNDATION_NODE_ID ? (
-                  <FoundationDataPanel />
+                  <StarterBrickDataPanel />
                 ) : (
-                  <DataPanel key={activeNodeId} />
+                  <BrickDataPanel key={activeNodeId} />
                 )}
               </div>
             </div>

@@ -30,13 +30,18 @@ test("can save a standalone trigger mod", async ({
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-  const { modComponentName } = await pageEditorPage.addStarterBrick("Trigger");
-  await pageEditorPage.setStarterBrickName(modComponentName);
-  await pageEditorPage.saveStandaloneMod(modComponentName);
+  const { modComponentName, modUuid } =
+    await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
+  await pageEditorPage.brickConfigurationPanel.fillField(
+    "name",
+    modComponentName,
+  );
+  await pageEditorPage.saveStandaloneMod(modComponentName, modUuid);
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
+
   await expect(
-    page.locator(".list-group-item", { hasText: modComponentName }),
+    modsPage.locator(".list-group-item", { hasText: modComponentName }),
   ).toBeVisible();
 });
 
@@ -52,9 +57,13 @@ test("shows error notification when updating a public mod without incrementing t
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-  const modListItem = pageEditorPage.getModListItemByName(modName);
-  await modListItem.click();
-  await pageEditorPage.fillInBrickField("Name", "8203 Repro Updated");
-  await pageEditorPage.saveSelectedPackagedMod();
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName(modName);
+  await modListItem.select();
+  await pageEditorPage.modEditorPane.editMetadataTabPanel.fillField(
+    "name",
+    "8203 Repro Updated",
+  );
+  await pageEditorPage.modListingPanel.activeModListItem.saveButton.click();
   await expect(pageEditorPage.getIncrementVersionErrorToast()).toBeVisible();
 });

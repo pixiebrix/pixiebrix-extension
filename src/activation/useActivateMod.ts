@@ -19,10 +19,10 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { uninstallMod } from "@/store/uninstallUtils";
+import { deactivateMod } from "@/store/deactivateUtils";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
@@ -30,6 +30,8 @@ import { useCreateDatabaseMutation } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
+import { type ReportEventData } from "@/telemetry/telemetryTypes";
+import { type UUID } from "@/types/stringTypes";
 
 export type ActivateResult = {
   success: boolean;
@@ -42,24 +44,28 @@ export type ActivateModFormCallback =
    *
    * @param formValues The form values for mod configuration options
    * @param modDefinition The mod definition to activate
+   * @param options Internal options/flags
    * @returns a promise that resolves to an ActivateResult
    */
   (
     formValues: WizardValues,
     modDefinition: ModDefinition,
+    options?: { forceModComponentId?: UUID },
   ) => Promise<ActivateResult>;
 
 type ActivationSource = "marketplace" | "extensionConsole";
 
-function selectActivateEventData(modDefinition: ModDefinition) {
+function selectActivateEventData(
+  modDefinition: ModDefinition,
+): ReportEventData {
   return {
-    blueprintId: modDefinition.metadata.id,
-    extensions: modDefinition.extensionPoints.map((x) => x.label),
+    modId: modDefinition.metadata.id,
+    modComponents: modDefinition.extensionPoints.map((x) => x.label),
   };
 }
 
 /**
- * React hook to install a mod.
+ * React hook to activate a mod.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
  * @param source The source of the activation, only used for reporting purposes
@@ -77,7 +83,11 @@ function useActivateMod(
   const [createDatabase] = useCreateDatabaseMutation();
 
   return useCallback(
-    async (formValues: WizardValues, modDefinition: ModDefinition) => {
+    async (
+      formValues: WizardValues,
+      modDefinition: ModDefinition,
+      { forceModComponentId }: { forceModComponentId?: UUID } = {},
+    ) => {
       const isReactivate = activatedModComponents.some(
         (x) => x._recipe?.id === modDefinition.metadata.id,
       );
@@ -85,7 +95,7 @@ function useActivateMod(
       if (source === "extensionConsole") {
         // Note: The prefix "Marketplace" on the telemetry event name
         // here is legacy terminology from before the public marketplace
-        // was created. It refers to the mod-list part of the extension
+        // was created. It refers to the mod-list part of the mod component
         // console, to distinguish that from the workshop.
         // It's being kept to keep our metrics history clean.
         reportEvent(Events.MARKETPLACE_ACTIVATE, {
@@ -112,7 +122,7 @@ function useActivateMod(
             if (source === "extensionConsole") {
               // Note: The prefix "Marketplace" on the telemetry event name
               // here is legacy terminology from before the public marketplace
-              // was created. It refers to the mod-list part of the extension
+              // was created. It refers to the mod-list part of the mod component
               // console, to distinguish that from the workshop.
               // It's being kept like this so our metrics history stays clean.
               reportEvent(Events.MARKETPLACE_REJECT_PERMISSIONS, {
@@ -143,14 +153,15 @@ function useActivateMod(
           (x) => x._recipe?.id === modDefinition.metadata.id,
         );
 
-        await uninstallMod(
+        await deactivateMod(
           modDefinition.metadata.id,
           existingModComponents,
           dispatch,
         );
 
         dispatch(
-          extensionsSlice.actions.activateMod({
+          modComponentsSlice.actions.activateMod({
+            forceModComponentId,
             modDefinition,
             configuredDependencies: integrationDependencies,
             optionsArgs,
@@ -179,7 +190,13 @@ function useActivateMod(
         success: true,
       };
     },
-    [createDatabase, dispatch, activatedModComponents, source],
+    [
+      createDatabase,
+      dispatch,
+      activatedModComponents,
+      source,
+      checkPermissions,
+    ],
   );
 }
 

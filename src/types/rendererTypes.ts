@@ -19,6 +19,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type Except } from "type-fest";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 type BaseRendererPayload = {
   /**
@@ -27,10 +28,9 @@ type BaseRendererPayload = {
   key: Nullishable<string>;
   /**
    * The ModComponent that produced the payload.
-   * Marked Nullishable as part of the StrictNullChecks migration.
-   * TODO: Revisit and determine if this should be required.
+   * @since 2.0.6 is a ModComponentRef
    */
-  extensionId: Nullishable<UUID>;
+  modComponentRef: ModComponentRef;
   /**
    * The ModComponent run that produced the payload
    * @since 1.7.0
@@ -50,19 +50,19 @@ export type RendererLoadingPayload = Except<BaseRendererPayload, "runId"> & {
  */
 export type RendererRunPayload = BaseRendererPayload & {
   /**
-   * The registry id of the renderer block, e.g., @pixiebrix/table
+   * The registry id of the renderer brick, e.g., @pixiebrix/table
    */
-  blockId: RegistryId;
+  brickId: RegistryId;
   /**
-   * The BlockArg to pass to the renderer
-   * @see BlockProps.args
+   * The BrickArgs to pass to the renderer
+   * @see BrickProps.args
    * @see BrickArgs
    */
   args: unknown;
   /**
    * The context to pass to the renderer
-   * @see BlockProps.context
-   * @see BlockOptions
+   * @see BrickProps.context
+   * @see BrickOptions
    */
   ctxt: unknown;
 };

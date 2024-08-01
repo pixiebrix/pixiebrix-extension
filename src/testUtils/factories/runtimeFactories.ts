@@ -15,11 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickOptions, type RunMetadata } from "@/types/runtimeTypes";
+import {
+  type ApiVersion,
+  type BrickOptions,
+  type RunMetadata,
+} from "@/types/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import type { ReduceOptions } from "@/runtime/reducePipeline";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { assertNotNullish } from "@/utils/nullishUtils";
+
+export const runMetadataFactory = define<RunMetadata>({
+  runId: null,
+  modComponentRef: modComponentRefFactory,
+  branches: () => [] as RunMetadata["branches"],
+});
 
 /**
  * Factory for BrickOptions to pass to Brick.run method.
@@ -33,23 +47,48 @@ export const brickOptionsFactory = define<BrickOptions>({
     return {};
   },
   platform: () => contentScriptPlatform,
-  logger: (i: number) =>
-    new ConsoleLogger({
-      extensionId: uuidSequence(i),
-    }),
-  root: (_i: number) => document,
-  runPipeline: (_i: number) =>
+  meta: runMetadataFactory,
+  logger: derive<BrickOptions, BrickOptions["logger"]>((options) => {
+    assertNotNullish(
+      options.meta,
+      "You must provide BrickOptions.meta to derive logger",
+    );
+    return new ConsoleLogger(
+      mapModComponentRefToMessageContext(options.meta.modComponentRef),
+    );
+  }, "meta"),
+  root: () => document,
+  runPipeline: () =>
     jest.fn().mockRejectedValue(new Error("runPipeline mock not implemented")),
-  runRendererPipeline: (_i: number) =>
+  runRendererPipeline: () =>
     jest
       .fn()
       .mockRejectedValue(new Error("runRendererPipeline mock not implemented")),
-  meta: derive<BrickOptions, RunMetadata>(
-    (options) => ({
-      runId: null,
-      extensionId: options.logger?.context.extensionId,
-      branches: [],
-    }),
-    "logger",
-  ),
 });
+
+/**
+ * ReduceOptions factory for passing to runtime reducer methods
+ * @see ReduceOptions
+ * @see apiVersionOptions
+ */
+export function reduceOptionsFactory(
+  // XXX: How to handle traits in cooky-cutter similar to Python's Factory Boy?
+  // https://factoryboy.readthedocs.io/en/stable/introduction.html#altering-a-factory-s-behavior-parameters-and-traits
+  runtimeVersion: ApiVersion = "v3",
+  overrides: Partial<ReduceOptions> = {},
+): ReduceOptions {
+  const modComponentRef = overrides.modComponentRef ?? modComponentRefFactory();
+  const logger =
+    overrides.logger ??
+    new ConsoleLogger(mapModComponentRefToMessageContext(modComponentRef));
+
+  return {
+    modComponentRef,
+    logger,
+    runId: overrides.runId ?? null,
+    headless: overrides.headless ?? false,
+    branches: overrides.branches ?? [],
+    logValues: overrides.logValues ?? true,
+    ...apiVersionOptions(runtimeVersion),
+  };
+}

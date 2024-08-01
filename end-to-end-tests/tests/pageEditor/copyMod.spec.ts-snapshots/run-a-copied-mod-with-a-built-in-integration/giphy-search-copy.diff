@@ -1,0 +1,59 @@
+Index: giphy-search-copy
+===================================================================
+--- giphy-search-copy
++++ giphy-search-copy
+@@ -83,51 +83,52 @@
+                                 element: !defer 
+                                   children:
+                                     - config:
+                                         height: !nunjucks >-
+                                           200*{{@gif.images.fixed_width_downsampled.width
+                                           /
+                                           @gif.images.fixed_width_downsampled.height}}
+                                         url: !var '@gif.images.fixed_width_downsampled.url'
+                                         width: !nunjucks '200'
+                                       type: image
+                                   config:
+                                     className: !nunjucks m-0 p-0
+                                   type: column
+                                 elementKey: gif
+                               type: list
+                           config: {}
+                           type: row
+                       config: {}
+                       type: container
+                 id: '@pixiebrix/document'
+                 root: null
+                 rootMode: document
+             title: !nunjucks GIPHY Search Results
+           id: '@pixiebrix/display'
+           outputKey: infoOutput
+           root: null
+           rootMode: document
+       icon:
+         id: giphy
+         library: simple-icons
+         size: 16
+       title: GIPHY Search
+     id: extensionPoint
+     label: GIPHY Search
+     permissions: {}
+     services:
+       giphy: '@pixies/giphy/giphy-service'
+ kind: recipe
+ metadata:
+   description: Search GIPHY from Quick Bar and view results in your Sidebar
+-  id: '@e2e-testing/giphy/giphy-search'
+-  name: GIPHY Search
++  id: >-
++    @extension-e2e-test-unaffiliated/giphy-search-00000000-0000-0000-0000-000000000000
++  name: GIPHY Search (Copy)
+   version: 1.0.0
+ options:
+   schema:
+     $schema: https://json-schema.org/draft/2019-09/schema#
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

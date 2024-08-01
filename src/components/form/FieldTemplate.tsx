@@ -45,7 +45,6 @@ export type FieldProps<
     name: string;
     label?: ReactNode;
     fitLabelWidth?: boolean;
-    widerLabel?: boolean;
     description?: ReactNode;
     annotations?: FieldAnnotation[];
     onChange?:
@@ -90,7 +89,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   name,
   label,
   fitLabelWidth,
-  widerLabel,
   description,
   annotations = EMPTY_ANNOTATIONS,
   value,
@@ -177,7 +175,10 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   );
 
   return (
-    <FormGroup className={cx(styles.formGroup, className)}>
+    <FormGroup
+      data-testid="field-template-form-group"
+      className={cx(styles.formGroup, className)}
+    >
       <Collapse in={fieldAnnotations.length > 0}>
         <div className="mb-2 w-100">
           {fieldAnnotations.length === 0 ? (
@@ -198,7 +199,6 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
       {label && (
         <FormLabel
           className={cx(styles.label, {
-            [styles.labelWider ?? ""]: widerLabel,
             [styles.labelFitContent ?? ""]: fitLabelWidth,
           })}
           htmlFor={controlId}

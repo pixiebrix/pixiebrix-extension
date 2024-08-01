@@ -31,9 +31,6 @@ import cx from "classnames";
 import Effect from "@/components/Effect";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import { type AnyObjectSchema } from "yup";
-import { useSelector } from "react-redux";
-import { selectModComponentsForMod } from "@/store/extensionsSelectors";
-import { isEmpty } from "lodash";
 import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID } from "@/types/helpers";
@@ -41,10 +38,11 @@ import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsB
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 type ActivateModInputsProps = {
   mod: ModDefinition;
-  optionsWizardStep: WizardStep;
+  optionsWizardStep: WizardStep | undefined;
   initialValues: WizardValues;
   onChange: (values: WizardValues) => void;
   validationSchema: AnyObjectSchema;
@@ -52,8 +50,8 @@ type ActivateModInputsProps = {
   needsPermissions?: boolean;
   header?: React.ReactNode;
   formValuesRef?: React.MutableRefObject<WizardValues>;
-  onClickSubmit?: () => void;
-  activationError?: string;
+  onClickSubmit: () => void;
+  activationError: Nullishable<string>;
 };
 
 const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
@@ -70,8 +68,12 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
 }) => {
   const normalizedMod = mod.options?.schema?.properties
     ? produce(mod, (draft) => {
+        assertNotNullish(
+          draft.options?.schema?.properties,
+          "options schema is nullish",
+        );
         for (const [name, optionSchema] of Object.entries(
-          mod.options.schema.properties,
+          draft.options.schema.properties,
         )) {
           if (typeof optionSchema === "boolean") {
             return;
@@ -90,11 +92,6 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
         }
       })
     : mod;
-
-  const modComponents = useSelector(
-    selectModComponentsForMod(normalizedMod?.metadata?.id),
-  );
-  const isReinstall = !isEmpty(modComponents);
 
   const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>
@@ -119,10 +116,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
             bring everything back in line.
           */}
           <Col className={styles.optionsBody}>
-            <optionsWizardStep.Component
-              mod={normalizedMod}
-              reinstall={isReinstall}
-            />
+            <optionsWizardStep.Component mod={normalizedMod} />
           </Col>
         </WizardValuesModIntegrationsContextAdapter>
       )}
@@ -160,7 +154,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
           variant="outline-danger"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_CANCEL, {
-              recipeId: normalizedMod?.metadata?.id,
+              modId: normalizedMod?.metadata?.id,
             });
             onClickCancel();
           }}
@@ -171,7 +165,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
           type="submit"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_SUBMIT, {
-              recipeId: normalizedMod?.metadata?.id,
+              modId: normalizedMod?.metadata?.id,
             });
             return true;
           }}

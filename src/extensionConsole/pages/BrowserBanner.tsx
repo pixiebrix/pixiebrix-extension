@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { type RootState } from "@/store/optionsStore";
+import { type RootState } from "@/extensionConsole/store";
 import { selectBrowserWarningDismissed } from "@/store/settings/settingsSelectors";
 import Banner from "@/components/banner/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import settingsSlice from "@/store/settings/settingsSlice";
 
-import { isGoogleChrome } from "@/utils/browserUtils";
+import { isOfficiallySupportedBrowser } from "@/utils/browserUtils";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 const BrowserBanner: React.VoidFunctionComponent = () => {
@@ -37,7 +37,7 @@ const BrowserBanner: React.VoidFunctionComponent = () => {
 
   if (
     browserWarningDismissed ||
-    isGoogleChrome() ||
+    isOfficiallySupportedBrowser() ||
     enterpriseState.isLoading ||
     enterpriseState.data?.disableBrowserWarning
   ) {
@@ -46,8 +46,8 @@ const BrowserBanner: React.VoidFunctionComponent = () => {
 
   return (
     <Banner variant="warning">
-      PixieBrix officially supports Google Chrome. Some functionality may not be
-      available on your browser.
+      PixieBrix officially supports Google Chrome and Microsoft Edge. Some
+      functionality may not be available on your browser.
       <Button
         className="info ml-3"
         size="sm"

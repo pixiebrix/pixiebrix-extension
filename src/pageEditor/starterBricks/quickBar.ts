@@ -38,12 +38,13 @@ import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarte
 import QuickBarConfiguration from "@/pageEditor/tabs/quickBar/QuickBarConfiguration";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";
-import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type QuickBarDefinition,
   type QuickBarConfig,
 } from "@/starterBricks/quickBar/quickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const base = makeInitialBaseState();
@@ -53,15 +54,14 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
   const title = "Quick Bar item";
 
   return {
-    type: "quickBar",
     // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
-        type: "quickBar",
-        reader: getImplicitReader("quickBar"),
+        type: StarterBrickTypes.QUICK_BAR_ACTION,
+        reader: getImplicitReader(StarterBrickTypes.QUICK_BAR_ACTION),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         targetMode: "eventTarget",
@@ -69,9 +69,9 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
         isAvailable,
       },
     },
-    extension: {
+    modComponent: {
       title,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -79,7 +79,7 @@ function fromNativeElement(url: string, metadata: Metadata): QuickBarFormState {
 function selectStarterBrickDefinition(
   formState: QuickBarFormState,
 ): StarterBrickDefinitionLike<QuickBarDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -92,7 +92,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "quickBar",
+      type: StarterBrickTypes.QUICK_BAR_ACTION,
       documentUrlPatterns,
       contexts,
       targetMode,
@@ -106,13 +106,13 @@ function selectModComponent(
   state: QuickBarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<QuickBarConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: QuickBarConfig = {
     title: modComponent.title,
     icon: modComponent.icon,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -126,8 +126,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     QuickBarDefinition,
     QuickBarConfig,
-    "quickBar"
-  >(config, "quickBar");
+    typeof StarterBrickTypes.QUICK_BAR_ACTION
+  >(config, StarterBrickTypes.QUICK_BAR_ACTION);
 
   const {
     documentUrlPatterns = [],
@@ -147,11 +147,11 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
-        type: "quickBar",
+        type: StarterBrickTypes.QUICK_BAR_ACTION,
         documentUrlPatterns,
         defaultOptions,
         targetMode,
@@ -168,7 +168,7 @@ function asDraftModComponent(
   quickBarFormState: QuickBarFormState,
 ): DraftModComponent {
   return {
-    type: "quickBar",
+    type: StarterBrickTypes.QUICK_BAR_ACTION,
     extension: selectModComponent(quickBarFormState, {
       includeInstanceIds: true,
     }),
@@ -178,7 +178,7 @@ function asDraftModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, QuickBarFormState> = {
   displayOrder: 1,
-  elementType: "quickBar",
+  starterBrickType: StarterBrickTypes.QUICK_BAR_ACTION,
   label: "Quick Bar Action",
   baseClass: QuickBarStarterBrickABC,
   EditorNode: QuickBarConfiguration,

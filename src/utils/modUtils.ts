@@ -31,11 +31,16 @@ import {
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
-  type ModComponentBase,
   type HydratedModComponent,
+  type ModComponentBase,
+  type ModComponentRef,
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
-import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
+import {
+  DefinitionKinds,
+  INNER_SCOPE,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import { assertNotNullish, type Nullishable } from "./nullishUtils";
@@ -54,6 +59,111 @@ import {
 import { produce } from "immer";
 import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type SetRequired } from "type-fest";
+import { validateRegistryId } from "@/types/helpers";
+
+/**
+ * Returns a synthetic mod id for a standalone mod component for use in the runtime
+ * @param modComponentId the standalone mod component id
+ * @see INNER_SCOPE
+ */
+export function getStandaloneModComponentRuntimeModId(
+  modComponentId: UUID,
+): RegistryId {
+  return validateRegistryId(
+    `${INNER_SCOPE}/mod/${modComponentId.toLowerCase()}`,
+  );
+}
+
+/**
+ * Returns a modId suitable for use in the runtime.
+ * @since 2.0.6
+ */
+function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
+  return (
+    modComponent._recipe?.id ??
+    getStandaloneModComponentRuntimeModId(modComponent.id)
+  );
+}
+
+/**
+ * Returns the ModComponentRef for a given mod component.
+ * @see mapMessageContextToModComponentRef
+ */
+export function getModComponentRef(
+  // Must be HydratedModComponent so `extensionPointId` points to a registryId
+  modComponent: HydratedModComponent,
+): ModComponentRef {
+  return {
+    modComponentId: modComponent.id,
+    modId: getRuntimeModId(modComponent),
+    starterBrickId: modComponent.extensionPointId,
+  };
+}
+
+/**
+ * Returns the MessageContext associated with `modComponent`.
+ * @see mapMessageContextToModComponentRef
+ */
+export function mapModComponentToMessageContext(
+  modComponent: HydratedModComponent,
+): MessageContext {
+  return {
+    // The step label will be re-assigned later in reducePipeline
+    label: modComponent.label ?? undefined,
+    modComponentLabel: modComponent.label ?? undefined,
+    modComponentId: modComponent.id,
+    starterBrickId: modComponent.extensionPointId,
+    deploymentId: modComponent._deployment?.id,
+    modId: getRuntimeModId(modComponent),
+    modVersion: modComponent._recipe?.version,
+  };
+}
+
+/**
+ * Returns the message context for a ModComponentRef. For use with passing to reportEvent
+ * @see selectEventData
+ */
+export function mapModComponentRefToMessageContext(
+  modComponentRef: ModComponentRef,
+): SetRequired<MessageContext, "modComponentId" | "starterBrickId" | "modId"> {
+  // Fields are currently named the same. In the future, the fields might temporarily diverge.
+  return {
+    modComponentId: modComponentRef.modComponentId,
+    starterBrickId: modComponentRef.starterBrickId,
+    modId: modComponentRef.modId,
+  };
+}
+
+/**
+ * Returns the ModComponentRef for a given Logger MessageContext. Only call from running bricks with an associated
+ * mod component and starter brick in the context.
+ *
+ * @see getModComponentRef
+ * @see mapModComponentToMessageContext
+ * @throws TypeError if the modComponentId or starterBrickId is missing
+ */
+export function mapMessageContextToModComponentRef(
+  context: MessageContext,
+): ModComponentRef {
+  assertNotNullish(context.modId, "modId is required for ModComponentRef");
+  assertNotNullish(
+    context.modComponentId,
+    "modComponentId is required for ModComponentRef",
+  );
+  assertNotNullish(
+    context.starterBrickId,
+    "starterBrickId is required for ModComponentRef",
+  );
+
+  // Can't use "pick" because it doesn't pick up assertNotNullish checks above
+  return {
+    modComponentId: context.modComponentId,
+    modId: context.modId,
+    starterBrickId: context.starterBrickId,
+  };
+}
 
 /**
  * Returns true if the mod is an UnavailableMod, i.e., a mod the user no longer has access to.

@@ -17,23 +17,19 @@
 
 import React, { useEffect, useReducer } from "react";
 import { type BrickConfig } from "@/bricks/types";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExclamationTriangle,
-  faInfoCircle,
-  faSync,
-} from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBrickPreview } from "@/contentScript/messenger/api";
-import { useField, useFormikContext } from "formik";
+import { useField } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "@/runtime/getType";
 import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
@@ -43,13 +39,14 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type BaseStarterBrickState } from "@/pageEditor/baseFormStateTypes";
+import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { useSelector } from "react-redux";
+import { selectActiveModComponentRef } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -81,7 +78,7 @@ export function usePreviewInfo(
   blockId: RegistryId,
 ): FetchableAsyncState<PreviewInfo> {
   return useAsyncState(async () => {
-    const block = await blockRegistry.lookup(blockId);
+    const block = await brickRegistry.lookup(blockId);
     const type = await getType(block);
     return {
       block,
@@ -96,8 +93,8 @@ export function usePreviewInfo(
 const traceWarning = (
   // The text-warning font color is brutal. This is more of a warning, but this color/style will have to do for now
   <div className="text-info mb-2">
-    <FontAwesomeIcon icon={faExclamationTriangle} />
-    &nbsp; No trace available. The actual output will differ from the preview if
+    <FontAwesomeIcon icon={faInfoCircle} />
+    &nbsp; No runs available. The actual output will differ from the preview if
     the configuration uses templates/variables
   </div>
 );
@@ -142,7 +139,7 @@ const previewSlice = createSlice({
 const BrickPreview: React.FunctionComponent<{
   brickConfig: BrickConfig;
   starterBrick: BaseStarterBrickState;
-  traceRecord: TraceRecord;
+  traceRecord: Nullishable<TraceRecord>;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik
 }> = ({ brickConfig, starterBrick, traceRecord, previewRefreshMillis }) => {
@@ -151,7 +148,8 @@ const BrickPreview: React.FunctionComponent<{
     outputKey: brickConfig.outputKey,
   });
 
-  const { values } = useFormikContext<ModComponentFormState>();
+  const modComponentRef = useSelector(selectActiveModComponentRef);
+
   const [{ value: apiVersion }] = useField<ApiVersion>("apiVersion");
   const [{ value: integrationDependencies }] = useField<
     IntegrationDependency[]
@@ -174,7 +172,7 @@ const BrickPreview: React.FunctionComponent<{
       try {
         const output = await runBrickPreview(inspectedTab, {
           apiVersion,
-          blockConfig: {
+          brickConfig: {
             ...removeEmptyValues(brickConfig),
             if: undefined,
           },
@@ -185,7 +183,7 @@ const BrickPreview: React.FunctionComponent<{
             )),
           },
           rootSelector: undefined,
-          modId: values.recipe?.id,
+          modComponentRef,
         });
         dispatch(previewSlice.actions.setSuccess({ output, outputKey }));
       } catch (error) {
@@ -253,9 +251,8 @@ const BrickPreview: React.FunctionComponent<{
 
   if (!brickInfo?.traceOptional && !traceRecord) {
     return (
-      <div className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> Run the brick once to enable
-        output preview
+      <div className="text-muted">
+        No runs available. Run the brick to enable output preview
       </div>
     );
   }
@@ -267,16 +264,26 @@ const BrickPreview: React.FunctionComponent<{
       {showTraceWarning && traceWarning}
 
       {brickInfo != null && !brickInfo.isPure && (
-        <Button
-          variant="info"
-          size="sm"
-          disabled={!traceRecord}
-          onClick={() => {
-            void debouncedRun(brickConfig, context as BrickArgsContext);
-          }}
-        >
-          <FontAwesomeIcon icon={faSync} /> Refresh Preview
-        </Button>
+        <>
+          <div className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} /> This brick&apos;s output
+            cannot be automatically determined from its input/configuration.
+            Click to refresh the preview
+          </div>
+          <div>
+            <Button
+              variant="info"
+              size="sm"
+              className="mt-2"
+              disabled={!traceRecord && !brickInfo.traceOptional}
+              onClick={() => {
+                void debouncedRun(brickConfig, context as BrickArgsContext);
+              }}
+            >
+              <FontAwesomeIcon icon={faSync} /> Refresh Preview
+            </Button>
+          </div>
+        </>
       )}
 
       {output && !isError && !isEmpty(output) && (
@@ -284,17 +291,17 @@ const BrickPreview: React.FunctionComponent<{
           data={output}
           searchable
           copyable
-          tabKey={DataPanelTabKey.Preview}
-          label="Output Preview"
+          tabKey={DataPanelTabKey.Output}
+          label="Live Preview"
         />
       )}
 
       {output && !isError && isEmpty(output) && (
-        <div>Brick produced empty output</div>
+        <div className="text-muted mt-2">Brick produced empty output</div>
       )}
 
       {output && isError && (
-        <div className="text-danger">{getErrorMessage(output)}</div>
+        <div className="text-danger mt-2">{getErrorMessage(output)}</div>
       )}
     </div>
   );

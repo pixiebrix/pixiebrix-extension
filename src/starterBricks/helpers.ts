@@ -18,13 +18,11 @@
 import { castArray } from "lodash";
 import initialize from "@/vendors/jQueryInitialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
-import {
-  type ModComponentBase,
-  type HydratedModComponent,
-} from "@/types/modComponentTypes";
-import { type MessageContext } from "@/types/loggerTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { $safeFind } from "@/utils/domUtils";
 import { onAbort } from "abort-utils";
+
+import { isStateChangeEvent } from "@/platform/state/stateTypes";
 
 /**
  * Attach a callback to be called when a node is removed from the DOM
@@ -183,34 +181,16 @@ export function acquireElement(
 }
 
 /**
- * Returns the MessageContext associated with `modComponent`.
- */
-export function selectModComponentContext(
-  modComponent: HydratedModComponent,
-): MessageContext {
-  return {
-    // The step label will be re-assigned later in reducePipeline
-    label: modComponent.label ?? undefined,
-    extensionLabel: modComponent.label ?? undefined,
-    extensionId: modComponent.id,
-    extensionPointId: modComponent.extensionPointId,
-    deploymentId: modComponent._deployment?.id,
-    blueprintId: modComponent._recipe?.id,
-    blueprintVersion: modComponent._recipe?.version,
-  };
-}
-
-/**
  * Returns true if the ModComponent should run for the given state change event.
  */
 export function shouldModComponentRunForStateChange(
   modComponent: ModComponentBase,
   event: Event,
 ): boolean {
-  if (event instanceof CustomEvent) {
+  if (isStateChangeEvent(event)) {
     const { detail } = event;
 
-    // Ignore state changes from shared state and unrelated extensions/blueprints
+    // Ignore state changes from shared state and unrelated mods/mod components
     return (
       detail?.extensionId === modComponent.id ||
       (modComponent._recipe?.id != null &&

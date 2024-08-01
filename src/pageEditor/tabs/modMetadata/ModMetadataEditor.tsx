@@ -20,11 +20,11 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectDirtyMetadataForModId,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -37,7 +37,7 @@ import Alert from "@/components/Alert";
 import { createSelector } from "@reduxjs/toolkit";
 import { lt } from "semver";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import cx from "classnames";
@@ -69,19 +69,19 @@ const selectFirstModComponent = createSelector(
 
 const OldModVersionAlert: React.FunctionComponent<{
   modId: RegistryId;
-  installedModVersion: string;
+  activatedModVersion: string;
   latestModVersion: string;
 }> = ({
   modId,
-  installedModVersion,
+  activatedModVersion,
   latestModVersion,
 }: {
   modId: RegistryId;
-  installedModVersion: string;
+  activatedModVersion: string;
   latestModVersion: string;
 }) => (
   <Alert variant="warning">
-    You are editing version {installedModVersion} of this mod, the latest
+    You are editing version {activatedModVersion} of this mod, the latest
     version is {latestModVersion}. To get the latest version,{" "}
     <a
       href={`/options.html#${getActivateModHashRoute(modId)}`}
@@ -105,16 +105,16 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     error,
   } = useOptionalModDefinition(modId);
 
-  // Select a single mod component for the mod to check the installed version.
+  // Select a single mod component for the mod to check the activated version.
   // We rely on the assumption that every component in the mod has the same version.
   const modDefinitionComponent = useSelector(selectFirstModComponent);
 
-  const installedModVersion = modDefinitionComponent?._recipe?.version;
+  const activatedModVersion = modDefinitionComponent?._recipe?.version;
   const latestModVersion = modDefinition?.metadata?.version;
   const showOldModVersionWarning =
-    installedModVersion &&
+    activatedModVersion &&
     latestModVersion &&
-    lt(installedModVersion, latestModVersion);
+    lt(activatedModVersion, latestModVersion);
 
   const dirtyMetadata = useSelector(selectDirtyMetadataForModId(modId));
   const savedMetadata = modDefinition?.metadata;
@@ -157,7 +157,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
           {showOldModVersionWarning && (
             <OldModVersionAlert
               modId={modId}
-              installedModVersion={installedModVersion}
+              activatedModVersion={activatedModVersion}
               latestModVersion={latestModVersion}
             />
           )}

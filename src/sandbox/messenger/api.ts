@@ -18,18 +18,83 @@
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
-import postMessage from "@/utils/postMessage";
-import pMemoize from "p-memoize";
+import postMessage, { type Payload } from "@/utils/postMessage";
+import pMemoize, { pMemoizeClear } from "p-memoize";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import pRetry from "p-retry";
 import { type JsonObject } from "type-fest";
+import { TimeoutError } from "p-timeout";
+import { isSpecificError } from "@/errors/errorHelpers";
 
-// Uses pMemoize to allow retries after a failure
-const loadSandbox = pMemoize(async () => {
-  const iframe = await injectIframe(
+const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
+
+const loadSandbox = pMemoize(async () =>
+  injectIframe(
     chrome.runtime.getURL("sandbox.html"),
     hiddenIframeStyle,
+    SANDBOX_SHADOW_ROOT_ID,
+  ),
+);
+
+const getSandbox = memoizeUntilSettled(async () => {
+  let sandbox = await loadSandbox();
+  const isSandboxWrapperInDom = document.querySelector(
+    `#${SANDBOX_SHADOW_ROOT_ID}`,
   );
-  return iframe.contentWindow;
+
+  if (isSandboxWrapperInDom) {
+    await postMessage({
+      recipient: sandbox.contentWindow,
+      payload: "ping",
+      type: "SANDBOX_PING",
+    });
+  } else {
+    console.warn("Sandbox iframe was removed from the DOM. Reinjecting...");
+    pMemoizeClear(loadSandbox);
+    sandbox = await loadSandbox();
+  }
+
+  return sandbox.contentWindow;
 });
+
+async function postSandboxMessage<TReturn extends Payload = Payload>({
+  type,
+  payload,
+}: {
+  type: string;
+  payload: Payload;
+}): Promise<TReturn> {
+  try {
+    return await pRetry(
+      async () =>
+        postMessage({
+          recipient: await getSandbox(),
+          payload,
+          type,
+        }),
+      {
+        retries: 3,
+        shouldRetry: (error) => isSpecificError(error, TimeoutError),
+        onFailedAttempt(error) {
+          console.warn(
+            `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
+          );
+        },
+      },
+    );
+  } catch (error) {
+    if (isSpecificError(error, TimeoutError)) {
+      throw new Error(
+        `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
+        {
+          cause: error,
+        },
+      );
+    }
+
+    throw error;
+  }
+}
 
 export type TemplateRenderPayload = {
   template: string;
@@ -42,18 +107,16 @@ export type TemplateValidatePayload = string;
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
-  return postMessage({
-    recipient: await loadSandbox(),
-    payload,
+  return postSandboxMessage({
     type: "RENDER_NUNJUCKS",
+    payload,
   });
 }
 
 export async function validateNunjucksTemplate(
   payload: TemplateValidatePayload,
 ): Promise<void> {
-  return postMessage({
-    recipient: await loadSandbox(),
+  return postSandboxMessage({
     payload,
     type: "VALIDATE_NUNJUCKS",
   });
@@ -62,8 +125,7 @@ export async function validateNunjucksTemplate(
 export async function renderHandlebarsTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
-  return postMessage({
-    recipient: await loadSandbox(),
+  return postSandboxMessage({
     payload,
     type: "RENDER_HANDLEBARS",
   });
@@ -75,8 +137,7 @@ export type JavaScriptPayload = {
 };
 
 export async function runUserJs(payload: JavaScriptPayload) {
-  return postMessage({
-    recipient: await loadSandbox(),
+  return postSandboxMessage({
     payload,
     type: "RUN_USER_JS",
   });

@@ -20,18 +20,17 @@ import { authSlice } from "@/auth/authSlice";
 import modComponentsSlice from "@/store/extensionsSlice";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
-import sessionSlice from "@/pageEditor/slices/sessionSlice";
-import { savingModComponentSlice } from "@/pageEditor/panes/save/savingModComponentSlice";
-import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
-import pageEditorAnalysisManager from "./analysisManager";
-import { tabStateSlice } from "@/pageEditor/tabState/tabStateSlice";
+import pageEditorAnalysisManager from "./store/analysisManager";
+import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
 import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
@@ -45,7 +44,6 @@ const configureStoreForTests = () =>
       settings: settingsSlice.reducer,
       editor: editorSlice.reducer,
       session: sessionSlice.reducer,
-      savingModComponent: savingModComponentSlice.reducer,
       runtime: runtimeSlice.reducer,
       logs: logSlice.reducer,
       analysis: analysisSlice.reducer,

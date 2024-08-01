@@ -20,7 +20,7 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
@@ -51,7 +51,9 @@ describe("useCompareModComponentCounts", () => {
       metadata: modMetadata,
     });
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -86,7 +88,7 @@ describe("useCompareModComponentCounts", () => {
 
   it("should return true for 1 clean and 1 unmatching dirty component in state and 2 in the definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
     });
     const unsavedModDefinition = modDefinitionFactory({
@@ -95,14 +97,16 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const dirtyFormState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -113,14 +117,14 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(true);
   });
 
   it("should return true for 3 clean and 2 unmatching dirty form state and 5 components in the definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 3),
     });
@@ -130,17 +134,21 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const dirtyFormState1 = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
     const dirtyFormState2 = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -152,7 +160,7 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(true);
   });
@@ -163,7 +171,9 @@ describe("useCompareModComponentCounts", () => {
       metadata: modMetadata,
     });
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -184,7 +194,7 @@ describe("useCompareModComponentCounts", () => {
 
   it("should return false for 1 clean and 1 unmatching form state and 3 in definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
     });
     const unsavedModDefinition = modDefinitionFactory({
@@ -193,14 +203,16 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -211,14 +223,14 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(false);
   });
 
   it("should return false for 1 clean and 0 unmatching form state and 0 in definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
     });
     const unsavedModDefinition = modDefinitionFactory({
@@ -230,7 +242,7 @@ describe("useCompareModComponentCounts", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -240,14 +252,14 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(false);
   });
 
   it("should return false for 1 clean and 0 unmatching form state and 2 in definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
     });
     const unsavedModDefinition = modDefinitionFactory({
@@ -259,7 +271,7 @@ describe("useCompareModComponentCounts", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -269,7 +281,7 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(false);
   });
@@ -282,7 +294,9 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -303,7 +317,7 @@ describe("useCompareModComponentCounts", () => {
 
   it("should return false for 0 clean and 1 unmatching form state and 2 in definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: [],
     });
@@ -313,14 +327,16 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -331,7 +347,7 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(false);
   });
@@ -344,7 +360,9 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
@@ -365,7 +383,7 @@ describe("useCompareModComponentCounts", () => {
 
   it("should return false for 3 clean and 1 unmatching form state and 5 in definition", () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 3),
     });
@@ -375,14 +393,16 @@ describe("useCompareModComponentCounts", () => {
     });
 
     const formState = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentsActions.activateMod({
-            modDefinition: installedModDefinition,
+            modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
           }),
@@ -393,7 +413,7 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(unsavedModDefinition, {
-        sourceModDefinition: installedModDefinition,
+        sourceModDefinition: activatedModDefinition,
       }),
     ).toBe(false);
   });

@@ -47,7 +47,7 @@ import {
   isPipelineExpression,
   type PipelineClosureExpression,
 } from "@/utils/expressionUtils";
-import { isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -377,7 +377,7 @@ class UserDefinedBrick extends BrickABC {
     } catch (error) {
       if (isSpecificError(error, HeadlessModeError)) {
         const continuation = error;
-        const renderer = await this.registry.lookup(continuation.blockId);
+        const renderer = await this.registry.lookup(continuation.brickId);
         return renderer.run(continuation.args, {
           ...options,
           ctxt: continuation.ctxt,

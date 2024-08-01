@@ -16,19 +16,22 @@
  */
 
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { uuidv4 } from "@/types/helpers";
 import produce from "immer";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
-import { useCreateModDefinitionMutation } from "@/data/service/api";
+import {
+  useCreateModDefinitionMutation,
+  useDeleteStandaloneModDefinitionMutation,
+} from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
-import { selectModMetadata } from "@/pageEditor/utils";
-import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/slices/editorSelectors";
+import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
+import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
@@ -49,6 +52,8 @@ function useCreateModFromModComponent(
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const { buildAndValidateMod } = useBuildAndValidateMod();
+  const [deleteStandaloneModDefinition] =
+    useDeleteStandaloneModDefinitionMutation();
 
   const createModFromComponent = useCallback(
     (
@@ -84,7 +89,10 @@ function useCreateModFromModComponent(
           }).unwrap();
 
           const newModComponent = produce(newModComponentFormState, (draft) => {
-            draft.recipe = selectModMetadata(newModDefinition, upsertResponse);
+            draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
+              newModDefinition,
+              upsertResponse,
+            );
           });
 
           dispatch(editorActions.addModComponentFormState(newModComponent));
@@ -92,8 +100,6 @@ function useCreateModFromModComponent(
           await upsertModComponentFormState({
             modComponentFormState: newModComponent,
             options: {
-              // Don't push to cloud since we're saving it with the mod
-              pushToCloud: false,
               // Permissions are already checked above
               checkPermissions: false,
               // Need to provide user feedback
@@ -104,9 +110,35 @@ function useCreateModFromModComponent(
           });
 
           if (!keepLocalCopy) {
-            await removeModComponentFromStorage({
-              modComponentId: activeModComponent.uuid,
-            });
+            console.debug(
+              "createModFromComponent - removing standalone component",
+              {
+                activeModComponent,
+              },
+            );
+
+            const removePromises: Array<Promise<unknown>> = [
+              removeModComponentFromStorage({
+                modComponentId: activeModComponent.uuid,
+              }),
+            ];
+
+            // @since v2.0.5 - Remove standalone mod definition on the server as well as locally,
+            //  when the user converts to a mod and chooses not to keep a copy. This helps clean
+            //  up existing standalone mod components that shouldn't be needed any longer. If the
+            //  user wants to keep the standalone mod component around, they can simply choose
+            //  the "keep local copy" option when converting to a mod.
+            //  Also since v2.0.5, saving a standalone mod component in the page editor will call
+            //  this create hook with keepLocalCopy forced to false.
+            if (activeModComponent.installed) {
+              removePromises.push(
+                deleteStandaloneModDefinition({
+                  extensionId: activeModComponent.uuid,
+                }),
+              );
+            }
+
+            await Promise.all(removePromises);
           }
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
@@ -117,7 +149,7 @@ function useCreateModFromModComponent(
             // Error is already handled by buildAndValidateMod.
           } else {
             throw error;
-          } // Other errors can be thrown during mod installation
+          } // Other errors can be thrown during mod activation
         }
       }),
     [
@@ -127,6 +159,7 @@ function useCreateModFromModComponent(
       dispatch,
       upsertModComponentFormState,
       keepLocalCopy,
+      deleteStandaloneModDefinition,
       removeModComponentFromStorage,
     ],
   );

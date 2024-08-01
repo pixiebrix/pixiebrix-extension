@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   identityBrick,
   pipelineBrick,
   simpleInput,
-  testOptions,
 } from "./pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { validateRegistryId } from "@/types/helpers";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([pipelineBrick, identityBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([pipelineBrick, identityBrick]);
 });
 
 describe("apiVersion: v3", () => {
-  test("run block with pipeline arg", async () => {
+  test("run brick with pipeline arg", async () => {
     const pipeline = {
       id: pipelineBrick.id,
       config: {
@@ -44,7 +44,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({ length: 1 });
   });
@@ -61,7 +61,7 @@ describe("apiVersion: v3", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({
       data: toExpression("pipeline", [

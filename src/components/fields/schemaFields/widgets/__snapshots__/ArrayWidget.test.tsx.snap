@@ -32,165 +32,230 @@ exports[`ArrayWidget renders widget with items 1`] = `
       class="list-group mb-2"
     >
       <li
-        class="list-group-item py-1"
+        class="list-group-item py-1 d-flex pl-1"
       >
+        <div>
+          <button
+            class="moveButton btn btn-link"
+            disabled=""
+            title="Move up"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+          <button
+            class="moveButton btn btn-link"
+            title="Move down"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+        </div>
         <div
-          class="formGroup mb-0 form-group"
+          class="flex-grow-1"
         >
           <div
-            class="mb-2 w-100 collapse"
+            class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
-              class="annotationPlaceholder"
-            />
-          </div>
-          <div
-            class="formField"
-          >
-            <div
-              class="root"
+              class="mb-2 w-100 collapse"
             >
               <div
-                class="field"
-              >
-                <textarea
-                  class="form-control"
-                  id="testField.0"
-                  name="testField.0"
-                  rows="1"
-                >
-                  abc
-                </textarea>
-              </div>
+                class="annotationPlaceholder"
+              />
+            </div>
+            <div
+              class="formField"
+            >
               <div
-                class="dropdown dropdown"
-                data-test-selected="Text"
-                data-testid="toggle-testField.0"
+                class="root"
               >
-                <button
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="dropdown-toggle btn btn-link"
-                  type="button"
+                <div
+                  class="field"
                 >
-                  <span
-                    class="symbol"
+                  <textarea
+                    class="form-control"
+                    id="testField.0"
+                    name="testField.0"
+                    rows="1"
                   >
-                    <test-file-stub
-                      classname="root"
-                    />
-                  </span>
-                </button>
+                    abc
+                  </textarea>
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Text"
+                  data-testid="toggle-testField.0"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </li>
       <li
-        class="list-group-item py-1"
+        class="list-group-item py-1 d-flex pl-1"
       >
+        <div>
+          <button
+            class="moveButton btn btn-link"
+            title="Move up"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+          <button
+            class="moveButton btn btn-link"
+            title="Move down"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+        </div>
         <div
-          class="formGroup mb-0 form-group"
+          class="flex-grow-1"
         >
           <div
-            class="mb-2 w-100 collapse"
+            class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
-              class="annotationPlaceholder"
-            />
-          </div>
-          <div
-            class="formField"
-          >
-            <div
-              class="root"
+              class="mb-2 w-100 collapse"
             >
               <div
-                class="field"
-              >
-                <textarea
-                  class="form-control"
-                  id="testField.1"
-                  name="testField.1"
-                  rows="1"
-                >
-                  def
-                </textarea>
-              </div>
+                class="annotationPlaceholder"
+              />
+            </div>
+            <div
+              class="formField"
+            >
               <div
-                class="dropdown dropdown"
-                data-test-selected="Text"
-                data-testid="toggle-testField.1"
+                class="root"
               >
-                <button
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="dropdown-toggle btn btn-link"
-                  type="button"
+                <div
+                  class="field"
                 >
-                  <span
-                    class="symbol"
+                  <textarea
+                    class="form-control"
+                    id="testField.1"
+                    name="testField.1"
+                    rows="1"
                   >
-                    <test-file-stub
-                      classname="root"
-                    />
-                  </span>
-                </button>
+                    def
+                  </textarea>
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Text"
+                  data-testid="toggle-testField.1"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </li>
       <li
-        class="list-group-item py-1"
+        class="list-group-item py-1 d-flex pl-1"
       >
+        <div>
+          <button
+            class="moveButton btn btn-link"
+            title="Move up"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+          <button
+            class="moveButton btn btn-link"
+            disabled=""
+            title="Move down"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+        </div>
         <div
-          class="formGroup mb-0 form-group"
+          class="flex-grow-1"
         >
           <div
-            class="mb-2 w-100 collapse"
+            class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
-              class="annotationPlaceholder"
-            />
-          </div>
-          <div
-            class="formField"
-          >
-            <div
-              class="root"
+              class="mb-2 w-100 collapse"
             >
               <div
-                class="field"
-              >
-                <textarea
-                  class="form-control"
-                  id="testField.2"
-                  name="testField.2"
-                  rows="1"
-                >
-                  this is a really long string to see what happens when the array value is long
-                </textarea>
-              </div>
+                class="annotationPlaceholder"
+              />
+            </div>
+            <div
+              class="formField"
+            >
               <div
-                class="dropdown dropdown"
-                data-test-selected="Text"
-                data-testid="toggle-testField.2"
+                class="root"
               >
-                <button
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="dropdown-toggle btn btn-link"
-                  type="button"
+                <div
+                  class="field"
                 >
-                  <span
-                    class="symbol"
+                  <textarea
+                    class="form-control"
+                    id="testField.2"
+                    name="testField.2"
+                    rows="1"
                   >
-                    <test-file-stub
-                      classname="root"
-                    />
-                  </span>
-                </button>
+                    this is a really long string to see what happens when the array value is long
+                  </textarea>
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Text"
+                  data-testid="toggle-testField.2"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

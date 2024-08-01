@@ -25,7 +25,7 @@ import { isEmpty } from "lodash";
 import styles from "./ModOptionsDefinitionEditor.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
-import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
@@ -34,12 +34,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectDirtyOptionsDefinitionsForModId,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
@@ -84,7 +84,7 @@ const formRuntimeContext: RuntimeContext = {
 
 const Preview: React.VFC<{
   optionsDefinition: RJSFSchema;
-  activeField: string | undefined;
+  activeField: string | null;
   setActiveField: (field: string) => void;
 }> = ({ optionsDefinition, activeField, setActiveField }) => (
   <Tab.Container activeKey="preview">
@@ -109,7 +109,7 @@ const Preview: React.VFC<{
 );
 
 const ModOptionsDefinitionEditor: React.VFC = () => {
-  const [activeField, setActiveField] = useState<string>();
+  const [activeField, setActiveField] = useState<string | null>(null);
   const modId = useSelector(selectActiveModId);
   const { data: mod, isFetching, error } = useOptionalModDefinition(modId);
 

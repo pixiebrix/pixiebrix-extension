@@ -52,9 +52,27 @@ module.exports = {
         capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
       },
     ],
+    "no-param-reassign": [
+      "warn",
+      {
+        props: true,
+        ignorePropertyModificationsFor: ["draft", "state"],
+      },
+    ],
     "eslint-comments/require-description": [
       "error",
       { ignore: ["eslint-enable"] },
+    ],
+    "jest/valid-title": [
+      "error",
+      {
+        mustNotMatch: {
+          test: [
+            /^it/.source,
+            'Test title should not begin with `it`. Use `it("should ...")` or omit `it` from the title instead.',
+          ],
+        },
+      },
     ],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
@@ -149,12 +167,14 @@ module.exports = {
         "unicorn/prefer-dom-node-dataset": "off",
         "unicorn/prefer-module": "off", // `import.meta.dirname` throws "cannot use 'import meta' outside a module"
         "no-await-in-loop": "off",
+        "security/detect-object-injection": "off",
         "playwright/no-skipped-test": [
           "error",
           {
             allowConditional: true,
           },
         ],
+        "playwright/no-page-pause": "error",
         "playwright/no-wait-for-timeout": "error",
         "playwright/no-useless-not": "error",
         "playwright/expect-expect": [
@@ -272,6 +292,23 @@ module.exports = {
                 group: ["../*"],
                 message:
                   'Use root-based imports (`import "@/something"`) instead of relative imports.',
+              },
+            ],
+          }),
+        ],
+      },
+    },
+    {
+      files: ["./src/**/*.tsx", "./src/**/use*.ts"],
+      rules: {
+        "no-restricted-imports": [
+          "error",
+          extendNoRestrictedImports({
+            patterns: [
+              {
+                group: ["@/auth/featureFlagStorage"],
+                message:
+                  "Use useFlags instead of featureFlagStorage in React code.",
               },
             ],
           }),

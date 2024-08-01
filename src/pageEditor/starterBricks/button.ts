@@ -57,11 +57,10 @@ function fromNativeElement(
   button: ButtonSelectionResult,
 ): ButtonFormState {
   return {
-    type: StarterBrickTypes.BUTTON,
     label: `My ${getDomain(url)} button`,
     ...makeInitialBaseState(button.uuid),
     containerInfo: button.containerInfo,
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
         ...button.menu,
@@ -77,9 +76,9 @@ function fromNativeElement(
         },
       },
     },
-    extension: {
+    modComponent: {
       caption: button.item.caption,
-      blockPipeline: [],
+      brickPipeline: [],
       dynamicCaption: false,
       onSuccess: true,
       synchronous: false,
@@ -90,7 +89,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: ButtonFormState,
 ): StarterBrickDefinitionLike<ButtonDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -121,13 +120,13 @@ function selectModComponent(
   state: ButtonFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ButtonStarterBrickConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: ButtonStarterBrickConfig = {
     caption: modComponent.caption,
     icon: modComponent.icon,
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
     dynamicCaption: modComponent.dynamicCaption,
     onSuccess: modComponent.onSuccess,
     synchronous: modComponent.synchronous,
@@ -157,10 +156,10 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
+    modComponent,
     // `containerInfo` only populated on initial creation session
     containerInfo: null,
-    extensionPoint: {
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         ...starterBrick.definition,
@@ -188,7 +187,7 @@ const config: ModComponentFormStateAdapter<
   ButtonFormState
 > = {
   displayOrder: 0,
-  elementType: StarterBrickTypes.BUTTON,
+  starterBrickType: StarterBrickTypes.BUTTON,
   label: "Button",
   icon: faMousePointer,
   baseClass: ButtonStarterBrickABC,

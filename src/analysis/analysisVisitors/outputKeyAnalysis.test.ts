@@ -26,7 +26,7 @@ describe("outputKeyAnalysis", () => {
   it("no warning", async () => {
     const formState = triggerFormStateFactory({}, [
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         outputKey: validateOutputKey("foo"),
       },
@@ -42,7 +42,7 @@ describe("outputKeyAnalysis", () => {
     const formState = triggerFormStateFactory({}, [
       // Syntactically it's a valid output key
       {
-        id: ContextBrick.BLOCK_ID,
+        id: ContextBrick.BRICK_ID,
         config: {},
         outputKey: validateOutputKey(name),
       },

@@ -39,7 +39,7 @@ import { type AbortSignalAsOptions } from "./promiseUtils";
 
 const TIMEOUT_MS = 3000;
 
-type Payload = JsonValue | void;
+export type Payload = JsonValue | void;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
@@ -86,6 +86,7 @@ export default async function postMessage<TReturn extends Payload = Payload>({
       type,
       payload,
     };
+
     // The origin must be "*". See note in @file
     recipient.postMessage(packet, "*", [privateChannel.port2]);
   });

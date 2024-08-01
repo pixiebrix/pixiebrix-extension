@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`NonScriptablePage it renders 1`] = `
+exports[`NonScriptablePage renders 1`] = `
 <DocumentFragment>
   <div
     class="root container-fluid"
@@ -72,7 +72,7 @@ exports[`NonScriptablePage it renders 1`] = `
 </DocumentFragment>
 `;
 
-exports[`NonScriptablePage it renders http snapshot 1`] = `
+exports[`NonScriptablePage renders http snapshot 1`] = `
 <DocumentFragment>
   <div
     class="root container-fluid"

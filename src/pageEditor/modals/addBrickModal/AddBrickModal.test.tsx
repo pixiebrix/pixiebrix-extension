@@ -18,9 +18,9 @@
 import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
 import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import bricksRegistry from "@/bricks/registry";
@@ -47,7 +47,7 @@ beforeAll(() => {
 });
 
 describe("AddBrickModal", () => {
-  test("it renders", async () => {
+  it("renders", async () => {
     const formState = formStateFactory();
     const { asFragment } = render(<AddBrickModal />, {
       setupRedux(dispatch) {
@@ -71,7 +71,7 @@ describe("AddBrickModal", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders with tag selected and search query", async () => {
+  it("renders with tag selected and search query", async () => {
     const formState = formStateFactory();
 
     const { asFragment } = render(<AddBrickModal />, {
@@ -80,7 +80,7 @@ describe("AddBrickModal", () => {
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
           actions.showAddBlockModal({
-            path: PIPELINE_BLOCKS_FIELD_NAME,
+            path: PIPELINE_BRICKS_FIELD_NAME,
             flavor: PipelineFlavor.AllBricks,
             index: 0,
           }),

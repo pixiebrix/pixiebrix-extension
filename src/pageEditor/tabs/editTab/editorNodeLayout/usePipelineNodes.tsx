@@ -22,7 +22,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import {
   type BrickConfig,
   type BrickPipeline,
@@ -34,11 +34,11 @@ import {
 } from "@/telemetry/traceHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
-  getBlockAnnotations,
   getDocumentBuilderPipelinePaths,
-  getFoundationNodeAnnotations,
+  filterStarterBrickAnalysisAnnotations,
   getVariableKeyForSubPipeline,
   getPipelinePropNames,
+  filterAnnotationsByBrickPath,
 } from "@/pageEditor/utils";
 import { get, isEmpty } from "lodash";
 import {
@@ -50,8 +50,8 @@ import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   actions,
   actions as editorActions,
-} from "@/pageEditor/slices/editorSlice";
-import BrickIcon from "@/components/BrickIcon";
+} from "@/pageEditor/store/editor/editorSlice";
+import PackageIcon from "@/components/PackageIcon";
 import {
   decideBlockStatus,
   decideFoundationStatus,
@@ -59,29 +59,29 @@ import {
 import { type Except } from "type-fest";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveModComponentTraces } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
   selectActiveBuilderPreviewElement,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
-import { FOUNDATION_NODE_ID } from "@/pageEditor/uiState/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
-import { getBrickOutlineSummary } from "@/pageEditor/brickSummary";
+import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
 import { BrickTypes } from "@/runtime/runtimeTypes";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -223,10 +223,12 @@ const usePipelineNodes = (): {
   const pasteBlock = usePasteBrick();
   const showPaste = pasteBlock && isApiAtLeastV2;
 
-  const starterBrickType = activeModComponentFormState.type;
-  const { label: starterBrickLabel, icon: starterBrickIcon } =
-    ADAPTERS.get(starterBrickType);
-  const rootPipeline = activeModComponentFormState.extension.blockPipeline;
+  const {
+    starterBrickType,
+    label: starterBrickLabel,
+    icon: starterBrickIcon,
+  } = adapterForComponent(activeModComponentFormState);
+  const rootPipeline = activeModComponentFormState.modComponent.brickPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
@@ -413,11 +415,11 @@ const usePipelineNodes = (): {
       // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
       const blockPath = maybePipelineMap?.[nodeId]?.path;
       const blockAnnotations = blockPath
-        ? getBlockAnnotations(blockPath, annotations)
+        ? filterAnnotationsByBrickPath(annotations, blockPath)
         : [];
 
       contentProps = {
-        icon: <BrickIcon brick={block} size="2x" inheritColor />,
+        icon: <PackageIcon packageOrMetadata={block} size="2x" inheritColor />,
         runStatus: decideBlockStatus({
           traceRecord,
           blockAnnotations,
@@ -425,7 +427,7 @@ const usePipelineNodes = (): {
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block?.name
           : blockConfig.label,
-        brickSummary: getBrickOutlineSummary(blockConfig),
+        brickSummary: getBrickPipelineNodeSummary(blockConfig),
         outputKey: expanded ? undefined : blockConfig.outputKey,
       };
     }
@@ -602,7 +604,7 @@ const usePipelineNodes = (): {
   function mapPipelineToNodes({
     pipeline,
     flavor,
-    pipelinePath = PIPELINE_BLOCKS_FIELD_NAME,
+    pipelinePath = PIPELINE_BRICKS_FIELD_NAME,
     nestingLevel = 0,
     isParentActive = false,
     isAncestorActive = false,
@@ -622,7 +624,7 @@ const usePipelineNodes = (): {
      */
     latestParentCall?: Branch[];
   }): MapOutput {
-    const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
+    const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
     const lastBlockId = pipeline.at(lastIndex)?.id;
     const lastBlock = lastBlockId ? allBricks.get(lastBlockId) : undefined;
@@ -693,7 +695,7 @@ const usePipelineNodes = (): {
         onClick() {
           dispatch(
             actions.showAddBlockModal({
-              path: PIPELINE_BLOCKS_FIELD_NAME,
+              path: PIPELINE_BRICKS_FIELD_NAME,
               flavor: pipelineFlavor,
               index: 0,
             }),
@@ -708,7 +710,7 @@ const usePipelineNodes = (): {
         icon: faPaste,
         tooltipText: "Paste copied brick",
         async onClick() {
-          await pasteBlock(PIPELINE_BLOCKS_FIELD_NAME, 0);
+          await pasteBlock(PIPELINE_BRICKS_FIELD_NAME, 0);
         },
       });
     }
@@ -717,7 +719,7 @@ const usePipelineNodes = (): {
       icon: starterBrickIcon,
       runStatus: decideFoundationStatus({
         hasTraces: modComponentHasTraces,
-        blockAnnotations: getFoundationNodeAnnotations(annotations),
+        blockAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
       }),
       brickLabel: starterBrickLabel,
       outputKey: "input" as OutputKey,

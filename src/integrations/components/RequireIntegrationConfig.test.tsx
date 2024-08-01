@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { useAuthOptions } from "@/hooks/auth";
 import {
   integrationDependencyFactory,
@@ -39,7 +39,9 @@ import { makeVariableExpression } from "@/utils/variableUtils";
 jest.mock("@/hooks/auth");
 jest.mock("@/integrations/util/checkIntegrationAuth.ts");
 
-const serviceLocateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 const useAuthOptionMock = jest.mocked(useAuthOptions);
 const checkIntegrationAuthMock = jest.mocked(checkIntegrationAuth);
 
@@ -71,21 +73,23 @@ const authOptions = [localConfig1, localConfig2].map(
 );
 useAuthOptionMock.mockReturnValue(valueToAsyncState(authOptions));
 
-serviceLocateMock.mockImplementation(async (integrationId, configId) => {
-  if (configId === localConfig1.id) {
-    return localConfig1;
-  }
+findSanitizedIntegrationConfigMock.mockImplementation(
+  async (integrationId, configId) => {
+    if (configId === localConfig1.id) {
+      return localConfig1;
+    }
 
-  if (configId === localConfig2.id) {
-    return localConfig2;
-  }
+    if (configId === localConfig2.id) {
+      return localConfig2;
+    }
 
-  if (configId === remoteConfig.id) {
-    return remoteConfig;
-  }
+    if (configId === remoteConfig.id) {
+      return remoteConfig;
+    }
 
-  throw new Error("Invalid config id");
-});
+    throw new Error("Invalid config id");
+  },
+);
 
 const integrationDependency1 = integrationDependencyFactory({
   integrationId,
@@ -109,18 +113,17 @@ describe("RequireIntegrationConfig", () => {
 
   it("shows auth options and renders children when option is selected", async () => {
     checkIntegrationAuthMock.mockResolvedValue(true);
-    const formState = formStateFactory(
-      undefined,
-      pipelineFactory({
+    const formState = formStateFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: null,
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />
@@ -167,18 +170,17 @@ describe("RequireIntegrationConfig", () => {
 
   it("does not show children and shows error alert when integration auth is not valid", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
-    const formState = formStateFactory(
-      undefined,
-      pipelineFactory({
+    const formState = formStateFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: null,
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />
@@ -240,20 +242,20 @@ describe("RequireIntegrationConfig", () => {
 
   it("shows retry button in error alert that calls validate again when clicked", async () => {
     checkIntegrationAuthMock.mockResolvedValue(false);
-    const formState = formStateFactory(
-      {
+    const formState = formStateFactory({
+      formStateConfig: {
         integrationDependencies: [integrationDependency1],
       },
-      pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: makeVariableExpression(integrationDependency1.outputKey),
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />
@@ -293,20 +295,20 @@ describe("RequireIntegrationConfig", () => {
       configId: remoteConfig.id,
     });
 
-    const formState = formStateFactory(
-      {
+    const formState = formStateFactory({
+      formStateConfig: {
         integrationDependencies: [remoteDependency],
       },
-      pipelineFactory({
+      brickPipeline: pipelineFactory({
         config: {
           integration: makeVariableExpression(remoteDependency.outputKey),
         },
       }),
-    );
+    });
     render(
       <RequireIntegrationConfig
         integrationFieldSchema={integrationFieldSchema}
-        integrationFieldName="extension.blockPipeline[0].config.integration"
+        integrationFieldName="modComponent.brickPipeline[0].config.integration"
       >
         {({ sanitizedConfig }) => (
           <ChildComponent sanitizedConfig={sanitizedConfig} />

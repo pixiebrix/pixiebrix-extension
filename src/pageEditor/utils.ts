@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isModComponentBase } from "@/pageEditor/sidebar/common";
+import { isModComponentBase } from "@/pageEditor/modListingPanel/common";
 import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -29,7 +29,7 @@ import {
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
-import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -44,6 +44,17 @@ import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
+export function mapModDefinitionUpsertResponseToModMetadata(
+  unsavedModDefinition: UnsavedModDefinition,
+  response: PackageUpsertResponse,
+): ModComponentBase["_recipe"] {
+  return {
+    ...unsavedModDefinition.metadata,
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
+  };
+}
+
 export function getModComponentId(
   modComponentOrFormState: ModComponentBase | ModComponentFormState,
 ): UUID {
@@ -57,7 +68,7 @@ export function getModId(
 ): RegistryId | undefined {
   return isModComponentBase(modComponentOrFormState)
     ? modComponentOrFormState._recipe?.id
-    : modComponentOrFormState.recipe?.id;
+    : modComponentOrFormState.modMetadata?.id;
 }
 
 /**
@@ -65,7 +76,7 @@ export function getModId(
  *
  * Returns prop names in the order they should be displayed in the layout.
  *
- * @param brick the brick, or null if resolved block not available yet
+ * @param brick the brick, or null if resolved brick not available yet
  * @param brickConfig the brick configuration
  *
  * @see PipelineToggleField
@@ -208,36 +219,38 @@ function getDocumentBuilderElementsPipelinePropNames(
   return propNames;
 }
 
-export function getDocumentBuilderPipelinePaths(block: BrickConfig): string[] {
+export function getDocumentBuilderPipelinePaths(
+  brickConfig: BrickConfig,
+): string[] {
   return getDocumentBuilderElementsPipelinePropNames(
     "config.body",
-    (block.config.body ?? []) as DocumentBuilderElement[],
+    (brickConfig.config.body ?? []) as DocumentBuilderElement[],
   );
 }
 
-export function getFoundationNodeAnnotations(
+export function filterStarterBrickAnalysisAnnotations(
   annotations: AnalysisAnnotation[],
 ): AnalysisAnnotation[] {
   return annotations.filter(
     (annotation) =>
-      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME),
+      !annotation.position.path.startsWith(PIPELINE_BRICKS_FIELD_NAME),
   );
 }
 
-export function getBlockAnnotations(
-  blockPath: string,
+export function filterAnnotationsByBrickPath(
   annotations: AnalysisAnnotation[],
+  brickPath: string,
 ): AnalysisAnnotation[] {
-  const pathLength = blockPath.length;
+  const pathLength = brickPath.length;
 
   const relatedAnnotations = annotations.filter((annotation) =>
-    annotation.position.path.startsWith(blockPath),
+    annotation.position.path.startsWith(brickPath),
   );
 
   return relatedAnnotations.filter((annotation) => {
     const restPath = annotation.position.path.slice(pathLength);
     // XXX: this may be not a reliable way to determine if the annotation
-    // is owned by the block or its sub pipeline.
+    // is owned by the brick or its sub pipeline.
     // It assumes that it's only the pipeline field that can have a ".__value__" followed by "." in the path,
     // and a pipeline field always has this pattern in its path.
     return !restPath.includes(".__value__.");
@@ -250,16 +263,5 @@ export function selectPageEditorDimensions() {
     pageEditorHeight: window.innerHeight,
     pageEditorOrientation:
       window.innerWidth > window.innerHeight ? "landscape" : "portrait",
-  };
-}
-
-export function selectModMetadata(
-  unsavedModDefinition: UnsavedModDefinition,
-  response: PackageUpsertResponse,
-): ModComponentBase["_recipe"] {
-  return {
-    ...unsavedModDefinition.metadata,
-    sharing: pick(response, ["public", "organizations"]),
-    ...pick(response, ["updated_at"]),
   };
 }

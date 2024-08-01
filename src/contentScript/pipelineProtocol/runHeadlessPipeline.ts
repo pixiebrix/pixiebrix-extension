@@ -33,10 +33,6 @@ export async function runHeadlessPipeline({
 }: RunPipelineParams): Promise<unknown> {
   expectContext("contentScript");
 
-  if (meta.extensionId == null) {
-    throw new Error("runHeadlessPipeline requires meta.extensionId");
-  }
-
   return reducePipeline(
     pipeline,
     {

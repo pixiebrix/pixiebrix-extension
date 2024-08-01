@@ -20,7 +20,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
   getDocument,
@@ -98,8 +98,8 @@ beforeEach(() => {
   reduceModComponentPipelineMock.mockClear();
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
-  blockRegistry.clear();
-  blockRegistry.register([rootReader]);
+  brickRegistry.clear();
+  brickRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = null;
 });

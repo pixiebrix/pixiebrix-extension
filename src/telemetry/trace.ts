@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JsonObject } from "type-fest";
+import { type JsonObject, type SetRequired } from "type-fest";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { sortBy } from "lodash";
 import { type BrickConfig } from "@/bricks/types";
@@ -33,20 +33,20 @@ import { type Nullishable } from "@/utils/nullishUtils";
 
 const DATABASE_NAME = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
-const DB_VERSION_NUMBER = 3;
+const DB_VERSION_NUMBER = 4;
 
 export type TraceRecordMeta = {
   /**
-   * Extension id, to correlate across extension runs.
+   * Mod component id, to correlate across runs.
    *
-   * `null` for ad-hoc block execution.
+   * `null` for ad-hoc brick execution.
    * Marked Nullishable as part of the StrictNullChecks migration.
    * TODO: Revisit and determine if this should be required.
    */
-  extensionId: Nullishable<UUID>;
+  modComponentId: Nullishable<UUID>;
 
   /**
-   * Extension run id. Unique run id to correlate trace elements from the same extension run.
+   * Mod component run id. Unique run id to correlate trace entries from the same mod component run.
    */
   runId: Nullishable<UUID>;
 
@@ -62,28 +62,28 @@ export type TraceRecordMeta = {
   branches: Branch[];
 
   /**
-   * Unique id to identify the block in the Page Editor across runs.
+   * Unique id to identify the brick in the Page Editor across runs.
    */
-  blockInstanceId: Nullishable<UUID>;
+  brickInstanceId: Nullishable<UUID>;
 
   /**
-   * The registry id of the block.
+   * The registry id of the brick.
    */
-  blockId: RegistryId;
+  brickId: RegistryId;
 };
 
 type Output = {
   outputKey: Nullishable<OutputKey>;
 
   /**
-   * Output of the block
+   * Output of the brick
    */
   output: JsonObject | null;
 };
 
 type ErrorOutput = {
   /**
-   * Serialized error from running the block
+   * Serialized error from running the brick
    */
   error: ErrorObject | null;
 };
@@ -94,6 +94,9 @@ export type TraceEntryData = TraceRecordMeta & {
    */
   timestamp: string;
 
+  /**
+   * Snapshot of the context passed to the brick argument renderer
+   */
   templateContext: JsonObject;
 
   /**
@@ -106,7 +109,10 @@ export type TraceEntryData = TraceRecordMeta & {
    */
   renderError: ErrorObject | null;
 
-  blockConfig: BrickConfig;
+  /**
+   * The brick configuration
+   */
+  brickConfig: BrickConfig;
 };
 
 export type TraceExitData = TraceRecordMeta &
@@ -143,15 +149,19 @@ export type TraceRecord = TraceEntryData & Partial<TraceExitData> & DerivedData;
 export type TraceError = TraceEntryData & ErrorOutput & DerivedData;
 
 export function isTraceError(
-  traceRecord: TraceRecord,
-): traceRecord is TraceError {
+  traceRecord: Nullishable<TraceRecord>,
+): traceRecord is SetRequired<TraceError, "error"> {
+  if (traceRecord == null) {
+    return false;
+  }
+
   return "error" in traceRecord && traceRecord.error != null;
 }
 
 const INDEX_KEYS = [
   "runId",
-  "blockInstanceId",
-  "extensionId",
+  "brickInstanceId",
+  "modComponentId",
 ] as const satisfies Array<keyof TraceRecordMeta>;
 
 interface TraceDB extends DBSchema {
@@ -160,8 +170,8 @@ interface TraceDB extends DBSchema {
     key: string;
     indexes: {
       runId: UUID;
-      blockInstanceId: UUID;
-      extensionId: UUID;
+      brickInstanceId: UUID;
+      modComponentId: UUID;
     };
   };
 }
@@ -187,7 +197,7 @@ async function openTraceDB() {
 
       // Create a store of objects
       const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
-        keyPath: ["runId", "blockInstanceId", "callId"],
+        keyPath: ["runId", "brickInstanceId", "callId"],
       });
 
       // Create individual indexes
@@ -222,8 +232,8 @@ export async function addTraceEntry(record: TraceEntryData): Promise<void> {
     return;
   }
 
-  if (!record.blockInstanceId) {
-    console.debug("Ignoring trace entry data without blockInstanceId");
+  if (!record.brickInstanceId) {
+    console.debug("Ignoring trace entry data without brickInstanceId");
     return;
   }
 
@@ -242,8 +252,8 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
     return;
   }
 
-  if (!record.blockInstanceId) {
-    console.debug("Ignoring trace exit data without blockInstanceId");
+  if (!record.brickInstanceId) {
+    console.debug("Ignoring trace exit data without brickInstanceId");
     return;
   }
 
@@ -255,7 +265,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
     const data = await tx.store.get(
-      IDBKeyRange.only([record.runId, record.blockInstanceId, callId]),
+      IDBKeyRange.only([record.runId, record.brickInstanceId, callId]),
     );
 
     if (data) {
@@ -267,7 +277,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
     } else {
       console.warn("Trace entry record not found", {
         runId: record.runId,
-        blockInstanceId: record.blockInstanceId,
+        brickInstanceId: record.brickInstanceId,
         callId,
       });
     }
@@ -311,7 +321,7 @@ export async function recreateDB(): Promise<void> {
 }
 
 export async function clearModComponentTraces(
-  extensionId: UUID,
+  modComponentId: UUID,
 ): Promise<void> {
   let cnt = 0;
 
@@ -319,8 +329,8 @@ export async function clearModComponentTraces(
 
   try {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-    const index = tx.store.index("extensionId");
-    for await (const cursor of index.iterate(extensionId)) {
+    const index = tx.store.index("modComponentId");
+    for await (const cursor of index.iterate(modComponentId)) {
       cnt++;
       await cursor.delete();
     }
@@ -328,7 +338,7 @@ export async function clearModComponentTraces(
     console.debug(
       "Cleared %d trace entries for mod component %s",
       cnt,
-      extensionId,
+      modComponentId,
     );
   } finally {
     db.close();
@@ -348,7 +358,7 @@ export async function getLatestRunByModComponentId(
     const matches = await db
       .transaction(ENTRY_OBJECT_STORE, "readonly")
       .objectStore(ENTRY_OBJECT_STORE)
-      .index("extensionId")
+      .index("modComponentId")
       .getAll(modComponentId);
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp

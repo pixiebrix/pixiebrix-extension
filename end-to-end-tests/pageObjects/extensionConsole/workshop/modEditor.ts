@@ -15,25 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Locator, type Page, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { uuidv4 } from "@/types/helpers";
+import { BasePageObject } from "../../basePageObject";
 
-export class WorkshopModEditor {
-  readonly textArea: Locator;
-  readonly content: Locator;
-  readonly baseLocator: Locator;
-
-  constructor(private readonly page: Page) {
-    this.baseLocator = this.page.getByLabel("Editor");
-    this.content = this.baseLocator.locator(".ace_content");
-    this.textArea = this.baseLocator.getByRole("textbox");
-  }
+export class WorkshopModEditor extends BasePageObject {
+  content = this.locator(".ace_content");
+  textArea = this.getByRole("textbox");
 
   async waitForLoad() {
     await expect(this.textArea).toBeVisible();
-    await expect(this.baseLocator.getByText("Loading editor...")).toBeHidden();
+    await expect(this.getByText("Loading editor...")).toBeHidden();
   }
 
   async getValue() {
@@ -50,14 +44,14 @@ export class WorkshopModEditor {
   async findText(text: string) {
     await this.content.click(); // Focus on the visible editor
     await this.page.keyboard.press("ControlOrMeta+f");
-    await this.page.getByPlaceholder("Search for").fill(text);
+    await this.getByPlaceholder("Search for").fill(text);
   }
 
   async findAndReplaceText(findText: string, replaceText: string) {
     await this.findText(findText);
-    await this.page.getByText("+", { exact: true }).click();
-    await this.page.getByPlaceholder("Replace with").fill(replaceText);
-    await this.page.getByText("Replace").click();
+    await this.getByText("+", { exact: true }).click();
+    await this.getByPlaceholder("Replace with").fill(replaceText);
+    await this.getByText("Replace").click();
   }
 
   // Loads the corresponding yaml from the fixtures/modDefinitions directory
@@ -71,9 +65,15 @@ export class WorkshopModEditor {
     );
     const uuid = uuidv4();
     const modId = `@extension-e2e-test-unaffiliated/${modDefinitionName}-${uuid}`;
+    if (!modDefinition.includes("{{ modId }}")) {
+      throw new Error(
+        `The mod definition ${modDefinitionName} does not contain the placeholder {{ modId }}`,
+      );
+    }
+
     const replacedDefinition = modDefinition.replace("{{ modId }}", modId);
 
     await this.textArea.fill(replacedDefinition);
-    return modId;
+    return { id: modId, definition: replacedDefinition };
   }
 }

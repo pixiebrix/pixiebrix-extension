@@ -20,7 +20,7 @@ import DocumentContext from "./DocumentContext";
 import { type Args } from "@/runtime/mapArgs";
 import Loader from "@/components/Loader";
 import {
-  type BuildDocumentBuilderBranch,
+  type BuildDocumentBuilderSubtree,
   type DocumentBuilderElement,
   type DynamicPath,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
@@ -41,7 +41,7 @@ type DocumentListProps = {
   array: UnknownObject[];
   elementKey?: string;
   config: Args;
-  buildDocumentBuilderBranch: BuildDocumentBuilderBranch;
+  buildDocumentBuilderSubtree: BuildDocumentBuilderSubtree;
   tracePath: DynamicPath;
 };
 
@@ -51,7 +51,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
   array = DEFAULT_ARRAY,
   elementKey,
   config,
-  buildDocumentBuilderBranch,
+  buildDocumentBuilderSubtree,
   tracePath,
 }) => {
   const { staticId, branches } = tracePath;
@@ -93,7 +93,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
               config: config.__value__,
               context: elementContext.options.ctxt,
               options: apiVersionOptions("v3"),
-              modId: documentContext.options.logger.context.blueprintId,
+              modComponentRef: documentContext.options.meta.modComponentRef,
             },
           )) as DocumentBuilderElement;
         } else {
@@ -138,7 +138,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     <>
       {rootDefinitions?.map(({ documentElement, elementContext }, index) => {
         const { Component, props } =
-          buildDocumentBuilderBranch(
+          buildDocumentBuilderSubtree(
             documentElement as DocumentBuilderElement,
             {
               staticId: joinPathParts(staticId, "list", "children"),

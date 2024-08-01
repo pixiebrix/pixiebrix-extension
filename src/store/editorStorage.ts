@@ -17,12 +17,12 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { produce } from "immer";
 import {
   removeModComponentFormState,
   removeModData,
-} from "@/pageEditor/slices/editorSliceHelpers";
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import {
   readReduxStorage,
   setReduxStorage,
@@ -114,7 +114,7 @@ export async function removeDraftModComponentsForMod(
     removeModData(draft, modId);
 
     for (const modComponentFormState of state.modComponentFormStates) {
-      if (modComponentFormState.recipe?.id === modId) {
+      if (modComponentFormState.modMetadata?.id === modId) {
         removedDraftModComponents.push(modComponentFormState.uuid);
         removeModComponentFormState(draft, modComponentFormState.uuid);
       }

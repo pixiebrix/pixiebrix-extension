@@ -16,8 +16,8 @@
  */
 
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useField } from "formik";
 import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getElementCollectionName";

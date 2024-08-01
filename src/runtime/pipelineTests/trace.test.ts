@@ -15,13 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
   echoBrick,
   simpleInput,
-  testOptions,
   throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
@@ -35,15 +34,19 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick, throwBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick, throwBrick]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
 });
@@ -61,7 +64,7 @@ describe("Trace normal exit", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() },
+      { ...reduceOptionsFactory("v3"), runId: uuidv4() },
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -96,7 +99,7 @@ describe("Trace normal exit", () => {
       },
       simpleInput({ inputArg: "hello" }),
       // `runId` defaults to null
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -119,7 +122,7 @@ describe("Trace render error", () => {
           instanceId,
         },
         simpleInput({ inputArg: "hello" }),
-        { ...testOptions("v3"), runId: uuidv4() },
+        { ...reduceOptionsFactory("v3"), runId: uuidv4() },
       ),
     ).rejects.toThrow(/doesNotExist/);
 
@@ -155,7 +158,7 @@ describe("Trace render error", () => {
         instanceId,
       },
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() },
+      { ...reduceOptionsFactory("v3"), runId: uuidv4() },
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(1);
@@ -200,7 +203,7 @@ describe("Trace conditional execution", () => {
         },
       ],
       simpleInput({ inputArg: "hello" }),
-      { ...testOptions("v3"), runId: uuidv4() },
+      { ...reduceOptionsFactory("v3"), runId: uuidv4() },
     );
 
     expect(traces.addEntry).toHaveBeenCalledTimes(2);
@@ -225,44 +228,41 @@ describe("Trace normal execution", () => {
     const timestamp = new Date("10/31/2021");
     MockDate.set(timestamp);
 
-    const instanceId = uuidv4();
-    const runId = uuidv4();
-    const extensionId = uuidv4();
+    const instanceId = autoUUIDSequence();
+    const runId = autoUUIDSequence();
+    const modComponentRef = standaloneModComponentRefFactory();
 
-    const blockConfig = {
+    const brickConfig = {
       id: echoBrick.id,
       config: { message: "{{@input.inputArg}}" },
       instanceId,
     };
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    await reducePipeline(
+      brickConfig,
+      simpleInput({ inputArg: "hello" }),
+      reduceOptionsFactory("v2", { runId, modComponentRef }),
+    );
 
-    await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
-      ...testOptions("v2"),
-      runId,
-      logger,
-      extensionId,
-    });
-
-    const meta: TraceRecordMeta = {
-      extensionId,
+    const expectedMeta: TraceRecordMeta = {
+      modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
-      blockInstanceId: instanceId,
-      blockId: echoBrick.id,
+      brickInstanceId: instanceId,
+      brickId: echoBrick.id,
     };
 
     const expectedEntry: TraceEntryData = {
-      ...meta,
+      ...expectedMeta,
       timestamp: timestamp.toISOString(),
-      blockConfig,
+      brickConfig,
       templateContext: { "@input": { inputArg: "hello" }, "@options": {} },
       renderedArgs: { message: "hello" } as unknown as RenderedArgs,
       renderError: null,
     };
 
     const expectedExit: TraceExitData = {
-      ...meta,
+      ...expectedMeta,
       outputKey: undefined,
       output: { message: "hello" },
       skippedRun: false,
@@ -281,12 +281,13 @@ describe("Trace normal execution", () => {
     const timestamp = new Date("10/31/2021");
     MockDate.set(timestamp);
 
-    const instanceId = uuidv4();
-    const runId = uuidv4();
-    const extensionId = uuidv4();
-    const outputKey = "echo" as OutputKey;
+    const instanceId = autoUUIDSequence();
+    const runId = autoUUIDSequence();
+    const outputKey = validateOutputKey("echo");
 
-    const blockConfig: BrickPipeline = [
+    const modComponentRef = standaloneModComponentRefFactory();
+
+    const brickPipeline: BrickPipeline = [
       {
         id: echoBrick.id,
         config: { message: "{{@input.inputArg}}" },
@@ -300,25 +301,22 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
+    await reducePipeline(
+      brickPipeline,
+      simpleInput({ inputArg: "hello" }),
+      reduceOptionsFactory("v2", { modComponentRef, runId }),
+    );
 
-    await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
-      ...testOptions("v2"),
-      extensionId,
-      runId,
-      logger,
-    });
-
-    const meta: TraceRecordMeta = {
-      extensionId,
+    const expectedMeta: TraceRecordMeta = {
+      modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
-      blockInstanceId: instanceId,
-      blockId: echoBrick.id,
+      brickInstanceId: instanceId,
+      brickId: echoBrick.id,
     };
 
     const expectedExit: TraceExitData = {
-      ...meta,
+      ...expectedMeta,
       outputKey,
       output: { message: "hello" },
       skippedRun: false,
@@ -336,10 +334,14 @@ describe("Trace normal execution", () => {
 
     const instanceId = uuidv4();
     const runId = uuidv4();
-    const extensionId = uuidv4();
-    const outputKey = "never" as OutputKey;
+    const modComponentRef = standaloneModComponentRefFactory();
+    const logger = new ConsoleLogger(
+      mapModComponentRefToMessageContext(modComponentRef),
+    );
 
-    const blockConfig: BrickPipeline = [
+    const outputKey = validateOutputKey("never");
+
+    const brickPipeline: BrickPipeline = [
       {
         id: throwBrick.id,
         config: { message: "{{@input.inputArg}}" },
@@ -353,29 +355,27 @@ describe("Trace normal execution", () => {
       },
     ];
 
-    const logger = new ConsoleLogger().childLogger({ extensionId });
-
     await expect(async () => {
-      await reducePipeline(blockConfig, simpleInput({ inputArg: "hello" }), {
-        ...testOptions("v2"),
+      await reducePipeline(brickPipeline, simpleInput({ inputArg: "hello" }), {
+        ...reduceOptionsFactory("v2"),
         runId,
         logger,
       });
     }).rejects.toThrow();
 
     const meta: TraceRecordMeta = {
-      extensionId,
+      modComponentId: modComponentRef.modComponentId,
       runId,
       branches: [],
-      blockInstanceId: instanceId,
-      blockId: throwBrick.id,
+      brickInstanceId: instanceId,
+      brickId: throwBrick.id,
     };
 
     expect(traces.addExit).toHaveBeenCalledTimes(1);
     expect(traces.addExit).toHaveBeenCalledWith(
       expect.objectContaining({
         runId: meta.runId,
-        blockInstanceId: meta.blockInstanceId,
+        brickInstanceId: meta.brickInstanceId,
         error: expect.objectContaining({
           name: "BusinessError",
           message: "hello",
@@ -395,7 +395,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -410,7 +410,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -436,7 +436,7 @@ describe("Tracing disabled", () => {
         },
       },
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({});

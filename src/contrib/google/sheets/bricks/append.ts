@@ -32,7 +32,8 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { type SetRequired } from "type-fest";
 
 type CellValue = string | number | null;
 
@@ -48,13 +49,13 @@ export type RowValues =
 type KnownShape = "entries" | "multi" | "single";
 export type Shape = KnownShape | "infer";
 
-export const APPEND_SCHEMA: Schema = propertiesToSchema(
+export const APPEND_SCHEMA = propertiesToSchema(
   {
     googleAccount: {
       title: "Google Account",
       oneOf: [
         {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${GOOGLE_OAUTH2_PKCE_INTEGRATION_ID}`,
         },
       ],
     },
@@ -133,7 +134,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
   },
   // For backwards compatibility, googleAccount is not required
   ["spreadsheetId", "tabName", "rowValues"],
-);
+) as SetRequired<Schema, "properties">;
 
 function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
   const row = [];

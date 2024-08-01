@@ -19,7 +19,7 @@
     "128": "icons/logo128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:",
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: wss:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:",
     "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
   },
   "content_scripts": [
@@ -52,6 +52,7 @@
     "storage",
     "identity",
     "tabs",
+    "tabCapture",
     "webNavigation",
     "contextMenus",
     "alarms",

@@ -21,7 +21,7 @@ import {
   TEST_flushAll,
 } from "@/background/telemetry";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { type Event } from "@/telemetry/events";
+import { type TelemetryEvent } from "@/telemetry/telemetryTypes";
 
 const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {
@@ -53,13 +53,13 @@ beforeEach(async () => {
 
 describe("recordEvent", () => {
   test("runs", async () => {
-    await recordEvent({ event: "TestEvent" as Event, data: {} });
+    await recordEvent({ event: "TestEvent" as TelemetryEvent, data: {} });
     const events = await flushEvents();
     expect(events).toHaveLength(1);
   });
 
   test("includes expected default properties", async () => {
-    const testEvent = { event: "TestEvent" as Event, data: {} };
+    const testEvent = { event: "TestEvent" as TelemetryEvent, data: {} };
     await recordEvent(testEvent);
     const events = await flushEvents();
     expect(events[0]).toMatchObject({
@@ -76,7 +76,7 @@ describe("recordEvent", () => {
   test("successfully persists concurrent telemetry events to local storage", async () => {
     // Easiest way to test race condition without having to mock
     const recordTestEvents = Array.from({ length: 100 }, async () =>
-      recordEvent({ event: "TestEvent" as Event, data: {} }),
+      recordEvent({ event: "TestEvent" as TelemetryEvent, data: {} }),
     );
     await Promise.all(recordTestEvents);
 

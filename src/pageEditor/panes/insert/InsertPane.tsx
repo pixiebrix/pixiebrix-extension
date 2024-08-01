@@ -15,36 +15,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
-import { useDispatch } from "react-redux";
-import { actions } from "@/pageEditor/slices/editorSlice";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
-import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 
-const InsertPane: React.FC<{ inserting: StarterBrickType }> = ({
-  inserting,
-}) => {
-  // Auto-insert if the StarterBrickType supports it
-  useAutoInsert(inserting);
+type InsertPaneContextProps = {
+  insertingStarterBrickType: StarterBrickType | null;
+  setInsertingStarterBrickType: (
+    starterBrickType: StarterBrickType | null,
+  ) => void;
+};
 
-  const dispatch = useDispatch();
+const InsertPaneContext = createContext<InsertPaneContextProps>({
+  insertingStarterBrickType: null,
+  setInsertingStarterBrickType() {
+    throw new Error("setInsertingStarterBrickType not configured");
+  },
+});
+
+export const InsertPaneProvider: React.FunctionComponent = ({ children }) => {
+  const [insertingStarterBrickType, setInsertingStarterBrickType] =
+    useState<StarterBrickType | null>(null);
+
+  return (
+    <InsertPaneContext.Provider
+      value={{ insertingStarterBrickType, setInsertingStarterBrickType }}
+    >
+      {children}
+    </InsertPaneContext.Provider>
+  );
+};
+
+export function useInsertPane(): InsertPaneContextProps {
+  return useContext(InsertPaneContext);
+}
+
+const InsertPane: React.FC = () => {
+  const { insertingStarterBrickType, setInsertingStarterBrickType } =
+    useInsertPane();
 
   const cancelInsert = useCallback(async () => {
-    dispatch(actions.toggleInsert(null));
+    setInsertingStarterBrickType(null);
     await cancelSelect(inspectedTab);
-  }, [dispatch]);
+  }, [setInsertingStarterBrickType]);
 
   // Cancel insert with escape key
-  useEscapeHandler(cancelInsert, inserting != null);
+  useEscapeHandler(cancelInsert, insertingStarterBrickType != null);
 
-  switch (inserting) {
+  switch (insertingStarterBrickType) {
     case StarterBrickTypes.BUTTON: {
       return <InsertButtonPane cancel={cancelInsert} />;
     }

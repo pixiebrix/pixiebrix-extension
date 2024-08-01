@@ -19,7 +19,7 @@ import type React from "react";
 import { useCallback } from "react";
 import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,15 +27,15 @@ import {
   selectActiveModComponentFormState,
   selectAddBlockLocation,
   selectPipelineMap,
-} from "@/pageEditor/slices/editorSelectors";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
@@ -63,8 +63,7 @@ function useAddBrick(): AddBrick {
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
-
-  const addBlockLocation = useSelector(selectAddBlockLocation);
+  const addBrickLocation = useSelector(selectAddBlockLocation);
 
   const makeNewBrick = useCallback(
     async (brick: Brick): Promise<BrickConfig> => {
@@ -75,14 +74,14 @@ function useAddBrick(): AddBrick {
           ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
         ]),
       );
-      const newBlock = createNewConfiguredBrick(brick.id, {
+      const newBrick = createNewConfiguredBrick(brick.id, {
         brickInputSchema: brick.inputSchema,
       });
       if (outputKey) {
-        newBlock.outputKey = outputKey;
+        newBrick.outputKey = outputKey;
       }
 
-      return newBlock;
+      return newBrick;
     },
     [pipelineMap],
   );
@@ -93,25 +92,26 @@ function useAddBrick(): AddBrick {
    * with adding the particular brick.
    */
   const testAddBrick = useCallback(
-    async (block: Brick): Promise<TestAddBrickResult> => {
-      if (!addBlockLocation) {
+    async (brick: Brick): Promise<TestAddBrickResult> => {
+      if (!addBrickLocation || !activeModComponent) {
         return {};
       }
 
-      // Add the block to a copy of the mod component
-      const newBlock = await makeNewBrick(block);
+      // Add the brick to a copy of the mod component
+      const newBrick = await makeNewBrick(brick);
+
       const newModComponent = produce(activeModComponent, (draft) => {
-        const pipeline = get(draft, addBlockLocation.path) as
+        const pipeline = get(draft, addBrickLocation.path) as
           | BrickConfig[]
           | undefined;
         assertNotNullish(
           pipeline,
-          `The path provided to add a block could not be found: ${addBlockLocation.path}`,
+          `The path provided to add a brick could not be found: ${addBrickLocation.path}`,
         );
-        pipeline.splice(addBlockLocation.index, 0, newBlock);
+        pipeline.splice(addBrickLocation.index, 0, newBrick);
       });
 
-      // Run the block-level analyses and gather annotations
+      // Run the brick-level analyses and gather annotations
       const analyses = makeBrickLevelAnalyses();
       const annotationSets = await Promise.all(
         analyses.map(async (analysis) => {
@@ -120,51 +120,51 @@ function useAddBrick(): AddBrick {
         }),
       );
       const annotations = annotationSets.flat();
-      const newBlockPath = joinPathParts(
-        addBlockLocation.path,
-        addBlockLocation.index,
+      const newBrickPath = joinPathParts(
+        addBrickLocation.path,
+        addBrickLocation.index,
       );
 
-      // Find annotations for the added block
-      const newBlockAnnotation = annotations.find(
-        (annotation) => annotation.position.path === newBlockPath,
+      // Find annotations for the added brick
+      const newBrickAnnotation = annotations.find(
+        (annotation) => annotation.position.path === newBrickPath,
       );
 
-      if (newBlockAnnotation) {
-        return { error: newBlockAnnotation.message };
+      if (newBrickAnnotation) {
+        return { error: newBrickAnnotation.message };
       }
 
       return {};
     },
-    [activeModComponent, addBlockLocation, makeNewBrick],
+    [activeModComponent, addBrickLocation, makeNewBrick],
   );
 
   const addBrick = useCallback(
     async (brick: Brick) => {
-      if (!addBlockLocation) {
+      if (!addBrickLocation || !activeModComponent) {
         return;
       }
 
-      const newBlock = await makeNewBrick(brick);
+      const newBrick = await makeNewBrick(brick);
 
       dispatch(
         actions.addNode({
-          block: newBlock,
-          pipelinePath: addBlockLocation.path,
-          pipelineIndex: addBlockLocation.index,
+          block: newBrick,
+          pipelinePath: addBrickLocation.path,
+          pipelineIndex: addBrickLocation.index,
         }),
       );
 
       reportEvent(Events.BRICK_ADD, {
         brickId: brick.id,
         sessionId,
-        extensionId: activeModComponent.uuid,
+        modComponentId: activeModComponent.uuid,
         source: "PageEditor-BrickSearchModal",
       });
     },
     [
       activeModComponent?.uuid,
-      addBlockLocation,
+      addBrickLocation,
       dispatch,
       makeNewBrick,
       sessionId,

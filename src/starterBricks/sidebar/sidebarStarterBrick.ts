@@ -30,10 +30,7 @@ import { checkAvailable } from "@/bricks/available";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import {
-  selectModComponentContext,
-  shouldModComponentRunForStateChange,
-} from "@/starterBricks/helpers";
+import { shouldModComponentRunForStateChange } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, remove } from "lodash";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
@@ -47,7 +44,11 @@ import { type JsonObject } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type StarterBrick } from "@/types/starterBrickTypes";
+import {
+  type StarterBrick,
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import { ReusableAbortController } from "abort-utils";
@@ -58,8 +59,14 @@ import {
   type SidebarDefinition,
   type SidebarConfig,
   type Trigger,
+  SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import {
+  getModComponentRef,
+  mapModComponentToMessageContext,
+} from "@/utils/modUtils";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;
@@ -117,8 +124,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   // Historical context: in the browser API, the toolbar icon is bound to an action. This is a panel that's shown
   // when the user toggles the toolbar icon. Hence: actionPanel.
   // See https://developer.chrome.com/docs/extensions/reference/browserAction/
-  public get kind(): "actionPanel" {
-    return "actionPanel";
+  public get kind(): StarterBrickType {
+    return StarterBrickTypes.SIDEBAR_PANEL;
   }
 
   readonly capabilities: PlatformCapability[] = ["panel"];
@@ -136,7 +143,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   public override uninstall(): void {
     const modComponents = this.modComponents.splice(0);
     this.clearModComponentInterfaceAndEvents(modComponents.map((x) => x.id));
-    this.platform.panels.unregisterExtensionPoint(this.id);
+    this.platform.panels.unregisterStarterBrick(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents",
     );
@@ -153,8 +160,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Don't call this.clearModComponentInterfaceAndEvents to keep the panel.
     // Instead, mutate this.modComponents to exclude id
     remove(this.modComponents, (x) => x.id === modComponentId);
-    this.platform.panels.unregisterExtensionPoint(this.id, {
-      preserveExtensionIds: [modComponentId],
+    this.platform.panels.unregisterStarterBrick(this.id, {
+      preserveModComponentIds: [modComponentId],
     });
     this.platform.panels.showEvent.remove(this.runModComponents);
   }
@@ -167,7 +174,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     const runId = uuidv4();
 
     const componentLogger = this.logger.childLogger(
-      selectModComponentContext(modComponent),
+      mapModComponentToMessageContext(modComponent),
     );
 
     const integrationsContext = await makeIntegrationsContextFromDependencies(
@@ -199,6 +206,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       await reduceModComponentPipeline(body, initialValues, {
         headless: true,
         logger: componentLogger,
+        modComponentRef: getModComponentRef(modComponent),
         ...apiVersionOptions(modComponent.apiVersion),
         runId,
       });
@@ -206,31 +214,27 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // noinspection ExceptionCaughtLocallyJS
       throw new NoRendererError();
     } catch (error) {
-      const ref = {
-        extensionId: modComponent.id,
-        extensionPointId: this.id,
-        blueprintId: modComponent._recipe?.id,
-      };
+      const modComponentRef = getModComponentRef(modComponent);
 
-      const meta = {
+      const runMetadata = {
         runId,
-        extensionId: modComponent.id,
+        modComponentRef,
       };
 
       if (error instanceof HeadlessModeError) {
-        this.platform.panels.upsertPanel(ref, heading, {
-          blockId: error.blockId,
+        this.platform.panels.upsertPanel(modComponentRef, heading, {
+          brickId: error.brickId,
           key: uuidv4(),
           ctxt: error.ctxt,
           args: error.args,
-          ...meta,
+          ...runMetadata,
         });
       } else {
         componentLogger.error(error);
-        this.platform.panels.upsertPanel(ref, heading, {
+        this.platform.panels.upsertPanel(modComponentRef, heading, {
           key: uuidv4(),
           error: serializeError(error),
-          ...meta,
+          ...runMetadata,
         });
       }
     }
@@ -259,8 +263,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       this.logger
         .childLogger({
           deploymentId: modComponent._deployment?.id,
-          blueprintId: modComponent._recipe?.id,
-          extensionId: modComponent.id,
+          modId: modComponent._recipe?.id,
+          modComponentId: modComponent.id,
         })
         .error(error);
     }
@@ -313,7 +317,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     let relevantModComponents;
 
     switch (this.trigger) {
-      case "statechange": {
+      case STATE_CHANGE_JS_EVENT_TYPE: {
         // For performance, only run mod components that could be impacted by the state change.
         // Perform the check _before_ debounce, so that the debounce timer is not impacted by state from other mods.
         // See https://github.com/pixiebrix/pixiebrix-extension/issues/6804 for more details/considerations.
@@ -347,7 +351,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       );
 
       // Keep sidebar entries up-to-date regardless of trigger policy
-      this.platform.panels.unregisterExtensionPoint(this.id);
+      this.platform.panels.unregisterStarterBrick(this.id);
       return;
     }
 
@@ -363,11 +367,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
     this.platform.panels.reservePanels(
-      this.modComponents.map((modComponent) => ({
-        extensionId: modComponent.id,
-        extensionPointId: this.id,
-        blueprintId: modComponent._recipe?.id,
-      })),
+      this.modComponents.map((x) => getModComponentRef(x)),
     );
 
     if (!(await this.platform.panels.isContainerVisible())) {
@@ -380,7 +380,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
     // On the initial run or a manual run, run directly
     if (
-      this.trigger === "load" ||
+      this.trigger === SidebarTriggers.LOAD ||
       [
         RunReason.MANUAL,
         RunReason.INITIAL_LOAD,
@@ -390,10 +390,13 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       void this.debouncedRefreshPanels(this.modComponents);
     }
 
-    if (this.trigger === "selectionchange" || this.trigger === "statechange") {
+    if (
+      this.trigger === SidebarTriggers.SELECTION_CHANGE ||
+      this.trigger === SidebarTriggers.STATE_CHANGE
+    ) {
       this.attachEventTrigger(this.trigger);
     } else if (
-      this.trigger === "custom" &&
+      this.trigger === SidebarTriggers.CUSTOM &&
       this.customTriggerOptions?.eventName
     ) {
       this.attachEventTrigger(this.customTriggerOptions?.eventName);
@@ -412,11 +415,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // In the future, we might instead consider gating sidebar content loading based on mods both having been
       // `install`ed and `runComponents` called completed at least once.
       this.platform.panels.reservePanels(
-        this.modComponents.map((components) => ({
-          extensionId: components.id,
-          extensionPointId: this.id,
-          blueprintId: components._recipe?.id,
-        })),
+        this.modComponents.map((x) => getModComponentRef(x)),
       );
 
       // Add event listener so content for the panel is calculated/loaded when the sidebar opens
@@ -428,7 +427,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         passive: true,
       });
     } else {
-      this.platform.panels.unregisterExtensionPoint(this.id);
+      this.platform.panels.unregisterStarterBrick(this.id);
     }
 
     return available;
@@ -472,7 +471,7 @@ class RemotePanelStarterBrick extends SidebarStarterBrickABC {
 
   get trigger(): Trigger {
     // Default to load for backward compatability
-    return this.definition.trigger ?? "load";
+    return this.definition.trigger ?? SidebarTriggers.LOAD;
   }
 
   async isAvailable(): Promise<boolean> {
@@ -486,7 +485,7 @@ export function fromJS(
   config: StarterBrickDefinitionLike,
 ): StarterBrick {
   const { type } = config.definition;
-  if (type !== "actionPanel") {
+  if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
     throw new Error(`Expected type=actionPanel, got ${type}`);
   }
 

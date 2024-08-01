@@ -33,7 +33,7 @@ import { isVarExpression } from "@/utils/expressionUtils";
 import {
   INTEGRATION_DEPENDENCY_FIELD_REFS,
   PIXIEBRIX_INTEGRATION_REF_URL,
-  SERVICES_BASE_SCHEMA_URL,
+  INTEGRATIONS_BASE_SCHEMA_URL,
 } from "@/integrations/constants";
 
 export const isPixiebrixIntegrationField = createTypePredicate(
@@ -46,7 +46,7 @@ function isIntegrationRef(ref?: string): boolean {
   }
 
   return (
-    ref.startsWith(SERVICES_BASE_SCHEMA_URL) ||
+    ref.startsWith(INTEGRATIONS_BASE_SCHEMA_URL) ||
     INTEGRATION_DEPENDENCY_FIELD_REFS.includes(ref)
   );
 }
@@ -63,7 +63,7 @@ export const isHeadingStyleField = (fieldDefinition: Schema) =>
   fieldDefinition.type === "string" &&
   fieldDefinition.format === "heading-style";
 
-export const hasCustomWidget = (uiSchema?: UiSchema) =>
+export const hasCustomWidget = (uiSchema: UiSchema) =>
   typeof get(uiSchema, ["ui:widget"]) === "string";
 
 /**

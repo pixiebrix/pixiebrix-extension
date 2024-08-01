@@ -116,7 +116,7 @@ export class FormTransformer extends TransformerABC {
       stylesheets = [],
       disableParentStyles = false,
     }: BrickArgs<FormDefinition>,
-    { logger, abortSignal, platform }: BrickOptions,
+    { meta: { modComponentRef }, abortSignal, platform }: BrickOptions,
   ): Promise<unknown> {
     // Repackage the definition from the brick input with default values
     const formDefinition: FormDefinition = {
@@ -135,15 +135,9 @@ export class FormTransformer extends TransformerABC {
       controller.abort();
     });
 
-    if (logger.context.extensionId == null) {
-      throw new Error(`${this.name} must be run in a mod context`);
-    }
-
     try {
-      return await platform.form(formDefinition, controller, {
-        componentId: logger.context.extensionId,
-        modId: logger.context.blueprintId,
-      });
+      // `mapMessageContextToModComponentRef` throws if there's no mod component or starter brick in the context
+      return await platform.form(formDefinition, controller, modComponentRef);
     } finally {
       controller.abort();
     }

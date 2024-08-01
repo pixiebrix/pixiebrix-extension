@@ -30,12 +30,9 @@ import { defaultBrickConfig } from "@/bricks/util";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
-import {
-  baseModComponentStateFactory,
-  formStateFactory,
-} from "@/testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -57,15 +54,13 @@ const renderElementPreview = (
   };
 
   const formState = formStateFactory({
-    extension: baseModComponentStateFactory({
-      blockPipeline: [
-        brickConfigFactory({
-          config: {
-            body: [element],
-          },
-        }),
-      ],
-    }),
+    brickPipeline: [
+      brickConfigFactory({
+        config: {
+          body: [element],
+        },
+      }),
+    ],
   });
 
   return render(<ElementPreview {...props} />, {
@@ -75,7 +70,7 @@ const renderElementPreview = (
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId,
+          formState.modComponent.brickPipeline[0].instanceId,
         ),
       );
       dispatch(actions.setActiveBuilderPreviewElement("0"));

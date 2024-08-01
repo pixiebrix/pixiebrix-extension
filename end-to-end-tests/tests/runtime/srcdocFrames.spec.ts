@@ -21,7 +21,11 @@ import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { test as base } from "@playwright/test";
 import { range } from "lodash";
 
-test("8143: mods can run in srcdoc iframes", async ({ page, extensionId }) => {
+test("8143: mods can run in srcdoc iframes", async ({
+  page,
+  extensionId,
+  chromiumChannel,
+}) => {
   const modId = "@pixies/test/8143-repro";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -40,4 +44,19 @@ test("8143: mods can run in srcdoc iframes", async ({ page, extensionId }) => {
       await expect(locator).toBeVisible();
     }),
   );
+
+  await page.evaluate(() => {
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute(
+      "srcdoc",
+      "<div>Hello inserted sandboxed srcdoc world!</div>",
+    );
+    iframe.setAttribute("sandbox", "");
+    document.body.append(iframe);
+  });
+
+  const frame = frameLocator.nth(2);
+  const locator = frame.locator("mark").first();
+  await expect(frame.getByText("Hello inserted sandboxed")).toBeVisible();
+  await expect(locator).toBeVisible();
 });

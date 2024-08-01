@@ -32,9 +32,9 @@ export const PIXIEBRIX_INTEGRATION_CONFIG_ID: UUID = uuidSequence(0);
 export const PIXIEBRIX_OUTPUT_KEY = validateOutputKey("pixiebrix");
 // We should probably leave this as called "SERVICES_" until if/when the actual url is changed
 // to point to /schemas/integrations/, just as a reminder
-export const SERVICES_BASE_SCHEMA_URL =
+export const INTEGRATIONS_BASE_SCHEMA_URL =
   "https://app.pixiebrix.com/schemas/services/";
-export const PIXIEBRIX_INTEGRATION_REF_URL = `${SERVICES_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`;
+export const PIXIEBRIX_INTEGRATION_REF_URL = `${INTEGRATIONS_BASE_SCHEMA_URL}${PIXIEBRIX_INTEGRATION_ID}`;
 export const PIXIEBRIX_INTEGRATION_FIELD_SCHEMA: Schema = {
   $ref: PIXIEBRIX_INTEGRATION_REF_URL,
 };

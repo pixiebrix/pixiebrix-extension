@@ -16,10 +16,10 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
-import extensionsSlice from "@/store/extensionsSlice";
+import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import modComponentsSlice from "@/store/extensionsSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";
@@ -29,7 +29,7 @@ import {
   checkAvailable as backgroundCheckAvailable,
   normalizeAvailability,
 } from "@/bricks/available";
-import { selectModComponentAvailability } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
@@ -39,22 +39,22 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: extensionsReducer } = extensionsSlice;
+const { reducer: modComponentsReducer } = modComponentsSlice;
 
 describe("checkActiveModComponentAvailability", () => {
-  test("it checks the active element correctly", async () => {
+  it("checks the active element correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
     jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: extensionsReducer,
+        options: modComponentsReducer,
       },
     });
 
     const availableDraftModComponent = menuItemFormStateFactory({
-      extensionPoint: {
+      starterBrick: {
         metadata: {
           id: validateRegistryId("test/available-button"),
           name: "Test Starter Brick 1",
@@ -72,7 +72,7 @@ describe("checkActiveModComponentAvailability", () => {
     });
 
     const unavailableDraftModComponent = menuItemFormStateFactory({
-      extensionPoint: {
+      starterBrick: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
           name: "Test Starter Brick 2",
@@ -92,7 +92,9 @@ describe("checkActiveModComponentAvailability", () => {
     store.dispatch(
       actions.addModComponentFormState(unavailableDraftModComponent),
     );
-    store.dispatch(actions.selectInstalled(availableDraftModComponent));
+    store.dispatch(
+      actions.selectActivatedModComponentFormState(availableDraftModComponent),
+    );
 
     jest
       .mocked(checkAvailable)
@@ -116,7 +118,7 @@ describe("checkActiveModComponentAvailability", () => {
 
     // Make mod component form state available
     const available = produce(availableDraftModComponent, (draft) => {
-      draft.extensionPoint.definition.isAvailable.matchPatterns = [testUrl];
+      draft.starterBrick.definition.isAvailable.matchPatterns = [testUrl];
     });
     store.dispatch(actions.syncModComponentFormState(available));
 

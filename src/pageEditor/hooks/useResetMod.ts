@@ -17,11 +17,11 @@
 
 import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
-import { selectModComponentFormStates } from "@/pageEditor/slices/editorSelectors";
+import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 
 function useResetMod(): (modId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
@@ -45,7 +45,7 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
         modComponentFormStates
           .filter(
             (modComponentFormState) =>
-              modComponentFormState.recipe?.id === modId,
+              modComponentFormState.modMetadata?.id === modId,
           )
           .map(async (modComponentFormState) =>
             resetModComponent({

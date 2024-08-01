@@ -21,7 +21,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader } from "@/starterBricks/starterBrickTestUtils";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -35,6 +35,7 @@ import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);
@@ -51,7 +52,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
         name: "Test Starter Brick",
       }) as Metadata,
     definition: define<ContextMenuDefinition>({
-      type: "contextMenu",
+      type: StarterBrickTypes.CONTEXT_MENU,
       contexts: () => ["page"] as any,
       targetMode: "document",
       isAvailable: () => ({
@@ -79,8 +80,8 @@ const modComponentFactory = define<HydratedModComponent<ContextMenuConfig>>({
 beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
-  blockRegistry.clear();
-  blockRegistry.register([rootReader]);
+  brickRegistry.clear();
+  brickRegistry.register([rootReader]);
   rootReader.readCount = 0;
   rootReader.ref = null;
   jest.resetAllMocks();
@@ -125,7 +126,7 @@ describe("contextMenuStarterBrick", () => {
     expect(ensureContextMenuMock).toHaveBeenCalledOnce();
     expect(ensureContextMenuMock).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        extensionId: modComponent.id,
+        modComponentId: modComponent.id,
       }),
     );
   });

@@ -17,7 +17,7 @@
 
 import "@/vendors/bootstrapWithoutRem.css";
 import "@/sidebar/sidebarBootstrapOverrides.scss";
-import { buildDocumentBuilderBranch } from "@/pageEditor/documentBuilder/documentTree";
+import { buildDocumentBuilderSubtree } from "@/pageEditor/documentBuilder/documentTree";
 import React from "react";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/pageEditor/documentBuilder/render/DocumentContext";
@@ -26,6 +26,7 @@ import { joinPathParts } from "@/utils/formUtils";
 import StylesheetsContext, {
   useStylesheetsContextWithDocumentDefault,
 } from "@/components/StylesheetsContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
@@ -35,15 +36,13 @@ const DocumentView: React.FC<DocumentViewProps> = ({
   meta,
   onAction,
 }) => {
-  if (!meta?.runId) {
-    // The sidebar panel should dynamically pass the prop through
-    throw new Error("meta.runId is required for DocumentView");
-  }
-
-  if (!meta?.extensionId) {
-    // The sidebar panel should dynamically pass the prop through
-    throw new Error("meta.extensionId is required for DocumentView");
-  }
+  // The code for RendererComponent isn't fully type-safe. So dynamically check the necessary meta props are passed in.
+  assertNotNullish(meta, "meta is required for DocumentView");
+  assertNotNullish(meta.runId, "meta.runId is required for DocumentView");
+  assertNotNullish(
+    meta.modComponentRef,
+    "meta.modComponentRef is required for DocumentView",
+  );
 
   const { stylesheets } = useStylesheetsContextWithDocumentDefault({
     newStylesheets,
@@ -56,7 +55,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
       <StylesheetsContext.Provider value={{ stylesheets }}>
         <Stylesheets href={stylesheets}>
           {body.map((documentElement, index) => {
-            const documentBuilderBranch = buildDocumentBuilderBranch(
+            const documentBuilderSubtree = buildDocumentBuilderSubtree(
               documentElement,
               {
                 staticId: joinPathParts("body", "children"),
@@ -65,11 +64,11 @@ const DocumentView: React.FC<DocumentViewProps> = ({
               },
             );
 
-            if (documentBuilderBranch == null) {
+            if (documentBuilderSubtree == null) {
               return null;
             }
 
-            const { Component, props } = documentBuilderBranch;
+            const { Component, props } = documentBuilderSubtree;
             // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
             return <Component key={index} {...props} />;
           })}

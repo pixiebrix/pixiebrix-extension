@@ -28,7 +28,8 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
 import type { ModActivationConfig } from "@/types/modTypes";
-import { type Nullishable } from "@/utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -71,8 +72,7 @@ export function isRendererErrorPayload(
  * Context for panel, with fields required for functionality marked as required.
  */
 export type PanelContext = MessageContext & {
-  extensionId: UUID;
-  blueprintId: RegistryId | null;
+  modComponentId: UUID;
 };
 
 /**
@@ -138,19 +138,15 @@ type BasePanelEntry = {
  */
 export type BaseModComponentPanelEntry = BasePanelEntry & {
   /**
-   * The id of the ModComponent that added the panel
-   */
-  extensionId: UUID;
-  /**
-   * The blueprint associated with the ModComponent that added the panel.
+   * Reference to the ModComponent that added the panel.
    *
-   * Used to:
-   * - Give preference to blueprint side panels when using the "Show Sidebar" brick.
-   * - Pass to the panel for actions that require the blueprint id, e.g., Get Page State, Set Page State, etc.
+   * The mod is used to:
+   * - Give preference to mod side panels when using the "Show Sidebar" brick.
+   * - Pass to the panel for actions that require the mod id, e.g., Get Page State, Set Page State, etc.
    *
-   * @since 1.6.5
+   * @since 2.0.5 refactored to use a single property for the mod component id and the containing mod id
    */
-  blueprintId: Nullishable<RegistryId>;
+  modComponentRef: ModComponentRef;
   /**
    * Heading for tab name in the sidebar
    */
@@ -171,7 +167,7 @@ export type BaseModComponentPanelEntry = BasePanelEntry & {
 export function isBaseModComponentPanelEntry(
   panel: unknown,
 ): panel is BaseModComponentPanelEntry {
-  return (panel as BaseModComponentPanelEntry)?.extensionId != null;
+  return (panel as BaseModComponentPanelEntry)?.modComponentRef != null;
 }
 
 /**
@@ -180,11 +176,6 @@ export function isBaseModComponentPanelEntry(
  */
 export type PanelEntry = BaseModComponentPanelEntry & {
   type: "panel";
-  /**
-   * The sidebar extension point
-   * @see SidebarStarterBrickABC
-   */
-  extensionPointId: RegistryId;
 };
 
 export function isPanelEntry(panel: unknown): panel is PanelEntry {
@@ -220,19 +211,13 @@ export function isTemporaryPanelEntry(
 export type FormPanelEntry = BasePanelEntry & {
   type: "form";
   /**
-   * The extension that created the form
-   */
-  extensionId: UUID;
-  /**
-   * The blueprint of the extension panel to show
-   *
-   * @since 1.7.33
-   */
-  blueprintId?: RegistryId;
-  /**
    * Unique identifier for the form instance. Used to correlate form submission/cancellation.
    */
   nonce: UUID;
+  /**
+   * The mod component that created the form.
+   */
+  modComponentRef: ModComponentRef;
   /**
    * The form schema and configuration
    */
@@ -318,6 +303,8 @@ export type ActivatePanelOptions = {
    */
   refresh?: boolean;
 
+  // XXX: can't use ModComponentRef directly here, because extensionId and/or blueprintId might be excluded depending
+  // on the specificity of the request
   /**
    * The id of the extension panel to show. Included so the Page Editor can request a specific panel to show when
    * editing the extension
@@ -331,6 +318,7 @@ export type ActivatePanelOptions = {
    * @since 1.6.5
    */
   blueprintId?: RegistryId;
+
   /**
    * A panel heading name to match
    *
@@ -343,7 +331,7 @@ export type ActivatePanelOptions = {
  * Metadata about the extension that produced the panel content
  * @since 1.7.0
  */
-export type PanelRunMeta = Pick<RunMetadata, "runId" | "extensionId">;
+export type PanelRunMetadata = Pick<RunMetadata, "runId" | "modComponentRef">;
 
 export type SidebarState = SidebarEntries & {
   activeKey: Nullishable<string>;

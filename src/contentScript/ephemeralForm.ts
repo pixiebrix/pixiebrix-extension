@@ -26,12 +26,11 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
-import type { UUID } from "@/types/stringTypes";
-import type { RegistryId } from "@/types/registryTypes";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import { showModal } from "@/contentScript/modalDom";
 import type { Target } from "@/types/messengerTypes";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 // The modes for createFrameSource are different from the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -55,10 +54,7 @@ export async function createFrameSource(
 export async function ephemeralForm(
   definition: FormDefinition,
   controller: AbortController,
-  {
-    componentId: extensionId,
-    modId: blueprintId,
-  }: { componentId: UUID; modId: RegistryId },
+  modComponentRef: ModComponentRef,
 ): Promise<unknown> {
   expectContext("contentScript");
 
@@ -75,10 +71,9 @@ export async function ephemeralForm(
   // Pre-registering the form also allows the sidebar to know a form will be shown in computing the default
   // tab to show during sidebar initialization.
   const formPromise = registerForm({
-    extensionId,
     nonce: formNonce,
+    modComponentRef,
     definition,
-    blueprintId,
   });
 
   if (definition.location === "sidebar") {
@@ -86,10 +81,9 @@ export async function ephemeralForm(
     await showSidebar();
 
     await showSidebarForm({
-      extensionId,
-      blueprintId,
       nonce: formNonce,
       form: definition,
+      modComponentRef,
     });
 
     // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar

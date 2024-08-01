@@ -29,7 +29,6 @@ import {
 } from "@/types/helpers";
 import { compact, pick, sortBy } from "lodash";
 import { produce } from "immer";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_STARTER_BRICK_VAR,
@@ -47,7 +46,7 @@ import {
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type IntegrationDependency,
@@ -55,7 +54,7 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
@@ -65,6 +64,7 @@ import {
   isStarterBrickDefinitionPropEqual,
 } from "@/starterBricks/starterBrickUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -98,7 +98,7 @@ function findModComponentIndex(
 ): number {
   if (modDefinition.metadata.version !== modComponent._recipe?.version) {
     console.warn(
-      "Mod component was installed using a different version of the mod",
+      "Mod component was activated using a different version of the mod",
       {
         modDefinitionVersion: modDefinition.metadata.version,
         modComponentModVersion: modComponent._recipe?.version,
@@ -173,7 +173,7 @@ export function selectModComponentIntegrations({
       isOptional,
     } of _integrationDependencies) {
       properties[outputKey] = {
-        $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationId}`,
+        $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationId}`,
       };
       if (!isOptional) {
         required.push(outputKey);
@@ -271,11 +271,10 @@ export function replaceModComponent(
       activatedModComponent,
     );
 
-    const adapter = ADAPTERS.get(newModComponent.type);
-    assertNotNullish(adapter, `No adapter found for ${newModComponent.type}`);
-    const { selectModComponent, selectStarterBrickDefinition } = adapter;
+    const { selectModComponent, selectStarterBrickDefinition } =
+      adapterForComponent(newModComponent);
     const rawModComponent = selectModComponent(newModComponent);
-    const starterBrickId = newModComponent.extensionPoint.metadata.id;
+    const starterBrickId = newModComponent.starterBrick.metadata.id;
     const hasInnerDefinition = isInnerDefinitionRegistryId(starterBrickId);
 
     const commonModComponentDefinition: Except<ModComponentDefinition, "id"> = {
@@ -450,12 +449,8 @@ export function buildNewMod({
 
     const unsavedModComponents: ModComponentBase[] =
       dirtyModComponentFormStates.map((modComponentFormState) => {
-        const adapter = ADAPTERS.get(modComponentFormState.type);
-        assertNotNullish(
-          adapter,
-          `No adapter found for ${modComponentFormState.type}`,
-        );
-        const { selectModComponent, selectStarterBrickDefinition } = adapter;
+        const { selectModComponent, selectStarterBrickDefinition } =
+          adapterForComponent(modComponentFormState);
 
         const unsavedModComponent = selectModComponent(modComponentFormState);
 

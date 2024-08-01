@@ -21,14 +21,13 @@ import {
   selectDirtyModMetadata,
   selectDirtyModOptionsDefinitions,
   selectGetDeletedComponentIdsForMod,
-} from "@/pageEditor/slices/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import notify from "@/utils/notify";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { useModals } from "@/components/ConfirmationModal";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import modComponentsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -44,11 +43,12 @@ import type {
   ModDefinition,
   UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const { actions: optionsActions } = modComponentsSlice;
 
@@ -98,7 +98,6 @@ function useSaveMod(): ModSaver {
   );
   const allDirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
   const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
-  const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -107,7 +106,11 @@ function useSaveMod(): ModSaver {
    * Throws errors for various bad states
    * @returns boolean indicating successful save
    */
-  async function save(modId: RegistryId): Promise<boolean> {
+  async function save(modId: RegistryId): Promise<boolean | undefined> {
+    if (!editablePackages) {
+      return;
+    }
+
     const modDefinition = modDefinitions?.find(
       (mod) => mod.metadata.id === modId,
     );
@@ -119,17 +122,6 @@ function useSaveMod(): ModSaver {
 
     if (!isModEditable(editablePackages, modDefinition)) {
       dispatch(editorActions.showSaveAsNewModModal());
-      return false;
-    }
-
-    const confirm = await showConfirmation({
-      title: "Save Mod?",
-      message: "All changes to the mod will be saved",
-      submitCaption: "Save",
-      submitVariant: "primary",
-    });
-
-    if (!confirm) {
       return false;
     }
 
@@ -162,6 +154,8 @@ function useSaveMod(): ModSaver {
       (x) => x.name === newMod.metadata.id,
     )?.id;
 
+    assertNotNullish(packageId, "Package ID is required to upsert a mod");
+
     const upsertResponse = await updateMod({
       packageId,
       modDefinition: newMod,
@@ -169,13 +163,14 @@ function useSaveMod(): ModSaver {
 
     const newModMetadata = selectModMetadata(newMod, upsertResponse);
 
+    assertNotNullish(newModMetadata, "New mod metadata is required");
+
     // Don't push to cloud since we're saving it with the mod
     await Promise.all(
       dirtyModComponentFormStates.map(async (modComponentFormState) =>
         upsertModComponentFormState({
           modComponentFormState,
           options: {
-            pushToCloud: false,
             // Permissions were already checked earlier in the save function here
             checkPermissions: false,
             // Notified and reactivated once in safeSave below

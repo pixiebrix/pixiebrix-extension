@@ -21,7 +21,7 @@ import {
   showSidebarInTopFrame,
   sidebarWasLoaded,
   updateSidebar,
-  removeExtensions as removeSidebars,
+  removeModComponents as removeSidebars,
   getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
 import { handleMenuAction } from "@/contentScript/contextMenus";
@@ -73,6 +73,7 @@ import {
 } from "@/contentScript/lifecycle";
 import { updateDraftModComponent } from "@/contentScript/pageEditor/draft/updateDraftModComponent";
 import { resetTab } from "@/contentScript/pageEditor/resetTab";
+import { emitAudioEvent } from "@/contentScript/audio";
 
 declare global {
   interface MessengerMethods {
@@ -125,6 +126,7 @@ declare global {
     RESET_TAB: typeof resetTab;
     REMOVE_DRAFT_MOD_COMPONENTS: typeof removeDraftModComponents;
     UPDATE_DRAFT_MOD_COMPONENT: typeof updateDraftModComponent;
+    AUDIO_CAPTURE_EMIT: typeof emitAudioEvent;
   }
 }
 export default function registerMessenger(): void {
@@ -178,5 +180,6 @@ export default function registerMessenger(): void {
     RESET_TAB: resetTab,
     REMOVE_DRAFT_MOD_COMPONENTS: removeDraftModComponents,
     UPDATE_DRAFT_MOD_COMPONENT: updateDraftModComponent,
+    AUDIO_CAPTURE_EMIT: emitAudioEvent,
   });
 }

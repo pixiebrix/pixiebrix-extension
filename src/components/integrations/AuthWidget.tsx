@@ -22,7 +22,7 @@ import { useField } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import registry from "@/integrations/registry";
 import { uuidv4 } from "@/types/helpers";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -116,8 +116,8 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
     // Need to write the current Redux options to storage so the locator can read them during checks
     await flushReduxPersistence();
     try {
-      // Also refresh the integration config locator on the background so the new auth works immediately
-      await services.refresh({ remote: false, local: true });
+      // Also refresh the integration config locator on the background so the new configuration works immediately
+      await integrationConfigLocator.refresh({ remote: false, local: true });
     } catch (error) {
       notify.error({
         message:

@@ -123,7 +123,7 @@ export function isButtonElement(
 
 export type DocumentBuilderComponent = {
   Component: ElementType;
-  props?: UnknownObject | undefined;
+  props: UnknownObject;
 };
 
 /**
@@ -145,7 +145,7 @@ export type DynamicPath = {
   }>;
 };
 
-export type BuildDocumentBuilderBranch = (
+export type BuildDocumentBuilderSubtree = (
   root: DocumentBuilderElement,
   tracePath: DynamicPath,
 ) => DocumentBuilderComponent | null;

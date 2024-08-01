@@ -60,10 +60,10 @@ export function hasMultipleTargets(
 }
 
 /**
- * Condition expression written in templateEngine for deciding if the step should be run.
+ * Condition expression written in templateEngine for deciding if the brick should run.
  * @see {@link BrickConfig.if}
  */
-export type BlockIf = string | boolean | number | Expression;
+export type BrickCondition = string | boolean | number | Expression;
 
 /**
  * A brick configuration to be executed by the PixieBrix runtime.
@@ -126,9 +126,9 @@ export type BrickConfig = {
   /**
    * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
    * provided, the step is run unconditionally.
-   * @see BlockIf
+   * @see BrickCondition
    */
-  if?: BlockIf;
+  if?: BrickCondition;
 
   /**
    * (Optional) whether the brick should inherit the current root element, or if it should use the document
@@ -190,9 +190,9 @@ export enum PipelineFlavor {
 }
 
 /**
- * Defines the position of the brick in the extension
- * ex. "extension.brickPipeline.0.config.body.__value__.0",
- * "extension.brickPipeline.0.config.body.0.children.0.config.onClick.__value__.0"
+ * Defines the position of the brick in the mod component
+ * ex. "modComponent.brickPipeline.0.config.body.__value__.0",
+ * "modComponent.brickPipeline.0.config.body.0.children.0.config.onClick.__value__.0"
  */
 export type BrickPosition = {
   /**

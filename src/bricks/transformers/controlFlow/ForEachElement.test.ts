@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEachElement from "./ForEachElement";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const forEachBlock = new ForEachElement();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, forEachBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, forEachBlock]);
 });
 
 describe("ForEachElement", () => {
@@ -53,7 +53,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toBeUndefined();
@@ -79,7 +79,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "This is a message" });
@@ -108,7 +108,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: `Got reference: ${ref}` });
@@ -136,7 +136,7 @@ describe("ForEachElement", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "Got reference: " });

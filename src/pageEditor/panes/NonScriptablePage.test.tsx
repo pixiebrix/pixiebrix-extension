@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import NonScriptablePage from "@/pageEditor/NonScriptablePage";
+import NonScriptablePage from "@/pageEditor/panes/NonScriptablePage";
 import { render } from "@/pageEditor/testHelpers";
 
 describe("NonScriptablePage", () => {
-  test("it renders", () => {
+  it("renders", () => {
     const { asFragment } = render(<NonScriptablePage url="https://test.url" />);
     expect(asFragment()).toMatchSnapshot();
   });
 
   // Since 1.7.36 http: URLs are permitted
-  test("it renders http snapshot", () => {
+  it("renders http snapshot", () => {
     const { asFragment } = render(<NonScriptablePage url="http://test.url" />);
     expect(asFragment()).toMatchSnapshot();
   });

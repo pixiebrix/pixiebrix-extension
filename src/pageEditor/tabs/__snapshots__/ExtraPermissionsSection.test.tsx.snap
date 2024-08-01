@@ -36,6 +36,7 @@ exports[`ExtraPermissionsSection render empty section 1`] = `
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -149,6 +150,7 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"
@@ -201,55 +203,78 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
               class="list-group mb-2"
             >
               <li
-                class="list-group-item py-1"
+                class="list-group-item py-1 d-flex pl-1"
               >
+                <div>
+                  <button
+                    class="moveButton btn btn-link"
+                    disabled=""
+                    title="Move up"
+                    type="button"
+                  >
+                    <test-file-stub />
+                  </button>
+                  <button
+                    class="moveButton btn btn-link"
+                    disabled=""
+                    title="Move down"
+                    type="button"
+                  >
+                    <test-file-stub />
+                  </button>
+                </div>
                 <div
-                  class="formGroup mb-0 form-group"
+                  class="flex-grow-1"
                 >
                   <div
-                    class="mb-2 w-100 collapse"
+                    class="formGroup mb-0 form-group"
+                    data-testid="field-template-form-group"
                   >
                     <div
-                      class="annotationPlaceholder"
-                    />
-                  </div>
-                  <div
-                    class="formField"
-                  >
-                    <div
-                      class="root"
+                      class="mb-2 w-100 collapse"
                     >
                       <div
-                        class="field"
-                      >
-                        <textarea
-                          class="form-control"
-                          id="permissions.origins.0"
-                          name="permissions.origins.0"
-                          rows="1"
-                        >
-                          http://web.archive.org/web/20150905193945/http://www.hamsterdance.com/
-                        </textarea>
-                      </div>
+                        class="annotationPlaceholder"
+                      />
+                    </div>
+                    <div
+                      class="formField"
+                    >
                       <div
-                        class="dropdown dropdown"
-                        data-test-selected="Text"
-                        data-testid="toggle-permissions.origins.0"
+                        class="root"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          class="dropdown-toggle btn btn-link"
-                          type="button"
+                        <div
+                          class="field"
                         >
-                          <span
-                            class="symbol"
+                          <textarea
+                            class="form-control"
+                            id="permissions.origins.0"
+                            name="permissions.origins.0"
+                            rows="1"
                           >
-                            <test-file-stub
-                              classname="root"
-                            />
-                          </span>
-                        </button>
+                            http://web.archive.org/web/20150905193945/http://www.hamsterdance.com/
+                          </textarea>
+                        </div>
+                        <div
+                          class="dropdown dropdown"
+                          data-test-selected="Text"
+                          data-testid="toggle-permissions.origins.0"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            class="dropdown-toggle btn btn-link"
+                            type="button"
+                          >
+                            <span
+                              class="symbol"
+                            >
+                              <test-file-stub
+                                classname="root"
+                              />
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

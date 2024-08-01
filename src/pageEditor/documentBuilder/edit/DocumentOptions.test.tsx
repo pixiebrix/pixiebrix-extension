@@ -23,14 +23,11 @@ import userEvent from "@testing-library/user-event";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@/pageEditor/testHelpers";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import {
-  baseModComponentStateFactory,
-  formStateFactory,
-} from "@/testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -48,16 +45,14 @@ describe("DocumentOptions", () => {
     stylesheets: string[] = [],
   ): ModComponentFormState {
     return formStateFactory({
-      extension: baseModComponentStateFactory({
-        blockPipeline: [
-          brickConfigFactory({
-            config: {
-              body: documentElements,
-              stylesheets,
-            },
-          }),
-        ],
-      }),
+      brickPipeline: [
+        brickConfigFactory({
+          config: {
+            body: documentElements,
+            stylesheets,
+          },
+        }),
+      ],
     });
   }
 
@@ -66,7 +61,10 @@ describe("DocumentOptions", () => {
     initialActiveElement: string = null,
   ) {
     return render(
-      <DocumentOptions name="extension.blockPipeline.0" configKey="config" />,
+      <DocumentOptions
+        name="modComponent.brickPipeline.0"
+        configKey="config"
+      />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -74,7 +72,7 @@ describe("DocumentOptions", () => {
           dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
             actions.setActiveNodeId(
-              formState.extension.blockPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0].instanceId,
             ),
           );
           dispatch(
@@ -152,8 +150,8 @@ describe("DocumentOptions", () => {
       // Integration dependencies included in the form state
       const integrationDependencies: IntegrationDependency[] = [
         integrationDependencyFactory({
-          integrationId: validateRegistryId("@test/service"),
-          outputKey: validateOutputKey("serviceOutput"),
+          integrationId: validateRegistryId("@test/integration"),
+          outputKey: validateOutputKey("integrationOuput"),
           configId: uuidSequence,
         }),
       ];
@@ -170,7 +168,7 @@ describe("DocumentOptions", () => {
                   id: validateRegistryId("@test/action"),
                   instanceId: uuidSequence(2),
                   config: {
-                    input: toExpression("var", "@serviceOutput"),
+                    input: toExpression("var", "@integrationOuput"),
                   },
                 },
               ]),
@@ -181,12 +179,12 @@ describe("DocumentOptions", () => {
 
       // Form state for the test
       const formState = formStateFactory({
-        integrationDependencies,
-        extension: baseModComponentStateFactory({
-          blockPipeline: [
-            brickConfigFactory({ config: documentWithButtonConfig }),
-          ],
-        }),
+        formStateConfig: {
+          integrationDependencies,
+        },
+        brickPipeline: [
+          brickConfigFactory({ config: documentWithButtonConfig }),
+        ],
       });
 
       const { getFormState } = renderDocumentOptions(formState, "0");
@@ -229,7 +227,7 @@ describe("DocumentOptions", () => {
 
       // The form state should be updated
       expect(
-        getFormState().extension.blockPipeline[0].config.stylesheets,
+        getFormState().modComponent.brickPipeline[0].config.stylesheets,
       ).toStrictEqual([
         toExpression("nunjucks", "https://example.com/stylesheet.css"),
       ]);

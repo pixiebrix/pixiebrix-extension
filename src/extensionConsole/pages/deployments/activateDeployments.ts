@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
@@ -23,8 +23,23 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import {
+  queueReloadModEveryTab,
+  reloadModsEveryTab,
+} from "@/contentScript/messenger/api";
+import { persistor } from "@/extensionConsole/store";
 
 const { actions } = extensionsSlice;
+
+// For ensuring the mod state is persisted before continuing so the content script can immediately pick up the changes
+async function flushAndPersist(mode: "queue" | "immediate") {
+  await persistor.flush();
+  if (mode === "immediate") {
+    reloadModsEveryTab();
+  } else {
+    queueReloadModEveryTab();
+  }
+}
 
 async function activateDeployment({
   dispatch,
@@ -61,7 +76,7 @@ async function activateDeployment({
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
         activatableDeployment,
-        services.locateAllForId,
+        integrationConfigLocator.findAllSanitizedConfigsForIntegration,
       ),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
@@ -79,10 +94,12 @@ export async function activateDeployments({
   dispatch,
   activatableDeployments,
   activatedModComponents,
+  reloadMode,
 }: {
   dispatch: Dispatch;
   activatableDeployments: ActivatableDeployment[];
   activatedModComponents: ModComponentBase[];
+  reloadMode: "queue" | "immediate";
 }): Promise<void> {
   // Activate as many as we can
   const errors = [];
@@ -105,6 +122,10 @@ export async function activateDeployments({
     // activate deployments again
     throw errors[0];
   }
+
+  // Ensure the mod state is persisted before continuing so the content script can immediately pick up the changes
+  // when activating a deployment from the extension console. See: https://github.com/pixiebrix/pixiebrix-extension/issues/8744
+  await flushAndPersist(reloadMode);
 }
 
 export function deactivateUnassignedModComponents({
@@ -132,6 +153,8 @@ export function deactivateUnassignedModComponents({
       );
     }
   }
+
+  void flushAndPersist("immediate");
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,

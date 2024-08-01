@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionPointRegistry from "@/starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import * as backgroundApi from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { getPlatform } from "@/platform/platformContext";
@@ -31,6 +31,7 @@ import {
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 TEST_setContext("background");
 
@@ -70,12 +71,12 @@ describe("contextMenus", () => {
   it("preload context menu", async () => {
     const extensionPoint =
       starterBrickDefinitionFactory() as unknown as StarterBrickDefinitionLike<ContextMenuDefinition>;
-    extensionPoint.definition.type = "contextMenu";
+    extensionPoint.definition.type = StarterBrickTypes.CONTEXT_MENU;
     extensionPoint.definition.contexts = ["all"];
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register([fromJS(getPlatform(), extensionPoint)]);
+    starterBrickRegistry.register([fromJS(getPlatform(), extensionPoint)]);
 
     const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,

@@ -27,23 +27,71 @@ import quickBarActionModComponent from "@/pageEditor/starterBricks/quickBar";
 import triggerModComponent from "@/pageEditor/starterBricks/trigger";
 import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";
 import sidebarPanelModComponent from "@/pageEditor/starterBricks/sidebar";
-import quickBarProviderModComponent from "@/pageEditor/starterBricks/quickBarProvider";
+import dynamicQuickBarModComponent from "@/pageEditor/starterBricks/dynamicQuickBar";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { compact, sortBy } from "lodash";
+import useAsyncState from "@/hooks/useAsyncState";
+import { flagOn } from "@/auth/featureFlagStorage";
 
-export const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>(
-  [
-    [StarterBrickTypes.TRIGGER, triggerModComponent],
-    [StarterBrickTypes.CONTEXT_MENU, contextMenuModComponent],
-    [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
-    [StarterBrickTypes.BUTTON, buttonModComponent],
-    [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
-    [StarterBrickTypes.DYNAMIC_QUICK_BAR, quickBarProviderModComponent],
-  ],
+const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
+  [StarterBrickTypes.TRIGGER, triggerModComponent],
+  [StarterBrickTypes.CONTEXT_MENU, contextMenuModComponent],
+  [StarterBrickTypes.SIDEBAR_PANEL, sidebarPanelModComponent],
+  [StarterBrickTypes.BUTTON, buttonModComponent],
+  [StarterBrickTypes.QUICK_BAR_ACTION, quickBarActionModComponent],
+  [StarterBrickTypes.DYNAMIC_QUICK_BAR, dynamicQuickBarModComponent],
+]);
+
+const ALL_ADAPTERS = sortBy(
+  [...ADAPTERS.values()],
+  (adapter) => adapter.displayOrder,
 );
+
+export const useAvailableFormStateAdapters =
+  (): ModComponentFormStateAdapter[] => {
+    const { data: availableStarterBrickAdapters = [] } = useAsyncState<
+      ModComponentFormStateAdapter[]
+    >(
+      async () => {
+        const results = await Promise.all(
+          ALL_ADAPTERS.map(async (adapter) => {
+            if (!adapter.flag) {
+              return adapter;
+            }
+
+            return (await flagOn(adapter.flag)) ? adapter : null;
+          }),
+        );
+
+        return compact(results);
+      },
+      [],
+      { initialValue: [] },
+    );
+
+    return availableStarterBrickAdapters;
+  };
+
+export function adapter(
+  starterBrickType: StarterBrickType,
+): ModComponentFormStateAdapter {
+  const adapter = ADAPTERS.get(starterBrickType);
+  assertNotNullish(
+    adapter,
+    `No adapter found for starter brick type: ${starterBrickType}`,
+  );
+  return adapter;
+}
+
+export function adapterForComponent(
+  formState: ModComponentFormState,
+): ModComponentFormStateAdapter {
+  return adapter(formState.starterBrick.definition.type);
+}
 
 export async function selectType(
   modComponent: ModComponentBase,
@@ -88,10 +136,11 @@ export async function modComponentToFormState(
 export function formStateToDraftModComponent(
   modComponentFormState: ModComponentFormState,
 ): DraftModComponent {
-  const adapter = ADAPTERS.get(modComponentFormState.type);
+  const starterBrickType = modComponentFormState.starterBrick.definition.type;
+  const adapter = ADAPTERS.get(starterBrickType);
   assertNotNullish(
     adapter,
-    `No adapter found for starter brick type: ${modComponentFormState.type}`,
+    `No adapter found for starter brick type: ${starterBrickType}`,
   );
   return adapter.asDraftModComponent(modComponentFormState);
 }

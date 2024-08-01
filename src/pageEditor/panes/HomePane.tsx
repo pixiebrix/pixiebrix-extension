@@ -20,7 +20,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import paintbrush from "@img/paintbrush.svg";
 import bgIllustration from "@img/home-pane-bg-illustration.png";
 

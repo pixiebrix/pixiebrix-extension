@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const mapValueBrick = new MapValues();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, mapValueBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, mapValueBrick]);
 });
 
 describe("MapValues", () => {
@@ -51,7 +51,7 @@ describe("MapValues", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ elements: [1, 2, 3] }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual([
       { message: "iteration 1" },

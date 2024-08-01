@@ -19,9 +19,8 @@ import {
   type PlatformCapability,
   PlatformCapabilityNotAvailableError,
 } from "@/platform/capabilities";
-import type { RegistryId, SemVerString } from "@/types/registryTypes";
+import type { SemVerString } from "@/types/registryTypes";
 import type { FormDefinition } from "@/platform/forms/formTypes";
-import type { UUID } from "@/types/stringTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
@@ -42,6 +41,8 @@ import type { ClipboardProtocol } from "@/platform/platformTypes/clipboardProtoc
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
+import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
 
 /**
  * Base protocol with no capabilities implemented.
@@ -72,10 +73,7 @@ export class PlatformBase implements PlatformProtocol {
   async form(
     _definition: FormDefinition,
     _controller: AbortController,
-    _context: {
-      componentId: UUID;
-      modId?: RegistryId;
-    },
+    _context: ModComponentRef,
   ): Promise<unknown> {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "form");
   }
@@ -115,6 +113,10 @@ export class PlatformBase implements PlatformProtocol {
 
   get audio(): AudioProtocol {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "audio");
+  }
+
+  get capture(): CaptureProtocol {
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "capture");
   }
 
   get state(): StateProtocol {

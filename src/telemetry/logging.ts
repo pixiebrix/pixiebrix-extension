@@ -44,14 +44,12 @@ import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
-import {
-  type RecordErrorMessage,
-  setupOffscreenDocument,
-} from "@/tinyPages/offscreen";
+import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
+import { type RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
-const DB_VERSION_NUMBER = 3;
+const DB_VERSION_NUMBER = 4;
 /**
  * Maximum number of most recent logs to keep in the database. A low-enough number that performance should not be
  * impacted due to the number of entries.
@@ -88,11 +86,11 @@ interface LogDB extends DBSchema {
     value: LogEntry;
     key: string;
     indexes: {
-      extensionId: string;
-      blueprintId: string;
-      blockId: string;
-      extensionPointId: string;
-      serviceId: string;
+      modComponentId: string;
+      modId: string;
+      brickId: string;
+      starterBrickId: string;
+      integrationId: string;
       authId: string;
     };
   };
@@ -103,10 +101,10 @@ type IndexKey = keyof Except<
   | "deploymentId"
   | "label"
   | "pageName"
-  | "blueprintVersion"
-  | "blockVersion"
-  | "serviceVersion"
-  | "extensionLabel"
+  | "modVersion"
+  | "brickVersion"
+  | "integrationVersion"
+  | "modComponentLabel"
   | "platformName"
   | "url"
   | "connectionType"
@@ -114,11 +112,11 @@ type IndexKey = keyof Except<
 >;
 
 const INDEX_KEYS = [
-  "extensionId",
-  "blueprintId",
-  "blockId",
-  "extensionPointId",
-  "serviceId",
+  "modComponentId",
+  "modId",
+  "brickId",
+  "starterBrickId",
+  "integrationId",
   "authId",
 ] as const satisfies IndexKey[];
 
@@ -399,15 +397,13 @@ export async function reportToApplicationErrorTelemetry(
   // we need to send the error from an offscreen document.
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
   // and offscreen.ts
-  await setupOffscreenDocument();
+  await ensureOffscreenDocument();
 
-  const recordErrorMessage: RecordErrorMessage = {
+  await chrome.runtime.sendMessage({
     type: "record-error",
     target: "offscreen-doc",
     data: errorData,
-  };
-
-  await chrome.runtime.sendMessage(recordErrorMessage);
+  } satisfies RecordErrorMessage);
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
@@ -496,17 +492,17 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 }
 
 /**
- * Clear all debug and trace level logs for the given extension.
+ * Clear all debug and trace level logs for the given mod component.
  */
-export async function clearExtensionDebugLogs(
-  extensionId: UUID,
+export async function clearModComponentDebugLogs(
+  modComponentId: UUID,
 ): Promise<void> {
   const db = await openLoggingDB();
 
   try {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-    const index = tx.store.index("extensionId");
-    for await (const cursor of index.iterate(extensionId)) {
+    const index = tx.store.index("modComponentId");
+    for await (const cursor of index.iterate(modComponentId)) {
       if (cursor.value.level === "debug" || cursor.value.level === "trace") {
         await cursor.delete();
       }

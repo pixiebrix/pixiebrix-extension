@@ -44,7 +44,7 @@ describe("ScrollToElementEffect", () => {
     await expect(brick.isRootAware()).resolves.toBe(true);
   });
 
-  test("it scrolls for selector", async () => {
+  it("scrolls for selector", async () => {
     await brick.run(
       unsafeAssumeValidArg({ selector: "button" }),
       brickOptionsFactory(),
@@ -53,7 +53,7 @@ describe("ScrollToElementEffect", () => {
     expect(scrollIntoViewMock).toHaveBeenCalled();
   });
 
-  test("it scrolls to element for element for isRootAware: true", async () => {
+  it("scrolls to element for element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({}),
       brickOptionsFactory({ root: document.querySelector("button")! }),

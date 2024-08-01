@@ -1,0 +1,58 @@
+Index: description-change
+===================================================================
+--- description-change
++++ description-change
+@@ -23,52 +23,52 @@
+       body:
+         - config:
+             body:
+               - children:
+                   - children:
+                       - children:
+                           - config:
+                               heading: h1
+                               title: !nunjucks Simple Sidebar Panel
+                             type: header
+                         config: {}
+                         type: column
+                     config: {}
+                     type: row
+                   - children:
+                       - children:
+                           - config:
+                               enableMarkdown: true
+                               text: !nunjucks >-
+                                 Simple sidebar panel for testing sidepanel
+                                 open/close behavior
+                             type: text
+                         config: {}
+                         type: column
+                     config: {}
+                     type: row
+                 config: {}
+                 type: container
+           id: '@pixiebrix/document'
+           root: null
+           rootMode: document
+       heading: Simple Sidebar Panel
+     id: extensionPoint
+     label: Simple Sidebar Panel
+     permissions:
+       origins: []
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+-  description: Created with the PixieBrix Page Editor
++  description: Created in end to end tests
+   id: >-
+     @extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000
+   name: Simple Sidebar Panel
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

@@ -52,6 +52,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
         >
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -108,6 +109,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
           </div>
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -164,6 +166,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
           </div>
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -220,6 +223,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
           </div>
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -276,6 +280,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
           </div>
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -332,6 +337,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
           </div>
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"
@@ -388,6 +394,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
           </div>
           <div
             class="formGroup form-group"
+            data-testid="field-template-form-group"
           >
             <div
               class="mb-2 w-100 collapse"

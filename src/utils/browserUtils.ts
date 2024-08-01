@@ -32,12 +32,27 @@ const brands: Array<{ brand: string }> =
 /**
  * Return true if the browser is Google Chrome.
  *
- * Unlike webext-detect-page, attempts to exclude other Chromium-based browsers like Microsoft Edge, Brave, and Opera.
+ * Unlike webext-detect, attempts to exclude other Chromium-based browsers like Microsoft Edge, Brave, and Opera.
  */
-export function isGoogleChrome(): boolean {
+function isGoogleChrome(): boolean {
   return brands.some((x) => x.brand === "Google Chrome");
 }
 
+/**
+ * Return true if the browser is Microsoft Edge.
+ */
 export function isMicrosoftEdge(): boolean {
   return brands.some((x) => x.brand === "Microsoft Edge");
+}
+
+/**
+ * Return true if the browser is an officially supported browser.
+ *
+ * Should match browser support matrix in documentation:
+ * https://docs.pixiebrix.com/enterprise-it-setup/browser-extension-installation-and-configuration
+ *
+ * @since 2.0.5
+ */
+export function isOfficiallySupportedBrowser(): boolean {
+  return isGoogleChrome() || isMicrosoftEdge();
 }

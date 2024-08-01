@@ -47,7 +47,7 @@ import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError");
-jest.mock("@/utils/extensionUtils");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/background/contextMenus/uninstallContextMenu");
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);

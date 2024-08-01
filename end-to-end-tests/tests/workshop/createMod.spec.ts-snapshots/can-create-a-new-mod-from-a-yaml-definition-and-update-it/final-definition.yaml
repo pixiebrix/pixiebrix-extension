@@ -1,0 +1,73 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - "*"
+metadata:
+  id: "@extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000"
+  name: Simple Sidebar Panel
+  version: 1.0.0
+  description: Created in end to end tests
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: actionPanel
+      reader:
+        - "@pixiebrix/document-metadata"
+        - "@pixiebrix/document-context"
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+      trigger: load
+      debounce:
+        waitMillis: 250
+        leading: false
+        trailing: true
+      customEvent: null
+extensionPoints:
+  - label: Simple Sidebar Panel
+    config:
+      heading: Simple Sidebar Panel -- Updated
+      body:
+        - id: "@pixiebrix/document"
+          rootMode: document
+          config:
+            body:
+              - type: container
+                config: {}
+                children:
+                  - type: row
+                    config: {}
+                    children:
+                      - type: column
+                        config: {}
+                        children:
+                          - type: header
+                            config:
+                              title: !nunjucks Simple Sidebar Panel
+                              heading: h1
+                  - type: row
+                    config: {}
+                    children:
+                      - type: column
+                        config: {}
+                        children:
+                          - type: text
+                            config:
+                              text: !nunjucks >-
+                                Simple sidebar panel for testing sidepanel
+                                open/close behavior
+                              enableMarkdown: true
+          root: null
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}

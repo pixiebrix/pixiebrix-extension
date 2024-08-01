@@ -65,6 +65,8 @@ import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
 import ConnectingOverlay from "@/sidebar/ConnectingOverlay";
 
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+
 const ActivateModPanel = lazy(
   async () =>
     import(
@@ -209,7 +211,7 @@ const Tabs: React.FC = () => {
         >
           {panels.map((panel) => (
             <TabWithDivider
-              key={panel.extensionId}
+              key={panel.modComponentRef.modComponentId}
               active={isPanelActive(panel)}
               eventKey={eventKeyForEntry(panel)}
             >
@@ -224,7 +226,7 @@ const Tabs: React.FC = () => {
 
           {forms.map((form) => (
             <TabWithDivider
-              key={form.extensionId}
+              key={form.modComponentRef.modComponentId}
               active={isPanelActive(form)}
               eventKey={eventKeyForEntry(form)}
             >
@@ -309,15 +311,16 @@ const Tabs: React.FC = () => {
               // un-submitted form state/scroll position
               unmountOnExit={false}
               className={cx("full-height flex-grow", styles.paneOverrides)}
-              key={panel.extensionId}
+              key={panel.modComponentRef.modComponentId}
               eventKey={eventKeyForEntry(panel)}
             >
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
+                    ...mapModComponentRefToMessageContext(
+                      panel.modComponentRef,
+                    ),
                     panelType: panel.type,
-                    extensionId: panel.extensionId,
-                    blueprintId: panel.blueprintId,
                   });
                 }}
               >
@@ -335,11 +338,9 @@ const Tabs: React.FC = () => {
                   isRootPanel
                   payload={panel.payload}
                   onAction={permanentSidebarPanelAction}
-                  context={{
-                    extensionId: panel.extensionId,
-                    extensionPointId: panel.extensionPointId,
-                    blueprintId: panel.blueprintId,
-                  }}
+                  context={mapModComponentRefToMessageContext(
+                    panel.modComponentRef,
+                  )}
                 />
               </ErrorBoundary>
             </Tab.Pane>
@@ -354,9 +355,8 @@ const Tabs: React.FC = () => {
               <ErrorBoundary
                 onError={() => {
                   reportEvent(Events.VIEW_ERROR, {
+                    ...mapModComponentRefToMessageContext(form.modComponentRef),
                     panelType: form.type,
-                    extensionId: form.extensionId,
-                    blueprintId: form.blueprintId,
                   });
                 }}
               >
@@ -392,7 +392,7 @@ const Tabs: React.FC = () => {
                     reportEvent(Events.VIEW_ERROR, {
                       panelType: "activate",
                       // For backward compatability, provide a single modId to the recipeToActivate property
-                      recipeToActivate: modActivationPanel.mods[0].modId,
+                      modToActivate: modActivationPanel.mods[0].modId,
                       modCount: modActivationPanel.mods.length,
                       modIds: modActivationPanel.mods.map((x) => x.modId),
                     });

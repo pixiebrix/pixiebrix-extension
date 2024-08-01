@@ -17,7 +17,7 @@
 
 import React from "react";
 import { partial } from "lodash";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { COMMON_PROPERTIES } from "@/contrib/automationanywhere/RunBot";
 import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
@@ -168,7 +168,7 @@ const BotOptionsContent: React.FunctionComponent<{
   );
 };
 
-const BotOptions: React.FC<BlockOptionProps> = ({ name, configKey }) => {
+const BotOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
   const configName = partial(joinName, name, configKey);
   return (
     <RequireIntegrationConfig

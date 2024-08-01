@@ -26,7 +26,6 @@ import {
   uuidv4,
   validateRegistryId,
   normalizeSemVerString,
-  validateTimestamp,
 } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -43,6 +42,7 @@ import {
 } from "@/integrations/constants";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(

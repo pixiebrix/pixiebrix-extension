@@ -19,17 +19,15 @@ import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import {
   CustomFormRenderer,
   type StateStorage,
   type Storage,
 } from "@/bricks/renderers/customForm";
-import { StateNamespaces } from "@/platform/state/stateController";
 
-const fallbackMessage =
-  "This brick is not in a Mod. It will fall back to Public state, which other Mods can read and overwrite.";
+import { StateNamespaces } from "@/platform/state/stateTypes";
+
 const publicMessage =
   "The Public namespace is for advanced use cases. Other Mods are able to read and overwrite Public state.";
 
@@ -37,56 +35,35 @@ const publicMessage =
  * A visitor that checks for standard uses of page state.
  */
 class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
-  private isInMod = false;
-
   get id(): string {
     return "pageState";
   }
 
   override visitBrick(
     position: BrickPosition,
-    blockConfig: BrickConfig,
+    brickConfig: BrickConfig,
     extra: VisitBlockExtra,
   ): void {
-    super.visitBrick(position, blockConfig, extra);
+    super.visitBrick(position, brickConfig, extra);
 
     if (
-      blockConfig.id === SetPageState.BRICK_ID ||
-      blockConfig.id === GetPageState.BRICK_ID
+      [SetPageState.BRICK_ID, GetPageState.BRICK_ID].includes(brickConfig.id) &&
+      brickConfig.config.namespace === StateNamespaces.PUBLIC
     ) {
-      if (
-        blockConfig.config.namespace === StateNamespaces.MOD &&
-        !this.isInMod
-      ) {
-        this.annotations.push({
-          position: nestedPosition(position, "config", "namespace"),
-          message: fallbackMessage,
-          analysisId: this.id,
-          type: AnnotationType.Warning,
-        });
-      } else if (blockConfig.config.namespace === StateNamespaces.PUBLIC) {
-        this.annotations.push({
-          position: nestedPosition(position, "config", "namespace"),
-          message: publicMessage,
-          analysisId: this.id,
-          type: AnnotationType.Info,
-        });
-      }
+      this.annotations.push({
+        position: nestedPosition(position, "config", "namespace"),
+        message: publicMessage,
+        analysisId: this.id,
+        type: AnnotationType.Info,
+      });
     }
 
     if (
-      blockConfig.id === CustomFormRenderer.BRICK_ID &&
-      (blockConfig.config.storage as Storage)?.type === "state"
+      brickConfig.id === CustomFormRenderer.BRICK_ID &&
+      (brickConfig.config.storage as Storage)?.type === "state"
     ) {
-      const storage = blockConfig.config.storage as StateStorage;
-      if (storage.namespace === StateNamespaces.MOD && !this.isInMod) {
-        this.annotations.push({
-          position: nestedPosition(position, "config", "storage", "namespace"),
-          message: fallbackMessage,
-          analysisId: this.id,
-          type: AnnotationType.Warning,
-        });
-      } else if (storage.namespace === StateNamespaces.PUBLIC) {
+      const storage = brickConfig.config.storage as StateStorage;
+      if (storage.namespace === StateNamespaces.PUBLIC) {
         this.annotations.push({
           position: nestedPosition(position, "config", "storage", "namespace"),
           message: publicMessage,
@@ -95,11 +72,6 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
         });
       }
     }
-  }
-
-  override async run(extension: ModComponentFormState): Promise<void> {
-    this.isInMod = Boolean(extension.recipe);
-    await super.run(extension);
   }
 }
 

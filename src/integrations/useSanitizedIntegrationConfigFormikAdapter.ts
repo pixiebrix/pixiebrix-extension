@@ -20,7 +20,7 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
@@ -85,8 +85,11 @@ function useSanitizedIntegrationConfigFormikAdapter(
     }
 
     const { integrationId, configId } = integrationDependency;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- unconfigured dependencies are filtered out
-    return services.locate(integrationId, configId!);
+    return integrationConfigLocator.findSanitizedIntegrationConfig(
+      integrationId,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- unconfigured dependencies are filtered out
+      configId!,
+    );
   }, [integrationDependency]);
 }
 

@@ -21,13 +21,13 @@ import React, { useCallback, useMemo } from "react";
 import { type Column, type Row } from "react-table";
 import { isEqual } from "lodash";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
-import { type RootState } from "@/store/optionsStore";
+import { type RootState } from "@/extensionConsole/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import BrickIcon from "@/components/BrickIcon";
+import PackageIcon from "@/components/PackageIcon";
 import {
   type Integration,
   type IntegrationConfig,
@@ -127,7 +127,7 @@ const columnFactory = ({
 
       return (
         <>
-          <BrickIcon brick={value} size="1x" />
+          <PackageIcon packageOrMetadata={value} size="1x" />
           <div className="ml-2">
             <div className="text-wrap">{value.name}</div>
             <div className="text-wrap">

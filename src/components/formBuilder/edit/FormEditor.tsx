@@ -37,13 +37,14 @@ import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
 import { joinName } from "@/utils/formUtils";
 import { ActiveField } from "./ActiveField";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type FormEditorProps = {
   /**
    * The Formik name of the form field.
    */
   name: string;
-  activeField?: string;
+  activeField: string | null;
   setActiveField: SetActiveField;
   fieldTypes?: SelectStringOption[];
 };
@@ -110,6 +111,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       normalizeSchema(draft);
+      assertNotNullish(draft.schema?.properties, "Schema normalization failed");
 
       // eslint-disable-next-line security/detect-object-injection -- prop name is generated
       draft.schema.properties[propertyName] = newProperty;
@@ -126,6 +128,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   const removeProperty = async () => {
+    assertNotNullish(activeField, "Active field is not set");
     const propertyToRemove = activeField;
     const nextUiOrder = replaceStringInArray(
       getNormalizedUiOrder(propertyKeys, uiOrder),
@@ -133,14 +136,17 @@ const FormEditor: React.FC<FormEditorProps> = ({
     );
     const nextActiveField = nextUiOrder.length > 1 ? nextUiOrder[0] : undefined;
 
-    setActiveField(nextActiveField);
+    // Convert undefined to null
+    setActiveField(nextActiveField ?? null);
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       normalizeSchema(draft);
+      assertNotNullish(draft.schema?.properties, "Schema normalization failed");
 
-      if (schema.required?.length > 0) {
+      if (Number(draft.schema.required?.length) > 0) {
         draft.schema.required = replaceStringInArray(
-          schema.required,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
+          draft.schema.required!,
           propertyToRemove,
         );
       }

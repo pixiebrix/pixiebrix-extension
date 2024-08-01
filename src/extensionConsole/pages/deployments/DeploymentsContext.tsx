@@ -25,7 +25,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { services } from "@/background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
 import useFlags, { type Restrict } from "@/hooks/useFlags";
@@ -54,6 +54,8 @@ import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Permissions } from "webextension-polyfill";
 import useDeactivateUnassignedDeploymentsEffect from "@/extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
 export type DeploymentsState = {
   /**
@@ -118,8 +120,14 @@ function useDeployments(): DeploymentsState {
   const deploymentUpdateState = useDeriveAsyncState(
     deploymentsState,
     flagsState,
-    async (deployments: Deployment[], { restrict }: Restrict) => {
-      const isUpdated = makeUpdatedFilter(activatedModComponents, {
+    // Including activatedModComponents in the dependencies to ensure the derived state is recalculated when they change
+    valueToAsyncState(activatedModComponents),
+    async (
+      deployments: Deployment[],
+      { restrict }: Restrict,
+      _activatedModComponents: ActivatedModComponent[],
+    ) => {
+      const isUpdated = makeUpdatedFilter(_activatedModComponents, {
         restricted: restrict("uninstall"),
       });
 
@@ -127,7 +135,7 @@ function useDeployments(): DeploymentsState {
         deployments.map((deployment) => deployment.package.package_id),
       );
 
-      const unassignedModComponents = activatedModComponents.filter(
+      const unassignedModComponents = _activatedModComponents.filter(
         (activeModComponent) =>
           activeModComponent._deployment &&
           activeModComponent._recipe &&
@@ -151,7 +159,8 @@ function useDeployments(): DeploymentsState {
             activatableDeployments.map(async (activatableDeployment) =>
               checkDeploymentPermissions({
                 activatableDeployment,
-                locate: services.locateAllForId,
+                locate:
+                  integrationConfigLocator.findAllSanitizedConfigsForIntegration,
                 // In the UI context, always prompt the user to accept permissions to ensure they get the full
                 // functionality of the mod
                 optionalPermissions: [],
@@ -246,6 +255,7 @@ function useDeployments(): DeploymentsState {
         dispatch,
         activatableDeployments,
         activatedModComponents,
+        reloadMode: "immediate",
       });
       notify.success("Updated team deployments");
     } catch (error) {

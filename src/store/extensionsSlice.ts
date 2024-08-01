@@ -39,15 +39,30 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { initialState } from "@/store/extensionsSliceInitialState";
-import { getActivatedModComponentFromDefinition } from "@/activation/getActivatedModComponentFromDefinition";
+import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 
 type ActivateModPayload = {
+  /**
+   * The mod definition to activate.
+   */
   modDefinition: ModDefinition;
+  /**
+   * Optionally force a specific mod component id to be assigned to the mod. If the mod definition has multiple
+   * components, an error will be thrown.
+   * @since 2.0.6
+   */
+  forceModComponentId?: UUID;
   /**
    * Mod integration dependencies with configs filled in
    */
   configuredDependencies?: IntegrationDependency[];
+  /**
+   * Options supplied by the user during activation, or the deployment.
+   */
   optionsArgs?: OptionsArgs;
+  /**
+   * The deployment that activated the mod. Or undefined if not associated with a deployment.
+   */
   deployment?: Deployment;
   /**
    * The screen or source of the activation. Used for telemetry.
@@ -125,6 +140,7 @@ const extensionsSlice = createSlice({
       {
         payload: {
           modDefinition,
+          forceModComponentId,
           configuredDependencies,
           optionsArgs,
           deployment,
@@ -133,6 +149,12 @@ const extensionsSlice = createSlice({
         },
       }: PayloadAction<ActivateModPayload>,
     ) {
+      if (modDefinition.extensionPoints.length > 1 && forceModComponentId) {
+        throw new Error(
+          "forceModComponentId is not allowed when activating a mod with multiple components",
+        );
+      }
+
       for (const modComponentDefinition of modDefinition.extensionPoints) {
         // May be null from bad Workshop edit?
         if (modComponentDefinition.id == null) {
@@ -150,7 +172,8 @@ const extensionsSlice = createSlice({
         }
 
         const activatedModComponent: ActivatedModComponent =
-          getActivatedModComponentFromDefinition({
+          mapModComponentDefinitionToActivatedModComponent({
+            modComponentId: forceModComponentId,
             modComponentDefinition,
             modDefinition,
             deployment,
@@ -165,7 +188,7 @@ const extensionsSlice = createSlice({
           selectEventData(activatedModComponent),
         );
 
-        // NOTE: do not save the extensions in the cloud (because the user can just activate from the marketplace /
+        // NOTE: do not save the mod components in the cloud (because the user can just activate from the marketplace /
         // or activate the deployment again
         state.extensions.push(activatedModComponent);
 
@@ -174,8 +197,8 @@ const extensionsSlice = createSlice({
       }
 
       reportEvent(Events.MOD_ACTIVATE, {
-        blueprintId: modDefinition.metadata.id,
-        blueprintVersion: modDefinition.metadata.version,
+        modId: modDefinition.metadata.id,
+        modVersion: modDefinition.metadata.version,
         deploymentId: deployment?.id,
         screen,
         reinstall: isReactivate,

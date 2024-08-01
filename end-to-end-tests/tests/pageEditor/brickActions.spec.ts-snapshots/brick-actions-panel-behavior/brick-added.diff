@@ -1,0 +1,89 @@
+Index: brick-added
+===================================================================
+--- brick-added
++++ brick-added
+@@ -6,77 +6,84 @@
+       containerSelector: span:has(> span:contains('Review in codespace'))
+       isAvailable:
+         allFrames: true
+         matchPatterns:
+           - https://github.com/*
+         selectors: []
+         urlPatterns: []
+       position: append
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+         - element: '@pixiebrix/html/element'
+       targetMode: document
+       template: <span class="Button-label">{{{ caption }}}</span>
+       type: menuItem
+     kind: extensionPoint
+ extensionPoints:
+   - config:
+       action:
+         - config:
+             cancelable: true
+             location: modal
+             schema:
+               properties:
+                 example:
+                   description: An example form field
+                   title: Example Field
+                   type: string
+               title: Example Form
+               type: object
+             submitCaption: Submit
+             uiSchema:
+               ui:order:
+                 - '*'
+           id: '@pixiebrix/form-modal'
+           label: Custom modal 123
+           outputKey: form
+           root: null
+           rootMode: document
+         - config:
++            data: []
++            key: !nunjucks ''
++          id: '@pixies/util/set-mod-variable'
++          outputKey: output
++          root: null
++          rootMode: document
++        - config:
+             value: !nunjucks ''
+           id: '@pixiebrix/state/assign'
+           label: Assign Mod Var Brick 123
+           root: null
+           rootMode: document
+         - config:
+             duration: 2500
+             message: !nunjucks ''
+             type: info
+           id: '@pixiebrix/browser/alert'
+           label: Alert Brick 123
+           root: null
+           rootMode: document
+       caption: Action
+       dynamicCaption: false
+       onSuccess: true
+       synchronous: false
+     id: extensionPoint
+     label: Button
+     permissions:
+       origins: []
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+   description: Created with the PixieBrix Page Editor
+   id: >-
+     @extension-e2e-test-unaffiliated/brick-actions-00000000-0000-0000-0000-000000000000
+   name: Mod Actions Test
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

@@ -19,7 +19,7 @@ import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfi
 import { validateRegistryId } from "@/types/helpers";
 import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 describe("getUnconfiguredComponentIntegrations", () => {
   it("returns empty if no integrations", () => {
@@ -36,10 +36,10 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -85,10 +85,10 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service2"],
@@ -100,11 +100,11 @@ describe("getUnconfiguredComponentIntegrations", () => {
         properties: {
           // Same outputKey as above for service1
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
           // Unique outputKey for service2
           service3: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: ["service1", "service3"],
@@ -147,10 +147,10 @@ describe("getUnconfiguredComponentIntegrations", () => {
       services: {
         properties: {
           service1: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId1}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId1}`,
           },
           service2: {
-            $ref: `${SERVICES_BASE_SCHEMA_URL}${serviceId2}`,
+            $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${serviceId2}`,
           },
         },
         required: [],

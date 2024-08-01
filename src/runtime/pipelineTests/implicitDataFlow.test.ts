@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -26,14 +26,14 @@ import {
   identityBrick,
   simpleInput,
   teapotBrick,
-  testOptions,
 } from "./pipelineTestHelpers";
 import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([
+  brickRegistry.clear();
+  brickRegistry.register([
     echoBrick,
     contextBrick,
     teapotBrick,
@@ -57,7 +57,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "bar" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ message: "hello, bar" });
   });
@@ -76,7 +76,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "bar" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({
       "@input": { inputArg: "bar" },
@@ -107,7 +107,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "bar" }),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({
       "@input": { inputArg: "bar" },
@@ -136,7 +136,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
 
     expect(result).toStrictEqual({
@@ -170,7 +170,7 @@ describe("pass non-objects direct to next component", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual([
       // The output from arrayBrick
@@ -196,7 +196,7 @@ describe("pass non-objects direct to next component", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({}),
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ data: "{{ foo }}" });
   });
@@ -219,7 +219,7 @@ describe("pass non-objects direct to next component", () => {
         const result = await reducePipeline(
           pipeline,
           simpleInput({}),
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
 
         expect(result).toStrictEqual({

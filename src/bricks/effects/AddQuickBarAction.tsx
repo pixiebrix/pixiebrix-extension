@@ -64,14 +64,14 @@ const DEFAULT_PRIORITY = 1;
 
 /**
  * An effect that adds an action to the PixieBrix Quick Bar.
- * @see QuickBarProviderExtensionPoint
+ * @see DynamicQuickBarStarterBrick
  */
 class AddQuickBarAction extends EffectABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/quickbar/add");
+  static BRICK_ID = validateRegistryId("@pixiebrix/quickbar/add");
 
   constructor() {
     super(
-      AddQuickBarAction.BLOCK_ID,
+      AddQuickBarAction.BRICK_ID,
       "Add Quick Bar Action",
       "Add an action to the PixieBrix Quick Bar",
     );
@@ -116,7 +116,7 @@ class AddQuickBarAction extends EffectABC {
         description: "The action to perform when the Quick Bar Action is run",
       },
       priority: {
-        // By default in KBar, each action has a base priority value of 1. So we're just keeping the default
+        // By default, in KBar, each action has a base priority value of 1. So we're just keeping the default
         // https://kbar.vercel.app/docs/concepts/priority
         description:
           "The priority of the action. Higher priority actions appear first. (HIGH = 1, MEDIUM = 0, LOW = -1)",
@@ -137,9 +137,16 @@ class AddQuickBarAction extends EffectABC {
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
     }: BrickArgs<ActionConfig>,
-    { root, logger, runPipeline, abortSignal, platform }: BrickOptions,
+    {
+      root,
+      runPipeline,
+      abortSignal,
+      platform,
+      meta: { modComponentRef },
+    }: BrickOptions,
   ): Promise<void> {
     const { quickBar } = platform;
+    const { modComponentId } = modComponentRef;
 
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
     if (abortSignal?.aborted) {
@@ -149,15 +156,14 @@ class AddQuickBarAction extends EffectABC {
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
-    // Expected parent id from QuickBarProviderExtensionPoint
-    const parentId = `provider-${logger.context.extensionId}`;
+    // Expected parent id from DynamicQuickBarStarterBrickABC
+    const parentId = `provider-${modComponentId}`;
 
     const action: CustomAction = {
-      // XXX: old actions will still appear in the quick bar unless the extension point clears out the old actions
-      id: `${logger.context.extensionId}-${title}`,
+      // XXX: old actions will still appear in the quick bar unless the starter brick clears out the old actions
+      id: `${modComponentId}-${title}`,
       // Additional metadata, for enabling clearing out old actions
-      extensionPointId: logger.context.extensionPointId,
-      extensionId: logger.context.extensionId,
+      modComponentRef,
       // Can only provide a parent if the parent exists
       parent: quickBar.knownGeneratorRootIds.has(parentId)
         ? parentId
@@ -166,7 +172,7 @@ class AddQuickBarAction extends EffectABC {
       subtitle,
       section,
       priority,
-      // Defaults to a box; match behavior from Quick Bar Action extension point
+      // Defaults to a box; match behavior from Quick Bar Action starter brick
       icon: iconConfig ? (
         <Icon icon={iconConfig.id} library={iconConfig.library} />
       ) : (

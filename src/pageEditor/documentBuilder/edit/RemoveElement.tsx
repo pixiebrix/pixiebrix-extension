@@ -20,8 +20,9 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { useSelector } from "react-redux";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type RemoveElementProps = {
   documentBodyName: string;
@@ -31,6 +32,7 @@ const RemoveElement: React.FC<RemoveElementProps> = ({ documentBodyName }) => {
   const activeElement = useSelector(selectActiveBuilderPreviewElement);
   const deleteElement = useDeleteElement(documentBodyName);
   const onDelete = async () => {
+    assertNotNullish(activeElement, "activeElement is required to delete");
     await deleteElement(activeElement);
   };
 

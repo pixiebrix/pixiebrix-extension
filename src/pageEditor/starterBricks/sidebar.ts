@@ -43,6 +43,7 @@ import {
   type SidebarDefinition,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
@@ -50,16 +51,15 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const heading = "Sidebar Panel";
 
   return {
-    type: "actionPanel",
     label: heading,
     ...base,
-    extensionPoint: {
+    starterBrick: {
       metadata,
 
       definition: {
-        type: "actionPanel",
+        type: StarterBrickTypes.SIDEBAR_PANEL,
         isAvailable: ALL_SITES_AVAILABILITY,
-        reader: getImplicitReader("actionPanel"),
+        reader: getImplicitReader(StarterBrickTypes.SIDEBAR_PANEL),
 
         trigger: "load",
 
@@ -72,9 +72,9 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
         customEvent: null,
       },
     },
-    extension: {
+    modComponent: {
       heading,
-      blockPipeline: [],
+      brickPipeline: [],
     },
   };
 }
@@ -82,14 +82,14 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
 function selectStarterBrickDefinition(
   formState: SidebarFormState,
 ): StarterBrickDefinitionLike {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: { isAvailable, reader, trigger, debounce, customEvent },
   } = starterBrick;
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "actionPanel",
+      type: StarterBrickTypes.SIDEBAR_PANEL,
       reader,
       isAvailable,
       trigger,
@@ -103,12 +103,12 @@ function selectModComponent(
   state: SidebarFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: SidebarConfig = {
     heading: modComponent.heading,
     body: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -120,7 +120,7 @@ function asDraftModComponent(
   sidebarFormState: SidebarFormState,
 ): DraftModComponent {
   return {
-    type: "actionPanel",
+    type: StarterBrickTypes.SIDEBAR_PANEL,
     extension: selectModComponent(sidebarFormState, {
       includeInstanceIds: true,
     }),
@@ -134,8 +134,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     SidebarDefinition,
     SidebarConfig,
-    "actionPanel"
-  >(config, "actionPanel");
+    typeof StarterBrickTypes.SIDEBAR_PANEL
+  >(config, StarterBrickTypes.SIDEBAR_PANEL);
 
   const base = baseFromModComponent(config, starterBrick.definition.type);
   const modComponent = await modComponentWithNormalizedPipeline(
@@ -154,8 +154,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         ...starterBrick.definition,
@@ -171,7 +171,7 @@ async function fromModComponent(
 
 const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   displayOrder: 3,
-  elementType: "actionPanel",
+  starterBrickType: StarterBrickTypes.SIDEBAR_PANEL,
   label: "Sidebar Panel",
   baseClass: SidebarStarterBrickABC,
   selectNativeElement: undefined,

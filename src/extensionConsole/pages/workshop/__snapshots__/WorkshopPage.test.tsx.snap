@@ -70,7 +70,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
       </div>
       <div>
         <button
-          class="btn btn-info"
+          class="btn btn-primary"
           type="button"
         >
           <svg
@@ -88,7 +88,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
               fill="currentColor"
             />
           </svg>
-           Create New Brick
+           Create New Package
         </button>
       </div>
     </div>
@@ -96,7 +96,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
       class="pb-4"
     >
       <p>
-        Text-based editor for advanced users to create and edit bricks. Mods created in the Page Editor can also be edited here.
+        Text-based editor for advanced users to create and edit registry packages. Mods created with the Page Editor can also be edited here
       </p>
     </div>
     <div
@@ -386,7 +386,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
             <div
               class="flex-grow-1"
             >
-              Custom Bricks
+              Packages
             </div>
           </div>
           <div
@@ -417,7 +417,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
                       <div
                         class="header-content d-flex"
                       >
-                        Name
+                        Package Name
                         <span
                           class="text-muted ml-2"
                         >
@@ -584,15 +584,7 @@ exports[`WorkshopPage renders empty workshop 1`] = `
                       </div>
                       <div
                         class="flex-grow-1 px-3"
-                      >
-                        <input
-                          class="form-control form-control-sm"
-                          placeholder="Filter records..."
-                          style="max-width: 300px;"
-                          type="text"
-                          value=""
-                        />
-                      </div>
+                      />
                       <ul
                         class="m-0 pagination"
                       >
@@ -766,6 +758,7 @@ exports[`WorkshopPage require account alias 1`] = `
       >
         <div
           class="formGroup form-group"
+          data-testid="field-template-form-group"
         >
           <div
             class="mb-2 w-100 collapse"

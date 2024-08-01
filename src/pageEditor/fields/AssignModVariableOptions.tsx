@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
@@ -27,8 +27,9 @@ import { selectKnownVarsForActiveNode } from "@/components/fields/schemaFields/w
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
-function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
+function schemaWithKnownVariableNames(varMap: Nullishable<VarMap>): Schema {
   const map = varMap?.getMap() ?? {};
   // eslint-disable-next-line security/detect-object-injection -- compile time constant
   const modVars = map[KnownSources.MOD]?.[MOD_VARIABLE_REFERENCE];
@@ -38,6 +39,12 @@ function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
   );
 
   const schema = new AssignModVariable().inputSchema;
+
+  assertNotNullish(
+    schema.properties,
+    "AssignModVariable inputSchema.properties is required",
+  );
+
   return {
     properties: {
       ...schema.properties,
@@ -50,7 +57,7 @@ function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
   };
 }
 
-const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
+const AssignModVariableOptions: React.FC<BrickOptionProps> = ({
   name,
   configKey,
 }) => {
@@ -62,6 +69,11 @@ const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
   const { properties } = useMemo(
     () => schemaWithKnownVariableNames(varMap),
     [varMap],
+  );
+
+  assertNotNullish(
+    properties,
+    "schema properties are required to assign mod variable options",
   );
 
   return (

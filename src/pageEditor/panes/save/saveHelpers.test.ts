@@ -38,7 +38,6 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
@@ -70,8 +69,9 @@ import {
   emptyModOptionsDefinitionFactory,
   normalizeModDefinition,
 } from "@/utils/modUtils";
-import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -291,7 +291,7 @@ describe("replaceModComponent round trip", () => {
 
     modComponentFormState.label = "New Label";
     const newTemplate = '<input value="Click Me!"/>';
-    modComponentFormState.extensionPoint.definition.template = newTemplate;
+    modComponentFormState.starterBrick.definition.template = newTemplate;
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
@@ -625,7 +625,7 @@ describe("buildNewMod", () => {
     expect(newMod.extensionPoints[0].id).toBe(modComponent.extensionPointId);
   });
 
-  test("Dirty mod component with services", async () => {
+  test("Dirty mod component with integrations", async () => {
     const integrationId = validateRegistryId("@pixiebrix/api");
     const outputKey = validateOutputKey("pixiebrix");
 
@@ -640,13 +640,13 @@ describe("buildNewMod", () => {
       extensionPointId: starterBrick.metadata.id,
     }) as SerializedModComponent;
 
-    const adapter = ADAPTERS.get(starterBrick.definition.type);
+    const { fromModComponent } = adapter(starterBrick.definition.type);
 
     // Mock this lookup for the adapter call that follows
     jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
     // Use the adapter to convert to ModComponentFormState
-    const modComponentFormState = (await adapter.fromModComponent(
+    const modComponentFormState = (await fromModComponent(
       modComponent,
     )) as ModComponentFormState;
 
@@ -804,7 +804,7 @@ describe("buildNewMod", () => {
         totalModComponentCount,
       )();
 
-      // Install the mod
+      // Activate the mod
       const state = modComponentsSlice.reducer(
         { extensions: [] },
         modComponentsSlice.actions.activateMod({
@@ -825,15 +825,15 @@ describe("buildNewMod", () => {
           // Mock this lookup for the adapter call that follows
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-          // Mod was installed, so get the mod component from state
+          // Mod was activated, so get the mod component from state
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
-          const adapter = ADAPTERS.get(starterBrick.definition.type);
+          const { fromModComponent } = adapter(starterBrick.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await adapter.fromModComponent(
+          const modComponentFormState = (await fromModComponent(
             modComponent,
           )) as ModComponentFormState;
 
@@ -869,7 +869,7 @@ describe("buildNewMod", () => {
   );
 });
 
-describe("findMaxServicesDependencyApiVersion", () => {
+describe("findMaxIntegrationDependencyApiVersion", () => {
   it("returns v1 for v1 dependencies", () => {
     const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
       {
@@ -923,7 +923,7 @@ describe("findMaxServicesDependencyApiVersion", () => {
 });
 
 describe("selectModComponentIntegrations", () => {
-  it("works for v1 services", () => {
+  it("works for v1 integrations", () => {
     const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [
         integrationDependencyFactory(),
@@ -941,7 +941,7 @@ describe("selectModComponentIntegrations", () => {
     });
   });
 
-  it("works for v2 services", () => {
+  it("works for v2 integrations", () => {
     const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [
         integrationDependencyFactory({
@@ -961,13 +961,13 @@ describe("selectModComponentIntegrations", () => {
     expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
       properties: {
         [modComponent.integrationDependencies[0].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,
         },
         [modComponent.integrationDependencies[1].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[1].integrationId}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[1].integrationId}`,
         },
         [modComponent.integrationDependencies[2].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[2].integrationId}`,
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[2].integrationId}`,
         },
       },
       required: [modComponent.integrationDependencies[1].outputKey],

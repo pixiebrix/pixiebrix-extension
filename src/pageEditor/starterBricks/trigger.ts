@@ -46,6 +46,8 @@ import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { ReportModes } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 
 function fromNativeElement(
   url: string,
@@ -53,33 +55,32 @@ function fromNativeElement(
   _element: null,
 ): TriggerFormState {
   return {
-    type: "trigger",
     label: `My ${getDomain(url)} trigger`,
     ...makeInitialBaseState(),
-    extensionPoint: {
+    starterBrick: {
       metadata,
       definition: {
-        type: "trigger",
+        type: StarterBrickTypes.TRIGGER,
         trigger: "load",
         rootSelector: undefined,
         attachMode: undefined,
         targetMode: undefined,
         // Use "once" for reportMode, because the default is "load"
-        reportMode: "once",
+        reportMode: ReportModes.ONCE,
         // Show error notifications by default, to assist with development
         showErrors: true,
         intervalMillis: undefined,
         // Use `background: true` for the default for "load" trigger to 1) match the pre-1.8.7 behavior, and 2)
-        // cause the trigger to run by default when the mod component is installed
+        // cause the trigger to run by default when the mod component is activated
         background: true,
         debounce: undefined,
         customEvent: undefined,
-        reader: getImplicitReader("trigger"),
+        reader: getImplicitReader(StarterBrickTypes.TRIGGER),
         isAvailable: getDefaultAvailabilityForUrl(url),
       },
     },
-    extension: {
-      blockPipeline: [],
+    modComponent: {
+      brickPipeline: [],
     },
   };
 }
@@ -87,7 +88,7 @@ function fromNativeElement(
 function selectStarterBrickDefinition(
   formState: TriggerFormState,
 ): StarterBrickDefinitionLike<TriggerDefinition> {
-  const { extensionPoint: starterBrick } = formState;
+  const { starterBrick } = formState;
   const {
     definition: {
       isAvailable,
@@ -107,7 +108,7 @@ function selectStarterBrickDefinition(
   return removeEmptyValues({
     ...baseSelectStarterBrick(formState),
     definition: {
-      type: "trigger",
+      type: StarterBrickTypes.TRIGGER,
       reader,
       isAvailable: cleanIsAvailable(isAvailable),
       trigger,
@@ -129,11 +130,11 @@ function selectModComponent(
   state: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TriggerConfig> {
-  const { extension: modComponent } = state;
+  const { modComponent } = state;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
-      ? modComponent.blockPipeline
-      : omitEditorMetadata(modComponent.blockPipeline),
+      ? modComponent.brickPipeline
+      : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
     ...baseSelectModComponent(state),
@@ -145,7 +146,7 @@ function asDraftModComponent(
   triggerFormState: TriggerFormState,
 ): DraftModComponent {
   return {
-    type: "trigger",
+    type: StarterBrickTypes.TRIGGER,
     extension: selectModComponent(triggerFormState, {
       includeInstanceIds: true,
     }),
@@ -159,8 +160,8 @@ async function fromModComponent(
   const starterBrick = await lookupStarterBrick<
     TriggerDefinition,
     TriggerConfig,
-    "trigger"
-  >(config, "trigger");
+    typeof StarterBrickTypes.TRIGGER
+  >(config, StarterBrickTypes.TRIGGER);
 
   const {
     rootSelector,
@@ -186,8 +187,8 @@ async function fromModComponent(
 
   return {
     ...base,
-    extension: modComponent,
-    extensionPoint: {
+    modComponent,
+    starterBrick: {
       metadata: starterBrick.metadata,
       definition: {
         type: starterBrick.definition.type,
@@ -210,7 +211,7 @@ async function fromModComponent(
 
 const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   displayOrder: 4,
-  elementType: "trigger",
+  starterBrickType: StarterBrickTypes.TRIGGER,
   label: "Trigger",
   baseClass: TriggerStarterBrickABC,
   EditorNode: TriggerConfiguration,

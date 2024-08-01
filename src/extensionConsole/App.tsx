@@ -16,14 +16,14 @@
  */
 
 import React, { useEffect } from "react";
-import store, { hashHistory, persistor } from "@/store/optionsStore";
+import store, { hashHistory, persistor } from "@/extensionConsole/store";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ServicesEditor from "@/extensionConsole/pages/integrations/IntegrationsPage";
-import BrickCreatePage from "@/extensionConsole/pages/brickEditor/CreatePage";
-import BrickEditPage from "@/extensionConsole/pages/brickEditor/EditPage";
+import BrickCreatePage from "@/extensionConsole/pages/packageEditor/CreatePage";
+import BrickEditPage from "@/extensionConsole/pages/packageEditor/EditPage";
 import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
 import SettingsPage from "@/extensionConsole/pages/settings/SettingsPage";
 import Navbar from "@/extensionConsole/Navbar";
@@ -32,8 +32,8 @@ import Sidebar from "@/extensionConsole/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
-import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
-import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivateExtensionPage";
+import ActivateModDefinitionIdPage from "@/extensionConsole/pages/activateMod/ActivateModDefinitionIdPage";
+import ActivateStandaloneModDefinitionIdPage from "@/extensionConsole/pages/activateMod/ActivateStandaloneModDefinitionIdPage";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
@@ -88,13 +88,13 @@ const AuthenticatedContent: React.VFC = () => {
             <Switch>
               <Route
                 exact
-                path="/extensions/install/:extensionId"
-                component={ActivateExtensionPage}
+                path="/extensions/install/:modComponentId"
+                component={ActivateStandaloneModDefinitionIdPage}
               />
               <Route
                 exact
                 path="/:sourcePage/activate/:registryId"
-                component={ActivateModPage}
+                component={ActivateModDefinitionIdPage}
               />
 
               <Route exact path="/settings" component={SettingsPage} />

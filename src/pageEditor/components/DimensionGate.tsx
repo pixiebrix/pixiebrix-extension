@@ -17,10 +17,10 @@
 
 import React from "react";
 import { useWindowSize } from "@/hooks/useWindowSize";
-import { selectIsDimensionsWarningDismissed } from "@/pageEditor/slices/editorSelectors";
+import { selectIsDimensionsWarningDismissed } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Col, Row } from "react-bootstrap";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import devtoolsToolbarScreenshot from "@img/devtools-pixiebrix-toolbar-screenshot.png";
 import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

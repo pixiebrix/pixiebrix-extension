@@ -28,7 +28,10 @@ import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOpti
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { hasCachedAuthData, services } from "@/background/messenger/api";
+import {
+  hasCachedAuthData,
+  integrationConfigLocator,
+} from "@/background/messenger/api";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -61,7 +64,9 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
 jest.mock("@/hooks/auth");
-const servicesLocateMock = jest.mocked(services.locate);
+const findSanitizedIntegrationConfigMock = jest.mocked(
+  integrationConfigLocator.findSanitizedIntegrationConfig,
+);
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 const isLoggedInMock = jest.mocked(hasCachedAuthData);
 const getAllSpreadsheetsMock = jest.mocked(getAllSpreadsheets);
@@ -176,7 +181,7 @@ const fileListResponse: FileList = {
 
 beforeAll(() => {
   registerDefaultWidgets();
-  servicesLocateMock.mockImplementation(
+  findSanitizedIntegrationConfigMock.mockImplementation(
     async (serviceId) => servicesLookup[serviceId],
   );
   useAuthOptionsMock.mockReturnValue(

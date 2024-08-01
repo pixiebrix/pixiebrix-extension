@@ -22,25 +22,27 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentNodeInfo,
-  selectParentBlockInfo,
-} from "@/pageEditor/slices/editorSelectors";
+  selectActiveModComponentRef,
+  selectParentNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBrick } from "@/contentScript/messenger/api";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
-import { selectActiveModComponentTraceForBrick } from "@/pageEditor/slices/runtimeSelectors";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Location = "modal" | "panel";
 
-type BlockPreviewState = {
+type BrickPreviewState = {
   /**
    * The output from the block
    */
@@ -57,14 +59,14 @@ type BlockPreviewState = {
   isRunning: boolean;
 };
 
-type BlockPreviewRunBlock = BlockPreviewState & {
+type BlockPreviewRunBlock = BrickPreviewState & {
   /**
    * The handler to run the block
    */
   runBlockPreview: () => void;
 };
 
-const initialState: BlockPreviewState = {
+const initialState: BrickPreviewState = {
   output: null,
   error: null,
   isRunning: false,
@@ -95,71 +97,74 @@ const previewSlice = createSlice({
 });
 
 /**
- * Get a handler to run a "preview" of a document renderer block.
- * @param blockInstanceId the instance id (node id) of the block to run
+ * Get a handler to run a "preview" of a document renderer brick.
+ * @param brickInstanceId the node id of the brick to run
  */
 export default function useDocumentPreviewRunBlock(
-  blockInstanceId: UUID,
+  brickInstanceId: UUID,
 ): BlockPreviewRunBlock {
   const [state, dispatch] = useReducer(previewSlice.reducer, initialState);
 
-  const {
-    uuid: modComponentId,
-    recipe: mod,
-    apiVersion,
-    integrationDependencies,
-    extensionPoint: starterBrick,
-  } = useSelector(selectActiveModComponentFormState);
+  const formState = useSelector(selectActiveModComponentFormState);
+  const modComponentRef = useSelector(selectActiveModComponentRef);
 
-  const { blockConfig } = useSelector(
-    selectActiveModComponentNodeInfo(blockInstanceId),
+  assertNotNullish(
+    formState,
+    "An active mod component form state is required to preview a document renderer brick",
   );
 
+  const { apiVersion, integrationDependencies, starterBrick } = formState;
+
+  const { blockConfig: brickConfig } =
+    useSelector(selectActiveModComponentNodeInfo(brickInstanceId)) ?? {};
+
+  assertNotNullish(brickConfig, `No brickConfig found for ${brickInstanceId}`);
+
   const {
-    data: blockInfo,
-    isLoading: isBlockLoading,
-    error: blockError,
-  } = usePreviewInfo(blockConfig.id);
+    data: previewInfo,
+    isLoading: isPreviewInfoLoading,
+    error: previewInfoError,
+  } = usePreviewInfo(brickConfig.id);
 
   useEffect(() => {
-    if (blockError) {
+    if (previewInfoError) {
       dispatch(
         previewSlice.actions.setError({
           error: {
             name: "BlockRegistryError",
             message: `Error loading brick from registry\n${getErrorMessage(
-              blockError,
+              previewInfoError,
             )}`,
           },
         }),
       );
     }
-  }, [blockError]);
+  }, [previewInfoError]);
 
   const traceRecord = useSelector(
-    selectActiveModComponentTraceForBrick(blockInstanceId),
+    selectActiveModComponentTraceForBrick(brickInstanceId),
   );
-  const { data: serviceContext, isLoading: isLoadingServiceContext } =
+  const { data: integrationContext, isLoading: isLoadingIntegrationContext } =
     useAsyncState(
       makeIntegrationsContextFromDependencies(integrationDependencies),
       [integrationDependencies],
     );
   const context = {
     ...traceRecord?.templateContext,
-    ...serviceContext,
+    ...integrationContext,
   } as BrickArgsContext;
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
-  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const blockRootMode = brickConfig.rootMode ?? "inherit";
   const shouldUseStarterBrickRoot =
-    blockInfo?.isRootAware &&
+    previewInfo?.isRootAware &&
     blockRootMode === "inherit" &&
     isTriggerStarterBrick(starterBrick);
 
-  const parentBlockInfo = useSelector(selectParentBlockInfo(blockInstanceId));
+  const parentNodeInfo = useSelector(selectParentNodeInfo(brickInstanceId));
 
   // Assume the parent is a temp display brick for now
-  const titleField = parentBlockInfo?.blockConfig?.config?.title ?? "";
+  const titleField = parentNodeInfo?.blockConfig?.config?.title ?? "";
   const titleValue = isExpression(titleField)
     ? titleField.__value__
     : titleField;
@@ -167,7 +172,7 @@ export default function useDocumentPreviewRunBlock(
 
   const debouncedRun = useDebouncedCallback(
     async () => {
-      if (isLoadingServiceContext || isBlockLoading) {
+      if (isLoadingIntegrationContext || isPreviewInfoLoading) {
         return;
       }
 
@@ -187,18 +192,19 @@ export default function useDocumentPreviewRunBlock(
 
       // `panel` was the default before we added the location field
       const location: Location =
-        (parentBlockInfo?.blockConfig.config.location as Location) ?? "panel";
+        (parentNodeInfo?.blockConfig.config.location as Location) ?? "panel";
+
+      assertNotNullish(traceRecord?.runId, "trace record run ID not found");
 
       try {
         await runRendererBrick(inspectedTab, {
-          modComponentId,
-          modId: mod?.id,
           runId: traceRecord.runId,
           title,
+          modComponentRef,
           args: {
             apiVersion,
-            blockConfig: {
-              ...removeEmptyValues(blockConfig),
+            brickConfig: {
+              ...removeEmptyValues(brickConfig),
               if: undefined,
             },
             context,
@@ -208,7 +214,9 @@ export default function useDocumentPreviewRunBlock(
         });
         dispatch(previewSlice.actions.setSuccess({ output: {} }));
       } catch (error) {
-        dispatch(previewSlice.actions.setError({ error }));
+        dispatch(
+          previewSlice.actions.setError({ error: error as SimpleErrorObject }),
+        );
       }
     },
     300,

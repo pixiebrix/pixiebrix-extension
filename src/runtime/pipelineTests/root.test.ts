@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
@@ -33,6 +32,7 @@ import {
 import { BrickABC } from "@/types/brickTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 class RootAwareBlock extends BrickABC {
   constructor() {
@@ -80,8 +80,8 @@ const rootBlock = new RootAwareBlock();
 const rootReader = new RootAwareReader();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([rootBlock, rootReader, echoBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([rootBlock, rootReader, echoBrick]);
   // https://stackoverflow.com/questions/42805128/does-jest-reset-the-jsdom-document-after-every-suite-or-test
   document.querySelectorAll("html")[0]!.innerHTML = "";
 });
@@ -97,7 +97,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: rootReader.id, config: {} },
           { ...simpleInput({}), optionsArgs: {}, root: element },
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
@@ -112,7 +112,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: rootBlock.id, config: {} },
           { ...simpleInput({}), optionsArgs: {}, root: element },
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
@@ -125,7 +125,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const result = await reducePipeline(
         { id: rootBlock.id, config: {}, rootMode: "document" },
         { ...simpleInput({}), optionsArgs: {}, root: element },
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       );
 
       expect(result).toStrictEqual({ isDocument: true, tagName: undefined });
@@ -140,7 +140,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: blockId, config: {}, rootMode: "document", root: "img" },
           { ...simpleInput({}), optionsArgs: {}, root: document },
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
@@ -161,7 +161,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: blockId, config: {}, rootMode: "inherit", root: "img" },
           { ...simpleInput({}), optionsArgs: {}, root: div },
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
@@ -183,7 +183,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             // Force document as starting point for the selector
             { id: blockId, config: {}, rootMode: "document", root: "img" },
             { ...simpleInput({}), optionsArgs: {}, root: div },
-            testOptions(apiVersion),
+            reduceOptionsFactory(apiVersion),
           ),
         ).rejects.toThrow(/Multiple roots found/);
       },
@@ -197,7 +197,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             // Force document as starting point for the selector
             { id: blockId, config: {}, rootMode: "document", root: "a" },
             { ...simpleInput({}), optionsArgs: {} },
-            testOptions(apiVersion),
+            reduceOptionsFactory(apiVersion),
           ),
         ).rejects.toThrow(/No roots found/);
       },
@@ -214,7 +214,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           // Force document as starting point for the selector
           { id: rootBlock.id, config: {}, rootMode: "element", root: ref },
           { ...simpleInput({}), optionsArgs: {}, root: document },
-          testOptions(apiVersion),
+          reduceOptionsFactory(apiVersion),
         ),
       ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
     });
@@ -238,7 +238,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
           root: toExpression("var", "@options.element"),
         },
         { ...simpleInput({}), optionsArgs: { element: ref }, root: document },
-        testOptions(apiVersion),
+        reduceOptionsFactory(apiVersion),
       ),
     ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
   });

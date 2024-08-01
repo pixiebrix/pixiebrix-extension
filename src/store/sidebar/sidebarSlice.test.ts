@@ -16,7 +16,7 @@
  */
 
 import sidebarSlice, {
-  fixActiveTabOnRemove,
+  fixActiveTabOnRemoveInPlace,
 } from "@/store/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import {
@@ -34,6 +34,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
 import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/sidebar/messenger/api");
 jest.mock("@/contentScript/messenger/api");
@@ -101,7 +102,9 @@ describe("sidebarSlice.addTemporaryPanel", () => {
     const existingPanel = sidebarEntryFactory("temporaryPanel");
     const otherExistingPanel = sidebarEntryFactory("temporaryPanel");
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: existingPanel.extensionId,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: existingPanel.modComponentRef.modComponentId,
+      }),
     });
 
     const initialState: SidebarState = {
@@ -190,15 +193,13 @@ describe("removeTemporaryPanel", () => {
     );
   });
 
-  it("sets activeKey to a panel with the same extensionId if it exists", async () => {
-    const originalPanel = sidebarEntryFactory("panel", {
-      extensionId: uuidv4(),
-    });
-    const otherExistingPanel = sidebarEntryFactory("form", {
-      extensionId: uuidv4(),
-    });
+  it("sets activeKey to a panel with the same mod component id if it exists", async () => {
+    const originalPanel = sidebarEntryFactory("panel");
+    const otherExistingPanel = sidebarEntryFactory("form");
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: originalPanel.extensionId,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: originalPanel.modComponentRef.modComponentId,
+      }),
     });
 
     const initialState: SidebarState = {
@@ -210,7 +211,6 @@ describe("removeTemporaryPanel", () => {
 
     const store = configureStore({
       reducer: { sidebar: sidebarSlice.reducer },
-
       preloadedState: { sidebar: initialState },
     });
 
@@ -532,16 +532,20 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
   it("sets activeKey to the active key of any panel with the same extensionId as the removedEntry if it exists", () => {
     const modId = validateRegistryId("test/123");
     const originalPanel = sidebarEntryFactory("panel", {
-      extensionId: uuidv4(),
-      blueprintId: modId,
+      modComponentRef: modComponentRefFactory({
+        modId,
+      }),
     });
     const otherExistingPanel = sidebarEntryFactory("form", {
-      extensionId: uuidv4(),
-      blueprintId: modId,
+      modComponentRef: modComponentRefFactory({
+        modId,
+      }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: originalPanel.extensionId,
-      blueprintId: modId,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: originalPanel.modComponentRef.modComponentId,
+        modId,
+      }),
     });
 
     const state = {
@@ -554,7 +558,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- Flaky error
     // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite"
-    fixActiveTabOnRemove(state, newPanel);
+    fixActiveTabOnRemoveInPlace(state, newPanel);
 
     expect(state).toStrictEqual({
       ...state,
@@ -562,19 +566,19 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     });
   });
 
-  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists and there is no matching extensionId", () => {
+  it("sets activeKey to the active key of any panel with the same modId as the removedEntry if it exists and there is no matching component id", () => {
     const modId = validateRegistryId("test/123");
 
-    const firstPanel = sidebarEntryFactory("panel", {
-      extensionId: uuidv4(),
-    });
+    const firstPanel = sidebarEntryFactory("panel");
     const matchingPanel = sidebarEntryFactory("panel", {
-      extensionId: uuidv4(),
-      blueprintId: modId,
+      modComponentRef: modComponentRefFactory({
+        modId,
+      }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: uuidv4(),
-      blueprintId: modId,
+      modComponentRef: modComponentRefFactory({
+        modId,
+      }),
     });
 
     const state = {
@@ -584,7 +588,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    fixActiveTabOnRemove(state, newPanel);
+    fixActiveTabOnRemoveInPlace(state, newPanel);
 
     expect(state).toStrictEqual({
       ...state,
@@ -596,18 +600,26 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
     const extensionId = uuidv4();
 
     const originalPanel = sidebarEntryFactory("panel", {
-      extensionId,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: extensionId,
+      }),
     });
     const firstFormPanel = sidebarEntryFactory("form", {
-      extensionId,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: extensionId,
+      }),
     });
     const nullModId = sidebarEntryFactory("form", {
-      extensionId: uuidv4(),
-      blueprintId: null,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: extensionId,
+        modId: null,
+      }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId,
-      blueprintId: null,
+      modComponentRef: modComponentRefFactory({
+        modComponentId: extensionId,
+        modId: null,
+      }),
     });
 
     const state = {
@@ -618,7 +630,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    fixActiveTabOnRemove(state, newPanel);
+    fixActiveTabOnRemoveInPlace(state, newPanel);
 
     expect(state).toStrictEqual({
       ...state,
@@ -627,15 +639,9 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
   });
 
   it("sets activeKey to the defaultEventKey if no panel with the same extensionId as the removedEntry exists", () => {
-    const originalPanel = sidebarEntryFactory("panel", {
-      extensionId: uuidv4(),
-    });
-    const otherExistingPanel = sidebarEntryFactory("form", {
-      extensionId: uuidv4(),
-    });
-    const newPanel = sidebarEntryFactory("temporaryPanel", {
-      extensionId: uuidv4(),
-    });
+    const originalPanel = sidebarEntryFactory("panel");
+    const otherExistingPanel = sidebarEntryFactory("form");
+    const newPanel = sidebarEntryFactory("temporaryPanel");
 
     const state = {
       ...sidebarSlice.getInitialState(),
@@ -645,7 +651,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as SidebarState;
 
-    fixActiveTabOnRemove(state, newPanel);
+    fixActiveTabOnRemoveInPlace(state, newPanel);
 
     expect(state).toStrictEqual({
       ...state,

@@ -48,7 +48,10 @@ import {
 import produce from "immer";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import {
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
@@ -67,7 +70,7 @@ jest.mock("@/auth/authStorage", () => ({
   addListener: jest.fn(),
 }));
 
-jest.mock("@/utils/extensionUtils");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("./refreshRegistries");
 
 const isLinkedMock = jest.mocked(isLinked);
@@ -108,7 +111,7 @@ describe("debouncedActivateStarterMods", () => {
 
     const modDefinition = overrideStarterBrickType(
       defaultModDefinitionFactory(),
-      "actionPanel",
+      StarterBrickTypes.SIDEBAR_PANEL,
     );
 
     axiosMock
@@ -197,7 +200,7 @@ describe("debouncedActivateStarterMods", () => {
 
     const modDefinition = overrideStarterBrickType(
       _modDefinition,
-      "actionPanel",
+      StarterBrickTypes.SIDEBAR_PANEL,
     );
 
     axiosMock

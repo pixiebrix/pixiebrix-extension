@@ -24,19 +24,19 @@ import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
 } from "./AdvancedLinks";
 
-const BLOCK_FIELD_NAME = "block";
+const BRICK_FIELD_NAME = "block";
 
 describe("Advanced options", () => {
-  function renderAdvancedLinks(blockConfig: FormikValues) {
+  function renderAdvancedLinks(brickConfig: FormikValues) {
     const FormikTemplate = createFormikTemplate({
-      [BLOCK_FIELD_NAME]: blockConfig,
+      [BRICK_FIELD_NAME]: brickConfig,
     });
 
     const ComponentUnderTest = () => {
       const scrollToRef = useRef<HTMLElement>(null);
       return (
         <FormikTemplate>
-          <AdvancedLinks name={BLOCK_FIELD_NAME} scrollToRef={scrollToRef} />
+          <AdvancedLinks name={BRICK_FIELD_NAME} scrollToRef={scrollToRef} />
         </FormikTemplate>
       );
     };
@@ -52,8 +52,8 @@ describe("Advanced options", () => {
     {
       window: DEFAULT_WINDOW_VALUE,
     },
-  ])("doesn't show advanced links by default", (blockConfig) => {
-    renderAdvancedLinks(blockConfig);
+  ])("doesn't show advanced links by default", (brickConfig) => {
+    renderAdvancedLinks(brickConfig);
 
     expect(screen.getAllByRole("button")).toHaveLength(1);
   });
@@ -69,7 +69,19 @@ describe("Advanced options", () => {
       {
         if: "true",
       },
-      "Condition: true",
+      "Condition: Always",
+    ],
+    [
+      {
+        if: "false",
+      },
+      "Condition: Never",
+    ],
+    [
+      {
+        if: " ",
+      },
+      "Condition: Never",
     ],
     [
       {
@@ -77,8 +89,8 @@ describe("Advanced options", () => {
       },
       "Target: Target Tab",
     ],
-  ])("shows changed advanced options", (blockConfig, expectedOptionText) => {
-    renderAdvancedLinks(blockConfig);
+  ])("shows changed advanced options", (brickConfig, expectedOptionText) => {
+    renderAdvancedLinks(brickConfig);
 
     expect(
       screen.getByRole("button", { name: expectedOptionText }),

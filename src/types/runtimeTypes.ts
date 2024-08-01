@@ -18,12 +18,13 @@
 import { type ComponentType } from "react";
 import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type Primitive } from "type-fest";
+import { type Primitive, type Tagged } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -54,9 +55,7 @@ export function isDocument(root: SelectorRoot): root is Document {
  * A reference to an element on the page.
  * @see getReferenceForElement
  */
-export type ElementReference = UUID & {
-  _elementReferenceBrand: never;
-};
+export type ElementReference = Tagged<UUID, "ElementReference">;
 
 /**
  * A reference to a React component produced by a Renderer brick.
@@ -75,17 +74,15 @@ export type RendererOutput = SafeHTML | ComponentRef;
 /**
  * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
  */
-export type OutputKey = string & {
-  _outputKeyBrand: never;
-};
+export type OutputKey = Tagged<string, "OutputKey">;
 
 /**
  * A variable with a "@"-prefix that refers to an integration
  */
-export type IntegrationDependencyVarRef = string & {
-  // Preserve legacy branding field name for backwards compatibility
-  _serviceVarRefBrand: never;
-};
+export type IntegrationDependencyVarRef = Tagged<
+  string,
+  "IntegrationDependencyVarRef"
+>;
 
 /**
  * A text template engine.
@@ -212,7 +209,7 @@ export type RunArgs = {
   /**
    * If provided, only run the specified ModComponents.
    */
-  extensionIds?: UUID[] | null;
+  modComponentIds?: UUID[] | null;
 };
 
 /**
@@ -226,12 +223,13 @@ export type OptionsArgs = Record<string, Primitive>;
  * @see RenderedArgs
  * @see BrickConfig.outputKey
  */
-export type BrickArgsContext = UnknownObject & {
-  // Nominal typing
-  _blockArgsContextBrand: never;
-  "@input": UnknownObject;
-  "@options"?: OptionsArgs;
-};
+export type BrickArgsContext = Tagged<
+  UnknownObject & {
+    "@input": UnknownObject;
+    "@options"?: OptionsArgs;
+  },
+  "BrickArgsContext"
+>;
 
 /**
  * Returns an object as a BrickArgsContext, or throw a TypeError if it's not a valid context.
@@ -257,19 +255,16 @@ export function validateBrickArgsContext(obj: UnknownObject): BrickArgsContext {
 export type BrickArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
   T extends Record<string, any> = Record<string, any>,
-> = T & {
-  _blockArgBrand: never;
-};
+> = Tagged<T, "BrickArgs">;
 
 /**
  * The non-validated arguments to pass into the `run` method of a Brick.
  * @see BrickArgs
  */
-export type RenderedArgs = UnknownObject & {
-  _renderedArgBrand: never;
-};
+export type RenderedArgs = Tagged<UnknownObject, "RenderedArgs">;
 
 export type IntegrationsContextValue = {
+  // NOTE: this is not a nominal type brand. The `__service` key is actually used in the runtime.
   __service: SanitizedIntegrationConfig;
   [prop: string]: string | SanitizedIntegrationConfig | null;
 };
@@ -308,14 +303,16 @@ export type Branch = {
  */
 export interface RunMetadata {
   /**
-   * The extension that's running the brick. Used to correlate trace records across all runs/branches.
-   * @since 1.7.0
-   * Marked Nullishable as part of the StrictNullChecks migration.
-   * TODO: Revisit and determine if this should be required.
+   * The mod component that's running the brick. Used to:
+   *
+   * - Associate UI elements with the mod component (e.g., forms, quickbar actions, etc.)
+   * - Used to correlate trace records across all runs/branches.
+   *
+   * @since 2.0.6 is the full ModComponentRef instead of just the modComponentId
    */
-  extensionId: Nullishable<UUID>;
+  modComponentRef: ModComponentRef;
   /**
-   * A unique run id to correlate trace records across branches for a run, or null to disable tracing.
+   * A unique run id to correlate trace records across branches for a run, or nullish to disable tracing.
    */
   runId: Nullishable<UUID>;
   /**

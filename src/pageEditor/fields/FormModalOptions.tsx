@@ -23,8 +23,8 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/slices/editorSelectors";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
@@ -114,12 +114,14 @@ const FormModalOptions: React.FC<{
       <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
         <SchemaField
           name={configName("stylesheets")}
-          schema={TEMPORARY_FORM_SCHEMA.properties.stylesheets as Schema}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- hardcoded schema
+          schema={TEMPORARY_FORM_SCHEMA.properties!.stylesheets as Schema}
         />
         <SchemaField
           name={configName("disableParentStyles")}
           schema={
-            TEMPORARY_FORM_SCHEMA.properties.disableParentStyles as Schema
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- hardcoded schema
+            TEMPORARY_FORM_SCHEMA.properties!.disableParentStyles as Schema
           }
         />
       </ConnectedCollapsibleFieldSection>

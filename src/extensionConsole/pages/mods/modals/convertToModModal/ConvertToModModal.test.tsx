@@ -28,9 +28,10 @@ import {
   selectModalsContext,
   selectShowShareContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
-import { type RootState } from "@/store/optionsStore";
+import { type RootState } from "@/extensionConsole/store";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn().mockReturnValue({ refetch: jest.fn() }),
@@ -135,7 +136,7 @@ describe("it renders", () => {
           unwrap: jest.fn().mockResolvedValue({
             public: false,
             organizations: [],
-            updated_at: new Date().toISOString(),
+            updated_at: timestampFactory(),
           }),
         }),
       ] as any);

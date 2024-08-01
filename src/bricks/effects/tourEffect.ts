@@ -38,10 +38,10 @@ type Step = {
 };
 
 export class TourEffect extends EffectABC {
-  static readonly BLOCK_ID = validateRegistryId("@pixiebrix/tour");
+  static readonly BRICK_ID = validateRegistryId("@pixiebrix/tour");
 
   constructor() {
-    super(TourEffect.BLOCK_ID, "Show Tour", "Show step-by-step tour");
+    super(TourEffect.BRICK_ID, "Show Tour", "Show step-by-step tour");
   }
 
   override async isRootAware(): Promise<boolean> {
@@ -122,7 +122,7 @@ export class TourEffect extends EffectABC {
       steps?: Step[];
       isRootAware?: boolean;
     }>,
-    { root = document, abortSignal: blockAbortSignal, logger }: BrickOptions,
+    { root = document, abortSignal: brickAbortSignal }: BrickOptions,
   ): Promise<void> {
     if (steps.length === 0) {
       throw new PropError(
@@ -133,7 +133,6 @@ export class TourEffect extends EffectABC {
       );
     }
 
-    const { extensionId } = logger.context;
     const abortController = new AbortController();
     const stylesheetLink = await injectStylesheet(stylesheetUrl);
 
@@ -165,8 +164,6 @@ export class TourEffect extends EffectABC {
         "No matching element found for first step in tour",
       );
     }
-
-    assertNotNullish(extensionId, "extensionId is required to run a tour");
 
     const tour = introJs()
       .setOptions({
@@ -201,7 +198,7 @@ export class TourEffect extends EffectABC {
     };
 
     abortController.signal.addEventListener("abort", handleAbort);
-    blockAbortSignal?.addEventListener("abort", handleAbort);
+    brickAbortSignal?.addEventListener("abort", handleAbort);
 
     await tourPromise;
   }

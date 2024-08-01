@@ -20,7 +20,7 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { type Schema } from "@/types/schemaTypes";
 import { compact, isEqual, uniqWith } from "lodash";
 
@@ -59,11 +59,11 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
   static async collectSchemas(
     formStates: ModComponentFormState[],
   ): Promise<ModVariableSchemaResult> {
-    const allBlocks = await blockRegistry.allTyped();
+    const allBlocks = await brickRegistry.allTyped();
     const visitor = new ModVariableSchemasVisitor(allBlocks);
 
     for (const formState of formStates) {
-      visitor.visitRootPipeline(formState.extension.blockPipeline);
+      visitor.visitRootPipeline(formState.modComponent.brickPipeline);
     }
 
     // Schema promises return undefined if not page state

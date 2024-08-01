@@ -36,23 +36,18 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void) | null => {
 
   const reactivate = () => {
     if (hasModDefinition) {
-      const blueprintId = isModDefinition(mod)
-        ? mod.metadata.id
-        : mod._recipe?.id;
+      const modId = isModDefinition(mod) ? mod.metadata.id : mod._recipe?.id;
 
-      assertNotNullish(
-        blueprintId,
-        "blueprintId is required to reactivate mod",
-      );
+      assertNotNullish(modId, "modId is required to reactivate mod");
 
       reportEvent(Events.START_MOD_ACTIVATE, {
-        blueprintId,
+        modId,
         screen: "extensionConsole",
         reinstall: true,
       });
 
       const reactivatePath = `marketplace/activate/${encodeURIComponent(
-        blueprintId,
+        modId,
       )}?reinstall=1`;
 
       dispatch(push(reactivatePath));

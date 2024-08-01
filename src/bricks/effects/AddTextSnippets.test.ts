@@ -19,7 +19,7 @@ import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 
 const brick = new AddTextSnippets();
 
@@ -53,7 +53,7 @@ describe("AddTextSnippets", () => {
           title: "Test",
           preview: "test text",
           handler: expect.toBeFunction(),
-          componentId: options.logger.context.extensionId,
+          componentId: options.logger.context.modComponentId,
           context: options.logger.context,
         },
       ]);

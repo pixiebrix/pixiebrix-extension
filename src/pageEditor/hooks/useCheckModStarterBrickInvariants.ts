@@ -21,19 +21,18 @@ import {
 } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import { type InnerDefinitions, DefinitionKinds } from "@/types/registryTypes";
 import produce from "immer";
 import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
@@ -53,7 +52,7 @@ function useCheckModStarterBrickInvariants(): (
    *  - For each clean mod component, every entry in definitions should exist
    *    in the {modDefinition.definitions} object
    *  - For each dirty mod component with @internal starter brick definition,
-   *    formState.extensionPoint.definition should exist in the
+   *    formState.starterBrick.definition should exist in the
    *    {modDefinition.definitions} object, but the key may be different,
    *    e.g. "extensionPoint" vs. "extensionPoint3" in the modDefinition,
    *    also need to run it through the adapter because of some cleanup logic
@@ -80,15 +79,11 @@ function useCheckModStarterBrickInvariants(): (
       }
 
       for (const formState of dirtyModComponentFormStates) {
-        if (
-          !isInnerDefinitionRegistryId(formState.extensionPoint.metadata.id)
-        ) {
+        if (!isInnerDefinitionRegistryId(formState.starterBrick.metadata.id)) {
           continue;
         }
 
-        const adapter = ADAPTERS.get(formState.type);
-        assertNotNullish(adapter, `Adapter not found for ${formState.type}`);
-        const { selectStarterBrickDefinition } = adapter;
+        const { selectStarterBrickDefinition } = adapterForComponent(formState);
 
         const definitionFromComponent = {
           kind: DefinitionKinds.STARTER_BRICK,

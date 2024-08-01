@@ -16,7 +16,7 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/bricks/errors";
 import { type BrickPipeline } from "@/bricks/types";
@@ -24,13 +24,13 @@ import {
   contextBrick,
   echoBrick,
   simpleInput,
-  testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
@@ -47,7 +47,7 @@ describe("apiVersion: v1", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: true }), optionsArgs: {} },
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
@@ -67,7 +67,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: true }), optionsArgs: {} },
-      testOptions(apiVersion),
+      reduceOptionsFactory(apiVersion),
     );
     expect(result).toStrictEqual({ message: "Ran block" });
   });
@@ -87,7 +87,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v1"),
+      reduceOptionsFactory("v1"),
     );
     // The original input is passed through
     expect(result).toStrictEqual({ run: false });
@@ -106,7 +106,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v2"),
+      reduceOptionsFactory("v2"),
     );
     // The starting value is {}
     expect(result).toStrictEqual({});
@@ -125,7 +125,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     // The block still doesn't run because the string is not truthy according to boolean
     expect(result).toStrictEqual({});
@@ -144,7 +144,7 @@ describe("false mustache conditional", () => {
     const result = await reducePipeline(
       pipeline as BrickPipeline,
       { ...simpleInput({ run: false }), optionsArgs: {} },
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
     expect(result).toStrictEqual({});
   });
@@ -162,7 +162,7 @@ describe("apiVersion: v2", () => {
       await reducePipeline(
         pipeline,
         simpleInput({ inputArg: 42 }),
-        testOptions("v2"),
+        reduceOptionsFactory("v2"),
       );
     } catch (error) {
       expect(error).toBeInstanceOf(InputValidationError);

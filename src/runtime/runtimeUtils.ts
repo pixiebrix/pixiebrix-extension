@@ -23,6 +23,7 @@ import {
 import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import { isEmpty } from "lodash";
 import {
+  type BrickCondition,
   type BrickConfig,
   type BrickWindow,
   hasMultipleTargets,
@@ -52,6 +53,13 @@ import {
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
 import { $safeFind } from "@/utils/domUtils";
+import {
+  castTextLiteralOrThrow,
+  isExpression,
+  isTextLiteralOrNull,
+} from "@/utils/expressionUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -138,6 +146,37 @@ async function renderConfigOption(
   })) as { value: unknown };
 
   return value;
+}
+
+/**
+ * Returns the boolean value of a constant condition, or undefined if the condition is not a constant.
+ * @param condition the brick condition
+ * @see BrickConfig.if
+ * @since 2.0.6
+ */
+export function getConstantConditionOrUndefined(
+  condition: Nullishable<BrickCondition>,
+): boolean | undefined {
+  if (condition == null) {
+    return undefined;
+  }
+
+  if (isTextLiteralOrNull(condition)) {
+    const text = castTextLiteralOrThrow(condition);
+    return boolean(text);
+  }
+
+  const value = isExpression(condition) ? condition.__value__ : condition;
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "number") {
+    return value !== 0;
+  }
+
+  return undefined;
 }
 
 /**
@@ -260,4 +299,13 @@ export function isApiVersionAtLeast(
   const atLeastNum = Number(atLeast.slice(1));
 
   return isNum >= atLeastNum;
+}
+
+/**
+ * Return true if the brick supports output variables.
+ */
+export function brickTypeSupportsOutputKey(brickType: BrickType): boolean {
+  // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
+  // Renderers are always the last brick in a pipeline, so they don't need an output key
+  return brickType !== BrickTypes.EFFECT && brickType !== BrickTypes.RENDERER;
 }

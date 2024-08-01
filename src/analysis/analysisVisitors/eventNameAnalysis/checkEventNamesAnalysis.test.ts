@@ -28,7 +28,7 @@ import { toExpression } from "@/utils/expressionUtils";
 describe("checkEventNamesAnalysis", () => {
   it("error on missing custom event", async () => {
     const formState = triggerFormStateFactory();
-    formState.extensionPoint.definition.trigger = "custom";
+    formState.starterBrick.definition.trigger = "custom";
 
     const analysis = new CheckEventNamesAnalysis([formState]);
     await analysis.run(formState);
@@ -42,8 +42,8 @@ describe("checkEventNamesAnalysis", () => {
 
   it.each(["click"])("allow dom event: %s", async (eventName) => {
     const formState = triggerFormStateFactory();
-    formState.extensionPoint.definition.trigger = "custom";
-    formState.extensionPoint.definition.customEvent = { eventName };
+    formState.starterBrick.definition.trigger = "custom";
+    formState.starterBrick.definition.customEvent = { eventName };
 
     const analysis = new CheckEventNamesAnalysis([formState]);
     await analysis.run(formState);
@@ -53,8 +53,8 @@ describe("checkEventNamesAnalysis", () => {
 
   it("warn on unknown event", async () => {
     const formState = triggerFormStateFactory();
-    formState.extensionPoint.definition.trigger = "custom";
-    formState.extensionPoint.definition.customEvent = { eventName: "unknown" };
+    formState.starterBrick.definition.trigger = "custom";
+    formState.starterBrick.definition.customEvent = { eventName: "unknown" };
 
     const analysis = new CheckEventNamesAnalysis([formState]);
     await analysis.run(formState);
@@ -68,14 +68,16 @@ describe("checkEventNamesAnalysis", () => {
 
   it("allow known event", async () => {
     const triggerFormState = triggerFormStateFactory();
-    triggerFormState.extensionPoint.definition.trigger = "custom";
-    triggerFormState.extensionPoint.definition.customEvent = {
+    triggerFormState.starterBrick.definition.trigger = "custom";
+    triggerFormState.starterBrick.definition.customEvent = {
       eventName: "myevent",
     };
 
-    const otherFormState = formStateFactory({}, [
-      { id: CustomEventEffect.BRICK_ID, config: { eventName: "myevent" } },
-    ]);
+    const otherFormState = formStateFactory({
+      brickPipeline: [
+        { id: CustomEventEffect.BRICK_ID, config: { eventName: "myevent" } },
+      ],
+    });
 
     const analysis = new CheckEventNamesAnalysis([
       triggerFormState,
@@ -88,19 +90,21 @@ describe("checkEventNamesAnalysis", () => {
 
   it("info on unknown event with dynamic expressions", async () => {
     const triggerFormState = triggerFormStateFactory();
-    triggerFormState.extensionPoint.definition.trigger = "custom";
-    triggerFormState.extensionPoint.definition.customEvent = {
+    triggerFormState.starterBrick.definition.trigger = "custom";
+    triggerFormState.starterBrick.definition.customEvent = {
       eventName: "myevent",
     };
 
-    const otherFormState = formStateFactory({}, [
-      {
-        id: CustomEventEffect.BRICK_ID,
-        config: {
-          eventName: toExpression("nunjucks", "{{@myevent}}"),
+    const otherFormState = formStateFactory({
+      brickPipeline: [
+        {
+          id: CustomEventEffect.BRICK_ID,
+          config: {
+            eventName: toExpression("nunjucks", "{{@myevent}}"),
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new CheckEventNamesAnalysis([
       triggerFormState,
@@ -117,19 +121,21 @@ describe("checkEventNamesAnalysis", () => {
 
   it("get knownEventNames() combines known and trigger names", async () => {
     const triggerFormState = triggerFormStateFactory();
-    triggerFormState.extensionPoint.definition.trigger = "custom";
-    triggerFormState.extensionPoint.definition.customEvent = {
+    triggerFormState.starterBrick.definition.trigger = "custom";
+    triggerFormState.starterBrick.definition.customEvent = {
       eventName: "myevent",
     };
 
-    const otherFormState = formStateFactory({}, [
-      {
-        id: CustomEventEffect.BRICK_ID,
-        config: {
-          eventName: "myevent2",
+    const otherFormState = formStateFactory({
+      brickPipeline: [
+        {
+          id: CustomEventEffect.BRICK_ID,
+          config: {
+            eventName: "myevent2",
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const analysis = new CheckEventNamesAnalysis([
       triggerFormState,

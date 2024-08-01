@@ -28,7 +28,7 @@ import { Events } from "@/telemetry/events";
 import { useModals } from "@/components/ConfirmationModal";
 import { type Permissions } from "webextension-polyfill";
 import { extractAdditionalPermissions } from "webext-permissions";
-import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { revertAll } from "@/store/commonActions";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import { allSettled } from "@/utils/promiseUtils";

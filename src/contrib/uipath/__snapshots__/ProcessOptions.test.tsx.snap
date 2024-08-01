@@ -4,6 +4,7 @@ exports[`UiPath Options Render integration selector 1`] = `
 <DocumentFragment>
   <div
     class="formGroup form-group"
+    data-testid="field-template-form-group"
   >
     <div
       class="mb-2 w-100 collapse"
@@ -14,7 +15,7 @@ exports[`UiPath Options Render integration selector 1`] = `
     </div>
     <label
       class="label form-label"
-      for="extension.blockPipeline.0.config.uipath"
+      for="modComponent.brickPipeline.0.config.uipath"
     >
       Integration
     </label>
@@ -67,7 +68,7 @@ exports[`UiPath Options Render integration selector 1`] = `
                     autocomplete="off"
                     autocorrect="off"
                     class=""
-                    id="extension.blockPipeline.0.config.uipath"
+                    id="modComponent.brickPipeline.0.config.uipath"
                     role="combobox"
                     spellcheck="false"
                     style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
@@ -103,7 +104,7 @@ exports[`UiPath Options Render integration selector 1`] = `
               </div>
             </div>
             <input
-              name="extension.blockPipeline.0.config.uipath"
+              name="modComponent.brickPipeline.0.config.uipath"
               type="hidden"
               value=""
             />

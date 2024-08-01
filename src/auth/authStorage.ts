@@ -17,13 +17,14 @@
 
 import Cookies from "js-cookie";
 import {
+  type DeploymentKey,
   type PartnerAuthData,
   type TokenAuthData,
   USER_DATA_UPDATE_KEYS,
   type UserData,
   type UserDataUpdate,
 } from "./authTypes";
-import { isExtensionContext } from "webext-detect-page";
+import { isExtensionContext } from "webext-detect";
 import { expectContext } from "@/utils/expectContext";
 import { omit } from "lodash";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
@@ -31,6 +32,8 @@ import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { ReusableAbortController } from "abort-utils";
 import { removeOAuth2Token } from "@/background/messenger/api";
+import { deploymentKeyStorage, getDeploymentKey } from "@/auth/deploymentKey";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
@@ -43,7 +46,7 @@ type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 const controller = new ReusableAbortController();
 
 const authChanges = new SimpleEventTarget<
-  Partial<TokenAuthData | PartnerAuthData>
+  Partial<TokenAuthData | PartnerAuthData | DeploymentKey>
 >();
 
 // Use listeners to allow inversion of control and avoid circular dependency with error reporter.
@@ -56,7 +59,7 @@ export function removeAuthListener(handler: AuthListener): void {
 }
 
 function triggerListeners(
-  auth?: Partial<TokenAuthData | PartnerAuthData>,
+  auth?: Partial<TokenAuthData | PartnerAuthData | DeploymentKey>,
 ): void {
   authChanges.emit(auth);
 }
@@ -86,12 +89,16 @@ export async function readAuthData(): Promise<
 
 /**
  * Return the native PixieBrix API token (issued by the PixieBrix API).
+ * @see getDeploymentKey
  */
 export async function getExtensionToken(): Promise<string | undefined> {
-  const { token } = await readAuthData();
+  const { token } = (await readAuthData()) ?? {};
   return token;
 }
 
+/**
+ * Read the partner auth data from local storage (issued by a partner JWT provider).
+ */
 export async function getPartnerAuthData(): Promise<
   PartnerAuthData | undefined
 > {
@@ -145,14 +152,18 @@ export async function clearPartnerAuthData(): Promise<void> {
 /**
  * Return PixieBrix API authentication headers, or null if not authenticated.
  *
- * Headers can either be:
- * - Native PixieBrix token
+ * Headers can be, in order of precedence:
+ * - Native PixieBrix user token
  * - Partner Bearer JWT
+ * - Shared PixieBrix deployment key
+ *
+ * @since 2.0.6 added deployment key authentication
  */
 export async function getAuthHeaders(): Promise<UnknownObject | null> {
-  const [nativeToken, partnerAuth] = await Promise.all([
+  const [nativeToken, partnerAuth, deploymentKey] = await Promise.all([
     getExtensionToken(),
     getPartnerAuthData(),
+    getDeploymentKey(),
   ]);
 
   if (nativeToken) {
@@ -167,6 +178,14 @@ export async function getAuthHeaders(): Promise<UnknownObject | null> {
       // Put Authorization second to avoid overriding Authorization header. (Is defensive for now, currently
       // the extra headers are hard-coded)
       Authorization: `Bearer ${partnerAuth.token}`,
+    };
+  }
+
+  // Prefer user-authentication over deployment key
+  if (deploymentKey) {
+    return {
+      Authorization: `Token ${deploymentKey}`,
+      "X-Device-Id": await getUUID(),
     };
   }
 
@@ -209,6 +228,7 @@ export async function getExtensionAuth(): Promise<
 export async function clearCachedAuthSecrets(): Promise<void> {
   console.debug("Clearing extension auth");
   await Promise.all([
+    // Don't clear deploymentKeyStorage, as it's a user-configured setting vs. the token material returned by a server
     extensionKeyStorage.remove(),
     partnerTokenStorage.remove(),
   ]);
@@ -272,4 +292,5 @@ export async function linkExtension(auth: TokenAuthData): Promise<boolean> {
 if (isExtensionContext()) {
   extensionKeyStorage.onChanged(triggerListeners);
   partnerTokenStorage.onChanged(triggerListeners);
+  deploymentKeyStorage.onChanged(triggerListeners);
 }

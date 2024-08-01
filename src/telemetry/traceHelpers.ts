@@ -38,12 +38,12 @@ export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
  */
 export function getLatestBrickCall(
   records: TraceRecord[],
-  blockInstanceId: UUID,
+  blockInstanceId: UUID | undefined,
 ): TraceRecord | undefined {
   return getLatestCall(
     records.filter(
       // Use first block in pipeline to determine the latest run
-      (trace) => trace.blockInstanceId === blockInstanceId,
+      (trace) => trace.brickInstanceId === blockInstanceId,
     ),
   );
 }

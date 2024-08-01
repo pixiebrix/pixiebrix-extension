@@ -17,9 +17,9 @@
 
 import React from "react";
 import useAsyncState from "@/hooks/useAsyncState";
-import blockRegistry from "@/bricks/registry";
-import serviceRegistry from "@/integrations/registry";
-import extensionPointRegistry from "@/starterBricks/registry";
+import brickRegistry from "@/bricks/registry";
+import integrationRegistry from "@/integrations/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import AsyncStateGate from "@/components/AsyncStateGate";
 
 /**
@@ -29,9 +29,9 @@ const RequireBrickRegistry: React.FC = ({ children }) => {
   const state = useAsyncState(
     async () =>
       Promise.all([
-        blockRegistry.all(),
-        serviceRegistry.all(),
-        extensionPointRegistry.all(),
+        brickRegistry.all(),
+        integrationRegistry.all(),
+        starterBrickRegistry.all(),
       ]),
     [],
   );

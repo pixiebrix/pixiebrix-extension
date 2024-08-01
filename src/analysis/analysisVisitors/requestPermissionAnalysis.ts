@@ -55,7 +55,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     // Analyze the known blocks that make external HTTP request
     if (
       !(
-        blockConfig.id === RemoteMethod.BLOCK_ID ||
+        blockConfig.id === RemoteMethod.BRICK_ID ||
         blockConfig.id === GetAPITransformer.BRICK_ID
       ) ||
       blockConfig.config.service != null

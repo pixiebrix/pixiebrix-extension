@@ -25,6 +25,7 @@ import {
   performConfiguredRequestInBackground,
   ensureContextMenu,
   uninstallContextMenu,
+  tabCapture,
 } from "@/background/messenger/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -97,6 +98,7 @@ class ContentScriptPlatform extends PlatformBase {
     "contentScript",
     "logs",
     "debugger",
+    "capture",
     "alert",
     "form",
     "panel",
@@ -209,6 +211,30 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
+  override get capture(): PlatformProtocol["capture"] {
+    return {
+      async captureScreenshot() {
+        return tabCapture.captureTabScreenshot();
+      },
+      async startAudioCapture(
+        integrationConfig: SanitizedIntegrationConfig,
+        options: {
+          captureMicrophone: boolean;
+          captureSystem: boolean;
+        },
+      ): Promise<void> {
+        await tabCapture.startAudioCapture({
+          integrationConfig,
+          captureMicrophone: options.captureMicrophone,
+          captureTab: options.captureSystem,
+        });
+      },
+      async stopAudioCapture(): Promise<void> {
+        await tabCapture.stopAudioCapture();
+      },
+    };
+  }
+
   override get badge(): PlatformProtocol["badge"] {
     return {
       setText: setToolbarBadge,
@@ -230,7 +256,7 @@ class ContentScriptPlatform extends PlatformBase {
 
     return {
       async register({ handler, ...options }) {
-        registerHandler(options.extensionId, handler);
+        registerHandler(options.modComponentId, handler);
         await ensureContextMenu(options);
       },
       async unregister(componentId) {
@@ -286,8 +312,8 @@ class ContentScriptPlatform extends PlatformBase {
   override get panels(): PlatformProtocol["panels"] {
     return {
       isContainerVisible: async () => sidebarController.isSidePanelOpen(),
-      unregisterExtensionPoint: sidebarController.removeExtensionPoint,
-      removeComponents: sidebarController.removeExtensions,
+      unregisterStarterBrick: sidebarController.removeStarterBrick,
+      removeComponents: sidebarController.removeModComponents,
       reservePanels: sidebarController.reservePanels,
       updateHeading: sidebarController.updateHeading,
       upsertPanel: sidebarController.upsertPanel,

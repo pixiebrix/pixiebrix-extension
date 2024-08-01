@@ -19,14 +19,11 @@ import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import FormModalOptions from "@/pageEditor/fields/FormModalOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { screen } from "@testing-library/react";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import {
-  baseModComponentStateFactory,
-  formStateFactory,
-} from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -37,13 +34,14 @@ describe("FormModalOptions", () => {
     const brick = createNewConfiguredBrick(FormTransformer.BRICK_ID);
 
     const initialValues = formStateFactory({
-      extension: baseModComponentStateFactory({
-        blockPipeline: [brick],
-      }),
+      brickPipeline: [brick],
     });
 
     render(
-      <FormModalOptions name="extension.blockPipeline.0" configKey="config" />,
+      <FormModalOptions
+        name="modComponent.brickPipeline.0"
+        configKey="config"
+      />,
       {
         initialValues,
         setupRedux(dispatch) {

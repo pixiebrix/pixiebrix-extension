@@ -46,7 +46,7 @@ import pluralize from "@/utils/pluralize";
  */
 export function useOptionalModDefinition(
   id: RegistryId | null,
-): FetchableAsyncState<ModDefinition | null> {
+): FetchableAsyncState<ModDefinition> {
   const state = useAllModDefinitions();
 
   const findModDefinition = useCallback(

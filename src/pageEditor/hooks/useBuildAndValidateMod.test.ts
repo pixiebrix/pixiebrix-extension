@@ -16,7 +16,6 @@
  */
 
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import {
   internalStarterBrickMetaFactory,
   lookupStarterBrick,
@@ -41,9 +40,10 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { normalizeModDefinition } from "@/utils/modUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -95,7 +95,7 @@ describe("useBuildAndValidateMod", () => {
         totalModComponentCount,
       )();
 
-      // Install the mod
+      // Activate the mod
       const state = modComponentsSlice.reducer(
         { extensions: [] },
         modComponentsActions.activateMod({
@@ -116,15 +116,15 @@ describe("useBuildAndValidateMod", () => {
           // Mock this lookup for the adapter call that follows
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-          // Mod was installed, so get the mod component from state
+          // Mod was activated, so get the mod component from state
           const modComponent = state.extensions[i];
 
           // Load the adapter for this mod component
-          const adapter = ADAPTERS.get(starterBrick.definition.type);
+          const { fromModComponent } = adapter(starterBrick.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await adapter.fromModComponent(
+          const modComponentFormState = (await fromModComponent(
             modComponent,
           )) as ModComponentFormState;
 
@@ -174,13 +174,15 @@ describe("useBuildAndValidateMod", () => {
 
   it("built mod has the wrong number of mod components", async () => {
     const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
+    const activatedModDefinition = modDefinitionFactory({
       metadata: modMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 1),
     });
 
     const dirtyFormState1 = formStateFactory({
-      recipe: modMetadata,
+      formStateConfig: {
+        modMetadata,
+      },
     });
 
     const { result, getReduxStore } = renderHook(
@@ -189,7 +191,7 @@ describe("useBuildAndValidateMod", () => {
         setupRedux(dispatch) {
           dispatch(
             modComponentsActions.activateMod({
-              modDefinition: installedModDefinition,
+              modDefinition: activatedModDefinition,
               screen: "pageEditor",
               isReactivate: false,
             }),
@@ -204,7 +206,7 @@ describe("useBuildAndValidateMod", () => {
     await hookAct(async () => {
       await expect(
         result.current.buildAndValidateMod({
-          sourceMod: installedModDefinition,
+          sourceMod: activatedModDefinition,
           cleanModComponents: state.extensions.slice(1),
           dirtyModComponentFormStates: [dirtyFormState1],
         }),

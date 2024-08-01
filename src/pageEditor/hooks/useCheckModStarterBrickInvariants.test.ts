@@ -26,13 +26,13 @@ import {
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { getActivatedModComponentFromDefinition } from "@/activation/getActivatedModComponentFromDefinition";
+import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { actions as modComponentsActions } from "@/store/extensionsSlice";
-import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
@@ -93,8 +93,8 @@ describe("useCheckModStarterBrickInvariants", () => {
       expectedResult: boolean;
     }) => {
       const modMetadata = modMetadataFactory();
-      let installedModDefinition: ModDefinition | null = null;
-      const installedFormStates: ModComponentFormState[] = [];
+      let activatedModDefinition: ModDefinition | null = null;
+      const activatedFormStates: ModComponentFormState[] = [];
       const newFormStates: ModComponentFormState[] = [];
 
       const cleanModComponentDefinitions: ModComponentDefinition[] = [];
@@ -130,7 +130,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           };
         }
 
-        installedModDefinition = modDefinitionFactory({
+        activatedModDefinition = modDefinitionFactory({
           metadata: modMetadata,
           definitions: {
             ...cleanModInnerDefinitions,
@@ -144,15 +144,16 @@ describe("useCheckModStarterBrickInvariants", () => {
       }
 
       for (const modComponentDefinition of dirtyModComponentDefinitions) {
-        const activatedModComponent = getActivatedModComponentFromDefinition({
-          modComponentDefinition,
-          modDefinition: installedModDefinition,
-          optionsArgs: {},
-          integrationDependencies: [],
-        });
+        const activatedModComponent =
+          mapModComponentDefinitionToActivatedModComponent({
+            modComponentDefinition,
+            modDefinition: activatedModDefinition,
+            optionsArgs: {},
+            integrationDependencies: [],
+          });
         // eslint-disable-next-line no-await-in-loop -- we control the loop count to be low here
         const formState = await modComponentToFormState(activatedModComponent);
-        installedFormStates.push(formState);
+        activatedFormStates.push(formState);
       }
 
       for (let i = 0; i < newCount; i++) {
@@ -174,12 +175,13 @@ describe("useCheckModStarterBrickInvariants", () => {
           extensionPoints: newModComponentDefinitions,
         });
         for (const modComponentDefinition of newModComponentDefinitions) {
-          const activatedModComponent = getActivatedModComponentFromDefinition({
-            modComponentDefinition,
-            modDefinition: modDefinitionForNewComponents,
-            optionsArgs: {},
-            integrationDependencies: [],
-          });
+          const activatedModComponent =
+            mapModComponentDefinitionToActivatedModComponent({
+              modComponentDefinition,
+              modDefinition: modDefinitionForNewComponents,
+              optionsArgs: {},
+              integrationDependencies: [],
+            });
           // eslint-disable-next-line no-await-in-loop -- we control the loop count to be low here
           const formState = await modComponentToFormState(
             activatedModComponent,
@@ -206,18 +208,20 @@ describe("useCheckModStarterBrickInvariants", () => {
 
       const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
         setupRedux(dispatch) {
-          if (installedModDefinition) {
+          if (activatedModDefinition) {
             dispatch(
               modComponentsActions.activateMod({
-                modDefinition: installedModDefinition,
+                modDefinition: activatedModDefinition,
                 screen: "pageEditor",
                 isReactivate: false,
               }),
             );
           }
 
-          for (const formState of installedFormStates) {
-            dispatch(editorActions.selectInstalled(formState));
+          for (const formState of activatedFormStates) {
+            dispatch(
+              editorActions.selectActivatedModComponentFormState(formState),
+            );
             dispatch(editorActions.syncModComponentFormState(formState));
           }
 
@@ -230,7 +234,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       const checkModStarterBrickInvariants = result.current;
       const actualResult = await checkModStarterBrickInvariants(
         resultModDefinition,
-        { sourceModDefinition: installedModDefinition },
+        { sourceModDefinition: activatedModDefinition },
       );
       expect(actualResult).toBe(expectedResult);
     },
@@ -256,12 +260,13 @@ describe("useCheckModStarterBrickInvariants", () => {
       extensionPoints: [modComponentDefinition],
     });
 
-    const activatedModComponent = getActivatedModComponentFromDefinition({
-      modComponentDefinition,
-      modDefinition: resultModDefinition,
-      optionsArgs: {},
-      integrationDependencies: [],
-    });
+    const activatedModComponent =
+      mapModComponentDefinitionToActivatedModComponent({
+        modComponentDefinition,
+        modDefinition: resultModDefinition,
+        optionsArgs: {},
+        integrationDependencies: [],
+      });
     const formState = await modComponentToFormState(activatedModComponent);
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
@@ -294,14 +299,15 @@ describe("useCheckModStarterBrickInvariants", () => {
       definitions: modInnerDefinitions,
       extensionPoints: [modComponentDefinition],
     });
-    const activatedModComponent = getActivatedModComponentFromDefinition({
-      modComponentDefinition,
-      modDefinition: modForComponent,
-      optionsArgs: {},
-      integrationDependencies: [],
-    });
+    const activatedModComponent =
+      mapModComponentDefinitionToActivatedModComponent({
+        modComponentDefinition,
+        modDefinition: modForComponent,
+        optionsArgs: {},
+        integrationDependencies: [],
+      });
     const formState = await modComponentToFormState(activatedModComponent);
-    delete formState.recipe;
+    delete formState.modMetadata;
 
     const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
       setupRedux(dispatch) {

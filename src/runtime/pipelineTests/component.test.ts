@@ -15,30 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-  testOptions,
-} from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { normalizeSemVerString } from "@/types/helpers";
-import { TEST_setContext } from "webext-detect-page";
+import { TEST_setContext } from "webext-detect";
 import { toExpression } from "@/utils/expressionUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 TEST_setContext("contentScript");
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
-const componentBlock = fromJS(blockRegistry, {
+const componentBlock = fromJS(brickRegistry, {
   apiVersion: "v1",
   kind: DefinitionKinds.BRICK,
   metadata: {
@@ -63,7 +59,7 @@ const componentBlock = fromJS(blockRegistry, {
 
 describe("component block v1", () => {
   test("v2 pipeline calling v1 block", async () => {
-    blockRegistry.register([componentBlock]);
+    brickRegistry.register([componentBlock]);
 
     const pipeline = [
       {
@@ -84,14 +80,14 @@ describe("component block v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v2"),
+      reduceOptionsFactory("v2"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
   });
 
   test("v3 pipeline calling v1 block", async () => {
-    blockRegistry.register([componentBlock]);
+    brickRegistry.register([componentBlock]);
 
     const pipeline = [
       {
@@ -112,7 +108,7 @@ describe("component block v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3"),
+      reduceOptionsFactory("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });

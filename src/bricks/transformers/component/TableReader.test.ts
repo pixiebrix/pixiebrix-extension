@@ -16,7 +16,7 @@
  */
 
 import { TableReader } from "@/bricks/transformers/component/TableReader";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { type BrickConfig } from "@/bricks/types";
 import {
   unsafeAssumeValidArg,
@@ -27,8 +27,8 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 const tableReaderBlock = new TableReader();
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([tableReaderBlock]);
+  brickRegistry.clear();
+  brickRegistry.register([tableReaderBlock]);
 });
 
 describe("TableReader", () => {

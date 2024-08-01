@@ -16,22 +16,11 @@
  */
 
 import type { UserData } from "@/auth/authTypes";
+import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
-import { once } from "lodash";
+import { cloneDeep, once } from "lodash";
 import { StorageItem } from "webext-storage";
-
-/**
- * The Person model for application error telemetry.
- */
-export type TelemetryUser = {
-  /**
-   * User id or browser distinct id, if the user is anonymous.
-   */
-  id: UUID;
-  email?: string;
-  organizationId?: UUID | null;
-};
 
 export const uuidStorage = new StorageItem<UUID>("USER_UUID");
 
@@ -96,4 +85,56 @@ export async function mapAppUserToTelemetryUser(
     email,
     organizationId: telemetryOrganizationId ?? organizationId,
   };
+}
+
+export function mapEventDataToDeprecatedTerminology(
+  data: UnknownObject,
+): UnknownObject {
+  const _data = cloneDeep(data);
+  if (_data.brickId) {
+    _data.blockId = _data.brickId;
+  }
+
+  if (_data.brickVersion) {
+    _data.blockVersion = _data.brickVersion;
+  }
+
+  if (_data.integrationId) {
+    _data.serviceId = _data.integrationId;
+  }
+
+  if (_data.integrationVersion) {
+    _data.serviceVersion = _data.integrationVersion;
+  }
+
+  if (_data.modId) {
+    _data.blueprintId = _data.modId;
+    _data.recipeId = _data.modId;
+  }
+
+  if (_data.modComponentId) {
+    _data.extensionId = _data.modComponentId;
+  }
+
+  if (_data.modComponentLabel) {
+    _data.extensionLabel = _data.modComponentLabel;
+  }
+
+  if (_data.modComponents) {
+    _data.extensions = _data.modComponents;
+  }
+
+  if (_data.modToActivate) {
+    _data.recipeToActivate = _data.modToActivate;
+  }
+
+  if (_data.modVersion) {
+    _data.blueprintVersion = _data.modVersion;
+  }
+
+  if (_data.starterBrickId) {
+    _data.extensionPointId = _data.starterBrickId;
+  }
+
+  return _data;
 }

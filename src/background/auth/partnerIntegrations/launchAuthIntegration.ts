@@ -17,8 +17,8 @@
 
 import type { RegistryId } from "@/types/registryTypes";
 import { expectContext } from "@/utils/expectContext";
-import serviceRegistry from "@/integrations/registry";
-import { locator as serviceLocator } from "@/background/locator";
+import integrationRegistry from "@/integrations/registry";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
@@ -44,10 +44,11 @@ export async function launchAuthIntegration({
 }): Promise<void> {
   expectContext("background");
 
-  const integration = await serviceRegistry.lookup(integrationId);
+  const integration = await integrationRegistry.lookup(integrationId);
 
   await serviceLocator.refreshLocal();
-  const allAuths = await serviceLocator.locateAllForService(integrationId);
+  const allAuths =
+    await serviceLocator.findAllSanitizedConfigsForIntegration(integrationId);
   const localAuths = allAuths.filter((x) => !x.proxy);
 
   if (localAuths.length === 0) {

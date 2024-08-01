@@ -24,7 +24,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import {
   contextMenuFormStateFactory,
   formStateFactory,
@@ -63,7 +63,7 @@ function renderBrickConfiguration(
       dispatch(actions.setActiveModComponentId(initialValues.uuid));
       dispatch(
         actions.setActiveNodeId(
-          initialValues.extension.blockPipeline[0].instanceId,
+          initialValues.modComponent.brickPipeline[0].instanceId,
         ),
       );
     },
@@ -73,11 +73,15 @@ function renderBrickConfiguration(
 test("renders", async () => {
   const brick = echoBrick;
   brickRegistry.register([brick]);
-  const initialState = formStateFactory({ apiVersion: "v3" }, [
-    brickConfigFactory({ id: brick.id }),
-  ]);
+  const initialState = formStateFactory({
+    formStateConfig: { apiVersion: "v3" },
+    brickPipeline: [brickConfigFactory({ id: brick.id })],
+  });
   const { asFragment } = renderBrickConfiguration(
-    <BrickConfiguration name="extension.blockPipeline[0]" brickId={brick.id} />,
+    <BrickConfiguration
+      name="modComponent.brickPipeline[0]"
+      brickId={brick.id}
+    />,
     initialState,
   );
 
@@ -101,7 +105,7 @@ describe("shows root mode", () => {
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="extension.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,
@@ -122,7 +126,7 @@ describe("shows root mode", () => {
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="extension.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,
@@ -143,7 +147,7 @@ describe("shows root mode", () => {
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="extension.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,
@@ -182,7 +186,7 @@ test.each`
     ]);
     renderBrickConfiguration(
       <BrickConfiguration
-        name="extension.blockPipeline[0]"
+        name="modComponent.brickPipeline[0]"
         brickId={brick.id}
       />,
       initialState,

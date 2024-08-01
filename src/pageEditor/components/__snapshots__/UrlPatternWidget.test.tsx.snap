@@ -32,138 +32,383 @@ exports[`UrlPatternWidget render single pattern 1`] = `
       class="list-group mb-2"
     >
       <li
-        class="list-group-item py-1"
+        class="list-group-item py-1 d-flex pl-1"
       >
+        <div>
+          <button
+            class="moveButton btn btn-link"
+            disabled=""
+            title="Move up"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+          <button
+            class="moveButton btn btn-link"
+            disabled=""
+            title="Move down"
+            type="button"
+          >
+            <test-file-stub />
+          </button>
+        </div>
         <div
-          class="formGroup mb-0 form-group"
+          class="flex-grow-1"
         >
           <div
-            class="mb-2 w-100 collapse"
+            class="formGroup mb-0 form-group"
+            data-testid="field-template-form-group"
           >
             <div
-              class="annotationPlaceholder"
-            />
-          </div>
-          <div
-            class="formField"
-          >
-            <div
-              class="root"
+              class="mb-2 w-100 collapse"
             >
               <div
-                class="field"
+                class="annotationPlaceholder"
+              />
+            </div>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
               >
-                <div>
-                  <table
-                    class="mb-0 table table-sm"
-                  >
-                    <thead>
-                      <tr>
-                        <th
-                          scope="col"
-                        >
-                          Property name
-                        </th>
-                        <th
-                          scope="col"
-                        >
-                          Value
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <input
-                            class="form-control"
-                            data-testid="pattern.0.hash-name"
-                            type="text"
-                            value="hash"
-                          />
-                        </td>
-                        <td>
-                          <div
-                            class="formGroup mb-0 form-group"
+                <div
+                  class="field"
+                >
+                  <div>
+                    <table
+                      class="mb-0 table table-sm"
+                    >
+                      <thead>
+                        <tr>
+                          <th
+                            scope="col"
                           >
+                            Property name
+                          </th>
+                          <th
+                            scope="col"
+                          >
+                            Value
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <input
+                              class="form-control"
+                              data-testid="pattern.0.hostname-name"
+                              readonly=""
+                              type="text"
+                              value="hostname"
+                            />
+                          </td>
+                          <td>
                             <div
-                              class="mb-2 w-100 collapse"
+                              class="formGroup mb-0 form-group"
+                              data-testid="field-template-form-group"
                             >
                               <div
-                                class="annotationPlaceholder"
-                              />
-                            </div>
-                            <div
-                              class="formField"
-                            >
-                              <div
-                                class="root"
+                                class="mb-2 w-100 collapse"
                               >
                                 <div
-                                  class="field"
-                                >
-                                  <textarea
-                                    class="form-control"
-                                    id="pattern.0.hash"
-                                    name="pattern.0.hash"
-                                    rows="1"
-                                  >
-                                    /requests/ref/16-2
-                                  </textarea>
-                                </div>
+                                  class="annotationPlaceholder"
+                                />
+                              </div>
+                              <div
+                                class="formField"
+                              >
                                 <div
-                                  class="dropdown dropdown"
-                                  data-test-selected="Text"
-                                  data-testid="toggle-pattern.0.hash"
+                                  class="root"
                                 >
-                                  <button
-                                    aria-expanded="false"
-                                    aria-haspopup="true"
-                                    class="dropdown-toggle btn btn-link"
-                                    type="button"
+                                  <div
+                                    class="field"
                                   >
-                                    <span
-                                      class="symbol"
+                                    <input
+                                      class="form-control"
+                                      id="pattern.0.hostname"
+                                      name="pattern.0.hostname"
+                                      readonly=""
+                                      value=""
+                                    />
+                                  </div>
+                                  <div
+                                    class="dropdown dropdown"
+                                    data-test-selected="Exclude"
+                                    data-testid="toggle-pattern.0.hostname"
+                                  >
+                                    <button
+                                      aria-expanded="false"
+                                      aria-haspopup="true"
+                                      class="dropdown-toggle btn btn-link"
+                                      type="button"
                                     >
-                                      <test-file-stub
-                                        classname="root"
-                                      />
-                                    </span>
-                                  </button>
+                                      <span
+                                        class="symbol"
+                                      >
+                                        <test-file-stub
+                                          classname="root"
+                                        />
+                                      </span>
+                                    </button>
+                                  </div>
                                 </div>
+                                <small
+                                  class="text-muted form-text"
+                                >
+                                  <span>
+                                    Pattern to match the hostname part of a URL.
+                                  </span>
+                                </small>
                               </div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input
+                              class="form-control"
+                              data-testid="pattern.0.pathname-name"
+                              readonly=""
+                              type="text"
+                              value="pathname"
+                            />
+                          </td>
+                          <td>
+                            <div
+                              class="formGroup mb-0 form-group"
+                              data-testid="field-template-form-group"
+                            >
+                              <div
+                                class="mb-2 w-100 collapse"
+                              >
+                                <div
+                                  class="annotationPlaceholder"
+                                />
+                              </div>
+                              <div
+                                class="formField"
+                              >
+                                <div
+                                  class="root"
+                                >
+                                  <div
+                                    class="field"
+                                  >
+                                    <input
+                                      class="form-control"
+                                      id="pattern.0.pathname"
+                                      name="pattern.0.pathname"
+                                      readonly=""
+                                      value=""
+                                    />
+                                  </div>
+                                  <div
+                                    class="dropdown dropdown"
+                                    data-test-selected="Exclude"
+                                    data-testid="toggle-pattern.0.pathname"
+                                  >
+                                    <button
+                                      aria-expanded="false"
+                                      aria-haspopup="true"
+                                      class="dropdown-toggle btn btn-link"
+                                      type="button"
+                                    >
+                                      <span
+                                        class="symbol"
+                                      >
+                                        <test-file-stub
+                                          classname="root"
+                                        />
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+                                <small
+                                  class="text-muted form-text"
+                                >
+                                  <span>
+                                    Pattern to match the pathname part of a URL.
+                                  </span>
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input
+                              class="form-control"
+                              data-testid="pattern.0.hash-name"
+                              readonly=""
+                              type="text"
+                              value="hash"
+                            />
+                          </td>
+                          <td>
+                            <div
+                              class="formGroup mb-0 form-group"
+                              data-testid="field-template-form-group"
+                            >
+                              <div
+                                class="mb-2 w-100 collapse"
+                              >
+                                <div
+                                  class="annotationPlaceholder"
+                                />
+                              </div>
+                              <div
+                                class="formField"
+                              >
+                                <div
+                                  class="root"
+                                >
+                                  <div
+                                    class="field"
+                                  >
+                                    <textarea
+                                      class="form-control"
+                                      id="pattern.0.hash"
+                                      name="pattern.0.hash"
+                                      rows="1"
+                                    >
+                                      /requests/ref/16-2
+                                    </textarea>
+                                  </div>
+                                  <div
+                                    class="dropdown dropdown"
+                                    data-test-selected="Text"
+                                    data-testid="toggle-pattern.0.hash"
+                                  >
+                                    <button
+                                      aria-expanded="false"
+                                      aria-haspopup="true"
+                                      class="dropdown-toggle btn btn-link"
+                                      type="button"
+                                    >
+                                      <span
+                                        class="symbol"
+                                      >
+                                        <test-file-stub
+                                          classname="root"
+                                        />
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+                                <small
+                                  class="text-muted form-text"
+                                >
+                                  <span>
+                                    Pattern to match the hash part of a URL.
+                                  </span>
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <input
+                              class="form-control"
+                              data-testid="pattern.0.search-name"
+                              readonly=""
+                              type="text"
+                              value="search"
+                            />
+                          </td>
+                          <td>
+                            <div
+                              class="formGroup mb-0 form-group"
+                              data-testid="field-template-form-group"
+                            >
+                              <div
+                                class="mb-2 w-100 collapse"
+                              >
+                                <div
+                                  class="annotationPlaceholder"
+                                />
+                              </div>
+                              <div
+                                class="formField"
+                              >
+                                <div
+                                  class="root"
+                                >
+                                  <div
+                                    class="field"
+                                  >
+                                    <input
+                                      class="form-control"
+                                      id="pattern.0.search"
+                                      name="pattern.0.search"
+                                      readonly=""
+                                      value=""
+                                    />
+                                  </div>
+                                  <div
+                                    class="dropdown dropdown"
+                                    data-test-selected="Exclude"
+                                    data-testid="toggle-pattern.0.search"
+                                  >
+                                    <button
+                                      aria-expanded="false"
+                                      aria-haspopup="true"
+                                      class="dropdown-toggle btn btn-link"
+                                      type="button"
+                                    >
+                                      <span
+                                        class="symbol"
+                                      >
+                                        <test-file-stub
+                                          classname="root"
+                                        />
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+                                <small
+                                  class="text-muted form-text"
+                                >
+                                  <span>
+                                    Pattern to match the search part of a URL.
+                                  </span>
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button
+                      class="btn btn-primary"
+                      type="button"
+                    >
+                      Add Property
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Object properties"
+                  data-testid="toggle-pattern.0"
+                >
                   <button
-                    class="btn btn-primary"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
                     type="button"
                   >
-                    Add Property
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
                   </button>
                 </div>
-              </div>
-              <div
-                class="dropdown dropdown"
-                data-test-selected="Object properties"
-                data-testid="toggle-pattern.0"
-              >
-                <button
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  class="dropdown-toggle btn btn-link"
-                  type="button"
-                >
-                  <span
-                    class="symbol"
-                  >
-                    <test-file-stub
-                      classname="root"
-                    />
-                  </span>
-                </button>
               </div>
             </div>
           </div>

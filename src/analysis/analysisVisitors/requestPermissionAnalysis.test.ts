@@ -25,18 +25,18 @@ import { toExpression } from "@/utils/expressionUtils";
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 const containsMock = jest.mocked(browser.permissions.contains);
 
-function blockExtensionFactory(url: string) {
-  const extension = triggerFormStateFactory();
-  extension.extension.blockPipeline = [
+function brickModComponentFactory(url: string) {
+  const formState = triggerFormStateFactory();
+  formState.modComponent.brickPipeline = [
     brickConfigFactory({
-      id: RemoteMethod.BLOCK_ID,
+      id: RemoteMethod.BRICK_ID,
       config: {
         url: toExpression("nunjucks", url),
       },
     }),
   ];
 
-  return extension;
+  return formState;
 }
 
 describe("requestPermissionAnalysis", () => {
@@ -45,11 +45,11 @@ describe("requestPermissionAnalysis", () => {
     containsMock.mockReset();
   });
 
-  test("it annotates http: url", async () => {
+  it("annotates http: url", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = blockExtensionFactory("http://example.com");
+    const formState = brickModComponentFactory("http://example.com");
 
-    await visitor.run(extension);
+    await visitor.run(formState);
     expect(visitor.getAnnotations()).toStrictEqual([
       {
         analysisId: "requestPermission",
@@ -57,36 +57,38 @@ describe("requestPermissionAnalysis", () => {
         message:
           "PixieBrix does not support calls using http: because they are insecure. Please use https: instead.",
         position: {
-          path: "extension.blockPipeline.0.config.url",
+          path: "modComponent.brickPipeline.0.config.url",
         },
       },
     ]);
   });
 
-  test("it annotates invalid url", async () => {
+  it("annotates invalid url", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = blockExtensionFactory("https://there is a space in here");
+    const formState = brickModComponentFactory(
+      "https://there is a space in here",
+    );
 
-    await visitor.run(extension);
+    await visitor.run(formState);
     expect(visitor.getAnnotations()).toStrictEqual([
       {
         analysisId: "requestPermission",
         type: "error",
         message: "Invalid URL: https://there is a space in here",
         position: {
-          path: "extension.blockPipeline.0.config.url",
+          path: "modComponent.brickPipeline.0.config.url",
         },
       },
     ]);
   });
 
-  test("it annotates insufficient permissions", async () => {
+  it("annotates insufficient permissions", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = blockExtensionFactory("https://example.com");
+    const formState = brickModComponentFactory("https://example.com");
 
     containsMock.mockResolvedValue(false);
 
-    await visitor.run(extension);
+    await visitor.run(formState);
 
     expect(containsMock).toHaveBeenCalledWith({
       // Checking that the visitor applies a trailing slash. `contains` requires a path on the URL
@@ -105,7 +107,7 @@ describe("requestPermissionAnalysis", () => {
         message:
           "Insufficient browser permissions to make request. Specify an Integration to access the API, or add an Extra Permissions rule to the starter brick.",
         position: {
-          path: "extension.blockPipeline.0.config.url",
+          path: "modComponent.brickPipeline.0.config.url",
         },
       },
     ]);
@@ -113,9 +115,9 @@ describe("requestPermissionAnalysis", () => {
 
   test("skip relative URLs", async () => {
     const visitor = new RequestPermissionAnalysis();
-    const extension = blockExtensionFactory("/relative/url");
+    const formState = brickModComponentFactory("/relative/url");
 
-    await visitor.run(extension);
+    await visitor.run(formState);
 
     expect(visitor.getAnnotations()).toHaveLength(0);
   });
@@ -123,9 +125,9 @@ describe("requestPermissionAnalysis", () => {
   test("skips valid URLs", async () => {
     const visitor = new RequestPermissionAnalysis();
     containsMock.mockResolvedValue(true);
-    const extension = blockExtensionFactory("https://example.com");
+    const formState = brickModComponentFactory("https://example.com");
 
-    await visitor.run(extension);
+    await visitor.run(formState);
 
     expect(visitor.getAnnotations()).toHaveLength(0);
   });

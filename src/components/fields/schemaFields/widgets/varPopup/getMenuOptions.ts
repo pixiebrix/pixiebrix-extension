@@ -22,9 +22,9 @@ import {
   type ExistenceNode,
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { isEmpty, merge } from "lodash";
-import { type JsonObject } from "type-fest";
-import { type UnknownRecord } from "type-fest/source/internal";
+import { type UnknownRecord, type JsonObject } from "type-fest";
 import { excludeIntegrationVariables } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Convert every node in the existence tree which IS_ARRAY to an array
@@ -74,7 +74,11 @@ function getMenuOptions(
   // This is important for the case where the same output key is used multiple times in a pipeline
   for (let index = varMapEntries.length - 1; index >= 0; index--) {
     // eslint-disable-next-line security/detect-object-injection -- accessing array item by index
-    const [, existenceTree] = varMapEntries[index];
+    const varMapEntry = varMapEntries[index];
+
+    assertNotNullish(varMapEntry, "var map entry not found");
+
+    const [, existenceTree] = varMapEntry;
 
     for (const [outputKey] of Object.entries(existenceTree)) {
       // eslint-disable-next-line security/detect-object-injection -- access via Object.entries
