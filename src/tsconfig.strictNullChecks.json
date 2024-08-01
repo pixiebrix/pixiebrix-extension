@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/modListingPanel/modals/CreateModModal.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -1293,8 +1292,10 @@
     "./pageEditor/modListingPanel/filterSidebarItems.test.ts",
     "./pageEditor/modListingPanel/filterSidebarItems.ts",
     "./pageEditor/modListingPanel/modals/AddToModModal.tsx",
+    "./pageEditor/modListingPanel/modals/CreateModModal.tsx",
     "./pageEditor/modListingPanel/modals/MoveFromModModal.tsx",
     "./pageEditor/modListingPanel/modals/SaveAsNewModModal.tsx",
+    "./pageEditor/modals/Modals.tsx",
     "./pageEditor/modals/addBrickModal/AddBrickModal.tsx",
     "./pageEditor/modals/addBrickModal/BrickDetail.tsx",
     "./pageEditor/modals/addBrickModal/BrickGridItem.tsx",
