@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import properEvent from 'proper-event';
+import properEvent from "proper-event";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -83,7 +83,7 @@ export class ElementEvent extends EffectABC {
     // NOTE: the event is not "trusted" as being a user action
     // https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
     for (const element of $elements) {
-      element.dispatchEvent(properEvent(event, {bubbles: true}))
+      element.dispatchEvent(properEvent(event, { bubbles: true }))
     }
   }
 }

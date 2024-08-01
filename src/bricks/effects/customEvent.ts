@@ -16,7 +16,7 @@
  */
 
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import properEvent from 'proper-event';
+import properEvent from "proper-event";
 import { type JsonObject } from "type-fest";
 import { type UiSchema, type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
