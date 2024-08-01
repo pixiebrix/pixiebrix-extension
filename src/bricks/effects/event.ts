@@ -83,7 +83,7 @@ export class ElementEvent extends EffectABC {
     // NOTE: the event is not "trusted" as being a user action
     // https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
     for (const element of $elements) {
-      element.dispatchEvent(properEvent(event, { bubbles: true }))
+      element.dispatchEvent(properEvent(event, { bubbles: true }));
     }
   }
 }
