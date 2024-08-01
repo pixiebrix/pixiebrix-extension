@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./extensionConsole/pages/packageEditor/useSubmitPackage.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -975,6 +974,7 @@
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.test.ts",
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.ts",
     "./extensionConsole/pages/packageEditor/CodeEditor.tsx",
+    "./extensionConsole/pages/packageEditor/CreatePage.tsx",
     "./extensionConsole/pages/packageEditor/Editor.test.tsx",
     "./extensionConsole/pages/packageEditor/Editor.tsx",
     "./extensionConsole/pages/packageEditor/PackageHistory.test.tsx",
@@ -986,6 +986,7 @@
     "./extensionConsole/pages/packageEditor/referenceTab/PackageReference.tsx",
     "./extensionConsole/pages/packageEditor/referenceTab/PackageResult.tsx",
     "./extensionConsole/pages/packageEditor/useLogContext.ts",
+    "./extensionConsole/pages/packageEditor/useSubmitPackage.ts",
     "./extensionConsole/pages/packageEditor/validate.test.ts",
     "./extensionConsole/pages/packageEditor/validate.ts",
     "./extensionConsole/pages/settings/AdvancedSettings.tsx",
