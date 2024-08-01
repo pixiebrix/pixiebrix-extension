@@ -40,6 +40,7 @@ const esmPackages = [
   "p-memoize",
   "p-retry",
   "p-timeout",
+  "proper-event",
   "react-base16-styling",
   "react-json-tree",
   "serialize-error",
