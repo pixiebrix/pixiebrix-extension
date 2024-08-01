@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/modListingPanel/ModComponents.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -1283,7 +1282,9 @@
     "./pageEditor/modListingPanel/ModComponentIcons.test.tsx",
     "./pageEditor/modListingPanel/ModComponentIcons.tsx",
     "./pageEditor/modListingPanel/ModComponentListItem.tsx",
+    "./pageEditor/modListingPanel/ModComponents.tsx",
     "./pageEditor/modListingPanel/ModListItem.tsx",
+    "./pageEditor/modListingPanel/ModListingPanel.tsx",
     "./pageEditor/modListingPanel/ReloadButton.tsx",
     "./pageEditor/modListingPanel/SaveButton.stories.tsx",
     "./pageEditor/modListingPanel/SaveButton.tsx",
