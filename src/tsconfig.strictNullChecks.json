@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/modListingPanel/DraftModComponentListItem.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
@@ -1277,9 +1276,12 @@
     "./pageEditor/modListingPanel/ActivatedModComponentListItem.test.tsx",
     "./pageEditor/modListingPanel/ActivatedModComponentListItem.tsx",
     "./pageEditor/modListingPanel/AddStarterBrickButton.tsx",
+    "./pageEditor/modListingPanel/DraftModComponentListItem.test.tsx",
+    "./pageEditor/modListingPanel/DraftModComponentListItem.tsx",
     "./pageEditor/modListingPanel/HomeButton.tsx",
     "./pageEditor/modListingPanel/ModComponentIcons.test.tsx",
     "./pageEditor/modListingPanel/ModComponentIcons.tsx",
+    "./pageEditor/modListingPanel/ModComponentListItem.tsx",
     "./pageEditor/modListingPanel/ModListItem.tsx",
     "./pageEditor/modListingPanel/ReloadButton.tsx",
     "./pageEditor/modListingPanel/SaveButton.stories.tsx",
