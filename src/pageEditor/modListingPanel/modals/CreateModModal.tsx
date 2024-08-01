@@ -58,18 +58,21 @@ import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 function useInitialFormState({
   activeMod,
   activeModComponentFormState,
 }: {
-  activeModComponentFormState: ModComponentFormState;
+  activeModComponentFormState: Nullishable<ModComponentFormState>;
   activeMod: ModDefinition | null;
-}): ModMetadataFormState | null {
+}): ModMetadataFormState | UnknownObject {
   const scope = useSelector(selectScope);
+  assertNotNullish(scope, "Expected scope to create new mod");
 
   const activeModId =
     activeModComponentFormState?.modMetadata?.id ?? activeMod?.metadata?.id;
+
   const dirtyModMetadata = useSelector(
     selectDirtyMetadataForModId(activeModId),
   );
@@ -101,7 +104,7 @@ function useInitialFormState({
     };
   }
 
-  return null;
+  return {};
 }
 
 function useFormSchema() {
@@ -137,6 +140,7 @@ const CreateModModalBody: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromComponent } = useCreateModFromModComponent(
     activeModComponentFormState,
@@ -147,7 +151,9 @@ const CreateModModalBody: React.FC = () => {
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
     directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id;
-  const { data: activeMod, isFetching: isModFetching } =
+  assertNotNullish(activeModId, "Expected active mod id");
+
+  const { data: activeMod = null, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
   const formSchema = useFormSchema();
@@ -237,7 +243,7 @@ const CreateModModalBody: React.FC = () => {
   );
 
   return (
-    <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
+    <>
       {isModFetching ? (
         <Loader />
       ) : (
@@ -250,7 +256,7 @@ const CreateModModalBody: React.FC = () => {
           renderSubmit={renderSubmit}
         />
       )}
-    </RequireScope>
+    </>
   );
 };
 
@@ -266,7 +272,9 @@ const CreateModModal: React.FunctionComponent = () => {
 
   return (
     <ModalLayout title="Save new mod" show={show} onHide={hideModal}>
-      <CreateModModalBody />
+      <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
+        <CreateModModalBody />
+      </RequireScope>
     </ModalLayout>
   );
 };
