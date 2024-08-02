@@ -16,6 +16,7 @@
  */
 
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import properEvent from "proper-event";
 import { type JsonObject } from "type-fest";
 import { type UiSchema, type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
@@ -71,8 +72,7 @@ class CustomEventEffect extends EffectABC {
     }: BrickArgs<{ eventName: string; data?: JsonObject }>,
     { root = document }: BrickOptions,
   ): Promise<void> {
-    const event = new CustomEvent(eventName, { detail: data, bubbles: true });
-    root.dispatchEvent(event);
+    root.dispatchEvent(properEvent(eventName, { detail: data, bubbles: true }));
   }
 }
 
