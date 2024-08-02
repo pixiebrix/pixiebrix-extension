@@ -52,6 +52,7 @@ import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 
 import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ConvertModFormState = {
   blueprintId: RegistryId;
@@ -125,7 +126,7 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
       standaloneModDefinitions?.find((x) => x.id === modComponentId);
     if (modComponent == null) {
       throw new Error(
-        `No persisted extension exists with id: ${modComponentId}`,
+        `No persisted mod component exists with id: ${modComponentId}`,
       );
     }
 
@@ -136,8 +137,8 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
 
   const initialValues: ConvertModFormState = useMemo(
     () => ({
-      blueprintId: generatePackageId(scope, modComponent.label),
-      name: modComponent.label,
+      blueprintId: generatePackageId(scope, modComponent?.label),
+      name: modComponent?.label ?? "",
       version: normalizeSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",
     }),
@@ -156,6 +157,7 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
     helpers: FormikHelpers<ConvertModFormState>,
   ) => {
     try {
+      assertNotNullish(modComponent, "modComponent is nullish");
       const unsavedModDefinition = mapModComponentToUnsavedModDefinition(
         modComponent,
         {
@@ -212,7 +214,7 @@ const ConvertToModModalBody: React.FunctionComponent = () => {
         );
       }
     } catch (error) {
-      if (isSingleObjectBadRequestError(error) && error.response.data.config) {
+      if (isSingleObjectBadRequestError(error) && error.response?.data.config) {
         helpers.setStatus(error.response.data.config);
         return;
       }

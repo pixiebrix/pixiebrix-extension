@@ -24,6 +24,7 @@ import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const EditPublishContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -36,7 +37,9 @@ const EditPublishContent: React.FunctionComponent = () => {
     dispatch(modModalsSlice.actions.setCancelingPublish());
   };
 
-  const { blueprintId } = useSelector(selectShowPublishContext);
+  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+
+  assertNotNullish(modId, "modId from publish context is nullish");
 
   return (
     <PublishContentLayout title="Edit Pending Publish">
@@ -57,7 +60,7 @@ const EditPublishContent: React.FunctionComponent = () => {
         </p>
 
         <p className="mb-1">Public link to share:</p>
-        <ActivationLink modId={blueprintId} />
+        <ActivationLink modId={modId} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="danger" onClick={cancelPublish}>

@@ -44,7 +44,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectClosedTabs,
-  selectExtensionFromEventKey,
+  selectModComponentFromEventKey,
   selectSidebarActiveTabKey,
   selectSidebarForms,
   selectSidebarModActivationPanel,
@@ -66,6 +66,7 @@ import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
 import ConnectingOverlay from "@/sidebar/ConnectingOverlay";
 
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -99,6 +100,8 @@ const TabWithDivider = ({
 }: NavLinkProps) => {
   const closedTabs = useSelector(selectClosedTabs);
 
+  assertNotNullish(eventKey, "eventKey is nullish");
+
   // eslint-disable-next-line security/detect-object-injection -- eventKey is not user input
   const isPanelHidden = closedTabs[eventKey];
 
@@ -127,7 +130,7 @@ const Tabs: React.FC = () => {
   const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
   const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
-  const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
+  const getExtensionFromEventKey = useSelector(selectModComponentFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
 
   const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
@@ -392,14 +395,15 @@ const Tabs: React.FC = () => {
                     reportEvent(Events.VIEW_ERROR, {
                       panelType: "activate",
                       // For backward compatability, provide a single modId to the recipeToActivate property
-                      modToActivate: modActivationPanel.mods[0].modId,
+                      modToActivate: modActivationPanel.mods[0]?.modId,
                       modCount: modActivationPanel.mods.length,
                       modIds: modActivationPanel.mods.map((x) => x.modId),
                     });
                   }}
                 >
                   {modActivationPanel.mods.length === 1 ? (
-                    <ActivateModPanel mod={modActivationPanel.mods[0]} />
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
+                    <ActivateModPanel mod={modActivationPanel.mods[0]!} />
                   ) : (
                     <ActivateMultipleModsPanel mods={modActivationPanel.mods} />
                   )}

@@ -47,6 +47,8 @@ import { joinName } from "@/utils/formUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type SetOptional } from "type-fest";
 
 /**
  * Version of SelectorConfig where fields may be expressions.
@@ -182,9 +184,9 @@ const SelectorCard: React.FC<{
    */
   onChange: (item: SelectorItem) => void;
   /**
-   * Delete handler, or null if selector item cannot be deleted.
+   * Delete handler, or undefined if selector item cannot be deleted.
    */
-  onDelete: (() => void) | null;
+  onDelete: (() => void) | undefined;
   /**
    * The Formik path to selector configuration.
    */
@@ -225,8 +227,10 @@ const SelectorCard: React.FC<{
 
       return [];
     }, [selectorDefinition.selector, rootSelector]),
-    [],
+    [] as AttributeExample[],
   );
+
+  assertNotNullish(attributeExamples, "attributeExamples is nullish");
 
   const typeOption = inferActiveTypeOption(selectorDefinition);
   const typeOptions = typeOptionsFactory(attributeExamples, typeOption);
@@ -313,9 +317,10 @@ const SelectorCard: React.FC<{
               selector: produce(selectorDefinition, (draft) => {
                 // `draft` is either a SingleSelector or a ChildrenSelector. Cast as intersection type so we can clean
                 // up the values in the alternative type.
-                const commonDraft = draft as SingleSelector & ChildrenSelector;
+                const commonDraft = draft as SingleSelector &
+                  SetOptional<ChildrenSelector, "find">;
 
-                if (next.startsWith(ATTRIBUTE_OPTION_VALUE_PREFIX)) {
+                if (next?.startsWith(ATTRIBUTE_OPTION_VALUE_PREFIX)) {
                   const attributeName = next.slice(
                     ATTRIBUTE_OPTION_VALUE_PREFIX.length,
                   );
@@ -376,7 +381,7 @@ const SelectorCard: React.FC<{
 
 const SelectorsOptions: React.FC<{
   path: string;
-  rootSelector: string;
+  rootSelector: string | null;
   nestingLevel: number;
 }> = ({ path, rootSelector, nestingLevel }) => {
   const configName = partial(joinName, path);
@@ -468,7 +473,7 @@ const SelectorsOptions: React.FC<{
                       selectorItems.filter((_, i) => i !== index),
                     );
                   }
-                : null
+                : undefined
             }
             path={configName(name)}
           />

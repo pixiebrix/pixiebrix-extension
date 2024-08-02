@@ -31,12 +31,14 @@ import { type Nullish, type Nullishable } from "@/utils/nullishUtils";
 import { type UUID } from "@/types/stringTypes";
 
 function eventKeyForEntry(entry: SidebarEntry): string;
-function eventKeyForEntry(entry: Nullish): null;
+function eventKeyForEntry(entry: Nullish): undefined;
 // This duplicate overload is required: https://stackoverflow.com/a/66510061/288906
-function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null;
-function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null {
+function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | undefined;
+function eventKeyForEntry(
+  entry: Nullishable<SidebarEntry>,
+): string | undefined {
   if (entry == null) {
-    return null;
+    return;
   }
 
   if (isModActivationPanelEntry(entry)) {
@@ -80,7 +82,7 @@ export function defaultEventKey(
     modActivationPanel = null,
   }: SidebarEntries,
   closedTabs: SidebarState["closedTabs"],
-): Nullishable<string> {
+): string | undefined {
   if (forms.length > 0) {
     return eventKeyForEntry(forms.at(-1));
   }
@@ -102,8 +104,6 @@ export function defaultEventKey(
   if (openStaticPanels.length > 0) {
     return eventKeyForEntry(openStaticPanels.at(0));
   }
-
-  return null;
 }
 
 export function getOpenPanelEntries(

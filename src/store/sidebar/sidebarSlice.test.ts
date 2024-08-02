@@ -57,7 +57,7 @@ describe("sidebarSlice.selectTab", () => {
       state,
       sidebarSlice.actions.selectTab("unknown"),
     );
-    expect(newState.activeKey).toBeNull();
+    expect(newState.activeKey).toBeUndefined();
   });
 
   it("selects temporary panel", () => {

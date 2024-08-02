@@ -76,7 +76,7 @@ const WizardHeader: React.VoidFunctionComponent<{
 const ActivateModCard: React.FC<{
   modDefinition: ModDefinition;
   isReactivate: boolean;
-  forceModComponentId: UUID;
+  forceModComponentId?: UUID;
 }> = ({ modDefinition, isReactivate, forceModComponentId }) => {
   const dispatch = useDispatch();
 
