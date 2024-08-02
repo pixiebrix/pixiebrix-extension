@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/activateMod/ActivateModDefinitionIdPage.tsx",
     "./components/packageSearchModal/PackageSearchModal.tsx",
     "./components/packageSearchModal/PackageDetail.tsx",
     "../end-to-end-tests/env.ts",
