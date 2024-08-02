@@ -25,7 +25,7 @@ import { type PackageInstance } from "@/types/registryTypes";
 
 type OwnProps<Instance extends PackageInstance> = {
   onSelect: (packageInstance: Instance) => void;
-  recommendations: Instance[];
+  recommendations: Instance[] | undefined;
 };
 
 const QuickAdd = <Instance extends PackageInstance>({
