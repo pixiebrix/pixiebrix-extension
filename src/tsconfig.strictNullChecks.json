@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/packageSearchModal/PackageDetail.tsx",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
     "../end-to-end-tests/fixtures/testBase.ts",
