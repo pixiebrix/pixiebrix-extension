@@ -564,7 +564,7 @@ async function runBrick(
   let isAllowed;
 
   try {
-    isAllowed = await flagOn(brick.featureFlag);
+    isAllowed = brick.featureFlag == null || (await flagOn(brick.featureFlag));
   } catch {
     // Don't ban on network/storage errors checking feature flags
     isAllowed = true;
