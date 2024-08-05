@@ -18,15 +18,15 @@
 import { clearLog, getLogEntries, type LogEntry } from "@/telemetry/logging";
 import { type MessageContext } from "@/types/loggerTypes";
 import {
+  type ActionReducerMapBuilder,
   createAsyncThunk,
   createSlice,
   type PayloadAction,
-  type Slice,
 } from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
 import { type LogRootState, type LogState } from "./logViewerTypes";
-import { castDraft, type Draft } from "immer";
+import { castDraft } from "immer";
 
 const REFRESH_INTERVAL = 750;
 
@@ -56,6 +56,10 @@ const pollLogs = createAsyncThunk<
     state: LogRootState;
   }
 >("logs/polling", async (arg, thunkAPI) => {
+  // TODO
+  //  1. Try/catch wrap the logic & set isError and error on the state if there is an error
+  //
+
   const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
@@ -67,24 +71,38 @@ const pollLogs = createAsyncThunk<
   return availableEntries;
 });
 
-// Specify type explicitly. Otherwise, TypeScript was failing with "Excessive stack depth comparing types" after
+// Extract extraReducers. Otherwise, TypeScript was failing with "Excessive stack depth comparing types" after
 // updating to TypeScript 4.7. Other people seeing issues with TypeScript upgrade:
 // https://github.com/microsoft/TypeScript/issues/34933
-export const logSlice: Slice<
-  LogState,
-  {
-    refreshEntries(state: Draft<LogState>): void;
-    setContext(
-      state: Draft<LogState>,
-      action: PayloadAction<MessageContext | null>,
-    ): void;
-  },
-  "logs"
-> = createSlice({
+const extraReducers = (builder: ActionReducerMapBuilder<LogState>) => {
+  builder.addCase(clear.fulfilled, (state) => {
+    state.availableEntries = [];
+    state.entries = [];
+  });
+  builder.addCase(
+    pollLogs.fulfilled,
+    (state, { payload: availableEntries }) => {
+      // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
+      // Makes sense to spend some cycles here to save on re-rendering of the children.
+      if (!isEqual(state.availableEntries, availableEntries)) {
+        state.availableEntries = castDraft(availableEntries);
+      }
+
+      // If this is the first time we've loaded the log from storage, we want to display all of it.
+      if (state.isLoading) {
+        state.isLoading = false;
+        state.entries = castDraft(availableEntries);
+      }
+    },
+  );
+};
+
+export const logSlice = createSlice({
   name: "logs",
   initialState: initialLogState,
   reducers: {
-    setContext(state, { payload: context }: PayloadAction<MessageContext>) {
+    setContext(state, action: PayloadAction<MessageContext>) {
+      const { payload: context } = action;
       state.activeContext = context;
       state.availableEntries = [];
       state.entries = [];
@@ -94,28 +112,7 @@ export const logSlice: Slice<
       state.entries = state.availableEntries;
     },
   },
-  extraReducers(builder) {
-    builder.addCase(clear.fulfilled, (state) => {
-      state.availableEntries = [];
-      state.entries = [];
-    });
-    builder.addCase(
-      pollLogs.fulfilled,
-      (state, { payload: availableEntries }) => {
-        // Do deep equality check. On the log array of ~3k items it takes only a fraction of a ms.
-        // Makes sense to spend some cycles here to save on re-rendering of the children.
-        if (!isEqual(state.availableEntries, availableEntries)) {
-          state.availableEntries = castDraft(availableEntries);
-        }
-
-        // If this is the first time we've loaded the log from storage, we want to display all of it.
-        if (state.isLoading) {
-          state.isLoading = false;
-          state.entries = castDraft(availableEntries);
-        }
-      },
-    );
-  },
+  extraReducers,
 });
 
 export const logActions = {

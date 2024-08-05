@@ -20,7 +20,7 @@ import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ContextName } from "webext-detect";
 
 /**
- * Log event metadata for the extensions internal logging infrastructure.
+ * Log event metadata for the mod component's internal logging infrastructure.
  * @see Logger
  */
 export type MessageContext = {

@@ -34,6 +34,7 @@ import {
   selectEditorUpdateKey,
 } from "@/pageEditor/store/editor/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import { type MessageContext } from "@/types/loggerTypes";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -56,9 +57,10 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   );
 
   useEffect(() => {
-    const messageContext = {
-      extensionId: modComponentFormState.uuid,
-      blueprintId: modComponentFormState.modMetadata
+    // TODO: Why wasn't this throwing a type error?
+    const messageContext: MessageContext = {
+      modComponentId: modComponentFormState.uuid,
+      modId: modComponentFormState.modMetadata
         ? modComponentFormState.modMetadata.id
         : undefined,
     };
