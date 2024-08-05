@@ -19,6 +19,7 @@ import { INNER_SCOPE, type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import { split } from "lodash";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Returns true if the value is a valid internal registry id, i.e., that should not be displayed to the user.
@@ -30,12 +31,15 @@ export function isInternalRegistryId(value: RegistryId): boolean {
 /**
  * Return a valid package id, or empty string in case of error.
  * @param scope a user scope, with the leading `@`
- * @param label the extension label
+ * @param label the mod component label
  */
-export function generatePackageId(scope: string, label: string): RegistryId {
+export function generatePackageId(
+  scope: Nullishable<string>,
+  label: string | undefined,
+): RegistryId {
   try {
     return validateRegistryId(
-      `${scope}/${slugify(label, { lower: true, strict: true })}`,
+      `${scope}/${slugify(label ?? "", { lower: true, strict: true })}`,
     );
   } catch {
     return "" as RegistryId;

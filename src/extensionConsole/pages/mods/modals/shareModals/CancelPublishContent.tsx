@@ -30,14 +30,16 @@ import {
 import notify from "@/utils/notify";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const CancelPublishContent: React.FunctionComponent = () => {
   const [isCancelling, setCancelling] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const { blueprintId } = useSelector(selectShowPublishContext);
+  const { blueprintId: modId = null } =
+    useSelector(selectShowPublishContext) ?? {};
   const { data: modDefinition, refetch: refetchModDefinitions } =
-    useOptionalModDefinition(blueprintId);
+    useOptionalModDefinition(modId);
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
     useGetEditablePackagesQuery();
 
@@ -53,14 +55,23 @@ const CancelPublishContent: React.FunctionComponent = () => {
     setError(null);
 
     try {
+      assertNotNullish(
+        modDefinition,
+        `modDefinition for modId: ${modId} is nullish`,
+      );
       const newModDefinition = produce(modDefinition, (draft) => {
         draft.sharing.public = false;
       });
 
+      assertNotNullish(editablePackages, "editablePackages is nullish");
       const packageId = editablePackages.find(
         (x) => x.name === newModDefinition.metadata.id,
       )?.id;
 
+      assertNotNullish(
+        packageId,
+        `packageId for metadata id ${newModDefinition.metadata.id} is nullish`,
+      );
       await updateModDefinition({
         packageId,
         modDefinition: newModDefinition,
@@ -73,9 +84,10 @@ const CancelPublishContent: React.FunctionComponent = () => {
     } catch (error) {
       if (
         isSingleObjectBadRequestError(error) &&
-        error.response.data.config?.length > 0
+        Number(error.response?.data.config?.length) > 0
       ) {
-        setError(error.response.data.config.join(" "));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- See if block above
+        setError(error.response!.data.config!.join(" "));
       } else {
         const message = getErrorMessage(error);
         setError(message);

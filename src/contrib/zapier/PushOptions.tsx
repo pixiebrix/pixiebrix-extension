@@ -55,7 +55,7 @@ function useHooks(): AsyncState<Webhook[]> {
 }
 
 const ZapField: React.FunctionComponent<
-  SchemaFieldProps & { hooks: Webhook[]; error: unknown }
+  SchemaFieldProps & { hooks?: Webhook[]; error: unknown }
 > = ({ hooks, error, ...props }) => {
   const options = useMemo(
     () =>

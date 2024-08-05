@@ -17,13 +17,14 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const selectUpdatePromptState = createSelector(
   [
     ({ settings }: SettingsRootState) => settings,
     (
       _state: SettingsRootState,
-      args: { now: number; enforceUpdateMillis: number | null },
+      args: { now: number; enforceUpdateMillis: Nullishable<number> },
     ) => args,
   ],
   (state, { now, enforceUpdateMillis }) => {

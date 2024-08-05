@@ -31,8 +31,9 @@ import { type ApiTaskArgs } from "@/contrib/automationanywhere/aaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
+import { type SetRequired } from "type-fest";
 
-export const RUN_API_TASK_INPUT_SCHEMA: Schema = {
+export const RUN_API_TASK_INPUT_SCHEMA: SetRequired<Schema, "properties"> = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
   type: "object",
   properties: {
