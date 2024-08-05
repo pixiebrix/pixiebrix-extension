@@ -40,7 +40,7 @@
     "@cfworker/json-schema": "^1.12.8",
     "@datadog/browser-logs": "^5.23.3",
     "@datadog/browser-rum": "^5.23.3",
-    "@deepgram/sdk": "^3.4.4",
+    "@deepgram/sdk": "^3.5.0",
     "@floating-ui/dom": "^1.6.8",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
