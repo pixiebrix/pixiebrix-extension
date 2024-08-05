@@ -90,7 +90,7 @@ export class EchoBrick extends BrickABC {
 /**
  * A test helper brick that is behind a feature flag
  */
-export class FeatureFlagBrick extends BrickABC {
+class FeatureFlagBrick extends BrickABC {
   static BRICK_ID = validateRegistryId("test/flagged");
 
   featureFlag = "test-flag-brick";

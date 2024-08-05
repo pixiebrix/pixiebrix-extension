@@ -561,8 +561,17 @@ async function runBrick(
 
   const { config: brickConfig, brick, type } = resolvedConfig;
 
-  if (brick.featureFlag && !(await flagOn(brick.featureFlag))) {
-    // Throw as Error so we get telemetry of potential feature flag misconfiguration
+  let isAllowed;
+
+  try {
+    isAllowed = await flagOn(brick.featureFlag);
+  } catch {
+    // Don't ban on network/storage errors checking feature flags
+    isAllowed = true;
+  }
+
+  if (!isAllowed) {
+    // Throw as an application Error, so we get telemetry of potential feature flag misconfiguration
     throw new Error(`Brick not available. Feature flag: ${brick.featureFlag}`);
   }
 
