@@ -57,12 +57,12 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 
   useEffect(() => {
     const messageContext = {
-      extensionId: modComponentFormState.uuid,
-      blueprintId: modComponentFormState.modMetadata
+      modComponentId: modComponentFormState.uuid,
+      modId: modComponentFormState.modMetadata
         ? modComponentFormState.modMetadata.id
         : undefined,
     };
-    dispatch(logActions.setContext(messageContext));
+    dispatch(logActions.setContext({ messageContext }));
   }, [modComponentFormState.uuid, modComponentFormState.modMetadata, dispatch]);
 
   return (
