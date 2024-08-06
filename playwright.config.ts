@@ -1,6 +1,13 @@
 import { defineConfig } from "@playwright/test";
 import { CI } from "./end-to-end-tests/env";
 
+const USE_PRE_RELEASE_CHANNELS = true;
+
+const stableChannels = ["chrome", "msedge"];
+// TODO: also test against chromium and chrome-canary?
+const preReleaseChannels = ["chrome-beta", "msedge-beta"];
+const channels = USE_PRE_RELEASE_CHANNELS ? preReleaseChannels : stableChannels;
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -46,35 +53,21 @@ export default defineConfig<{ chromiumChannel: string }>({
     navigationTimeout: 10_000,
   },
   /* Configure projects for major browsers */
-  projects: [
+  projects: channels.flatMap((channel) => [
     {
-      name: "chromeSetup",
+      name: `${channel}-setup`,
       use: {
-        chromiumChannel: "chrome",
+        chromiumChannel: channel,
       },
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: "edgeSetup",
+      name: channel,
       use: {
-        chromiumChannel: "msedge",
-      },
-      testMatch: /.*\.setup\.ts/,
-    },
-    {
-      name: "chrome",
-      use: {
-        chromiumChannel: "chrome",
+        chromiumChannel: channel,
       },
       // For faster local development, you can filter out the setup project in --ui mode to skip rerunning the setup project
-      dependencies: ["chromeSetup"],
+      dependencies: [`${channel}-setup`],
     },
-    {
-      name: "edge",
-      use: {
-        chromiumChannel: "msedge",
-      },
-      dependencies: ["edgeSetup"],
-    },
-  ],
+  ]),
 });
