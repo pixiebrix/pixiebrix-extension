@@ -18,7 +18,6 @@
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
-import { waitFor } from "@testing-library/react";
 
 jest.mock("lodash", () => {
   const lodash = jest.requireActual("lodash");
@@ -36,7 +35,7 @@ beforeEach(async () => {
 
 describe("useManagedStorageState", () => {
   it("waits on uninitialized state", async () => {
-    const { result } = renderHook(() => useManagedStorageState());
+    const { result, waitFor } = renderHook(() => useManagedStorageState());
     expect(result.current).toStrictEqual({
       data: undefined,
       isLoading: true,
