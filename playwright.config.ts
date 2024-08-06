@@ -5,7 +5,7 @@ const USE_PRE_RELEASE_CHANNELS = true;
 
 const stableChannels = ["chrome", "msedge"];
 // TODO: also test against chromium and chrome-canary?
-const preReleaseChannels = ["chrome-beta", "msedge-beta"];
+const preReleaseChannels = ["chrome-beta", "msedge-beta", "chromium"];
 const channels = USE_PRE_RELEASE_CHANNELS ? preReleaseChannels : stableChannels;
 
 /**
@@ -53,21 +53,17 @@ export default defineConfig<{ chromiumChannel: string }>({
     navigationTimeout: 10_000,
   },
   /* Configure projects for major browsers */
-  projects: channels.flatMap((channel) => [
+  projects: channels.flatMap((chromiumChannel) => [
     {
-      name: `${channel}-setup`,
-      use: {
-        chromiumChannel: channel,
-      },
+      name: `${chromiumChannel}-setup`,
+      use: chromiumChannel === "chromium" ? {} : { chromiumChannel },
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: channel,
-      use: {
-        chromiumChannel: channel,
-      },
+      name: chromiumChannel,
+      use: chromiumChannel === "chromium" ? {} : { chromiumChannel },
       // For faster local development, you can filter out the setup project in --ui mode to skip rerunning the setup project
-      dependencies: [`${channel}-setup`],
+      dependencies: [`${chromiumChannel}-setup`],
     },
   ]),
 });
