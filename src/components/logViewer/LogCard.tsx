@@ -38,12 +38,16 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const { isLoading } = useSelector(selectLogs);
+  const { isLoading, isError, error } = useSelector(selectLogs);
   const dispatch = useDispatch();
   const refreshEntries = () => dispatch(logActions.refreshEntries());
   const clearAvailableEntries = () => dispatch(logActions.clear());
 
   const logs = useLogEntriesView({ level, page, perPage });
+
+  if (isError) {
+    throw error;
+  }
 
   if (isLoading) {
     return (

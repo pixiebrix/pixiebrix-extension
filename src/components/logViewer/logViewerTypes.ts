@@ -38,6 +38,10 @@ export type LogState = {
    * Indicates the progress of the first loading from storage for the active context
    */
   isLoading: boolean;
+
+  isError: boolean;
+
+  error: unknown;
 };
 
 export type LogRootState = {

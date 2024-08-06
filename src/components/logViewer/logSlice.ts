@@ -35,6 +35,8 @@ export const initialLogState: LogState = {
   availableEntries: [],
   entries: [],
   isLoading: false,
+  isError: false,
+  error: null,
 };
 
 // Clear the logs in storage for the given context
@@ -56,10 +58,6 @@ const pollLogs = createAsyncThunk<
     state: LogRootState;
   }
 >("logs/polling", async (arg, thunkAPI) => {
-  // TODO
-  //  1. Try/catch wrap the logic & set isError and error on the state if there is an error
-  //
-
   const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
@@ -95,15 +93,27 @@ const extraReducers = (builder: ActionReducerMapBuilder<LogState>) => {
       }
     },
   );
+  builder.addCase(pollLogs.rejected, (state, { error }) => {
+    state.isError = true;
+    state.error = error;
+    state.isLoading = false;
+  });
 };
 
 export const logSlice = createSlice({
   name: "logs",
   initialState: initialLogState,
   reducers: {
-    setContext(state, action: PayloadAction<MessageContext>) {
-      const { payload: context } = action;
-      state.activeContext = context;
+    setContext(
+      state,
+      // Add messageContext as a required object property to get better type checking for MessageContext, which
+      // has all optional fields
+      action: PayloadAction<{ messageContext: MessageContext | null }>,
+    ) {
+      const {
+        payload: { messageContext },
+      } = action;
+      state.activeContext = messageContext;
       state.availableEntries = [];
       state.entries = [];
       state.isLoading = true;
