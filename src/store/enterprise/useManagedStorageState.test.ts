@@ -19,15 +19,6 @@ import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
-jest.mock("lodash", () => {
-  const lodash = jest.requireActual("lodash");
-  return {
-    ...lodash,
-    // Handle multiple calls to managedStorage:initManagedStorage across tests
-    once: (fn: any) => fn,
-  };
-});
-
 beforeEach(async () => {
   await INTERNAL_reset();
   await browser.storage.managed.clear();

@@ -46,15 +46,6 @@ jest.mock("@/telemetry/reportError");
 const notifySuccessMock = jest.mocked(notify.success);
 const notifyWarnMock = jest.mocked(notify.warning);
 
-jest.mock("lodash", () => {
-  const lodash = jest.requireActual("lodash");
-  return {
-    ...lodash,
-    // Handle multiple calls to managedStorage:initManagedStorage across tests
-    once: (fn: any) => fn,
-  };
-});
-
 // `pMemoize` has problems when used in tests because the promise can leak across tests. pMemoizeClear doesn't work
 // because the promise hasn't resolved yet
 jest.mock("p-memoize", () => {
