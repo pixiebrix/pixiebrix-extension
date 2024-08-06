@@ -25,6 +25,7 @@ import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLogs } from "./logSelectors";
 import { logActions } from "./logSlice";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
@@ -46,7 +47,11 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
   const logs = useLogEntriesView({ level, page, perPage });
 
   if (isError) {
-    throw error;
+    return (
+      <Card.Body>
+        <ErrorDisplay error={error} />
+      </Card.Body>
+    );
   }
 
   if (isLoading) {

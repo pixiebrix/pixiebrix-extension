@@ -56,7 +56,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   );
 
   useEffect(() => {
-    // TODO: Why wasn't this throwing a type error?
     const messageContext = {
       modComponentId: modComponentFormState.uuid,
       modId: modComponentFormState.modMetadata
