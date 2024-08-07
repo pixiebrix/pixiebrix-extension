@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/transformers/temporaryInfo/EphemeralPanel.tsx",
     "./background/deploymentUpdater.ts",
     "./background/modUpdater.ts",
     "./extensionConsole/pages/activateMod/ActivateModDefinitionIdPage.tsx",

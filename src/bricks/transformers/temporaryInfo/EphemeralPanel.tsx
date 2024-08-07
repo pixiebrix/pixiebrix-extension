@@ -36,6 +36,7 @@ import { ClosePanelAction } from "@/bricks/errors";
 import styles from "./EphemeralPanel.module.scss";
 import useReportError from "@/hooks/useReportError";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Mode = "modal" | "popover";
 
@@ -85,12 +86,13 @@ const ActionToolbar: React.FC<{
 const EphemeralPanel: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const initialNonce: UUID | undefined = validateUUID(params.get("nonce"));
-  const opener = JSON.parse(params.get("opener")) as Target;
+  const opener = params.get("opener");
+  assertNotNullish(opener, "opener is required to display temporary panel");
   const mode = params.get("mode") as Mode;
 
   // The opener for a sidebar panel will be the sidebar frame, not the host panel frame. The sidebar only opens in the
   // top-level frame, so hard-code the top-level frameId
-  const target = opener;
+  const target = JSON.parse(opener) as Target;
 
   const Layout = mode === "modal" ? ModalLayout : PopoverLayout;
 
@@ -105,27 +107,6 @@ const EphemeralPanel: React.FC = () => {
     return (
       <Layout>
         <Loader />
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <div>Panel Error</div>
-
-        <div className="text-danger my-3">{getErrorMessage(error)}</div>
-
-        <div>
-          <Button
-            variant="primary"
-            onClick={() => {
-              cancelTemporaryPanel(target, [panelNonce]);
-            }}
-          >
-            Close
-          </Button>
-        </div>
       </Layout>
     );
   }
@@ -145,6 +126,32 @@ const EphemeralPanel: React.FC = () => {
       <Layout>
         <Modal.Header></Modal.Header>
         <Modal.Body></Modal.Body>
+      </Layout>
+    );
+  }
+
+  assertNotNullish(
+    panelNonce,
+    "panelNonce is required to display temporary panel",
+  );
+
+  if (error) {
+    return (
+      <Layout>
+        <div>Panel Error</div>
+
+        <div className="text-danger my-3">{getErrorMessage(error)}</div>
+
+        <div>
+          <Button
+            variant="primary"
+            onClick={() => {
+              cancelTemporaryPanel(target, [panelNonce]);
+            }}
+          >
+            Close
+          </Button>
+        </div>
       </Layout>
     );
   }
@@ -184,11 +191,12 @@ const EphemeralPanel: React.FC = () => {
             />
           </ErrorBoundary>
 
-          {entry.actions?.length > 0 && (
+          {Number(entry.actions?.length) > 0 && (
             <>
               <hr className={styles.actionDivider} />
               <ActionToolbar
-                actions={entry.actions}
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
+                actions={entry.actions!}
                 onClick={(action) => {
                   resolveTemporaryPanel(target, panelNonce, action);
                 }}
@@ -227,10 +235,11 @@ const EphemeralPanel: React.FC = () => {
         </ErrorBoundary>
       </Modal.Body>
 
-      {entry.actions?.length > 0 && (
+      {Number(entry.actions?.length) > 0 && (
         <Modal.Footer>
           <ActionToolbar
-            actions={entry.actions}
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
+            actions={entry.actions!}
             onClick={(action) => {
               resolveTemporaryPanel(target, panelNonce, action);
             }}
