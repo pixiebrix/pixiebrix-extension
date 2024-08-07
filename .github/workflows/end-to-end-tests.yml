@@ -41,7 +41,7 @@ jobs:
       E2E_GOOGLE_TEST_USER_PASSWORD: ${{ secrets.E2E_GOOGLE_TEST_USER_PASSWORD }}
       E2E_GOOGLE_TEST_USER_OTP_KEY: ${{ secrets.E2E_GOOGLE_TEST_USER_OTP_KEY }}
       DEV_EVENT_TELEMETRY: true
-      E2E_CHROMIUM_CHANNELS: ${{ fromJson(inputs.projects) }}
+      E2E_CHROMIUM_CHANNELS: ${{ inputs.projects }}
     steps:
       - uses: actions/checkout@v4
         with:
