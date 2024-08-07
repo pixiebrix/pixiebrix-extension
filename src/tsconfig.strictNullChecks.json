@@ -1489,6 +1489,7 @@
     "./runtime/pipelineTests/conditional.test.ts",
     "./runtime/pipelineTests/deferExpression.test.ts",
     "./runtime/pipelineTests/deploymentAlert.test.ts",
+    "./runtime/pipelineTests/featureFlag.test.ts",
     "./runtime/pipelineTests/implicitDataFlow.test.ts",
     "./runtime/pipelineTests/integrationsContext.test.ts",
     "./runtime/pipelineTests/modVariableContext.test.ts",

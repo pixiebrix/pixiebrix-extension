@@ -112,6 +112,12 @@ export type Metadata = {
  */
 export interface PackageInstance extends Metadata {
   // Type currently matches Metadata, given that instances used to extend directly from Metadata
+
+  /**
+   * (Optional) if provided, the feature flag required to view/use the package
+   * @since 2.0.7
+   */
+  featureFlag?: string;
 }
 
 /**

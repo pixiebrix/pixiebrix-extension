@@ -74,6 +74,8 @@ const knipConfig = {
     "style-loader",
     "@storybook/react-webpack5",
   ],
+  // False positive for PackageInstance.featureFlag
+  ignoreMembers: ["featureFlag"],
 };
 
 // Echo settings to console to make CI results easier to understand/debug
