@@ -173,7 +173,7 @@ exports[`StarterBrickDataPanel renders with form state and trace data 1`] = `
           </div>
         </div>
         <div
-          class="root"
+          class="root dataTabRoot"
         >
           <div
             class="formGroup form-group"

@@ -69,6 +69,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
+import useFlags from "@/hooks/useFlags";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -125,6 +126,7 @@ const slice = createSlice({
 });
 
 const AddBrickModal: React.FC = () => {
+  const { flagOn } = useFlags();
   const [state, dispatch] = useReducer(slice.reducer, initialState);
 
   const { isAddBlockModalVisible: show } = useSelector(
@@ -219,7 +221,9 @@ const AddBrickModal: React.FC = () => {
       return [];
     }
 
-    let typedBricks = [...allBricks.values()];
+    let typedBricks = [...allBricks.values()].filter(
+      ({ block }) => block.featureFlag == null || flagOn(block.featureFlag),
+    );
 
     if (themeName === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       typedBricks = typedBricks.filter(
@@ -229,7 +233,14 @@ const AddBrickModal: React.FC = () => {
     }
 
     return typedBricks.map(({ block }) => block);
-  }, [allBricks, isLoadingAllBricks, isLoadingTags, themeName, taggedBrickIds]);
+  }, [
+    allBricks,
+    isLoadingAllBricks,
+    isLoadingTags,
+    themeName,
+    taggedBrickIds,
+    flagOn,
+  ]);
 
   const searchResults = useBrickSearch(
     filteredBricks,

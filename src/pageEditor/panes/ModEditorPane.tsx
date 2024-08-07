@@ -49,7 +49,7 @@ const ModEditorPane: React.VFC = () => {
           modId: activeModId,
         }
       : {};
-    dispatch(logActions.setContext(messageContext));
+    dispatch(logActions.setContext({ messageContext }));
   }, [dispatch, activeModId]);
 
   const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();

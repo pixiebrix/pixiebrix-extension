@@ -31,7 +31,7 @@ const ModLogsModal: React.FunctionComponent = () => {
 
   const closeModal = () => {
     dispatch(modModalsSlice.actions.closeModal());
-    dispatch(logActions.setContext(null));
+    dispatch(logActions.setContext({ messageContext: null }));
   };
 
   const showLogsContext = useSelector(selectShowLogsContext);
@@ -40,7 +40,9 @@ const ModLogsModal: React.FunctionComponent = () => {
       return;
     }
 
-    dispatch(logActions.setContext(showLogsContext.messageContext));
+    dispatch(
+      logActions.setContext({ messageContext: showLogsContext.messageContext }),
+    );
   }, [showLogsContext, dispatch]);
 
   return (

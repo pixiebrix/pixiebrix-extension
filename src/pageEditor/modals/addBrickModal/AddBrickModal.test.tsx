@@ -23,11 +23,13 @@ import userEvent from "@testing-library/user-event";
 import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import bricksRegistry from "@/bricks/registry";
-import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import brickRegistry from "@/bricks/registry";
+import {
+  echoBrick,
+  featureFlagBrick,
+} from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-
 import {
   marketplaceListingFactory,
   marketplaceTagFactory,
@@ -35,7 +37,7 @@ import {
 import { PipelineFlavor } from "@/bricks/types";
 
 // Need at least one item so callers see the registry as initialized
-bricksRegistry.register([echoBrick]);
+brickRegistry.register([echoBrick, featureFlagBrick]);
 
 beforeAll(() => {
   const tags = array(marketplaceTagFactory, 3)({ subtype: "role" });
@@ -68,7 +70,40 @@ describe("AddBrickModal", () => {
 
     await waitForEffect();
 
+    // Exclude the feature flagged brick by default
+    expect(screen.getByText(echoBrick.name)).toBeInTheDocument();
+    expect(screen.queryByText(featureFlagBrick.name)).not.toBeInTheDocument();
+
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it("includes feature flagged brick", async () => {
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: [featureFlagBrick.featureFlag],
+    });
+
+    const formState = formStateFactory();
+    render(<AddBrickModal />, {
+      setupRedux(dispatch) {
+        dispatch(actions.addModComponentFormState(formState));
+        dispatch(actions.setActiveModComponentId(formState.uuid));
+        dispatch(
+          actions.showAddBlockModal({
+            path: "",
+            flavor: PipelineFlavor.AllBricks,
+            index: 0,
+          }),
+        );
+      },
+      // This currently produces a warning, but allows us to snapshot the modal
+      //  See: https://github.com/testing-library/react-testing-library/issues/62
+      container: document.body,
+    });
+
+    await waitForEffect();
+
+    expect(screen.getByText(echoBrick.name)).toBeInTheDocument();
+    expect(screen.getByText(featureFlagBrick.name)).toBeInTheDocument();
   });
 
   it("renders with tag selected and search query", async () => {

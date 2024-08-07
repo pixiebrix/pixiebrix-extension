@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "../DataTabJsonTree.module.scss";
+
 .viewToggle {
   display: flex;
   gap: 1em;
@@ -31,6 +33,14 @@
 .formGroup {
   :global(.form-label + div) {
     align-content: center;
+  }
+
+  :global {
+    // Override the default form layout, which has min-width 100px for labels
+    .form-label {
+      width: $label-width;
+      min-width: unset;
+    }
   }
 
   margin-bottom: 0;

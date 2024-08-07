@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { ConfigurationForm } from "./configurationForm";
+import { expect } from "@playwright/test";
 
 class MetadataConfigurationForm extends ConfigurationForm {
   modId = this.getByRole("textbox", { name: "Mod ID" });
@@ -35,6 +36,23 @@ class InputConfigurationForm extends ConfigurationForm {
   addNewFieldButton = this.getByRole("button", { name: "Add new field" });
 }
 
+class LogsTableRow extends BasePageObject {
+  timestamp = this.getByRole("cell").nth(1);
+  level = this.getByRole("cell").nth(2);
+  label = this.getByRole("cell").nth(3);
+  brickId = this.getByRole("cell").nth(4);
+  message = this.getByRole("cell").nth(5);
+}
+
+class LogsPane extends BasePageObject {
+  logsTable = this.getByRole("table");
+
+  async getLogsTableRows() {
+    const rowElements = await this.logsTable.locator("tbody tr").all();
+    return rowElements.map((row) => new LogsTableRow(row));
+  }
+}
+
 export class ModEditorPane extends BasePageObject {
   editMetadataTab = this.getByRole("tab", { name: "Edit" });
   editMetadataTabPanel = new MetadataConfigurationForm(
@@ -49,6 +67,15 @@ export class ModEditorPane extends BasePageObject {
       hasText: "Mod Input Options",
     }),
   );
+
+  logsTab = this.getByRole("tab", { name: "Logs" });
+  async getLogsTabPanel() {
+    const logsTabPanel = this.getByRole("tabpanel").filter({
+      hasText: "Message/Error",
+    });
+    await expect(logsTabPanel).toBeVisible();
+    return new LogsPane(logsTabPanel);
+  }
 
   inputFormTab = this.getByRole("tab", { name: "Input Form" });
   inputFormTabPanel = new InputConfigurationForm(

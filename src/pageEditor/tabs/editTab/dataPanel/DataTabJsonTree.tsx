@@ -26,6 +26,8 @@ import { type Except } from "type-fest";
 import { type DataPanelTabKey } from "./dataPanelTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import cx from "classnames";
+import styles from "./DataTabJsonTree.module.scss";
 
 type DataTabJsonTreeProps = Except<
   JsonTreeProps,
@@ -37,6 +39,9 @@ type DataTabJsonTreeProps = Except<
   tabKey: DataPanelTabKey;
 };
 
+/**
+ * JSON tree connected to the Page Editor Redux store.
+ */
 const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
   tabKey,
   ...jsonTreeProps
@@ -75,6 +80,7 @@ const DataTabJsonTree: React.FunctionComponent<DataTabJsonTreeProps> = ({
   return (
     <JsonTree
       {...jsonTreeProps}
+      className={cx(jsonTreeProps.className, styles.dataTabRoot)}
       initialSearchQuery={query}
       onSearchQueryChange={setQuery}
       initialExpandedState={treeExpandedState}

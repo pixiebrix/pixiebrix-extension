@@ -39,11 +39,17 @@ import notify from "@/utils/notify";
 import PackageHistory from "@/extensionConsole/pages/packageEditor/PackageHistory";
 import { useParams } from "react-router";
 import LogCard from "@/components/logViewer/LogCard";
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import {
+  type Metadata,
+  type PackageInstance,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { appApi } from "@/data/service/api";
 import useAsyncState from "@/hooks/useAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -114,9 +120,10 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
   const [editorWidth, setEditorWidth] = useState<number>();
   const [selectedReference, setSelectedReference] = useState<Metadata>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
+  const { state: flagQuery } = useFlags();
   const { id: packageId } = useParams<{ id: UUID }>();
 
-  const { data: packageInstances } = useAsyncState(async () => {
+  const allPackageQuery = useAsyncState(async () => {
     const [starterBricks, bricks, integrations] = await Promise.all([
       starterBrickRegistry.all(),
       brickRegistry.all(),
@@ -124,6 +131,15 @@ const Content = ({ showLogs }: { showLogs: boolean }) => {
     ]);
     return [...starterBricks, ...bricks, ...integrations];
   }, []);
+
+  const { data: packageInstances } = useMergeAsyncState(
+    allPackageQuery,
+    flagQuery,
+    (allPackages: PackageInstance[], { flagOn }: FlagHelpers) =>
+      (allPackages ?? []).filter(
+        (x) => x.featureFlag == null || flagOn(x.featureFlag),
+      ),
+  );
 
   const openReference = useCallback(
     (registryId: string) => {
