@@ -39,7 +39,7 @@ const optionalEnvVariables = [
   "E2E_GOOGLE_TEST_USER_EMAIL",
   "E2E_GOOGLE_TEST_USER_PASSWORD",
   "E2E_GOOGLE_TEST_USER_OTP_KEY",
-  "E2E_USE_PRE_RELEASE_CHANNELS",
+  "E2E_CHROMIUM_CHANNELS",
 ] as const;
 
 type RequiredEnvVariables = Record<
@@ -83,5 +83,5 @@ export const {
   E2E_GOOGLE_TEST_USER_EMAIL,
   E2E_GOOGLE_TEST_USER_PASSWORD,
   E2E_GOOGLE_TEST_USER_OTP_KEY,
-  E2E_USE_PRE_RELEASE_CHANNELS,
+  E2E_CHROMIUM_CHANNELS,
 } = process.env as OptionalEnvVariables;

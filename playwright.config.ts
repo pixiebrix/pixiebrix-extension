@@ -1,12 +1,42 @@
 import { defineConfig } from "@playwright/test";
-import { CI, E2E_USE_PRE_RELEASE_CHANNELS } from "./end-to-end-tests/env";
+import { CI, E2E_CHROMIUM_CHANNELS } from "./end-to-end-tests/env";
 
-const stableChannels = ["chrome", "msedge"];
-// TODO: also test against chromium and chrome-canary?
-const preReleaseChannels = ["chrome-beta", "msedge-beta", "chromium"];
-const channels = E2E_USE_PRE_RELEASE_CHANNELS
-  ? preReleaseChannels
-  : stableChannels;
+const supportedChannels = [
+  "chrome",
+  "msedge",
+  "chrome-beta",
+  "msedge-beta",
+  "chromium",
+];
+type SupportedChannel = (typeof supportedChannels)[number];
+
+const channels: SupportedChannel[] = (() => {
+  if (!E2E_CHROMIUM_CHANNELS) {
+    return ["chrome", "msedge"];
+  }
+
+  const parsedChannels = JSON.parse(E2E_CHROMIUM_CHANNELS);
+
+  if (!Array.isArray(parsedChannels)) {
+    throw new TypeError(
+      "E2E_CHROMIUM_CHANNELS must be an json serialized array of strings",
+    );
+  }
+
+  return parsedChannels.map((parsedChannel) => {
+    if (typeof parsedChannel !== "string") {
+      throw new TypeError(
+        "E2E_CHROMIUM_CHANNELS must contain only string values",
+      );
+    }
+
+    if (!supportedChannels.includes(parsedChannel)) {
+      throw new Error(`Unsupported channel: ${parsedChannel}`);
+    }
+
+    return parsedChannel;
+  });
+})();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
