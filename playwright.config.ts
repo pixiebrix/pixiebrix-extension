@@ -15,7 +15,15 @@ const channels: SupportedChannel[] = (() => {
     return ["chrome", "msedge"];
   }
 
-  const parsedChannels = JSON.parse(E2E_CHROMIUM_CHANNELS);
+  let parsedChannels: unknown;
+  try {
+    parsedChannels = JSON.parse(E2E_CHROMIUM_CHANNELS);
+  } catch (error) {
+    throw new Error(
+      "Failed to parse E2E_CHROMIUM_CHANNELS; expected a json serialized array of strings.",
+      { cause: error },
+    );
+  }
 
   if (!Array.isArray(parsedChannels)) {
     throw new TypeError(
