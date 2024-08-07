@@ -7,6 +7,11 @@ on:
         description: "Branch, tag, or commit on which to run the tests"
         required: false
         type: string
+      projects:
+        description: "Json parsable array of strings of projects to test. GitHub workflows does not support array inputs natively."
+        required: false
+        default: "['chrome', 'edge']"
+        type: string
 
 jobs:
   run-tests:
@@ -14,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chrome, edge]
+        project: ${{ fromJson(inputs.projects) }}
         shardIndex: [1, 2, 3]
         shardTotal: [3]
     timeout-minutes: 60
@@ -49,6 +54,7 @@ jobs:
       - name: Install playwright browsers
         uses: Wandalen/wretry.action@v3.5.0
         with:
+          # TODO: replace with dynamic input
           command: npx playwright install chrome msedge
           with: |
             fail_ci_if_error: true

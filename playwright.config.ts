@@ -1,12 +1,12 @@
 import { defineConfig } from "@playwright/test";
-import { CI } from "./end-to-end-tests/env";
-
-const USE_PRE_RELEASE_CHANNELS = true;
+import { CI, E2E_USE_PRE_RELEASE_CHANNELS } from "./end-to-end-tests/env";
 
 const stableChannels = ["chrome", "msedge"];
 // TODO: also test against chromium and chrome-canary?
 const preReleaseChannels = ["chrome-beta", "msedge-beta", "chromium"];
-const channels = USE_PRE_RELEASE_CHANNELS ? preReleaseChannels : stableChannels;
+const channels = E2E_USE_PRE_RELEASE_CHANNELS
+  ? preReleaseChannels
+  : stableChannels;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
