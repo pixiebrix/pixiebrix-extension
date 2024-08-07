@@ -81,6 +81,8 @@
     "./analysis/analysisVisitors/requestPermissionAnalysis.ts",
     "./analysis/analysisVisitors/selectorAnalysis.test.ts",
     "./analysis/analysisVisitors/selectorAnalysis.ts",
+    "./analysis/analysisVisitors/sidebarStarterBrickAnalysis.test.ts",
+    "./analysis/analysisVisitors/sidebarStarterBrickAnalysis.ts",
     "./analysis/analysisVisitors/templateAnalysis.test.ts",
     "./analysis/analysisVisitors/templateAnalysis.ts",
     "./analysis/analysisVisitors/traceAnalysis.ts",
