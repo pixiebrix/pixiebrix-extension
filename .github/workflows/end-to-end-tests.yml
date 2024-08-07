@@ -10,7 +10,7 @@ on:
       projects:
         description: "Json parsable array of strings of projects to test. GitHub workflows does not support array inputs natively."
         required: false
-        default: "['chrome', 'msedge']"
+        default: '["chrome", "msedge"]'
         type: string
 
 jobs:
