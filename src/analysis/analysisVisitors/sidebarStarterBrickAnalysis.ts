@@ -17,8 +17,8 @@
 
 import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import {
-  ModComponentFormState,
-  SidebarFormState,
+  type ModComponentFormState,
+  type SidebarFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
