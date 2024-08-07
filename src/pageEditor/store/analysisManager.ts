@@ -51,6 +51,7 @@ import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
 import { StateNamespaces } from "@/platform/state/stateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import SidebarStarterBrickAnalysis from "@/analysis/analysisVisitors/sidebarStarterBrickAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -106,6 +107,16 @@ const nodeListMutationActions = [
 // The first analysis registered will be the first to run.
 // When multiple actions (e.g. typing) trigger analysis, the later analysis have more chances to get aborted.
 // Try to put the faster analysis first, and the slower ones at the end.
+
+pageEditorAnalysisManager.registerAnalysisEffect(
+  () => new SidebarStarterBrickAnalysis(),
+  {
+    matcher: isAnyOf(
+      editorActions.syncModComponentFormState,
+      ...nodeListMutationActions,
+    ),
+  },
+);
 
 pageEditorAnalysisManager.registerAnalysisEffect(
   (
