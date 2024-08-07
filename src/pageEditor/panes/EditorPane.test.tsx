@@ -158,23 +158,28 @@ const getPlainFormState = (): ModComponentFormState =>
 
 const getSidebarPanelPlainFormState = (): ModComponentFormState =>
   formStateFactory({
-    brickPipeline: [
-      brickConfigFactory({
-        id: echoBrick.id,
-        outputKey: "echoOutput" as OutputKey,
-        config: defaultBrickConfig(echoBrick.inputSchema),
+    formStateConfig: {
+      modComponent: {
+        heading: "Test Heading",
+        brickPipeline: [
+          brickConfigFactory({
+            id: echoBrick.id,
+            outputKey: "echoOutput" as OutputKey,
+            config: defaultBrickConfig(echoBrick.inputSchema),
+          }),
+          brickConfigFactory({
+            id: teapotBrick.id,
+            outputKey: "teapotOutput" as OutputKey,
+            config: defaultBrickConfig(teapotBrick.inputSchema),
+          }),
+        ],
+      },
+      starterBrick: starterBrickDefinitionFactory({
+        definition: starterBrickDefinitionPropFactory({
+          type: StarterBrickTypes.SIDEBAR_PANEL,
+        }),
       }),
-      brickConfigFactory({
-        id: teapotBrick.id,
-        outputKey: "teapotOutput" as OutputKey,
-        config: defaultBrickConfig(teapotBrick.inputSchema),
-      }),
-    ],
-    starterBrick: starterBrickDefinitionFactory({
-      definition: starterBrickDefinitionPropFactory({
-        type: StarterBrickTypes.SIDEBAR_PANEL,
-      }),
-    }),
+    },
   });
 
 const getFormStateWithSubPipelines = (): ModComponentFormState =>
