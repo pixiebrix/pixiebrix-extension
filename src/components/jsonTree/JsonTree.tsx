@@ -97,6 +97,11 @@ export type JsonTreeProps = JsonTreeOrigProps & {
    * Change listener for the expanded state
    */
   onExpandedStateChange?: (nextExpandedState: TreeExpandedState) => void;
+
+  /**
+   * Optional additional class name
+   */
+  className?: string;
 };
 
 function normalize(value: Primitive): string {
@@ -189,6 +194,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   data,
   initialExpandedState = emptyObject,
   onExpandedStateChange,
+  className,
   ...restProps
 }) => {
   const [query, setQuery] = useState(initialSearchQuery);
@@ -258,7 +264,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   const labelText = query ? `Search Results: ${query}` : label;
 
   return (
-    <div className={styles.root}>
+    <div className={cx(styles.root, className)}>
       {searchable && (
         <FieldTemplate
           value={query}
