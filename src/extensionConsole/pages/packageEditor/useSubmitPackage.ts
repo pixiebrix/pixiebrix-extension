@@ -48,7 +48,7 @@ type SubmitOptions = {
 
 type SubmitCallbacks = {
   validate: (values: EditorValues) => Promise<BrickValidationResult>;
-  remove: (({ id, name }: { id: UUID; name: string }) => Promise<void>) | null;
+  remove: (({ id, name }: { id: UUID; name?: string }) => Promise<void>) | null;
   submit: (
     values: EditorValues & { id: UUID },
     helpers: { setErrors: (errors: unknown) => void },
