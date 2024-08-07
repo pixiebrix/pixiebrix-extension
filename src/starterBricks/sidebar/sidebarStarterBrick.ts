@@ -172,37 +172,34 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   ): Promise<void> {
     // Generate our own run id so that we know it (to pass to upsertPanel)
     const runId = uuidv4();
+    let { heading = "", body } = modComponent.config;
 
     const componentLogger = this.logger.childLogger(
       mapModComponentToMessageContext(modComponent),
     );
 
-    const integrationsContext = await makeIntegrationsContextFromDependencies(
-      modComponent.integrationDependencies,
-    );
-    const modComponentContext = { ...readerContext, ...integrationsContext };
-
-    const { heading: rawHeading, body } = modComponent.config;
-
-    const heading = Mustache.render(rawHeading, modComponentContext);
-
-    this.platform.panels.updateHeading(modComponent.id, heading);
-
-    const initialValues: InitialValues = {
-      input: readerContext,
-      optionsArgs: modComponent.optionsArgs,
-      root: document,
-      serviceContext: integrationsContext,
-    };
-
-    /**
-     * Renderers need to be run with try-catch, catch the HeadlessModeError, and
-     * use that to send the panel payload to the sidebar (or other target)
-     * @see runRendererBlock
-     * @see executeBlockWithValidatedProps
-     *  starting on line 323, the runRendererPipeline() function
-     */
     try {
+      const integrationsContext = await makeIntegrationsContextFromDependencies(
+        modComponent.integrationDependencies,
+      );
+      const modComponentContext = { ...readerContext, ...integrationsContext };
+
+      heading = Mustache.render(heading, modComponentContext);
+
+      this.platform.panels.updateHeading(modComponent.id, heading);
+
+      const initialValues: InitialValues = {
+        input: readerContext,
+        optionsArgs: modComponent.optionsArgs,
+        root: document,
+        serviceContext: integrationsContext,
+      };
+
+      /**
+       * Renderers need to be run with try-catch, catch the HeadlessModeError, and
+       * use that to send the panel payload to the sidebar (or other target)
+       * @see runRendererBrick
+       */
       await reduceModComponentPipeline(body, initialValues, {
         headless: true,
         logger: componentLogger,

@@ -59,7 +59,5 @@ export function fromJS(definition: StarterBrickDefinitionLike): StarterBrick {
     );
   }
 
-  // TODO: Find a better solution than casting to any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- the factory methods perform validation
-  return TYPE_MAP[definition.definition.type](getPlatform(), definition as any);
+  return TYPE_MAP[definition.definition.type](getPlatform(), definition);
 }

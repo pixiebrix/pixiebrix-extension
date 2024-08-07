@@ -132,6 +132,6 @@ export async function setFieldValue(
     }
 
     // Browsers normally fire this on `blur` if it's a text field, otherwise immediately
-    field.dispatchEvent(new KeyboardEvent("change", { bubbles: true }));
+    field.dispatchEvent(new Event("change", { bubbles: true }));
   }
 }

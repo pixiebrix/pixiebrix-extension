@@ -225,12 +225,9 @@ const waitForInitialManagedStorage = pMemoize(async () => {
   return managedStorageSnapshot;
 });
 
-/**
- * Initialize the managed storage state once and listen for changes. Safe to call multiple times.
- */
-export const initManagedStorage = once(async () => {
-  expectContext("extension");
-
+// Unlike initManagedStorage it's fine to use lodash `once` here because our test fakes don't support managed storage
+// change events. If we are testing listener behavior, we'd need a way to remove the listener, etc.
+const tryAddListenerOnce = once(() => {
   try {
     // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/onChanged
     // `onChanged` is only called when the policy changes, not on initialization
@@ -252,6 +249,19 @@ export const initManagedStorage = once(async () => {
     // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
     console.warn("Managed storage is not supported in your browser", { error });
   }
+});
+
+/**
+ * Initialize the managed storage state once and listen for changes. Safe to call multiple times.
+ */
+// Use pMemoize instead of use lodash `once` because there's no simple way to clear the state of lodash `once`. Using
+// pMemoize here the method will re-run if there's an exception vs. returning the rejected promise
+export const initManagedStorage = pMemoize(async () => {
+  expectContext("extension");
+
+  // `tryAddListenerOnce` wraps the listener code in `once` so it's not re-added if waitForInitialManagedStorage
+  // throws an error. (initManagedStorage is not memoizing promise rejections with pMemoize)
+  tryAddListenerOnce();
 
   await waitForInitialManagedStorage();
 });
@@ -325,6 +335,7 @@ export function getSnapshot(): Nullishable<ManagedStorageState> {
 export async function INTERNAL_reset(): Promise<void> {
   controller.abortAndReset(new PromiseCancelled("Internal test cleanup"));
   managedStorageSnapshot = undefined;
+  pMemoizeClear(initManagedStorage);
   pMemoizeClear(waitForInitialManagedStorage);
   await resetInitializationTimestamp();
 }

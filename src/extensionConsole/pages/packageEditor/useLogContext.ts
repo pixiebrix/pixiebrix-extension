@@ -80,7 +80,7 @@ function useLogContext(config: string | null) {
       }
     }
 
-    dispatch(logActions.setContext(messageContext));
+    dispatch(logActions.setContext({ messageContext }));
   }, [debouncedConfig, dispatch]);
 }
 

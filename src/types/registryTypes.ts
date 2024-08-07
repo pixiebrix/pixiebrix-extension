@@ -116,6 +116,12 @@ export interface PackageInstance extends Metadata {
   inputSchema?: Schema;
   outputSchema?: Schema;
   schema?: Schema;
+
+  /**
+   * (Optional) if provided, the feature flag required to view/use the package
+   * @since 2.0.7
+   */
+  featureFlag?: string;
 }
 
 /**

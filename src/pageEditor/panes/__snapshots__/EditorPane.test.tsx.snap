@@ -1381,7 +1381,7 @@ exports[`renders a mod component with sub pipeline 1`] = `
                     </div>
                     <div>
                       <div
-                        class="root"
+                        class="root dataTabRoot"
                       >
                         <div
                           class="formGroup form-group"

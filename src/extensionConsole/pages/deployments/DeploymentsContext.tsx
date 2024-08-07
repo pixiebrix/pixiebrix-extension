@@ -28,7 +28,7 @@ import notify from "@/utils/notify";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
-import useFlags, { type Restrict } from "@/hooks/useFlags";
+import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
   type InstalledDeployment,
@@ -124,7 +124,7 @@ function useDeployments(): DeploymentsState {
     valueToAsyncState(activatedModComponents),
     async (
       deployments: Deployment[],
-      { restrict }: Restrict,
+      { restrict }: FlagHelpers,
       _activatedModComponents: ActivatedModComponent[],
     ) => {
       const isUpdated = makeUpdatedFilter(_activatedModComponents, {
