@@ -55,8 +55,7 @@ jobs:
       - name: Install playwright browsers
         uses: Wandalen/wretry.action@v3.5.0
         with:
-          # TODO: replace with dynamic input
-          command: npx playwright install chrome msedge
+          command: npx playwright install ${{ join(fromJson(inputs.projects), ' ') }}
           with: |
             fail_ci_if_error: true
             verbose: true
