@@ -24,7 +24,9 @@ import {
 import { type ValueOf } from "type-fest";
 
 export type SidebarConfig = {
-  heading: string;
+  // Heading could be undefined because the page editor sets empty string values to undefined. See:
+  // https://github.com/pixiebrix/pixiebrix-extension/blob/cf7a0567248ffb6c3172653786f2f3486019e394/src/pageEditor/starterBricks/base.ts#L377
+  heading?: string;
   body: BrickConfig | BrickPipeline;
 };
 
