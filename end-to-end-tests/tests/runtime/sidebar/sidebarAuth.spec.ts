@@ -21,6 +21,7 @@ import { type Page, test as base } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../../pageObjects/constants";
 import { ActivateModPage } from "../../../pageObjects/extensionConsole/modsPage";
 import { getSidebarPage, runModViaQuickBar } from "../../../utils";
+import { SupportedChannels } from "../../../../playwright.config";
 
 test("Connect action in partner auth sidebar takes user to the Extension Console", async ({
   page,
@@ -70,7 +71,11 @@ test("Connect action in partner auth sidebar takes user to the Extension Console
   const extensionConsolePage = await consolePagePromise;
 
   // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-  if (chromiumChannel === "msedge") {
+  if (
+    [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+      chromiumChannel,
+    )
+  ) {
     // Another msedge bug causes the browser to fail to open the extension console page from the sidebar until you refresh the page.
     //   "Error: This script should only be loaded in a browser extension."
     await extensionConsolePage.reload();
