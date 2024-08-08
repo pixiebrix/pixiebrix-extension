@@ -15,9 +15,12 @@ export const SupportedChannels: Record<
 
 export type SupportedChannel = ValueOf<typeof SupportedChannels>;
 
-const channels: SupportedChannel[] = (() => {
+const getChromiumChannelsFromEnv = (): SupportedChannel[] => {
   if (!E2E_CHROMIUM_CHANNELS) {
-    return [SupportedChannels.CHROME, SupportedChannels.MSEDGE];
+    return [
+      SupportedChannels.CHROME,
+      SupportedChannels.MSEDGE,
+    ] as SupportedChannel[];
   }
 
   let parsedChannels: unknown;
@@ -49,7 +52,7 @@ const channels: SupportedChannel[] = (() => {
 
     return parsedChannel as SupportedChannel;
   });
-})();
+};
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -96,7 +99,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     navigationTimeout: 10_000,
   },
   /* Configure projects for major browsers */
-  projects: channels.flatMap((chromiumChannel) => [
+  projects: getChromiumChannelsFromEnv().flatMap((chromiumChannel) => [
     {
       name: `${chromiumChannel}-setup`,
       use:

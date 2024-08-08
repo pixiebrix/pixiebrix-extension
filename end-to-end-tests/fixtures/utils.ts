@@ -18,6 +18,7 @@
 import { type BrowserContext, chromium } from "@playwright/test";
 import { CI, PWDEBUG, SLOWMO } from "../env";
 import path from "node:path";
+import { SupportedChannel } from "../../playwright.config";
 
 export const launchPersistentContextWithExtension = async (
   chromiumChannel: "chrome" | "msedge",
@@ -67,7 +68,7 @@ export const getExtensionId = async (context: BrowserContext) => {
 
 export const getAuthProfilePathFile = (
   profileName: string,
-  chromiumChannel: "chrome" | "msedge",
+  chromiumChannel: SupportedChannel,
 ) =>
   path.join(
     __dirname,
