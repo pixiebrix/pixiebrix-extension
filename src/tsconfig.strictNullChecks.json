@@ -1603,6 +1603,7 @@
     "./store/enterprise/singleSignOn.ts",
     "./store/enterprise/useManagedStorageState.test.ts",
     "./store/enterprise/useManagedStorageState.ts",
+    "./store/extensionsMigrations.test.ts",
     "./store/extensionsMigrations.ts",
     "./store/extensionsSelectors.ts",
     "./store/extensionsSlice.ts",
