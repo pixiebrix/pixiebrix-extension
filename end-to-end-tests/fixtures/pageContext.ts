@@ -50,7 +50,6 @@ export const test = base.extend<
     checkRequiredEnvironmentVariables: () => void;
   }
 >({
-  // TODO: for some reason strict null thinks that SupportedChannels.CHROME could be undefined, or maybe that SupportedChannel type is union of undefined?
   chromiumChannel: [SupportedChannels.CHROME as "chrome", { option: true }],
   profileName: "unaffiliated",
   async context({ chromiumChannel, profileName }, use) {

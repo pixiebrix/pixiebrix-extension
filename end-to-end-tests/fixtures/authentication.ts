@@ -65,7 +65,6 @@ export const test = mergeTests(
     chromiumChannel: SupportedChannel;
     additionalRequiredEnvVariables: string[];
   }>({
-    // TODO: for some reason strict null thinks that SUPPORTED_CHANNELS could be undefined. Or maybe that SupportedChannel type includes undefined in the intersection?
     chromiumChannel: [SupportedChannels.CHROME as "chrome", { option: true }],
     additionalRequiredEnvVariables: [
       "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",

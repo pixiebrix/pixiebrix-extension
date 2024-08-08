@@ -1,10 +1,9 @@
-name: e2e-test-pre-released-browsers
+name: pre-release-browsers
 
 on:
   schedule:
     # Run nightly at 1:00 AM EST (5:00 UTC)
     - cron: "0 5 * * *"
-  push:
   workflow_dispatch:
 
 jobs:
