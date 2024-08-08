@@ -40,7 +40,6 @@ import { castDraft } from "immer";
 import {
   eventKeyExists,
   findInitialPanelEntry,
-  getIsModLauncherOnlyTabVisible,
   getVisiblePanelCount,
 } from "@/store/sidebar/sidebarUtils";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
