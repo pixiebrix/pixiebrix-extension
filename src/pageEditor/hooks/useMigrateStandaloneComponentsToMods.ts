@@ -36,7 +36,7 @@ export default function useMigrateStandaloneComponentsToMods() {
     for (const formState of standaloneComponentFormStates) {
       const modMetadata = activatedModComponents.find(
         ({ id }) => id === formState.uuid,
-      )._recipe;
+      )?._recipe;
 
       if (modMetadata == null) {
         dispatch(actions.removeModComponentFormState(formState.uuid));
