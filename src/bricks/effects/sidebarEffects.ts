@@ -49,8 +49,8 @@ export class ShowSidebar extends EffectABC {
         type: "boolean",
         title: "Force Panel",
         description:
-          "If the sidebar is already showing a panel, force switch the active panel (default=false)",
-        default: false,
+          "If the sidebar is already showing a panel, force switch the active panel (default=true)",
+        default: true,
       },
     },
     [],
