@@ -1,4 +1,4 @@
-name: e2e-test-unstable-browsers
+name: e2e-test-pre-released-browsers
 
 on:
   schedule:
