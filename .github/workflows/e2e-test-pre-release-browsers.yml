@@ -1,4 +1,4 @@
-name: pre-release-browsers
+name: Pre-release Browsers
 
 on:
   schedule:
