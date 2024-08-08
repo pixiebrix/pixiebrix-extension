@@ -46,6 +46,8 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -87,23 +89,21 @@ const Preview: React.VFC<{
   activeField: string | null;
   setActiveField: (field: string) => void;
 }> = ({ optionsDefinition, activeField, setActiveField }) => (
-  <Tab.Container activeKey="preview">
+  <Tab.Container activeKey={DataPanelTabKey.Design}>
     <Nav variant="tabs">
       <Nav.Item className={dataPanelStyles.tabNav}>
-        <Nav.Link eventKey="preview">Preview</Nav.Link>
+        <Nav.Link eventKey={DataPanelTabKey.Design}>Design</Nav.Link>
       </Nav.Item>
     </Nav>
 
     <Tab.Content className={dataPanelStyles.tabContent}>
-      <Tab.Pane eventKey="preview" className={dataPanelStyles.tabPane}>
-        <ErrorBoundary>
-          <FormPreview
-            rjsfSchema={optionsDefinition}
-            activeField={activeField}
-            setActiveField={setActiveField}
-          />
-        </ErrorBoundary>
-      </Tab.Pane>
+      <DataTabPane eventKey={DataPanelTabKey.Design}>
+        <FormPreview
+          rjsfSchema={optionsDefinition}
+          activeField={activeField}
+          setActiveField={setActiveField}
+        />
+      </DataTabPane>
     </Tab.Content>
   </Tab.Container>
 );
