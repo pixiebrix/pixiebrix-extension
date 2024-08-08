@@ -1,18 +1,23 @@
 import { defineConfig } from "@playwright/test";
 import { CI, E2E_CHROMIUM_CHANNELS } from "./end-to-end-tests/env";
+import { type ValueOf } from "type-fest";
 
-const supportedChannels = [
-  "chrome",
-  "msedge",
-  "chrome-beta",
-  "msedge-beta",
-  "chromium",
-];
-type SupportedChannel = (typeof supportedChannels)[number];
+const SupportedChannels: Record<
+  string,
+  "chrome" | "msedge" | "chrome-beta" | "msedge-beta" | "chromium"
+> = {
+  CHROME: "chrome",
+  MSEDGE: "msedge",
+  CHROME_BETA: "chrome-beta",
+  MSEDGE_BETA: "msedge-beta",
+  CHROMIUM: "chromium",
+};
+
+type SupportedChannel = ValueOf<typeof SupportedChannels>;
 
 const channels: SupportedChannel[] = (() => {
   if (!E2E_CHROMIUM_CHANNELS) {
-    return ["chrome", "msedge"];
+    return [SupportedChannels.CHROME, SupportedChannels.MSEDGE];
   }
 
   let parsedChannels: unknown;
@@ -38,11 +43,11 @@ const channels: SupportedChannel[] = (() => {
       );
     }
 
-    if (!supportedChannels.includes(parsedChannel)) {
+    if (!Object.values(SupportedChannels).includes(parsedChannel)) {
       throw new Error(`Unsupported channel: ${parsedChannel}`);
     }
 
-    return parsedChannel;
+    return parsedChannel as SupportedChannel;
   });
 })();
 
@@ -94,12 +99,18 @@ export default defineConfig<{ chromiumChannel: string }>({
   projects: channels.flatMap((chromiumChannel) => [
     {
       name: `${chromiumChannel}-setup`,
-      use: chromiumChannel === "chromium" ? {} : { chromiumChannel },
+      use:
+        chromiumChannel === SupportedChannels.CHROMIUM
+          ? {}
+          : { chromiumChannel },
       testMatch: /.*\.setup\.ts/,
     },
     {
       name: chromiumChannel,
-      use: chromiumChannel === "chromium" ? {} : { chromiumChannel },
+      use:
+        chromiumChannel === SupportedChannels.CHROMIUM
+          ? {}
+          : { chromiumChannel },
       // For faster local development, you can filter out the setup project in --ui mode to skip rerunning the setup project
       dependencies: [`${chromiumChannel}-setup`],
     },
