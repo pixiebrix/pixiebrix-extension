@@ -25,7 +25,10 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { PageEditorPage } from "../pageObjects/pageEditor/pageEditorPage";
-import { SupportedChannel, SupportedChannels } from "../../playwright.config";
+import {
+  type SupportedChannel,
+  SupportedChannels,
+} from "../../playwright.config";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
