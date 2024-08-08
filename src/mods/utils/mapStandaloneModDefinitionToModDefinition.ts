@@ -24,6 +24,7 @@ import { normalizeSemVerString } from "@/types/helpers";
 /**
  * Map a standalone mod definition from the server to a mod definition
  * @see mapModComponentToUnsavedModDefinition
+ * @see createModMetadataForStandaloneComponent - similar functionality
  */
 export function mapStandaloneModDefinitionToModDefinition(
   standaloneModDefinition: StandaloneModDefinition,
