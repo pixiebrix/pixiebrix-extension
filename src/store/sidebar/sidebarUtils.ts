@@ -27,7 +27,6 @@ import {
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import { isEqual } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 
 /**
  * Returns the initial panel entry given a modComponentRef, or undefined if not found.
