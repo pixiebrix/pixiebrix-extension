@@ -46,11 +46,11 @@ export function mapModComponentToUnavailableMod(
   modComponent: ModComponentBase,
 ): UnavailableMod {
   return {
-    metadata: modComponent._recipe,
+    metadata: modComponent.modMetadata,
     kind: DefinitionKinds.MOD,
     isStub: true,
-    updated_at: modComponent._recipe.updated_at,
-    sharing: modComponent._recipe.sharing,
+    updated_at: modComponent.modMetadata.updated_at,
+    sharing: modComponent.modMetadata.sharing,
   };
 }
 
@@ -73,7 +73,7 @@ function useMods(): ModsState {
           activatedModComponents.map((x) => x.id),
         ),
         activatedModDefinitionIds: new Set(
-          activatedModComponents.map((x) => x._recipe?.id),
+          activatedModComponents.map((x) => x.modMetadata.id),
         ),
       }),
       [activatedModComponents],

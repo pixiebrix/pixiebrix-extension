@@ -17,7 +17,6 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
@@ -34,7 +33,7 @@ export type UnavailableMod = Pick<
 };
 
 // XXX: should this be SerializedModComponent instead of HydratedModComponent? The old screens used ResolvedModComponent
-export type Mod = ModDefinition | HydratedModComponent | UnavailableMod;
+export type Mod = ModDefinition | UnavailableMod;
 
 export type SharingType =
   | "Personal"

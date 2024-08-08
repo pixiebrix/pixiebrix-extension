@@ -18,6 +18,7 @@
 import {
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
+  type ActivatedModComponentV3,
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
 
@@ -55,25 +56,32 @@ export type ModComponentStateV3 = {
   extensions: ActivatedModComponentV2[];
 };
 
-export type ModComponentStateVersions =
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentStateV4 = {
+  activatedModComponents: ActivatedModComponentV3[];
+};
+
+export type ModComponentStateLegacyVersions =
   | ModComponentStateV0
   | ModComponentStateV1
   | ModComponentStateV2
   | ModComponentStateV3;
-export type ModComponentState = ModComponentStateV3;
+export type ModComponentState = ModComponentStateV4;
 
 export type ModComponentsRootState = {
   options: ModComponentState;
 };
 
 export function isModComponentStateV0(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV0 {
   return !Array.isArray(state.extensions);
 }
 
 export function isModComponentStateV1(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV1 {
   return (
     Array.isArray(state.extensions) &&
@@ -83,7 +91,7 @@ export function isModComponentStateV1(
 }
 
 export function isModComponentStateV2(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
@@ -95,7 +103,7 @@ export function isModComponentStateV2(
 }
 
 export function isModComponentStateV3(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV3 {
   return (
     Array.isArray(state.extensions) &&

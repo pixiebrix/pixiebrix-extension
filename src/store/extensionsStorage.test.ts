@@ -16,8 +16,8 @@
  */
 
 import {
+  createMigrationsManifest,
   inferModComponentStateVersion,
-  migrations,
 } from "@/store/extensionsMigrations";
 import { initialState } from "@/store/extensionsSliceInitialState";
 import {
@@ -44,13 +44,21 @@ const inferModComponentStateVersionMock = jest.mocked(
   inferModComponentStateVersion,
 );
 
+jest.mock("@/auth/authUtils", () => {
+  const actual = jest.requireActual("@/auth/authUtils");
+  return {
+    ...actual,
+    getUserScope: jest.fn(() => "@testUser"),
+  };
+});
+
 const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 describe("getModComponentState", () => {
   test("readReduxStorage is called with inferModComponentStateVersion", async () => {
-    void getModComponentState();
+    await getModComponentState();
     expect(readReduxStorageMock).toHaveBeenCalledWith(
       STORAGE_KEY,
-      migrations,
+      expect.toBeObject(), // Migrations are dynamically created
       initialState,
       inferModComponentStateVersionMock,
     );
@@ -58,7 +66,8 @@ describe("getModComponentState", () => {
 });
 
 describe("persistExtensionOptionsConfig", () => {
-  test("version is the highest migration version", () => {
+  test("version is the highest migration version", async () => {
+    const migrations = await createMigrationsManifest();
     const maxVersion = getMaxMigrationsVersion(migrations);
     expect(persistModComponentOptionsConfig.version).toBe(maxVersion);
   });

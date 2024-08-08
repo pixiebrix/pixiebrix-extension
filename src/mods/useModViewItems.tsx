@@ -61,7 +61,7 @@ function useModViewItems(mods: Mod[]): {
       ),
       activatedModIds: new Set(
         compact(
-          activatedModComponents.map((extension) => extension._recipe?.id),
+          activatedModComponents.map((extension) => extension.modMetadata.id),
         ),
       ),
     }),

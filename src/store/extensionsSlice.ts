@@ -32,6 +32,7 @@ import { revertAll } from "@/store/commonActions";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
+  type ModMetadata,
 } from "@/types/modComponentTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -86,12 +87,12 @@ const extensionsSlice = createSlice({
   initialState,
   reducers: {
     // Helper method to directly update extensions in tests. Can't use activateStandaloneModDefinition because
-    // StandaloneModDefinition doesn't have the _recipe field
+    // StandaloneModDefinition doesn't have the modMetadata field
     UNSAFE_setModComponents(
       state,
       { payload }: PayloadAction<ActivatedModComponent[]>,
     ) {
-      state.extensions = cloneDeep(payload);
+      state.activatedModComponents = cloneDeep(payload);
     },
 
     activateStandaloneModDefinition(
@@ -108,7 +109,10 @@ const extensionsSlice = createSlice({
       // NOTE: do not save the extensions in the cloud (because the user can just activate from the marketplace /
       // or activate the deployment again
 
-      state.extensions.push({ ...standaloneModDefinition, active: true });
+      state.activatedModComponents.push({
+        ...standaloneModDefinition,
+        active: true,
+      });
 
       void contextMenus.preload([standaloneModDefinition]);
     },
@@ -122,16 +126,16 @@ const extensionsSlice = createSlice({
         payload,
       }: PayloadAction<{
         modComponentId: UUID;
-        modMetadata: ModComponentBase["_recipe"];
+        modMetadata: ModMetadata;
       }>,
     ) {
       const { modComponentId, modMetadata } = payload;
-      const modComponent = state.extensions.find(
+      const modComponent = state.activatedModComponents.find(
         (x) => x.id === modComponentId,
       );
 
       if (modComponent != null) {
-        modComponent._recipe = modMetadata;
+        modComponent.modMetadata = modMetadata;
       }
     },
 
@@ -190,7 +194,7 @@ const extensionsSlice = createSlice({
 
         // NOTE: do not save the mod components in the cloud (because the user can just activate from the marketplace /
         // or activate the deployment again
-        state.extensions.push(activatedModComponent);
+        state.activatedModComponents.push(activatedModComponent);
 
         // Ensure context menus are available on all existing tabs
         void contextMenus.preload([activatedModComponent]);
@@ -236,7 +240,7 @@ const extensionsSlice = createSlice({
           optionsArgs,
           integrationDependencies,
           updateTimestamp,
-          _recipe,
+          modMetadata,
         },
       } = payload;
 
@@ -256,7 +260,7 @@ const extensionsSlice = createSlice({
         id,
         apiVersion,
         extensionPointId,
-        _recipe,
+        modMetadata,
         _deployment: undefined,
         label,
         definitions,
@@ -274,13 +278,13 @@ const extensionsSlice = createSlice({
 
       assertModComponentNotResolved(modComponent);
 
-      const index = state.extensions.findIndex((x) => x.id === id);
+      const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = modComponent;
+        state.activatedModComponents[index] = modComponent;
       } else {
-        state.extensions.push(modComponent);
+        state.activatedModComponents.push(modComponent);
       }
     },
 
@@ -292,7 +296,7 @@ const extensionsSlice = createSlice({
       action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>,
     ) {
       const { id, ...modComponentUpdate } = action.payload;
-      const index = state.extensions.findIndex((x) => x.id === id);
+      const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index === -1) {
         reportError(
@@ -304,8 +308,8 @@ const extensionsSlice = createSlice({
       }
 
       // eslint-disable-next-line security/detect-object-injection -- index is number
-      state.extensions[index] = {
-        ...state.extensions.at(index),
+      state.activatedModComponents[index] = {
+        ...state.activatedModComponents.at(index),
         ...modComponentUpdate,
       } as ActivatedModComponent;
     },
@@ -315,14 +319,14 @@ const extensionsSlice = createSlice({
      */
     updateModMetadata(
       state,
-      action: PayloadAction<ModComponentBase["_recipe"]>,
+      action: PayloadAction<ModComponentBase["modMetadata"]>,
     ) {
       const metadata = action.payload;
-      const modComponents = state.extensions.filter(
-        (extension) => extension._recipe?.id === metadata?.id,
+      const modComponents = state.activatedModComponents.filter(
+        (extension) => extension.modMetadata?.id === metadata?.id,
       );
       for (const modComponent of modComponents) {
-        modComponent._recipe = metadata;
+        modComponent.modMetadata = metadata;
       }
     },
 
@@ -331,11 +335,11 @@ const extensionsSlice = createSlice({
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
       const [, extensions] = partition(
-        state.extensions,
-        (x) => x._recipe?.id === modId,
+        state.activatedModComponents,
+        (x) => x.modMetadata?.id === modId,
       );
 
-      state.extensions = extensions;
+      state.activatedModComponents = extensions;
     },
 
     /**
@@ -349,7 +353,7 @@ const extensionsSlice = createSlice({
     ) {
       // NOTE: We aren't deleting the mod components on the server.
       // The user must do that separately from the mods screen
-      state.extensions = state.extensions.filter(
+      state.activatedModComponents = state.activatedModComponents.filter(
         (x) => !modComponentIds.includes(x.id),
       );
     },
@@ -364,7 +368,7 @@ const extensionsSlice = createSlice({
     ) {
       // NOTE: We aren't deleting the mod component/definition on the server.
       // The user must do that separately from the dashboard
-      state.extensions = state.extensions.filter(
+      state.activatedModComponents = state.activatedModComponents.filter(
         (x) => x.id !== modComponentId,
       );
     },

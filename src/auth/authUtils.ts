@@ -23,6 +23,23 @@ import {
 import { type Me } from "@/data/model/Me";
 import selectAuthUserOrganizations from "@/auth/selectAuthUserOrganizations";
 import { UserRole } from "@/types/contract";
+import {
+  readReduxStorage,
+  validateReduxStorageKey,
+} from "@/utils/storageUtils";
+import { anonAuth } from "@/auth/authConstants";
+import { type Nullishable } from "@/utils/nullishUtils";
+
+const AUTH_SLICE_STORAGE_KEY = validateReduxStorageKey("persist:authOptions");
+
+export async function getUserScope(): Promise<Nullishable<string>> {
+  const { scope } = await readReduxStorage(
+    AUTH_SLICE_STORAGE_KEY,
+    {},
+    anonAuth,
+  );
+  return scope;
+}
 
 export function selectUserDataUpdate({
   email,

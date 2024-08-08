@@ -82,7 +82,7 @@ export function getStandaloneModComponentRuntimeModId(
  */
 function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
   return (
-    modComponent._recipe?.id ??
+    modComponent.modMetadata.id ??
     getStandaloneModComponentRuntimeModId(modComponent.id)
   );
 }
@@ -117,7 +117,7 @@ export function mapModComponentToMessageContext(
     starterBrickId: modComponent.extensionPointId,
     deploymentId: modComponent._deployment?.id,
     modId: getRuntimeModId(modComponent),
-    modVersion: modComponent._recipe?.version,
+    modVersion: modComponent.modMetadata.version,
   };
 }
 
@@ -186,7 +186,7 @@ export function isStandaloneModComponent(
  * Return true if the mod is an ModComponentBase that originated from a mod.
  */
 export function isModComponentFromMod(mod: Mod): boolean {
-  return isStandaloneModComponent(mod) && Boolean(mod._recipe);
+  return isStandaloneModComponent(mod) && Boolean(mod.modMetadata);
 }
 
 /**
@@ -219,7 +219,7 @@ export function getLabel(mod: Mod): string {
  */
 export const getDescription = (mod: Mod): string => {
   if (isStandaloneModComponent(mod)) {
-    return mod._recipe?.description ?? "Created in the Page Editor";
+    return mod.modMetadata.description ?? "Created in the Page Editor";
   }
 
   return mod.metadata.description ?? "No description";
@@ -229,7 +229,7 @@ export const getDescription = (mod: Mod): string => {
  * Return the registry id associated with a mod, or undefined
  */
 export function getPackageId(mod: Mod): RegistryId | undefined {
-  return isStandaloneModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
+  return isStandaloneModComponent(mod) ? mod.modMetadata.id : mod.metadata.id;
 }
 
 /**
@@ -239,18 +239,18 @@ export function getUpdatedAt(mod: Mod): string | null {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- See TODO below
   return isStandaloneModComponent(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
-      mod._recipe?.updated_at ?? mod.updateTimestamp
+      mod.modMetadata.updated_at ?? mod.updateTimestamp
     : mod.updated_at;
 }
 
 function isPublic(mod: Mod): boolean {
   return isStandaloneModComponent(mod)
-    ? mod._recipe?.sharing?.public ?? false
+    ? mod.modMetadata.sharing?.public ?? false
     : mod.sharing.public;
 }
 
 function isPersonalModComponent(modComponent: ModComponentBase): boolean {
-  return !modComponent._recipe && !modComponent._deployment;
+  return !modComponent.modMetadata && !modComponent._deployment;
 }
 
 /**
@@ -260,7 +260,7 @@ function hasSourceModWithScope(
   modComponent: ModComponentBase,
   scope: string,
 ): boolean {
-  return Boolean(scope && modComponent._recipe?.id.startsWith(scope + "/"));
+  return Boolean(scope && modComponent.modMetadata.id.startsWith(scope + "/"));
 }
 
 /**
@@ -294,15 +294,15 @@ export function getInstalledVersionNumber(
   mod: Mod,
 ): string | undefined {
   if (isStandaloneModComponent(mod)) {
-    return mod._recipe?.version;
+    return mod.modMetadata.version;
   }
 
   const installedExtension = installedExtensions.find(
     (extension: SerializedModComponent) =>
-      extension._recipe?.id === mod.metadata.id,
+      extension.modMetadata.id === mod.metadata.id,
   );
 
-  return installedExtension?._recipe?.version;
+  return installedExtension?.modMetadata.version;
 }
 
 export function isDeployment(
@@ -315,7 +315,7 @@ export function isDeployment(
 
   const modId = mod.metadata.id;
   return installedComponents.some(
-    (component) => component._recipe?.id === modId && component?._deployment,
+    (component) => component.modMetadata.id === modId && component?._deployment,
   );
 }
 
@@ -384,11 +384,11 @@ export function updateAvailable(
     ? activatedMods.get(mod.metadata.id)
     : mod;
 
-  if (!activatedMod?._recipe) {
+  if (!activatedMod?.modMetadata) {
     return false;
   }
 
-  const availableMod = availableMods.get(activatedMod._recipe.id);
+  const availableMod = availableMods.get(activatedMod.modMetadata.id);
 
   if (!availableMod) {
     return false;
@@ -397,7 +397,7 @@ export function updateAvailable(
   // TODO: Drop assertions once the types are tighter
   // https://github.com/pixiebrix/pixiebrix-extension/pull/7010#discussion_r1410080332
   assertNotNullish(
-    activatedMod._recipe.version,
+    activatedMod.modMetadata.version,
     "The requested mod doesn't have a version",
   );
   assertNotNullish(
@@ -405,19 +405,23 @@ export function updateAvailable(
     "The mod component's mod doesn't have a version",
   );
 
-  if (semver.gt(availableMod.metadata.version, activatedMod._recipe.version)) {
+  if (
+    semver.gt(availableMod.metadata.version, activatedMod.modMetadata.version)
+  ) {
     return true;
   }
 
-  if (semver.eq(availableMod.metadata.version, activatedMod._recipe.version)) {
+  if (
+    semver.eq(availableMod.metadata.version, activatedMod.modMetadata.version)
+  ) {
     // Check the updated_at timestamp
-    if (activatedMod._recipe?.updated_at == null) {
+    if (activatedMod.modMetadata.updated_at == null) {
       // Extension was installed prior to us adding updated_at to RecipeMetadata
       return false;
     }
 
     const availableDate = new Date(availableMod.updated_at);
-    const installedDate = new Date(activatedMod._recipe.updated_at);
+    const installedDate = new Date(activatedMod.modMetadata.updated_at);
 
     return availableDate > installedDate;
   }
@@ -430,7 +434,7 @@ function getOrganization(
   organizations: Organization[],
 ): Organization | undefined {
   const sharing = isStandaloneModComponent(mod)
-    ? mod._recipe?.sharing
+    ? mod.modMetadata.sharing
     : mod.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
@@ -452,7 +456,7 @@ export const selectComponentsFromMod = createSelector(
   (activeModComponents, mod) =>
     isModDefinition(mod)
       ? activeModComponents.filter(
-          (extension) => extension._recipe?.id === mod.metadata.id,
+          (extension) => extension.modMetadata.id === mod.metadata.id,
         )
       : activeModComponents.filter((x) => x.id === mod.id),
 );

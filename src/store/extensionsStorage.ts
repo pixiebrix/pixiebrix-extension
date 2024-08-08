@@ -18,13 +18,12 @@
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
 import {
+  createMigrationsManifest,
   inferModComponentStateVersion,
-  migrations,
 } from "@/store/extensionsMigrations";
 import { type ModComponentState } from "./extensionsTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type RegistryId } from "@/types/registryTypes";
-import { compact, isEmpty } from "lodash";
 import { boolean } from "@/utils/typeUtils";
 import {
   readReduxStorage,
@@ -33,10 +32,12 @@ import {
 } from "@/utils/storageUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import { initialState } from "@/store/extensionsSliceInitialState";
+import { type PersistMigrate } from "redux-persist/es/types";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
 
 export async function getModComponentState(): Promise<ModComponentState> {
+  const migrations = await createMigrationsManifest();
   return readReduxStorage<ModComponentState>(
     STORAGE_KEY,
     migrations,
@@ -48,18 +49,9 @@ export async function getModComponentState(): Promise<ModComponentState> {
 /**
  * Returns the set of currently activated mod ids. Reads current activated mods from storage.
  */
-export async function getActivatedModIds(): Promise<
-  Set<RegistryId | undefined>
-> {
-  const modComponentState = await getModComponentState();
-
-  if (isEmpty(modComponentState?.extensions)) {
-    return new Set();
-  }
-
-  return new Set(
-    compact(modComponentState.extensions.map(({ _recipe }) => _recipe?.id)),
-  );
+export async function getActivatedModIds(): Promise<Set<RegistryId>> {
+  const { activatedModComponents = [] } = await getModComponentState();
+  return new Set(activatedModComponents.map(({ modMetadata: { id } }) => id));
 }
 
 /**
@@ -68,6 +60,7 @@ export async function getActivatedModIds(): Promise<
 export async function saveModComponentState(
   state: ModComponentState,
 ): Promise<void> {
+  const migrations = await createMigrationsManifest();
   await setReduxStorage(
     STORAGE_KEY,
     state,
@@ -75,12 +68,20 @@ export async function saveModComponentState(
   );
 }
 
+const migrate: PersistMigrate = async (state, currentVersion) => {
+  const migrations = await createMigrationsManifest();
+  const migrator = createMigrate(migrations, {
+    debug: boolean(process.env.DEBUG),
+  });
+  return migrator(state, currentVersion);
+};
+
 export const persistModComponentOptionsConfig = {
   key: "extensionOptions",
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 3,
+  version: 4,
   // https://github.com/rt2zz/redux-persist#migrations
-  migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
+  migrate,
 };

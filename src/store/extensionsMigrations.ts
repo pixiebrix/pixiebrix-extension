@@ -17,27 +17,36 @@
 
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import {
-  type ModComponentStateVersions,
-  type ModComponentStateV0,
-  type ModComponentStateV1,
-  type ModComponentStateV2,
-  type ModComponentStateV3,
   isModComponentStateV0,
   isModComponentStateV1,
   isModComponentStateV2,
   isModComponentStateV3,
+  type ModComponentStateLegacyVersions,
+  type ModComponentStateV0,
+  type ModComponentStateV1,
+  type ModComponentStateV2,
+  type ModComponentStateV3,
+  type ModComponentStateV4,
 } from "@/store/extensionsTypes";
-import { omit } from "lodash";
+import { omit, partition } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
+import {
+  type ActivatedModComponentV2,
+  type ActivatedModComponentV3,
+} from "@/types/modComponentTypes";
+import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
+import { getUserScope } from "@/auth/authUtils";
 
-export const migrations: MigrationManifest = {
+// eslint-disable-next-line local-rules/persistBackgroundData -- This is never mutated
+const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
   // state version to match state type names and existing versions
   // The typeguards shouldn't be necessary, but in certain cases, the rehydration can run
   // on ModComponentStateV2 extensions before the _persist key is added
   0: (state) => state,
-  1(state: ModComponentStateVersions & PersistedState) {
+  1(state: ModComponentStateLegacyVersions & PersistedState) {
     if (isModComponentStateV0(state)) {
       return migrateModComponentStateV0ToV1(state);
     }
@@ -58,7 +67,18 @@ export const migrations: MigrationManifest = {
 
     return state;
   },
+  // V4 migration defined below
 };
+
+export async function createMigrationsManifest(): Promise<MigrationManifest> {
+  const userScope = await getUserScope();
+  console.log("*** user scope loaded for redux-persist migrations:", userScope);
+  return {
+    ...migrations,
+    4: (state: ModComponentStateV3 & PersistedState) =>
+      migrateModComponentStateV3toV4(state, userScope),
+  };
+}
 
 function migrateModComponentStateV0ToV1(
   state: ModComponentStateV0 & PersistedState,
@@ -100,8 +120,57 @@ function migrateModComponentStateV2toV3(
   };
 }
 
+function migrateExtensions(
+  extensions: ActivatedModComponentV2[],
+  userScope: Nullishable<string>,
+): ActivatedModComponentV3[] {
+  const [modComponents, standaloneComponents] = partition(
+    extensions,
+    (extension) => Boolean(extension._recipe),
+  );
+
+  const migratedModComponents: ActivatedModComponentV3[] = modComponents.map(
+    (extension) => ({
+      ...omit(extension, "_recipe"),
+      modMetadata: extension._recipe,
+    }),
+  );
+
+  if (userScope == null) {
+    return migratedModComponents;
+  }
+
+  const convertedStandaloneComponents: ActivatedModComponentV3[] =
+    standaloneComponents.map((extension) => ({
+      ...omit(extension, "_recipe"),
+      modMetadata: {
+        id: validateRegistryId(`${userScope}/converted/${extension.id}`),
+        name: extension.label,
+        version: normalizeSemVerString("1.0.0"),
+        description: "Page Editor mod automatically converted to a package",
+        sharing: {
+          public: false,
+          organizations: [],
+        },
+        updated_at: nowTimestamp(),
+      },
+    }));
+
+  return [...migratedModComponents, ...convertedStandaloneComponents];
+}
+
+function migrateModComponentStateV3toV4(
+  state: ModComponentStateV3 & PersistedState,
+  userScope: Nullishable<string>,
+): ModComponentStateV4 & PersistedState {
+  return {
+    ...omit(state, "extensions"),
+    activatedModComponents: migrateExtensions(state.extensions, userScope),
+  };
+}
+
 export function inferModComponentStateVersion(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): number {
   if (isModComponentStateV3(state)) {
     return 3;

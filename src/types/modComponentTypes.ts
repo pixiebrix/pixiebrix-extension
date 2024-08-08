@@ -182,9 +182,20 @@ export type ModComponentBaseV2<Config extends UnknownObject = UnknownObject> =
     integrationDependencies?: IntegrationDependencyV2[];
   };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentBaseV3<Config extends UnknownObject = UnknownObject> =
+  Except<ModComponentBaseV2<Config>, "_recipe"> & {
+    /**
+     * @since 2.1.0 renamed from `_recipe` to `modMetadata` and made required (dropping standalone mod components)
+     */
+    modMetadata: ModMetadata;
+  };
+
 // XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
 export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
-  ModComponentBaseV2<Config>;
+  ModComponentBaseV3<Config>;
 
 export type SerializedModComponentV1<
   Config extends UnknownObject = UnknownObject,
@@ -195,6 +206,12 @@ export type SerializedModComponentV1<
 export type SerializedModComponentV2<
   Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV2<Config> & {
+  _serializedModComponentBrand: never;
+};
+
+export type SerializedModComponentV3<
+  Config extends UnknownObject = UnknownObject,
+> = ModComponentBaseV3<Config> & {
   _serializedModComponentBrand: never;
 };
 
@@ -242,6 +259,10 @@ export type ActivatedModComponentV2<
   Config extends UnknownObject = UnknownObject,
 > = SerializedModComponentV2<Config> & ActivatedModComponentBase;
 
+export type ActivatedModComponentV3<
+  Config extends UnknownObject = UnknownObject,
+> = SerializedModComponentV3<Config> & ActivatedModComponentBase;
+
 /**
  * A ModComponent that has been activated locally
  * @see ModComponentBase
@@ -249,7 +270,7 @@ export type ActivatedModComponentV2<
  */
 export type ActivatedModComponent<
   Config extends UnknownObject = UnknownObject,
-> = ActivatedModComponentV2<Config>;
+> = ActivatedModComponentV3<Config>;
 
 /**
  * An `ModComponentBase` with all inner definitions hydrated.

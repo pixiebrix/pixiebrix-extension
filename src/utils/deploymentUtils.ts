@@ -86,7 +86,7 @@ export const makeUpdatedFilter =
     const modMatch = activatedModComponents.find(
       (modComponent) =>
         modComponent._deployment == null &&
-        modComponent._recipe?.id === deployment.package.package_id,
+        modComponent.modMetadata.id === deployment.package.package_id,
     );
 
     if (!deploymentMatch && !modMatch) {
@@ -97,7 +97,7 @@ export const makeUpdatedFilter =
       modMatch &&
       gte(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- modMatch is checked above
-        modMatch._recipe!.version!,
+        modMatch.modMetadata!.version!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
         deployment.package.version!,
       )
@@ -157,7 +157,7 @@ export type InstalledDeployment = {
 };
 
 export function selectInstalledDeployments(
-  extensions: Array<Pick<ModComponentBase, "_deployment" | "_recipe">>,
+  extensions: Array<Pick<ModComponentBase, "_deployment" | "modMetadata">>,
 ): InstalledDeployment[] {
   return uniqBy(
     extensions
@@ -167,8 +167,8 @@ export function selectInstalledDeployments(
           ({
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- _deployment is checked above
             deployment: x._deployment!.id,
-            blueprint: x._recipe?.id,
-            blueprintVersion: x._recipe?.version,
+            blueprint: x.modMetadata.id,
+            blueprintVersion: x.modMetadata.version,
           }) as InstalledDeployment,
       ),
     (x) => x.deployment,
