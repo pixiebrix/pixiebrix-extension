@@ -25,6 +25,7 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { PageEditorPage } from "../pageObjects/pageEditor/pageEditorPage";
+import { SupportedChannel } from "../../playwright.config";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -39,7 +40,7 @@ export const test = base.extend<
     context: BrowserContext;
     extensionId: string;
     profileName: "unaffiliated" | "affiliated";
-    chromiumChannel: "chrome" | "msedge";
+    chromiumChannel: SupportedChannel;
     newPageEditorPage: (urlToConnectTo: string) => Promise<PageEditorPage>;
   },
   {

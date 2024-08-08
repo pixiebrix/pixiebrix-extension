@@ -29,6 +29,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as os from "node:os";
 import { test as envSetup } from "./environmentCheck";
+import { type SupportedChannel } from "../../playwright.config";
 
 const profileNameFromTestPath = (testFilePath: string) => {
   // Split the file path into directory and file name
@@ -58,7 +59,7 @@ export const test = mergeTests(
   envSetup,
   base.extend<{
     contextAndPage: { context: BrowserContext; page: Page };
-    chromiumChannel: "chrome" | "msedge";
+    chromiumChannel: SupportedChannel;
     additionalRequiredEnvVariables: string[];
   }>({
     chromiumChannel: ["chrome", { option: true }],

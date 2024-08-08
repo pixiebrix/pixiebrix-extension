@@ -18,19 +18,26 @@
 import { expect, type Page } from "@playwright/test";
 import { getModifierKey, getModifierSymbol } from "end-to-end-tests/utils";
 import { BasePageObject } from "./basePageObject";
+import {
+  type SupportedChannel,
+  SupportedChannels,
+} from "../../playwright.config";
 
-function getExtensionShortcutsUrl(chromiumChannel: "chrome" | "msedge") {
+function getExtensionShortcutsUrl(chromiumChannel: SupportedChannel) {
   switch (chromiumChannel) {
-    case "chrome": {
+    case SupportedChannels.CHROME:
+    case SupportedChannels.CHROME_BETA:
+    case SupportedChannels.CHROMIUM: {
       return "chrome://extensions/shortcuts";
     }
 
-    case "msedge": {
+    case SupportedChannels.MSEDGE:
+    case SupportedChannels.MSEDGE_BETA: {
       return "edge://extensions/shortcuts";
     }
 
     default: {
-      const exhaustiveCheck: never = chromiumChannel;
+      const exhaustiveCheck = chromiumChannel as never;
       throw new Error(`Unexpected channel: ${exhaustiveCheck}`);
     }
   }
@@ -48,7 +55,7 @@ export class ExtensionsShortcutsPage extends BasePageObject {
 
   constructor(
     page: Page,
-    private readonly chromiumChannel: "chrome" | "msedge",
+    private readonly chromiumChannel: SupportedChannel,
   ) {
     super(page);
     this.pageUrl = getExtensionShortcutsUrl(this.chromiumChannel);
