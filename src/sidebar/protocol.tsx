@@ -165,21 +165,21 @@ export async function renderPanels(
 
 export async function activatePanel(
   sequence: TimedSequence,
-  options: ActivatePanelOptions,
+  activateOptions: ActivatePanelOptions,
 ): Promise<void> {
   if (sequence < lastActivateMessageSeen) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
       sequence,
       lastActivateMessageSeen,
-      { data: options },
+      { data: activateOptions },
     );
     return;
   }
 
   lastActivateMessageSeen = sequence;
 
-  runListeners("onActivatePanel", sequence, options, { force: true });
+  runListeners("onActivatePanel", sequence, activateOptions, { force: true });
 }
 
 export async function showForm(sequence: TimedSequence, entry: FormPanelEntry) {

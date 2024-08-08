@@ -63,7 +63,7 @@ export class ShowSidebar extends EffectABC {
   async effect(
     {
       panelHeading,
-      forcePanel = false,
+      forcePanel = true,
     }: BrickArgs<{
       panelHeading?: string;
       forcePanel?: boolean;
