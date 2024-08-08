@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 import { CI, E2E_CHROMIUM_CHANNELS } from "./end-to-end-tests/env";
 import { type ValueOf } from "type-fest";
 
-const SupportedChannels: Record<
+export const SupportedChannels: Record<
   string,
   "chrome" | "msedge" | "chrome-beta" | "msedge-beta" | "chromium"
 > = {
@@ -13,7 +13,7 @@ const SupportedChannels: Record<
   CHROMIUM: "chromium",
 };
 
-type SupportedChannel = ValueOf<typeof SupportedChannels>;
+export type SupportedChannel = ValueOf<typeof SupportedChannels>;
 
 const channels: SupportedChannel[] = (() => {
   if (!E2E_CHROMIUM_CHANNELS) {
