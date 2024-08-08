@@ -273,7 +273,10 @@ const sidebarSlice = createSlice({
     activatePanel(state, { payload }: PayloadAction<ActivatePanelOptions>) {
       state.pendingActivePanel = null;
 
-      const isModLauncherOnlyTabVisible = getIsModLauncherOnlyTabVisible(state);
+      const visiblePanelCount = getVisiblePanelCount(state);
+      const isModLauncherOnlyTabVisible =
+        visiblePanelCount === 1 &&
+        !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)];
 
       if (!payload.force && !isModLauncherOnlyTabVisible) {
         return;

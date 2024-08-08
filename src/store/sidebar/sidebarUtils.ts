@@ -71,14 +71,6 @@ export function getVisiblePanelCount({
   );
 }
 
-export function getIsModLauncherOnlyTabVisible(state: SidebarState): boolean {
-  const visiblePanelCount = getVisiblePanelCount(state);
-
-  return (
-    visiblePanelCount === 1 && !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)]
-  );
-}
-
 export function eventKeyExists(
   state: SidebarState,
   query: Nullishable<string>,
