@@ -68,7 +68,11 @@ export class ExtensionsShortcutsPage extends BasePageObject {
   async goto() {
     await this.page.goto(this.pageUrl);
 
-    if (this.chromiumChannel === "chrome") {
+    if (
+      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
+        this.chromiumChannel,
+      )
+    ) {
       await expect(
         this.getByRole("heading", { name: /PixieBrix/ }),
       ).toBeVisible();
@@ -82,7 +86,11 @@ export class ExtensionsShortcutsPage extends BasePageObject {
 
     const shortcut = await getShortcut(this.page);
 
-    if (this.chromiumChannel === "chrome") {
+    if (
+      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
+        this.chromiumChannel,
+      )
+    ) {
       await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
         shortcut,
       );
@@ -119,7 +127,11 @@ export class ExtensionsShortcutsPage extends BasePageObject {
     const modifierKey = await getModifierKey(this.page);
     const shortcut = await getShortcut(this.page);
 
-    if (this.chromiumChannel === "chrome") {
+    if (
+      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
+        this.chromiumChannel,
+      )
+    ) {
       await expect(
         this.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/),
       ).toBeEmpty();

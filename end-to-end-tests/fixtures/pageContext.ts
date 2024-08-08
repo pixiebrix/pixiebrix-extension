@@ -25,7 +25,7 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { PageEditorPage } from "../pageObjects/pageEditor/pageEditorPage";
-import { SupportedChannel } from "../../playwright.config";
+import { SupportedChannel, SupportedChannels } from "../../playwright.config";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -47,7 +47,8 @@ export const test = base.extend<
     checkRequiredEnvironmentVariables: () => void;
   }
 >({
-  chromiumChannel: ["chrome", { option: true }],
+  // TODO: for some reason strict null thinks that SupportedChannels.CHROME could be undefined, or maybe that SupportedChannel type is union of undefined?
+  chromiumChannel: [SupportedChannels.CHROME as "chrome", { option: true }],
   profileName: "unaffiliated",
   async context({ chromiumChannel, profileName }, use) {
     let authSetupProfileDirectory: string;
