@@ -32,7 +32,6 @@ import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponents from "./ModComponents";
-import useMigrateStandaloneComponentsToMods from "@/pageEditor/hooks/useMigrateStandaloneComponentsToMods";
 
 /**
  * React Bootstrap Collapsed component that includes a div wrapper.
@@ -66,11 +65,6 @@ const ModListingPanel: React.VFC = () => {
       }),
     );
   };
-
-  /**
-   * @since 2.0.8 - Migrate form states for activated standalone mod components
-   */
-  useMigrateStandaloneComponentsToMods();
 
   return (
     <div

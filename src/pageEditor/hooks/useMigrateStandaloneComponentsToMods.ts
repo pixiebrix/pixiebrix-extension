@@ -21,6 +21,9 @@ import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useEffect } from "react";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 
+/**
+ * Note: This must be run underneath the PersistGate component in the React component tree
+ */
 export default function useMigrateStandaloneComponentsToMods() {
   const dispatch = useDispatch();
   const formStates = useSelector(selectModComponentFormStates);
