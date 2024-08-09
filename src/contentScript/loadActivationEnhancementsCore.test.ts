@@ -20,7 +20,6 @@ import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { getActivatingMods } from "@/background/messenger/external/_implementation";
 import {
@@ -90,19 +89,7 @@ describe("marketplace enhancements", () => {
   test("given user is logged in, when an activate button is clicked, should open the sidebar", async () => {
     isLinkedMock.mockResolvedValue(true);
     window.location.assign(MARKETPLACE_URL);
-    // Recipe 1 is installed, recipe 2 is not
-    const modComponent1 = modComponentFactory({
-      _recipe: modMetadataFactory({
-        id: modId1,
-      }),
-    }) as ActivatedModComponent;
-    const modComponent2 = modComponentFactory() as ActivatedModComponent;
-    getActivatedModIdsMock.mockResolvedValue(
-      new Set<RegistryId | undefined>([
-        modComponent1._recipe?.id,
-        modComponent2._recipe?.id,
-      ]),
-    );
+    getActivatedModIdsMock.mockResolvedValue(new Set<RegistryId>([modId1]));
 
     await loadActivationEnhancements();
     await initSidebarActivation();
@@ -195,16 +182,7 @@ describe("marketplace enhancements", () => {
   test("given user is not logged in, when loaded, should change button text", async () => {
     isLinkedMock.mockResolvedValue(false);
     window.location.assign(MARKETPLACE_URL);
-    // Recipe 1 is installed, recipe 2 is not
-    const modComponent1 = modComponentFactory({
-      _recipe: modMetadataFactory({
-        id: modId1,
-      }),
-    }) as ActivatedModComponent;
-    const modComponent2 = modComponentFactory() as ActivatedModComponent;
-    getActivatedModIdsMock.mockResolvedValue(
-      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id]),
-    );
+    getActivatedModIdsMock.mockResolvedValue(new Set([modId1]));
 
     await loadActivationEnhancements();
     await initSidebarActivation();
@@ -218,16 +196,7 @@ describe("marketplace enhancements", () => {
   test("given user is logged in, when loaded, should change button text for installed recipe", async () => {
     isLinkedMock.mockResolvedValue(true);
     window.location.assign(MARKETPLACE_URL);
-    // Recipe 1 is installed, recipe 2 is not
-    const modComponent1 = modComponentFactory({
-      _recipe: modMetadataFactory({
-        id: modId1,
-      }),
-    }) as ActivatedModComponent;
-    const modComponent2 = modComponentFactory() as ActivatedModComponent;
-    getActivatedModIdsMock.mockResolvedValue(
-      new Set([modComponent1._recipe?.id, modComponent2._recipe?.id]),
-    );
+    getActivatedModIdsMock.mockResolvedValue(new Set([modId1]));
 
     await loadActivationEnhancements();
     await initSidebarActivation();
