@@ -145,7 +145,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
       if (Number(draft.schema.required?.length) > 0) {
         draft.schema.required = replaceStringInArray(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
           draft.schema.required!,
           propertyToRemove,
         );
