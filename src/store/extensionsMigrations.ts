@@ -69,7 +69,6 @@ const migrations: MigrationManifest = {
 
 export async function createMigrationsManifest(): Promise<MigrationManifest> {
   const userScope = await getUserScope();
-  console.log("*** user scope loaded for redux-persist migrations:", userScope);
   return {
     ...migrations,
     4: (state: ModComponentStateV3 & PersistedState) =>
