@@ -26,6 +26,7 @@ import {
 } from "@playwright/test";
 import { ensureVisibility, getBrowserOs, getSidebarPage } from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
+import { SupportedChannels } from "../../../playwright.config";
 
 async function openSidebar(page: Page, extensionId: string) {
   // The mod contains a trigger to open the sidebar on h1. If the sidePanel is already open, it's a NOP
@@ -53,7 +54,11 @@ async function clickLinkInSidebarAndWaitForPage(
   chromiumChannel: string,
 ) {
   const pagePromise = context.waitForEvent("page");
-  if (chromiumChannel === "msedge") {
+  if (
+    [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+      chromiumChannel,
+    )
+  ) {
     // On MS Edge, opening a new tab closes the sidebar. The click steps fail because MS Edge closes the sidebar when the new tab is opened
     //  Error: locator.click: Target page, context or browser has been closed.
     // Even though it errors, the link is still opened in a new tab.
@@ -99,7 +104,11 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
     );
 
     // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-    if (chromiumChannel === "msedge") {
+    if (
+      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       // Another msedge bug causes the browser to fail to open the extension console page from the sidebar until you refresh the page.
       //   "Error: This script should only be loaded in a browser extension."
       await extensionConsolePage.reload();
@@ -113,10 +122,16 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking markdown text link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge and linux bug that causes the sidebar to close on clicking a link
-    if (browserOSName === "Linux" || chromiumChannel === "msedge") {
+    /* eslint-disable playwright/no-conditional-in-test -- msedge and linux bug that causes the sidebar to close on clicking a link */
+    if (
+      browserOSName === "Linux" ||
+      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
+    /* eslint-enable playwright/no-conditional-in-test */
 
     const markdownTextLinkPage = await clickLinkInSidebarAndWaitForPage(
       context,
@@ -127,10 +142,16 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking react bootstrap link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge/linux bug
-    if (browserOSName === "Linux" || chromiumChannel === "msedge") {
+    /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
+    if (
+      browserOSName === "Linux" ||
+      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
+    /* eslint-enable playwright/no-conditional-in-test */
 
     const reactBootstrapLinkPage = await clickLinkInSidebarAndWaitForPage(
       context,
@@ -141,10 +162,16 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking html renderer link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge/linux bug
-    if (browserOSName === "Linux" || chromiumChannel === "msedge") {
+    /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
+    if (
+      browserOSName === "Linux" ||
+      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
+    /* eslint-enable playwright/no-conditional-in-test */
 
     const htmlRendererLinkPage = await clickLinkInSidebarAndWaitForPage(
       context,
@@ -155,10 +182,16 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   });
 
   await test.step("Clicking embedded form link", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- msedge/linux bug
-    if (browserOSName === "Linux" || chromiumChannel === "msedge") {
+    /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
+    if (
+      browserOSName === "Linux" ||
+      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
+    /* eslint-enable playwright/no-conditional-in-test */
 
     const embeddedFormLinkPage = await clickLinkInSidebarAndWaitForPage(
       context,
@@ -171,8 +204,13 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   // Clicking link in IFrame will crash MS Edge until the issue is fixed
   // https://github.com/microsoft/MicrosoftEdge-Extensions/issues/145
   // For some reason this also happens in Chrome/Linux in the CI github workflow.
-  // eslint-disable-next-line playwright/no-conditional-in-test -- see above comment
-  if (browserOSName !== "Linux" && chromiumChannel !== "msedge") {
+  /* eslint-disable playwright/no-conditional-in-test -- see above comment */
+  if (
+    browserOSName !== "Linux" &&
+    ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+      chromiumChannel,
+    )
+  ) {
     await test.step("Clicking link in IFrame", async () => {
       // PixieBrix uses 2 layers of frames to get around the host page CSP. Test page has 2 layers
       const pixiebrixFrame = sideBarPage.frameLocator("iframe").first();
@@ -184,4 +222,5 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
       await srcdocFrame.getByRole("link", { name: "IFrame Link" }).click();
     });
   }
+  /* eslint-enable playwright/no-conditional-in-test */
 });

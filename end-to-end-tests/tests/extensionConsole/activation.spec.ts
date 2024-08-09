@@ -31,6 +31,7 @@ import { type Serializable } from "playwright-core/types/structs";
 import { SERVICE_URL } from "../../env";
 import { ExtensionsShortcutsPage } from "../../pageObjects/extensionsShortcutsPage";
 import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
+import { SupportedChannels } from "../../../playwright.config";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -162,11 +163,17 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
     const os = await getBrowserOs(firstTab);
     // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
-    // eslint-disable-next-line playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux
-    if (os === "MacOS" || chromiumChannel === "chrome") {
+    /* eslint-disable playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux */
+    if (
+      os === "MacOS" ||
+      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       await shortcutsPage.clearQuickbarShortcut();
     }
   });
+  /* eslint-enable playwright/no-conditional-in-test */
 
   let modActivationPage: ActivateModPage;
   const secondTab = await context.newPage();
