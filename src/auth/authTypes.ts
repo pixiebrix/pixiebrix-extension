@@ -54,10 +54,6 @@ export type UserData = Partial<{
    */
   organizationId: UUID | null;
   /**
-   * The user's organization for engagement and error attribution
-   */
-  telemetryOrganizationId: UUID | null;
-  /**
    * Organizations the user is a member of
    */
   organizations: Array<{
@@ -102,7 +98,6 @@ export type UserDataUpdate = Required<Except<UserData, "hostname" | "user">>;
 export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "email",
   "organizationId",
-  "telemetryOrganizationId",
   "organizations",
   "groups",
   "enforceUpdateMillis",
@@ -157,6 +152,10 @@ export type OrganizationAuthState = {
    * The human-readable name of the organization.
    */
   readonly name: string;
+  /**
+   * Whether the organization is an enterprise organization.
+   */
+  readonly isEnterprise: boolean;
   /**
    * The package scope of the organization, or null if not set.
    */
@@ -229,14 +228,6 @@ export type AuthState = {
    *  The primary organization for the user, or null.
    */
   readonly organization?: OrganizationAuthState | null;
-
-  /**
-   * The enterprise organization used for telemetry collection, or null. Generally, if set, this will be the same as the
-   * user's primary organization.
-   *
-   * @since 1.7.35
-   */
-  readonly telemetryOrganizationId?: UUID | null;
 
   /**
    * Organizations the user is a member of

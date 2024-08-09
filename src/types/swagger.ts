@@ -36,7 +36,7 @@ export interface paths {
   };
   "/api/bricks/": {
     /** @description View for editable brick packages in the registry. */
-    get: operations["listPackageMetas"];
+    get: operations["listPackageMeta"];
     /** @description View for editable brick packages in the registry. */
     post: operations["createPackage"];
   };
@@ -49,7 +49,7 @@ export interface paths {
     delete: operations["destroyPackage"];
   };
   "/api/bricks/{id}/versions/": {
-    get: operations["listPackageVersionDeprecateds"];
+    get: operations["listPackageVersionSlims"];
   };
   "/api/databases/": {
     get: operations["listUserDatabases"];
@@ -62,6 +62,9 @@ export interface paths {
     get: operations["retrieveUserDatabase"];
     delete: operations["destroyUserDatabase"];
     patch: operations["updateUserDatabase"];
+  };
+  "/api/databases/{id}/permissions/": {
+    get: operations["retrieveUserDatabasePermission"];
   };
   "/api/databases/{database_pk}/records/": {
     get: operations["listRecords"];
@@ -83,13 +86,13 @@ export interface paths {
     get: operations["listDatabaseDeployments"];
   };
   "/api/organizations/{organization_pk}/campaigns/": {
-    get: operations["listCampaignSummarys"];
+    get: operations["listCampaigns"];
     post: operations["createCampaign"];
   };
   "/api/organizations/{organization_pk}/campaigns/{id}/": {
     get: operations["retrieveCampaign"];
-    put: operations["updateCampaign"];
     delete: operations["destroyCampaign"];
+    patch: operations["partialUpdateCampaign"];
   };
   "/api/campaigns/{campaign_pk}/jobs/{id}/": {
     get: operations["retrieveCampaignEngagementJob"];
@@ -100,6 +103,10 @@ export interface paths {
   "/api/organizations/{organization_pk}/campaigns/{campaign_pk}/members/": {
     /** @description Paginated view of members in a Campaign. */
     get: operations["listCampaignMembers"];
+    /** @description Paginated view of members in a Campaign. */
+    put: operations["updateCampaignMember"];
+    /** @description Paginated view of members in a Campaign. */
+    post: operations["createCampaignMember"];
   };
   "/api/deployments/": {
     /** @description View for individual users to report/retrieve available deployments. */
@@ -121,7 +128,7 @@ export interface paths {
     get: operations["retrieveDeploymentDependencies"];
   };
   "/api/deployments/{deployment_pk}/reports/": {
-    get: operations["listDeploymentReportMetadatas"];
+    get: operations["listDeploymentReportMetadata"];
   };
   "/api/deployments/{deployment_pk}/reports/{id}/": {
     get: operations["retrieveDeploymentReport"];
@@ -164,9 +171,9 @@ export interface paths {
   };
   "/api/groups/{group_pk}/memberships/": {
     /** @description Add, remove, and list users to/from a group */
-    get: operations["listGroupMembershipActivitys"];
+    get: operations["listGroupMemberships"];
     /** @description Add, remove, and list users to/from a group */
-    put: operations["updateList"];
+    put: operations["updateGroupMembership"];
     /** @description Add, remove, and list users to/from a group */
     post: operations["createGroupMembership"];
   };
@@ -200,11 +207,11 @@ export interface paths {
     patch: operations["partialUpdateDatabasePermission"];
   };
   "/api/invitations/me/": {
-    get: operations["listPendingInvitations"];
+    get: operations["listMeInvitations"];
   };
-  "/api/invitations/": {
-    get: operations["listInvitations"];
-    post: operations["createInvitation"];
+  "/api/organizations/{organization_pk}/invitations/": {
+    get: operations["listOrganizationInvitations"];
+    post: operations["createOrganizationInvitation"];
   };
   "/api/magic-link/": {
     get: operations["loginMagicLink"];
@@ -266,10 +273,10 @@ export interface paths {
     get: operations["listOrganizationBricks"];
   };
   "/api/organizations/{organization_pk}/blueprints/": {
-    get: operations["listPackageVersionSlims"];
+    get: operations["listOrganizationBlueprints"];
   };
   "/api/organizations/{organization_pk}/integrations/": {
-    get: operations["listServiceAuthMetas"];
+    get: operations["listServiceAuthMeta"];
   };
   "/api/organizations/{organization_pk}/memberships/": {
     /** @description List view of an organization's memberships. */
@@ -379,6 +386,9 @@ export interface paths {
   "/api/telemetry/errors/public-blueprints/": {
     get: operations["listPublicBlueprintErrorItemGroups"];
   };
+  "/api/telemetry/errors/{id}/": {
+    get: operations["retrieveErrorDetail"];
+  };
   "/api/tests/cypress/constants/": {
     get: operations["listCypressConstants"];
   };
@@ -418,10 +428,10 @@ export interface paths {
     post: operations["createIdentify"];
   };
   "/api/invitations/{id}/accept/": {
-    post: operations["acceptPendingInvitation"];
+    post: operations["acceptMeInvitation"];
   };
   "/api/invitations/{id}/reject/": {
-    post: operations["rejectPendingInvitation"];
+    post: operations["rejectMeInvitation"];
   };
   "/api/me/milestones/": {
     post: operations["createMilestone"];
@@ -456,8 +466,8 @@ export interface paths {
     /** @description Add, remove, and list users to/from a group */
     delete: operations["destroyGroupMembership"];
   };
-  "/api/invitations/{id}/": {
-    delete: operations["destroyInvitation"];
+  "/api/organizations/{organization_pk}/invitations/{id}/": {
+    delete: operations["destroyOrganizationInvitation"];
   };
   "/api/tests/accounts/social/": {
     delete: operations["destroyDeleteTestSocialAccount"];
@@ -634,6 +644,10 @@ export interface components {
       data?: string | null;
       error_message?: string | null;
     };
+    UserDatabasePermission: {
+      /** @description Array of permissions for the database. */
+      permissions?: readonly (1 | 2)[];
+    };
     Record: {
       id: string;
       data: {
@@ -654,6 +668,8 @@ export interface components {
       active?: boolean;
       /** Format: date-time */
       created_at?: Timestamp;
+      /** Format: date-time */
+      updated_at?: Timestamp;
       package?: {
         /** Format: uuid */
         readonly id: UUID;
@@ -673,42 +689,10 @@ export interface components {
         [key: string]: unknown;
       };
     };
-    CampaignSummary: {
-      /** Format: uuid */
-      id?: UUID;
-      name: string;
-      /** Format: date-time */
-      created_at?: Timestamp;
-      /** Format: date-time */
-      updated_at?: Timestamp;
-    };
     Campaign: {
       /** Format: uuid */
       id?: UUID;
       name: string;
-      users: {
-        /** Format: uuid */
-        id?: UUID;
-        /** Format: email */
-        email: string;
-        data: {
-          [key: string]: unknown;
-        };
-        account?: {
-          /** Format: uuid */
-          readonly id?: UUID;
-          /** Format: date-time */
-          readonly date_joined?: Timestamp;
-        };
-        clients?: string;
-        groups?: string;
-        assigned_deployments?: string;
-        /** Format: date-time */
-        created_at?: Timestamp;
-        /** Format: date-time */
-        updated_at?: Timestamp;
-        last_active_at?: string | null;
-      }[];
       /** Format: date-time */
       created_at?: Timestamp;
       /** Format: date-time */
@@ -751,17 +735,33 @@ export interface components {
       account?: {
         /** Format: uuid */
         readonly id?: UUID;
+        readonly name?: string;
+        /** Format: email */
+        readonly email?: string;
+        readonly service_account?: boolean;
         /** Format: date-time */
         readonly date_joined?: Timestamp;
       };
-      clients?: string;
-      groups?: string;
-      assigned_deployments?: string;
+      latest_client?: {
+        readonly extension_version: string;
+        /** Format: date-time */
+        readonly created_at?: Timestamp;
+        /** Format: date-time */
+        readonly updated_at?: Timestamp;
+        readonly active_deployments?: readonly UUID[];
+      };
+      groups?: readonly UUID[];
+      assigned_deployments?: readonly {
+        /** Format: uuid */
+        id: UUID;
+        name: string;
+      }[];
       /** Format: date-time */
       created_at?: Timestamp;
       /** Format: date-time */
       updated_at?: Timestamp;
-      last_active_at?: string | null;
+      /** Format: date-time */
+      last_active_at?: Timestamp | null;
     };
     DeploymentDetail: {
       /** Format: uuid */
@@ -915,11 +915,15 @@ export interface components {
       /** Format: date-time */
       updateTimestamp: Timestamp;
     };
-    GroupMembershipActivity: {
-      last_name: string | null;
-      first_name: string | null;
+    GroupMembership: {
+      /** Format: uuid */
+      id?: UUID;
+      last_name?: string | null;
+      first_name?: string | null;
       /** Format: email */
-      email: string;
+      email?: string;
+      /** Format: uuid */
+      user_id?: UUID;
       /** Format: date-time */
       created_at?: Timestamp;
       /** Format: date-time */
@@ -951,12 +955,13 @@ export interface components {
       name: string;
       /** Format: date-time */
       created_at?: Timestamp;
-      memberships?: readonly {
+      memberships?: {
         /** Format: uuid */
         id?: UUID;
         /** Format: date-time */
         created_at?: Timestamp;
-        last_active_at?: string;
+        /** Format: date-time */
+        last_active_at?: Timestamp;
         user: {
           /** Format: uuid */
           id?: UUID;
@@ -969,7 +974,15 @@ export interface components {
         };
         /** Format: email */
         email: string;
-        campaigns?: string;
+        campaigns?: readonly {
+          /** Format: uuid */
+          id?: UUID;
+          name: string;
+          /** Format: date-time */
+          created_at?: Timestamp;
+          /** Format: date-time */
+          updated_at?: Timestamp;
+        }[];
       }[];
       deployments?: readonly {
         /** Format: uuid */
@@ -990,29 +1003,8 @@ export interface components {
     PendingInvitation: {
       /** Format: uuid */
       id?: UUID;
-      inviter: {
-        /** Format: uuid */
-        id?: UUID;
-        name?: string;
-        /** Format: email */
-        email?: string;
-        service_account?: boolean;
-        /** Format: date-time */
-        date_joined?: Timestamp;
-      };
-      organization: {
-        /** Format: uuid */
-        id?: UUID;
-        name: string;
-      };
-    };
-    Invitation: {
-      /** Format: uuid */
-      id?: UUID;
       /** Format: email */
       email: string;
-      /** @enum {integer} */
-      role?: 1 | 2 | 3 | 4 | 5;
       inviter?: {
         /** Format: uuid */
         id?: UUID;
@@ -1023,9 +1015,13 @@ export interface components {
         /** Format: date-time */
         date_joined?: Timestamp;
       };
-      organization: string;
+      organization?: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        readonly name: string;
+      };
       /** @enum {integer} */
-      status?: 1 | 2 | 3 | 4;
+      role?: 1 | 2 | 3 | 4 | 5;
     };
     MarketplaceListing: {
       /**
@@ -1089,6 +1085,7 @@ export interface components {
         fa_icon?: string | null;
         /**
          * @description The sub-type/category of the tag
+         * @default generic
          * @enum {string}
          */
         subtype?:
@@ -1137,6 +1134,7 @@ export interface components {
       fa_icon?: string | null;
       /**
        * @description The sub-type/category of the tag
+       * @default generic
        * @enum {string}
        */
       subtype?:
@@ -1166,6 +1164,7 @@ export interface components {
         readonly id?: UUID;
         readonly name: string;
         readonly scope?: string | null;
+        readonly is_enterprise?: boolean;
         readonly control_room?: {
           /** Format: uuid */
           readonly id?: UUID;
@@ -1179,40 +1178,12 @@ export interface components {
           readonly show_sidebar_logo?: boolean;
           /**
            * Format: uri
-           * @description The image url of a custom logo. Image format must be svg or png.
+           * @description The image URL of a custom logo. Image format must be SVG or PNG.
            */
           readonly logo?: string | null;
           /**
            * Format: uri
-           * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
-           */
-          readonly toolbar_icon?: string | null;
-        };
-      };
-      telemetry_organization?: {
-        /** Format: uuid */
-        readonly id?: UUID;
-        readonly name: string;
-        readonly scope?: string | null;
-        readonly control_room?: {
-          /** Format: uuid */
-          readonly id?: UUID;
-          /**
-           * Format: uri
-           * @description The Control Room URL
-           */
-          readonly url: string;
-        };
-        readonly theme?: {
-          readonly show_sidebar_logo?: boolean;
-          /**
-           * Format: uri
-           * @description The image url of a custom logo. Image format must be svg or png.
-           */
-          readonly logo?: string | null;
-          /**
-           * Format: uri
-           * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+           * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
            */
           readonly toolbar_icon?: string | null;
         };
@@ -1322,27 +1293,6 @@ export interface components {
           name: string;
         }[];
       }[];
-      invitations?: readonly {
-        /** Format: uuid */
-        id?: UUID;
-        /** Format: email */
-        email: string;
-        /** @enum {integer} */
-        role?: 1 | 2 | 3 | 4 | 5;
-        inviter?: {
-          /** Format: uuid */
-          id?: UUID;
-          name?: string;
-          /** Format: email */
-          email?: string;
-          service_account?: boolean;
-          /** Format: date-time */
-          date_joined?: Timestamp;
-        };
-        organization: string;
-        /** @enum {integer} */
-        status?: 1 | 2 | 3 | 4;
-      }[];
       scope?: string | null;
       /** @enum {integer} */
       default_role?: 1 | 2 | 3 | 4 | 5;
@@ -1353,15 +1303,20 @@ export interface components {
         show_sidebar_logo?: boolean;
         /**
          * Format: uri
-         * @description The image url of a custom logo. Image format must be svg or png.
+         * @description The image URL of a custom logo. Image format must be SVG or PNG.
          */
         logo?: string | null;
         /**
          * Format: uri
-         * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+         * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
          */
         toolbar_icon?: string | null;
       };
+      /**
+       * Format: date-time
+       * @description Timestamp when the Business Plan trial ends. None if not on trial.
+       */
+      trial_end_timestamp?: Timestamp | null;
     };
     UserDetail: {
       /** Format: uuid */
@@ -1465,12 +1420,12 @@ export interface components {
       show_sidebar_logo?: boolean;
       /**
        * Format: uri
-       * @description The image url of a custom logo. Image format must be svg or png.
+       * @description The image URL of a custom logo. Image format must be SVG or PNG.
        */
       logo?: string | null;
       /**
        * Format: uri
-       * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+       * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
        */
       toolbar_icon?: string | null;
     };
@@ -1559,6 +1514,11 @@ export interface components {
         id?: UUID;
         name: string;
       }[];
+      /**
+       * Format: int64
+       * @description If available, the Pipedrive Person ID associated with this user.
+       */
+      pipedrive_person_id?: number | null;
     };
     SupportUserEvent: {
       name: string;
@@ -1601,112 +1561,6 @@ export interface components {
       last_occurrence_timestamp: Timestamp;
       user_agent_extension_versions: string[];
       request_urls: string[];
-    };
-    CypressConstants: {
-      TEST_CONTROL_ROOM_1: {
-        index: number;
-        url: string;
-        database_url: string;
-        service_account_username: string;
-        service_account_api_key: string;
-      };
-      TEST_CONTROL_ROOM_2: {
-        index: number;
-        url: string;
-        database_url: string;
-        service_account_username: string;
-        service_account_api_key: string;
-      };
-    };
-    DatabaseExportRequest: {
-      name: string;
-      databases: UUID[];
-      /**
-       * @default application/json
-       * @enum {string}
-       */
-      media_type?: "application/xlsx" | "application/json" | "text/csv";
-      /** @default {} */
-      filters?: {
-        [key: string]: unknown;
-      };
-    };
-    DeploymentMessage: {
-      /** Format: email */
-      recipient: string;
-      subject: string;
-      message: string;
-    };
-    EventList: {
-      events?: {
-        data?: {
-          [key: string]: unknown;
-        };
-        uid?: string;
-        event?: string;
-      }[];
-      /** Format: date-time */
-      timestamp?: Timestamp;
-    };
-    GroupMembership: {
-      /** Format: uuid */
-      id?: UUID;
-      group_id: string;
-      group_name: string;
-      /** Format: date-time */
-      created_at?: Timestamp;
-    };
-    Identify: {
-      uid?: string;
-      data?: {
-        [key: string]: unknown;
-      };
-    };
-    Milestone: {
-      key: string;
-      /** @description Optional additional information to provide context about the Milestone. */
-      metadata?: {
-        [key: string]: unknown;
-      } | null;
-    };
-    Onboarding: {
-      external?: boolean;
-    };
-    ProxiedRequest: {
-      /** @description An absolute/relative URL for the request */
-      url: string;
-      /** @description The search params for the request */
-      params?: {
-        [key: string]: unknown;
-      };
-      /** @description The headers for the request */
-      headers?: {
-        [key: string]: unknown;
-      };
-      /**
-       * @description The HTTP method for the request
-       * @default GET
-       * @enum {string}
-       */
-      method?:
-        | "GET"
-        | "POST"
-        | "PUT"
-        | "PATCH"
-        | "DELETE"
-        | "get"
-        | "post"
-        | "put"
-        | "patch"
-        | "delete";
-      /** @description The application/json body of the request */
-      data?: {
-        [key: string]: unknown;
-      };
-      /** @description The id of the service to authenticate the request */
-      service_id?: string;
-      /** @description The id of the credential to authenticate the request */
-      auth_id: string;
     };
     ErrorItem: {
       /** Format: uuid */
@@ -1770,6 +1624,104 @@ export interface components {
         [key: string]: unknown;
       } | null;
     };
+    CypressConstants: {
+      TEST_CONTROL_ROOM_1: {
+        index: number;
+        url: string;
+        database_url: string;
+        service_account_username: string;
+        service_account_api_key: string;
+      };
+      TEST_CONTROL_ROOM_2: {
+        index: number;
+        url: string;
+        database_url: string;
+        service_account_username: string;
+        service_account_api_key: string;
+      };
+    };
+    DatabaseExportRequest: {
+      name: string;
+      databases: UUID[];
+      /**
+       * @default application/json
+       * @enum {string}
+       */
+      media_type?: "application/xlsx" | "application/json" | "text/csv";
+      /** @default {} */
+      filters?: {
+        [key: string]: unknown;
+      };
+    };
+    DeploymentMessage: {
+      /** Format: email */
+      recipient: string;
+      subject: string;
+      message: string;
+    };
+    EventList: {
+      events?: {
+        data?: {
+          [key: string]: unknown;
+        };
+        uid?: string;
+        event?: string;
+      }[];
+      /** Format: date-time */
+      timestamp?: Timestamp;
+    };
+    Identify: {
+      uid?: string;
+      data?: {
+        [key: string]: unknown;
+      };
+    };
+    Milestone: {
+      key: string;
+      /** @description Optional additional information to provide context about the Milestone. */
+      metadata?: {
+        [key: string]: unknown;
+      } | null;
+    };
+    Onboarding: {
+      external?: boolean;
+    };
+    ProxiedRequest: {
+      /** @description An absolute/relative URL for the request */
+      url: string;
+      /** @description The search params for the request */
+      params?: {
+        [key: string]: unknown;
+      };
+      /** @description The headers for the request */
+      headers?: {
+        [key: string]: unknown;
+      };
+      /**
+       * @description The HTTP method for the request
+       * @default GET
+       * @enum {string}
+       */
+      method?:
+        | "GET"
+        | "POST"
+        | "PUT"
+        | "PATCH"
+        | "DELETE"
+        | "get"
+        | "post"
+        | "put"
+        | "patch"
+        | "delete";
+      /** @description The application/json body of the request */
+      data?: {
+        [key: string]: unknown;
+      };
+      /** @description The id of the service to authenticate the request */
+      service_id?: string;
+      /** @description The id of the credential to authenticate the request */
+      auth_id: string;
+    };
     ExternalEvent: {
       /** Format: email */
       email: string;
@@ -1782,6 +1734,7 @@ export interface components {
       users: {
         /** Format: email */
         email?: string;
+        pending_invitations?: readonly string[];
         scope?: string | null;
       }[];
     };
@@ -1798,50 +1751,126 @@ export interface components {
       /** Format: date-time */
       updated_at?: Timestamp;
     };
-    DeploymentDetailDeprecated: {
+    MeV1_0: {
+      flags?: readonly string[];
       /** Format: uuid */
       id?: UUID;
-      name: string;
-      /** Format: date-time */
-      created_at?: Timestamp;
-      /** Format: date-time */
-      updated_at?: Timestamp;
-      package?: {
+      scope?: string | null;
+      /** Format: email */
+      email?: string;
+      name?: string;
+      organization?: {
         /** Format: uuid */
-        readonly id: UUID;
-        readonly package_id: string;
+        readonly id?: UUID;
         readonly name: string;
-        readonly version?: string;
-        /** Format: date-time */
-        readonly created_at?: Timestamp;
-        /** Format: date-time */
-        readonly updated_at?: Timestamp;
-        readonly config?: {
-          [key: string]: unknown;
+        readonly scope?: string | null;
+        readonly is_enterprise?: boolean;
+        readonly control_room?: {
+          /** Format: uuid */
+          readonly id?: UUID;
+          /**
+           * Format: uri
+           * @description The Control Room URL
+           */
+          readonly url: string;
+        };
+        readonly theme?: {
+          readonly show_sidebar_logo?: boolean;
+          /**
+           * Format: uri
+           * @description The image URL of a custom logo. Image format must be SVG or PNG.
+           */
+          readonly logo?: string | null;
+          /**
+           * Format: uri
+           * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
+           */
+          readonly toolbar_icon?: string | null;
         };
       };
-      bindings?: readonly {
+      organization_memberships?: readonly {
         /** Format: uuid */
-        id?: UUID;
-        /** Format: date-time */
-        created_at?: Timestamp;
-        /** @description Key for named integration dependencies */
-        key?: string | null;
-        auth: {
+        organization: UUID;
+        organization_name: string;
+        /** @enum {integer} */
+        role: 1 | 2 | 3 | 4 | 5;
+        scope: string | null;
+        /** @description True if user is a manager of one or more team deployments */
+        is_deployment_manager?: boolean;
+        control_room: {
           /** Format: uuid */
           id?: UUID;
-          service_id: string;
-          label?: string | null;
+          /**
+           * Format: uri
+           * @description The Control Room URL
+           */
+          url: string;
         };
       }[];
-      active?: boolean;
-      options_config?: {
-        [key: string]: unknown;
-      };
-      package_version: string;
-      services: {
-        auth: string;
+      group_memberships?: readonly {
+        /** Format: uuid */
+        id: UUID;
+        name: string;
       }[];
+      partner_principals?: readonly {
+        /**
+         * Format: int64
+         * @description AA unique identifier used to interact with the Control Room user via the AA API
+         */
+        control_room_user_id: number;
+        /** Format: uri */
+        control_room_url?: string;
+      }[];
+      is_onboarded?: boolean;
+      milestones?: readonly {
+        key: string;
+        /** @description Optional additional information to provide context about the Milestone. */
+        metadata?: {
+          [key: string]: unknown;
+        } | null;
+      }[];
+      /** @description True if the account is an organization API service account */
+      service_account?: boolean;
+      /** @description True if the account is an automated/manual test account */
+      test_account?: boolean;
+      partner?: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        readonly name: string;
+        readonly theme?: string;
+        /** Format: uri */
+        readonly documentation_url?: string | null;
+      };
+      enforce_update_millis?: number;
+      telemetry_organization?: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        readonly name: string;
+        readonly scope?: string | null;
+        readonly is_enterprise?: boolean;
+        readonly control_room?: {
+          /** Format: uuid */
+          readonly id?: UUID;
+          /**
+           * Format: uri
+           * @description The Control Room URL
+           */
+          readonly url: string;
+        };
+        readonly theme?: {
+          readonly show_sidebar_logo?: boolean;
+          /**
+           * Format: uri
+           * @description The image URL of a custom logo. Image format must be SVG or PNG.
+           */
+          readonly logo?: string | null;
+          /**
+           * Format: uri
+           * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
+           */
+          readonly toolbar_icon?: string | null;
+        };
+      };
     };
   };
   responses: never;
@@ -1989,7 +2018,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["PackageConfig"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfig"];
@@ -2007,7 +2035,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["PackageQueryResult"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageQueryResult"];
@@ -2032,7 +2059,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["PackageConfig"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfig"];
@@ -2073,7 +2099,7 @@ export interface operations {
     };
   };
   /** @description View for editable brick packages in the registry. */
-  listPackageMetas: {
+  listPackageMeta: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -2111,7 +2137,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Package"];
@@ -2132,7 +2157,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Package"];
@@ -2160,7 +2184,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Package"];
@@ -2185,7 +2208,7 @@ export interface operations {
       };
     };
   };
-  listPackageVersionDeprecateds: {
+  listPackageVersionSlims: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -2248,7 +2271,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -2265,7 +2287,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DatabaseExportJob"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseExportJob"];
@@ -2281,7 +2302,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -2316,10 +2336,24 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
+        };
+      };
+    };
+  };
+  retrieveUserDatabasePermission: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["UserDatabasePermission"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserDatabasePermission"];
         };
       };
     };
@@ -2369,7 +2403,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -2394,7 +2427,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -2425,7 +2457,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -2451,7 +2482,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Record"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Record"];
@@ -2532,7 +2562,7 @@ export interface operations {
       };
     };
   };
-  listCampaignSummarys: {
+  listCampaigns: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -2554,8 +2584,8 @@ export interface operations {
           Link?: unknown;
         };
         content: {
-          "application/json; version=2.0": components["schemas"]["CampaignSummary"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["CampaignSummary"][];
+          "application/json; version=2.0": components["schemas"]["Campaign"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"][];
         };
       };
     };
@@ -2575,7 +2605,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Campaign"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
@@ -2592,31 +2621,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
-        content: {
-          "application/json; version=2.0": components["schemas"]["Campaign"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
-        };
-      };
-    };
-  };
-  updateCampaign: {
-    parameters: {
-      path: {
-        organization_pk: string;
-        id: string;
-      };
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["Campaign"];
-        "application/x-www-form-urlencoded": components["schemas"]["Campaign"];
-        "multipart/form-data": components["schemas"]["Campaign"];
-      };
-    };
-    responses: {
-      200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Campaign"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
@@ -2637,6 +2641,29 @@ export interface operations {
       };
     };
   };
+  partialUpdateCampaign: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["Campaign"];
+        "application/x-www-form-urlencoded": components["schemas"]["Campaign"];
+        "multipart/form-data": components["schemas"]["Campaign"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["Campaign"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Campaign"];
+        };
+      };
+    };
+  };
   retrieveCampaignEngagementJob: {
     parameters: {
       path: {
@@ -2646,7 +2673,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Job"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
@@ -2712,6 +2738,54 @@ export interface operations {
       };
     };
   };
+  /** @description Paginated view of members in a Campaign. */
+  updateCampaignMember: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        campaign_pk: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CampaignMember"];
+        "application/x-www-form-urlencoded": components["schemas"]["CampaignMember"];
+        "multipart/form-data": components["schemas"]["CampaignMember"];
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["CampaignMember"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["CampaignMember"];
+        };
+      };
+    };
+  };
+  /** @description Paginated view of members in a Campaign. */
+  createCampaignMember: {
+    parameters: {
+      path: {
+        organization_pk: string;
+        campaign_pk: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CampaignMember"];
+        "application/x-www-form-urlencoded": components["schemas"]["CampaignMember"];
+        "multipart/form-data": components["schemas"]["CampaignMember"];
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json; version=2.0": components["schemas"]["CampaignMember"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["CampaignMember"];
+        };
+      };
+    };
+  };
   /** @description View for individual users to report/retrieve available deployments. */
   listUserDeploymentDetails: {
     parameters: {
@@ -2749,7 +2823,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
@@ -2766,10 +2839,9 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
+          "application/json; version=1.0": components["schemas"]["DeploymentDetail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentDetail"];
         };
       };
     };
@@ -2790,10 +2862,9 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
+          "application/json; version=1.0": components["schemas"]["DeploymentDetail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentDetail"];
         };
       };
     };
@@ -2827,10 +2898,9 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
+          "application/json; version=1.0": components["schemas"]["DeploymentDetail"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentDetail"];
         };
       };
     };
@@ -2843,7 +2913,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DependencyTree"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DependencyTree"];
@@ -2851,7 +2920,7 @@ export interface operations {
       };
     };
   };
-  listDeploymentReportMetadatas: {
+  listDeploymentReportMetadata: {
     parameters: {
       path: {
         deployment_pk: string;
@@ -2859,7 +2928,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentReportMetadata"][];
           "text/csv; version=1.0": components["schemas"]["DeploymentReportMetadata"][];
@@ -2876,7 +2944,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentReport"];
           "text/csv; version=1.0": components["schemas"]["DeploymentReport"];
@@ -2894,7 +2961,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Job"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
@@ -2938,7 +3004,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
@@ -3001,7 +3066,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentPermission"];
@@ -3052,7 +3116,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DeploymentManagerPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentManagerPermission"];
@@ -3068,7 +3131,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"][];
@@ -3091,7 +3153,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
@@ -3108,7 +3169,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
@@ -3132,7 +3192,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
@@ -3169,7 +3228,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentAlertEmail"];
@@ -3210,7 +3268,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserExtension"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserExtension"];
@@ -3233,7 +3290,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["UserExtension"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserExtension"];
@@ -3254,24 +3310,36 @@ export interface operations {
     };
   };
   /** @description Add, remove, and list users to/from a group */
-  listGroupMembershipActivitys: {
+  listGroupMemberships: {
     parameters: {
+      query?: {
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+      };
       path: {
         group_pk: string;
       };
     };
     responses: {
       200: {
-        headers: {};
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/groups/{group_pk}/memberships/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/groups/{group_pk}/memberships/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/groups/{group_pk}/memberships/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/groups/{group_pk}/memberships/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json; version=1.0": components["schemas"]["GroupMembershipActivity"][];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupMembershipActivity"][];
+          "application/json; version=2.0": components["schemas"]["GroupMembership"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["GroupMembership"][];
         };
       };
     };
   };
   /** @description Add, remove, and list users to/from a group */
-  updateList: {
+  updateGroupMembership: {
     parameters: {
       query?: {
         /** @description Ignore emails that are not associated with a campaign */
@@ -3283,17 +3351,16 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": unknown;
-        "application/x-www-form-urlencoded": unknown;
-        "multipart/form-data": unknown;
+        "application/json": components["schemas"]["GroupMembership"];
+        "application/x-www-form-urlencoded": components["schemas"]["GroupMembership"];
+        "multipart/form-data": components["schemas"]["GroupMembership"];
       };
     };
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=1.0": unknown;
-          "application/vnd.pixiebrix.api+json; version=1.0": unknown;
+          "application/json; version=2.0": components["schemas"]["GroupMembership"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["GroupMembership"];
         };
       };
     };
@@ -3314,10 +3381,9 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
-          "application/json; version=1.0": components["schemas"]["GroupMembership"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupMembership"];
+          "application/json; version=2.0": components["schemas"]["GroupMembership"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["GroupMembership"];
         };
       };
     };
@@ -3365,7 +3431,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["GroupPackagePermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["GroupPackagePermission"];
@@ -3416,7 +3481,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -3433,7 +3497,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -3457,7 +3520,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -3494,7 +3556,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["ServiceAuthPermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAuthPermission"];
@@ -3511,7 +3572,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["GroupDetail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupDetail"];
@@ -3535,7 +3595,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["GroupDetail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupDetail"];
@@ -3572,7 +3631,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["GroupDetail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupDetail"];
@@ -3623,7 +3681,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": unknown;
           "application/vnd.pixiebrix.api+json; version=2.0": unknown;
@@ -3640,7 +3697,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DatabasePermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabasePermission"];
@@ -3677,7 +3733,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["DatabasePermission"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DatabasePermission"];
@@ -3685,7 +3740,7 @@ export interface operations {
       };
     };
   };
-  listPendingInvitations: {
+  listMeInvitations: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -3710,7 +3765,7 @@ export interface operations {
       };
     };
   };
-  listInvitations: {
+  listOrganizationInvitations: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -3718,37 +3773,44 @@ export interface operations {
         /** @description Number of results to return per page. */
         page_size?: number;
       };
+      path: {
+        organization_pk: string;
+      };
     };
     responses: {
       200: {
         headers: {
           /**
            * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
-           * @example &lt;https://app.pixiebrix.com/api/invitations/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/invitations/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/invitations/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/invitations/?page=11&gt;; rel=&quot;last&quot;
+           * @example &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/invitations/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/invitations/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/invitations/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/invitations/?page=11&gt;; rel=&quot;last&quot;
            */
           Link?: unknown;
         };
         content: {
-          "application/json; version=2.0": components["schemas"]["Invitation"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Invitation"][];
+          "application/json; version=2.0": components["schemas"]["PendingInvitation"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PendingInvitation"][];
         };
       };
     };
   };
-  createInvitation: {
+  createOrganizationInvitation: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
     requestBody?: {
       content: {
-        "application/json": components["schemas"]["Invitation"];
-        "application/x-www-form-urlencoded": components["schemas"]["Invitation"];
-        "multipart/form-data": components["schemas"]["Invitation"];
+        "application/json": components["schemas"]["PendingInvitation"];
+        "application/x-www-form-urlencoded": components["schemas"]["PendingInvitation"];
+        "multipart/form-data": components["schemas"]["PendingInvitation"];
       };
     };
     responses: {
       201: {
-        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["Invitation"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Invitation"];
+          "application/json; version=2.0": components["schemas"]["PendingInvitation"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PendingInvitation"];
         };
       };
     };
@@ -3756,7 +3818,6 @@ export interface operations {
   loginMagicLink: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -3774,7 +3835,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -3825,7 +3885,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["MarketplaceListing"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["MarketplaceListing"];
@@ -3861,10 +3920,9 @@ export interface operations {
   retrieveMe: {
     responses: {
       200: {
-        headers: {};
         content: {
-          "application/json; version=1.0": components["schemas"]["Me"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Me"];
+          "application/json; version=1.1": components["schemas"]["Me"];
+          "application/vnd.pixiebrix.api+json; version=1.1": components["schemas"]["Me"];
         };
       };
     };
@@ -3880,7 +3938,6 @@ export interface operations {
   retrieveAuthToken: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["AuthToken"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["AuthToken"];
@@ -3898,7 +3955,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Membership"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Membership"];
@@ -3923,7 +3979,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Membership"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Membership"];
@@ -3962,7 +4017,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Membership"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Membership"];
@@ -3973,7 +4027,6 @@ export interface operations {
   listStarterBlueprints: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["PackageConfigList"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageConfigList"][];
@@ -4016,7 +4069,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Organization"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
@@ -4032,7 +4084,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Organization"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
@@ -4067,7 +4118,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Organization"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Organization"];
@@ -4084,7 +4134,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["UserDetail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserDetail"];
@@ -4135,7 +4184,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Group"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Group"];
@@ -4188,7 +4236,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Deployment"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Deployment"];
@@ -4226,7 +4273,7 @@ export interface operations {
       };
     };
   };
-  listPackageVersionSlims: {
+  listOrganizationBlueprints: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -4254,7 +4301,7 @@ export interface operations {
       };
     };
   };
-  listServiceAuthMetas: {
+  listServiceAuthMeta: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -4330,7 +4377,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -4358,7 +4404,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -4403,7 +4448,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -4420,7 +4464,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DatabaseSchema"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseSchema"];
@@ -4444,7 +4487,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DatabaseSchema"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseSchema"];
@@ -4528,7 +4570,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["Database"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Database"];
@@ -4544,7 +4585,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Subscription"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Subscription"][];
@@ -4560,7 +4600,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -4576,7 +4615,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
@@ -4592,7 +4630,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["EventInterval"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventInterval"][];
@@ -4643,7 +4680,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["OrganizationContact"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
@@ -4660,7 +4696,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["OrganizationContact"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
@@ -4684,7 +4719,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["OrganizationContact"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
@@ -4721,7 +4755,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["OrganizationContact"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
@@ -4737,7 +4770,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["OrganizationAuthUrlPattern"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["OrganizationAuthUrlPattern"][];
@@ -4753,7 +4785,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["OrganizationTheme"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["OrganizationTheme"];
@@ -4764,7 +4795,6 @@ export interface operations {
   retrieveControlRoom: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ControlRoom"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoom"];
@@ -4781,7 +4811,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
@@ -4818,7 +4847,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
@@ -4834,7 +4862,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["GroupPackagePermission"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupPackagePermission"];
@@ -4857,7 +4884,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["GroupPackagePermission"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupPackagePermission"];
@@ -4892,7 +4918,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["GroupPackagePermission"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["GroupPackagePermission"];
@@ -4935,7 +4960,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -4951,7 +4975,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -4974,7 +4997,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -5009,7 +5031,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["EditableAuth"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["EditableAuth"];
@@ -5020,7 +5041,6 @@ export interface operations {
   retrieveSettings: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Settings"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Settings"];
@@ -5038,7 +5058,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Settings"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Settings"];
@@ -5056,7 +5075,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Settings"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Settings"];
@@ -5103,7 +5121,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["SupportUserDetail"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["SupportUserDetail"];
@@ -5119,7 +5136,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["SupportUserEvent"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserEvent"];
@@ -5135,7 +5151,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["UserErrorItem"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserErrorItem"][];
@@ -5151,7 +5166,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["UserExtension"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserExtension"][];
@@ -5168,7 +5182,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["UserExtension"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserExtension"];
@@ -5184,7 +5197,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Package"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Package"][];
@@ -5201,7 +5213,6 @@ export interface operations {
     };
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Package"];
@@ -5212,7 +5223,6 @@ export interface operations {
   listIntercoms: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown[];
           "application/vnd.pixiebrix.api+json; version=1.0": unknown[];
@@ -5223,7 +5233,6 @@ export interface operations {
   listPublicBlueprintErrorItemGroups: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["PublicBlueprintErrorItemGroup"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PublicBlueprintErrorItemGroup"][];
@@ -5231,10 +5240,25 @@ export interface operations {
       };
     };
   };
+  retrieveErrorDetail: {
+    parameters: {
+      path: {
+        /** @description A unique integer value identifying this error item. */
+        id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json; version=1.0": components["schemas"]["ErrorItem"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItem"];
+        };
+      };
+    };
+  };
   listCypressConstants: {
     responses: {
       200: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["CypressConstants"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["CypressConstants"][];
@@ -5252,7 +5276,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -5270,7 +5293,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DatabaseExportRequest"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DatabaseExportRequest"];
@@ -5298,7 +5320,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -5321,7 +5342,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Job"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
@@ -5344,7 +5364,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -5367,7 +5386,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["DeploymentMessage"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["DeploymentMessage"];
@@ -5391,7 +5409,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Job"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Job"];
@@ -5414,7 +5431,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": unknown;
           "application/vnd.pixiebrix.api+json; version=1.0": unknown;
@@ -5432,7 +5448,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["EventList"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["EventList"];
@@ -5450,7 +5465,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Identify"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Identify"];
@@ -5458,7 +5472,7 @@ export interface operations {
       };
     };
   };
-  acceptPendingInvitation: {
+  acceptMeInvitation: {
     parameters: {
       path: {
         id: string;
@@ -5473,7 +5487,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["PendingInvitation"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PendingInvitation"];
@@ -5481,7 +5494,7 @@ export interface operations {
       };
     };
   };
-  rejectPendingInvitation: {
+  rejectMeInvitation: {
     parameters: {
       path: {
         id: string;
@@ -5496,7 +5509,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=2.0": components["schemas"]["PendingInvitation"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PendingInvitation"];
@@ -5514,7 +5526,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Milestone"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Milestone"];
@@ -5532,7 +5543,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["Onboarding"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Onboarding"];
@@ -5550,7 +5560,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ControlRoomConfiguration"];
@@ -5569,7 +5578,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ProxiedRequest"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ProxiedRequest"];
@@ -5587,7 +5595,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ErrorItem"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItem"];
@@ -5606,7 +5613,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["ExternalEvent"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExternalEvent"];
@@ -5624,7 +5630,6 @@ export interface operations {
     };
     responses: {
       201: {
-        headers: {};
         content: {
           "application/json; version=1.0": components["schemas"]["SeedCypress"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SeedCypress"];
@@ -5672,9 +5677,10 @@ export interface operations {
       };
     };
   };
-  destroyInvitation: {
+  destroyOrganizationInvitation: {
     parameters: {
       path: {
+        organization_pk: string;
         id: string;
       };
     };

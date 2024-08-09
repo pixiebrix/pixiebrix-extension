@@ -38,6 +38,10 @@ export type MeOrganization = {
    */
   organizationName: string;
   /**
+   * Whether the organization is an enterprise organization.
+   */
+  isEnterprise: boolean;
+  /**
    * The organization's scope for saving modsmods, if set. A string beginning with "@".
    */
   scope?: string;
@@ -60,6 +64,7 @@ export function transformMeOrganizationResponse(
   const organization: MeOrganization = {
     organizationId: validateUUID(response.id),
     organizationName: response.name,
+    isEnterprise: response.is_enterprise ?? false,
   };
 
   if (response.scope) {

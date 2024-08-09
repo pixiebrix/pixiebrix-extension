@@ -70,7 +70,6 @@ import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsH
 import { Events } from "@/telemetry/events";
 import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
-import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
@@ -561,10 +560,6 @@ export async function syncDeployments(): Promise<void> {
       version: getExtensionVersion(),
       active: selectInstalledDeployments(activatedModComponents),
       campaignIds,
-    },
-    {
-      // @since 1.8.10 -- API version 1.1 excludes the package config
-      headers: getRequestHeadersByAPIVersion("1.1"),
     },
   );
 
