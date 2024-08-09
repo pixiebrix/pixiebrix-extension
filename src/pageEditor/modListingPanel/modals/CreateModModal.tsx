@@ -150,7 +150,7 @@ const CreateModModalBody: React.FC = () => {
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id ?? null;
+    directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id;
 
   const { data: activeMod = null, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
