@@ -26,11 +26,14 @@ import {
 } from "@/platform/capabilities";
 import { expectContext } from "@/utils/expectContext";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { validateRegistryId } from "@/types/helpers";
 
 export class ShowSidebar extends EffectABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/sidebar/show");
+
   constructor() {
     super(
-      "@pixiebrix/sidebar/show",
+      ShowSidebar.BRICK_ID,
       "Show Sidebar",
       "Show/open the PixieBrix sidebar",
     );
@@ -50,6 +53,7 @@ export class ShowSidebar extends EffectABC {
         title: "Force Panel",
         description:
           "If the sidebar is already showing a panel, force switch the active panel (default=true)",
+        // @since 2.0.7 -- changed default to true as that is probably the user expected behavior
         default: true,
       },
     },
@@ -63,7 +67,8 @@ export class ShowSidebar extends EffectABC {
   async effect(
     {
       panelHeading,
-      forcePanel = true,
+      // Maintaining forcePanel = false to maintain backwards compatibility for existing mods that excluded this field
+      forcePanel = false,
     }: BrickArgs<{
       panelHeading?: string;
       forcePanel?: boolean;
