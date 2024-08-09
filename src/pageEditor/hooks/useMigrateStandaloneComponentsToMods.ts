@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useEffect } from "react";
-import { partition } from "lodash";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 
 export default function useMigrateStandaloneComponentsToMods() {
@@ -28,9 +27,8 @@ export default function useMigrateStandaloneComponentsToMods() {
   const activatedModComponents = useSelector(selectActivatedModComponents);
 
   useEffect(() => {
-    const [, standaloneComponentFormStates] = partition(
-      formStates,
-      (formState) => Boolean(formState.modMetadata),
+    const standaloneComponentFormStates = formStates.filter(
+      (formState) => formState.modMetadata == null,
     );
 
     for (const formState of standaloneComponentFormStates) {
