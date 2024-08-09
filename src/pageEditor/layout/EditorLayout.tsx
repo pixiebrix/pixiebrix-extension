@@ -34,6 +34,7 @@ import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelec
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
+import useMigrateStandaloneComponentsToMods from "@/pageEditor/hooks/useMigrateStandaloneComponentsToMods";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -44,6 +45,15 @@ const EditorLayout: React.FunctionComponent = () => {
   const isStaleSession = useSelector(selectIsStaleSession);
 
   const url = useCurrentInspectedUrl();
+
+  /**
+   * Migrate form states for activated standalone mod components. We are
+   * running it here because it's the top-most component underneath
+   * the redux-persist PersistGate.
+   *
+   * @since 2.0.8
+   */
+  useMigrateStandaloneComponentsToMods();
 
   const currentPane = useMemo(
     () =>

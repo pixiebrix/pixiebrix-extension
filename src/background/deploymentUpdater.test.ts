@@ -102,6 +102,15 @@ jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
+// This comes up in the extensions slice redux-persist migrations that run when mod component state is loaded
+jest.mock("@/auth/authUtils", () => {
+  const actual = jest.requireActual("@/auth/authUtils");
+  return {
+    ...actual,
+    getUserScope: jest.fn(() => "@test-user"),
+  };
+});
+
 const registryFindMock = jest.mocked(registry.find);
 
 const isLinkedMock = jest.mocked(isLinked);

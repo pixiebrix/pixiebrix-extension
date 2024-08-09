@@ -73,6 +73,15 @@ jest.mock("@/auth/authStorage", () => ({
 jest.mock("@/contentScript/messenger/api");
 jest.mock("./refreshRegistries");
 
+// This comes up in the extensions slice redux-persist migrations that run when mod component state is loaded
+jest.mock("@/auth/authUtils", () => {
+  const actual = jest.requireActual("@/auth/authUtils");
+  return {
+    ...actual,
+    getUserScope: jest.fn(() => "@test-user"),
+  };
+});
+
 const isLinkedMock = jest.mocked(isLinked);
 const refreshRegistriesMock = jest.mocked(refreshRegistries);
 

@@ -80,6 +80,7 @@ import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -559,6 +560,20 @@ async function runBrick(
   const { validateInput, logger, headless, trace } = options;
 
   const { config: brickConfig, brick, type } = resolvedConfig;
+
+  let isAllowed;
+
+  try {
+    isAllowed = brick.featureFlag == null || (await flagOn(brick.featureFlag));
+  } catch {
+    // Don't ban on network/storage errors checking feature flags
+    isAllowed = true;
+  }
+
+  if (!isAllowed) {
+    // Throw as an application Error, so we get telemetry of potential feature flag misconfiguration
+    throw new Error(`Brick not available. Feature flag: ${brick.featureFlag}`);
+  }
 
   if (validateInput) {
     await throwIfInvalidInput(brick, props.args);

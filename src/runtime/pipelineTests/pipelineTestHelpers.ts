@@ -14,7 +14,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
 import { type JsonValue } from "type-fest";
-import { propertiesToSchema } from "@/utils/schemaUtils";
+import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * A test helper brick that returns and stores the BrickOptions.context.
@@ -84,6 +84,25 @@ export class EchoBrick extends BrickABC {
 
   async run({ message }: BrickArgs<{ message: string }>) {
     return { message };
+  }
+}
+
+/**
+ * A test helper brick that is behind a feature flag
+ */
+class FeatureFlagBrick extends BrickABC {
+  static BRICK_ID = validateRegistryId("test/flagged");
+
+  featureFlag = "test-flag-brick";
+
+  constructor() {
+    super(FeatureFlagBrick.BRICK_ID, "Feature Flagged Brick");
+  }
+
+  inputSchema = minimalSchemaFactory();
+
+  async run() {
+    return {};
   }
 }
 
@@ -346,6 +365,7 @@ export const arrayBrick = new ArrayBrick();
 export const pipelineBrick = new PipelineBrick();
 export const deferBrick = new DeferBrick();
 export const rootAwareBrick = new RootAwareBrick();
+export const featureFlagBrick = new FeatureFlagBrick();
 
 /**
  * Helper method to pass only `input` to reducePipeline.

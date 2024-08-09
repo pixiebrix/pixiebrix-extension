@@ -271,20 +271,21 @@ const sidebarSlice = createSlice({
     // significantly after the initial request.
     activatePanel(state, { payload }: PayloadAction<ActivatePanelOptions>) {
       state.pendingActivePanel = null;
-      const hasActive = state.forms.length > 0 || state.panels.length > 0;
 
-      if (hasActive && !payload.force) {
+      const visiblePanelCount = getVisiblePanelCount(state);
+      const isModLauncherOnlyTabVisible =
+        visiblePanelCount === 1 &&
+        !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)];
+
+      if (!payload.force && !isModLauncherOnlyTabVisible) {
         return;
       }
 
       // We don't want to show an empty sidebar. setInitialPanels will set the active tab to the mod launcher if there
       // are no visible panels. This next logic will hide the mod launcher if it's the only visible panel, which will
       // be replaced by the newly activated panel.
-      const visiblePanelCount = getVisiblePanelCount(state);
-      if (
-        visiblePanelCount === 1 &&
-        !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)]
-      ) {
+
+      if (isModLauncherOnlyTabVisible) {
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
       }
 

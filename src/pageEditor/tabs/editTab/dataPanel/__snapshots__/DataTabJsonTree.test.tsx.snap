@@ -3,7 +3,7 @@
 exports[`renders the DataTabJsonTree component 1`] = `
 <DocumentFragment>
   <div
-    class="root"
+    class="root dataTabRoot"
   >
     <ul
       style="border: 0px; padding: 0px; margin: 0.5em 0px 0.5em 0.125em; list-style: none; background-color: rgb(255, 255, 255);"
