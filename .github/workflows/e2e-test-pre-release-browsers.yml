@@ -5,7 +5,6 @@ on:
     # Run nightly at 1:00 AM EST (5:00 UTC)
     - cron: "0 5 * * *"
   workflow_dispatch:
-  push:
 
 jobs:
   end-to-end-tests:
@@ -13,4 +12,5 @@ jobs:
     uses: ./.github/workflows/end-to-end-tests.yml
     secrets: inherit
     with:
-      projects: '["chrome-beta", "msedge-beta", "chromium"]'
+      # Include stable browsers for comparison
+      projects: '["chrome-beta", "msedge-beta", "chromium", "chrome", "msedge"]'
