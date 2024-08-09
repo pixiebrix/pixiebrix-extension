@@ -227,17 +227,14 @@ export async function toggleSidebar(): Promise<void> {
  * @param activateOptions options controlling the visible panel in the sidebar
  */
 export async function updateSidebar(
-  activateOptions: ActivatePanelOptions = {},
+  activateOptions: ActivatePanelOptions,
 ): Promise<void> {
   await pingSidebar();
 
   if (!isEmpty(activateOptions)) {
     // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
     // activatePanel request.
-    await sidebarInThisTab.activatePanel(getTimedSequence(), {
-      ...activateOptions,
-      force: activateOptions.force,
-    });
+    await sidebarInThisTab.activatePanel(getTimedSequence(), activateOptions);
   }
 }
 
