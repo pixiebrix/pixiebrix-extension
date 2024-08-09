@@ -48,6 +48,7 @@ import Loader from "@/components/Loader";
 import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
 import ModOwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ShareModFormState = {
   organizations: UUID[];
@@ -63,7 +64,8 @@ const AddATeamMenuList = createMenuListWithAddButton(
 
 const ShareModModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId: modId } = useSelector(selectShowShareContext);
+  const { blueprintId: modId = null } =
+    useSelector(selectShowShareContext) ?? {};
   const organizationsForSelect = useSortOrganizations();
   const [updateModDefinition] = useUpdateModDefinitionMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =
@@ -89,6 +91,9 @@ const ShareModModalBody: React.FunctionComponent = () => {
     );
   }
 
+  assertNotNullish(modId, "modId is nullish");
+  assertNotNullish(modDefinition, `modDefintion for modId ${modId} is nullish`);
+
   const initialValues: ShareModFormState = {
     organizations: modDefinition.sharing.organizations,
   };
@@ -98,6 +103,8 @@ const ShareModModalBody: React.FunctionComponent = () => {
     helpers: FormikHelpers<ShareModFormState>,
   ) => {
     try {
+      assertNotNullish(editablePackages, "editablePackages is nullish");
+
       const newModDefinition = produce(modDefinition, (draft) => {
         draft.sharing.organizations = formValues.organizations;
       });
@@ -105,6 +112,11 @@ const ShareModModalBody: React.FunctionComponent = () => {
       const packageId = editablePackages.find(
         (x) => x.name === newModDefinition.metadata.id,
       )?.id;
+
+      assertNotNullish(
+        packageId,
+        `could not find packageId for mod definition metadata id: ${newModDefinition.metadata.id}`,
+      );
 
       await updateModDefinition({
         packageId,
@@ -117,9 +129,10 @@ const ShareModModalBody: React.FunctionComponent = () => {
     } catch (error) {
       if (
         isSingleObjectBadRequestError(error) &&
-        error.response.data.config?.length > 0
+        Number(error.response.data.config?.length) > 0
       ) {
-        helpers.setStatus(error.response.data.config.join(" "));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Length check above
+        helpers.setStatus(error.response.data.config!.join(" "));
         return;
       }
 

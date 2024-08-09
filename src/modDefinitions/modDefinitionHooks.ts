@@ -31,6 +31,7 @@ import deepEquals from "fast-deep-equal";
 import { loadingAsyncStateFactory } from "@/utils/asyncStateUtils";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import pluralize from "@/utils/pluralize";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Lookup a mod definition from the registry by ID, or null if it doesn't exist.
@@ -45,7 +46,7 @@ import pluralize from "@/utils/pluralize";
  * @see useAllModDefinitions
  */
 export function useOptionalModDefinition(
-  id: RegistryId | null,
+  id: Nullishable<RegistryId>,
 ): FetchableAsyncState<ModDefinition> {
   const state = useAllModDefinitions();
 

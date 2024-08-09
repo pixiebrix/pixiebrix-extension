@@ -35,6 +35,7 @@ import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editor
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -44,7 +45,7 @@ type UseCreateModFromModReturn = {
 };
 
 function useCreateModFromModComponent(
-  activeModComponent: ModComponentFormState,
+  activeModComponent: Nullishable<ModComponentFormState>,
 ): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
@@ -65,7 +66,7 @@ function useCreateModFromModComponent(
         modComponentFormState,
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
-        if (!hasPermissions) {
+        if (!hasPermissions || !activeModComponent) {
           return;
         }
 

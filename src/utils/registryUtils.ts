@@ -51,10 +51,14 @@ export function generatePackageId(
  *  as everything following the first / character
  * @param value the full RegistryId
  */
-export function getScopeAndId(value: RegistryId): {
+export function getScopeAndId(value: RegistryId | null): {
   scope: string | undefined;
   id: string | undefined;
 } {
+  if (value == null) {
+    return { scope: undefined, id: undefined };
+  }
+
   // Scope needs to start with @
   if (!value.startsWith("@")) {
     return { scope: undefined, id: value };

@@ -24,7 +24,9 @@ import { useSelector } from "react-redux";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
-export default function useHasEditPermissions(modId: RegistryId): boolean {
+export default function useHasEditPermissions(
+  modId: RegistryId | null,
+): boolean {
   const { scope: userScope } = useSelector(selectAuth);
   const { scope: modIdScope } = getScopeAndId(modId);
   const sortedOrganizations = useSortOrganizations();

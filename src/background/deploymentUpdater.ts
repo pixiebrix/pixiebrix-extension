@@ -136,7 +136,7 @@ function deactivateModComponentFromStates(
   modComponentId: UUID,
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-): { options: ModComponentState; editor: EditorState } {
+): { options: ModComponentState; editor: EditorState | undefined } {
   const options = optionsReducer(
     optionsState,
     optionsActions.removeModComponent({ modComponentId }),
@@ -155,7 +155,7 @@ async function deactivateModComponentsAndSaveState(
   {
     editorState,
     optionsState,
-  }: { editorState: EditorState; optionsState: ModComponentState },
+  }: { editorState: EditorState | undefined; optionsState: ModComponentState },
 ): Promise<void> {
   // Deactivate existing mod components
   for (const modComponent of modComponentsToDeactivate) {
@@ -210,7 +210,9 @@ export async function deactivateAllDeployedMods(): Promise<void> {
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_ALL, {
     auto: true,
-    deployments: modComponentsToDeactivate.map((x) => x._deployment.id),
+    deployments: modComponentsToDeactivate
+      .map((x) => x._deployment?.id)
+      .filter((x) => x != null),
   });
 }
 
@@ -232,7 +234,8 @@ async function deactivateUnassignedDeployments(
   const unassignedModComponents = activatedModComponents.filter(
     (activatedModComponent) =>
       !isEmpty(activatedModComponent._deployment) &&
-      !deployedModIds.has(activatedModComponent._recipe?.id),
+      activatedModComponent._recipe?.id &&
+      !deployedModIds.has(activatedModComponent._recipe.id),
   );
 
   if (unassignedModComponents.length === 0) {
@@ -247,9 +250,9 @@ async function deactivateUnassignedDeployments(
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: unassignedModComponents.map(
-      (modComponent) => modComponent._deployment.id,
-    ),
+    deployments: unassignedModComponents
+      .map((x) => x._deployment?.id)
+      .filter((x) => x != null),
   });
 }
 
@@ -370,7 +373,7 @@ async function activateDeployments(
 type DeploymentConstraint = {
   activatableDeployment: ActivatableDeployment;
   hasPermissions: boolean;
-  extensionVersion: SemVer;
+  extensionVersion: SemVer | null;
 };
 
 /**
@@ -386,7 +389,7 @@ async function canAutoActivate({
   hasPermissions,
   extensionVersion,
 }: DeploymentConstraint): Promise<boolean> {
-  if (!hasPermissions) {
+  if (!hasPermissions || extensionVersion == null) {
     return false;
   }
 
@@ -585,7 +588,7 @@ export async function syncDeployments(): Promise<void> {
   // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
   // corresponds to whether the user is a restricted user vs. developer
   const updatedDeployments = await selectUpdatedDeployments(deployments, {
-    restricted: meApiResponse.flags.includes("restricted-uninstall"),
+    restricted: meApiResponse.flags?.includes("restricted-uninstall") ?? false,
   });
 
   if (shouldReportDeployments) {
@@ -613,7 +616,7 @@ export async function syncDeployments(): Promise<void> {
   if (
     isUpdateAvailable() &&
     // `restricted-version` is an implicit flag from the MeSerializer
-    (meApiResponse.flags.includes("restricted-version") ||
+    (meApiResponse.flags?.includes("restricted-version") ||
       meData.enforceUpdateMillis)
   ) {
     console.info("Extension update available from the web store");
@@ -635,7 +638,7 @@ export async function syncDeployments(): Promise<void> {
     // Reporting goes through Datadog, so safe to report even if our server is acting up.
     reportError(error);
 
-    if (isAxiosError(error) && error.response?.status >= 500) {
+    if (isAxiosError(error) && Number(error.response?.status) >= 500) {
       // If our server is acting up, bail because opening the options page will cause a refetch, which will just
       // further increase server load. Try again on the next heart beat.
       return;
@@ -678,7 +681,7 @@ async function activateDeploymentsInBackground({
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
   // type so the types wouldn't match with checkDeploymentPermissions
   const optionalPermissions: Manifest.OptionalPermission[] =
-    meApiResponse.flags.includes("deployment-permissions-strict")
+    meApiResponse.flags?.includes("deployment-permissions-strict")
       ? []
       : ["clipboardWrite"];
 
@@ -718,7 +721,7 @@ async function activateDeploymentsInBackground({
     .filter(({ autoActivate }) => !autoActivate)
     .map(({ activatableDeployment }) => activatableDeployment);
 
-  let autoActivationError: boolean;
+  let autoActivationError: boolean | undefined;
 
   if (deploymentsToAutoActivate.length > 0) {
     try {

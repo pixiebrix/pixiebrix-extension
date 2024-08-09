@@ -145,7 +145,7 @@ const DraftModComponentListItem: React.FunctionComponent<
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.modBackground]: isRelativeOfActiveListItem,
+        [styles.modBackground ?? ""]: isRelativeOfActiveListItem,
       })}
       as="div"
       active={isActive}
@@ -181,7 +181,7 @@ const DraftModComponentListItem: React.FunctionComponent<
     >
       <span
         className={cx(styles.icon, {
-          [styles.nested]: isNested,
+          [styles.nested ?? ""]: isNested,
         })}
       >
         <ModComponentIcon

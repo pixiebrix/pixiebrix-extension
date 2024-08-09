@@ -41,6 +41,7 @@ import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModComponents: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -99,13 +100,22 @@ const ModComponents: React.FunctionComponent = () => {
           key={modMetadata.id}
           modMetadata={modMetadata}
           onSave={async () => {
+            assertNotNullish(activeModId, "Expected active mod id to save mod");
             await saveMod(activeModId);
           }}
           isSaving={isSavingMod}
           onReset={async () => {
+            assertNotNullish(
+              activeModId,
+              "Expected active mod id to reset mod",
+            );
             await resetMod(activeModId);
           }}
           onDeactivate={async () => {
+            assertNotNullish(
+              activeModId,
+              "Expected active mod id to deactivate mod",
+            );
             await deactivateMod({ modId: activeModId });
           }}
           onClone={async () => {
@@ -162,7 +172,7 @@ const ModComponents: React.FunctionComponent = () => {
       </div>
 
       {/* Mod Component List */}
-      <Accordion activeKey={expandedModId} className={styles.list}>
+      <Accordion activeKey={expandedModId ?? undefined} className={styles.list}>
         <ListGroup>{listItems}</ListGroup>
       </Accordion>
     </>

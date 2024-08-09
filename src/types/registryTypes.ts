@@ -18,6 +18,7 @@
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type Tagged, type ValueOf } from "type-fest";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`
@@ -112,6 +113,9 @@ export type Metadata = {
  */
 export interface PackageInstance extends Metadata {
   // Type currently matches Metadata, given that instances used to extend directly from Metadata
+  inputSchema?: Schema;
+  outputSchema?: Schema;
+  schema?: Schema;
 
   /**
    * (Optional) if provided, the feature flag required to view/use the package

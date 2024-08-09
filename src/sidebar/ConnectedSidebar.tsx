@@ -57,6 +57,7 @@ import {
   type ModComponentRef,
   validateModComponentRef,
 } from "@/types/modComponentTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -73,6 +74,7 @@ function useConnectedListener(): SidebarListener {
         await dispatch(addFormPanel({ form }));
       },
       onHideForm({ nonce }: Partial<FormPanelEntry>) {
+        assertNotNullish(nonce, "Expected nonce to hide form");
         dispatch(sidebarSlice.actions.removeForm(nonce));
       },
       onActivatePanel(options: ActivatePanelOptions) {

@@ -28,8 +28,10 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 const FormBuilder: React.FC<{
   name: string;
   initialActiveField?: string;
-}> = ({ name, initialActiveField }) => {
-  const [activeField, setActiveField] = useState<string>(initialActiveField);
+}> = ({ name, initialActiveField = null }) => {
+  const [activeField, setActiveField] = useState<string | null>(
+    initialActiveField,
+  );
   const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   return (

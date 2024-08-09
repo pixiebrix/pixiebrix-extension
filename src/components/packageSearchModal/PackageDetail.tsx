@@ -54,19 +54,19 @@ const PackageDetail = <Instance extends PackageInstance>({
       </div>
     </div>
 
-    {"inputSchema" in packageInstance && (
+    {"inputSchema" in packageInstance && packageInstance.inputSchema && (
       <div className="small mb-3">
         <h6 className="my-3">Input Schema</h6>
         <SchemaTree schema={packageInstance.inputSchema} />
       </div>
     )}
-    {"outputSchema" in packageInstance && (
+    {"outputSchema" in packageInstance && packageInstance.outputSchema && (
       <div className="small mb-3">
         <h6 className="my-3">Output Schema</h6>
         <SchemaTree schema={packageInstance.outputSchema} />
       </div>
     )}
-    {"schema" in packageInstance && (
+    {"schema" in packageInstance && packageInstance.schema && (
       <div className="small mb-3">
         <h6 className="my-3">Schema</h6>
         <SchemaTree schema={packageInstance.schema} />
