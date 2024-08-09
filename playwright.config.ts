@@ -18,7 +18,7 @@ export type SupportedChannel = ValueOf<typeof SupportedChannels>;
 const DEFAULT_CHANNELS: SupportedChannel[] = [
   SupportedChannels.CHROME,
   SupportedChannels.MSEDGE,
-];
+] as SupportedChannel[];
 
 const getChromiumChannelsFromEnv = (): SupportedChannel[] => {
   if (!E2E_CHROMIUM_CHANNELS) {
