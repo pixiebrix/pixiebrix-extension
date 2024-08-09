@@ -111,25 +111,6 @@ const EphemeralPanel: React.FC = () => {
     );
   }
 
-  // Panel was pre-allocated for performance
-  if (entry == null) {
-    if (mode === "popover") {
-      return (
-        <Layout>
-          <Popover.Title></Popover.Title>
-          <Popover.Content>&nbsp;</Popover.Content>
-        </Layout>
-      );
-    }
-
-    return (
-      <Layout>
-        <Modal.Header></Modal.Header>
-        <Modal.Body></Modal.Body>
-      </Layout>
-    );
-  }
-
   assertNotNullish(
     panelNonce,
     "panelNonce is required to display temporary panel",
@@ -152,6 +133,25 @@ const EphemeralPanel: React.FC = () => {
             Close
           </Button>
         </div>
+      </Layout>
+    );
+  }
+
+  // Panel was pre-allocated for performance
+  if (entry == null) {
+    if (mode === "popover") {
+      return (
+        <Layout>
+          <Popover.Title></Popover.Title>
+          <Popover.Content>&nbsp;</Popover.Content>
+        </Layout>
+      );
+    }
+
+    return (
+      <Layout>
+        <Modal.Header></Modal.Header>
+        <Modal.Body></Modal.Body>
       </Layout>
     );
   }
