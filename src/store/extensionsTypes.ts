@@ -55,25 +55,34 @@ export type ModComponentStateV3 = {
   extensions: ActivatedModComponentV2[];
 };
 
-export type ModComponentStateVersions =
+export type ModComponentStateLegacyVersions =
   | ModComponentStateV0
   | ModComponentStateV1
   | ModComponentStateV2
   | ModComponentStateV3;
-export type ModComponentState = ModComponentStateV3;
+
+/**
+ * @deprecated - Do not use versioned state types directly
+ *
+ * @since 2.0.8 This type is only being used as a placeholder for the
+ * migration to convert all stand-alone mod components to mod definitions
+ */
+export type ModComponentStateV4 = ModComponentStateV3;
+
+export type ModComponentState = ModComponentStateV4;
 
 export type ModComponentsRootState = {
   options: ModComponentState;
 };
 
 export function isModComponentStateV0(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV0 {
   return !Array.isArray(state.extensions);
 }
 
 export function isModComponentStateV1(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV1 {
   return (
     Array.isArray(state.extensions) &&
@@ -83,7 +92,7 @@ export function isModComponentStateV1(
 }
 
 export function isModComponentStateV2(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV2 {
   return (
     Array.isArray(state.extensions) &&
@@ -95,7 +104,7 @@ export function isModComponentStateV2(
 }
 
 export function isModComponentStateV3(
-  state: ModComponentStateVersions,
+  state: ModComponentStateLegacyVersions,
 ): state is ModComponentStateV3 {
   return (
     Array.isArray(state.extensions) &&
