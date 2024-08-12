@@ -35,14 +35,19 @@ export default function useMigrateStandaloneComponentsToMods() {
     );
 
     for (const formState of standaloneComponentFormStates) {
-      const modMetadata = activatedModComponents.find(
+      const activatedModComponent = activatedModComponents.find(
         ({ id }) => id === formState.uuid,
-      )?._recipe;
+      );
 
-      if (modMetadata == null) {
+      if (activatedModComponent == null) {
+        // We shouldn't touch "unsaved" form states that do not have a corresponding activated mod component
+        return;
+      }
+
+      if (activatedModComponent._recipe == null) {
         dispatch(actions.removeModComponentFormState(formState.uuid));
       } else {
-        formState.modMetadata = modMetadata;
+        formState.modMetadata = activatedModComponent._recipe;
         dispatch(actions.syncModComponentFormState(formState));
       }
     }
