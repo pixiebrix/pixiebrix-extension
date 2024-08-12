@@ -124,7 +124,7 @@ const EphemeralPanel: React.FC = () => {
             onClick={() => {
               assertNotNullish(
                 panelNonce,
-                "panelNonce is required to display temporary panel",
+                "panelNonce is required to cancel temporary panel",
               );
 
               cancelTemporaryPanel(target, [panelNonce]);
@@ -158,7 +158,7 @@ const EphemeralPanel: React.FC = () => {
 
   assertNotNullish(
     panelNonce,
-    "panelNonce is required to display temporary panel",
+    "panelNonce is required to replace reserved panel with a temporary panel",
   );
 
   if (mode === "popover") {
