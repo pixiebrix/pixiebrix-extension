@@ -46,12 +46,12 @@ export class ScreenshotTab extends TransformerABC {
   override defaultOutputKey = "screenshot";
 
   async transform(
-    args: BrickArgs,
+    _args: BrickArgs,
     { platform }: BrickOptions,
-  ): Promise<unknown> {
+  ): Promise<{ data: string }> {
     try {
       return {
-        data: platform.capture.captureScreenshot(),
+        data: await platform.capture.captureScreenshot(),
       };
     } catch (error) {
       if (getErrorMessage(error).includes("activeTab")) {
