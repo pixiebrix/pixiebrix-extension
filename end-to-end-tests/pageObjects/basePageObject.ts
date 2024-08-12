@@ -99,4 +99,8 @@ export class BasePageObject {
   // so we can't use `getByLabel` here, and also does not have a "role"
   getSwitchByLabel = (label: string) =>
     this.locator(`.switch:near(:text("${label}"))`);
+
+  async reload() {
+    await this.page.reload();
+  }
 }
