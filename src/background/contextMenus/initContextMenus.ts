@@ -26,6 +26,7 @@ import { type UUID } from "@/types/stringTypes";
 import { allSettled } from "@/utils/promiseUtils";
 import { MENU_PREFIX } from "@/background/contextMenus/makeMenuId";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 // This constant must be high enough to give Chrome time to inject the content script. waitForContentScript can take
 // >= 1 seconds because it also waits for the content script to be ready
@@ -41,6 +42,11 @@ async function dispatchMenu(
   tab: Tabs.Tab,
 ): Promise<void> {
   expectContext("background");
+
+  assertNotNullish(
+    tab.id,
+    "tabId required to dispatch a Chrome context menu event",
+  );
 
   const target = { frameId: info.frameId ?? 0, tabId: tab.id };
 
