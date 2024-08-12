@@ -37,8 +37,7 @@ function getExtensionShortcutsUrl(chromiumChannel: SupportedChannel) {
     }
 
     default: {
-      const exhaustiveCheck = chromiumChannel as never;
-      throw new Error(`Unexpected channel: ${exhaustiveCheck}`);
+      throw new Error(`Unexpected channel: ${chromiumChannel}`);
     }
   }
 }
