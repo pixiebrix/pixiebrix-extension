@@ -47,6 +47,13 @@ test("Add new starter brick", async ({
       }),
     ).toHaveValue("My pbx.vercel.app button");
 
+    // Ensure the new, unsaved mod component remains after reloading the page editor
+    // See: https://github.com/pixiebrix/pixiebrix-extension/pull/9002
+    await pageEditorPage.reload();
+    await expect(
+      pageEditorPage.getByText("My pbx.vercel.app button"),
+    ).toBeVisible();
+
     // TODO: save the mod and verify the snapshot of the mod definition with `verifyModDefinitionSnapshot` fixture
   });
 
