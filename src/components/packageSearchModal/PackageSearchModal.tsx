@@ -50,6 +50,7 @@ import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 import { freeze } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type PackageOption<Instance extends PackageInstance = Brick> = {
   data: Instance;
@@ -141,7 +142,9 @@ const ItemRenderer = <Instance extends PackageInstance>({
   style: CSSProperties;
   data: ItemType<Instance>;
 }) => {
-  const { data: packageInstance } = searchResults.at(index);
+  const { data: packageInstance } = searchResults.at(index) ?? {};
+  assertNotNullish(packageInstance, "Package instance should not be nullish");
+
   return (
     <div style={style}>
       <PackageResult
@@ -169,6 +172,7 @@ function itemKey<Instance extends PackageInstance>(
   // Find the item at the specified index.
   // In this case "data" is an Array that was passed to List as "itemData".
   const item = searchResults.at(index);
+  assertNotNullish(item, "item not found in searchResults");
 
   // Return a value that uniquely identifies this item.
   // Typically, this will be a UID of some sort.
@@ -192,7 +196,7 @@ function ActualModal<Instance extends PackageInstance>({
   modalClassName,
 }: ModalProps<Instance>): React.ReactElement<Instance> {
   const [query, setQuery] = useState("");
-  const [detailPackage, setDetailPackage] = useState<Instance>(null);
+  const [detailPackage, setDetailPackage] = useState<Instance | null>(null);
   const searchInput = useRef(null);
   // The react-window library requires exact height
   const brickResultSizePx = 87;
@@ -218,7 +222,7 @@ function ActualModal<Instance extends PackageInstance>({
 
   useOnMountOnly(() => {
     // If there's no recommendations, default to the first brick so the right side isn't blank
-    if (recommendations.length === 0 && searchResults.length > 0) {
+    if (recommendations.length === 0 && searchResults[0]) {
       setDetailPackage(searchResults[0].data);
     }
   });

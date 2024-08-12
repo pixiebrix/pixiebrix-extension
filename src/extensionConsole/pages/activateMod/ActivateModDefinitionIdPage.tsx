@@ -19,6 +19,7 @@ import React from "react";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import ActivateModDefinitionPage from "@/extensionConsole/pages/activateMod/ActivateModDefinitionPage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Page for activating a mod definition by its registry ID.
@@ -26,7 +27,7 @@ import ActivateModDefinitionPage from "@/extensionConsole/pages/activateMod/Acti
  */
 const ActivateModDefinitionIdPage: React.FunctionComponent = () => {
   const modId = useRegistryIdParam();
-
+  assertNotNullish(modId, "modId is required to activate a mod definition");
   const modDefinitionQuery = useGetModDefinitionQuery(
     { modId },
     {
