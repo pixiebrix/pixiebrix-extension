@@ -16,11 +16,11 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { type Schema } from "@/types/schemaTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type FromSchema } from "json-schema-to-ts";
 
 export class ScreenshotTab extends TransformerABC {
   constructor() {
@@ -31,9 +31,9 @@ export class ScreenshotTab extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = minimalSchemaFactory();
+  inputSchema = minimalSchemaFactory();
 
-  override outputSchema: Schema = {
+  override outputSchema = {
     type: "object",
     properties: {
       data: {
@@ -41,14 +41,15 @@ export class ScreenshotTab extends TransformerABC {
         description: "The PNG screenshot as a data URI",
       },
     },
-  };
+  } as const;
 
   override defaultOutputKey = "screenshot";
 
+  // Infers the return type from the output schema!
   async transform(
     _args: BrickArgs,
     { platform }: BrickOptions,
-  ): Promise<{ data: string }> {
+  ): Promise<FromSchema<typeof this.outputSchema>> {
     try {
       return {
         data: await platform.capture.captureScreenshot(),

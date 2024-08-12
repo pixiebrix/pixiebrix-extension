@@ -17,6 +17,7 @@
 
 import { BrickABC } from "@/types/brickTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { FromSchema, JSONSchema } from "json-schema-to-ts";
 
 /**
  * Abstract base class for transformers - bricks that take an input and produce an output.
@@ -27,7 +28,14 @@ export abstract class TransformerABC extends BrickABC {
     return false;
   }
 
-  abstract transform(value: BrickArgs, options: BrickOptions): Promise<unknown>;
+  abstract transform(
+    value: BrickArgs,
+    options: BrickOptions,
+  ): Promise<
+    typeof this.outputSchema extends JSONSchema
+      ? FromSchema<typeof this.outputSchema>
+      : unknown
+  >;
 
   async run(value: BrickArgs, options: BrickOptions): Promise<unknown> {
     return this.transform(value, options);

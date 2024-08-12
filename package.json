@@ -102,6 +102,7 @@
     "js-beautify": "^1.15.1",
     "js-cookie": "^3.0.5",
     "js-yaml": "^4.1.0",
+    "json-schema-to-ts": "^3.1.0",
     "json-stringify-safe": "^5.0.1",
     "json5": "^2.2.3",
     "jsonpath-plus": "^9.0.0",
