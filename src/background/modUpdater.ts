@@ -40,12 +40,13 @@ import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 type ActivatedModState = {
   options: ModComponentState;
-  editor: EditorState;
+  editor: EditorState | undefined;
 };
 
 type BackwardsCompatibleUpdate = {
@@ -77,7 +78,9 @@ export async function getActivatedMarketplaceModVersions(): Promise<
     groupBy(mods, "id"),
   ) as Array<[RegistryId, Array<ActivatedModComponent["_recipe"]>]>) {
     const uniqueModVersions: SemVerString[] = uniq(
-      modComponents.map((modComponent) => modComponent.version),
+      modComponents
+        .map((modComponent) => modComponent?.version)
+        .filter((x) => x != null),
     );
 
     if (uniqueModVersions.length > 1) {
@@ -89,6 +92,8 @@ export async function getActivatedMarketplaceModVersions(): Promise<
         ),
       );
     }
+
+    assertNotNullish(uniqueModVersions[0], "Mod component version is required");
 
     modVersions.push({ name, version: uniqueModVersions[0] });
   }
@@ -125,11 +130,11 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
     // Only return backwards compatible updates for now. Future work outlines
     // handling backwards incompatible updates as well.
     return updates
-      .filter(({ backwards_compatible }) => backwards_compatible)
+      .filter(({ backwards_compatible }) => backwards_compatible != null)
       .map(({ name, backwards_compatible }) => ({
         name,
         backwards_compatible,
-      }));
+      })) as BackwardsCompatibleUpdate[];
   } catch (error) {
     reportError(error);
     return [];

@@ -215,8 +215,8 @@ const dirtyMetadataForModIdSelector = createSelector(
 );
 
 export const selectDirtyMetadataForModId =
-  (modId: RegistryId) => (state: EditorRootState) =>
-    dirtyMetadataForModIdSelector(state, modId);
+  (modId: RegistryId | undefined) => (state: EditorRootState) =>
+    modId ? dirtyMetadataForModIdSelector(state, modId) : null;
 
 const modComponentIsDirtySelector = createSelector(
   selectIsModComponentDirtyById,
