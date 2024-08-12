@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Except } from "type-fest";
+import { type SetRequired, type Except } from "type-fest";
 import { type AxiosError, type AxiosResponse } from "axios";
 import { isEmpty } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
@@ -157,7 +157,7 @@ function isBadRequestResponse(
  */
 export function isSingleObjectBadRequestError(
   error: unknown,
-): error is AxiosError<BadRequestObjectData> {
+): error is SetRequired<AxiosError<BadRequestObjectData>, "response"> {
   if (!isAxiosError(error)) {
     return false;
   }

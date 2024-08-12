@@ -40,13 +40,14 @@ import { useGetPackageQuery } from "@/data/service/api";
 import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
 import { type Definition, DefinitionKinds } from "@/types/registryTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const { touchPackage } = workshopSlice.actions;
 
 type ParsedPackageInfo = {
   isMod: boolean;
   isActivated: boolean;
-  config: Definition;
+  config?: Definition;
 };
 
 function useParsePackage(config: string | null): ParsedPackageInfo {
@@ -111,7 +112,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
     config: rawConfig,
   } = useParsePackage(data.config);
 
-  const name = rawConfig.metadata?.name;
+  const name = rawConfig?.metadata?.name;
 
   const { submit, validate, remove } = useSubmitPackage({
     create: false,
@@ -121,6 +122,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
 
   const [isRemoving, setIsRemovingPackage] = useState(false);
   const onRemove = async () => {
+    assertNotNullish(remove, "Remove function is not set");
     setIsRemovingPackage(true);
     await remove({ id, name });
 
@@ -148,7 +150,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
           <HotKeys
             handlers={{
               SAVE(keyEvent) {
-                keyEvent.preventDefault();
+                keyEvent?.preventDefault();
                 handleSubmit();
               },
             }}
@@ -214,6 +216,8 @@ const EditPage: React.FC = () => {
   if (isFetching) {
     return <LoadingBody />;
   }
+
+  assertNotNullish(data, "Package data is nullish");
 
   return <EditForm id={id} data={data} />;
 };

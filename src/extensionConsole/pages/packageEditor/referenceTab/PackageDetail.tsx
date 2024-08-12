@@ -95,7 +95,8 @@ const PackageDetail = <T extends PackageInstance>({
 
   const copyHandler = useUserAction(
     async () => {
-      await writeToClipboard({ text: makeArgumentYaml(schema as Schema) });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- see ternary above
+      await writeToClipboard({ text: makeArgumentYaml(schema!) });
     },
     {
       successMessage: "Copied input argument YAML to clipboard",
@@ -147,7 +148,7 @@ const PackageDetail = <T extends PackageInstance>({
             <Button className="p-0 mb-3" variant="link" onClick={copyHandler}>
               <FontAwesomeIcon icon={faClipboard} /> Copy Argument YAML
             </Button>
-            <SchemaTree schema={schema as Schema} />
+            <SchemaTree schema={schema} />
           </div>
         )}
       </DetailSection>
