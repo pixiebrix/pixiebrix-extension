@@ -25,6 +25,10 @@ import {
 } from "./utils";
 import { ModsPage } from "../pageObjects/extensionConsole/modsPage";
 import { PageEditorPage } from "../pageObjects/pageEditor/pageEditorPage";
+import {
+  type SupportedChannel,
+  SupportedChannels,
+} from "../../playwright.config";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -39,14 +43,14 @@ export const test = base.extend<
     context: BrowserContext;
     extensionId: string;
     profileName: "unaffiliated" | "affiliated";
-    chromiumChannel: "chrome" | "msedge";
+    chromiumChannel: SupportedChannel;
     newPageEditorPage: (urlToConnectTo: string) => Promise<PageEditorPage>;
   },
   {
     checkRequiredEnvironmentVariables: () => void;
   }
 >({
-  chromiumChannel: ["chrome", { option: true }],
+  chromiumChannel: [SupportedChannels.CHROME, { option: true }],
   profileName: "unaffiliated",
   async context({ chromiumChannel, profileName }, use) {
     let authSetupProfileDirectory: string;

@@ -1,5 +1,57 @@
 import { defineConfig } from "@playwright/test";
-import { CI } from "./end-to-end-tests/env";
+import { CI, E2E_CHROMIUM_CHANNELS } from "./end-to-end-tests/env";
+import { type ValueOf } from "type-fest";
+
+export const SupportedChannels = {
+  CHROME: "chrome",
+  MSEDGE: "msedge",
+  CHROME_BETA: "chrome-beta",
+  MSEDGE_BETA: "msedge-beta",
+  CHROMIUM: "chromium",
+} as const;
+
+export type SupportedChannel = ValueOf<typeof SupportedChannels>;
+
+const DEFAULT_CHANNELS: SupportedChannel[] = [
+  SupportedChannels.CHROME,
+  SupportedChannels.MSEDGE,
+] as SupportedChannel[];
+
+const getChromiumChannelsFromEnv = (): SupportedChannel[] => {
+  if (!E2E_CHROMIUM_CHANNELS) {
+    return DEFAULT_CHANNELS;
+  }
+
+  let parsedChannels: unknown;
+  try {
+    parsedChannels = JSON.parse(E2E_CHROMIUM_CHANNELS);
+  } catch (error) {
+    throw new Error(
+      "Failed to parse E2E_CHROMIUM_CHANNELS; expected a json serialized array of strings.",
+      { cause: error },
+    );
+  }
+
+  if (!Array.isArray(parsedChannels)) {
+    throw new TypeError(
+      "E2E_CHROMIUM_CHANNELS must be an json serialized array of strings",
+    );
+  }
+
+  return parsedChannels.map((parsedChannel) => {
+    if (typeof parsedChannel !== "string") {
+      throw new TypeError(
+        "E2E_CHROMIUM_CHANNELS must contain only string values",
+      );
+    }
+
+    if (!Object.values(SupportedChannels).includes(parsedChannel)) {
+      throw new Error(`Unsupported channel: ${parsedChannel}`);
+    }
+
+    return parsedChannel as SupportedChannel;
+  });
+};
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -46,35 +98,23 @@ export default defineConfig<{ chromiumChannel: string }>({
     navigationTimeout: 10_000,
   },
   /* Configure projects for major browsers */
-  projects: [
+  projects: getChromiumChannelsFromEnv().flatMap((chromiumChannel) => [
     {
-      name: "chromeSetup",
-      use: {
-        chromiumChannel: "chrome",
-      },
+      name: `${chromiumChannel}-setup`,
+      use:
+        chromiumChannel === SupportedChannels.CHROMIUM
+          ? {}
+          : { chromiumChannel },
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: "edgeSetup",
-      use: {
-        chromiumChannel: "msedge",
-      },
-      testMatch: /.*\.setup\.ts/,
-    },
-    {
-      name: "chrome",
-      use: {
-        chromiumChannel: "chrome",
-      },
+      name: chromiumChannel,
+      use:
+        chromiumChannel === SupportedChannels.CHROMIUM
+          ? {}
+          : { chromiumChannel },
       // For faster local development, you can filter out the setup project in --ui mode to skip rerunning the setup project
-      dependencies: ["chromeSetup"],
+      dependencies: [`${chromiumChannel}-setup`],
     },
-    {
-      name: "edge",
-      use: {
-        chromiumChannel: "msedge",
-      },
-      dependencies: ["edgeSetup"],
-    },
-  ],
+  ]),
 });
