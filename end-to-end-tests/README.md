@@ -37,6 +37,9 @@ One-time setup:
   is resolved, you must include an unused playwright import as shown
   in [this test](https://github.com/pixiebrix/pixiebrix-extension/blob/7826c6549be0dbcbab32a8dfbaef472a3fdc22e9/end-to-end-tests/tests/workshopPageSmoke.spec.ts#L21)
   for the IDE to recognize the test)
+- You can optionally run tests against specific browsers and/or browser versions by setting environment variable
+  `E2E_CHROMIUM_CHANNELS`, which takes an array of channel values. Current expected values include `chrome`, `msedge`,
+  `chromium`, `chrome-beta`, and `msedge-beta`. See `.env.example` for example configuration.
 
 ## Writing Tests
 
