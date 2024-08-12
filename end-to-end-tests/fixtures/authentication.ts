@@ -65,7 +65,7 @@ export const test = mergeTests(
     chromiumChannel: SupportedChannel;
     additionalRequiredEnvVariables: string[];
   }>({
-    chromiumChannel: [SupportedChannels.CHROME as "chrome", { option: true }],
+    chromiumChannel: [SupportedChannels.CHROME, { option: true }],
     additionalRequiredEnvVariables: [
       "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",
     ],

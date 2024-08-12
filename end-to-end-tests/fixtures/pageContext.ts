@@ -50,7 +50,7 @@ export const test = base.extend<
     checkRequiredEnvironmentVariables: () => void;
   }
 >({
-  chromiumChannel: [SupportedChannels.CHROME as "chrome", { option: true }],
+  chromiumChannel: [SupportedChannels.CHROME, { option: true }],
   profileName: "unaffiliated",
   async context({ chromiumChannel, profileName }, use) {
     let authSetupProfileDirectory: string;
