@@ -19,7 +19,7 @@
  * Type contract between the backend and front-end.
  */
 import { type components } from "@/types/swagger";
-import { type Except, type JsonObject } from "type-fest";
+import { type Except } from "type-fest";
 import { type AxiosResponse } from "axios";
 import type { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
@@ -37,7 +37,6 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
@@ -188,17 +187,6 @@ export type PackageConfigDetail = Except<
    */
   config: UnsavedModDefinition;
 };
-
-/**
- * A mod component that is not packaged inside a mod that is synced/saved to the cloud.
- * @deprecated because ModDefinition will be used for standalone mods
- */
-export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
-  Except<ActivatedModComponent<Config>, "active"> & {
-    _remoteUserExtensionBrand: never;
-    _deployment: undefined;
-    _recipe: undefined;
-  };
 
 /**
  * Response shape from `/api/recipes/${recipeId}/`

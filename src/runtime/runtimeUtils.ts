@@ -281,7 +281,7 @@ export async function selectBrickRootElement(
   );
 }
 
-export function assertModComponentNotResolved<
+export function assertModComponentNotHydrated<
   Config extends UnknownObject = UnknownObject,
 >(
   modComponent: ModComponentBase<Config>,

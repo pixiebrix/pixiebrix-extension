@@ -32,8 +32,6 @@ import Sidebar from "@/extensionConsole/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
-import ActivateModDefinitionIdPage from "@/extensionConsole/pages/activateMod/ActivateModDefinitionIdPage";
-import ActivateStandaloneModDefinitionIdPage from "@/extensionConsole/pages/activateMod/ActivateStandaloneModDefinitionIdPage";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
@@ -55,6 +53,7 @@ import ReduxPersistenceContext, {
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
+import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 
 // Register the built-in bricks
 registerEditors();
@@ -88,13 +87,8 @@ const AuthenticatedContent: React.VFC = () => {
             <Switch>
               <Route
                 exact
-                path="/extensions/install/:modComponentId"
-                component={ActivateStandaloneModDefinitionIdPage}
-              />
-              <Route
-                exact
                 path="/:sourcePage/activate/:registryId"
-                component={ActivateModDefinitionIdPage}
+                component={ActivateModPage}
               />
 
               <Route exact path="/settings" component={SettingsPage} />

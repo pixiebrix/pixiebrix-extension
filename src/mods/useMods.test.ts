@@ -21,21 +21,12 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
-import {
-  standaloneModDefinitionFactory,
-  activatedModComponentFactory,
-} from "@/testUtils/factories/modComponentFactories";
-import {
-  defaultModDefinitionFactory,
-  starterBrickInnerDefinitionFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import {
-  DefinitionKinds,
-  type InnerDefinitionRef,
-} from "@/types/registryTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
@@ -162,114 +153,5 @@ describe("useMods", () => {
     });
 
     expect(wrapper.result.current.mods[0]).not.toHaveProperty("isStub");
-  });
-
-  it("handles inactive standalone mod component", async () => {
-    appApiMock
-      .onGet("/api/extensions/")
-      .reply(200, [standaloneModDefinitionFactory()]);
-
-    const wrapper = renderHook(() => useMods());
-
-    await wrapper.waitForEffect();
-
-    expect(wrapper.result.current).toEqual({
-      mods: [
-        expect.objectContaining({
-          active: false,
-          extensionPointId: expect.toBeString(),
-        }),
-      ],
-      error: undefined,
-    });
-  });
-
-  it("handles active standalone mod component", async () => {
-    appApiMock.reset();
-
-    const standaloneModDefinition = standaloneModDefinitionFactory();
-    appApiMock.onGet("/api/extensions/").reply(200, [standaloneModDefinition]);
-
-    const wrapper = renderHook(() => useMods(), {
-      setupRedux(dispatch) {
-        dispatch(
-          extensionsSlice.actions.UNSAFE_setModComponents([
-            // Content doesn't matter, just need to match the ID
-            activatedModComponentFactory({ id: standaloneModDefinition.id }),
-          ]),
-        );
-      },
-    });
-
-    await wrapper.waitForEffect();
-
-    expect(wrapper.result.current).toEqual({
-      mods: [
-        expect.objectContaining({
-          active: true,
-          extensionPointId: expect.toBeString(),
-        }),
-      ],
-      error: undefined,
-    });
-  });
-
-  it("handles retired starter brick type with no valid mods", async () => {
-    appApiMock.reset();
-
-    const standaloneModDefinition = standaloneModDefinitionFactory();
-    standaloneModDefinition.definitions = {
-      extensionPoint: starterBrickInnerDefinitionFactory(),
-    };
-    (
-      standaloneModDefinition.definitions.extensionPoint.definition as any
-    ).type = "retired";
-    standaloneModDefinition.extensionPointId =
-      "extensionPoint" as InnerDefinitionRef;
-
-    appApiMock.onGet("/api/extensions/").reply(200, [standaloneModDefinition]);
-
-    const wrapper = renderHook(() => useMods(), {
-      setupRedux(dispatch) {},
-    });
-
-    await wrapper.waitForEffect();
-
-    expect(wrapper.result.current.mods).toEqual([]);
-    expect(wrapper.result.current.error).toBeInstanceOf(Error);
-  });
-
-  it("handles ignores retired mods", async () => {
-    appApiMock.reset();
-
-    const retiredDefinition = standaloneModDefinitionFactory();
-    retiredDefinition.definitions = {
-      extensionPoint: starterBrickInnerDefinitionFactory(),
-    };
-    (retiredDefinition.definitions.extensionPoint.definition as any).type =
-      "retired";
-    retiredDefinition.extensionPointId = "extensionPoint" as InnerDefinitionRef;
-
-    const validDefinition = standaloneModDefinitionFactory();
-
-    appApiMock
-      .onGet("/api/extensions/")
-      .reply(200, [retiredDefinition, validDefinition]);
-
-    const wrapper = renderHook(() => useMods(), {
-      setupRedux(dispatch) {},
-    });
-
-    await wrapper.waitForEffect();
-
-    expect(wrapper.result.current).toEqual({
-      mods: [
-        expect.objectContaining({
-          active: false,
-          extensionPointId: validDefinition.extensionPointId,
-        }),
-      ],
-      error: undefined,
-    });
   });
 });

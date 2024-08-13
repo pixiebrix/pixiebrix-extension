@@ -17,7 +17,6 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import ActivateModDefinitionIdPage from "@/extensionConsole/pages/activateMod/ActivateModDefinitionIdPage";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -37,6 +36,7 @@ import useActivateMod, {
   type ActivateModFormCallback,
 } from "@/activation/useActivateMod";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
+import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 
 registerDefaultWidgets();
 
@@ -81,16 +81,16 @@ beforeEach(() => {
   activateModHookMock.mockReturnValue(activateModCallbackMock);
 });
 
-const ActivateModDefinitionIdPageWrapper: React.FC = () => (
+const ActivateModDefinitionPageWrapper: React.FC = () => (
   <MemoryRouter>
-    <ActivateModDefinitionIdPage />
+    <ActivateModPage />
   </MemoryRouter>
 );
 
-describe("ActivateModDefinitionIdPage", () => {
+describe("ActivateModDefinitionPage", () => {
   test("renders", async () => {
     setupMod(defaultModDefinitionFactory());
-    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
+    const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -101,7 +101,7 @@ describe("ActivateModDefinitionIdPage", () => {
         extensionPoints: [modComponentDefinitionFactory({ services: null })],
       }),
     );
-    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
+    const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -134,7 +134,7 @@ describe("ActivateModDefinitionIdPage", () => {
     });
     setupMod(modDefinition);
 
-    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
+    const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
@@ -155,7 +155,7 @@ describe("ActivateModDefinitionIdPage", () => {
     });
     setupMod(modDefinition);
 
-    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
+    const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
@@ -167,8 +167,6 @@ describe("ActivateModDefinitionIdPage", () => {
         integrationDependencies: [],
       },
       modDefinition,
-      // Is provided for standalone mod activation
-      { forceModComponentId: undefined },
     );
   });
 
@@ -191,7 +189,7 @@ describe("ActivateModDefinitionIdPage", () => {
     });
     setupMod(modDefinition);
 
-    render(<ActivateModDefinitionIdPageWrapper />);
+    render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     await userEvent.click(screen.getByText("Activate"));
     await waitForEffect();
@@ -210,7 +208,7 @@ describe("ActivateModDefinitionIdPage", () => {
       },
     };
     setupMod(mod);
-    const { asFragment } = render(<ActivateModDefinitionIdPageWrapper />);
+    const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
 
     await waitForEffect();
 

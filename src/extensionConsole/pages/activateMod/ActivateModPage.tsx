@@ -22,7 +22,6 @@ import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import notify from "@/utils/notify";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { useHistory } from "react-router";
 import Page from "@/layout/Page";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -32,8 +31,9 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { BusinessError } from "@/errors/businessErrors";
 import { DefinitionKinds } from "@/types/registryTypes";
 import { truncate } from "lodash";
-import { type UUID } from "@/types/stringTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
+import { useGetModDefinitionQuery } from "@/data/service/api";
 
 /**
  * Effect to automatically redirect the user to the mods screen if the mod is not found.
@@ -60,17 +60,22 @@ function useModNotFoundRedirectEffect(error: unknown): void {
 
 /**
  * Common page for activating a mod definition
- * @see ActivateModDefinitionIdPage
- * @see ActivateStandaloneModDefinitionIdPage
  *
  * @param modDefinitionQuery The mod definition to activate
- * @param forceModComponentId Optional mod component id for the activated mod component. Used for standalone mod
- * because the id matches between the server and the client.
  */
-const ActivateModDefinitionPage: React.FC<{
-  modDefinitionQuery: FetchableAsyncState<ModDefinition>;
-  forceModComponentId?: UUID;
-}> = ({ modDefinitionQuery, forceModComponentId }) => {
+const ActivateModPage: React.FC = () => {
+  const modId = useRegistryIdParam();
+  assertNotNullish(modId, "modId is required to activate a mod definition");
+
+  const modDefinitionQuery = useGetModDefinitionQuery(
+    { modId },
+    {
+      // Force-refetch the latest data for mod definition before activation. (Because the user might
+      // have already had the Extension Console open when the mod was updated.)
+      refetchOnMountOrArgChange: true,
+    },
+  );
+
   // Redirect on 404
   useModNotFoundRedirectEffect(modDefinitionQuery.error);
 
@@ -93,7 +98,6 @@ const ActivateModDefinitionPage: React.FC<{
   // definition is fetched. But in practice, fetching the mod definition will be fast enough that there's no UX benefit
   const { data: modDefinition } = validatedModDefinitionQuery;
 
-  const modId = modDefinition?.metadata.id;
   const isReactivate = useSelector(
     selectModHasAnyActivatedModComponents(modId),
   );
@@ -137,7 +141,6 @@ const ActivateModDefinitionPage: React.FC<{
         <ErrorBoundary>
           <RequireBrickRegistry>
             <ActivateModCard
-              forceModComponentId={forceModComponentId}
               modDefinition={modDefinitionQuery.data}
               isReactivate={isReactivate}
             />
@@ -148,4 +151,4 @@ const ActivateModDefinitionPage: React.FC<{
   );
 };
 
-export default ActivateModDefinitionPage;
+export default ActivateModPage;

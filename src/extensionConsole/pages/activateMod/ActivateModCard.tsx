@@ -41,7 +41,6 @@ import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { isInternalRegistryId } from "@/utils/registryUtils";
-import { type UUID } from "@/types/stringTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const WizardHeader: React.VoidFunctionComponent<{
@@ -76,8 +75,7 @@ const WizardHeader: React.VoidFunctionComponent<{
 const ActivateModCard: React.FC<{
   modDefinition: ModDefinition;
   isReactivate: boolean;
-  forceModComponentId?: UUID;
-}> = ({ modDefinition, isReactivate, forceModComponentId }) => {
+}> = ({ modDefinition, isReactivate }) => {
   const dispatch = useDispatch();
 
   const {
@@ -141,9 +139,7 @@ const ActivateModCard: React.FC<{
   );
 
   const onSubmit: OnSubmit<WizardValues> = async (values) => {
-    const { success, error } = await activateMod(values, modDefinition, {
-      forceModComponentId,
-    });
+    const { success, error } = await activateMod(values, modDefinition);
 
     if (success) {
       notify.success(`Activated ${modDefinition.metadata.name}`);

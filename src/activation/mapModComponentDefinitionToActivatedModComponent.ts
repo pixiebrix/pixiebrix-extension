@@ -27,10 +27,8 @@ import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
-import { type UUID } from "@/types/stringTypes";
 
 export type ActivateModComponentParam = {
-  modComponentId?: UUID;
   modComponentDefinition: ModComponentDefinition;
   modDefinition: ModDefinition;
   deployment?: Deployment;
@@ -54,7 +52,6 @@ export type ActivateModComponentParam = {
 export function mapModComponentDefinitionToActivatedModComponent<
   Config extends UnknownObject = UnknownObject,
 >({
-  modComponentId,
   modComponentDefinition,
   modDefinition,
   deployment,
@@ -64,7 +61,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
   const timestamp = nowTimestamp();
 
   const activatedModComponent = {
-    id: modComponentId ?? uuidv4(),
+    id: uuidv4(),
     // Default to `v1` for backward compatability
     apiVersion: modDefinition.apiVersion ?? "v1",
     _recipe: pickModDefinitionMetadata(modDefinition),
