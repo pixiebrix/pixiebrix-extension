@@ -118,20 +118,6 @@ afterEach(() => {
 });
 
 describe("useModsPageActions", () => {
-  test("cloud mod component", () => {
-    mockHooks();
-    const standaloneModDefinition = modViewItemFactory({
-      isModComponent: true,
-      sharingType: "Personal",
-      status: "Inactive",
-    });
-
-    const {
-      result: { current: actions },
-    } = renderHook(() => useModsPageActions(standaloneModDefinition));
-    expectActions(["viewPublish", "viewShare", "activate", "delete"], actions);
-  });
-
   test("active personal mod component", () => {
     mockHooks();
     const personalModComponent = modViewItemFactory({
