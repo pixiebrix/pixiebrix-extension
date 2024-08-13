@@ -19,25 +19,27 @@ import { makeMenuId } from "@/background/contextMenus/makeMenuId";
 import { type UUID } from "@/types/stringTypes";
 
 /**
- * Uninstall the contextMenu UI for `extensionId` from browser context menu on all tabs.
+ * Uninstall the contextMenu UI for `modComponentId` from browser context menu on all tabs.
  *
- * Safe to call on non-context menu extension ids.
+ * Safe to call on non-context menu mod component ids.
  *
  * @returns true if the contextMenu was removed, or false if the contextMenu was not found.
  */
 export async function uninstallContextMenu({
-  extensionId,
+  modComponentId,
 }: {
-  extensionId: UUID;
+  modComponentId: UUID;
 }): Promise<boolean> {
   try {
-    await browser.contextMenus.remove(makeMenuId(extensionId));
-    console.debug(`Uninstalled context menu ${extensionId}`);
+    await browser.contextMenus.remove(makeMenuId(modComponentId));
+    console.debug(`Uninstalled context menu ${modComponentId}`);
     return true;
   } catch (error) {
-    // Will throw if extensionId doesn't refer to a context menu. The callers don't have an easy way to check the type
-    // without having to resolve the extensionPointId. So instead we'll just expect some of the calls to fail.
-    console.debug("Could not uninstall context menu %s", extensionId, {
+    // Will throw if modComponentId doesn't refer to a context menu. The
+    // callers don't have an easy way to check the type without having to
+    // resolve the extensionPointId. So instead we'll just expect some of
+    // the calls to fail.
+    console.debug("Could not uninstall context menu %s", modComponentId, {
       error,
     });
     return false;

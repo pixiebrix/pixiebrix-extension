@@ -211,7 +211,7 @@ export function deactivateMod(
     // will see duplicate menu items because the old/new mod components have different UUIDs.
     // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
     // mod component is not loaded yet, they'll get a notification to reload the page.
-    void uninstallContextMenu({ extensionId: activatedModComponent.id });
+    void uninstallContextMenu({ modComponentId: activatedModComponent.id });
   }
 
   return {
@@ -228,7 +228,7 @@ export function deactivateMod(
  * The ModComponents will have new UUIDs.
  *
  * @param modDefinition the mod to update
- * @param reduxState the current state of the extension and editor redux stores
+ * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod updated
  */
 function updateMod(
