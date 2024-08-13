@@ -24,7 +24,7 @@ import {
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
 import type { ModActivationConfig } from "@/types/modTypes";

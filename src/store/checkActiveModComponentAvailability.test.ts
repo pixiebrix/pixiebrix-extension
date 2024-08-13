@@ -17,9 +17,9 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";

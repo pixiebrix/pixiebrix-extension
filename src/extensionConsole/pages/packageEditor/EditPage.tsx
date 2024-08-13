@@ -28,7 +28,7 @@ import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitPackage from "./useSubmitPackage";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";

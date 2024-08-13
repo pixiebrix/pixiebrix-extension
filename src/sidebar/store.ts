@@ -25,8 +25,8 @@ import {
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import extensionsSlice from "@/store/extensionsSlice";
-import { persistModComponentOptionsConfig } from "@/store/extensionsStorage";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import settingsSlice from "@/store/settings/settingsSlice";
@@ -71,7 +71,7 @@ const store = configureStore({
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistModComponentOptionsConfig,
-      extensionsSlice.reducer,
+      modComponentSlice.reducer,
     ),
     sidebar: persistReducer(persistSidebarConfig, sidebarSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
@@ -114,7 +114,7 @@ setupListeners(store.dispatch);
 
 type State = {
   auth: AuthState;
-  options: ReturnType<typeof extensionsSlice.reducer>;
+  options: ReturnType<typeof modComponentSlice.reducer>;
   sidebar: SidebarState;
   settings: SettingsState;
   integrations: IntegrationsState;

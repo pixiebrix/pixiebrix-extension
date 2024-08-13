@@ -25,7 +25,7 @@ import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import {
   selectActivatedModComponents,
   selectModComponentsForMod,
-} from "@/store/extensionsSelectors";
+} from "@/store/modComponents/modComponentSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import {
   queueReloadModEveryTab,
@@ -33,12 +33,12 @@ import {
 } from "@/contentScript/messenger/api";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
-import { type ModComponentState } from "@/store/extensionsTypes";
-import extensionsSlice from "@/store/extensionsSlice";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { expectContext } from "@/utils/expectContext";
 import {
   getSettingsState,
@@ -82,7 +82,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "@/mv3/SessionStorage";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
+const { reducer: optionsReducer, actions: optionsActions } = modComponentSlice;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: editorReducer, actions: editorActions } = editorSlice;

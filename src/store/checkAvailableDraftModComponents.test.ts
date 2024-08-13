@@ -28,8 +28,8 @@ import {
 } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import modComponentsSlice from "@/store/extensionsSlice";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";

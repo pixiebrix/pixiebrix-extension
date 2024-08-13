@@ -27,7 +27,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { actions as modComponentsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { removeModComponentsFromAllTabs } from "@/store/deactivateUtils";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";

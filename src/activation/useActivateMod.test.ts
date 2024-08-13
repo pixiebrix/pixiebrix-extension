@@ -23,7 +23,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";

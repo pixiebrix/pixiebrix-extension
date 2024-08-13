@@ -28,7 +28,7 @@ import {
 } from "@/starterBricks/types";
 import modComponentsSlice, {
   actions as modComponentsActions,
-} from "@/store/extensionsSlice";
+} from "@/store/modComponents/modComponentSlice";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
@@ -36,7 +36,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import produce from "immer";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";

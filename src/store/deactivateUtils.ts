@@ -20,7 +20,7 @@ import {
   removeDraftModComponents,
   removeDraftModComponentsForMod,
 } from "@/store/editorStorage";
-import { actions as extensionActions } from "@/store/extensionsSlice";
+import { actions as extensionActions } from "@/store/modComponents/modComponentSlice";
 import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type SerializedModComponent } from "@/types/modComponentTypes";

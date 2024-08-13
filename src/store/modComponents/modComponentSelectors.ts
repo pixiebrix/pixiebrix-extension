@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";

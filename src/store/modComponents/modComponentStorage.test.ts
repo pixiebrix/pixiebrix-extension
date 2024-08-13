@@ -18,12 +18,12 @@
 import {
   createMigrationsManifest,
   inferModComponentStateVersion,
-} from "@/store/extensionsMigrations";
-import { initialState } from "@/store/extensionsSliceInitialState";
+} from "@/store/modComponents/modComponentMigrations";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import {
   getModComponentState,
   persistModComponentOptionsConfig,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import {
   readReduxStorage,
@@ -65,7 +65,7 @@ describe("getModComponentState", () => {
   });
 });
 
-describe("persistExtensionOptionsConfig", () => {
+describe("persistModComponentOptionsConfig", () => {
   test("version is the highest migration version", async () => {
     const migrations = await createMigrationsManifest();
     const maxVersion = getMaxMigrationsVersion(migrations);

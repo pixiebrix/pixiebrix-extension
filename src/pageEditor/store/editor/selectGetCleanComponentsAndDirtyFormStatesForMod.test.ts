@@ -16,7 +16,7 @@
  */
 
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { initialState as editorInitialState } from "@/pageEditor/store/editor/editorSlice";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";

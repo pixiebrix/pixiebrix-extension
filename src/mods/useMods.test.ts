@@ -17,7 +17,7 @@
 
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useMods from "@/mods/useMods";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { range } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -59,7 +59,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setModComponents([
+          modComponentSlice.actions.UNSAFE_setModComponents([
             activatedModComponentFactory({
               _recipe: {
                 ...metadataFactory(),
@@ -90,7 +90,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setModComponents(
+          modComponentSlice.actions.UNSAFE_setModComponents(
             range(3).map(() =>
               activatedModComponentFactory({
                 _recipe: {
@@ -128,7 +128,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.UNSAFE_setModComponents([
+          modComponentSlice.actions.UNSAFE_setModComponents([
             activatedModComponentFactory({
               _recipe: {
                 ...metadata,

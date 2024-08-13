@@ -22,7 +22,7 @@ import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/
 import { waitForEffect } from "@/testUtils/testHelpers";
 import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import userEvent from "@testing-library/user-event";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 

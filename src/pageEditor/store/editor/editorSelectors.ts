@@ -22,14 +22,14 @@ import {
   ModalKey,
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
   type DataPanelTabUIState,
 } from "@/pageEditor/store/editor/uiStateTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { deserializeError } from "serialize-error";
 import {

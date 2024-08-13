@@ -23,7 +23,7 @@ import {
 import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { actions as modComponentsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { array } from "cooky-cutter";

@@ -28,7 +28,7 @@ import {
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";

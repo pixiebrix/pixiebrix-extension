@@ -18,7 +18,7 @@
 import { type Mod, type ModStatus, type ModViewItem } from "@/types/modTypes";
 import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { type UUID } from "@/types/stringTypes";
 
 import {

@@ -17,7 +17,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";

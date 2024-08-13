@@ -41,7 +41,7 @@ import {
   selectActiveModComponentRef,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";

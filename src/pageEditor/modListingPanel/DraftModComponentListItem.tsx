@@ -52,7 +52,7 @@ import {
   DELETE_STARTER_BRICK_MODAL_PROPS,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
-import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
+import { selectIsModComponentSavedOnCloud } from "@/store/modComponents/modComponentSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import {
   getLinkedApiClient,
@@ -24,10 +24,10 @@ import {
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
@@ -43,7 +43,7 @@ import {
   getAllModComponentDefinitionsWithType,
   getModComponentIdsForModComponentDefinitions,
 } from "@/starterBricks/starterBrickModUtils";
-import { selectModComponentsForMod } from "@/store/extensionsSelectors";
+import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
 import { type SidebarState } from "@/types/sidebarTypes";
 import { getEventKeyForPanel } from "@/store/sidebar/eventKeyUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -64,7 +64,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: extensionsReducer, actions: extensionsActions } =
-  extensionsSlice;
+  modComponentSlice;
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reduce and actions
 const { reducer: sidebarReducer, actions: sidebarActions } = sidebarSlice;
 

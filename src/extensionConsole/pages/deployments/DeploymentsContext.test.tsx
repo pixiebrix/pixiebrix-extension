@@ -26,7 +26,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import {
   deploymentFactory,
@@ -34,7 +34,7 @@ import {
 } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment } from "@/types/contract";
 import { validateTimestamp } from "@/utils/timeUtils";
@@ -187,7 +187,7 @@ describe("DeploymentsContext", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.activateMod({
+            modComponentSlice.actions.activateMod({
               modDefinition: oldModDefinition,
               deployment,
               screen: "extensionConsole",
@@ -236,7 +236,7 @@ describe("DeploymentsContext", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.activateMod({
+            modComponentSlice.actions.activateMod({
               modDefinition,
               deployment,
               screen: "extensionConsole",
@@ -270,7 +270,7 @@ describe("DeploymentsContext", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.activateMod({
+            modComponentSlice.actions.activateMod({
               modDefinition,
               // No deployment, so that the mod is unmanaged
               screen: "extensionConsole",
@@ -430,7 +430,7 @@ describe("DeploymentsContext", () => {
     });
 
     getReduxStore().dispatch(
-      extensionsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         deployment,
         screen: "extensionConsole",

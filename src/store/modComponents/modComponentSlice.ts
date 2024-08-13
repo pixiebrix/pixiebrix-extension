@@ -35,7 +35,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { initialState } from "@/store/extensionsSliceInitialState";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 
 type ActivateModPayload = {
@@ -72,7 +72,7 @@ type ActivateModPayload = {
   isReactivate: boolean;
 };
 
-const extensionsSlice = createSlice({
+const modComponentSlice = createSlice({
   name: "extensions",
   initialState,
   reducers: {
@@ -152,8 +152,6 @@ const extensionsSlice = createSlice({
           selectEventData(activatedModComponent),
         );
 
-        // NOTE: do not save the mod components in the cloud (because the user can just activate from the marketplace /
-        // or activate the deployment again
         state.extensions.push(activatedModComponent);
 
         // Ensure context menus are available on all existing tabs
@@ -339,6 +337,6 @@ const extensionsSlice = createSlice({
   },
 });
 
-export const { actions } = extensionsSlice;
+export const { actions } = modComponentSlice;
 
-export default extensionsSlice;
+export default modComponentSlice;

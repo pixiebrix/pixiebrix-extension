@@ -33,7 +33,7 @@ import { produce } from "immer";
 import { calculateInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
 import { cloneDeep, range, uniq } from "lodash";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,

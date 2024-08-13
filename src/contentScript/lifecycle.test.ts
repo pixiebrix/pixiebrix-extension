@@ -33,7 +33,7 @@ import {
   timestampFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { type getModComponentState } from "@/store/extensionsStorage";
+import { type getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
@@ -89,7 +89,7 @@ const activatedModComponentFactory = define<
 describe("lifecycle", () => {
   beforeEach(() => {
     jest.isolateModules(() => {
-      jest.mock("@/store/extensionsStorage", () => ({
+      jest.mock("@/store/modComponents/modComponentStorage", () => ({
         getModComponentState: jest
           .fn()
           .mockRejectedValue(new Error("Mock not implemented")),
@@ -98,7 +98,7 @@ describe("lifecycle", () => {
       lifecycleModule = require("@/contentScript/lifecycle");
       starterBrickRegistry = require("@/starterBricks/registry").default;
       getModComponentStateMock =
-        require("@/store/extensionsStorage").getModComponentState;
+        require("@/store/modComponents/modComponentStorage").getModComponentState;
     });
 
     window.document.body.innerHTML = "";

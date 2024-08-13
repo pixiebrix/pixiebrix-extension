@@ -19,7 +19,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import { removeModComponentsFromAllTabs } from "@/store/deactivateUtils";
 import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { actions as modComponentsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";

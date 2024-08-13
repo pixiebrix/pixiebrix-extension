@@ -20,7 +20,7 @@ import { type Menus, type Tabs } from "webextension-polyfill";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { waitForContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
-import { getModComponentState } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { type UUID } from "@/types/stringTypes";
 import { allSettled } from "@/utils/promiseUtils";

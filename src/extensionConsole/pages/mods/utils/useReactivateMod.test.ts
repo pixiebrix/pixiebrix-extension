@@ -17,9 +17,9 @@
 
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useReactivateMod from "./useReactivateMod";
-import { actions as extensionActions } from "@/store/extensionsSlice";
+import { actions as extensionActions } from "@/store/modComponents/modComponentSlice";
 import { deactivateMod } from "@/store/deactivateUtils";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 beforeEach(() => {

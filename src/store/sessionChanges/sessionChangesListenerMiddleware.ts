@@ -19,7 +19,7 @@ import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
 import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
@@ -39,11 +39,11 @@ sessionChangesListenerMiddleware.startListening({
     actions.removeModComponentFormStateFromMod,
     actions.removeModData,
 
-    extensionsSlice.actions.removeModComponent,
-    extensionsSlice.actions.removeModComponents,
-    extensionsSlice.actions.setModComponentMetadata,
-    extensionsSlice.actions.activateMod,
-    extensionsSlice.actions.removeModById,
+    modComponentSlice.actions.removeModComponent,
+    modComponentSlice.actions.removeModComponents,
+    modComponentSlice.actions.setModComponentMetadata,
+    modComponentSlice.actions.activateMod,
+    modComponentSlice.actions.removeModById,
   ),
   effect(action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;

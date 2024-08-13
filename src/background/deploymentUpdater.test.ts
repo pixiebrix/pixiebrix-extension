@@ -18,7 +18,7 @@
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { uuidv4, normalizeSemVerString } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";

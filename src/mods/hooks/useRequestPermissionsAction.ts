@@ -20,7 +20,7 @@ import { useCallback } from "react";
 import { selectComponentsFromMod } from "@/utils/modUtils";
 import { useSelector } from "react-redux";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 
 function useRequestPermissionsAction(
   modViewItem: ModViewItem,

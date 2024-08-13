@@ -26,7 +26,7 @@ import { getLinkedApiClient } from "@/data/service/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import { useGetEditablePackagesQuery } from "@/data/service/api";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";

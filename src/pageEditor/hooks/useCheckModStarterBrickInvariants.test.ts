@@ -31,7 +31,7 @@ import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
-import { actions as modComponentsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   type InnerDefinitionRef,

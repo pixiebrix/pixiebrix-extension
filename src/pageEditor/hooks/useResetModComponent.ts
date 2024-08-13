@@ -17,7 +17,7 @@
 
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";

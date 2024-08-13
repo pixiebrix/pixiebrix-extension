@@ -27,7 +27,7 @@ import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import {
   modMetadataFactory,
   activatedModComponentFactory,
@@ -38,7 +38,7 @@ import {
   modDefinitionWithVersionedStarterBrickFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/editorStorage";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
@@ -322,9 +322,9 @@ describe("updateModsIfUpdatesAvailable", () => {
       },
     };
 
-    const optionsState = extensionsSlice.reducer(
+    const optionsState = modComponentSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition: publicMod,
         screen: "marketplace",
         isReactivate: false,

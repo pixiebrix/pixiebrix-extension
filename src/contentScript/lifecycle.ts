@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getModComponentState } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import starterBrickRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
@@ -270,7 +270,7 @@ export function TEST_getDraftModComponentStarterBrickMap(): Map<
 }
 
 /**
- * Remove a mod component on the page if a activated mod component (i.e. in extensionsSlice).
+ * Remove a mod component on the page if a activated mod component (i.e. in modComponentSlice).
  *
  * @see removeDraftModComponents
  */

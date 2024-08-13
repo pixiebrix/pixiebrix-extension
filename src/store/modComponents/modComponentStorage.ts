@@ -20,8 +20,8 @@ import { createMigrate } from "redux-persist";
 import {
   createMigrationsManifest,
   inferModComponentStateVersion,
-} from "@/store/extensionsMigrations";
-import { type ModComponentState } from "./extensionsTypes";
+} from "@/store/modComponents/modComponentMigrations";
+import { type ModComponentState } from "./modComponentTypes";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { type RegistryId } from "@/types/registryTypes";
 import { boolean } from "@/utils/typeUtils";
@@ -31,16 +31,17 @@ import {
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
-import { initialState } from "@/store/extensionsSliceInitialState";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { type PersistMigrate } from "redux-persist/es/types";
 import { compact } from "lodash";
 
-const STORAGE_KEY = validateReduxStorageKey("persist:extensionOptions");
+const PERSIST_KEY = "extensionOptions";
+const REDUX_STORAGE_KEY = validateReduxStorageKey(`persist:${PERSIST_KEY}`);
 
 export async function getModComponentState(): Promise<ModComponentState> {
   const migrations = await createMigrationsManifest();
   return readReduxStorage<ModComponentState>(
-    STORAGE_KEY,
+    REDUX_STORAGE_KEY,
     migrations,
     initialState,
     inferModComponentStateVersion,
@@ -63,7 +64,7 @@ export async function saveModComponentState(
 ): Promise<void> {
   const migrations = await createMigrationsManifest();
   await setReduxStorage(
-    STORAGE_KEY,
+    REDUX_STORAGE_KEY,
     state,
     getMaxMigrationsVersion(migrations),
   );
@@ -78,7 +79,7 @@ const migrate: PersistMigrate = async (state, currentVersion) => {
 };
 
 export const persistModComponentOptionsConfig = {
-  key: "extensionOptions",
+  key: PERSIST_KEY,
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,

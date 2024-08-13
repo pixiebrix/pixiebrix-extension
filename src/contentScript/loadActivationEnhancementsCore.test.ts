@@ -17,7 +17,7 @@
 
 import { showModActivationInSidebar } from "@/contentScript/sidebarController";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
-import { getActivatedModIds } from "@/store/extensionsStorage";
+import { getActivatedModIds } from "@/store/modComponents/modComponentStorage";
 import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -50,7 +50,7 @@ jest.mock("@/auth/authStorage", () => ({
 const isLinkedMock = jest.mocked(isLinked);
 
 jest.mock("@/contentScript/ready");
-jest.mock("@/store/extensionsStorage");
+jest.mock("@/store/modComponents/modComponentStorage");
 jest.mock("@/background/messenger/external/_implementation");
 jest.mock("@/sidebar/store");
 

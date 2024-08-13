@@ -19,7 +19,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { actions as modComponentsActions } from "@/store/extensionsSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   modComponentDefinitionFactory,

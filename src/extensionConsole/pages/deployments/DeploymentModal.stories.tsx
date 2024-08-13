@@ -21,7 +21,7 @@ import { action } from "@storybook/addon-actions";
 import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/data/service/api";
@@ -48,7 +48,7 @@ const Template: Story<StoryType> = ({
 }) => {
   const extensionsStore = configureStore({
     reducer: {
-      options: extensionsSlice.reducer,
+      options: modComponentSlice.reducer,
       settings: settingsSlice.reducer,
       auth: authSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
@@ -57,7 +57,7 @@ const Template: Story<StoryType> = ({
       return getDefaultMiddleware().concat(appApi.middleware);
     },
     preloadedState: {
-      options: extensionsSlice.getInitialState(),
+      options: modComponentSlice.getInitialState(),
       settings: { ...settingsSlice.getInitialState(), updatePromptTimestamp },
       auth: { ...authSlice.getInitialState(), enforceUpdateMillis },
     },

@@ -26,11 +26,11 @@ import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/data/service/api";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { persistModComponentOptionsConfig } from "@/store/extensionsStorage";
+import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
 import integrationsSlice, {
   persistIntegrationsConfig,
 } from "@/integrations/store/integrationsSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentsSlice from "@/store/modComponents/modComponentSlice";
 import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";

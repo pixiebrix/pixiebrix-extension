@@ -23,7 +23,7 @@ import { isEmpty } from "lodash";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { getVisiblePanelCount } from "@/store/sidebar/sidebarUtils";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 

@@ -17,7 +17,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { useEffect } from "react";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 

@@ -23,7 +23,7 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { wizardStateFactory } from "@/activation/useActivateModWizard";

@@ -29,7 +29,7 @@ import {
   type UnavailableMod,
 } from "@/types/modTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import {
   type HydratedModComponent,
   type ModComponentBase,

@@ -29,7 +29,7 @@ import {
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { getActivatedModIds } from "@/store/extensionsStorage";
+import { getActivatedModIds } from "@/store/modComponents/modComponentStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { allSettled } from "@/utils/promiseUtils";
 import type { ModActivationConfig } from "@/types/modTypes";

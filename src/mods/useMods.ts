@@ -17,7 +17,7 @@
 
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { uniqBy } from "lodash";

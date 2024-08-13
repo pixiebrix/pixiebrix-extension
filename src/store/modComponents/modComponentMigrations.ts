@@ -27,7 +27,7 @@ import {
   type ModComponentStateV2,
   type ModComponentStateV3,
   type ModComponentStateV4,
-} from "@/store/extensionsTypes";
+} from "@/store/modComponents/modComponentTypes";
 import { omit, partition, toLower } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 import { nowTimestamp } from "@/utils/timeUtils";
@@ -40,8 +40,9 @@ import { getUserScope } from "@/auth/authUtils";
 const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
   // state version to match state type names and existing versions
-  // The typeguards shouldn't be necessary, but in certain cases, the rehydration can run
-  // on ModComponentStateV2 extensions before the _persist key is added
+  // The type-guards shouldn't be necessary, but in certain cases, the
+  // rehydration can run on ModComponentStateV2 extensions before the
+  // _persist key is added
   0: (state) => state,
   1(state: ModComponentStateLegacyVersions & PersistedState) {
     if (isModComponentStateV0(state)) {

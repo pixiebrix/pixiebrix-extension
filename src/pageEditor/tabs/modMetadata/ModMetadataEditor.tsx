@@ -32,7 +32,7 @@ import styles from "./ModMetadataEditor.module.scss";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import Alert from "@/components/Alert";
 import { createSelector } from "@reduxjs/toolkit";
 import { lt } from "semver";

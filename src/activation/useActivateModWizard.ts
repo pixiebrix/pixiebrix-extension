@@ -17,7 +17,7 @@
 
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import type React from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
@@ -33,7 +33,7 @@ import { type AuthOption } from "@/auth/authTypes";
 import {
   collectConfiguredIntegrationDependencies,
   collectModOptions,
-} from "@/store/extensionsUtils";
+} from "@/store/modComponents/modComponentUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Primitive } from "type-fest";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";

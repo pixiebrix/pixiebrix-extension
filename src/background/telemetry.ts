@@ -16,7 +16,7 @@
  */
 
 import { compact, debounce, throttle, uniq } from "lodash";
-import { getModComponentState } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,

@@ -19,7 +19,7 @@ import { debouncedActivateStarterMods } from "@/background/starterMods";
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/authStorage";
