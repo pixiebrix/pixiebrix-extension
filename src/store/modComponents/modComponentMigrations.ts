@@ -21,7 +21,9 @@ import {
   isModComponentStateV1,
   isModComponentStateV2,
   isModComponentStateV3,
-  type ModComponentStateLegacyVersions,
+  isModComponentStateV4,
+  isModComponentStateV5,
+  type ModComponentStateVersions,
   type ModComponentStateV0,
   type ModComponentStateV1,
   type ModComponentStateV2,
@@ -45,7 +47,9 @@ const migrations: MigrationManifest = {
   // rehydration can run on ModComponentStateV2 extensions before the
   // _persist key is added
   0: (state) => state,
-  1(state: ModComponentStateLegacyVersions & PersistedState) {
+  1(state: ModComponentStateVersions & PersistedState) {
+    console.log("*** migration 1 running");
+
     if (isModComponentStateV0(state)) {
       return migrateModComponentStateV0ToV1(state);
     }
@@ -53,6 +57,8 @@ const migrations: MigrationManifest = {
     return state;
   },
   2(state: ModComponentStateV1 & PersistedState) {
+    console.log("*** migration 2 running");
+
     if (isModComponentStateV1(state)) {
       return migrateModComponentStateV1ToV2(state);
     }
@@ -60,6 +66,8 @@ const migrations: MigrationManifest = {
     return state;
   },
   3(state: ModComponentStateV2 & PersistedState) {
+    console.log("*** migration 3 running");
+
     if (isModComponentStateV2(state)) {
       return migrateModComponentStateV2toV3(state);
     }
@@ -70,6 +78,8 @@ const migrations: MigrationManifest = {
   5(
     state: ModComponentStateV4 & PersistedState,
   ): ModComponentStateV5 & PersistedState {
+    console.log("*** migration 5 running");
+
     return {
       ...omit(state, "extensions"),
       activatedModComponents: state.extensions,
@@ -178,6 +188,8 @@ function migrateModComponentStateV3toV4(
   state: ModComponentStateV3 & PersistedState,
   userScope: Nullishable<string>,
 ): ModComponentStateV4 & PersistedState {
+  console.log("*** migration 4 running");
+
   return {
     ...state,
     extensions: migrateStandaloneComponentsToMods(state.extensions, userScope),
@@ -185,8 +197,16 @@ function migrateModComponentStateV3toV4(
 }
 
 export function inferModComponentStateVersion(
-  state: ModComponentStateLegacyVersions,
+  state: ModComponentStateVersions,
 ): number {
+  if (isModComponentStateV5(state)) {
+    return 5;
+  }
+
+  if (isModComponentStateV4(state)) {
+    return 4;
+  }
+
   if (isModComponentStateV3(state)) {
     return 3;
   }

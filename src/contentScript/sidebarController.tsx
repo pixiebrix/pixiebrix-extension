@@ -189,10 +189,12 @@ export async function showSidebar(): Promise<void> {
 }
 
 /**
- * Force-show the panel for the given extension id
- * @param extensionId the extension UUID
+ * Force-show the panel for the given mod component id
+ * @param modComponentId the mod component UUID
  */
-export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
+export async function activateExtensionPanel(
+  modComponentId: UUID,
+): Promise<void> {
   expectContext("contentScript");
 
   if (!(await isSidePanelOpen())) {
@@ -200,7 +202,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   }
 
   void sidebarInThisTab.activatePanel(getTimedSequence(), {
-    extensionId,
+    modComponentId,
     force: true,
   });
 }

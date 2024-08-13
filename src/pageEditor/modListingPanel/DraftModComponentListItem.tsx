@@ -172,7 +172,7 @@ const DraftModComponentListItem: React.FunctionComponent<
           // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);
           updateSidebar(inspectedTab, {
-            extensionId: modComponentFormState.uuid,
+            modComponentId: modComponentFormState.uuid,
             force: true,
             refresh: false,
           });

@@ -51,7 +51,7 @@ class TraceAnalysis extends AnalysisVisitorABC {
     super();
 
     for (const [instanceId, records] of Object.entries(
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- a proxy function breaks the type inference of isTraceError
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- a prox y function breaks the type inference of isTraceError
       groupBy(trace.filter(isTraceError), (x) => x.brickInstanceId),
     )) {
       this.traceErrorMap.set(instanceId as UUID, records);
