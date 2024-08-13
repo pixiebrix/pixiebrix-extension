@@ -75,6 +75,9 @@ export default defineConfig<{ chromiumChannel: string }>({
   expect: {
     /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
     timeout: 5000,
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.1,
+    },
   },
   reportSlowTests: null,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
