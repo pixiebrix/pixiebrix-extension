@@ -33,7 +33,7 @@ const ShareModModal: React.FunctionComponent = () => {
 
   return (
     <ModalLayout
-      show={showShareContext?.blueprintId != null}
+      show={showShareContext?.modId != null}
       title="Share with Teams"
       onHide={closeModal}
     >

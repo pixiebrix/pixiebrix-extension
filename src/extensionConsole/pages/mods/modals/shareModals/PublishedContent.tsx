@@ -24,7 +24,7 @@ import PublishContentLayout from "./PublishContentLayout";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const PublishedContent: React.FunctionComponent = () => {
-  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+  const { modId: modId } = useSelector(selectShowPublishContext) ?? {};
 
   assertNotNullish(modId, "modId from publish context is nullish");
 

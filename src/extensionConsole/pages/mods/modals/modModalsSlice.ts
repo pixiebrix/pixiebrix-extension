@@ -26,8 +26,8 @@ type LogsContext = {
 };
 
 export type ShareContext = {
-  blueprintId?: RegistryId;
-  extensionId?: UUID;
+  modId?: RegistryId;
+  modComponentId?: UUID;
 };
 
 export type PublishContext = ShareContext & {

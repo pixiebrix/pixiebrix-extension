@@ -37,10 +37,10 @@ function useViewPublishAction(modViewItem: ModViewItem): (() => void) | null {
   const viewPublish = () => {
     const publishContext: PublishContext = isModDefinition(mod)
       ? {
-          blueprintId: getPackageId(mod),
+          modId: getPackageId(mod),
         }
       : {
-          extensionId: mod.id,
+          modComponentId: mod.id,
         };
 
     dispatch(modModalsSlice.actions.setPublishContext(publishContext));

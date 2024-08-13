@@ -37,7 +37,7 @@ const EditPublishContent: React.FunctionComponent = () => {
     dispatch(modModalsSlice.actions.setCancelingPublish());
   };
 
-  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+  const { modId: modId } = useSelector(selectShowPublishContext) ?? {};
 
   assertNotNullish(modId, "modId from publish context is nullish");
 

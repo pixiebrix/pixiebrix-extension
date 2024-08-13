@@ -75,7 +75,7 @@ test("renders publish modal", async () => {
 
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: modDefinition.metadata.id,
+            modId: modDefinition.metadata.id,
           }),
         );
       },
@@ -100,7 +100,7 @@ test("renders edit publish modal", async () => {
 
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: modDefinition.metadata.id,
+            modId: modDefinition.metadata.id,
           }),
         );
       },
@@ -125,7 +125,7 @@ test("renders cancel publish modal", async () => {
 
         dispatch(
           modModalsSlice.actions.setPublishContext({
-            blueprintId: modDefinition.metadata.id,
+            modId: modDefinition.metadata.id,
             cancelingPublish: true,
           }),
         );

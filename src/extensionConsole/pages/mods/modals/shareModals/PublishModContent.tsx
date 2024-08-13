@@ -37,7 +37,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 const PublishModContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
+  const { modId: modId } = useSelector(selectShowPublishContext) ?? {};
   assertNotNullish(modId, "modId from publish context is nullish");
 
   const [updateModDefinition] = useUpdateModDefinitionMutation();
