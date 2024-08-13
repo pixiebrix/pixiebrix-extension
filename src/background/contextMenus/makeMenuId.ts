@@ -22,6 +22,6 @@ export const MENU_PREFIX = "pixiebrix-";
 /**
  * Return a unique context menu item id for the given extension id.
  */
-export function makeMenuId(extensionId: UUID): string {
-  return `${MENU_PREFIX}${extensionId}`;
+export function makeMenuId(modComponentId: UUID): string {
+  return `${MENU_PREFIX}${modComponentId}`;
 }
