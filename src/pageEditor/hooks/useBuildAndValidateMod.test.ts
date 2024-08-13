@@ -97,7 +97,7 @@ describe("useBuildAndValidateMod", () => {
 
       // Activate the mod
       const state = modComponentsSlice.reducer(
-        { extensions: [] },
+        { activatedModComponents: [] },
         modComponentsActions.activateMod({
           modDefinition,
           screen: "pageEditor",
@@ -117,7 +117,7 @@ describe("useBuildAndValidateMod", () => {
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
           // Mod was activated, so get the mod component from state
-          const modComponent = state.extensions[i];
+          const modComponent = state.activatedModComponents[i];
 
           // Load the adapter for this mod component
           const { fromModComponent } = adapter(starterBrick.definition.type);
@@ -151,7 +151,9 @@ describe("useBuildAndValidateMod", () => {
         const newMod = await result.current.buildAndValidateMod({
           sourceMod: modDefinition,
           // Only pass in the unchanged clean mod components
-          cleanModComponents: state.extensions.slice(dirtyModComponentCount),
+          cleanModComponents: state.activatedModComponents.slice(
+            dirtyModComponentCount,
+          ),
           dirtyModComponentFormStates: modComponentFormStates,
         });
 
@@ -207,7 +209,7 @@ describe("useBuildAndValidateMod", () => {
       await expect(
         result.current.buildAndValidateMod({
           sourceMod: activatedModDefinition,
-          cleanModComponents: state.extensions.slice(1),
+          cleanModComponents: state.activatedModComponents.slice(1),
           dirtyModComponentFormStates: [dirtyFormState1],
         }),
       ).rejects.toThrow("Mod save failed due to data integrity error");

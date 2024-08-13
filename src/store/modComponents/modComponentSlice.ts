@@ -82,7 +82,7 @@ const modComponentSlice = createSlice({
       state,
       { payload }: PayloadAction<ActivatedModComponent[]>,
     ) {
-      state.extensions = cloneDeep(payload);
+      state.activatedModComponents = cloneDeep(payload);
     },
 
     /**
@@ -98,7 +98,7 @@ const modComponentSlice = createSlice({
       }>,
     ) {
       const { modComponentId, modMetadata } = payload;
-      const modComponent = state.extensions.find(
+      const modComponent = state.activatedModComponents.find(
         (x) => x.id === modComponentId,
       );
 
@@ -152,7 +152,7 @@ const modComponentSlice = createSlice({
           selectEventData(activatedModComponent),
         );
 
-        state.extensions.push(activatedModComponent);
+        state.activatedModComponents.push(activatedModComponent);
 
         // Ensure context menus are available on all existing tabs
         void contextMenus.preload([activatedModComponent]);
@@ -168,15 +168,9 @@ const modComponentSlice = createSlice({
     },
 
     /**
-     * Warning: this action saves the mod component to Redux, but it does not save the mod component to the cloud.
-     * You are likely looking for the `useUpsertModComponentFormState` hook, which saves the mod component
-     * form state using this action with options to push it to the server.
-     *
      * Prefer using `useUpsertModComponentFormState` over calling this action directly.
      *
      * @see useUpsertModComponentFormState
-     *
-     * XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
      */
     saveModComponent(
       state,
@@ -237,13 +231,13 @@ const modComponentSlice = createSlice({
 
       assertModComponentNotHydrated(modComponent);
 
-      const index = state.extensions.findIndex((x) => x.id === id);
+      const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = modComponent;
+        state.activatedModComponents[index] = modComponent;
       } else {
-        state.extensions.push(modComponent);
+        state.activatedModComponents.push(modComponent);
       }
     },
 
@@ -255,7 +249,7 @@ const modComponentSlice = createSlice({
       action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>,
     ) {
       const { id, ...modComponentUpdate } = action.payload;
-      const index = state.extensions.findIndex((x) => x.id === id);
+      const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index === -1) {
         reportError(
@@ -267,8 +261,8 @@ const modComponentSlice = createSlice({
       }
 
       // eslint-disable-next-line security/detect-object-injection -- index is number
-      state.extensions[index] = {
-        ...state.extensions.at(index),
+      state.activatedModComponents[index] = {
+        ...state.activatedModComponents.at(index),
         ...modComponentUpdate,
       } as ActivatedModComponent;
     },
@@ -281,7 +275,7 @@ const modComponentSlice = createSlice({
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
       const metadata = action.payload;
-      const modComponents = state.extensions.filter(
+      const modComponents = state.activatedModComponents.filter(
         (extension) => extension._recipe?.id === metadata?.id,
       );
       for (const modComponent of modComponents) {
@@ -294,11 +288,11 @@ const modComponentSlice = createSlice({
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
       const [, extensions] = partition(
-        state.extensions,
+        state.activatedModComponents,
         (x) => x._recipe?.id === modId,
       );
 
-      state.extensions = extensions;
+      state.activatedModComponents = extensions;
     },
 
     /**
@@ -312,7 +306,7 @@ const modComponentSlice = createSlice({
     ) {
       // NOTE: We aren't deleting the mod components on the server.
       // The user must do that separately from the mods screen
-      state.extensions = state.extensions.filter(
+      state.activatedModComponents = state.activatedModComponents.filter(
         (x) => !modComponentIds.includes(x.id),
       );
     },
@@ -327,7 +321,7 @@ const modComponentSlice = createSlice({
     ) {
       // NOTE: We aren't deleting the mod component/definition on the server.
       // The user must do that separately from the dashboard
-      state.extensions = state.extensions.filter(
+      state.activatedModComponents = state.activatedModComponents.filter(
         (x) => x.id !== modComponentId,
       );
     },

@@ -69,7 +69,14 @@ export type ModComponentStateLegacyVersions =
  */
 export type ModComponentStateV4 = ModComponentStateV3;
 
-export type ModComponentState = ModComponentStateV4;
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentStateV5 = {
+  activatedModComponents: ActivatedModComponentV2[];
+};
+
+export type ModComponentState = ModComponentStateV5;
 
 export type ModComponentsRootState = {
   options: ModComponentState;

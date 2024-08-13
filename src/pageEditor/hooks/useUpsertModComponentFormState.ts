@@ -106,8 +106,7 @@ function onStepError(error: unknown, step: string): string {
 }
 
 /**
- * Hook that returns a callback to save a Mod Component Form State in Redux, and optionally push a Standalone Mod
- * Component to the cloud.
+ * Hook that returns a callback to save a Mod Component Form State in Redux.
  */
 function useUpsertModComponentFormState(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't

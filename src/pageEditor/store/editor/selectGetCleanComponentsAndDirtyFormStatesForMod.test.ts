@@ -250,7 +250,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
           },
         },
         options: {
-          extensions: [
+          activatedModComponents: [
             ...cleanModComponents,
             ...cleanFormModComponents,
             ...dirtyModComponents,

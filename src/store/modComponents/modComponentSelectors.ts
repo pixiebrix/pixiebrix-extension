@@ -25,14 +25,14 @@ import { type UUID } from "@/types/stringTypes";
 export function selectActivatedModComponents({
   options,
 }: ModComponentsRootState): ActivatedModComponent[] {
-  if (!Array.isArray(options.extensions)) {
+  if (!Array.isArray(options.activatedModComponents)) {
     console.warn("state migration has not been applied yet", {
       options,
     });
     throw new TypeError("state migration has not been applied yet");
   }
 
-  return options.extensions;
+  return options.activatedModComponents;
 }
 
 const isModComponentSavedOnCloudSelector = createSelector(

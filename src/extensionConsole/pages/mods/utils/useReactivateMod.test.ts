@@ -47,7 +47,7 @@ test("deactivates mod components", async () => {
 
   const expectedExtension = (
     getReduxStore().getState() as ModComponentsRootState
-  ).options.extensions[0];
+  ).options.activatedModComponents[0];
 
   await act(async () => reactivate(modDefinition));
 

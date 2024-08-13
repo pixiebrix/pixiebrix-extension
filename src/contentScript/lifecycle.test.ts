@@ -114,7 +114,7 @@ describe("lifecycle", () => {
   });
 
   it("first navigation no extensions smoke test", async () => {
-    getModComponentStateMock.mockResolvedValue({ extensions: [] });
+    getModComponentStateMock.mockResolvedValue({ activatedModComponents: [] });
 
     await lifecycleModule.handleNavigate();
     expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
@@ -141,7 +141,9 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      activatedModComponents: [modComponent],
+    });
 
     // Sanity check for the test
     expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
@@ -193,7 +195,9 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      activatedModComponents: [modComponent],
+    });
 
     // Sanity check for the test
     expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
@@ -249,7 +253,9 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      activatedModComponents: [modComponent],
+    });
 
     await lifecycleModule.handleNavigate();
 
@@ -276,7 +282,7 @@ describe("lifecycle", () => {
     });
 
     getModComponentStateMock.mockResolvedValue({
-      extensions: [updatedModComponent],
+      activatedModComponents: [updatedModComponent],
     });
     lifecycleModule.queueReloadFrameMods();
 

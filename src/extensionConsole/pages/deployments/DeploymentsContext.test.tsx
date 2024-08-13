@@ -152,7 +152,9 @@ describe("DeploymentsContext", () => {
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     const { options } = getReduxStore().getState();
-    expect((options as ModComponentState).extensions).toHaveLength(1);
+    expect((options as ModComponentState).activatedModComponents).toHaveLength(
+      1,
+    );
 
     expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
   });
@@ -208,7 +210,9 @@ describe("DeploymentsContext", () => {
 
     // The initial load will automatically remove the old mod.
     const { options } = getReduxStore().getState();
-    expect((options as ModComponentState).extensions).toHaveLength(0);
+    expect((options as ModComponentState).activatedModComponents).toHaveLength(
+      0,
+    );
     expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(1);
 
     await userEvent.click(screen.getByText("Update"));
@@ -219,7 +223,9 @@ describe("DeploymentsContext", () => {
     });
 
     const { options: updatedOptions } = getReduxStore().getState();
-    expect((updatedOptions as ModComponentState).extensions).toHaveLength(1);
+    expect(
+      (updatedOptions as ModComponentState).activatedModComponents,
+    ).toHaveLength(1);
 
     expect(jest.mocked(reloadModsEveryTab)).toHaveBeenCalledTimes(2);
   });
@@ -253,7 +259,7 @@ describe("DeploymentsContext", () => {
     });
 
     const {
-      options: { extensions: activatedModComponents },
+      options: { activatedModComponents },
     } = getReduxStore().getState() as { options: ModComponentState };
     expect(activatedModComponents).toHaveLength(0);
   });
@@ -282,7 +288,7 @@ describe("DeploymentsContext", () => {
     );
 
     const {
-      options: { extensions: initialActivatedModComponents },
+      options: { activatedModComponents: initialActivatedModComponents },
     } = getReduxStore().getState() as { options: ModComponentState };
     expect(initialActivatedModComponents).toHaveLength(1);
     expect(initialActivatedModComponents[0]._deployment).toBeUndefined();
@@ -298,7 +304,7 @@ describe("DeploymentsContext", () => {
     await userEvent.click(screen.getByText("Update"));
 
     const {
-      options: { extensions: activatedModComponents },
+      options: { activatedModComponents },
     } = getReduxStore().getState() as { options: ModComponentState };
     expect(activatedModComponents).toHaveLength(1);
     expect(activatedModComponents[0]._deployment?.id).toBe(deployment.id);

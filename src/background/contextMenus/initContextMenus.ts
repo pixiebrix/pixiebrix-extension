@@ -88,9 +88,11 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
 }
 
 async function preloadAllContextMenus(): Promise<void> {
-  const { extensions } = await getModComponentState();
+  const { activatedModComponents } = await getModComponentState();
   const { fulfilled } = await allSettled(
-    extensions.map(async (x) => hydrateModComponentInnerDefinitions(x)),
+    activatedModComponents.map(async (x) =>
+      hydrateModComponentInnerDefinitions(x),
+    ),
     { catch: "ignore" },
   );
   await preloadContextMenus(fulfilled);

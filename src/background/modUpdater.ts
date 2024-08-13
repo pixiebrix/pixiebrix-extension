@@ -64,7 +64,7 @@ type PackageVersionPair = { name: RegistryId; version: SemVerString };
 export async function getActivatedMarketplaceModVersions(): Promise<
   PackageVersionPair[]
 > {
-  const { extensions: activatedModComponents } = await getModComponentState();
+  const { activatedModComponents } = await getModComponentState();
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
   // the deployment updater will handle the updates.

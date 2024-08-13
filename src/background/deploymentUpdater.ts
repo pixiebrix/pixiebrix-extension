@@ -301,7 +301,7 @@ async function activateDeployment({
   let _editorState = editorState;
   const { deployment, modDefinition } = activatableDeployment;
 
-  const isAlreadyActivated = optionsState.extensions.some(
+  const isAlreadyActivated = optionsState.activatedModComponents.some(
     (activatedModComponent) =>
       activatedModComponent._deployment?.id === deployment.id,
   );
@@ -417,7 +417,7 @@ async function selectUpdatedDeployments(
   { restricted }: { restricted: boolean },
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
-  const { extensions: activatedModComponents } = await getModComponentState();
+  const { activatedModComponents } = await getModComponentState();
   const updatePredicate = makeUpdatedFilter(activatedModComponents, {
     restricted,
   });
@@ -519,7 +519,7 @@ export async function syncDeployments(): Promise<void> {
   }
 
   // Always get the freshest options slice from the local storage
-  const { extensions: activatedModComponents } = await getModComponentState();
+  const { activatedModComponents } = await getModComponentState();
 
   // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment activated.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users

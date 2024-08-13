@@ -27,6 +27,7 @@ import {
   type ModComponentStateV2,
   type ModComponentStateV3,
   type ModComponentStateV4,
+  type ModComponentStateV5,
 } from "@/store/modComponents/modComponentTypes";
 import { omit, partition, toLower } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
@@ -66,6 +67,14 @@ const migrations: MigrationManifest = {
     return state;
   },
   // V4 migration defined below
+  5(
+    state: ModComponentStateV4 & PersistedState,
+  ): ModComponentStateV5 & PersistedState {
+    return {
+      ...omit(state, "extensions"),
+      activatedModComponents: state.extensions,
+    };
+  },
 };
 
 export async function createMigrationsManifest(): Promise<MigrationManifest> {

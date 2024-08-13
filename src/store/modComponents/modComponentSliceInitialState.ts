@@ -18,5 +18,5 @@
 import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 
 export const initialState: ModComponentState = {
-  extensions: [],
+  activatedModComponents: [],
 };
