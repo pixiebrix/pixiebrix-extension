@@ -53,7 +53,7 @@ type AnalysisListenerConfig =
 type EffectConfig<TAnalysis extends Analysis = Analysis> = {
   postAnalysisAction?: (
     analysis: TAnalysis,
-    extensionId: UUID,
+    modComponentId: UUID,
     listenerApi: ListenerEffectAPI<
       RootState,
       ThunkDispatch<unknown, unknown, AnyAction>
@@ -110,7 +110,7 @@ class ReduxAnalysisManager {
 
         listenerApi.dispatch(
           analysisSlice.actions.startAnalysis({
-            extensionId: modComponentId,
+            modComponentId,
             analysisId: analysis.id,
           }),
         );
@@ -120,7 +120,7 @@ class ReduxAnalysisManager {
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({
-              extensionId: modComponentId,
+              modComponentId,
               analysisId: analysis.id,
               error: serializeError(error),
             }),
@@ -130,7 +130,7 @@ class ReduxAnalysisManager {
 
         listenerApi.dispatch(
           analysisSlice.actions.finishAnalysis({
-            extensionId: modComponentId,
+            modComponentId,
             analysisId: analysis.id,
             annotations: analysis.getAnnotations(),
           }),

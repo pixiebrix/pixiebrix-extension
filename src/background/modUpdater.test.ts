@@ -272,10 +272,10 @@ describe("deactivateMod function", () => {
     // Verify that deactivate removes the context menu UI globally. See call for explanation of why that's necessary.
     expect(uninstallContextMenuMock).toHaveBeenCalledTimes(2);
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      extensionId: deactivatedModComponents[0].id,
+      modComponentId: deactivatedModComponents[0].id,
     });
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      extensionId: deactivatedModComponents[1].id,
+      modComponentId: deactivatedModComponents[1].id,
     });
   });
 

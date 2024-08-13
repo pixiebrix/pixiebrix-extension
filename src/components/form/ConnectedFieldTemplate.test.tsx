@@ -117,7 +117,7 @@ describe("ConnectedFieldTemplate", () => {
             dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
-                extensionId: formState.uuid,
+                modComponentId: formState.uuid,
                 analysisId: "test",
                 annotations: [analysisAnnotation],
               }),
@@ -180,7 +180,7 @@ describe("ConnectedFieldTemplate", () => {
             dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
-                extensionId: formState.uuid,
+                modComponentId: formState.uuid,
                 analysisId: "test",
                 annotations: [analysisAnnotation],
               }),
@@ -239,14 +239,14 @@ describe("ConnectedFieldTemplate", () => {
             dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
-                extensionId: formState.uuid,
+                modComponentId: formState.uuid,
                 analysisId: "test1",
                 annotations: [analysisAnnotation1],
               }),
             );
             dispatch(
               analysisSlice.actions.finishAnalysis({
-                extensionId: formState.uuid,
+                modComponentId: formState.uuid,
                 analysisId: "test2",
                 annotations: [analysisAnnotation2],
               }),
@@ -338,7 +338,7 @@ describe("ConnectedFieldTemplate", () => {
             dispatch(actions.selectActivatedModComponentFormState(formState));
             dispatch(
               analysisSlice.actions.finishAnalysis({
-                extensionId: formState.uuid,
+                modComponentId: formState.uuid,
                 analysisId: "test",
                 annotations,
               }),
