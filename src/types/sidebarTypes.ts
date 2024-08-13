@@ -302,21 +302,21 @@ export type ActivatePanelOptions = {
    */
   refresh?: boolean;
 
-  // XXX: can't use ModComponentRef directly here, because extensionId and/or blueprintId might be excluded depending
+  // XXX: can't use ModComponentRef directly here, because modComponentId and/or modId might be excluded depending
   // on the specificity of the request
   /**
-   * The id of the extension panel to show. Included so the Page Editor can request a specific panel to show when
-   * editing the extension
+   * The id of the mod component panel to show. Included so the Page Editor
+   * can request a specific panel to show when editing the mod component
    *
    * @since 1.6.5
    */
-  extensionId?: UUID;
+  modComponentId?: UUID;
   /**
-   * The blueprint of the extension panel to show
+   * The mod id of the mod component panel to show
    *
    * @since 1.6.5
    */
-  blueprintId?: RegistryId;
+  modId?: RegistryId;
 
   /**
    * A panel heading name to match

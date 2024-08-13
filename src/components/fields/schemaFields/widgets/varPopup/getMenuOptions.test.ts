@@ -179,10 +179,10 @@ describe("arrays", () => {
 describe("mod variables", () => {
   it("includes mod variables entry", async () => {
     const analysis = new VarAnalysis({ modState: { foo: 42 } });
-    const extension = formStateFactory({
+    const formState = formStateFactory({
       brickPipeline: [brickConfigFactory()],
     });
-    await analysis.run(extension);
+    await analysis.run(formState);
 
     const knownVars = analysis
       .getKnownVars()

@@ -34,7 +34,7 @@ import type { ActivatableDeployment } from "@/types/deploymentTypes";
  * deployment activation if there is not a unique local configuration matching the unbound service.)
  *
  * @see mergeDeploymentServiceConfigurations
- * @see collectExtensionDefinitionPermissions
+ * @see collectModComponentDefinitionPermissions
  * @see mergePermissionsStatuses
  */
 export async function checkDeploymentPermissions({

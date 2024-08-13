@@ -54,27 +54,27 @@ import { type ModComponentRef } from "@/types/modComponentTypes";
 
 function findNextActiveKey(
   state: SidebarState,
-  { extensionId, blueprintId, panelHeading }: ActivatePanelOptions,
+  { modComponentId, modId, panelHeading }: ActivatePanelOptions,
 ): string | null {
   // Try matching on extension
-  if (extensionId) {
+  if (modComponentId) {
     // Prefer form to panel -- however, it would be unusual to target an ephemeral form when reshowing the sidebar
     const extensionForm = state.forms.find(
-      (x) => x.modComponentRef.modComponentId === extensionId,
+      (x) => x.modComponentRef.modComponentId === modComponentId,
     );
     if (extensionForm) {
       return eventKeyForEntry(extensionForm);
     }
 
     const extensionTemporaryPanel = state.temporaryPanels.find(
-      (x) => x.modComponentRef.modComponentId === extensionId,
+      (x) => x.modComponentRef.modComponentId === modComponentId,
     );
     if (extensionTemporaryPanel) {
       return eventKeyForEntry(extensionTemporaryPanel);
     }
 
     const extensionPanel = state.panels.find(
-      (x) => x.modComponentRef.modComponentId === extensionId,
+      (x) => x.modComponentRef.modComponentId === modComponentId,
     );
     if (extensionPanel) {
       return eventKeyForEntry(extensionPanel);
@@ -84,9 +84,7 @@ function findNextActiveKey(
   // Try matching on panel heading
   if (panelHeading) {
     const extensionPanel = state.panels
-      .filter(
-        (x) => blueprintId == null || x.modComponentRef.modId === blueprintId,
-      )
+      .filter((x) => modId == null || x.modComponentRef.modId === modId)
       .find((x) => x.heading === panelHeading);
     if (extensionPanel) {
       return eventKeyForEntry(extensionPanel);
@@ -94,9 +92,9 @@ function findNextActiveKey(
   }
 
   // Try matching on blueprint
-  if (blueprintId) {
+  if (modId) {
     const blueprintPanel = state.panels.find(
-      (x) => x.modComponentRef.modId === blueprintId,
+      (x) => x.modComponentRef.modId === modId,
     );
     if (blueprintPanel) {
       return eventKeyForEntry(blueprintPanel);

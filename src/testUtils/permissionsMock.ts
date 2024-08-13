@@ -130,7 +130,7 @@ jest.mock("@/permissions/modComponentPermissionsHelpers", () => {
   );
   return {
     ...originalModule,
-    collectExtensionPermissions: jest.fn().mockImplementation(async () => ({
+    collectModComponentPermissions: jest.fn().mockImplementation(async () => ({
       origins: [],
     })),
     checkExtensionPermissions: jest.fn().mockImplementation(async () => ({

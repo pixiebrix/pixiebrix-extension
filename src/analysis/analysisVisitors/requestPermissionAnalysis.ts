@@ -139,8 +139,8 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     }
   }
 
-  override async run(extension: ModComponentFormState): Promise<void> {
-    super.run(extension);
+  override async run(formState: ModComponentFormState): Promise<void> {
+    super.run(formState);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs
     await allSettled(this.permissionCheckPromises, {

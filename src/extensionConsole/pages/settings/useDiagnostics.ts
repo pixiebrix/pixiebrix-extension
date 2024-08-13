@@ -34,10 +34,10 @@ import { getExtensionVersion } from "@/utils/extensionUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
 
 async function collectDiagnostics({
-  extensions,
+  modComponents,
   permissions,
 }: {
-  extensions: SerializedModComponent[];
+  modComponents: SerializedModComponent[];
   permissions?: DetailedPermissions;
 }) {
   const { version_name } = browser.runtime.getManifest();
@@ -55,10 +55,10 @@ async function collectDiagnostics({
     },
     extensions: {
       blueprints: uniqBy(
-        compact(extensions.map((x) => x._recipe)),
+        compact(modComponents.map((x) => x._recipe)),
         (x) => x.id,
       ),
-      extensions: extensions.filter((x) => !x._recipe),
+      extensions: modComponents.filter((x) => !x._recipe),
     },
   };
 }
@@ -75,7 +75,7 @@ function useDiagnostics() {
 
       const data = await collectDiagnostics({
         permissions: permissionsState.data,
-        extensions,
+        modComponents: extensions,
       });
 
       download(

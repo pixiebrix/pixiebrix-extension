@@ -142,11 +142,11 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
 }
 
 /**
- * Deactivates the mod component from the extensions and editor redux stores. Note that while the mod component
+ * Deactivates the mod component from the modComponent and editor redux stores. Note that while the mod component
  * is removed from redux, it is not removed from existing tabs until a navigation is triggered/store is refreshed in the respective tab.
  * This is to prevent interrupting the user's workflow when performing updates in the background.
  * @param modComponent the mod component to deactivate
- * @param reduxState the current state of the extension and editor redux stores
+ * @param reduxState the current state of the modComponent and editor redux stores
  * @returns the new redux state with the mod component deactivated
  */
 function deactivateModComponent(
@@ -177,7 +177,7 @@ function deactivateModComponent(
  * Deactivates all mod components with the given mod id. Does not remove the mod UI from existing tabs.
  *
  * @param modId the mod registry id
- * @param reduxState the current state of the extension and editor redux stores
+ * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod components deactivated
  * and the mod components that were deactivated
  */
