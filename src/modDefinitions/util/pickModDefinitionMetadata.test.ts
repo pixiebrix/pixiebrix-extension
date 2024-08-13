@@ -22,7 +22,7 @@ import { INNER_SCOPE } from "@/types/registryTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("pickModDefinitionMetadata", () => {
-  it("returns undefined for mod definition from standalone mod component", () => {
+  it("picks metadata correctly for mod definition", () => {
     const modDefinition = modDefinitionFactory();
 
     expect(pickModDefinitionMetadata(modDefinition)).toEqual(
