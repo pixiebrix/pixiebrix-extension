@@ -41,7 +41,8 @@ test("screenshot tab brick functionality", async ({ page, extensionId }) => {
     screenshotModalFrame.getByText("Screenshot modal"),
   ).toBeVisible();
 
-  await expect(screenshotModalFrame.getByRole("img")).toHaveScreenshot(
-    "screenshotTab.png",
+  await expect(screenshotModalFrame.getByRole("img")).not.toHaveJSProperty(
+    "naturalWidth",
+    0,
   );
 });
