@@ -38,10 +38,6 @@ import { getPlatform } from "@/platform/platformContext";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import {
-  modComponentFactory,
-  modMetadataFactory,
-} from "@/testUtils/factories/modComponentFactories";
 import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 
 jest.mock("@/contentScript/messenger/api");
