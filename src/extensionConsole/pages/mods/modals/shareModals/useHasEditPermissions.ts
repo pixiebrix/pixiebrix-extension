@@ -21,11 +21,12 @@ import { UserRole } from "@/types/contract";
 import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { useSelector } from "react-redux";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
 
 export default function useHasEditPermissions(
-  modId: RegistryId | null,
+  modId: Nullishable<RegistryId>,
 ): boolean {
   const { scope: userScope } = useSelector(selectAuth);
   const { scope: modIdScope } = getScopeAndId(modId);
