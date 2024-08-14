@@ -30,7 +30,10 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
   await modActivationPage.goto();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await page.goto("https://pixiebrix.com/welcome");
+  await page.goto("https://pixiebrix.com/welcome", {
+    waitUntil: "domcontentloaded",
+    timeout: 30_000,
+  });
   await runModViaQuickBar(page, "Open Sidebar");
 
   const sideBarPage = await getSidebarPage(page, extensionId);
