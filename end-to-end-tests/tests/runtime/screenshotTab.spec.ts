@@ -16,31 +16,33 @@
  */
 
 import { test, expect } from "../../fixtures/testBase";
+import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
-import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
+import { runModViaQuickBar } from "../../utils";
 
-test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async ({
-  page,
-  extensionId,
-}) => {
-  const modId = "@e2e-testing/open-sidebar-via-quickbar";
+test("screenshot tab brick functionality", async ({ page, extensionId }) => {
+  const modId = "@e2e-testing/test-screenshot";
+
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
+
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await page.goto("https://pixiebrix.com/welcome", {
-    waitUntil: "domcontentloaded",
-    timeout: 30_000,
-  });
-  await runModViaQuickBar(page, "Open Sidebar");
+  await page.goto("/advanced-fields/");
 
-  const sideBarPage = await getSidebarPage(page, extensionId);
+  await runModViaQuickBar(page, "Screenshot");
 
-  await expect(sideBarPage.getByRole("tab", { name: "Mods" })).toBeVisible();
+  const screenshotModalFrame = page.frameLocator(
+    'iframe[title="Modal content"]',
+  );
 
   await expect(
-    sideBarPage.locator(".list-group").getByRole("heading").first(),
-  ).not.toBeEmpty();
+    screenshotModalFrame.getByText("Screenshot modal"),
+  ).toBeVisible();
+
+  await expect(screenshotModalFrame.getByRole("img")).not.toHaveJSProperty(
+    "naturalWidth",
+    0,
+  );
 });

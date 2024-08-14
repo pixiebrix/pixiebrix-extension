@@ -42,9 +42,6 @@ export const launchPersistentContextWithExtension = async (
     ],
     slowMo: SLOWMO ? 3000 : undefined,
     permissions: ["clipboard-read", "clipboard-write", "accessibility-events"],
-    // Set the viewport to null because we rely on the real inner window width to detect when the sidepanel is open
-    // See: https://github.com/microsoft/playwright/issues/11465 and https://github.com/pixiebrix/pixiebrix-extension/blob/b4b0a2efde2c3ac5e634220b555532a2875fe5da/src/contentScript/sidebarController.tsx#L78
-    viewport: null,
   });
 };
 

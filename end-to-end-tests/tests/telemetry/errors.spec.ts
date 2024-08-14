@@ -63,7 +63,7 @@ test("can report errors to telemetry service", async ({
   extensionId,
 }) => {
   const endpointCalledFromExtensionConsole =
-    "https://app.pixiebrix.com/api/extensions/";
+    "https://app.pixiebrix.com/api/registry/bricks/";
   await test.step("Mock the extensions endpoint to return a bad response, and mock errorService calls", async () => {
     await context.route(endpointCalledFromExtensionConsole, async (route) => {
       await route.fulfill({
@@ -80,7 +80,7 @@ test("can report errors to telemetry service", async ({
   });
 
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
-  await expect(page.getByText("Something went wrong.")).toBeVisible();
+  await expect(page.getByText("An error occurred")).toBeVisible();
 
   const sentErrors = await getErrorsFromRequest(extensionId, context);
 

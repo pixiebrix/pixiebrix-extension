@@ -49,12 +49,14 @@ test("initiates sidebar mod activation from activate url click", async ({
   await initInsertActivationLink(page, redirectUrl);
   await page.goto("/");
   await page.locator("#activation-link").click();
-
+  await page.waitForURL(redirectUrl, {
+    waitUntil: "domcontentloaded",
+    timeout: 30_000,
+  });
   const sidebarPage = await getSidebarPage(page, extensionId);
 
   await expect(sidebarPage.getByText("Activating")).toBeVisible();
   await expect(sidebarPage.getByText("Reverse GitLink")).toBeVisible();
-  expect(page.url()).toBe(redirectUrl);
 });
 
 test("does not redirect to non-pixiebrix domain", async ({
