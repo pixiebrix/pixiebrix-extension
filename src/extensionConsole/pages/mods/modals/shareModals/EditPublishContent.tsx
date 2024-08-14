@@ -37,9 +37,9 @@ const EditPublishContent: React.FunctionComponent = () => {
     dispatch(modModalsSlice.actions.setCancelingPublish());
   };
 
-  const { modId: modId } = useSelector(selectShowPublishContext) ?? {};
-
-  assertNotNullish(modId, "modId from publish context is nullish");
+  const publishContext = useSelector(selectShowPublishContext);
+  const modId = publishContext?.modId;
+  assertNotNullish(modId, "modId not found in PublishContext");
 
   return (
     <PublishContentLayout title="Edit Pending Publish">

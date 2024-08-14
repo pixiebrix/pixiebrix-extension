@@ -36,8 +36,9 @@ type PublishContentLayoutProps = React.PropsWithChildren<{
 const PublishContentLayout: React.FunctionComponent<
   PublishContentLayoutProps
 > = ({ title, children }) => {
-  const { modId: modId } = useSelector(selectShowPublishContext) ?? {};
-  assertNotNullish(modId, "showPublishContext is nullish");
+  const publishContext = useSelector(selectShowPublishContext);
+  const modId = publishContext?.modId;
+  assertNotNullish(modId, "modId not found in PublishContext");
 
   const { data: mod } = useOptionalModDefinition(modId);
 

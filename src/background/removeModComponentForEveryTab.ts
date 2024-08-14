@@ -37,7 +37,7 @@ export async function removeModComponentForEveryTab(
     removeDraftModComponents(allFrames, modComponentId);
     await removeSidebars({ tabId }, [modComponentId]);
   });
-  await uninstallContextMenu({ modComponentId: modComponentId });
+  await uninstallContextMenu({ modComponentId });
   await clearModComponentTraces(modComponentId);
   await clearLog({ modComponentId });
 }
