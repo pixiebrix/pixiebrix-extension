@@ -50,11 +50,12 @@ export function mapModComponentToUnavailableMod(
 }
 
 /**
- * Hook that returns a list of mods to which the user has access, including
- * personal and/or team mods. Also includes activated mods from the
- * marketplace or currently activated mods that the user no longer has
- * permission to access (unavailable mods) for the purpose of deactivating
- * them. Excludes marketplace mods that the user does not have activated.
+ * Hook that returns mods relevant to the current user:
+ * - Personal and/or team mods
+ * - Activated mods from the marketplace
+ * - Currently activated mods that the user no longer has permission
+ *   to access, for the purpose of deactivating them.
+ * Excludes (public) marketplace mods that the user does not have activated.
  *
  * @see Mod
  */
