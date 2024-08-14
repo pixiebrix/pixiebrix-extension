@@ -48,8 +48,6 @@ const migrations: MigrationManifest = {
   // _persist key is added
   0: (state) => state,
   1(state: ModComponentStateVersions & PersistedState) {
-    console.log("*** migration 1 running");
-
     if (isModComponentStateV0(state)) {
       return migrateModComponentStateV0ToV1(state);
     }
@@ -57,8 +55,6 @@ const migrations: MigrationManifest = {
     return state;
   },
   2(state: ModComponentStateV1 & PersistedState) {
-    console.log("*** migration 2 running");
-
     if (isModComponentStateV1(state)) {
       return migrateModComponentStateV1ToV2(state);
     }
@@ -66,8 +62,6 @@ const migrations: MigrationManifest = {
     return state;
   },
   3(state: ModComponentStateV2 & PersistedState) {
-    console.log("*** migration 3 running");
-
     if (isModComponentStateV2(state)) {
       return migrateModComponentStateV2toV3(state);
     }
@@ -78,8 +72,6 @@ const migrations: MigrationManifest = {
   5(
     state: ModComponentStateV4 & PersistedState,
   ): ModComponentStateV5 & PersistedState {
-    console.log("*** migration 5 running");
-
     return {
       ...omit(state, "extensions"),
       activatedModComponents: state.extensions,
