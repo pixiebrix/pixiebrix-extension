@@ -16,6 +16,7 @@
  */
 
 import {
+  type ActivatedModComponent,
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
   type SerializedModComponent,
@@ -67,7 +68,11 @@ export type ModComponentStateV4 = ModComponentStateV3;
  * @deprecated - Do not use versioned state types directly
  */
 export type ModComponentStateV5 = {
-  activatedModComponents: ActivatedModComponentV2[];
+  // De-couple the versioned type for ModComponentState from the versioned
+  // type for ActivatedModComponent -- this will enable changes/migrations
+  // for the ActivatedModComponent type without affecting the ModComponentState
+  // type.
+  activatedModComponents: ActivatedModComponent[];
 };
 
 export type ModComponentStateVersions =
