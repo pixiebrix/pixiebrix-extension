@@ -50,7 +50,12 @@ export function mapModComponentToUnavailableMod(
 }
 
 /**
- * React Hook for consolidating Mods.
+ * Hook that returns a list of mods to which the user has access, including
+ * personal and/or team mods. Also includes activated mods from the
+ * marketplace or currently activated mods that the user no longer has
+ * permission to access (unavailable mods) for the purpose of deactivating
+ * them. Excludes marketplace mods that the user does not have activated.
+ *
  * @see Mod
  */
 function useMods(): ModsState {
