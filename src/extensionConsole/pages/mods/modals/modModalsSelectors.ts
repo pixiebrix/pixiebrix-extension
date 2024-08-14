@@ -25,5 +25,3 @@ export const selectShowShareContext = ({ modModals }: RootState) =>
 
 export const selectShowPublishContext = ({ modModals }: RootState) =>
   modModals.showPublishContext;
-
-export const selectModalsContext = ({ modModals }: RootState) => modModals;

@@ -19,7 +19,6 @@ import useActivateAction from "@/extensionConsole/pages/mods/hooks/useActivateAc
 import useViewPublishAction from "@/extensionConsole/pages/mods/hooks/useViewPublishAction";
 import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/mods/hooks/useViewShareAction";
-import useDeleteStandaloneModDefinitionAction from "@/mods/hooks/useDeleteStandaloneModDefinitionAction";
 import useReactivateAction from "@/extensionConsole/pages/mods/hooks/useReactivateAction";
 import { type ModViewItem } from "@/types/modTypes";
 import useRequestPermissionsAction from "@/mods/hooks/useRequestPermissionsAction";
@@ -51,8 +50,6 @@ function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
   const viewLogs = useViewLogsAction(modViewItem);
   const activate = useActivateAction(modViewItem);
   const deactivate = useDeactivateAction(modViewItem);
-  const deleteStandaloneModDefinition =
-    useDeleteStandaloneModDefinitionAction(modViewItem);
   const deleteMod = useDeleteModDefinitionAction(modViewItem);
   const requestPermissions = useRequestPermissionsAction(modViewItem);
   const editInWorkshop = useEditInWorkshopAction(modViewItem);
@@ -62,7 +59,7 @@ function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
     viewInMarketplaceHref,
     viewShare,
     editInWorkshop,
-    delete: deleteStandaloneModDefinition ?? deleteMod,
+    delete: deleteMod,
     deactivate,
     reactivate,
     viewLogs,

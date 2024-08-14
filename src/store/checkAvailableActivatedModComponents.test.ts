@@ -27,41 +27,53 @@ import { RemoteButtonStarterBrick } from "@/starterBricks/button/buttonStarterBr
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { RemoteQuickBarStarterBrick } from "@/starterBricks/quickBar/quickBarStarterBrick";
-import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  modComponentDefinitionFactory,
+  modDefinitionFactory,
+  starterBrickDefinitionFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { getPlatform } from "@/platform/platformContext";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 
 jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/context/connection");
 
-const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
+const {
+  actions: { activateMod },
+  reducer: extensionsReducer,
+} = extensionsSlice;
 
-describe("checkAvailableInstalledExtensions", () => {
-  it("checks installed extensions correctly", async () => {
+describe("checkAvailableActivatedModComponents", () => {
+  it("checks activated mod components correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
     jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
     const availableButtonId = validateRegistryId("test/available-button");
-    const availableButton = standaloneModDefinitionFactory({
-      extensionPointId: availableButtonId,
-    });
     const unavailableButtonId = validateRegistryId("test/unavailable-button");
-    const unavailableButton = standaloneModDefinitionFactory({
-      extensionPointId: unavailableButtonId,
-    });
     const availableQbId = validateRegistryId("test/available-quickbar");
-    const availableQb = standaloneModDefinitionFactory({
-      extensionPointId: availableQbId,
-    });
     const unavailableQbId = validateRegistryId("test/unavailable-quickbar");
-    const unavailableQb = standaloneModDefinitionFactory({
-      extensionPointId: unavailableQbId,
+
+    const modDefinition = modDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          id: availableButtonId,
+        }),
+        modComponentDefinitionFactory({
+          id: unavailableButtonId,
+        }),
+        modComponentDefinitionFactory({
+          id: availableQbId,
+        }),
+        modComponentDefinitionFactory({
+          id: unavailableQbId,
+        }),
+      ],
     });
 
     const availableButtonStarterBrickDefinition = starterBrickDefinitionFactory(
@@ -128,14 +140,11 @@ describe("checkAvailableInstalledExtensions", () => {
     });
 
     store.dispatch(
-      optionsActions.activateStandaloneModDefinition(availableButton),
-    );
-    store.dispatch(
-      optionsActions.activateStandaloneModDefinition(unavailableButton),
-    );
-    store.dispatch(optionsActions.activateStandaloneModDefinition(availableQb));
-    store.dispatch(
-      optionsActions.activateStandaloneModDefinition(unavailableQb),
+      activateMod({
+        modDefinition,
+        screen: "extensionConsole",
+        isReactivate: false,
+      }),
     );
 
     await store.dispatch(actions.checkAvailableActivatedModComponents());
@@ -144,6 +153,14 @@ describe("checkAvailableInstalledExtensions", () => {
 
     const { availableActivatedModComponentIds } =
       selectModComponentAvailability(state);
+
+    const activatedModComponents = selectActivatedModComponents(state);
+    const availableButton = activatedModComponents.find(
+      (modComponent) => modComponent.extensionPointId === availableButtonId,
+    );
+    const availableQb = activatedModComponents.find(
+      (modComponent) => modComponent.extensionPointId === availableQbId,
+    );
 
     expect(availableActivatedModComponentIds).toStrictEqual([
       availableButton.id,

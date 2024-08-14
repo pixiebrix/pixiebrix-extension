@@ -21,7 +21,6 @@ import { actions as extensionActions } from "@/store/extensionsSlice";
 import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -29,29 +28,19 @@ beforeEach(() => {
 
 test("deactivates mod components", async () => {
   const modDefinition = defaultModDefinitionFactory();
-  const standaloneModDefinition = standaloneModDefinitionFactory({
-    _recipe: {
-      id: modDefinition.metadata.id,
-    } as any,
-  });
-
-  const anotherStandaloneModDefinition = standaloneModDefinitionFactory();
 
   const {
-    result: { current: reinstall },
+    result: { current: reactivate },
     act,
     getReduxStore,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateStandaloneModDefinition(
-          standaloneModDefinition,
-        ),
-      );
-      dispatch(
-        extensionActions.activateStandaloneModDefinition(
-          anotherStandaloneModDefinition,
-        ),
+        extensionActions.activateMod({
+          modDefinition,
+          screen: "extensionConsole",
+          isReactivate: true,
+        }),
       );
     },
   });
@@ -60,7 +49,7 @@ test("deactivates mod components", async () => {
     getReduxStore().getState() as ModComponentsRootState
   ).options.extensions[0];
 
-  await act(async () => reinstall(modDefinition));
+  await act(async () => reactivate(modDefinition));
 
   expect(deactivateMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
@@ -73,26 +62,23 @@ test("dispatches activate mod action", async () => {
   jest.spyOn(extensionActions, "activateMod");
 
   const modDefinition = defaultModDefinitionFactory();
-  const standaloneModDefinition = standaloneModDefinitionFactory({
-    _recipe: {
-      id: modDefinition.metadata.id,
-    } as any,
-  });
 
   const {
-    result: { current: reinstall },
+    result: { current: reactivate },
     act,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateStandaloneModDefinition(
-          standaloneModDefinition,
-        ),
+        extensionActions.activateMod({
+          modDefinition,
+          screen: "extensionConsole",
+          isReactivate: true,
+        }),
       );
     },
   });
 
-  await act(async () => reinstall(modDefinition));
+  await act(async () => reactivate(modDefinition));
 
   expect(extensionActions.activateMod).toHaveBeenCalled();
 });

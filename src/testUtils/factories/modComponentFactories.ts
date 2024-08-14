@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Config, define, derive, extend } from "cooky-cutter";
+import { define, derive, extend } from "cooky-cutter";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
@@ -33,10 +33,9 @@ import { validateRegistryId } from "@/types/helpers";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { type StandaloneModDefinition } from "@/types/contract";
 import {
-  type Metadata,
   DefinitionKinds,
+  type Metadata,
   type RegistryId,
 } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -133,21 +132,3 @@ export const activatedModComponentFactory = extend<
   active: true,
   _serializedModComponentBrand: undefined as never,
 });
-
-// StandaloneModDefinition is a type in contract.ts. But it's really defined based on the ModComponentBase type not the backend API.
-export const standaloneModDefinitionFactory = (
-  override?: Partial<Config<StandaloneModDefinition>>,
-) => {
-  const modComponent = modComponentFactory(
-    override as Config<ModComponentBase>,
-  ) as StandaloneModDefinition;
-
-  // @ts-expect-error -- removing the ModComponentBase property that is not in the StandaloneModDefinition type
-  delete modComponent.active;
-
-  const timestamp = timestampFactory();
-  modComponent.createTimestamp = timestamp;
-  modComponent.updateTimestamp = timestamp;
-
-  return modComponent;
-};

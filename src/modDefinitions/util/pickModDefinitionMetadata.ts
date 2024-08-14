@@ -30,10 +30,6 @@ import { isInternalRegistryId } from "@/utils/registryUtils";
 export function pickModDefinitionMetadata(
   modDefinition: ModDefinition,
 ): ModComponentBase["_recipe"] {
-  if (modDefinition.metadata?.id == null) {
-    throw new TypeError("ModDefinition metadata id is required");
-  }
-
   if (isInternalRegistryId(modDefinition.metadata.id)) {
     return undefined;
   }

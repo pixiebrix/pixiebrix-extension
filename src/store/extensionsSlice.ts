@@ -16,10 +16,7 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-  type Deployment,
-  type StandaloneModDefinition,
-} from "@/types/contract";
+import { type Deployment } from "@/types/contract";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -27,7 +24,7 @@ import { contextMenus } from "@/background/messenger/api";
 import { cloneDeep, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { type Except } from "type-fest";
-import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
+import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import {
   type ActivatedModComponent,
@@ -46,12 +43,6 @@ type ActivateModPayload = {
    * The mod definition to activate.
    */
   modDefinition: ModDefinition;
-  /**
-   * Optionally force a specific mod component id to be assigned to the mod. If the mod definition has multiple
-   * components, an error will be thrown.
-   * @since 2.0.6
-   */
-  forceModComponentId?: UUID;
   /**
    * Mod integration dependencies with configs filled in
    */
@@ -94,25 +85,6 @@ const extensionsSlice = createSlice({
       state.extensions = cloneDeep(payload);
     },
 
-    activateStandaloneModDefinition(
-      state,
-      {
-        payload: standaloneModDefinition,
-      }: PayloadAction<StandaloneModDefinition>,
-    ) {
-      reportEvent(
-        Events.MOD_COMPONENT_CLOUD_ACTIVATE,
-        selectEventData(standaloneModDefinition),
-      );
-
-      // NOTE: do not save the extensions in the cloud (because the user can just activate from the marketplace /
-      // or activate the deployment again
-
-      state.extensions.push({ ...standaloneModDefinition, active: true });
-
-      void contextMenus.preload([standaloneModDefinition]);
-    },
-
     /**
      * Set the mod metadata associated with the given activated mod component id.
      */
@@ -140,7 +112,6 @@ const extensionsSlice = createSlice({
       {
         payload: {
           modDefinition,
-          forceModComponentId,
           configuredDependencies,
           optionsArgs,
           deployment,
@@ -149,12 +120,6 @@ const extensionsSlice = createSlice({
         },
       }: PayloadAction<ActivateModPayload>,
     ) {
-      if (modDefinition.extensionPoints.length > 1 && forceModComponentId) {
-        throw new Error(
-          "forceModComponentId is not allowed when activating a mod with multiple components",
-        );
-      }
-
       for (const modComponentDefinition of modDefinition.extensionPoints) {
         // May be null from bad Workshop edit?
         if (modComponentDefinition.id == null) {
@@ -173,7 +138,6 @@ const extensionsSlice = createSlice({
 
         const activatedModComponent: ActivatedModComponent =
           mapModComponentDefinitionToActivatedModComponent({
-            modComponentId: forceModComponentId,
             modComponentDefinition,
             modDefinition,
             deployment,
@@ -181,7 +145,7 @@ const extensionsSlice = createSlice({
             integrationDependencies: configuredDependencies ?? [],
           });
 
-        assertModComponentNotResolved(activatedModComponent);
+        assertModComponentNotHydrated(activatedModComponent);
 
         reportEvent(
           Events.STARTER_BRICK_ACTIVATE,
@@ -204,6 +168,7 @@ const extensionsSlice = createSlice({
         reinstall: isReactivate,
       });
     },
+
     /**
      * Warning: this action saves the mod component to Redux, but it does not save the mod component to the cloud.
      * You are likely looking for the `useUpsertModComponentFormState` hook, which saves the mod component
@@ -272,7 +237,7 @@ const extensionsSlice = createSlice({
         active: true,
       };
 
-      assertModComponentNotResolved(modComponent);
+      assertModComponentNotHydrated(modComponent);
 
       const index = state.extensions.findIndex((x) => x.id === id);
 

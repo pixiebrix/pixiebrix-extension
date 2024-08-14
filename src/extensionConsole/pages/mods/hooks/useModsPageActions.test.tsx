@@ -30,17 +30,12 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import { uniq } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import {
-  deactivateModComponents,
   deactivateMod,
+  deactivateModComponents,
 } from "@/store/deactivateUtils";
 import { renderHook } from "@/extensionConsole/testHelpers";
-import { actions as modComponentActions } from "@/store/extensionsSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
-import {
-  standaloneModDefinitionFactory,
-  modComponentFactory,
-} from "@/testUtils/factories/modComponentFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { authActions } from "@/auth/authSlice";
 import {
@@ -123,20 +118,6 @@ afterEach(() => {
 });
 
 describe("useModsPageActions", () => {
-  test("cloud mod component", () => {
-    mockHooks();
-    const standaloneModDefinition = modViewItemFactory({
-      isModComponent: true,
-      sharingType: "Personal",
-      status: "Inactive",
-    });
-
-    const {
-      result: { current: actions },
-    } = renderHook(() => useModsPageActions(standaloneModDefinition));
-    expectActions(["viewPublish", "viewShare", "activate", "delete"], actions);
-  });
-
   test("active personal mod component", () => {
     mockHooks();
     const personalModComponent = modViewItemFactory({
@@ -479,46 +460,6 @@ describe("actions", () => {
         expect.any(Function),
       );
       expect(deactivateModComponents).not.toHaveBeenCalled();
-    });
-
-    test("calls deactivateModComponents for a mod component", () => {
-      mockHooks();
-
-      const standaloneModDefinition = standaloneModDefinitionFactory();
-
-      const modViewItem = modViewItemFactory({
-        isModComponent: true,
-        sharingType: "Personal",
-        status: "Active",
-      });
-      (modViewItem.mod as ModComponentBase).id = standaloneModDefinition.id;
-
-      const {
-        result: {
-          current: { deactivate },
-        },
-      } = renderHook(() => useModsPageActions(modViewItem), {
-        setupRedux(dispatch) {
-          dispatch(
-            modComponentActions.activateStandaloneModDefinition(
-              standaloneModDefinition,
-            ),
-          );
-          dispatch(
-            modComponentActions.activateStandaloneModDefinition(
-              standaloneModDefinitionFactory(),
-            ),
-          );
-        },
-      });
-
-      deactivate();
-
-      expect(deactivateMod).not.toHaveBeenCalled();
-      expect(deactivateModComponents).toHaveBeenCalledWith(
-        [standaloneModDefinition.id],
-        expect.any(Function),
-      );
     });
   });
 });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivateModDefinitionIdPage activate mod definition permissions 1`] = `
+exports[`ActivateModDefinitionPage activate mod definition permissions 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -185,7 +185,7 @@ exports[`ActivateModDefinitionIdPage activate mod definition permissions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModDefinitionIdPage activate mod definition with missing required mod definition options 1`] = `
+exports[`ActivateModDefinitionPage activate mod definition with missing required mod definition options 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -511,7 +511,7 @@ exports[`ActivateModDefinitionIdPage activate mod definition with missing requir
 </DocumentFragment>
 `;
 
-exports[`ActivateModDefinitionIdPage renders 1`] = `
+exports[`ActivateModDefinitionPage renders 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -696,7 +696,7 @@ exports[`ActivateModDefinitionIdPage renders 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModDefinitionIdPage renders instructions 1`] = `
+exports[`ActivateModDefinitionPage renders instructions 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -893,7 +893,7 @@ exports[`ActivateModDefinitionIdPage renders instructions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModDefinitionIdPage renders successfully with null services property 1`] = `
+exports[`ActivateModDefinitionPage renders successfully with null services property 1`] = `
 <DocumentFragment>
   <div>
     <div

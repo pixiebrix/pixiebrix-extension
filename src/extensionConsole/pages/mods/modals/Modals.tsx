@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import ConvertToModModal from "./convertToModModal/ConvertToModModal";
 import ModLogsModal from "./modLogsModal/ModLogsModal";
 import PublishModModals from "./shareModals/PublishModModals";
 import ShareModModal from "./shareModals/ShareModModal";
@@ -24,7 +23,6 @@ import ShareModModal from "./shareModals/ShareModModal";
 const Modals: React.FunctionComponent = () => (
   <>
     <ModLogsModal />
-    <ConvertToModModal />
     <ShareModModal />
     <PublishModModals />
   </>

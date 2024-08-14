@@ -32,7 +32,6 @@ import {
   type PendingInvitation,
   type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
-  type StandaloneModDefinition,
   UserRole,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
@@ -45,7 +44,6 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/data/service/baseQuery";
-import type { ModComponentBase } from "@/types/modComponentTypes";
 import { type InstalledDeployment } from "@/utils/deploymentUtils";
 import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
@@ -226,47 +224,6 @@ export const appApi = createApi({
     getEditablePackages: builder.query<EditablePackageMetadata[], void>({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
-    }),
-    getAllStandaloneModDefinitions: builder.query<
-      StandaloneModDefinition[],
-      void
-    >({
-      query: () => ({ url: "/api/extensions/", method: "get" }),
-      providesTags: ["StandaloneModDefinitions"],
-    }),
-    getStandaloneModDefinition: builder.query<
-      StandaloneModDefinition,
-      { modComponentId: UUID }
-    >({
-      query: ({ modComponentId }) => ({
-        url: `/api/extensions/${modComponentId}/`,
-        method: "get",
-      }),
-      providesTags: (result, error, { modComponentId }) => [
-        { type: "StandaloneModDefinitions", modComponentId },
-        "StandaloneModDefinitions",
-      ],
-    }),
-    deleteStandaloneModDefinition: builder.mutation<
-      StandaloneModDefinition,
-      { extensionId: UUID }
-    >({
-      query: ({ extensionId }) => ({
-        url: `/api/extensions/${extensionId}/`,
-        method: "delete",
-      }),
-      invalidatesTags: ["StandaloneModDefinitions"],
-    }),
-    saveStandaloneModDefinition: builder.mutation<
-      StandaloneModDefinition,
-      { modComponent: ModComponentBase & { updateTimestamp: string } }
-    >({
-      query: ({ modComponent }) => ({
-        url: `/api/extensions/${modComponent.id}/`,
-        method: "put",
-        data: modComponent,
-      }),
-      invalidatesTags: ["StandaloneModDefinitions"],
     }),
     getModDefinition: builder.query<ModDefinition, { modId: RegistryId }>({
       query: ({ modId }) => ({
@@ -483,9 +440,6 @@ export const {
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
   useGetZapierKeyQuery,
-  useGetStandaloneModDefinitionQuery,
-  useGetAllStandaloneModDefinitionsQuery,
-  useDeleteStandaloneModDefinitionMutation,
   useGetEditablePackagesQuery,
   useGetModDefinitionQuery,
   useCreateModDefinitionMutation,
