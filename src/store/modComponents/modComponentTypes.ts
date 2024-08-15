@@ -16,10 +16,9 @@
  */
 
 import {
-  type ActivatedModComponent,
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
-  type SerializedModComponent,
+  type SerializedModComponentV1,
 } from "@/types/modComponentTypes";
 
 /**
@@ -30,7 +29,7 @@ export type ModComponentStateV0 = {
   extensions: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
     [extensionPointId: string]: {
-      [extensionId: string]: SerializedModComponent;
+      [extensionId: string]: SerializedModComponentV1;
     };
   };
 };
@@ -39,7 +38,7 @@ export type ModComponentStateV0 = {
  * @deprecated - Do not use versioned state types directly
  */
 export type ModComponentStateV1 = {
-  extensions: SerializedModComponent[];
+  extensions: SerializedModComponentV1[];
 };
 
 /**
@@ -68,11 +67,7 @@ export type ModComponentStateV4 = ModComponentStateV3;
  * @deprecated - Do not use versioned state types directly
  */
 export type ModComponentStateV5 = {
-  // De-couple the versioned type for ModComponentState from the versioned
-  // type for ActivatedModComponent -- this will enable changes/migrations
-  // for the ActivatedModComponent type without affecting the ModComponentState
-  // type.
-  activatedModComponents: ActivatedModComponent[];
+  activatedModComponents: ActivatedModComponentV2[];
 };
 
 export type ModComponentStateVersions =

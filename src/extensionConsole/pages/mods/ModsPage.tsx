@@ -23,12 +23,10 @@ import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import Modals from "./modals/Modals";
-import useShowPublishUrlEffect from "@/extensionConsole/pages/mods/hooks/useShowPublishUrlEffect";
 
 const ModsPage: React.FunctionComponent = () => {
   useSetDocumentTitle("Mods");
   const { mods, error } = useMods();
-  useShowPublishUrlEffect();
 
   useEffect(() => {
     reportEvent(Events.MODS_PAGE_VIEW);

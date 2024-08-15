@@ -23,15 +23,15 @@ import {
   isModComponentStateV3,
   isModComponentStateV4,
   isModComponentStateV5,
-  type ModComponentStateVersions,
   type ModComponentStateV0,
   type ModComponentStateV1,
   type ModComponentStateV2,
   type ModComponentStateV3,
   type ModComponentStateV4,
   type ModComponentStateV5,
+  type ModComponentStateVersions,
 } from "@/store/modComponents/modComponentTypes";
-import { omit, partition, toLower } from "lodash";
+import { omit, toLower } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -166,20 +166,19 @@ export function migrateStandaloneComponentsToMods(
   extensions: ActivatedModComponentV2[],
   userScope: Nullishable<string>,
 ): ActivatedModComponentV2[] {
-  const [modComponents, standaloneComponents] = partition(
-    extensions,
-    (extension) => Boolean(extension._recipe),
-  );
+  return extensions
+    .map((extension) => {
+      if (extension._recipe) {
+        return extension;
+      }
 
-  if (userScope == null || standaloneComponents.length === 0) {
-    return modComponents;
-  }
+      if (userScope == null) {
+        return extension;
+      }
 
-  const convertedStandaloneComponents = standaloneComponents.map((extension) =>
-    createModMetadataForStandaloneComponent(extension, userScope),
-  );
-
-  return [...modComponents, ...convertedStandaloneComponents];
+      return createModMetadataForStandaloneComponent(extension, userScope);
+    })
+    .filter((extension) => extension._recipe != null);
 }
 
 function migrateModComponentStateV3toV4(
