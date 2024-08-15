@@ -9,7 +9,7 @@
     "test:e2e:debug": "PWDEBUG=console playwright test",
     "lint": "npm run lint:full -- --rule '{\"import/no-cycle\": \"off\"}'",
     "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
-    "lint:full": "eslint src end-to-end-tests --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
+    "lint:full": "nx eslint:lint --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "fix": "npm run lint -- --fix",
     "watch": "concurrently npm:watch:webpack 'npm:watch:*(!webpack) -- --preserveWatchOutput' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack ${HMR:-watch} --mode development",
@@ -185,6 +185,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.9.1",
     "@fortawesome/fontawesome-common-types": "^0.2.36",
+    "@nx/eslint": "^19.6.0",
     "@playwright/test": "^1.46.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
     "@shopify/jest-dom-mocks": "^5.2.0",
@@ -283,6 +284,7 @@
     "msw-storybook-addon": "^1.10.0",
     "multimatch": "^5.0.0",
     "node-polyfill-webpack-plugin": "^4.0.0",
+    "nx": "19.6.0",
     "otpauth": "^9.3.1",
     "prettier": "3.1.0",
     "react-refresh-typescript": "^2.0.9",
@@ -320,5 +322,6 @@
   },
   "msw": {
     "workerDirectory": "public"
-  }
+  },
+  "nx": {}
 }

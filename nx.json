@@ -1,0 +1,56 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "build:webpack": {
+      "outputs": ["{projectRoot}/dist"],
+      "cache": true
+    },
+    "generate:headers": {
+      "outputs": ["{projectRoot}/headers.json"],
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "lint:fast": {
+      "cache": true
+    },
+    "lint:full": {
+      "cache": true
+    },
+    "fix": {
+      "cache": true
+    },
+    "build:typescript": {
+      "cache": true
+    },
+    "build:strictNullChecks": {
+      "cache": true
+    },
+    "build-storybook": {
+      "cache": true
+    },
+    "dead-code": {
+      "cache": true
+    },
+    "dead-code:base": {
+      "cache": true
+    }
+  },
+  "defaultBase": "main",
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
+    }
+  ]
+}

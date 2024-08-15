@@ -62,3 +62,8 @@ storybook-static
 /end-to-end-tests/blob-report.7z
 /playwright-report/
 .playwright-report/
+
+
+
+.nx/cache
+.nx/workspace-data
