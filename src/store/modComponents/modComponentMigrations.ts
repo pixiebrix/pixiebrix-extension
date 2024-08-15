@@ -72,10 +72,11 @@ const migrations: MigrationManifest = {
   5(
     state: ModComponentStateV4 & PersistedState,
   ): ModComponentStateV5 & PersistedState {
-    return {
-      ...omit(state, "extensions"),
-      activatedModComponents: state.extensions,
-    };
+    if (isModComponentStateV4(state)) {
+      return migrateModComponentStateV4toV5(state);
+    }
+
+    return state;
   },
 };
 
@@ -83,8 +84,13 @@ export async function createMigrationsManifest(): Promise<MigrationManifest> {
   const userScope = await getUserScope();
   return {
     ...migrations,
-    4: (state: ModComponentStateV3 & PersistedState) =>
-      migrateModComponentStateV3toV4(state, userScope),
+    4(state: ModComponentStateV3 & PersistedState) {
+      if (isModComponentStateV3(state)) {
+        return migrateModComponentStateV3toV4(state, userScope);
+      }
+
+      return state;
+    },
   };
 }
 
@@ -180,11 +186,18 @@ function migrateModComponentStateV3toV4(
   state: ModComponentStateV3 & PersistedState,
   userScope: Nullishable<string>,
 ): ModComponentStateV4 & PersistedState {
-  console.log("*** migration 4 running");
-
   return {
     ...state,
     extensions: migrateStandaloneComponentsToMods(state.extensions, userScope),
+  };
+}
+
+function migrateModComponentStateV4toV5(
+  state: ModComponentStateV4 & PersistedState,
+): ModComponentStateV5 & PersistedState {
+  return {
+    ...omit(state, "extensions"),
+    activatedModComponents: state.extensions,
   };
 }
 
