@@ -27,7 +27,7 @@ import {
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
 import modComponentSlice, {
-  actions as modComponentsActions,
+  actions as modComponentActions,
 } from "@/store/modComponents/modComponentSlice";
 import {
   modComponentDefinitionFactory,
@@ -98,7 +98,7 @@ describe("useBuildAndValidateMod", () => {
       // Activate the mod
       const state = modComponentSlice.reducer(
         { activatedModComponents: [] },
-        modComponentsActions.activateMod({
+        modComponentActions.activateMod({
           modDefinition,
           screen: "pageEditor",
           isReactivate: false,
@@ -138,7 +138,7 @@ describe("useBuildAndValidateMod", () => {
       const { result } = renderHook(() => useBuildAndValidateMod(), {
         setupRedux(dispatch) {
           dispatch(
-            modComponentsActions.activateMod({
+            modComponentActions.activateMod({
               modDefinition,
               screen: "pageEditor",
               isReactivate: false,
@@ -192,7 +192,7 @@ describe("useBuildAndValidateMod", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            modComponentsActions.activateMod({
+            modComponentActions.activateMod({
               modDefinition: activatedModDefinition,
               screen: "pageEditor",
               isReactivate: false,

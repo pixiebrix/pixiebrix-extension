@@ -19,7 +19,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   modComponentDefinitionFactory,
@@ -33,7 +33,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -74,7 +74,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -105,7 +105,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -147,7 +147,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -179,7 +179,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -211,7 +211,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -241,7 +241,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -270,7 +270,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -302,7 +302,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -335,7 +335,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -368,7 +368,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -401,7 +401,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition: activatedModDefinition,
             screen: "extensionConsole",
             isReactivate: false,
@@ -476,7 +476,7 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          modComponentsActions.activateMod({
+          modComponentActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
             isReactivate: false,

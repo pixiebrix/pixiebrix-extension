@@ -46,7 +46,7 @@ jest.mock("@/pageEditor/context/connection");
 
 const {
   actions: { activateMod },
-  reducer: extensionsReducer,
+  reducer: modComponentReducer,
 } = modComponentSlice;
 
 describe("checkAvailableActivatedModComponents", () => {
@@ -135,7 +135,7 @@ describe("checkAvailableActivatedModComponents", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: extensionsReducer,
+        options: modComponentReducer,
       },
     });
 

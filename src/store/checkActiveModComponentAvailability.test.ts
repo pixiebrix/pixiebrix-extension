@@ -39,7 +39,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: modComponentsReducer } = modComponentSlice;
+const { reducer: modComponentReducer } = modComponentSlice;
 
 describe("checkActiveModComponentAvailability", () => {
   it("checks the active element correctly", async () => {
@@ -49,7 +49,7 @@ describe("checkActiveModComponentAvailability", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: modComponentsReducer,
+        options: modComponentReducer,
       },
     });
 

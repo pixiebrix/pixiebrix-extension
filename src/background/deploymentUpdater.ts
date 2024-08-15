@@ -82,7 +82,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "@/mv3/SessionStorage";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const { reducer: modComponentsReducer, actions: modComponentActions } =
+const { reducer: modComponentReducer, actions: modComponentActions } =
   modComponentSlice;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -138,7 +138,7 @@ function deactivateModComponentFromStates(
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
 ): { options: ModComponentState; editor: EditorState | undefined } {
-  const options = modComponentsReducer(
+  const options = modComponentReducer(
     optionsState,
     modComponentActions.removeModComponent({ modComponentId }),
   );
@@ -318,7 +318,7 @@ async function activateDeployment({
   _editorState = result.editor;
 
   // Activate the deployed mod with the service definition
-  _optionsState = modComponentsReducer(
+  _optionsState = modComponentReducer(
     _optionsState,
     modComponentActions.activateMod({
       modDefinition,

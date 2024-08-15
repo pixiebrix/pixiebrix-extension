@@ -31,7 +31,7 @@ import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
-import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   type InnerDefinitionRef,
@@ -210,7 +210,7 @@ describe("useCheckModStarterBrickInvariants", () => {
         setupRedux(dispatch) {
           if (activatedModDefinition) {
             dispatch(
-              modComponentsActions.activateMod({
+              modComponentActions.activateMod({
                 modDefinition: activatedModDefinition,
                 screen: "pageEditor",
                 isReactivate: false,

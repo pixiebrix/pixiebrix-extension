@@ -39,7 +39,7 @@ jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: modComponentsReducer } = modComponentSlice;
+const { reducer: modComponentReducer } = modComponentSlice;
 
 describe("checkAvailableDraftModComponents", () => {
   it("checks draft mod components correctly", async () => {
@@ -49,7 +49,7 @@ describe("checkAvailableDraftModComponents", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: modComponentsReducer,
+        options: modComponentReducer,
       },
     });
 

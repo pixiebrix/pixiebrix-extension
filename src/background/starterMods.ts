@@ -63,7 +63,7 @@ import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegration
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
-const { reducer: extensionsReducer, actions: extensionsActions } =
+const { reducer: modComponentReducer, actions: modComponentActions } =
   modComponentSlice;
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reduce and actions
 const { reducer: sidebarReducer, actions: sidebarActions } = sidebarSlice;
@@ -84,9 +84,9 @@ function activateModInOptionsState(
     optionsArgs: OptionsArgs;
   },
 ): ModComponentState {
-  return extensionsReducer(
+  return modComponentReducer(
     state,
-    extensionsActions.activateMod({
+    modComponentActions.activateMod({
       modDefinition,
       optionsArgs,
       configuredDependencies,
