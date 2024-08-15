@@ -19,7 +19,7 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import modComponentsSlice from "@/store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { deactivateMod } from "@/store/deactivateUtils";
@@ -153,7 +153,7 @@ function useActivateMod(
         );
 
         dispatch(
-          modComponentsSlice.actions.activateMod({
+          modComponentSlice.actions.activateMod({
             modDefinition,
             configuredDependencies: integrationDependencies,
             optionsArgs,

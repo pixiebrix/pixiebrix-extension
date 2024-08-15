@@ -23,7 +23,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import modComponentsSlice from "@/store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -158,7 +158,7 @@ describe("useActivateMod", () => {
     expect(error).toBeUndefined();
   });
 
-  it("calls deactivateMod, activates to modComponentsSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
+  it("calls deactivateMod, activates to modComponentSlice, and calls reactivateEveryTab, if permissions are granted", async () => {
     const { formValues, modDefinition } = setupInputs();
     setModHasPermissions(false);
     setUserAcceptedPermissions(true);
@@ -193,7 +193,7 @@ describe("useActivateMod", () => {
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {},
@@ -261,7 +261,7 @@ describe("useActivateMod", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).toHaveBeenCalledWith(
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {

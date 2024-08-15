@@ -29,7 +29,7 @@ import {
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
-import modComponentsSlice from "@/store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
@@ -39,7 +39,7 @@ jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: modComponentsReducer } = modComponentsSlice;
+const { reducer: modComponentsReducer } = modComponentSlice;
 
 describe("checkAvailableDraftModComponents", () => {
   it("checks draft mod components correctly", async () => {

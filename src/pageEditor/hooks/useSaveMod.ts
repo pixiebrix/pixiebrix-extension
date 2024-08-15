@@ -28,7 +28,7 @@ import {
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import modComponentsSlice from "@/store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
@@ -50,7 +50,7 @@ import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const { actions: optionsActions } = modComponentsSlice;
+const { actions: optionsActions } = modComponentSlice;
 
 // Exported for testing
 export function isModEditable(

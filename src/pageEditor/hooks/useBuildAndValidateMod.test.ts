@@ -26,7 +26,7 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import modComponentsSlice, {
+import modComponentSlice, {
   actions as modComponentsActions,
 } from "@/store/modComponents/modComponentSlice";
 import {
@@ -96,7 +96,7 @@ describe("useBuildAndValidateMod", () => {
       )();
 
       // Activate the mod
-      const state = modComponentsSlice.reducer(
+      const state = modComponentSlice.reducer(
         { activatedModComponents: [] },
         modComponentsActions.activateMod({
           modDefinition,

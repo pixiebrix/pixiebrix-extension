@@ -33,7 +33,7 @@ import { castDraft, produce } from "immer";
 import { calculateInnerRegistryId } from "@/registry/hydrateInnerDefinitions";
 import { cloneDeep, range, uniq } from "lodash";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
-import modComponentsSlice from "@/store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
@@ -102,9 +102,9 @@ describe("replaceModComponent round trip", () => {
       extensionPointId: starterBrick.metadata.id,
     })();
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -147,9 +147,9 @@ describe("replaceModComponent round trip", () => {
       label: "Other Mod Component",
     });
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -183,9 +183,9 @@ describe("replaceModComponent round trip", () => {
   test("single starter brick with innerDefinition", async () => {
     const modDefinition = innerStarterBrickModDefinitionFactory()();
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -232,9 +232,9 @@ describe("replaceModComponent round trip", () => {
     const originalId = Object.keys(modDefinition.definitions)[0];
     modDefinition.definitions.excess = starterBrickInnerDefinitionFactory();
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -276,9 +276,9 @@ describe("replaceModComponent round trip", () => {
       label: "Other Mod Component",
     });
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -338,9 +338,9 @@ describe("replaceModComponent round trip", () => {
       label: "Other Mod Component",
     });
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -395,9 +395,9 @@ describe("replaceModComponent round trip", () => {
       } as any,
     });
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -445,9 +445,9 @@ describe("replaceModComponent round trip", () => {
       ],
     });
 
-    const state = modComponentsSlice.reducer(
+    const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -484,9 +484,9 @@ describe("mod options", () => {
       options: modOptionsDefinition,
     });
 
-    const modComponentState = modComponentsSlice.reducer(
+    const modComponentState = modComponentSlice.reducer(
       { activatedModComponents: [] },
-      modComponentsSlice.actions.activateMod({
+      modComponentSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
         isReactivate: false,
@@ -817,9 +817,9 @@ describe("buildNewMod", () => {
       )();
 
       // Activate the mod
-      const state = modComponentsSlice.reducer(
+      const state = modComponentSlice.reducer(
         { activatedModComponents: [] },
-        modComponentsSlice.actions.activateMod({
+        modComponentSlice.actions.activateMod({
           modDefinition,
           screen: "pageEditor",
           isReactivate: false,

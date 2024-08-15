@@ -30,7 +30,7 @@ import { persistModComponentOptionsConfig } from "@/store/modComponents/modCompo
 import integrationsSlice, {
   persistIntegrationsConfig,
 } from "@/integrations/store/integrationsSlice";
-import modComponentsSlice from "@/store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
@@ -70,7 +70,7 @@ const store = configureStore({
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistModComponentOptionsConfig,
-      modComponentsSlice.reducer,
+      modComponentSlice.reducer,
     ),
     integrations: persistReducer(
       persistIntegrationsConfig,
