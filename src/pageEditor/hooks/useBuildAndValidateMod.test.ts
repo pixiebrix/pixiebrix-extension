@@ -26,9 +26,9 @@ import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
 } from "@/starterBricks/types";
-import modComponentsSlice, {
-  actions as modComponentsActions,
-} from "@/store/extensionsSlice";
+import modComponentSlice, {
+  actions as modComponentActions,
+} from "@/store/modComponents/modComponentSlice";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
@@ -36,7 +36,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import produce from "immer";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { array } from "cooky-cutter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -96,9 +96,9 @@ describe("useBuildAndValidateMod", () => {
       )();
 
       // Activate the mod
-      const state = modComponentsSlice.reducer(
-        { extensions: [] },
-        modComponentsActions.activateMod({
+      const state = modComponentSlice.reducer(
+        { activatedModComponents: [] },
+        modComponentActions.activateMod({
           modDefinition,
           screen: "pageEditor",
           isReactivate: false,
@@ -117,7 +117,7 @@ describe("useBuildAndValidateMod", () => {
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
           // Mod was activated, so get the mod component from state
-          const modComponent = state.extensions[i];
+          const modComponent = state.activatedModComponents[i];
 
           // Load the adapter for this mod component
           const { fromModComponent } = adapter(starterBrick.definition.type);
@@ -138,7 +138,7 @@ describe("useBuildAndValidateMod", () => {
       const { result } = renderHook(() => useBuildAndValidateMod(), {
         setupRedux(dispatch) {
           dispatch(
-            modComponentsActions.activateMod({
+            modComponentActions.activateMod({
               modDefinition,
               screen: "pageEditor",
               isReactivate: false,
@@ -151,7 +151,9 @@ describe("useBuildAndValidateMod", () => {
         const newMod = await result.current.buildAndValidateMod({
           sourceMod: modDefinition,
           // Only pass in the unchanged clean mod components
-          cleanModComponents: state.extensions.slice(dirtyModComponentCount),
+          cleanModComponents: state.activatedModComponents.slice(
+            dirtyModComponentCount,
+          ),
           dirtyModComponentFormStates: modComponentFormStates,
         });
 
@@ -190,7 +192,7 @@ describe("useBuildAndValidateMod", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            modComponentsActions.activateMod({
+            modComponentActions.activateMod({
               modDefinition: activatedModDefinition,
               screen: "pageEditor",
               isReactivate: false,
@@ -207,7 +209,7 @@ describe("useBuildAndValidateMod", () => {
       await expect(
         result.current.buildAndValidateMod({
           sourceMod: activatedModDefinition,
-          cleanModComponents: state.extensions.slice(1),
+          cleanModComponents: state.activatedModComponents.slice(1),
           dirtyModComponentFormStates: [dirtyFormState1],
         }),
       ).rejects.toThrow("Mod save failed due to data integrity error");

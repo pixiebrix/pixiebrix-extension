@@ -18,14 +18,14 @@
 import {
   collectConfiguredIntegrationDependencies,
   collectModOptions,
-} from "@/store/extensionsUtils";
+} from "@/store/modComponents/modComponentUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
-describe("inferRecipeOptions", () => {
+describe("collectModOptions", () => {
   it("returns first option", () => {
     expect(collectModOptions([{ optionsArgs: { foo: 42 } }])).toStrictEqual({
       foo: 42,

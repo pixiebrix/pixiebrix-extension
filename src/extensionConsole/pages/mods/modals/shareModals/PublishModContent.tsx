@@ -37,8 +37,9 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 const PublishModContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId: modId } = useSelector(selectShowPublishContext) ?? {};
-  assertNotNullish(modId, "modId from publish context is nullish");
+  const publishContext = useSelector(selectShowPublishContext);
+  const modId = publishContext?.modId;
+  assertNotNullish(modId, "modId not found in PublishContext");
 
   const [updateModDefinition] = useUpdateModDefinitionMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =

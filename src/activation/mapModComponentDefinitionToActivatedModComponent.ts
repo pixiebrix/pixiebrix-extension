@@ -29,25 +29,32 @@ import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
 
 export type ActivateModComponentParam = {
+  /**
+   * The component definition to activate
+   */
   modComponentDefinition: ModComponentDefinition;
+  /**
+   * The mod definition this component belongs to
+   */
   modDefinition: ModDefinition;
+  /**
+   * The deployment for this component, if it belongs to one
+   */
   deployment?: Deployment;
+  /**
+   * Mod option inputs for the mod this component belongs to
+   */
   optionsArgs?: OptionsArgs;
+  /**
+   * The configured dependencies for the mod this component belongs to
+   */
   integrationDependencies: IntegrationDependency[];
 };
 
 /**
  * Transform a given ModComponentDefinition into an ActivatedModComponent.
- * Note: This function has no side effects, it's just a type-transformer.
- *       It does NOT save the activated mod component anywhere.
- * @param modComponentId the ID of the mod component, or undefined to generate a new mod component id. Used to force
- * the id of the component for standalone mod component activation.
- * @param modComponentDefinition the component definition to activate
- * @param apiVersion the PixieBrix definition API version
- * @param modDefinition the mod definition this component belongs to
- * @param deployment the deployment for this component, if it belongs to one
- * @param optionsArgs mod option inputs for the mod this component belongs to
- * @param integrationDependencies the configured dependencies for the mod this component belongs to
+ * Note: This function has no side effects, it's just a type-transformer. It does
+ * NOT save the activated mod component anywhere.
  */
 export function mapModComponentDefinitionToActivatedModComponent<
   Config extends UnknownObject = UnknownObject,

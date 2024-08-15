@@ -21,13 +21,16 @@ import {
   isModComponentStateV1,
   isModComponentStateV2,
   isModComponentStateV3,
-  type ModComponentStateLegacyVersions,
+  isModComponentStateV4,
+  isModComponentStateV5,
+  type ModComponentStateVersions,
   type ModComponentStateV0,
   type ModComponentStateV1,
   type ModComponentStateV2,
   type ModComponentStateV3,
   type ModComponentStateV4,
-} from "@/store/extensionsTypes";
+  type ModComponentStateV5,
+} from "@/store/modComponents/modComponentTypes";
 import { omit, partition, toLower } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 import { nowTimestamp } from "@/utils/timeUtils";
@@ -40,10 +43,11 @@ import { getUserScope } from "@/auth/authUtils";
 const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to 0-indexed
   // state version to match state type names and existing versions
-  // The typeguards shouldn't be necessary, but in certain cases, the rehydration can run
-  // on ModComponentStateV2 extensions before the _persist key is added
+  // The type-guards shouldn't be necessary, but in certain cases, the
+  // rehydration can run on ModComponentStateV2 extensions before the
+  // _persist key is added
   0: (state) => state,
-  1(state: ModComponentStateLegacyVersions & PersistedState) {
+  1(state: ModComponentStateVersions & PersistedState) {
     if (isModComponentStateV0(state)) {
       return migrateModComponentStateV0ToV1(state);
     }
@@ -65,14 +69,28 @@ const migrations: MigrationManifest = {
     return state;
   },
   // V4 migration defined below
+  5(
+    state: ModComponentStateV4 & PersistedState,
+  ): ModComponentStateV5 & PersistedState {
+    if (isModComponentStateV4(state)) {
+      return migrateModComponentStateV4toV5(state);
+    }
+
+    return state;
+  },
 };
 
 export async function createMigrationsManifest(): Promise<MigrationManifest> {
   const userScope = await getUserScope();
   return {
     ...migrations,
-    4: (state: ModComponentStateV3 & PersistedState) =>
-      migrateModComponentStateV3toV4(state, userScope),
+    4(state: ModComponentStateV3 & PersistedState) {
+      if (isModComponentStateV3(state)) {
+        return migrateModComponentStateV3toV4(state, userScope);
+      }
+
+      return state;
+    },
   };
 }
 
@@ -174,9 +192,26 @@ function migrateModComponentStateV3toV4(
   };
 }
 
+function migrateModComponentStateV4toV5(
+  state: ModComponentStateV4 & PersistedState,
+): ModComponentStateV5 & PersistedState {
+  return {
+    ...omit(state, "extensions"),
+    activatedModComponents: state.extensions,
+  };
+}
+
 export function inferModComponentStateVersion(
-  state: ModComponentStateLegacyVersions,
+  state: ModComponentStateVersions,
 ): number {
+  if (isModComponentStateV5(state)) {
+    return 5;
+  }
+
+  if (isModComponentStateV4(state)) {
+    return 4;
+  }
+
   if (isModComponentStateV3(state)) {
     return 3;
   }

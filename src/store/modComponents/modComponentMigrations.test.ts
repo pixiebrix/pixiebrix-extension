@@ -18,7 +18,7 @@
 import {
   createModMetadataForStandaloneComponent,
   migrateStandaloneComponentsToMods,
-} from "@/store/extensionsMigrations";
+} from "@/store/modComponents/modComponentMigrations";
 import {
   activatedModComponentFactory,
   modMetadataFactory,

@@ -20,8 +20,8 @@ import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModCompo
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { type ModComponentState } from "@/store/extensionsTypes";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 const axiosMock = new MockAdapter(axios);
 const defaultOptions = {

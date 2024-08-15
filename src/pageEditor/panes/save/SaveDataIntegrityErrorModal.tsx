@@ -22,7 +22,7 @@ import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorS
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import JSZip from "jszip";
 import download from "downloadjs";

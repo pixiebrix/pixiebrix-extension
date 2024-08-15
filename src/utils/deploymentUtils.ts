@@ -157,10 +157,12 @@ export type InstalledDeployment = {
 };
 
 export function selectInstalledDeployments(
-  extensions: Array<Pick<ModComponentBase, "_deployment" | "_recipe">>,
+  activatedModComponents: Array<
+    Pick<ModComponentBase, "_deployment" | "_recipe">
+  >,
 ): InstalledDeployment[] {
   return uniqBy(
-    extensions
+    activatedModComponents
       .filter((x) => x._deployment?.id != null)
       .map(
         (x) =>

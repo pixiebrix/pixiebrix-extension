@@ -27,7 +27,7 @@ import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import {
   modMetadataFactory,
   activatedModComponentFactory,
@@ -38,7 +38,7 @@ import {
   modDefinitionWithVersionedStarterBrickFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/editorStorage";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
@@ -63,7 +63,7 @@ describe("getActivatedMarketplaceModVersions function", () => {
   let privateActivatedDeployment: ActivatedModComponent;
 
   beforeEach(async () => {
-    await saveModComponentState({ extensions: [] });
+    await saveModComponentState({ activatedModComponents: [] });
 
     publicActivatedMod = activatedModComponentFactory({
       _recipe: modMetadataFactory({
@@ -99,7 +99,7 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
   it("should only return public mods without deployments", async () => {
     await saveModComponentState({
-      extensions: [
+      activatedModComponents: [
         publicActivatedMod,
         privateActivatedMod,
         publicActivatedDeployment,
@@ -124,7 +124,7 @@ describe("getActivatedMarketplaceModVersions function", () => {
     });
 
     await saveModComponentState({
-      extensions: [publicActivatedMod, anotherPublicActivatedMod],
+      activatedModComponents: [publicActivatedMod, anotherPublicActivatedMod],
     });
 
     const result = await getActivatedMarketplaceModVersions();
@@ -160,7 +160,10 @@ describe("getActivatedMarketplaceModVersions function", () => {
     });
 
     await saveModComponentState({
-      extensions: [onePublicActivatedMod, anotherPublicActivatedMod],
+      activatedModComponents: [
+        onePublicActivatedMod,
+        anotherPublicActivatedMod,
+      ],
     });
 
     const result = await getActivatedMarketplaceModVersions();
@@ -192,7 +195,7 @@ describe("fetchModUpdates function", () => {
       }),
     ];
 
-    await saveModComponentState({ extensions: activatedMods });
+    await saveModComponentState({ activatedModComponents: activatedMods });
   });
 
   it("calls the registry/updates/ endpoint with the right payload", async () => {
@@ -235,7 +238,7 @@ describe("deactivateMod function", () => {
     const anotherMod = modMetadataFactory({});
 
     await saveModComponentState({
-      extensions: [
+      activatedModComponents: [
         activatedModComponentFactory({
           _recipe: modToDeactivate,
         }),
@@ -264,15 +267,15 @@ describe("deactivateMod function", () => {
     expect(deactivatedModComponents).toHaveLength(2);
     expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
     expect(deactivatedModComponents[1]._recipe.id).toEqual(modToDeactivate.id);
-    expect(resultingState.extensions).toHaveLength(1);
+    expect(resultingState.activatedModComponents).toHaveLength(1);
 
     // Verify that deactivate removes the context menu UI globally. See call for explanation of why that's necessary.
     expect(uninstallContextMenuMock).toHaveBeenCalledTimes(2);
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      extensionId: deactivatedModComponents[0].id,
+      modComponentId: deactivatedModComponents[0].id,
     });
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      extensionId: deactivatedModComponents[1].id,
+      modComponentId: deactivatedModComponents[1].id,
     });
   });
 
@@ -284,7 +287,7 @@ describe("deactivateMod function", () => {
     });
 
     await saveModComponentState({
-      extensions: [extension],
+      activatedModComponents: [extension],
     });
 
     const priorOptionsState = await getModComponentState();
@@ -299,7 +302,9 @@ describe("deactivateMod function", () => {
     });
 
     expect(deactivatedModComponents).toEqual([]);
-    expect(resultingState.extensions).toEqual(priorOptionsState.extensions);
+    expect(resultingState.activatedModComponents).toEqual(
+      priorOptionsState.activatedModComponents,
+    );
   });
 });
 
@@ -322,9 +327,9 @@ describe("updateModsIfUpdatesAvailable", () => {
       },
     };
 
-    const optionsState = extensionsSlice.reducer(
-      { extensions: [] },
-      extensionsSlice.actions.activateMod({
+    const optionsState = modComponentSlice.reducer(
+      { activatedModComponents: [] },
+      modComponentSlice.actions.activateMod({
         modDefinition: publicMod,
         screen: "marketplace",
         isReactivate: false,
@@ -397,7 +402,9 @@ describe("updateModsIfUpdatesAvailable", () => {
     await updateModsIfForceUpdatesAvailable();
 
     const resultingOptionsState = await getModComponentState();
-    expect(resultingOptionsState.extensions).toHaveLength(1);
-    expect(resultingOptionsState.extensions[0]._recipe.version).toBe("2.0.1");
+    expect(resultingOptionsState.activatedModComponents).toHaveLength(1);
+    expect(
+      resultingOptionsState.activatedModComponents[0]._recipe.version,
+    ).toBe("2.0.1");
   });
 });

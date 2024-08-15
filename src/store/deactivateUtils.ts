@@ -20,7 +20,7 @@ import {
   removeDraftModComponents,
   removeDraftModComponentsForMod,
 } from "@/store/editorStorage";
-import { actions as extensionActions } from "@/store/extensionsSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
@@ -49,7 +49,7 @@ export async function deactivateMod(
   const draftModComponentsToDeactivate =
     await removeDraftModComponentsForMod(modId);
 
-  dispatch(extensionActions.removeModById(modId));
+  dispatch(modComponentActions.removeModById(modId));
 
   removeModComponentsFromAllTabs(
     uniq([
@@ -68,7 +68,7 @@ export async function deactivateModComponents(
 ): Promise<void> {
   await removeDraftModComponents(modComponentIds);
 
-  dispatch(extensionActions.removeModComponents({ modComponentIds }));
+  dispatch(modComponentActions.removeModComponents({ modComponentIds }));
 
   removeModComponentsFromAllTabs(modComponentIds);
 }

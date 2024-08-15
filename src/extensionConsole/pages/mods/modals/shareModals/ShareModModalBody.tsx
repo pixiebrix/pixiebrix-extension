@@ -64,8 +64,8 @@ const AddATeamMenuList = createMenuListWithAddButton(
 
 const ShareModModalBody: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const { blueprintId: modId = null } =
-    useSelector(selectShowShareContext) ?? {};
+  const shareContext = useSelector(selectShowShareContext);
+  const modId = shareContext?.modId;
   const organizationsForSelect = useSortOrganizations();
   const [updateModDefinition] = useUpdateModDefinitionMutation();
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =

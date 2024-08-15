@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
@@ -60,7 +60,7 @@ const Template: Story<{
   // Store that doesn't persist the data
   const templateStore = configureStore({
     reducer: {
-      options: extensionsSlice.reducer,
+      options: modComponentSlice.reducer,
       settings: settingsSlice.reducer,
       auth: authSlice.reducer,
       integrations: integrationsSlice.reducer,
@@ -68,7 +68,7 @@ const Template: Story<{
     },
     preloadedState: {
       auth,
-      options: extensionsSlice.getInitialState(),
+      options: modComponentSlice.getInitialState(),
       settings: settingsSlice.getInitialState(),
       integrations: integrationsSlice.getInitialState(),
     },

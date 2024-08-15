@@ -18,7 +18,7 @@
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { uuidv4, normalizeSemVerString } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";
@@ -139,7 +139,7 @@ beforeEach(async () => {
 
   // Reset local states
   await Promise.all([
-    saveModComponentState({ extensions: [] }),
+    saveModComponentState({ activatedModComponents: [] }),
     clearEditorReduxState(),
   ]);
 
@@ -265,7 +265,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
@@ -361,7 +361,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
@@ -397,7 +397,7 @@ describe("syncDeployments", () => {
     delete modComponent._deployment;
 
     await saveModComponentState({
-      extensions: [modComponent],
+      activatedModComponents: [modComponent],
     });
 
     let editorState = initialEditorState;
@@ -426,7 +426,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
     // Expect unrelated draft mod component not to be removed
@@ -452,7 +452,7 @@ describe("syncDeployments", () => {
     delete modComponent._deployment;
 
     await saveModComponentState({
-      extensions: [modComponent],
+      activatedModComponents: [modComponent],
     });
 
     appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
@@ -472,7 +472,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
     expect(activatedModComponents[0]._recipe.version).toBe(
       deployment.package.version,
@@ -506,7 +506,7 @@ describe("syncDeployments", () => {
     delete modComponent._deployment;
 
     await saveModComponentState({
-      extensions: [modComponent],
+      activatedModComponents: [modComponent],
     });
 
     let editorState = initialEditorState;
@@ -532,7 +532,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
     const { modComponentFormStates } = await getEditorState();
     // Expect draft mod component to be removed
@@ -566,7 +566,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -613,7 +613,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
@@ -829,7 +829,7 @@ describe("syncDeployments", () => {
     );
 
     await saveModComponentState({
-      extensions: [
+      activatedModComponents: [
         standaloneModComponent,
         deploymentModComponent,
         recipeModComponent,
@@ -842,7 +842,7 @@ describe("syncDeployments", () => {
 
     await syncDeployments();
 
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(2);
 
@@ -877,7 +877,7 @@ describe("syncDeployments", () => {
       );
 
     await syncDeployments();
-    const { extensions: activatedModComponents } = await getModComponentState();
+    const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toHaveLength(1);
     expect(activatedModComponents[0]._recipe.id).toBe(
       deployment.package.package_id,
@@ -911,7 +911,8 @@ describe("syncDeployments", () => {
       );
 
     await syncDeployments();
-    const { extensions: expectedModComponents } = await getModComponentState();
+    const { activatedModComponents: expectedModComponents } =
+      await getModComponentState();
     expect(expectedModComponents).toHaveLength(1);
     expect(expectedModComponents[0]._recipe.id).toBe(
       updatedDeployment.package.package_id,

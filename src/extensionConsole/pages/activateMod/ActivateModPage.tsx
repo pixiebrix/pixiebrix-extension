@@ -26,7 +26,7 @@ import { useHistory } from "react-router";
 import Page from "@/layout/Page";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { useSelector } from "react-redux";
-import { selectModHasAnyActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectModHasAnyActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { BusinessError } from "@/errors/businessErrors";
 import { DefinitionKinds } from "@/types/registryTypes";

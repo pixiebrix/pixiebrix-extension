@@ -28,7 +28,7 @@ import {
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
@@ -50,7 +50,7 @@ import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const { actions: optionsActions } = modComponentsSlice;
+const { actions: modComponentActions } = modComponentSlice;
 
 // Exported for testing
 export function isModEditable(
@@ -183,7 +183,7 @@ function useSaveMod(): ModSaver {
     );
 
     // Update the mod metadata on mod components in the options slice
-    dispatch(optionsActions.updateModMetadata(newModMetadata));
+    dispatch(modComponentActions.updateModMetadata(newModMetadata));
 
     dispatch(
       editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
@@ -191,7 +191,7 @@ function useSaveMod(): ModSaver {
 
     // Remove any deleted mod component form states from the mod components slice
     for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
-      dispatch(optionsActions.removeModComponent({ modComponentId }));
+      dispatch(modComponentActions.removeModComponent({ modComponentId }));
     }
 
     // Clear the dirty states

@@ -24,13 +24,13 @@ import {
   selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { collectModOptions } from "@/store/extensionsUtils";
+import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Events } from "@/telemetry/events";
-import { actions as modComponentActions } from "@/store/extensionsSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";

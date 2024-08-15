@@ -18,7 +18,7 @@
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { collectConfiguredIntegrationDependencies } from "@/store/extensionsUtils";
+import { collectConfiguredIntegrationDependencies } from "@/store/modComponents/modComponentUtils";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**

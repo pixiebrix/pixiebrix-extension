@@ -35,7 +35,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { initialState } from "@/store/extensionsSliceInitialState";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 
 type ActivateModPayload = {
@@ -72,7 +72,7 @@ type ActivateModPayload = {
   isReactivate: boolean;
 };
 
-const extensionsSlice = createSlice({
+const modComponentSlice = createSlice({
   name: "extensions",
   initialState,
   reducers: {
@@ -82,7 +82,7 @@ const extensionsSlice = createSlice({
       state,
       { payload }: PayloadAction<ActivatedModComponent[]>,
     ) {
-      state.extensions = cloneDeep(payload);
+      state.activatedModComponents = cloneDeep(payload);
     },
 
     /**
@@ -98,7 +98,7 @@ const extensionsSlice = createSlice({
       }>,
     ) {
       const { modComponentId, modMetadata } = payload;
-      const modComponent = state.extensions.find(
+      const modComponent = state.activatedModComponents.find(
         (x) => x.id === modComponentId,
       );
 
@@ -152,9 +152,7 @@ const extensionsSlice = createSlice({
           selectEventData(activatedModComponent),
         );
 
-        // NOTE: do not save the mod components in the cloud (because the user can just activate from the marketplace /
-        // or activate the deployment again
-        state.extensions.push(activatedModComponent);
+        state.activatedModComponents.push(activatedModComponent);
 
         // Ensure context menus are available on all existing tabs
         void contextMenus.preload([activatedModComponent]);
@@ -170,15 +168,9 @@ const extensionsSlice = createSlice({
     },
 
     /**
-     * Warning: this action saves the mod component to Redux, but it does not save the mod component to the cloud.
-     * You are likely looking for the `useUpsertModComponentFormState` hook, which saves the mod component
-     * form state using this action with options to push it to the server.
-     *
      * Prefer using `useUpsertModComponentFormState` over calling this action directly.
      *
      * @see useUpsertModComponentFormState
-     *
-     * XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
      */
     saveModComponent(
       state,
@@ -239,13 +231,13 @@ const extensionsSlice = createSlice({
 
       assertModComponentNotHydrated(modComponent);
 
-      const index = state.extensions.findIndex((x) => x.id === id);
+      const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = modComponent;
+        state.activatedModComponents[index] = modComponent;
       } else {
-        state.extensions.push(modComponent);
+        state.activatedModComponents.push(modComponent);
       }
     },
 
@@ -257,7 +249,7 @@ const extensionsSlice = createSlice({
       action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>,
     ) {
       const { id, ...modComponentUpdate } = action.payload;
-      const index = state.extensions.findIndex((x) => x.id === id);
+      const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index === -1) {
         reportError(
@@ -269,8 +261,8 @@ const extensionsSlice = createSlice({
       }
 
       // eslint-disable-next-line security/detect-object-injection -- index is number
-      state.extensions[index] = {
-        ...state.extensions.at(index),
+      state.activatedModComponents[index] = {
+        ...state.activatedModComponents.at(index),
         ...modComponentUpdate,
       } as ActivatedModComponent;
     },
@@ -283,7 +275,7 @@ const extensionsSlice = createSlice({
       action: PayloadAction<ModComponentBase["_recipe"]>,
     ) {
       const metadata = action.payload;
-      const modComponents = state.extensions.filter(
+      const modComponents = state.activatedModComponents.filter(
         (extension) => extension._recipe?.id === metadata?.id,
       );
       for (const modComponent of modComponents) {
@@ -296,11 +288,11 @@ const extensionsSlice = createSlice({
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
       const [, extensions] = partition(
-        state.extensions,
+        state.activatedModComponents,
         (x) => x._recipe?.id === modId,
       );
 
-      state.extensions = extensions;
+      state.activatedModComponents = extensions;
     },
 
     /**
@@ -314,7 +306,7 @@ const extensionsSlice = createSlice({
     ) {
       // NOTE: We aren't deleting the mod components on the server.
       // The user must do that separately from the mods screen
-      state.extensions = state.extensions.filter(
+      state.activatedModComponents = state.activatedModComponents.filter(
         (x) => !modComponentIds.includes(x.id),
       );
     },
@@ -329,7 +321,7 @@ const extensionsSlice = createSlice({
     ) {
       // NOTE: We aren't deleting the mod component/definition on the server.
       // The user must do that separately from the dashboard
-      state.extensions = state.extensions.filter(
+      state.activatedModComponents = state.activatedModComponents.filter(
         (x) => x.id !== modComponentId,
       );
     },
@@ -339,6 +331,6 @@ const extensionsSlice = createSlice({
   },
 });
 
-export const { actions } = extensionsSlice;
+export const { actions } = modComponentSlice;
 
-export default extensionsSlice;
+export default modComponentSlice;

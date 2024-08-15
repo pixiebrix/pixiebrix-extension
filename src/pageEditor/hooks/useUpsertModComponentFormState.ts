@@ -26,7 +26,7 @@ import { getLinkedApiClient } from "@/data/service/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import { useGetEditablePackagesQuery } from "@/data/service/api";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
@@ -39,7 +39,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { nowTimestamp } from "@/utils/timeUtils";
 
-const { saveModComponent } = modComponentsSlice.actions;
+const { saveModComponent } = modComponentSlice.actions;
 const { markClean } = editorSlice.actions;
 
 async function upsertPackageConfig(
@@ -106,8 +106,7 @@ function onStepError(error: unknown, step: string): string {
 }
 
 /**
- * Hook that returns a callback to save a Mod Component Form State in Redux, and optionally push a Standalone Mod
- * Component to the cloud.
+ * Hook that returns a callback to save a Mod Component Form State in Redux.
  */
 function useUpsertModComponentFormState(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't

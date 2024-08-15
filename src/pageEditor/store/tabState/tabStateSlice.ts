@@ -24,7 +24,7 @@ import {
   type TabStateRootState,
 } from "@/pageEditor/store/tabState/tabStateTypes";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";

@@ -259,8 +259,8 @@ class ContentScriptPlatform extends PlatformBase {
         registerHandler(options.modComponentId, handler);
         await ensureContextMenu(options);
       },
-      async unregister(componentId) {
-        await uninstallContextMenu({ extensionId: componentId });
+      async unregister(modComponentId) {
+        await uninstallContextMenu({ modComponentId });
       },
     };
   }

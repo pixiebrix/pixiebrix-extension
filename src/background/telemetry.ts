@@ -16,7 +16,7 @@
  */
 
 import { compact, debounce, throttle, uniq } from "lodash";
-import { getModComponentState } from "@/store/extensionsStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
@@ -284,13 +284,13 @@ async function collectUserSummary(): Promise<UserSummary> {
   let numActiveBlueprints: number | null = null;
 
   try {
-    const { extensions } = await getModComponentState();
-    numActiveExtensions = extensions.length;
+    const { activatedModComponents } = await getModComponentState();
+    numActiveExtensions = activatedModComponents.length;
     numActiveBlueprints = uniq(
-      compact(extensions.map((x) => x._recipe?.id)),
+      compact(activatedModComponents.map((x) => x._recipe?.id)),
     ).length;
     numActiveExtensionPoints = uniq(
-      extensions.map((x) => x.extensionPointId),
+      activatedModComponents.map((x) => x.extensionPointId),
     ).length;
   } catch (error) {
     console.warn("Cannot get number of extensions", { error });

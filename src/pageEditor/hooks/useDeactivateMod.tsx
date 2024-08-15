@@ -22,7 +22,7 @@ import {
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";

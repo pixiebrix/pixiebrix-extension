@@ -17,7 +17,7 @@
 
 import { type AuthRootState } from "@/auth/authTypes";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";

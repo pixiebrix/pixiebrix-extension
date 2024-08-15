@@ -31,10 +31,10 @@ function useViewShareAction(modViewItem: ModViewItem): (() => void) | null {
   const viewShare = () => {
     const shareContext: ShareContext = isModDefinition(mod)
       ? {
-          blueprintId: getPackageId(mod),
+          modId: getPackageId(mod),
         }
       : {
-          extensionId: mod.id,
+          modComponentId: mod.id,
         };
 
     dispatch(modModalsSlice.actions.setShareContext(shareContext));

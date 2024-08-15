@@ -19,11 +19,11 @@ import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { deactivateMod } from "@/store/deactivateUtils";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { useCreateDatabaseMutation } from "@/data/service/api";
@@ -153,7 +153,7 @@ function useActivateMod(
         );
 
         dispatch(
-          modComponentsSlice.actions.activateMod({
+          modComponentSlice.actions.activateMod({
             modDefinition,
             configuredDependencies: integrationDependencies,
             optionsArgs,

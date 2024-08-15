@@ -134,12 +134,12 @@ class TraceAnalysis extends AnalysisVisitorABC {
     this.annotations.push(...this.mapErrorAnnotations(position, traceError));
   }
 
-  override run(extension: ModComponentFormState): void {
+  override run(formState: ModComponentFormState): void {
     if (this.traceErrorMap.size === 0) {
       return;
     }
 
-    super.run(extension);
+    super.run(formState);
   }
 }
 

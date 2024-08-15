@@ -85,7 +85,7 @@ export class ShowSidebar extends EffectABC {
         force: forcePanel,
         panelHeading,
         // ActivatePanelOptions currently expects undefined not null
-        blueprintId: modComponentRef.modId ?? undefined,
+        modId: modComponentRef.modId ?? undefined,
       }),
     );
   }

@@ -21,11 +21,11 @@ import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,
   saveModComponentState,
-} from "@/store/extensionsStorage";
+} from "@/store/modComponents/modComponentStorage";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import { selectModComponentsForMod } from "@/store/extensionsSelectors";
-import extensionsSlice from "@/store/extensionsSlice";
+import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
 import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
@@ -35,8 +35,8 @@ import type {
   ActivatedModComponent,
   SerializedModComponent,
 } from "@/types/modComponentTypes";
-import { collectModOptions } from "@/store/extensionsUtils";
-import type { ModComponentState } from "@/store/extensionsTypes";
+import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { flagOn } from "@/auth/featureFlagStorage";
@@ -64,7 +64,7 @@ type PackageVersionPair = { name: RegistryId; version: SemVerString };
 export async function getActivatedMarketplaceModVersions(): Promise<
   PackageVersionPair[]
 > {
-  const { extensions: activatedModComponents } = await getModComponentState();
+  const { activatedModComponents } = await getModComponentState();
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
   // the deployment updater will handle the updates.
@@ -142,11 +142,11 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
 }
 
 /**
- * Deactivates the mod component from the extensions and editor redux stores. Note that while the mod component
+ * Deactivates the mod component from the modComponent and editor redux stores. Note that while the mod component
  * is removed from redux, it is not removed from existing tabs until a navigation is triggered/store is refreshed in the respective tab.
  * This is to prevent interrupting the user's workflow when performing updates in the background.
  * @param modComponent the mod component to deactivate
- * @param reduxState the current state of the extension and editor redux stores
+ * @param reduxState the current state of the modComponent and editor redux stores
  * @returns the new redux state with the mod component deactivated
  */
 function deactivateModComponent(
@@ -155,9 +155,9 @@ function deactivateModComponent(
 ): ActivatedModState {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
-  newOptionsState = extensionsSlice.reducer(
+  newOptionsState = modComponentSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.removeModComponent({
+    modComponentSlice.actions.removeModComponent({
       modComponentId: modComponent.id,
     }),
   );
@@ -177,7 +177,7 @@ function deactivateModComponent(
  * Deactivates all mod components with the given mod id. Does not remove the mod UI from existing tabs.
  *
  * @param modId the mod registry id
- * @param reduxState the current state of the extension and editor redux stores
+ * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod components deactivated
  * and the mod components that were deactivated
  */
@@ -211,7 +211,7 @@ export function deactivateMod(
     // will see duplicate menu items because the old/new mod components have different UUIDs.
     // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
     // mod component is not loaded yet, they'll get a notification to reload the page.
-    void uninstallContextMenu({ extensionId: activatedModComponent.id });
+    void uninstallContextMenu({ modComponentId: activatedModComponent.id });
   }
 
   return {
@@ -228,7 +228,7 @@ export function deactivateMod(
  * The ModComponents will have new UUIDs.
  *
  * @param modDefinition the mod to update
- * @param reduxState the current state of the extension and editor redux stores
+ * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod updated
  */
 function updateMod(
@@ -261,9 +261,9 @@ function updateMod(
     deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 
-  newOptionsState = extensionsSlice.reducer(
+  newOptionsState = modComponentSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.activateMod({
+    modComponentSlice.actions.activateMod({
       modDefinition,
       configuredDependencies,
       optionsArgs,

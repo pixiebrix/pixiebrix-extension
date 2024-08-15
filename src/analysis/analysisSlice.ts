@@ -38,7 +38,7 @@ const analysisSlice = createSlice({
     // `startAnalysis` action is to help with debugging via redux-logger
     startAnalysis(
       state,
-      action: PayloadAction<{ extensionId: UUID; analysisId: string }>,
+      action: PayloadAction<{ modComponentId: UUID; analysisId: string }>,
     ) {
       // NOP
     },
@@ -46,7 +46,7 @@ const analysisSlice = createSlice({
     failAnalysis(
       state,
       action: PayloadAction<{
-        extensionId: UUID;
+        modComponentId: UUID;
         analysisId: string;
         error: ErrorObject;
       }>,
@@ -56,26 +56,26 @@ const analysisSlice = createSlice({
     finishAnalysis(
       state,
       action: PayloadAction<{
-        extensionId: UUID;
+        modComponentId: UUID;
         analysisId: string;
         annotations: AnalysisAnnotation[];
       }>,
     ) {
-      const { extensionId, analysisId, annotations } = action.payload;
+      const { modComponentId, analysisId, annotations } = action.payload;
 
       // Clear out any existing annotations for this analysis.
-      if (state.extensionAnnotations[extensionId]) {
+      if (state.extensionAnnotations[modComponentId]) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- validated by if check
-        state.extensionAnnotations[extensionId] = state.extensionAnnotations[
-          extensionId
+        state.extensionAnnotations[modComponentId] = state.extensionAnnotations[
+          modComponentId
         ]!.filter((x) => x.analysisId !== analysisId);
       } else {
-        state.extensionAnnotations[extensionId] = [];
+        state.extensionAnnotations[modComponentId] = [];
       }
 
-      state.extensionAnnotations[extensionId] = [
+      state.extensionAnnotations[modComponentId] = [
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- validated above
-        ...state.extensionAnnotations[extensionId]!,
+        ...state.extensionAnnotations[modComponentId]!,
         ...annotations,
       ];
     },

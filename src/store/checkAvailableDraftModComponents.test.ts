@@ -28,8 +28,8 @@ import {
 } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
-import modComponentsSlice from "@/store/extensionsSlice";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
@@ -39,7 +39,7 @@ jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: modComponentsReducer } = modComponentsSlice;
+const { reducer: modComponentReducer } = modComponentSlice;
 
 describe("checkAvailableDraftModComponents", () => {
   it("checks draft mod components correctly", async () => {
@@ -49,7 +49,7 @@ describe("checkAvailableDraftModComponents", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: modComponentsReducer,
+        options: modComponentReducer,
       },
     });
 

@@ -69,10 +69,10 @@ export interface Analysis {
   getAnnotations(): AnalysisAnnotation[];
 
   /**
-   * Run the analysis on the given extension
-   * @param extension The extension to analyze
+   * Run the analysis on the given formState
+   * @param formState The formState to analyze
    */
-  run(extension: ModComponentFormState): void | Promise<void>;
+  run(formState: ModComponentFormState): void | Promise<void>;
 }
 
 export type AnalysisState = {

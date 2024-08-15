@@ -147,7 +147,7 @@ describe("contextMenuStarterBrick", () => {
     expect(starterBrick.registeredModComponents).toHaveLength(0);
 
     expect(uninstallContextMenuMock).toHaveBeenCalledExactlyOnceWith({
-      extensionId: modComponent.id,
+      modComponentId: modComponent.id,
     });
   });
 });

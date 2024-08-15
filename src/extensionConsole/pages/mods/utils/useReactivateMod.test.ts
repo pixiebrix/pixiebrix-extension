@@ -17,9 +17,9 @@
 
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useReactivateMod from "./useReactivateMod";
-import { actions as extensionActions } from "@/store/extensionsSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { deactivateMod } from "@/store/deactivateUtils";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 beforeEach(() => {
@@ -36,7 +36,7 @@ test("deactivates mod components", async () => {
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateMod({
+        modComponentActions.activateMod({
           modDefinition,
           screen: "extensionConsole",
           isReactivate: true,
@@ -47,7 +47,7 @@ test("deactivates mod components", async () => {
 
   const expectedExtension = (
     getReduxStore().getState() as ModComponentsRootState
-  ).options.extensions[0];
+  ).options.activatedModComponents[0];
 
   await act(async () => reactivate(modDefinition));
 
@@ -59,7 +59,7 @@ test("deactivates mod components", async () => {
 });
 
 test("dispatches activate mod action", async () => {
-  jest.spyOn(extensionActions, "activateMod");
+  jest.spyOn(modComponentActions, "activateMod");
 
   const modDefinition = defaultModDefinitionFactory();
 
@@ -69,7 +69,7 @@ test("dispatches activate mod action", async () => {
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.activateMod({
+        modComponentActions.activateMod({
           modDefinition,
           screen: "extensionConsole",
           isReactivate: true,
@@ -80,5 +80,5 @@ test("dispatches activate mod action", async () => {
 
   await act(async () => reactivate(modDefinition));
 
-  expect(extensionActions.activateMod).toHaveBeenCalled();
+  expect(modComponentActions.activateMod).toHaveBeenCalled();
 });

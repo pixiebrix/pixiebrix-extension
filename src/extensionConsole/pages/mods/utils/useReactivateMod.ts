@@ -17,10 +17,10 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { useCallback } from "react";
-import { actions as extensionActions } from "@/store/extensionsSlice";
-import { collectModOptions } from "@/store/extensionsUtils";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import { deactivateMod } from "@/store/deactivateUtils";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
@@ -52,7 +52,7 @@ function useReactivateMod(): ReactivateMod {
       await deactivateMod(modId, activatedModComponents, dispatch);
 
       dispatch(
-        extensionActions.activateMod({
+        modComponentActions.activateMod({
           modDefinition,
           configuredDependencies,
           optionsArgs: currentOptions,

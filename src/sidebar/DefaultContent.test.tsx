@@ -18,7 +18,7 @@
 import React from "react";
 import { render, screen } from "@/sidebar/testHelpers";
 import DefaultPanel from "./DefaultPanel";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -39,7 +39,7 @@ describe("renders DefaultPanel", () => {
     render(<DefaultPanel />, {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.saveModComponent({
+          modComponentSlice.actions.saveModComponent({
             modComponent: {
               ...(modComponentFactory() as ActivatedModComponent),
               updateTimestamp: timestampFactory(),

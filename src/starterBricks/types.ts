@@ -233,8 +233,8 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   /**
    * Internal helper method to clear an extension's UI and triggers/observers/etc. from the page.
    *
-   * NOTE: when this method is called, the extensions will still be in this.extensions. The caller is responsible for
-   * updating this.extensions as necessary.
+   * NOTE: when this method is called, the extensions will still be in this.modComponents. The caller is responsible for
+   * updating this.modComponents as necessary.
    *
    * @see synchronizeModComponents
    * @see removeModComponent
@@ -278,7 +278,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
         `Component ${component.id} already registered for the starter brick ${this.id}`,
       );
       /* eslint-disable-next-line security/detect-object-injection --
-      -- Index is guaranteed to be a number, and this.extensions is an array */
+      -- Index is guaranteed to be a number, and this.modComponents is an array */
       this.modComponents[index] = component;
     } else {
       this.modComponents.push(component);

@@ -17,7 +17,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
@@ -39,7 +39,7 @@ const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,
-      options: modComponentsSlice.reducer,
+      options: modComponentSlice.reducer,
       integrations: integrationsSlice.reducer,
       settings: settingsSlice.reducer,
       editor: editorSlice.reducer,

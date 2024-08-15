@@ -125,7 +125,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           // frequently between mod components within the same mod.
           await openSidePanel(inspectedTab.tabId);
           updateSidebar(inspectedTab, {
-            extensionId: modComponent.id,
+            modComponentId: modComponent.id,
             force: true,
             refresh: false,
           });

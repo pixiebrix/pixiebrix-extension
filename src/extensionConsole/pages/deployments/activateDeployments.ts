@@ -16,7 +16,7 @@
  */
 
 import { integrationConfigLocator } from "@/background/messenger/api";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -29,7 +29,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { persistor } from "@/extensionConsole/store";
 
-const { actions } = extensionsSlice;
+const { actions } = modComponentSlice;
 
 // For ensuring the mod state is persisted before continuing so the content script can immediately pick up the changes
 async function flushAndPersist(mode: "queue" | "immediate") {

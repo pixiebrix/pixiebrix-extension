@@ -27,7 +27,7 @@ import pDefer from "p-defer";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/components/ConfirmationModal", () => ({
@@ -135,7 +135,7 @@ test("load mod definitions and save one", async () => {
   render(<TestComponent />, {
     setupRedux(dispatch) {
       dispatch(
-        extensionsSlice.actions.activateMod({
+        modComponentSlice.actions.activateMod({
           modDefinition: sourceModDefinition,
           screen: "pageEditor",
           isReactivate: false,

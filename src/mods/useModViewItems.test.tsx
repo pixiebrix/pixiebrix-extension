@@ -20,7 +20,7 @@ import {
   type ActivatedModComponent,
   type HydratedModComponent,
 } from "@/types/modComponentTypes";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type UnavailableMod } from "@/types/modTypes";
@@ -49,7 +49,7 @@ describe("useModViewItems", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.UNSAFE_setModComponents([
+            modComponentSlice.actions.UNSAFE_setModComponents([
               modComponent as unknown as ActivatedModComponent,
             ]),
           );
@@ -76,7 +76,7 @@ describe("useModViewItems", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.UNSAFE_setModComponents([
+            modComponentSlice.actions.UNSAFE_setModComponents([
               activatedModComponent,
             ]),
           );
@@ -107,7 +107,7 @@ describe("useModViewItems", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsSlice.actions.UNSAFE_setModComponents([
+            modComponentSlice.actions.UNSAFE_setModComponents([
               activatedModComponent,
             ]),
           );

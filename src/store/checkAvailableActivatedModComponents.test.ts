@@ -17,9 +17,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
-import extensionsSlice from "@/store/extensionsSlice";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
@@ -38,7 +36,9 @@ import { getPlatform } from "@/platform/platformContext";
 import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -46,8 +46,8 @@ jest.mock("@/pageEditor/context/connection");
 
 const {
   actions: { activateMod },
-  reducer: extensionsReducer,
-} = extensionsSlice;
+  reducer: modComponentReducer,
+} = modComponentSlice;
 
 describe("checkAvailableActivatedModComponents", () => {
   it("checks activated mod components correctly", async () => {
@@ -135,7 +135,7 @@ describe("checkAvailableActivatedModComponents", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: extensionsReducer,
+        options: modComponentReducer,
       },
     });
 

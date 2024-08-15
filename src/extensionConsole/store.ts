@@ -20,7 +20,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import integrationsSlice, {
   persistIntegrationsConfig,
   type ServicesRootState,
@@ -31,13 +31,13 @@ import {
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/data/service/api";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import extensionsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import workshopSlice, {
   persistWorkshopConfig,
   type WorkshopRootState,
 } from "@/store/workshopSlice";
-import { persistModComponentOptionsConfig } from "@/store/extensionsStorage";
+import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import modsPageSlice, {
@@ -99,7 +99,7 @@ const store = configureStore({
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistModComponentOptionsConfig,
-      extensionsSlice.reducer,
+      modComponentSlice.reducer,
     ),
     modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
     integrations: persistReducer(

@@ -17,9 +17,9 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
-import modComponentsSlice from "@/store/extensionsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";
@@ -39,7 +39,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");
 
-const { reducer: modComponentsReducer } = modComponentsSlice;
+const { reducer: modComponentReducer } = modComponentSlice;
 
 describe("checkActiveModComponentAvailability", () => {
   it("checks the active element correctly", async () => {
@@ -49,7 +49,7 @@ describe("checkActiveModComponentAvailability", () => {
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
         editor: editorSlice.reducer,
-        options: modComponentsReducer,
+        options: modComponentReducer,
       },
     });
 

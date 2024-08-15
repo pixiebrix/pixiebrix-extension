@@ -22,36 +22,54 @@ import {
   modModalsSlice,
   type PublishContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
+import { validateRegistryId, validateUUID } from "@/types/helpers";
+
+function useShowPublishUrlParams(): {
+  showPublish: boolean;
+  modId: string | null;
+  modComponentId: string | null;
+} {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  return {
+    showPublish: params.get("publish") === "1",
+    // Backwards compatible with old URL param names (blueprintId, extensionId)
+    modId: params.get("modId") ?? params.get("blueprintId"),
+    modComponentId: params.get("modComponentId") ?? params.get("extensionId"),
+  };
+}
 
 // Supports showing the publish modal via URL, e.g. to link from the Sidebar
 const useShowPublishUrlEffect = () => {
-  const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
-  const params = new URLSearchParams(location.search);
 
-  const showPublish = params.get("publish") === "1";
-  const blueprintId = params.get("blueprintId");
-  const extensionId = params.get("extensionId");
+  const { showPublish, modId, modComponentId } = useShowPublishUrlParams();
 
   useEffect(() => {
-    // Both blueprintId & extensionId being set should never happen in practice, but
+    // Both modId & modComponentId being set should never happen in practice, but
     // at least one of them needs to be present
     const validShareContext =
-      (blueprintId || extensionId) && !(blueprintId && extensionId);
+      (modId || modComponentId) && !(modId && modComponentId);
 
     if (showPublish && validShareContext) {
-      dispatch(
-        modModalsSlice.actions.setPublishContext({
-          ...(blueprintId ? { blueprintId } : {}),
-          ...(extensionId ? { extensionId } : {}),
-        } as PublishContext),
-      );
+      const publishContext: PublishContext = {};
+
+      if (modId) {
+        publishContext.modId = validateRegistryId(modId);
+      }
+
+      if (modComponentId) {
+        publishContext.modComponentId = validateUUID(modComponentId);
+      }
+
+      dispatch(modModalsSlice.actions.setPublishContext(publishContext));
 
       // Remove the search params after showing the modal
       history.push("/");
     }
-  }, []);
+  }, [dispatch, history, modComponentId, modId, showPublish]);
 };
 
 export default useShowPublishUrlEffect;

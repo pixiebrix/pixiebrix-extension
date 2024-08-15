@@ -31,8 +31,9 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
-  const { blueprintId: modId, cancelingPublish } = showPublishContext ?? {};
-  assertNotNullish(modId, "modId not found in showPublishContext");
+  assertNotNullish(showPublishContext, "PublishContext not found");
+  const { modId, cancelingPublish } = showPublishContext;
+  assertNotNullish(modId, "modId not found in PublishContext");
   const { data: listing, isLoading: isLoadingListing } =
     useGetMarketplaceListingQuery({ packageId: modId });
   const { data: modDefinition, isLoading: isLoadingModDefinition } =
@@ -66,7 +67,7 @@ const PublishModModals: React.FunctionComponent = () => {
   };
 
   const showPublishContext = useSelector(selectShowPublishContext);
-  const showPublishModModal = showPublishContext?.blueprintId != null;
+  const showPublishModModal = showPublishContext?.modId != null;
 
   return (
     <Modal show={showPublishModModal} onHide={closeModal}>

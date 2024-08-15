@@ -51,7 +51,7 @@ export function generatePackageId(
  *  as everything following the first / character
  * @param value the full RegistryId
  */
-export function getScopeAndId(value: RegistryId | null): {
+export function getScopeAndId(value: Nullishable<RegistryId>): {
   scope: string | undefined;
   id: string | undefined;
 } {

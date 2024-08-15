@@ -23,7 +23,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectActivatedModComponents } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import notify from "@/utils/notify";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";

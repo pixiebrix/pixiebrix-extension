@@ -33,10 +33,10 @@ const fallback: PermissionsStatus = {
 
 /**
  * WARNING: This hook swallows errors (to simplify the behavior for the mods screen).
- * Outside the `ModsPage` you probably want to use useAsyncState with `collectExtensionPermissions`
- * @see collectExtensionPermissions
+ * Outside the `ModsPage` you probably want to use useAsyncState with `collectModComponentPermissions`
+ * @see collectModComponentPermissions
  */
-function useModPermissions(extensions: ModComponentBase[]): {
+function useModPermissions(modComponents: ModComponentBase[]): {
   hasPermissions: boolean;
   requestPermissions: () => Promise<boolean>;
 } {
@@ -45,11 +45,11 @@ function useModPermissions(extensions: ModComponentBase[]): {
   const { data } = fallbackValue(
     useAsyncState(async () => {
       if (isSuccess) {
-        return checkExtensionPermissions(extensions);
+        return checkExtensionPermissions(modComponents);
       }
 
       return fallback;
-    }, [extensions, browserPermissions, isSuccess]),
+    }, [modComponents, browserPermissions, isSuccess]),
     fallback,
   );
 

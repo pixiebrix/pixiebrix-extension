@@ -31,7 +31,7 @@ import {
 } from "@/store/deactivateUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { type ModComponentState } from "@/store/extensionsTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 
 function useDeactivateAction(modViewItem: ModViewItem): (() => void) | null {
   const dispatch = useDispatch();

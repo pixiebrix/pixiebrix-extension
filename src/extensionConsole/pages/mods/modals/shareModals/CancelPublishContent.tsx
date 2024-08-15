@@ -36,8 +36,8 @@ const CancelPublishContent: React.FunctionComponent = () => {
   const [isCancelling, setCancelling] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const { blueprintId: modId = null } =
-    useSelector(selectShowPublishContext) ?? {};
+  const publishContext = useSelector(selectShowPublishContext);
+  const modId = publishContext?.modId;
   const { data: modDefinition, refetch: refetchModDefinitions } =
     useOptionalModDefinition(modId);
   const { data: editablePackages, isFetching: isFetchingEditablePackages } =

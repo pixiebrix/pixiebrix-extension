@@ -60,7 +60,7 @@ import {
 } from "@/pageEditor/store/editor/editorSliceHelpers";
 import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
-import { type ModComponentsRootState } from "@/store/extensionsTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import {
   getRunningStarterBricks,
   checkAvailable,

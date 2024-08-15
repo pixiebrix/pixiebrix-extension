@@ -33,7 +33,7 @@ import {
   timestampFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { type getModComponentState } from "@/store/extensionsStorage";
+import { type getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
@@ -89,7 +89,7 @@ const activatedModComponentFactory = define<
 describe("lifecycle", () => {
   beforeEach(() => {
     jest.isolateModules(() => {
-      jest.mock("@/store/extensionsStorage", () => ({
+      jest.mock("@/store/modComponents/modComponentStorage", () => ({
         getModComponentState: jest
           .fn()
           .mockRejectedValue(new Error("Mock not implemented")),
@@ -98,7 +98,7 @@ describe("lifecycle", () => {
       lifecycleModule = require("@/contentScript/lifecycle");
       starterBrickRegistry = require("@/starterBricks/registry").default;
       getModComponentStateMock =
-        require("@/store/extensionsStorage").getModComponentState;
+        require("@/store/modComponents/modComponentStorage").getModComponentState;
     });
 
     window.document.body.innerHTML = "";
@@ -114,7 +114,7 @@ describe("lifecycle", () => {
   });
 
   it("first navigation no extensions smoke test", async () => {
-    getModComponentStateMock.mockResolvedValue({ extensions: [] });
+    getModComponentStateMock.mockResolvedValue({ activatedModComponents: [] });
 
     await lifecycleModule.handleNavigate();
     expect(getModComponentStateMock).toHaveBeenCalledTimes(1);
@@ -141,7 +141,9 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      activatedModComponents: [modComponent],
+    });
 
     // Sanity check for the test
     expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
@@ -193,7 +195,9 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      activatedModComponents: [modComponent],
+    });
 
     // Sanity check for the test
     expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
@@ -249,7 +253,9 @@ describe("lifecycle", () => {
       extensionPointId: starterBrick.id,
     });
 
-    getModComponentStateMock.mockResolvedValue({ extensions: [modComponent] });
+    getModComponentStateMock.mockResolvedValue({
+      activatedModComponents: [modComponent],
+    });
 
     await lifecycleModule.handleNavigate();
 
@@ -276,7 +282,7 @@ describe("lifecycle", () => {
     });
 
     getModComponentStateMock.mockResolvedValue({
-      extensions: [updatedModComponent],
+      activatedModComponents: [updatedModComponent],
     });
     lifecycleModule.queueReloadFrameMods();
 

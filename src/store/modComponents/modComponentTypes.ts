@@ -16,6 +16,7 @@
  */
 
 import {
+  type ActivatedModComponent,
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
   type SerializedModComponent,
@@ -55,12 +56,6 @@ export type ModComponentStateV3 = {
   extensions: ActivatedModComponentV2[];
 };
 
-export type ModComponentStateLegacyVersions =
-  | ModComponentStateV0
-  | ModComponentStateV1
-  | ModComponentStateV2
-  | ModComponentStateV3;
-
 /**
  * @deprecated - Do not use versioned state types directly
  *
@@ -69,21 +64,47 @@ export type ModComponentStateLegacyVersions =
  */
 export type ModComponentStateV4 = ModComponentStateV3;
 
-export type ModComponentState = ModComponentStateV4;
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentStateV5 = {
+  // De-couple the versioned type for ModComponentState from the versioned
+  // type for ActivatedModComponent -- this will enable changes/migrations
+  // for the ActivatedModComponent type without affecting the ModComponentState
+  // type.
+  activatedModComponents: ActivatedModComponent[];
+};
+
+export type ModComponentStateVersions =
+  | ModComponentStateV0
+  | ModComponentStateV1
+  | ModComponentStateV2
+  | ModComponentStateV3
+  | ModComponentStateV5;
+
+export type ModComponentState = ModComponentStateV5;
 
 export type ModComponentsRootState = {
   options: ModComponentState;
 };
 
 export function isModComponentStateV0(
-  state: ModComponentStateLegacyVersions,
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV0 {
-  return !Array.isArray(state.extensions);
+  if (!("extensions" in state)) {
+    return false;
+  }
+
+  return state.extensions != null && !Array.isArray(state.extensions);
 }
 
 export function isModComponentStateV1(
-  state: ModComponentStateLegacyVersions,
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV1 {
+  if (!("extensions" in state)) {
+    return false;
+  }
+
   return (
     Array.isArray(state.extensions) &&
     state.extensions[0] != null &&
@@ -92,8 +113,12 @@ export function isModComponentStateV1(
 }
 
 export function isModComponentStateV2(
-  state: ModComponentStateLegacyVersions,
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV2 {
+  if (!("extensions" in state)) {
+    return false;
+  }
+
   return (
     Array.isArray(state.extensions) &&
     state.extensions[0] != null &&
@@ -104,8 +129,12 @@ export function isModComponentStateV2(
 }
 
 export function isModComponentStateV3(
-  state: ModComponentStateLegacyVersions,
+  state: ModComponentStateVersions,
 ): state is ModComponentStateV3 {
+  if (!("extensions" in state)) {
+    return false;
+  }
+
   return (
     Array.isArray(state.extensions) &&
     (state.extensions[0] == null ||
@@ -113,4 +142,28 @@ export function isModComponentStateV3(
       // field is missing completely, the app logic will properly handle it as a V3 type.
       !("services" in state.extensions[0]))
   );
+}
+
+export function isModComponentStateV4(
+  state: ModComponentStateVersions,
+): state is ModComponentStateV4 {
+  if (!("extensions" in state)) {
+    return false;
+  }
+
+  return (
+    isModComponentStateV3(state) &&
+    // All standalone components have been migrated or removed
+    !state.extensions.some((extension) => extension._recipe == null)
+  );
+}
+
+export function isModComponentStateV5(
+  state: ModComponentStateVersions,
+): state is ModComponentStateV5 {
+  if (!("activatedModComponents" in state)) {
+    return false;
+  }
+
+  return Array.isArray(state.activatedModComponents);
 }
