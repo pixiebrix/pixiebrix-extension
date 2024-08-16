@@ -502,20 +502,20 @@ describe("mod component state migrations", () => {
     };
 
     it("migrates initial state", () => {
-      expect(migrateModComponentStateV0ToV1?.(initialStateV0)).toStrictEqual(
+      expect(migrateModComponentStateV0ToV1!(initialStateV0)).toStrictEqual(
         initialStateV1,
       );
     });
 
     it("migrates state with components", () => {
       const unmigrated = unmigrateStateV1toV0(expectedStateV1);
-      expect(migrateModComponentStateV0ToV1?.(unmigrated)).toStrictEqual(
+      expect(migrateModComponentStateV0ToV1!(unmigrated)).toStrictEqual(
         expectedStateV1,
       );
     });
 
     it("does not migrate or throw with wrong version", () => {
-      expect(migrateModComponentStateV0ToV1?.(expectedStateV1)).toStrictEqual(
+      expect(migrateModComponentStateV0ToV1!(expectedStateV1)).toStrictEqual(
         expectedStateV1,
       );
     });
@@ -537,7 +537,7 @@ describe("mod component state migrations", () => {
     };
 
     it("migrates initial state", () => {
-      expect(migrateModComponentStateV1ToV2?.(initialStateV1)).toStrictEqual(
+      expect(migrateModComponentStateV1ToV2!(initialStateV1)).toStrictEqual(
         initialStateV2,
       );
     });
@@ -545,7 +545,7 @@ describe("mod component state migrations", () => {
     it("migrates state with components", () => {
       const unmigrated = unmigrateStateV2toV1(expectedStateV2);
       // Timestamps on the components won't match, so we need to omit them (createTimestamp, updateTimestamp)
-      expect(migrateModComponentStateV1ToV2?.(unmigrated)).toEqual(
+      expect(migrateModComponentStateV1ToV2!(unmigrated)).toEqual(
         expect.objectContaining({
           extensions: expect.arrayContaining([
             expect.objectContaining(
@@ -563,7 +563,7 @@ describe("mod component state migrations", () => {
     });
 
     it("does not migrate or throw with wrong version", () => {
-      expect(migrateModComponentStateV1ToV2?.(expectedStateV2)).toStrictEqual(
+      expect(migrateModComponentStateV1ToV2!(expectedStateV2)).toStrictEqual(
         expectedStateV2,
       );
     });
@@ -586,20 +586,20 @@ describe("mod component state migrations", () => {
     };
 
     it("migrates initial state", () => {
-      expect(migrateModComponentStateV2toV3?.(initialStateV2)).toStrictEqual(
+      expect(migrateModComponentStateV2toV3!(initialStateV2)).toStrictEqual(
         initialStateV3,
       );
     });
 
     it("migrates state with components", () => {
       const unmigrated = unmigrateStateV3toV2(expectedStateV3);
-      expect(migrateModComponentStateV2toV3?.(unmigrated)).toStrictEqual(
+      expect(migrateModComponentStateV2toV3!(unmigrated)).toStrictEqual(
         expectedStateV3,
       );
     });
 
     it("does not migrate or throw with wrong version", () => {
-      expect(migrateModComponentStateV2toV3?.(expectedStateV3)).toStrictEqual(
+      expect(migrateModComponentStateV2toV3!(expectedStateV3)).toStrictEqual(
         expectedStateV3,
       );
     });
@@ -627,20 +627,20 @@ describe("mod component state migrations", () => {
     };
 
     it("migrates initial state", () => {
-      expect(migrateModComponentStateV3toV4?.(initialStateV3)).toStrictEqual(
+      expect(migrateModComponentStateV3toV4!(initialStateV3)).toStrictEqual(
         initialStateV4,
       );
     });
 
     it("migrates state with components", () => {
       const unmigrated = unmigrateStateV4toV3(expectedStateV4);
-      expect(migrateModComponentStateV3toV4?.(unmigrated)).toStrictEqual(
+      expect(migrateModComponentStateV3toV4!(unmigrated)).toStrictEqual(
         expectedStateV4,
       );
     });
 
     it("does not migrate or throw with wrong version", () => {
-      expect(migrateModComponentStateV3toV4?.(expectedStateV4)).toStrictEqual(
+      expect(migrateModComponentStateV3toV4!(expectedStateV4)).toStrictEqual(
         expectedStateV4,
       );
     });
@@ -668,20 +668,20 @@ describe("mod component state migrations", () => {
     };
 
     it("migrates initial state", () => {
-      expect(migrateModComponentStateV4toV5?.(initialStateV4)).toStrictEqual(
+      expect(migrateModComponentStateV4toV5!(initialStateV4)).toStrictEqual(
         initialStateV5,
       );
     });
 
     it("migrates state with components", () => {
       const unmigrated = unmigrateStateV5toV4(expectedStateV5);
-      expect(migrateModComponentStateV4toV5?.(unmigrated)).toStrictEqual(
+      expect(migrateModComponentStateV4toV5!(unmigrated)).toStrictEqual(
         expectedStateV5,
       );
     });
 
     it("does not migrate or throw with wrong version", () => {
-      expect(migrateModComponentStateV4toV5?.(expectedStateV5)).toStrictEqual(
+      expect(migrateModComponentStateV4toV5!(expectedStateV5)).toStrictEqual(
         expectedStateV5,
       );
     });
