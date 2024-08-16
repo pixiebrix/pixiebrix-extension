@@ -53,6 +53,7 @@ import { screen } from "@testing-library/react";
 import {
   ReportModes,
   type Trigger,
+  Triggers,
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -144,7 +145,7 @@ beforeEach(() => {
 });
 
 describe("triggerStarterBrick", () => {
-  it.each([["load"], [undefined]])(
+  it.each([[Triggers.LOAD], [undefined]])(
     "runs page load trigger",
     async (trigger) => {
       const starterBrick = fromJS(
@@ -175,7 +176,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         background: false,
       })(),
     );
@@ -210,7 +211,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         background: false,
       })(),
     );
@@ -241,7 +242,7 @@ describe("triggerStarterBrick", () => {
       const starterBrick = fromJS(
         getPlatform(),
         starterBrickFactory({
-          trigger: "click",
+          trigger: Triggers.CLICK,
           attachMode,
           rootSelector: "button",
         })(),
@@ -293,7 +294,7 @@ describe("triggerStarterBrick", () => {
       const starterBrick = fromJS(
         getPlatform(),
         starterBrickFactory({
-          trigger: "click",
+          trigger: Triggers.CLICK,
           targetMode,
           rootSelector: "div",
         })(),
@@ -328,7 +329,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "click",
+        trigger: Triggers.CLICK,
         targetMode: "root",
         rootSelector: "div",
       })(),
@@ -362,7 +363,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "keypress",
+        trigger: Triggers.KEYPRESS,
         rootSelector: "input",
       })(),
     );
@@ -394,7 +395,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "hover",
+        trigger: Triggers.HOVER,
         rootSelector: "button",
       })(),
     );
@@ -425,7 +426,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "selectionchange",
+        trigger: Triggers.SELECTION_CHANGE,
       })(),
     );
 
@@ -441,7 +442,7 @@ describe("triggerStarterBrick", () => {
     const extensionPoint = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "custom",
+        trigger: Triggers.CUSTOM,
       })(),
     );
 
@@ -455,7 +456,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "keypress",
+        trigger: Triggers.KEYPRESS,
       })(),
     );
 
@@ -469,7 +470,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "click",
+        trigger: Triggers.CLICK,
       })(),
     );
 
@@ -477,32 +478,34 @@ describe("triggerStarterBrick", () => {
     expect((reader.outputSchema.properties as any).event).toBeUndefined();
   });
 
-  it.each([["selectionchange"], ["click"], ["keypress"], ["custom"]])(
-    "smoke test for preview %s",
-    async (trigger) => {
-      const starterBrick = fromJS(
-        getPlatform(),
-        starterBrickFactory({
-          trigger,
-        })(),
-      );
+  it.each([
+    ["selectionchange"],
+    [Triggers.CLICK],
+    [Triggers.KEYPRESS],
+    [Triggers.CUSTOM],
+  ])("smoke test for preview %s", async (trigger) => {
+    const starterBrick = fromJS(
+      getPlatform(),
+      starterBrickFactory({
+        trigger,
+      })(),
+    );
 
-      const reader = await starterBrick.previewReader();
-      const result = await reader.read(document);
+    const reader = await starterBrick.previewReader();
+    const result = await reader.read(document);
 
-      expect(result).toStrictEqual(
-        expect.objectContaining({
-          readCount: 1,
-        }),
-      );
-    },
-  );
+    expect(result).toStrictEqual(
+      expect.objectContaining({
+        readCount: 1,
+      }),
+    );
+  });
 
   it("ignores context invalidated error for non user-action trigger in reader", async () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         reader: () => [InvalidContextReader.BRICK_ID],
       })({}),
     );
@@ -527,7 +530,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "click",
+        trigger: Triggers.CLICK,
         rootSelector: "button",
         showErrors: true,
         reader: () => [InvalidContextReader.BRICK_ID],
@@ -560,7 +563,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         reportMode: ReportModes.ONCE,
         showErrors: true,
       })({}),
@@ -586,6 +589,7 @@ describe("triggerStarterBrick", () => {
     // Does not report successful event only once
     expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
       modComponentId: modComponent.id,
+      trigger: Triggers.LOAD,
     });
 
     // Reports an error once
@@ -602,7 +606,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         reportMode: ReportModes.ERROR_ONCE,
         showErrors: true,
       })({}),
@@ -640,7 +644,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         reportMode: ReportModes.NEVER,
         showErrors: true,
       })({}),
@@ -667,7 +671,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         reportMode: ReportModes.ALL,
         showErrors: true,
       })({}),
@@ -696,7 +700,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         reportMode: ReportModes.ALL,
         // Testing the default of false, for backward compatability
         // showErrors: false,
@@ -726,7 +730,7 @@ describe("triggerStarterBrick", () => {
     const starterBrick = fromJS(
       getPlatform(),
       starterBrickFactory({
-        trigger: "load",
+        trigger: Triggers.LOAD,
         // Testing the default of error-once, for backward compatability
         // reportMode: "error-once",
         // Testing the default of false, for backward compatability
@@ -757,10 +761,12 @@ describe("triggerStarterBrick", () => {
 describe("defaults", () => {
   describe("getDefaultAllowInactiveFramesForTrigger", () => {
     it("return false for interval", () => {
-      expect(getDefaultAllowInactiveFramesForTrigger("interval")).toBe(false);
+      expect(getDefaultAllowInactiveFramesForTrigger(Triggers.INTERVAL)).toBe(
+        false,
+      );
     });
 
-    it.each(["load", "click"])(
+    it.each([Triggers.LOAD, Triggers.CLICK])(
       "returns true for trigger: %s",
       (trigger: Trigger) => {
         expect(getDefaultAllowInactiveFramesForTrigger(trigger)).toBe(true);

@@ -548,7 +548,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         }
 
         if (this.shouldReportEvent(modComponent.id)) {
-          reportEvent(Events.TRIGGER_RUN, selectEventData(modComponent));
+          reportEvent(Events.TRIGGER_RUN, {
+            ...selectEventData(modComponent),
+            trigger: this.trigger,
+          });
+
           componentLogger.info("Successfully ran trigger");
         }
       }),
