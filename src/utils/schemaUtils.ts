@@ -25,6 +25,7 @@ import { castArray, intersection, isEmpty, uniq } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type SetRequired } from "type-fest";
 
 /**
  * Return the names of top-level required properties that are missing or blank in an object.
@@ -56,7 +57,7 @@ export function missingProperties(
 export function propertiesToSchema(
   properties: SchemaProperties,
   required: string[],
-): Schema {
+): SetRequired<Schema, "properties"> {
   return {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",

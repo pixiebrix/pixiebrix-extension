@@ -24,8 +24,17 @@ export type NotificationType =
   | "warning"
   | "loading";
 
+export type NotificationPosition =
+  | "top-left"
+  | "top-right"
+  | "top-center"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right";
+
 export type Notification = RequireAtLeastOne<
   {
+    title?: string;
     message?: string;
     type?: NotificationType;
     id?: string;
@@ -34,6 +43,7 @@ export type Notification = RequireAtLeastOne<
     dismissable?: boolean;
     reportError?: boolean;
     includeErrorDetails?: boolean;
+    position?: NotificationPosition;
   },
   "message" | "error"
 >;

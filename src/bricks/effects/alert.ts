@@ -16,11 +16,11 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type Schema } from "@/types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type NotificationPosition } from "@/utils/notificationTypes";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
 
@@ -35,8 +35,13 @@ export class AlertEffect extends EffectABC {
     );
   }
 
-  inputSchema: Schema = propertiesToSchema(
+  inputSchema = propertiesToSchema(
     {
+      title: {
+        title: "Alert title",
+        type: "string",
+        description: "The title of the alert",
+      },
       message: {
         title: "Alert message",
         type: ["string", "number", "boolean"],
@@ -57,6 +62,20 @@ export class AlertEffect extends EffectABC {
           "How long, in milliseconds, the alert remains before disappearing",
         default: 2500,
       },
+      position: {
+        title: "Alert position",
+        type: "string",
+        description: "The position of the alert on the screen",
+        enum: [
+          "top-left",
+          "top-center",
+          "top-right",
+          "bottom-left",
+          "bottom-center",
+          "bottom-right",
+        ],
+        default: "top-center",
+      },
     },
     ["message"],
   );
@@ -68,12 +87,16 @@ export class AlertEffect extends EffectABC {
 
   async effect(
     {
+      title,
       message,
       type = "window",
       duration = Number.POSITIVE_INFINITY,
+      position = "top-center",
     }: BrickArgs<{
+      title?: string;
       message: string | number | boolean;
       type: "window" | "info" | "success" | "warning" | "error";
+      position: NotificationPosition;
       duration?: number;
     }>,
     { platform }: BrickOptions,
@@ -84,9 +107,11 @@ export class AlertEffect extends EffectABC {
       platform.alert(messageString);
     } else {
       platform.toasts.showNotification({
+        title,
         message: messageString,
         type,
         autoDismissTimeMs: duration,
+        position,
         reportError: false,
       });
     }

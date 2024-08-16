@@ -134,7 +134,7 @@ export const APPEND_SCHEMA = propertiesToSchema(
   },
   // For backwards compatibility, googleAccount is not required
   ["spreadsheetId", "tabName", "rowValues"],
-) as SetRequired<Schema, "properties">;
+);
 
 function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
   const row = [];

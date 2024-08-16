@@ -23,7 +23,6 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { ALERT_PERSISTENT_OPTION, AlertEffect } from "@/bricks/effects/alert";
 import { type Schema } from "@/types/schemaTypes";
 import { joinName } from "@/utils/formUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 const AlertOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
   const basePath = joinName(name, configKey);
@@ -34,13 +33,12 @@ const AlertOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
 
   const inputSchema = useMemo(() => new AlertEffect().inputSchema, []);
 
-  assertNotNullish(
-    inputSchema.properties,
-    "inputSchema.properties is required",
-  );
-
   return (
     <>
+      <SchemaField
+        name={configName("title")}
+        schema={inputSchema.properties.title as Schema}
+      />
       <SchemaField
         name={configName("message")}
         schema={inputSchema.properties.message as Schema}
@@ -50,6 +48,10 @@ const AlertOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
         name={alertTypeFieldName}
         schema={inputSchema.properties.type as Schema}
         isRequired
+      />
+      <SchemaField
+        name={configName("position")}
+        schema={inputSchema.properties.position as Schema}
       />
       {alertType !== ALERT_PERSISTENT_OPTION && (
         <SchemaField

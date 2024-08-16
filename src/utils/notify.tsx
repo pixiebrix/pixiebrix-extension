@@ -37,16 +37,20 @@ type SimpleNotification = string | Except<Notification, "type">;
 type ToastStyle = Partial<Record<NotificationType, ToastOptions>>;
 
 const Message: React.FunctionComponent<{
+  title?: string;
   message: string;
   id: string;
   dismissable: boolean;
-}> = ({ message, id, dismissable }) => (
+}> = ({ title, message, id, dismissable }) => (
   <>
-    <div className={styles.message}>
-      {message.split("\n").map((line, number) => (
-        // eslint-disable-next-line react/no-array-index-key -- Will not be updated
-        <div key={number}>{line}</div>
-      ))}
+    <div>
+      {title ? <p className={styles.title}>{title}</p> : null}
+      <p className={styles.message}>
+        {message.split("\n").map((line, number) => (
+          // eslint-disable-next-line react/no-array-index-key -- Will not be updated
+          <div key={number}>{line}</div>
+        ))}
+      </p>
     </div>
     {dismissable ? (
       <button
@@ -57,7 +61,7 @@ const Message: React.FunctionComponent<{
       >
         ×
       </button>
-    ) : undefined}
+    ) : null}
   </>
 );
 
@@ -117,12 +121,13 @@ export function initToaster(): void {
 export function showNotification({
   error,
   includeErrorDetails = true,
+  title,
   message,
   type = error ? "error" : undefined,
   id = uuidv4(),
   autoDismissTimeMs: duration,
   dismissable = true,
-
+  position = "top-center",
   /** Only errors are reported by default */
   reportError: willReport = type === "error",
 }: RequireAtLeastOne<Notification, "message" | "error">): string {
@@ -142,8 +147,16 @@ export function showNotification({
   const options: ToastOptions = {
     id,
     duration,
+    position,
   };
-  const component = <Message {...{ message, id, dismissable }} />;
+  const component = (
+    <Message
+      id={id}
+      title={title}
+      message={message}
+      dismissable={dismissable}
+    />
+  );
 
   switch (type) {
     case "error":
