@@ -33,7 +33,6 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
-import { type SetRequired } from "type-fest";
 
 type CellValue = string | number | null;
 
