@@ -933,7 +933,6 @@
     "./extensionConsole/pages/mods/hooks/useActivateAction.ts",
     "./extensionConsole/pages/mods/hooks/useModsPageActions.ts",
     "./extensionConsole/pages/mods/hooks/useReactivateAction.ts",
-    "./extensionConsole/pages/mods/hooks/useShowPublishUrlEffect.tsx",
     "./extensionConsole/pages/mods/hooks/useViewLogsAction.ts",
     "./extensionConsole/pages/mods/hooks/useViewPublishAction.ts",
     "./extensionConsole/pages/mods/hooks/useViewShareAction.ts",
