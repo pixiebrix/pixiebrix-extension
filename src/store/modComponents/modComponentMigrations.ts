@@ -163,20 +163,20 @@ export function createModMetadataForStandaloneComponent(
  * Exported for testing only
  */
 export function migrateStandaloneComponentsToMods(
-  extensions: ActivatedModComponentV2[],
+  modComponents: ActivatedModComponentV2[],
   userScope: Nullishable<string>,
 ): ActivatedModComponentV2[] {
-  return extensions
-    .map((extension) => {
-      if (extension._recipe) {
-        return extension;
+  return modComponents
+    .map((modComponent) => {
+      if (modComponent._recipe) {
+        return modComponent;
       }
 
       if (userScope == null) {
-        return extension;
+        return modComponent;
       }
 
-      return createModMetadataForStandaloneComponent(extension, userScope);
+      return createModMetadataForStandaloneComponent(modComponent, userScope);
     })
     .filter((extension) => extension._recipe != null);
 }
