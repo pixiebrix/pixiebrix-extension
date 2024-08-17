@@ -18,24 +18,29 @@
 import { type ValueOf } from "type-fest";
 
 /**
+ * Flags controlled by the user's primary organization (not waffle).
+ */
+export const OrganizationFlags = {
+  /**
+   * Enable additional metadata with error telemetry for enterprise customers.
+   *
+   * Controlled by the backend:
+   * https://github.com/pixiebrix/pixiebrix-app/blob/9ecd1d0357d9221e91dca96b3dfea16dcef177f4/api/serializers/account.py#L326-L326
+   */
+  ENTERPRISE_TELEMETRY: "enterprise-telemetry",
+} as const;
+
+/**
  * Feature flag constants controlled by waffle: see https://app.pixiebrix.com/admin/waffle/flag/
  *
- * @see RestrictedFeatures for flags set by organization policy
+ * @see OrganizationFlags for flags set based on the user's primary organization
+ * @see RestrictedFeatures for user flag's set based on the organization policy for the user's role
  */
 export const FeatureFlags = {
   /**
    * Report deployment updates in product telemetry. Introduced to debug enterprise deployment update issues.
    */
   REPORT_BACKGROUND_DEPLOYMENTS: "report-background-deployments",
-
-  /**
-   * Enable additional metadata with error telemetry for enterprise customers.
-   *
-   * Controlled by the backend, not waffle:
-   * https://github.com/pixiebrix/pixiebrix-app/blob/9ecd1d0357d9221e91dca96b3dfea16dcef177f4/api/serializers/account.py#L326-L326
-   */
-  // XXX: move to its own constant b/c it's not controlled by waffle?
-  ENTERPRISE_TELEMETRY: "enterprise-telemetry",
 
   /**
    * Enable performance and RUM sampling.
@@ -118,7 +123,9 @@ export const FeatureFlags = {
 /**
  * @see FeatureFlags
  */
-export type FeatureFlag = ValueOf<typeof FeatureFlags>;
+export type FeatureFlag =
+  | ValueOf<typeof FeatureFlags>
+  | ValueOf<typeof OrganizationFlags>;
 
 const RESTRICTED_PREFIX = "restricted";
 

@@ -43,7 +43,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import { selectAbsoluteUrl } from "@/utils/urlUtils";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
-import { FeatureFlags } from "@/auth/featureFlags";
+import { FeatureFlags, OrganizationFlags } from "@/auth/featureFlags";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -93,7 +93,7 @@ export async function selectExtraContext(
 
   if (
     axiosError?.config &&
-    ((await flagOn(FeatureFlags.ENTERPRISE_TELEMETRY)) ||
+    ((await flagOn(OrganizationFlags.ENTERPRISE_TELEMETRY)) ||
       (await isAppRequestError(axiosError)))
   ) {
     extraContext.url = selectAbsoluteUrl(axiosError.config);
