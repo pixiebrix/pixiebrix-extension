@@ -121,10 +121,12 @@ export const FeatureFlags = {
 
 /**
  * @see FeatureFlags
+ * @see OrganizationFlags
  */
 export type FeatureFlag =
-  | ValueOf<typeof FeatureFlags>
-  | ValueOf<typeof OrganizationFlags>;
+  // The constants are split out to make it easier to see which flags are controlled by the organization policy.
+  // But there's not much value in keeping them separate in flag checks
+  ValueOf<typeof FeatureFlags> | ValueOf<typeof OrganizationFlags>;
 
 const RESTRICTED_PREFIX = "restricted";
 
