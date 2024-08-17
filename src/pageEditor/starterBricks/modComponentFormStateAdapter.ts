@@ -25,7 +25,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
 import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { FeatureFlag } from "@/auth/featureFlags";
+import { type FeatureFlag } from "@/auth/featureFlags";
 
 /**
  * Adapter used to create initial mod component form state in the Page Editor from a starter brick.
