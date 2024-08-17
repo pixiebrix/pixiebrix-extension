@@ -53,7 +53,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -274,9 +274,9 @@ export abstract class DynamicQuickBarStarterBrickABC extends StarterBrickABC<Dyn
         return;
       }
 
-      const [reader, serviceContext] = await Promise.all([
+      const [reader, integrationContext] = await Promise.all([
         this.getBaseReader(),
-        makeIntegrationsContextFromDependencies(
+        makeIntegrationContextFromDependencies(
           modComponent.integrationDependencies,
         ),
       ]);
@@ -292,7 +292,7 @@ export abstract class DynamicQuickBarStarterBrickABC extends StarterBrickABC<Dyn
       const initialValues: InitialValues = {
         input,
         root: targetElement,
-        serviceContext,
+        integrationContext,
         optionsArgs: modComponent.optionsArgs,
       };
 

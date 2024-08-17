@@ -59,7 +59,7 @@ function toVarPath(value: string | null): string[] {
 export function excludeIntegrationVariables(options: MenuOptions): MenuOptions {
   return options.filter(([source]) => {
     const [kind] = source.split(":");
-    return (kind as KnownSources) !== KnownSources.SERVICE;
+    return (kind as KnownSources) !== KnownSources.INTEGRATION;
   });
 }
 

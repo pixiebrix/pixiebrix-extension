@@ -52,7 +52,7 @@ import {
 } from "@/utils/expressionUtils";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { BusinessError } from "@/errors/businessErrors";
@@ -103,7 +103,7 @@ export enum KnownSources {
   /**
    * Integration configuration.
    */
-  SERVICE = "service",
+  INTEGRATION = "integration",
   /**
    * Observed trace when running the bricks with the Page Editor open.
    */
@@ -112,7 +112,7 @@ export enum KnownSources {
 
 /**
  * Set availability of variables based on the integrations used by the ModComponentBase
- * @see makeIntegrationsContextFromDependencies
+ * @see makeIntegrationContextFromDependencies
  */
 async function setIntegrationDependencyVars(
   { integrationDependencies = [] }: ModComponentFormState,
@@ -121,12 +121,12 @@ async function setIntegrationDependencyVars(
   // Loop through all the dependencies, so we can set the source for each dependency variable properly
   await Promise.all(
     integrationDependencies.map(async (integrationDependency) => {
-      const serviceContext = await makeIntegrationsContextFromDependencies([
+      const integrationContext = await makeIntegrationContextFromDependencies([
         integrationDependency,
       ]);
       contextVars.setExistenceFromValues({
-        source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
-        values: serviceContext,
+        source: `${KnownSources.INTEGRATION}:${integrationDependency.integrationId}`,
+        values: integrationContext,
       });
     }),
   );

@@ -335,8 +335,8 @@ class UserDefinedBrick extends BrickABC {
       input: argsWithClosures,
       // OptionsArgs are set at the blueprint level. For user-defined bricks, are passed via brick inputs
       optionsArgs: undefined,
-      // Services are passed as inputs to the brick
-      serviceContext: undefined,
+      // Integration configurations are passed as inputs to the brick
+      integrationContext: undefined,
       root: options.root,
     };
 

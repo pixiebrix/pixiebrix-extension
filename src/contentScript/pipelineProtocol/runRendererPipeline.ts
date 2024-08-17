@@ -2,7 +2,7 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/bricks/errors";
 import { BusinessError } from "@/errors/businessErrors";
-import { type IntegrationsContext } from "@/types/runtimeTypes";
+import { type IntegrationContext } from "@/types/runtimeTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { type RunPipelineParams } from "@/contentScript/pipelineProtocol/types";
@@ -37,11 +37,11 @@ export async function runRendererPipeline({
         // Pass undefined here to force the runtime to handle correctly. Passing `document` here wouldn't make sense because
         // it would be the page that contains the React tree (i.e., the frame of the sidebar)
         root: undefined,
-        // `reducePipeline` just spreads the serviceContext. If we needed to pick out the actual services we could do the
-        // following. However, we actually want to pass through the rest of the context and we don't have an affordance
-        // for that in the InitialValues type
+        // `reducePipeline` just spreads the integrationContext. If we needed to pick out the actual integration
+        // configurations, we could do the following. However, we actually want to pass through the rest of the
+        // context and we don't have an affordance for that in the InitialValues type
         // pickBy(context, (value: unknown) => isPlainObject(value) && ("__service" in (value as UnknownObject))) as ServiceContext
-        serviceContext: context as IntegrationsContext,
+        integrationContext: context as IntegrationContext,
       },
       {
         logger: getPlatform().logger.childLogger(messageContext),
