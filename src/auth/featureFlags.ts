@@ -24,8 +24,7 @@ export const OrganizationFlags = {
   /**
    * Enable additional metadata with error telemetry for enterprise customers.
    *
-   * Controlled by the backend:
-   * https://github.com/pixiebrix/pixiebrix-app/blob/9ecd1d0357d9221e91dca96b3dfea16dcef177f4/api/serializers/account.py#L326-L326
+   * See: https://github.com/pixiebrix/pixiebrix-app/blob/9ecd1d0357d9221e91dca96b3dfea16dcef177f4/api/serializers/account.py#L326-L326
    */
   ENTERPRISE_TELEMETRY: "enterprise-telemetry",
 } as const;
