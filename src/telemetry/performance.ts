@@ -26,8 +26,7 @@ import {
 } from "@/telemetry/telemetryHelpers";
 import type { UserData } from "@/auth/authTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
-
-const RUM_FLAG = "telemetry-performance";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * Initialize Datadog Real User Monitoring (RUM) for performance monitoring. This should be called once per page load, before
@@ -48,7 +47,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
     return;
   }
 
-  if (!(await flagOn(RUM_FLAG))) {
+  if (!(await flagOn(FeatureFlags.RUM_FLAG))) {
     return;
   }
 

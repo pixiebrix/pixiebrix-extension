@@ -33,6 +33,9 @@ import {
 } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
+import { featureFlagFactory } from "@/testUtils/factories/featureFlagFactories";
+
+const testFlag = featureFlagFactory("test-flag");
 
 describe("featureFlags", () => {
   beforeEach(async () => {
@@ -58,54 +61,59 @@ describe("featureFlags", () => {
 
   it("returns true if flag is present", async () => {
     await TEST_overrideFeatureFlags([
-      "test-flag",
-      "test-other-flag",
-      "test-other-flag-2",
+      testFlag,
+      featureFlagFactory(),
+      featureFlagFactory(),
     ]);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn(testFlag)).resolves.toBe(true);
   });
 
   it("returns false if flag is not present", async () => {
-    await TEST_overrideFeatureFlags(["test-other-flag", "test-other-flag-2"]);
-    await expect(flagOn("test-flag")).resolves.toBe(false);
+    await TEST_overrideFeatureFlags([
+      featureFlagFactory(),
+      featureFlagFactory(),
+    ]);
+    await expect(flagOn(testFlag)).resolves.toBe(false);
   });
 
   it("fetches flags on initial storage state", async () => {
     appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag"],
+      flags: [testFlag],
     });
 
-    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn(testFlag)).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(1);
   });
 
   it("does not fetch if flags have been updated recently", async () => {
-    await TEST_overrideFeatureFlags(["test-flag"]);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await TEST_overrideFeatureFlags([testFlag]);
+    await expect(flagOn(testFlag)).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(0);
   });
 
   it("only fetches once if multiple calls are made", async () => {
     appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag"],
+      flags: [testFlag],
     });
 
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn(testFlag)).resolves.toBe(true);
+    await expect(flagOn(testFlag)).resolves.toBe(true);
+    await expect(flagOn(testFlag)).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(1);
   });
 
   it("fetches flags again if auth is reset in between calls", async () => {
+    const secretFlag = featureFlagFactory("secret-flag");
+
     // Mimic listener added by background.ts
     initFeatureFlagBackgroundListeners();
 
     appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag", "secret-flag"],
+      flags: [testFlag, secretFlag],
     });
 
-    await expect(flagOn("secret-flag")).resolves.toBe(true);
-    await expect(flagOn("secret-flag")).resolves.toBe(true);
+    await expect(flagOn(secretFlag)).resolves.toBe(true);
+    await expect(flagOn(secretFlag)).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(1);
 
     const authData = tokenAuthDataFactory();
@@ -114,11 +122,11 @@ describe("featureFlags", () => {
 
     // New user doesn't have secret flag
     appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag"],
+      flags: [testFlag],
     });
 
-    await expect(flagOn("secret-flag")).resolves.toBe(false);
-    await expect(flagOn("secret-flag")).resolves.toBe(false);
+    await expect(flagOn(secretFlag)).resolves.toBe(false);
+    await expect(flagOn(secretFlag)).resolves.toBe(false);
     expect(appApiMock.history.get).toHaveLength(2);
   });
 });

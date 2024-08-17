@@ -43,6 +43,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
 import useServiceUrlSetting from "@/extensionConsole/pages/settings/useServiceUrlSetting";
 import useDeploymentKeySetting from "@/extensionConsole/pages/settings/useDeploymentKeySetting";
+import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -120,11 +121,11 @@ const AdvancedSettings: React.FunctionComponent = () => {
               onBlur={async (event: React.FocusEvent<HTMLInputElement>) => {
                 await setServiceUrl(event.target.value);
               }}
-              disabled={restrict("service-url")}
+              disabled={restrict(RestrictedFeatures.SERVICE_URL)}
             />
             <Form.Text muted>The base URL of the PixieBrix API</Form.Text>
           </Form.Group>
-          {flagOn("deployment-key") && (
+          {flagOn(FeatureFlags.DEPLOYMENT_KEY) && (
             <Form.Group controlId="deploymentKey">
               <Form.Label>Deployment Key</Form.Label>
               <Form.Control
@@ -162,7 +163,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
                   });
                 }
               }}
-              disabled={restrict("service-url")}
+              disabled={restrict(RestrictedFeatures.SERVICE_URL)}
             />
             <Form.Text muted>
               The id of the integration for authenticating with the PixieBrix
@@ -215,13 +216,13 @@ const AdvancedSettings: React.FunctionComponent = () => {
           Export Diagnostics
         </AsyncButton>
 
-        {permit("clear-token") && (
+        {permit(RestrictedFeatures.CLEAR_TOKEN) && (
           <Button variant="warning" onClick={clear}>
             Clear PixieBrix Token
           </Button>
         )}
 
-        {permit("clear-token") && (
+        {permit(RestrictedFeatures.CLEAR_TOKEN) && (
           <Button variant="warning" onClick={clearTokens}>
             Clear OAuth2 Tokens
           </Button>

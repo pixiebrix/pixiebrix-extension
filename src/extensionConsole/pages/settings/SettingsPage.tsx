@@ -28,6 +28,7 @@ import { selectOrganization } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
 import StorageSettings from "@/extensionConsole/pages/settings/StorageSettings";
 import GeneralSettings from "@/extensionConsole/pages/settings/GeneralSettings";
+import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -57,7 +58,7 @@ const SettingsPage: React.FunctionComponent = () => {
         </p>
       }
     >
-      {flagOn("floating-quickbar-button-freemium") && (
+      {flagOn(FeatureFlags.FLOATING_ACTION_BUTTON_FREEMIUM) && (
         <Section>
           <GeneralSettings />
         </Section>
@@ -73,19 +74,19 @@ const SettingsPage: React.FunctionComponent = () => {
         <LoggingSettings />
       </Section>
 
-      {flagOn("settings-experimental") && (
+      {flagOn(FeatureFlags.SETTINGS_EXPERIMENTAL) && (
         <Section>
           <ExperimentalSettings />
         </Section>
       )}
 
-      {flagOn("settings-storage") && (
+      {flagOn(FeatureFlags.SETTINGS_STORAGE) && (
         <Section>
           <StorageSettings />
         </Section>
       )}
 
-      {permit("reset") && (
+      {permit(RestrictedFeatures.FACTORY_RESET) && (
         <Section>
           <FactoryResetSettings />
         </Section>

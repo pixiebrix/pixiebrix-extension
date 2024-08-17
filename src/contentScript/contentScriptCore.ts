@@ -46,8 +46,7 @@ import axios from "axios";
 import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
 import { flagOn } from "@/auth/featureFlagStorage";
 import initialize from "@/vendors/jQueryInitialize";
-
-const SANDBOX_SRCDOC_HACK_FLAG = "iframe-srcdoc-sandbox-hack";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 setPlatform(contentScriptPlatform);
 
@@ -79,7 +78,9 @@ onUncaughtError((error) => {
  * See https://issues.chromium.org/issues/355256366
  */
 const initSandboxedSrcdocIframeInjection = async () => {
-  const isSandboxSrcdocHackEnabled = await flagOn(SANDBOX_SRCDOC_HACK_FLAG);
+  const isSandboxSrcdocHackEnabled = await flagOn(
+    FeatureFlags.SANDBOX_SRCDOC_HACK_FLAG,
+  );
   if (!isSandboxSrcdocHackEnabled) {
     return;
   }

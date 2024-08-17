@@ -25,6 +25,7 @@ import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 function reloadSidebar() {
   location.reload();
@@ -39,7 +40,7 @@ const Header: React.FunctionComponent = () => {
   const { flagOn } = useFlags();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
-    flagOn("page-editor-developer");
+    flagOn(FeatureFlags.PAGE_EDITOR_DEVELOPER);
 
   const headerButtonClassName = cx(styles.button, {
     [styles.themeColorOverride || ""]: themeName === DEFAULT_THEME,

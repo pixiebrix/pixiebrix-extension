@@ -27,6 +27,7 @@ import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
 jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
+  restrict: jest.fn().mockReturnValue(false),
 }));
 
 beforeAll(async () => {

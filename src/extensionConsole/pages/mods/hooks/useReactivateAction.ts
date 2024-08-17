@@ -24,6 +24,7 @@ import { Events } from "@/telemetry/events";
 import { push } from "connected-react-router";
 import notify from "@/utils/notify";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const useReactivateAction = (modViewItem: ModViewItem): (() => void) | null => {
   const dispatch = useDispatch();
@@ -32,7 +33,8 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void) | null => {
   const hasModDefinition = isModComponentFromMod(mod) || isModDefinition(mod);
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
-  const isRestricted = isDeployment && restrict("uninstall");
+  const isRestricted =
+    isDeployment && restrict(RestrictedFeatures.DEACTIVATE_DEPLOYMENT);
 
   const reactivate = () => {
     if (hasModDefinition) {

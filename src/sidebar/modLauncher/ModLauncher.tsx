@@ -25,6 +25,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { showWalkthroughModal } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { permit } = useFlags();
@@ -32,7 +33,7 @@ const ModLauncher: React.FunctionComponent = () => {
   return (
     <>
       <ActiveSidebarModsList />
-      {permit("page-editor") && (
+      {permit(RestrictedFeatures.PAGE_EDITOR) && (
         <Navbar className={cx([styles.footer, "flex-grow-0"])}>
           <button
             onClick={async (event) => {

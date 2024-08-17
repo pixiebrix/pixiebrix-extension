@@ -27,6 +27,7 @@ import {
   type PublishContext,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import useFlags from "@/hooks/useFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 function useViewPublishAction(modViewItem: ModViewItem): (() => void) | null {
   const { flagOn } = useFlags();
@@ -47,8 +48,7 @@ function useViewPublishAction(modViewItem: ModViewItem): (() => void) | null {
   };
 
   const showPublishAction =
-    // Since 1.7.37
-    flagOn("publish-to-marketplace") &&
+    flagOn(FeatureFlags.PUBLISH_TO_MARKETPLACE) &&
     !unavailable &&
     // Deployment sharing is controlled via the Admin Console
     !isDeployment &&
