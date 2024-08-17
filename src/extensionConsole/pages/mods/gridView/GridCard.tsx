@@ -24,7 +24,7 @@ import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/mods/Status";
 import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
 import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
-import ModIcon from "@/mods/ModIcon";
+import ModIcon from "@/extensionConsole/pages/mods/ModIcon";
 
 type GridCardProps = {
   modViewItem: ModViewItem;

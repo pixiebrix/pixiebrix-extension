@@ -35,7 +35,7 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
-import ModIcon from "@/mods/ModIcon";
+import ModIcon from "@/extensionConsole/pages/mods/ModIcon";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";

@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  createAsyncThunk,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import { serializeError } from "serialize-error";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type ModDefinitionsRootState,
   type ModDefinitionsState,
@@ -52,57 +47,11 @@ export const initialState: ModDefinitionsState = Object.freeze({
   isLoadingFromRemote: false,
 });
 
-export const modDefinitionsSlice = createSlice({
-  name: "modDefinitions",
-  initialState,
-  reducers: {
-    startFetchingFromCache(state) {
-      state.isUninitialized = false;
-      state.isLoading = true;
-      state.isFetching = true;
-      state.isCacheUninitialized = false;
-      state.isLoadingFromCache = true;
-    },
-    setModDefinitionsFromCache(state, action: PayloadAction<ModDefinition[]>) {
-      // NOTE: there will be a flash of `isFetching: false` before the remote fetch starts
-      setValueOnState(state, action.payload);
-      state.isLoadingFromCache = false;
-    },
-    setCacheError(state) {
-      // Don't flash on error on cache failure. The useAllModDefinitions hook will immediately trigger a remote fetch
-      state.isLoadingFromCache = false;
-    },
-    startFetchingFromRemote(state) {
-      if (state.isRemoteUninitialized) {
-        state.isLoadingFromRemote = true;
-      }
-
-      // Don't reset currentData, because the mod definitions slice doesn't take any inputs arguments
-      state.isRemoteUninitialized = false;
-      state.isFetching = true;
-      state.isFetchingFromRemote = true;
-    },
-    setModDefinitions(state, action: PayloadAction<ModDefinition[]>) {
-      setValueOnState(state, action.payload);
-      state.isFetchingFromRemote = false;
-      state.isLoadingFromRemote = false;
-    },
-    setError(state, action) {
-      setErrorOnState(state, action.payload);
-      state.isFetchingFromRemote = false;
-      state.isLoadingFromRemote = false;
-    },
-  },
-  extraReducers(builder) {
-    builder.addCase(revertAll, () => initialState);
-  },
-});
-
 /**
  * Load mod definitions from the local database.
  */
 const loadModDefinitionsFromCache = createAsyncThunk<
-  void,
+  ModDefinition[],
   void,
   { state: ModDefinitionsRootState }
 >("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
@@ -110,24 +59,16 @@ const loadModDefinitionsFromCache = createAsyncThunk<
     throw new Error("Already loaded mod definitions from cache");
   }
 
-  try {
-    dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
-    const registryModDefinitions = await modDefinitionRegistry.all();
-    // Remove the top level registry item id to satisfy types properly
-    const modDefinitions: ModDefinition[] = registryModDefinitions.map((x) => {
-      const { id, ...rest } = x;
-      return rest;
-    });
-    dispatch(
-      modDefinitionsSlice.actions.setModDefinitionsFromCache(modDefinitions),
-    );
-  } catch {
-    dispatch(modDefinitionsSlice.actions.setCacheError());
-  }
+  const registryModDefinitions = await modDefinitionRegistry.all();
+  // Remove the top level registry item id to satisfy types properly
+  return registryModDefinitions.map((x) => {
+    const { id, ...rest } = x;
+    return rest;
+  });
 });
 
 export const syncRemoteModDefinitions = createAsyncThunk<
-  void,
+  ModDefinition[],
   void,
   { state: ModDefinitionsRootState }
 >("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
@@ -135,21 +76,58 @@ export const syncRemoteModDefinitions = createAsyncThunk<
     throw new Error("Already fetching mod definitions from server");
   }
 
-  try {
-    dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
-    await syncRemotePackages();
-    const registryModDefinitions = await modDefinitionRegistry.all();
-    // Remove the top level registry item id to satisfy types properly
-    const modDefinitions: ModDefinition[] = registryModDefinitions.map((x) => {
-      const { id, ...rest } = x;
-      return rest;
-    });
-    dispatch(modDefinitionsSlice.actions.setModDefinitions(modDefinitions));
-  } catch (error) {
-    // Serialize because stored in Redux
-    const serializedError = serializeError(error, { useToJSON: false });
-    dispatch(modDefinitionsSlice.actions.setError(serializedError));
-  }
+  await syncRemotePackages();
+  const registryModDefinitions = await modDefinitionRegistry.all();
+  // Remove the top level registry item id to satisfy types properly
+  return registryModDefinitions.map((x) => {
+    const { id, ...rest } = x;
+    return rest;
+  });
+});
+
+export const modDefinitionsSlice = createSlice({
+  name: "modDefinitions",
+  initialState,
+  reducers: {},
+  extraReducers(builder) {
+    builder
+      .addCase(revertAll, () => initialState)
+      .addCase(loadModDefinitionsFromCache.pending, (state) => {
+        state.isUninitialized = false;
+        state.isLoading = true;
+        state.isFetching = true;
+        state.isCacheUninitialized = false;
+        state.isLoadingFromCache = true;
+      })
+      .addCase(loadModDefinitionsFromCache.fulfilled, (state, action) => {
+        setValueOnState(state, action.payload);
+        state.isLoadingFromCache = false;
+      })
+      .addCase(loadModDefinitionsFromCache.rejected, (state) => {
+        // Don't flash on error on cache failure. The useAllModDefinitions hook will immediately trigger a remote fetch
+        state.isLoadingFromCache = false;
+      })
+      .addCase(syncRemoteModDefinitions.pending, (state) => {
+        if (state.isRemoteUninitialized) {
+          state.isLoadingFromRemote = true;
+        }
+
+        // Don't reset currentData, because the mod definitions slice doesn't take any inputs arguments
+        state.isRemoteUninitialized = false;
+        state.isFetching = true;
+        state.isFetchingFromRemote = true;
+      })
+      .addCase(syncRemoteModDefinitions.fulfilled, (state, action) => {
+        setValueOnState(state, action.payload);
+        state.isFetchingFromRemote = false;
+        state.isLoadingFromRemote = false;
+      })
+      .addCase(syncRemoteModDefinitions.rejected, (state, action) => {
+        setErrorOnState(state, action.error);
+        state.isFetchingFromRemote = false;
+        state.isLoadingFromRemote = false;
+      });
+  },
 });
 
 export const modDefinitionsActions = {

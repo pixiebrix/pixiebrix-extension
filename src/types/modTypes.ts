@@ -17,7 +17,6 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
@@ -34,7 +33,7 @@ export type UnavailableMod = Pick<
 };
 
 // XXX: should this be SerializedModComponent instead of HydratedModComponent? The old screens used ResolvedModComponent
-export type Mod = ModDefinition | HydratedModComponent | UnavailableMod;
+export type Mod = ModDefinition | UnavailableMod;
 
 export type SharingType =
   | "Personal"
@@ -56,23 +55,19 @@ export type ModStatus =
 
 // Reshaped Mod to easily filter, sort, and group Mods
 export type ModViewItem = {
+  modId: RegistryId;
+  marketplaceListingId: string | null;
   name: string;
   description: string;
-  sharing: {
-    packageId: RegistryId | undefined;
-    source: SharingSource;
-    listingId: string | null;
-  };
-  updatedAt: string | null;
+  sharingSource: SharingSource;
+  updatedAt: string;
   status: ModStatus;
   hasUpdate: boolean;
-  installedVersionNumber: string | undefined;
-  // Used to get Mod actions from useModActions
-  mod: Mod;
+  activatedModVersion: string;
   /**
    * True if the source package is no longer available
    */
-  unavailable: boolean;
+  isUnavailable: boolean;
 };
 
 /**

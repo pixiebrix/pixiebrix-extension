@@ -25,7 +25,7 @@ import { type ModViewItem } from "@/types/modTypes";
 import Status from "@/extensionConsole/pages/mods/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
-import ModIcon from "@/mods/ModIcon";
+import ModIcon from "@/extensionConsole/pages/mods/ModIcon";
 
 const ListItem: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;

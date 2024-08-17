@@ -143,3 +143,28 @@ export interface ModDefinition extends UnsavedModDefinition {
    */
   updated_at: Timestamp;
 }
+
+/*
+
+ ModDefinition
+
+  kind: typeof DefinitionKinds.MOD;
+  metadata: Metadata; {
+    id: RegistryId;
+    name: string;
+    description: string;
+    version: SemVerString;
+  }
+  updated_at: Timestamp;
+  sharing: SharingDefinition; {
+    public: boolean;
+    organizations: UUID[];
+  }
+
+  apiVersion: ApiVersion;
+  kind: Kind;
+  extensionPoints: ModComponentDefinition[];
+  definitions?: InnerDefinitions;
+  options?: ModOptionsDefinition;
+
+ */

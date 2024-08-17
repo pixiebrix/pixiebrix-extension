@@ -24,7 +24,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
-import ModIcon from "@/mods/ModIcon";
+import ModIcon from "@/extensionConsole/pages/mods/ModIcon";
 import { isMac } from "@/utils/browserUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import { Card } from "react-bootstrap";

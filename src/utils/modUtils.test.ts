@@ -52,8 +52,8 @@ describe("getSharingType", () => {
       getSharingSource({
         mod,
         organizations: [],
-        scope: "test_scope",
-        installedExtensions: [],
+        userScope: "test_scope",
+        modComponents: [],
       }),
     ).toThrow(InvalidTypeError);
   });
@@ -63,8 +63,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingSource({
       mod,
       organizations: [],
-      scope: "test_scope",
-      installedExtensions: [],
+      userScope: "test_scope",
+      modComponents: [],
     });
 
     expect(type).toBe("Personal");
@@ -82,8 +82,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingSource({
       mod,
       organizations: [],
-      scope: "test_scope",
-      installedExtensions: [],
+      userScope: "test_scope",
+      modComponents: [],
     });
 
     expect(type).toBe("Deployment");
@@ -119,8 +119,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingSource({
       mod,
       organizations: testOrganizations,
-      scope: "test_scope",
-      installedExtensions: [],
+      userScope: "test_scope",
+      modComponents: [],
     });
 
     expect(type).toBe("Deployment");
@@ -144,8 +144,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingSource({
       mod,
       organizations: testOrganizations,
-      scope: "test_scope",
-      installedExtensions: [],
+      userScope: "test_scope",
+      modComponents: [],
     });
 
     expect(type).toBe("Team");
@@ -160,8 +160,8 @@ describe("getSharingType", () => {
     const { type, label } = getSharingSource({
       mod,
       organizations: [],
-      scope: "test_scope",
-      installedExtensions: [],
+      userScope: "test_scope",
+      modComponents: [],
     });
 
     expect(type).toBe("Public");
