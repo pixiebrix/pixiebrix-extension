@@ -214,7 +214,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       pipeline,
       {
         ...simpleInput({}),
-        integrationContext: integrationContext,
+        integrationContext,
       },
       reduceOptionsFactory(apiVersion),
     );
