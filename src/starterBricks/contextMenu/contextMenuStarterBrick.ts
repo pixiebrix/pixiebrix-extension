@@ -351,10 +351,9 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
       try {
         const reader = await this.getBaseReader();
-        const integrationsContext =
-          await makeIntegrationContextFromDependencies(
-            modComponent.integrationDependencies,
-          );
+        const integrationContext = await makeIntegrationContextFromDependencies(
+          modComponent.integrationDependencies,
+        );
 
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;
@@ -370,7 +369,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         const initialValues: InitialValues = {
           input,
           root: this.decidePipelineRoot(targetElement),
-          integrationContext: integrationsContext,
+          integrationContext,
           optionsArgs: modComponent.optionsArgs,
         };
 

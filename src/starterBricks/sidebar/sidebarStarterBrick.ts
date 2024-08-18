@@ -179,10 +179,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     );
 
     try {
-      const integrationsContext = await makeIntegrationContextFromDependencies(
+      const integrationContext = await makeIntegrationContextFromDependencies(
         modComponent.integrationDependencies,
       );
-      const modComponentContext = { ...readerContext, ...integrationsContext };
+      const modComponentContext = { ...readerContext, ...integrationContext };
 
       heading = Mustache.render(heading, modComponentContext);
 
@@ -192,7 +192,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         input: readerContext,
         optionsArgs: modComponent.optionsArgs,
         root: document,
-        integrationContext: integrationsContext,
+        integrationContext,
       };
 
       /**
