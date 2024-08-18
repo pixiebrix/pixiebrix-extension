@@ -44,9 +44,10 @@ import { isRegistryId, isUUID } from "@/types/helpers";
  *
  * @see optionsSlice
  * @see ModComponentBase._recipe
+ * @see Metadata
  */
 // XXX: previously we didn't export because the usage was clearer as ModComponentBase[_recipe]. However, the ergonomics
-// of (ModMetadata | undefined) were base to handle with strict null checks
+// of (ModMetadata | undefined) were bad to handle with strict null checks
 export type ModMetadata = Metadata & {
   /**
    * `undefined` for mods that were activated prior to the field being added
