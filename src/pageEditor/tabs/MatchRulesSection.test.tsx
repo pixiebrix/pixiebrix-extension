@@ -50,7 +50,6 @@ describe("MatchRulesSection", () => {
           ],
           selectors: ["#foo"],
         }),
-        setupRedux(dispatch) {},
       }).asFragment(),
     ).toMatchSnapshot();
   });
