@@ -29,10 +29,18 @@ import { type ModMetadata } from "@/types/modComponentTypes";
 import { screen } from "@testing-library/react";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { appApiMock } from "@/testUtils/appApiMock";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { type SemVerString } from "@/types/registryTypes";
+
+// :shrug: ideally would mock the definitions returned from the server. But that's more complicated than it's worth,
+// because you can't just mock the /api/registry/bricks/ endpoint due to the way our tests mock the background worker
+jest.mock("@/modDefinitions/modDefinitionHooks");
+
+const useOptionalModDefinitionMock = jest.mocked(useOptionalModDefinition);
 
 beforeEach(() => {
-  appApiMock.reset();
+  useOptionalModDefinitionMock.mockReset();
 });
 
 describe("ModMetadataEditor", () => {
@@ -44,13 +52,15 @@ describe("ModMetadataEditor", () => {
       _recipe: modMetadata,
     });
 
-    appApiMock
-      .onGet("/api/registry/bricks/")
-      .reply(200, [modDefinitionFactory({ metadata: modMetadata })]);
+    useOptionalModDefinitionMock.mockReturnValue(
+      valueToAsyncState(modDefinitionFactory({ metadata: modMetadata })),
+    );
 
     render(<ModMetadataEditor />, {
       setupRedux(dispatch) {
-        modComponentSlice.actions.UNSAFE_setModComponents([modComponent]);
+        dispatch(
+          modComponentSlice.actions.UNSAFE_setModComponents([modComponent]),
+        );
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModId(formState.modMetadata!.id));
       },
@@ -71,21 +81,29 @@ describe("ModMetadataEditor", () => {
       _recipe: modMetadata,
     });
 
-    appApiMock
-      .onGet("/api/registry/bricks/")
-      .reply(200, [modDefinitionFactory({ metadata: modMetadata })]);
+    useOptionalModDefinitionMock.mockReturnValue(
+      valueToAsyncState(
+        modDefinitionFactory({
+          metadata: {
+            ...modMetadata,
+            version: "999.999.999" as SemVerString,
+          },
+        }),
+      ),
+    );
 
     render(<ModMetadataEditor />, {
       setupRedux(dispatch) {
-        modComponentSlice.actions.UNSAFE_setModComponents([modComponent]);
+        dispatch(
+          modComponentSlice.actions.UNSAFE_setModComponents([modComponent]),
+        );
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModId(formState.modMetadata!.id));
       },
     });
 
-    await waitForEffect();
-
     expect(screen.getByText("re-activate the mod")).toBeInTheDocument();
+    // Should be the version of the activated mod component, not the latest version
     expect(screen.getByLabelText("Version")).toHaveValue(modMetadata.version);
   });
 });
