@@ -56,7 +56,7 @@ import {
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
@@ -351,10 +351,9 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
       try {
         const reader = await this.getBaseReader();
-        const integrationsContext =
-          await makeIntegrationsContextFromDependencies(
-            modComponent.integrationDependencies,
-          );
+        const integrationContext = await makeIntegrationContextFromDependencies(
+          modComponent.integrationDependencies,
+        );
 
         const targetElement =
           clickedElement ?? guessSelectedElement() ?? document;
@@ -370,7 +369,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         const initialValues: InitialValues = {
           input,
           root: this.decidePipelineRoot(targetElement),
-          serviceContext: integrationsContext,
+          integrationContext,
           optionsArgs: modComponent.optionsArgs,
         };
 

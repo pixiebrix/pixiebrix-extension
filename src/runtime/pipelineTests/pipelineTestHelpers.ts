@@ -374,7 +374,7 @@ export function simpleInput(input: UnknownObject): InitialValues {
   return {
     input,
     root: null,
-    serviceContext: {},
+    integrationContext: {},
     optionsArgs: {} as OptionsArgs,
   };
 }

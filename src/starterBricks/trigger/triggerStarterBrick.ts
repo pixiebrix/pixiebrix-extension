@@ -83,7 +83,7 @@ import {
   runOnDocumentVisible,
   waitAnimationFrame,
 } from "@/utils/domUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
@@ -413,7 +413,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const initialValues: InitialValues = {
       input: ctxt,
       root,
-      serviceContext: await makeIntegrationsContextFromDependencies(
+      integrationContext: await makeIntegrationContextFromDependencies(
         modComponent.integrationDependencies,
       ),
       optionsArgs: modComponent.optionsArgs,

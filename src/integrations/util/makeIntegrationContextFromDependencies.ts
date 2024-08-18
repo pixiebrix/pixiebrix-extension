@@ -20,8 +20,8 @@
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import {
   type IntegrationDependencyVarRef,
-  type IntegrationsContext,
-  type IntegrationsContextValue,
+  type IntegrationContext,
+  type IntegrationContextValue,
 } from "@/types/runtimeTypes";
 import findSanitizedIntegrationConfigWithRetry from "@/integrations/util/findSanitizedIntegrationConfigWithRetry";
 import { pickBy } from "lodash";
@@ -38,7 +38,7 @@ async function dependencyContextValue({
 }: {
   integrationId: RegistryId;
   configId: UUID;
-}): Promise<IntegrationsContextValue> {
+}): Promise<IntegrationContextValue> {
   // Should be safe to call locateWithRetry in parallel b/c the locator.refresh() method debounces/coalesces
   // the promise
   const integrationConfig = await findSanitizedIntegrationConfigWithRetry(
@@ -56,13 +56,13 @@ async function dependencyContextValue({
 }
 
 /** Build the integrations context by locating the dependencies */
-export default async function makeIntegrationsContextFromDependencies(
+export default async function makeIntegrationContextFromDependencies(
   // `ModComponentBase.integrationDependencies` is an optional field. Since we don't have strict-nullness checking on, calls to this method
   // are error-prone. So just be defensive in the signature
   // https://github.com/pixiebrix/pixiebrix-extension/issues/3262
   dependencies: Nullishable<IntegrationDependency[]>,
-): Promise<IntegrationsContext> {
-  const context: IntegrationsContext = {};
+): Promise<IntegrationContext> {
+  const context: IntegrationContext = {};
 
   if (dependencies == null || dependencies.length === 0) {
     return context;

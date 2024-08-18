@@ -72,7 +72,13 @@ export type ComponentRef = {
 export type RendererOutput = SafeHTML | ComponentRef;
 
 /**
- * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
+ * A valid identifier for a brick output key or an integration configuration key. (Does not include the preceding "@".)
+ *
+ * Conceptually, an output key is a variable name. And the variable is referenced using the "@" prefix with the name.
+ *
+ * @see VARIABLE_REFERENCE_PREFIX
+ * @see isOutputKey
+ * @see validateOutputKey
  */
 export type OutputKey = Tagged<string, "OutputKey">;
 
@@ -263,19 +269,19 @@ export type BrickArgs<
  */
 export type RenderedArgs = Tagged<UnknownObject, "RenderedArgs">;
 
-export type IntegrationsContextValue = {
+export type IntegrationContextValue = {
   // NOTE: this is not a nominal type brand. The `__service` key is actually used in the runtime.
   __service: SanitizedIntegrationConfig;
   [prop: string]: string | SanitizedIntegrationConfig | null;
 };
 
 /**
- * Integrations context passed to bricks.
+ * Integration configuration context passed to each brick.
  * @see BrickArgsContext
  */
-export type IntegrationsContext = Record<
+export type IntegrationContext = Record<
   IntegrationDependencyVarRef,
-  IntegrationsContextValue | null
+  IntegrationContextValue | null
 >;
 
 /**
@@ -335,7 +341,7 @@ export type BrickOptions<
   platform: PlatformProtocol;
 
   /**
-   * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
+   * The variable context, e.g., @input, @options, integration configurations, and any output keys from other bricks
    *
    * @see BrickArgsContext
    */

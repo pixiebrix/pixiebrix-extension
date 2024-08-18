@@ -62,7 +62,7 @@ import {
   type BrickArgsContext,
   type SelectorRoot,
   type RenderedArgs,
-  type IntegrationsContext,
+  type IntegrationContext,
   type OptionsArgs,
   type PipelineExpression,
   type RunMetadata,
@@ -147,10 +147,10 @@ export type InitialValues = {
    */
   optionsArgs?: OptionsArgs;
   /**
-   * Service credentials provided by the user during activation of an extension
+   * Integration configuration provided by the user during activation of a mod or via deployment
    * @see ModComponentBase.services
    */
-  serviceContext?: IntegrationsContext;
+  integrationContext?: IntegrationContext;
   /**
    * The document root for root-aware bricks, including readers
    * @see Brick.isRootAware
@@ -984,13 +984,13 @@ export async function reducePipeline(
 ): Promise<unknown> {
   const options = await applyReduceDefaults(partialOptions);
 
-  const { input, root, serviceContext, optionsArgs } = initialValues;
+  const { input, root, integrationContext, optionsArgs } = initialValues;
 
   const { explicitDataFlow, logger: pipelineLogger, abortSignal } = options;
 
   let localVariableContext: BrickArgsContext = {
-    // Put serviceContext first to prevent overriding the input/options
-    ...serviceContext,
+    // Put integrationContext first to prevent overriding the input/options
+    ...integrationContext,
     "@input": input,
     "@options": optionsArgs ?? {},
   } as unknown as BrickArgsContext;
