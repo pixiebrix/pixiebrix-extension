@@ -227,7 +227,7 @@
     "@types/lodash": "^4.17.7",
     "@types/mark.js": "^8.11.12",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.2.0",
+    "@types/node": "^22.4.0",
     "@types/nunjucks": "^3.2.6",
     "@types/object-hash": "^2.1.1",
     "@types/papaparse": "^5.3.14",
