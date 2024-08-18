@@ -25,28 +25,37 @@ import { type ModViewItem } from "@/types/modTypes";
 import Status from "@/extensionConsole/pages/mods/Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
-import ModIcon from "@/extensionConsole/pages/mods/ModIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
+import {
+  faCubes,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ListItem: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
   style: React.CSSProperties;
 }> = ({ modViewItem, style }) => {
-  const { name, sharing, updatedAt, mod, description } = modViewItem;
+  const { modId, name, sharingSource, updatedAt, description, isUnavailable } =
+    modViewItem;
 
   return (
     <ListGroup.Item className={styles.root} style={style}>
       <div className={styles.icon}>
-        <ModIcon size="2x" mod={mod} />
+        <MarketplaceListingIcon
+          packageId={modId}
+          defaultIcon={isUnavailable ? faExclamationCircle : faCubes}
+          size="2x"
+        />
       </div>
       <div className={styles.primaryInfo}>
         <h5 className={styles.name}>{name}</h5>
         <p className={styles.description}>{description}</p>
-        <div className={styles.packageId}>{sharing.packageId}</div>
+        <div className={styles.packageId}>{modId}</div>
       </div>
       <div className="flex-shrink-0">
         <div className={styles.sharing}>
           <SharingLabel
-            sharing={sharing.source}
+            sharing={sharingSource}
             className={styles.sharingLabel}
           />
           <span>

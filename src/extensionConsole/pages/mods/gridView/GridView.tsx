@@ -30,7 +30,6 @@ import GridCard from "./GridCard";
 import { type Row } from "react-table";
 import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHeader";
 import { uuidv4 } from "@/types/helpers";
-import { getUniqueId } from "@/utils/modUtils";
 import GridCardErrorBoundary from "@/extensionConsole/pages/mods/gridView/GridCardErrorBoundary";
 import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 
@@ -144,12 +143,9 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
             return (
               <GridCardErrorBoundary
                 modViewItem={row.original}
-                key={getUniqueId(row.original.mod)}
+                key={row.original.modId}
               >
-                <GridCard
-                  key={getUniqueId(row.original.mod)}
-                  modViewItem={row.original}
-                />
+                <GridCard modViewItem={row.original} />
               </GridCardErrorBoundary>
             );
           })}

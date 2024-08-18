@@ -74,8 +74,7 @@ const columns: Array<Column<ModViewItem>> = [
   },
   {
     Header: "Package ID",
-    // @ts-expect-error -- react-table allows nested accessors
-    accessor: "sharing.packageId",
+    accessor: "modId",
     disableGroupBy: true,
     disableFilters: true,
     disableSortBy: true,
@@ -83,7 +82,7 @@ const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Source",
     // @ts-expect-error -- react-table allows nested accessors
-    accessor: "sharing.source.label",
+    accessor: "sharingSource.label",
     disableGlobalFilter: true,
   },
   {

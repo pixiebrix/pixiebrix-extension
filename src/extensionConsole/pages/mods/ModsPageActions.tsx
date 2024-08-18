@@ -38,7 +38,7 @@ const ModsPageActions: React.FunctionComponent<{
 }> = ({ modViewItem }) => {
   const actions = useModsPageActions(modViewItem);
 
-  const { hasUpdate } = modViewItem;
+  const { marketplaceListingUrl, hasUpdate } = modViewItem;
 
   const actionItems = useMemo(
     (): EllipsisMenuItem[] => [
@@ -52,8 +52,8 @@ const ModsPageActions: React.FunctionComponent<{
       {
         title: "View Mod Details",
         icon: <FontAwesomeIcon fixedWidth icon={faStore} />,
-        href: actions.viewInMarketplaceHref,
-        hide: !actions.viewInMarketplaceHref,
+        href: marketplaceListingUrl,
+        hide: marketplaceListingUrl == null,
       },
       {
         title: "Share with Teams",

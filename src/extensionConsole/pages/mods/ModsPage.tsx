@@ -31,7 +31,7 @@ const ModsPage: React.FunctionComponent = () => {
   useSetDocumentTitle("Mods");
 
   // Ensure all the data is loaded
-  // Note: Don't need to block rendering when the listings are loading, only mods
+  // Note: We only need to show a loading indicator until mods are loaded
   const { isLoading, error: modsError } = useAllModDefinitions();
   const { error: listingsError } = useGetMarketplaceListingsQuery(undefined, {
     refetchOnMountOrArgChange: true,

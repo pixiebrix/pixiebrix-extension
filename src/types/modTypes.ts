@@ -56,7 +56,7 @@ export type ModStatus =
 // Reshaped Mod to easily filter, sort, and group Mods
 export type ModViewItem = {
   modId: RegistryId;
-  marketplaceListingId: string | null;
+  marketplaceListingUrl: string | null;
   name: string;
   description: string;
   sharingSource: SharingSource;

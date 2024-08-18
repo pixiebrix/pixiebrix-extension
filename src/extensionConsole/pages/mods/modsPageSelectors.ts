@@ -31,6 +31,7 @@ import {
 } from "@/utils/modUtils";
 import * as semver from "semver";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -181,9 +182,13 @@ export const selectModViewItems = createSelector(
       const { hasUpdate, activatedModVersion } =
         getHasUpdateAndActivatedVersion(mod);
 
+      const listingId = listings?.[mod.metadata.id]?.id;
+
       return {
         modId: mod.metadata.id,
-        marketplaceListingId: listings?.[mod.metadata.id]?.id ?? null,
+        marketplaceListingUrl: listingId
+          ? `${MARKETPLACE_URL}${listingId}/`
+          : null,
         name: mod.metadata.name,
         description: mod.metadata.description,
         sharingSource: getSharingSource({

@@ -17,7 +17,6 @@
 
 import useActivateAction from "@/extensionConsole/pages/mods/hooks/useActivateAction";
 import useViewPublishAction from "@/extensionConsole/pages/mods/hooks/useViewPublishAction";
-import useMarketplaceUrl from "@/mods/hooks/useMarketplaceUrl";
 import useViewShareAction from "@/extensionConsole/pages/mods/hooks/useViewShareAction";
 import useReactivateAction from "@/extensionConsole/pages/mods/hooks/useReactivateAction";
 import { type ModViewItem } from "@/types/modTypes";
@@ -33,7 +32,6 @@ export type ModsPageActions = {
   reactivate: ActionCallback | null;
   activate: ActionCallback | null;
   viewPublish: ActionCallback | null;
-  viewInMarketplaceHref: string | null;
   viewShare: ActionCallback | null;
   delete: ActionCallback | null;
   editInWorkshop: ActionCallback | null;
@@ -43,7 +41,6 @@ export type ModsPageActions = {
 };
 
 function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
-  const viewInMarketplaceHref = useMarketplaceUrl(modViewItem);
   const viewPublish = useViewPublishAction(modViewItem);
   const viewShare = useViewShareAction(modViewItem);
   const reactivate = useReactivateAction(modViewItem);
@@ -56,7 +53,6 @@ function useModsPageActions(modViewItem: ModViewItem): ModsPageActions {
 
   return {
     viewPublish,
-    viewInMarketplaceHref,
     viewShare,
     editInWorkshop,
     delete: deleteMod,
