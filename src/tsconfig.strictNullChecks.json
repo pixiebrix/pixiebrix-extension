@@ -1426,6 +1426,7 @@
     "./pageEditor/tabs/logs/NavItemBadge.tsx",
     "./pageEditor/tabs/logs/useLogsBadgeState.ts",
     "./pageEditor/tabs/modMetadata/ModMetadataEditor.tsx",
+    "./pageEditor/tabs/modMetadata/ModMetadataEditor.test.tsx",
     "./pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor.test.tsx",
     "./pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor.tsx",
     "./pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor.test.tsx",
