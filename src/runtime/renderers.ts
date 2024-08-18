@@ -118,6 +118,7 @@ export function engineRenderer(
     case "var": {
       return async (template, ctxt) => {
         if (template == null) {
+          // XXX: consider converting to null because undefined is not a valid JSON value?
           return template;
         }
 

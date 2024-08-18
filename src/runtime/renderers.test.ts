@@ -19,7 +19,7 @@ import { engineRenderer } from "@/runtime/renderers";
 
 describe("renderers", () => {
   describe("mustache", () => {
-    const mustache = engineRenderer("mustache", {});
+    const mustache = engineRenderer("mustache", {})!;
 
     it.each([null, undefined])("returns blank for: %s", async (value) => {
       await expect(mustache(value, {})).resolves.toBe("");
@@ -27,7 +27,7 @@ describe("renderers", () => {
   });
 
   describe("nunjucks", () => {
-    const nunjucks = engineRenderer("nunjucks", {});
+    const nunjucks = engineRenderer("nunjucks", {})!;
 
     it.each([null, undefined])("returns blank for: %s", async (value) => {
       await expect(nunjucks(value, {})).resolves.toBe("");
@@ -35,7 +35,7 @@ describe("renderers", () => {
   });
 
   describe("handlebars", () => {
-    const handlebars = engineRenderer("handlebars", {});
+    const handlebars = engineRenderer("handlebars", {})!;
 
     it.each([null, undefined])("returns blank for: %s", async (value) => {
       await expect(handlebars(value, {})).resolves.toBe("");
@@ -43,7 +43,7 @@ describe("renderers", () => {
   });
 
   describe("var", () => {
-    const varExpr = engineRenderer("var", {});
+    const varExpr = engineRenderer("var", {})!;
 
     it.each([null, undefined])(
       "passes through value for: %s",
