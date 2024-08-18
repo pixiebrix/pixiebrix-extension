@@ -47,6 +47,12 @@ export const FeatureFlags = {
   RUM_SESSION_RECORDING: "telemetry-performance",
 
   /**
+   * Force recording the sidebar session replay during PixieBrix onboarding.
+   */
+  ONBOARDING_SIDEBAR_FORCE_SESSION_REPLAY:
+    "onboarding-sidebar-force-session-replay",
+
+  /**
    * Turn on local navigation tracing for debugging navigation/page load bugs.
    */
   NAVIGATION_TRACE: "navigation-trace",
