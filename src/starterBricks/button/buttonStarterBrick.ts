@@ -75,7 +75,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/jQueryInitialize";
-import { $safeFind } from "@/utils/domUtils";
+import { $safeFind, isSingleHtmlElementString } from "@/utils/domUtils";
 import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { ReusableAbortController, onAbort } from "abort-utils";
 import {
@@ -953,7 +953,18 @@ export class RemoteButtonStarterBrick extends ButtonStarterBrickABC {
     unsanitizedHTML: string,
     modComponent: HydratedModComponent<ButtonStarterBrickConfig>,
   ): JQuery {
-    const sanitizedHTML = sanitize(unsanitizedHTML);
+    let sanitizedHTML = "<button>Invalid Template</button>";
+
+    try {
+      // Try to avoid crash: https://github.com/pixiebrix/pixiebrix-extension/issues/8526
+      // Sanitize will exclude any custom elements
+      const sanitized = sanitize(unsanitizedHTML);
+      if (isSingleHtmlElementString(sanitized)) {
+        sanitizedHTML = sanitized;
+      }
+    } catch {
+      // NOP
+    }
 
     let $root: JQuery;
 

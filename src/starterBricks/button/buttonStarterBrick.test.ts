@@ -161,6 +161,31 @@ describe("buttonStarterBrick", () => {
     starterBrick.uninstall();
   });
 
+  it("handles invalid html", async () => {
+    document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
+    const starterBrick = fromJS(
+      getPlatform(),
+      starterBrickFactory({
+        template: "foo",
+      })(),
+    );
+
+    const modComponent = modComponentFactory({
+      extensionPointId: starterBrick.id,
+    });
+
+    starterBrick.registerModComponent(modComponent);
+
+    await starterBrick.install();
+    await starterBrick.runModComponents({ reason: RunReason.MANUAL });
+
+    expect(document.body.innerHTML).toBe(
+      `<div data-pb-extension-point="${starterBrick.id}"><button data-pb-uuid="${modComponent.id}">Invalid Template</button></div>`,
+    );
+
+    starterBrick.uninstall();
+  });
+
   it("can use targetMode: eventTarget", async () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
     const starterBrick = fromJS(
