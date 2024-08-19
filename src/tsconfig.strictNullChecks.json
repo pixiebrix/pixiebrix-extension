@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./store/sidebar/sidebarSlice.test.ts",
     "./background/contextMenus/initContextMenus.ts",
     "./extensionConsole/pages/packageEditor/EditPage.tsx",
     "./components/formBuilder/FormBuilder.tsx",
