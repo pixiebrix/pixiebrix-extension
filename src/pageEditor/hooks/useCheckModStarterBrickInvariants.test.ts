@@ -93,7 +93,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       expectedResult: boolean;
     }) => {
       const modMetadata = modMetadataFactory();
-      let activatedModDefinition: ModDefinition | null = null;
+      let activatedModDefinition: ModDefinition | undefined;
       const activatedFormStates: ModComponentFormState[] = [];
       const newFormStates: ModComponentFormState[] = [];
 
@@ -147,7 +147,7 @@ describe("useCheckModStarterBrickInvariants", () => {
         const activatedModComponent =
           mapModComponentDefinitionToActivatedModComponent({
             modComponentDefinition,
-            modDefinition: activatedModDefinition,
+            modDefinition: activatedModDefinition!,
             optionsArgs: {},
             integrationDependencies: [],
           });
