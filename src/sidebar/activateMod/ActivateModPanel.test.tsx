@@ -116,7 +116,7 @@ beforeEach(() => {
   includesQuickBarMock.mockResolvedValue(false);
 
   useQuickbarShortcutMock.mockReturnValue({
-    shortcut: undefined,
+    shortcut: null,
     isConfigured: false,
   });
 
