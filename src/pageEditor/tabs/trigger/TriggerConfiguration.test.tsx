@@ -26,12 +26,14 @@ describe("TriggerConfiguration", () => {
       },
     ]);
     formState.starterBrick.definition.trigger = "custom";
+    formState.starterBrick.definition.customEvent = { eventName: null };
 
     const { asFragment } = render(<TriggerConfiguration isLocked={false} />, {
       initialValues: formState,
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
+        dispatch(editorActions.setActiveNodeId(null));
       },
     });
 

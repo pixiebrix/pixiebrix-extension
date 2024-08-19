@@ -4,9 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/tabs/trigger/TriggerConfiguration.test.tsx",
-    "./registry/packageRegistry.test.ts",
-    "./runtime/pipelineTests/validateInput.test.ts",
     "./sidebar/activateMod/ActivateModPanel.test.tsx",
     "./sidebar/Tabs.test.tsx",
     "./starterBricks/starterBrickModUtils.test.ts",
