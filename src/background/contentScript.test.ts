@@ -45,7 +45,7 @@ describe("waitForContentScript", () => {
         listener: (
           message: any,
           sender: Runtime.MessageSender,
-        ) => Promise<any> | true | void,
+        ) => Promise<any> | true,
       ) => {
         // eslint-disable-next-line @typescript-eslint/promise-function-async -- Not on messaging APIs
         messageEvents!.add(({ message, sender }) => listener(message, sender));

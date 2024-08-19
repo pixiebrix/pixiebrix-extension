@@ -58,7 +58,6 @@ browser.permissions = {
     hasListener: jest
       .fn()
       .mockImplementation((listener: () => void) => addListeners.has(listener)),
-    hasListeners: jest.fn().mockReturnValue(() => addListeners.size > 0),
   },
   onRemoved: {
     addListener: jest.fn().mockImplementation((listener: () => void) => {
@@ -72,7 +71,6 @@ browser.permissions = {
       .mockImplementation((listener: () => void) =>
         removeListeners.has(listener),
       ),
-    hasListeners: jest.fn().mockImplementation(() => removeListeners.size > 0),
   },
   remove: jest
     .fn()

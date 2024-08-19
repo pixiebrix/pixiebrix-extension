@@ -40,7 +40,6 @@ browser.webNavigation.onBeforeNavigate = {
   addListener: jest.fn(),
   removeListener: jest.fn(),
   hasListener: jest.fn(),
-  hasListeners: jest.fn(),
 };
 
 jest.mock("@/contentScript/messenger/api", () => ({

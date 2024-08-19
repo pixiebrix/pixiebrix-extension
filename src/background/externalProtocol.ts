@@ -133,7 +133,7 @@ async function callBackground(
     });
     let response;
     try {
-      response = (await sendMessage(extensionId, message, {})) as unknown;
+      response = await sendMessage(extensionId, message, {});
     } catch (error) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
@@ -181,10 +181,10 @@ export function _liftBackground<
     callBackground(fullType, args, options) as R;
 }
 
-function backgroundListener(
+async function backgroundListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender,
-): Promise<unknown> | void {
+): Promise<unknown> {
   // Returning "undefined" indicates the message has not been handled
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
