@@ -77,7 +77,7 @@ async function setupPanelsAndRender(options: {
           staticPanels: [],
           temporaryPanels: [],
           forms: [],
-          modActivationPanel: null,
+          modActivationPanel: undefined,
           ...sidebarEntries,
         }),
       );
