@@ -31,8 +31,12 @@ import { FeatureFlags } from "@/auth/featureFlags";
 /**
  * Initialize Datadog Real User Monitoring (RUM) for performance monitoring. This should be called once per page load, before
  * any user interactions or network requests are made.
+ *
+ * @param sessionReplaySampleRate The percentage of sessions to record for session replay. Default is 20%.
  */
-export async function initPerformanceMonitoring(): Promise<void> {
+export async function initPerformanceMonitoring({
+  sessionReplaySampleRate = 20,
+}: { sessionReplaySampleRate?: number } = {}): Promise<void> {
   const environment = process.env.ENVIRONMENT;
   const applicationId = process.env.DATADOG_APPLICATION_ID;
   const clientToken = process.env.DATADOG_CLIENT_TOKEN;
@@ -77,7 +81,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
     env: environment,
     version: cleanDatadogVersionName(version_name),
     sessionSampleRate: 100,
-    sessionReplaySampleRate: 20,
+    sessionReplaySampleRate,
     trackUserInteractions: true,
     trackResources: true,
     trackLongTasks: true,

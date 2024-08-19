@@ -141,7 +141,7 @@ export function assertProtocolUrl(
   }
 }
 
-export function isPixieBrixDomain(url: string | null): boolean {
+export function isPixieBrixDomain(url: Nullishable<string>): boolean {
   if (url == null) {
     return false;
   }
