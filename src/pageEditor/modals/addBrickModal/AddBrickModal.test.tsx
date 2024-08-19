@@ -131,7 +131,7 @@ describe("AddBrickModal", () => {
       exact: false,
     });
 
-    await userEvent.click(tags.at(-1));
+    await userEvent.click(tags.at(-1)!);
 
     // Enter a query
     await userEvent.type(screen.getByTestId("tag-search-input"), "google");

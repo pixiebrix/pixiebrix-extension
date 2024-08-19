@@ -67,7 +67,7 @@ describe("ModListItem", () => {
       }),
     );
     render(
-      <Accordion defaultActiveKey={null}>
+      <Accordion>
         <ListGroup>
           <ModListItem
             modMetadata={modMetadata}
