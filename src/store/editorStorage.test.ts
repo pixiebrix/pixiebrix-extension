@@ -56,7 +56,7 @@ describe("draftModComponentStorage", () => {
     const brickConfigurationUIStates: Record<UUID, BrickConfigurationUIState> =
       {
         [formState.uuid]: {
-          nodeId: formState.modComponent.brickPipeline[0].instanceId,
+          nodeId: formState.modComponent.brickPipeline[0]!.instanceId,
           dataPanel: {
             activeTabKey: null,
           },
@@ -72,7 +72,7 @@ describe("draftModComponentStorage", () => {
       brickPipelineUIStateById: {
         [formState.uuid]: {
           pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
-          activeNodeId: formState.modComponent.brickPipeline[0].instanceId,
+          activeNodeId: formState.modComponent.brickPipeline[0]!.instanceId!,
           nodeUIStates: brickConfigurationUIStates,
         },
       },
@@ -96,7 +96,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [inactiveFormState.uuid]: {
-        nodeId: inactiveFormState.modComponent.brickPipeline[1].instanceId,
+        nodeId: inactiveFormState.modComponent.brickPipeline[1]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -108,7 +108,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [activeFormState.uuid]: {
-        nodeId: activeFormState.modComponent.brickPipeline[0].instanceId,
+        nodeId: activeFormState.modComponent.brickPipeline[0]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -127,7 +127,7 @@ describe("draftModComponentStorage", () => {
             activeFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            activeFormState.modComponent.brickPipeline[0].instanceId,
+            activeFormState.modComponent.brickPipeline[0]!.instanceId!,
           nodeUIStates: activeBrickConfigurationUIStates,
         },
       },
@@ -146,7 +146,7 @@ describe("draftModComponentStorage", () => {
             inactiveFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            inactiveFormState.modComponent.brickPipeline[0].instanceId,
+            inactiveFormState.modComponent.brickPipeline[0]!.instanceId,
           nodeUIStates: inactiveBrickConfigurationUIStates,
         },
       },
@@ -178,7 +178,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [formState1.uuid]: {
-        nodeId: formState1.modComponent.brickPipeline[0].instanceId,
+        nodeId: formState1.modComponent.brickPipeline[0]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -194,7 +194,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [formState2.uuid]: {
-        nodeId: formState2.modComponent.brickPipeline[0].instanceId,
+        nodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -206,7 +206,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [formState3.uuid]: {
-        nodeId: formState3.modComponent.brickPipeline[1].instanceId,
+        nodeId: formState3.modComponent.brickPipeline[1]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -218,7 +218,7 @@ describe("draftModComponentStorage", () => {
       brickPipelineUIStateById: {
         [formState3.uuid]: {
           pipelineMap: getPipelineMap(formState3.modComponent.brickPipeline),
-          activeNodeId: formState3.modComponent.brickPipeline[0].instanceId,
+          activeNodeId: formState3.modComponent.brickPipeline[0]!.instanceId!,
           nodeUIStates: formState3BrickConfigurationUIStates,
         },
       },
@@ -245,12 +245,12 @@ describe("draftModComponentStorage", () => {
         ...baseState.brickPipelineUIStateById,
         [formState1.uuid]: {
           pipelineMap: getPipelineMap(formState1.modComponent.brickPipeline),
-          activeNodeId: formState1.modComponent.brickPipeline[1].instanceId,
+          activeNodeId: formState1.modComponent.brickPipeline[1]!.instanceId,
           nodeUIStates: formState1BrickConfigurationUIStates,
         },
         [formState2.uuid]: {
           pipelineMap: getPipelineMap(formState2.modComponent.brickPipeline),
-          activeNodeId: formState2.modComponent.brickPipeline[0].instanceId,
+          activeNodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
           nodeUIStates: formState2BrickConfigurationUIStates,
         },
       },
@@ -283,7 +283,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [formState1.uuid]: {
-        nodeId: formState1.modComponent.brickPipeline[0].instanceId,
+        nodeId: formState1.modComponent.brickPipeline[0]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -299,7 +299,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [formState2.uuid]: {
-        nodeId: formState2.modComponent.brickPipeline[0].instanceId,
+        nodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -311,7 +311,7 @@ describe("draftModComponentStorage", () => {
       BrickConfigurationUIState
     > = {
       [formState3.uuid]: {
-        nodeId: formState3.modComponent.brickPipeline[1].instanceId,
+        nodeId: formState3.modComponent.brickPipeline[1]!.instanceId,
         dataPanel: {
           activeTabKey: null,
         },
@@ -324,7 +324,7 @@ describe("draftModComponentStorage", () => {
       brickPipelineUIStateById: {
         [formState3.uuid]: {
           pipelineMap: getPipelineMap(formState3.modComponent.brickPipeline),
-          activeNodeId: formState3.modComponent.brickPipeline[0].instanceId,
+          activeNodeId: formState3.modComponent.brickPipeline[0]!.instanceId!,
           nodeUIStates: formState3BrickConfigurationUIStates,
         },
       },
@@ -350,12 +350,12 @@ describe("draftModComponentStorage", () => {
         ...baseState.brickPipelineUIStateById,
         [formState1.uuid]: {
           pipelineMap: getPipelineMap(formState1.modComponent.brickPipeline),
-          activeNodeId: formState1.modComponent.brickPipeline[1].instanceId,
+          activeNodeId: formState1.modComponent.brickPipeline[1]!.instanceId,
           nodeUIStates: formState1BrickConfigurationUIStates,
         },
         [formState2.uuid]: {
           pipelineMap: getPipelineMap(formState2.modComponent.brickPipeline),
-          activeNodeId: formState2.modComponent.brickPipeline[0].instanceId,
+          activeNodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
           nodeUIStates: formState2BrickConfigurationUIStates,
         },
       },
@@ -390,7 +390,7 @@ describe("draftModComponentStorage when no state is persisted", () => {
   test.each([undefined, null])(
     "setEditorState is NOP for: %s",
     async (state?: null) => {
-      await saveEditorState(state);
+      await saveEditorState(state as unknown as EditorState);
       expect(setReduxStorageMock).not.toHaveBeenCalled();
     },
   );
