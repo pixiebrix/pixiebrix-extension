@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./starterBricks/starterBrickModUtils.test.ts",
     "./store/checkAvailableActivatedModComponents.test.ts",
     "./store/editorStorage.test.ts",
     "./store/sidebar/sidebarSlice.test.ts",
