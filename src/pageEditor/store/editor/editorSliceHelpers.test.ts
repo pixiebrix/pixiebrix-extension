@@ -61,7 +61,7 @@ describe("ensureBrickPipelineUIState", () => {
         [formState.uuid]: {
           ...makeInitialBrickPipelineUIState(),
           pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
-          activeNodeId: formState.modComponent.brickPipeline[0]!.instanceId!,
+          activeNodeId: formState.modComponent.brickPipeline[0].instanceId,
         },
       },
     };
@@ -88,7 +88,7 @@ describe("ensureBrickPipelineUIState", () => {
 describe("ensureBrickConfigurationUIState", () => {
   test("does not affect existing node state", () => {
     const formState = formStateFactory();
-    const nodeId = formState.modComponent.brickPipeline[0]!.instanceId!;
+    const nodeId = formState.modComponent.brickPipeline[0].instanceId;
     const uiState: BrickPipelineUIState = {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
@@ -98,7 +98,7 @@ describe("ensureBrickConfigurationUIState", () => {
       makeInitialBrickConfigurationUIState(nodeId);
     uiState.nodeUIStates = {
       ...uiState.nodeUIStates,
-      [nodeId as string]: {
+      [nodeId]: {
         ...nodeState,
         dataPanel: {
           ...nodeState.dataPanel,
@@ -115,8 +115,8 @@ describe("ensureBrickConfigurationUIState", () => {
 
   test("adds node states when not present", () => {
     const formState = formStateFactory();
-    const node1Id = formState.modComponent.brickPipeline[0]!.instanceId!;
-    const node2Id = formState.modComponent.brickPipeline[1]!.instanceId!;
+    const node1Id = formState.modComponent.brickPipeline[0].instanceId;
+    const node2Id = formState.modComponent.brickPipeline[1].instanceId;
     const uiState: BrickPipelineUIState = {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
@@ -134,7 +134,7 @@ describe("ensureBrickConfigurationUIState", () => {
 describe("syncNodeUIStates", () => {
   test("reset active node to foundation when node ids change, and removes invalid node states", () => {
     const formState = formStateFactory();
-    const nodeId = formState.modComponent.brickPipeline[0]!.instanceId!;
+    const nodeId = formState.modComponent.brickPipeline[0].instanceId;
     const invalidNodeId = uuidv4();
     const uiState: BrickPipelineUIState = {
       ...makeInitialBrickPipelineUIState(),
@@ -169,13 +169,13 @@ describe("syncNodeUIStates", () => {
       FOUNDATION_NODE_ID,
     );
     expect(
-      newEditorState.brickPipelineUIStateById[formState.uuid]!.nodeUIStates,
+      newEditorState.brickPipelineUIStateById[formState.uuid].nodeUIStates,
     ).not.toContainKey(invalidNodeId);
   });
 
   test("adds missing node states", () => {
     const formState = formStateFactory();
-    const node1Id = formState.modComponent.brickPipeline[0]!.instanceId!;
+    const node1Id = formState.modComponent.brickPipeline[0].instanceId;
     const uiState: BrickPipelineUIState = {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
@@ -194,14 +194,14 @@ describe("syncNodeUIStates", () => {
 
     // Maintains the foundation node state and adds the block node state for both blocks in the pipeline
     expect(
-      newEditorState.brickPipelineUIStateById[formState.uuid]!.nodeUIStates,
+      newEditorState.brickPipelineUIStateById[formState.uuid].nodeUIStates,
     ).toContainKey(FOUNDATION_NODE_ID);
     expect(
-      newEditorState.brickPipelineUIStateById[formState.uuid]!.nodeUIStates,
+      newEditorState.brickPipelineUIStateById[formState.uuid].nodeUIStates,
     ).toContainKey(node1Id);
-    const node2Id = formState.modComponent.brickPipeline[1]!.instanceId!;
+    const node2Id = formState.modComponent.brickPipeline[1].instanceId;
     expect(
-      newEditorState.brickPipelineUIStateById[formState.uuid]!.nodeUIStates,
+      newEditorState.brickPipelineUIStateById[formState.uuid].nodeUIStates,
     ).toContainKey(node2Id);
   });
 });
@@ -209,7 +209,7 @@ describe("syncNodeUIStates", () => {
 describe("setActiveNodeId", () => {
   test("sets active node when node state is missing", () => {
     const formState = formStateFactory();
-    const nodeId = formState.modComponent.brickPipeline[0]!.instanceId!;
+    const nodeId = formState.modComponent.brickPipeline[0].instanceId;
     const uiState: BrickPipelineUIState = {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
@@ -231,7 +231,7 @@ describe("setActiveNodeId", () => {
 
   test("sets active node when node state is already present", () => {
     const formState = formStateFactory();
-    const nodeId = formState.modComponent.brickPipeline[0]!.instanceId!;
+    const nodeId = formState.modComponent.brickPipeline[0].instanceId;
     const uiState: BrickPipelineUIState = {
       ...makeInitialBrickPipelineUIState(),
       pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
@@ -279,7 +279,7 @@ describe("removeModComponentFormState", () => {
         [formState.uuid]: {
           ...makeInitialBrickPipelineUIState(),
           pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
-          activeNodeId: formState.modComponent.brickPipeline[0]!.instanceId!,
+          activeNodeId: formState.modComponent.brickPipeline[0].instanceId,
         },
       },
       availableDraftModComponentIds: [formState.uuid],
@@ -317,8 +317,8 @@ describe("removeModComponentFormState", () => {
             availableModComponentFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            availableModComponentFormState.modComponent.brickPipeline[0]!
-              .instanceId!,
+            availableModComponentFormState.modComponent.brickPipeline[0]
+              .instanceId,
         },
         [unavailableModComponentFormState.uuid]: {
           ...makeInitialBrickPipelineUIState(),
@@ -326,8 +326,8 @@ describe("removeModComponentFormState", () => {
             unavailableModComponentFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            unavailableModComponentFormState.modComponent.brickPipeline[0]!
-              .instanceId!,
+            unavailableModComponentFormState.modComponent.brickPipeline[0]
+              .instanceId,
         },
       },
       availableDraftModComponentIds: [availableModComponentFormState.uuid],
@@ -385,7 +385,7 @@ describe("removeModData", () => {
             modComponentFormState1.modComponent.brickPipeline,
           ),
           activeNodeId:
-            modComponentFormState1.modComponent.brickPipeline[0]!.instanceId!,
+            modComponentFormState1.modComponent.brickPipeline[0].instanceId,
         },
         [modComponentFormState2.uuid]: {
           ...makeInitialBrickPipelineUIState(),
@@ -393,7 +393,7 @@ describe("removeModData", () => {
             modComponentFormState2.modComponent.brickPipeline,
           ),
           activeNodeId:
-            modComponentFormState2.modComponent.brickPipeline[0]!.instanceId!,
+            modComponentFormState2.modComponent.brickPipeline[0].instanceId,
         },
         [orphanModComponentFormState.uuid]: {
           ...makeInitialBrickPipelineUIState(),
@@ -401,8 +401,8 @@ describe("removeModData", () => {
             orphanModComponentFormState.modComponent.brickPipeline,
           ),
           activeNodeId:
-            orphanModComponentFormState.modComponent.brickPipeline[0]!
-              .instanceId!,
+            orphanModComponentFormState.modComponent.brickPipeline[0]
+              .instanceId,
         },
       },
       availableDraftModComponentIds: [
