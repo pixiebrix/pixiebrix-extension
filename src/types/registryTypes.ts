@@ -19,6 +19,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type Tagged, type ValueOf } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
+import { type FeatureFlag } from "@/auth/featureFlags";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`
@@ -121,7 +122,7 @@ export interface PackageInstance extends Metadata {
    * (Optional) if provided, the feature flag required to view/use the package
    * @since 2.0.7
    */
-  featureFlag?: string;
+  featureFlag?: FeatureFlag;
 }
 
 /**

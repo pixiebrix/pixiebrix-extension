@@ -32,6 +32,7 @@ import useFlags from "@/hooks/useFlags";
 import { useGetMeQuery } from "@/data/service/api";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 
@@ -55,11 +56,11 @@ const Sidebar: React.FunctionComponent = () => {
             }
           />
 
-          {permit("workshop") && (
+          {permit(RestrictedFeatures.WORKSHOP) && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
           )}
 
-          {permit("services") && (
+          {permit(RestrictedFeatures.LOCAL_INTEGRATIONS) && (
             <SidebarLink
               route="/services"
               // Help to distinguish vs. integrations defined in the Admin Console
@@ -75,7 +76,7 @@ const Sidebar: React.FunctionComponent = () => {
             <span className="nav-text">Quick Links</span>
           </li>
 
-          {permit("marketplace") && (
+          {permit(RestrictedFeatures.MARKETPLACE) && (
             <li className="nav-item">
               <a
                 href={MARKETPLACE_URL}
@@ -92,7 +93,7 @@ const Sidebar: React.FunctionComponent = () => {
               </a>
             </li>
           )}
-          {!hasPartner && permit("marketplace") && (
+          {!hasPartner && permit(RestrictedFeatures.MARKETPLACE) && (
             // Hide for partner users because we don't support custom community links yet
             <li className="nav-item">
               <a

@@ -46,26 +46,8 @@ afterEach(async () => {
 });
 
 describe("contentScriptPlatform", () => {
-  it("should use interactive request by default", async () => {
-    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
-
-    const config = sanitizedIntegrationConfigFactory();
-    const request = { url: "https://example.com" };
-    await contentScriptPlatform.request(config, request);
-
-    expect(backgroundRequestMock).toHaveBeenCalledExactlyOnceWith(
-      config,
-      request,
-      {
-        interactiveLogin: true,
-      },
-    );
-  });
-
   it("makes non-interactive successful call", async () => {
-    appApiMock
-      .onGet("/api/me/")
-      .reply(200, { flags: ["integration-login-banner"] });
+    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
 
     const config = sanitizedIntegrationConfigFactory();
     const request = { url: "https://example.com" };
@@ -81,9 +63,7 @@ describe("contentScriptPlatform", () => {
   });
 
   it("handles interactive error", async () => {
-    appApiMock
-      .onGet("/api/me/")
-      .reply(200, { flags: ["integration-login-banner"] });
+    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
 
     backgroundRequestMock.mockRejectedValueOnce(new Error("Other Error"));
 
@@ -103,9 +83,7 @@ describe("contentScriptPlatform", () => {
   });
 
   it("handles deferred login", async () => {
-    appApiMock
-      .onGet("/api/me/")
-      .reply(200, { flags: ["integration-login-banner"] });
+    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
 
     backgroundRequestMock.mockRejectedValueOnce(
       new InteractiveLoginRequiredError("Test error message"),

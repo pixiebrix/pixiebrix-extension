@@ -19,13 +19,13 @@ import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import {
   clearExtensionDebugLogs,
-  setToolbarBadge,
-  traces,
+  ensureContextMenu,
   openTab,
   performConfiguredRequestInBackground,
-  ensureContextMenu,
-  uninstallContextMenu,
+  setToolbarBadge,
   tabCapture,
+  traces,
+  uninstallContextMenu,
 } from "@/background/messenger/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -56,7 +56,6 @@ import type { RemoteResponse } from "@/types/contract";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
-import { flagOn } from "@/auth/featureFlagStorage";
 import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 
@@ -142,23 +141,18 @@ class ContentScriptPlatform extends PlatformBase {
         options,
       );
 
-    if (await flagOn("integration-login-banner")) {
-      try {
-        return await requestGenerator({ interactiveLogin: false });
-      } catch (error) {
-        if (!hasSpecificErrorCause(error, InteractiveLoginRequiredError)) {
-          // Error that can't be solved by an interactive login
-          throw error;
-        }
+    try {
+      return await requestGenerator({ interactiveLogin: false });
+    } catch (error) {
+      if (!hasSpecificErrorCause(error, InteractiveLoginRequiredError)) {
+        // Error that can't be solved by an interactive login
+        throw error;
       }
-
-      // `deferLogin` resolves when the user has logged in, rejects if the request is superseded
-      await deferLogin(integrationConfig);
-      return requestGenerator({ interactiveLogin: false });
     }
 
-    // Legacy behavior is to always show the interactive login, if possible
-    return requestGenerator({ interactiveLogin: true });
+    // `deferLogin` resolves when the user has logged in, rejects if the request is superseded
+    await deferLogin(integrationConfig);
+    return requestGenerator({ interactiveLogin: false });
   };
 
   override form = ephemeralForm;

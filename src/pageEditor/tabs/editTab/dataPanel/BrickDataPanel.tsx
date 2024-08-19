@@ -39,6 +39,7 @@ import DesignTab, {
   shouldShowFormDesign,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
 import OutlineTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/OutlineTab";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 export const NavItem: React.FC<{
   eventKey: DataPanelTabKey;
@@ -56,7 +57,7 @@ export const NavItem: React.FC<{
  */
 const BrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
-  const showDeveloperTabs = flagOn("page-editor-developer");
+  const showDeveloperTabs = flagOn(FeatureFlags.PAGE_EDITOR_DEVELOPER);
 
   const { blockId: brickId, blockConfig: brickConfig } =
     useSelector(selectActiveNodeInfo);

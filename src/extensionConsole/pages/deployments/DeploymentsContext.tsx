@@ -56,6 +56,7 @@ import type { Permissions } from "webextension-polyfill";
 import useDeactivateUnassignedDeploymentsEffect from "@/extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 export type DeploymentsState = {
   /**
@@ -128,7 +129,7 @@ function useDeployments(): DeploymentsState {
       _activatedModComponents: ActivatedModComponent[],
     ) => {
       const isUpdated = makeUpdatedFilter(_activatedModComponents, {
-        restricted: restrict("uninstall"),
+        restricted: restrict(RestrictedFeatures.DEACTIVATE_DEPLOYMENT),
       });
 
       const deployedModIds = new Set(

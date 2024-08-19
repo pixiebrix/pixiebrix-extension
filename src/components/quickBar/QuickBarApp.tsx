@@ -52,8 +52,9 @@ import { onContextInvalidated } from "webext-events";
 import StopPropagation from "@/components/StopPropagation";
 import useScrollLock from "@/hooks/useScrollLock";
 // eslint-disable-next-line no-restricted-imports -- being used in initQuickBarApp
-import { flagOn } from "@/auth/featureFlagStorage";
+import { restrict } from "@/auth/featureFlagStorage";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -223,7 +224,7 @@ export const initQuickBarApp = once(async () => {
     quickBarRegistry.addAction(action);
   }
 
-  if (!(await flagOn("page-editor"))) {
+  if (!(await restrict(RestrictedFeatures.PAGE_EDITOR))) {
     quickBarRegistry.addAction(pageEditorAction);
   }
 
