@@ -4,8 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/hooks/useBuildAndValidateMod.test.ts",
-    "./pageEditor/hooks/useCheckModStarterBrickInvariants.test.ts",
     "./pageEditor/hooks/useSaveMod.test.ts",
     "./pageEditor/modals/addBrickModal/AddBrickModal.test.tsx",
     "./pageEditor/modListingPanel/ModListItem.test.tsx",
