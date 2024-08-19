@@ -21,7 +21,6 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
 import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
@@ -96,8 +95,9 @@ function AsyncStateGate<Data>(
     throw error;
   }
 
-  assertNotNullish(data, "data should be defined"); // Type-only check
-  return <>{children({ data })}</>;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- at this point, the data can only be null/undefined if Data is explicitly set to be nullable
+  const dataResult = data as Data;
+  return <>{children({ data: dataResult })}</>;
 }
 
 export default AsyncStateGate;

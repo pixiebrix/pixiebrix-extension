@@ -22,8 +22,6 @@ import {
   selectDirtyMetadataForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
-import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
@@ -44,6 +42,8 @@ import cx from "classnames";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
+import { pick } from "lodash";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -99,11 +99,8 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
 
   assertNotNullish(modId, "No active mod id");
 
-  const {
-    data: modDefinition,
-    isFetching,
-    error,
-  } = useOptionalModDefinition(modId);
+  const modDefinitionQuery = useOptionalModDefinition(modId);
+  const modDefinition = modDefinitionQuery.data;
 
   // Select a single mod component for the mod to check the activated version.
   // We rely on the assumption that every component in the mod has the same version.
@@ -117,15 +114,14 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     lt(activatedModVersion, latestModVersion);
 
   const dirtyMetadata = useSelector(selectDirtyMetadataForModId(modId));
-  const savedMetadata = modDefinition?.metadata;
-  const metadata = dirtyMetadata ?? savedMetadata;
+  // Prefer the metadata from the activated mod component
+  const currentMetadata =
+    dirtyMetadata ?? modDefinitionComponent?._recipe ?? modDefinition?.metadata;
 
-  const initialFormState: Partial<ModMetadataFormState> = {
-    id: metadata?.id,
-    name: metadata?.name,
-    version: metadata?.version,
-    description: metadata?.description,
-  };
+  const initialFormState: Partial<ModMetadataFormState> = pick(
+    currentMetadata,
+    ["id", "name", "version", "description"],
+  );
 
   const dispatch = useDispatch();
   const updateRedux = useCallback(
@@ -134,18 +130,6 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     },
     [dispatch],
   );
-
-  if (isFetching || error) {
-    return (
-      <Container>
-        {isFetching ? (
-          <Loader />
-        ) : (
-          <div className="text-danger">{getErrorMessage(error)}</div>
-        )}
-      </Container>
-    );
-  }
 
   const renderBody: RenderBody = ({ values }) => (
     <IntegrationsSliceModIntegrationsContextAdapter>
@@ -190,19 +174,23 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
 
   return (
     <Container className={cx(styles.root, "max-750 ml-0")}>
-      <ErrorBoundary>
-        <Form
-          validationSchema={editModSchema}
-          initialValues={initialFormState}
-          onSubmit={() => {
-            console.error(
-              "The form's submit should not be called to save mod metadata. Use 'saveMod' from 'useSaveMod' instead.",
-            );
-          }}
-          renderBody={renderBody}
-          renderSubmit={() => null}
-        />
-      </ErrorBoundary>
+      <AsyncStateGate state={modDefinitionQuery}>
+        {() => (
+          <ErrorBoundary>
+            <Form
+              validationSchema={editModSchema}
+              initialValues={initialFormState}
+              onSubmit={() => {
+                console.error(
+                  "The form's submit should not be called to save mod metadata. Use 'saveMod' from 'useSaveMod' instead.",
+                );
+              }}
+              renderBody={renderBody}
+              renderSubmit={() => null}
+            />
+          </ErrorBoundary>
+        )}
+      </AsyncStateGate>
     </Container>
   );
 };
