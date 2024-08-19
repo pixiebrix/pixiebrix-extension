@@ -4,6 +4,13 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/store/editor/editorSliceHelpers.test.ts",
+    "./pageEditor/tabs/editTab/dataPanel/BrickDataPanel.test.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel.test.tsx",
+    "./pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab.test.tsx",
+    "./pageEditor/tabs/editTab/editHelpers.test.ts",
+    "./pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview.test.tsx",
+    "./pageEditor/tabs/effect/BrickConfiguration.test.tsx",
     "./pageEditor/tabs/trigger/TriggerConfiguration.test.tsx",
     "./registry/packageRegistry.test.ts",
     "./runtime/pipelineTests/validateInput.test.ts",

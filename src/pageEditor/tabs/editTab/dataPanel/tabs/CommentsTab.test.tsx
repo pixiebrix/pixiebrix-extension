@@ -59,7 +59,7 @@ const renderCommentsTab = (formState = formStateWithComments) => {
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
         dispatch(
           editorActions.setActiveNodeId(
-            formState.modComponent.brickPipeline[0].instanceId,
+            formState.modComponent.brickPipeline[0]!.instanceId!,
           ),
         );
       },
@@ -88,7 +88,7 @@ describe("CommentsTab", () => {
     // Trigger onBlur event for the textarea
     await userEvent.keyboard("{tab}");
     const expectedBrickId =
-      formStateWithNoComments.modComponent.brickPipeline[0].id;
+      formStateWithNoComments.modComponent.brickPipeline[0]!.id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: newComments.length,
@@ -110,12 +110,12 @@ describe("CommentsTab", () => {
     // Trigger onBlur event for the textarea
     await userEvent.keyboard("{tab}");
     const expectedBrickId =
-      formStateWithComments.modComponent.brickPipeline[0].id;
+      formStateWithComments.modComponent.brickPipeline[0]!.id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: expectedComments.length,
       brickId: expectedBrickId,
-      modId: formStateWithComments.modMetadata.id,
+      modId: formStateWithComments.modMetadata!.id,
     });
   });
 });
