@@ -25,6 +25,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
 import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type FeatureFlag } from "@/auth/featureFlags";
 
 /**
  * Adapter used to create initial mod component form state in the Page Editor from a starter brick.
@@ -66,7 +67,7 @@ export interface ModComponentFormStateAdapter<
    * Feature flag that indicates whether the starter brick type is enabled for the user. `undefined` to indicate
    * all users should be able to create/edit the starter bricks of this type.
    */
-  readonly flag?: string;
+  readonly flag?: FeatureFlag;
 
   /**
    * Method for the user to select an element from the host page (e.g., placing a menu button).

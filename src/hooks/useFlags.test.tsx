@@ -24,6 +24,16 @@ import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 // eslint-disable-next-line no-restricted-imports -- test file
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
+import {
+  featureFlagFactory,
+  UNSAFE_assumeFeatureFlag,
+} from "@/testUtils/factories/featureFlagFactories";
+import {
+  mapRestrictedFeatureToFeatureFlag,
+  RestrictedFeatures,
+} from "@/auth/featureFlags";
+
+const testFlag = featureFlagFactory();
 
 const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
   const { flagOn } = useFlags();
@@ -31,7 +41,9 @@ const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
   return (
     <div>
       Test Component {name}
-      {flagOn(`test-flag-${name}`) && <div>Test flag is on for {name}</div>}
+      {flagOn(UNSAFE_assumeFeatureFlag(`test-flag-${name}`)) && (
+        <div>Test flag is on for {name}</div>
+      )}
       {children}
     </div>
   );
@@ -45,7 +57,10 @@ describe("useFlags", () => {
 
   it("only fetches once for multiple instances of the hook in nested/sibling components", async () => {
     appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag-parent", "test-flag-child1"],
+      flags: [
+        UNSAFE_assumeFeatureFlag("test-flag-parent"),
+        UNSAFE_assumeFeatureFlag("test-flag-child1"),
+      ],
     });
 
     const { rerender } = render(
@@ -106,13 +121,13 @@ describe("useFlags", () => {
   describe("flagOn", () => {
     it("returns true if flag is present", async () => {
       appApiMock.onGet("/api/me/").reply(200, {
-        flags: ["test-flag"],
+        flags: [testFlag],
       });
 
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.flagOn("test-flag")).toBe(true);
+        expect(result.current.flagOn(testFlag)).toBe(true);
       });
     });
 
@@ -124,7 +139,7 @@ describe("useFlags", () => {
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.flagOn("test-flag")).toBe(false);
+        expect(result.current.flagOn(testFlag)).toBe(false);
       });
     });
   });
@@ -138,19 +153,19 @@ describe("useFlags", () => {
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.flagOff("test-flag")).toBe(true);
+        expect(result.current.flagOff(testFlag)).toBe(true);
       });
     });
 
     it("returns false if flag is present", async () => {
       appApiMock.onGet("/api/me/").reply(200, {
-        flags: ["test-flag"],
+        flags: [testFlag],
       });
 
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.flagOff("test-flag")).toBe(false);
+        expect(result.current.flagOff(testFlag)).toBe(false);
       });
     });
   });
@@ -158,25 +173,32 @@ describe("useFlags", () => {
   describe("permit", () => {
     it("returns true if restricted flag for area is not present", async () => {
       appApiMock.onGet("/api/me/").reply(200, {
-        flags: ["restricted-workshop"],
+        flags: mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.WORKSHOP),
       });
 
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.permit("page-editor")).toBe(true);
+        expect(result.current.permit(RestrictedFeatures.PAGE_EDITOR)).toBe(
+          true,
+        );
       });
     });
 
     it("returns false if restricted flag for area is present", async () => {
       appApiMock.onGet("/api/me/").reply(200, {
-        flags: ["restricted-workshop", "restricted-page-editor"],
+        flags: [
+          RestrictedFeatures.WORKSHOP,
+          RestrictedFeatures.PAGE_EDITOR,
+        ].map((x) => mapRestrictedFeatureToFeatureFlag(x)),
       });
 
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.permit("page-editor")).toBe(false);
+        expect(result.current.permit(RestrictedFeatures.PAGE_EDITOR)).toBe(
+          false,
+        );
       });
     });
   });
@@ -184,13 +206,18 @@ describe("useFlags", () => {
   describe("restrict", () => {
     it("returns true if restricted flag for area is present", async () => {
       appApiMock.onGet("/api/me/").reply(200, {
-        flags: ["restricted-workshop", "restricted-page-editor"],
+        flags: [
+          RestrictedFeatures.WORKSHOP,
+          RestrictedFeatures.PAGE_EDITOR,
+        ].map((x) => mapRestrictedFeatureToFeatureFlag(x)),
       });
 
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.restrict("page-editor")).toBe(true);
+        expect(result.current.restrict(RestrictedFeatures.PAGE_EDITOR)).toBe(
+          true,
+        );
       });
     });
 
@@ -202,7 +229,9 @@ describe("useFlags", () => {
       const { result, waitFor } = renderHook(() => useFlags());
 
       await waitFor(() => {
-        expect(result.current.restrict("page-editor")).toBe(false);
+        expect(result.current.restrict(RestrictedFeatures.PAGE_EDITOR)).toBe(
+          false,
+        );
       });
     });
   });

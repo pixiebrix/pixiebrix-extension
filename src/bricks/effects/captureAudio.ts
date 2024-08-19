@@ -22,17 +22,16 @@ import { validateRegistryId } from "@/types/helpers";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
 import { DEEPGRAM_INTEGRATION_ID } from "@/contrib/deepgram/deepgramTypes";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const DEEPGRAM_INTEGRATION_REF = `https://app.pixiebrix.com/schemas/services/${DEEPGRAM_INTEGRATION_ID}`;
-
-const FEATURE_FLAG_AUDIO_CAPTURE = "capture-audio";
 
 export class StartCaptureAudioEffect extends EffectABC {
   static BRICK_ID = validateRegistryId(
     "@pixiebrix/browser/audio-capture-start",
   );
 
-  featureFlag = FEATURE_FLAG_AUDIO_CAPTURE;
+  featureFlag = FeatureFlags.FEATURE_FLAG_AUDIO_CAPTURE;
 
   constructor() {
     super(
@@ -93,7 +92,7 @@ export class StopCaptureAudioEffect extends EffectABC {
     );
   }
 
-  featureFlag = FEATURE_FLAG_AUDIO_CAPTURE;
+  featureFlag = FeatureFlags.FEATURE_FLAG_AUDIO_CAPTURE;
 
   inputSchema: Schema = minimalSchemaFactory();
 

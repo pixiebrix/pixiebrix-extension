@@ -161,7 +161,6 @@
 ./src/integrations/util/getModDefinitionIntegrationIds.ts
 ./src/integrations/util/getUnconfiguredComponentIntegrations.ts
 ./src/integrations/util/locateSanitizedIntegrationConfigWithRetry.ts
-./src/integrations/util/makeServiceContextFromDependencies.ts
 ./src/integrations/util/permissionsHelpers.ts
 ./src/modDefinitions/modDefinitionPermissionsHelpers.ts
 ./src/modDefinitions/modDefinitionsTypes.ts

@@ -22,6 +22,7 @@ import useHasModPackageEditPermission from "@/mods/hooks/useHasModPackageEditPer
 import { useHistory } from "react-router";
 import useUserAction from "@/hooks/useUserAction";
 import useFlags from "@/hooks/useFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 /**
  * Hook returning a callback to a mod in the workshop, or null if mod is not mod package or the user does not have
@@ -39,7 +40,7 @@ function useEditInWorkshopAction(
   const [getEditablePackages] =
     appApi.endpoints.getEditablePackages.useLazyQuery();
 
-  const canOpenInWorkshop = permit("workshop") && canEdit;
+  const canOpenInWorkshop = permit(RestrictedFeatures.WORKSHOP) && canEdit;
 
   const openInWorkshop = useUserAction(
     async () => {

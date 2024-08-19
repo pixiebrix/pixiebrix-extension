@@ -45,6 +45,7 @@ import {
 } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 function fromNativeElement(
   _url: string,
@@ -177,7 +178,7 @@ const config: ModComponentFormStateAdapter<
   EditorNode: DynamicQuickBarConfiguration,
   selectNativeElement: undefined,
   icon: faPlusSquare,
-  flag: "pageeditor-quickbar-provider",
+  flag: FeatureFlags.PAGE_EDITOR_DYNAMIC_QUICKBAR,
   fromNativeElement,
   asDraftModComponent,
   selectStarterBrickDefinition,

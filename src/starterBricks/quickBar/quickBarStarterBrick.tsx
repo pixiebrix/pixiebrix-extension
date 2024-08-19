@@ -54,7 +54,7 @@ import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -229,9 +229,10 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
         try {
           const reader = await this.getBaseReader();
-          const serviceContext = await makeIntegrationsContextFromDependencies(
-            modComponent.integrationDependencies,
-          );
+          const integrationContext =
+            await makeIntegrationContextFromDependencies(
+              modComponent.integrationDependencies,
+            );
 
           const targetElement = guessSelectedElement() ?? document;
 
@@ -244,7 +245,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
           const initialValues: InitialValues = {
             input,
             root: this.decideRoot(targetElement),
-            serviceContext,
+            integrationContext,
             optionsArgs: modComponent.optionsArgs,
           };
 

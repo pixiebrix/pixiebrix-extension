@@ -53,6 +53,7 @@ const rootReaderId = validateRegistryId("test/root-reader");
 mockAnimationsApi();
 jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
+  restrict: jest.fn().mockReturnValue(false),
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>

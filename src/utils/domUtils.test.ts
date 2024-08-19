@@ -17,6 +17,7 @@
 
 import {
   isNativeCssSelector,
+  isSingleHtmlElementString,
   isValidSelector,
   runOnDocumentVisible,
 } from "@/utils/domUtils";
@@ -118,5 +119,23 @@ describe("isValidSelector", () => {
 
   it.each(["!foo"])("returns false for invalid selector: %s", (selector) => {
     expect(isValidSelector(selector)).toBeFalse();
+  });
+});
+
+describe("isSingleHtmlElementString", () => {
+  it("returns true for single element", () => {
+    expect(isSingleHtmlElementString("<div></div>")).toBeTrue();
+  });
+  it("returns false for two elements", () => {
+    expect(isSingleHtmlElementString("<div></div><div></div>")).toBeFalse();
+  });
+  it("returns false for whitespace", () => {
+    expect(isSingleHtmlElementString(" ")).toBeFalse();
+  });
+  it("returns false for text", () => {
+    expect(isSingleHtmlElementString("foo")).toBeFalse();
+  });
+  it("allows custom tag", () => {
+    expect(isSingleHtmlElementString("<foo></foo>")).toBeTrue();
   });
 });

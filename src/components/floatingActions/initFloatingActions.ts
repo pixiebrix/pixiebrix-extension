@@ -21,6 +21,7 @@ import { getUserData } from "@/background/messenger/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { isLinked as getIsLinked } from "@/auth/authStorage";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * Add the floating action button to the page if the user is not an enterprise/partner user.
@@ -46,7 +47,9 @@ export default async function initFloatingActions(): Promise<void> {
   const isEnterpriseOrPartnerUser =
     Boolean(telemetryOrganizationId) || settings.theme !== DEFAULT_THEME;
 
-  const hasFeatureFlag = await flagOn("floating-quickbar-button-freemium");
+  const hasFeatureFlag = await flagOn(
+    FeatureFlags.FLOATING_ACTION_BUTTON_FREEMIUM,
+  );
 
   // Add floating action button if the feature flag and settings are enabled
   // Need to wait until the Extension is linked to be certain that the user is not an enterprise user

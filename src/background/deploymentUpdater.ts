@@ -80,6 +80,7 @@ import { transformMeResponse } from "@/data/model/Me";
 import { getMe } from "@/data/service/backgroundApi";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "@/mv3/SessionStorage";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -453,7 +454,7 @@ export async function syncDeployments(): Promise<void> {
     readAuthData(),
     getSettingsState(),
     readManagedStorage(),
-    flagOn("report-background-deployments"),
+    flagOn(FeatureFlags.REPORT_BACKGROUND_DEPLOYMENTS),
   ]);
 
   const {

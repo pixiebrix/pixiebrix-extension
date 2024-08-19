@@ -32,6 +32,7 @@ import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponents from "./ModComponents";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * React Bootstrap Collapsed component that includes a div wrapper.
@@ -56,7 +57,7 @@ const ModListingPanel: React.VFC = () => {
   const { flagOn } = useFlags();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
-    flagOn("page-editor-developer");
+    flagOn(FeatureFlags.PAGE_EDITOR_DEVELOPER);
 
   const collapseSidebar = () => {
     dispatch(

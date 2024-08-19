@@ -20,6 +20,11 @@ import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 import { getMe } from "@/data/service/backgroundApi";
 import { addAuthListener as addAuthStorageListener } from "@/auth/authStorage";
+import {
+  type FeatureFlag,
+  mapRestrictedFeatureToFeatureFlag,
+  type RestrictedFeature,
+} from "@/auth/featureFlags";
 
 /**
  * Fetch the latest feature flags from the server.
@@ -28,13 +33,13 @@ import { addAuthListener as addAuthStorageListener } from "@/auth/authStorage";
  * from multiple contexts.
  */
 // getMe is memoized in-memory, so don't need to also memoizeUntilSettled this method
-export async function fetchFeatureFlags(): Promise<string[]> {
+export async function fetchFeatureFlags(): Promise<FeatureFlag[]> {
   expectContext(
     "background",
     "fetchFeatureFlags should be called via fetchFeatureFlagsInBackground",
   );
   const data = await getMe();
-  return [...(data?.flags ?? [])];
+  return [...(data?.flags ?? [])] as FeatureFlag[];
 }
 
 const featureFlags = new CachedFunction("getFeatureFlags", {
@@ -73,7 +78,7 @@ export async function TEST_deleteFeatureFlagsCache(): Promise<void> {
  * automatically used, not this file.
  */
 export async function TEST_overrideFeatureFlags(
-  flags: string[],
+  flags: FeatureFlag[],
 ): Promise<void> {
   await featureFlags.applyOverride([], flags);
 }
@@ -86,9 +91,23 @@ export async function TEST_overrideFeatureFlags(
  * @param flag the feature flag to check
  * @see useFlags
  */
-export async function flagOn(flag: string): Promise<boolean> {
+export async function flagOn(flag: FeatureFlag): Promise<boolean> {
   const flags = await featureFlags.get();
   return flags.includes(flag);
+}
+
+/**
+ * Returns true if the specified feature/area is restricted for the current user. Fetches the flags if they are not
+ * cached.
+ *
+ * In React code, use useFlags instead.
+ *
+ * @param area the restricted area/feature to check
+ * @see useFlags
+ */
+export async function restrict(area: RestrictedFeature): Promise<boolean> {
+  const flags = await featureFlags.get();
+  return flags.includes(mapRestrictedFeatureToFeatureFlag(area));
 }
 
 export function initFeatureFlagBackgroundListeners(): void {

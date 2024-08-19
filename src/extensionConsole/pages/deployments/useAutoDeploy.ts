@@ -26,6 +26,7 @@ import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 type UseAutoDeployReturn = {
   /**
@@ -60,7 +61,7 @@ function useAutoDeploy({
    *  Deployments will still auto-activate in the background, but won't downgrade the user
    *  so they can work on developing new versions of the mod.
    */
-  const shouldAutoDeploy = restrict("uninstall");
+  const shouldAutoDeploy = restrict(RestrictedFeatures.DEACTIVATE_DEPLOYMENT);
 
   useAsyncEffect(
     async (isMounted) => {

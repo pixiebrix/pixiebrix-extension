@@ -35,20 +35,49 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
-import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import {
+  getConnectedTarget,
+  getConnectedTargetUrl,
+} from "@/sidebar/connectedTarget";
 import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 import { isMicrosoftEdge } from "@/utils/browserUtils";
 import openAllLinksInPopups from "@/utils/openAllLinksInPopups";
+import { FeatureFlags } from "@/auth/featureFlags";
+// eslint-disable-next-line no-restricted-imports -- tsx file for the ReactDOM.render
+import { flagOn } from "@/auth/featureFlagStorage";
+import { isPixieBrixDomain } from "@/utils/urlUtils";
+
+/**
+ * Return session replay sample rate for the sidebar session.
+ */
+async function getSessionReplaySampleRateOverride(): Promise<
+  number | undefined
+> {
+  const [forceRecord, url] = await Promise.all([
+    flagOn(FeatureFlags.ONBOARDING_SIDEBAR_FORCE_SESSION_REPLAY),
+    getConnectedTargetUrl(),
+  ]);
+
+  // For now, just check for pixiebrix domain. Activate anywhere with nextUrl might put the user back
+  // onto a non-welcome page landing page.
+  if (forceRecord && isPixieBrixDomain(url)) {
+    console.debug("Forcing session replay recording");
+    return 100;
+  }
+}
 
 async function init(): Promise<void> {
   setPlatform(extensionPagePlatform);
   void initMessengerLogging();
   void initRuntimeLogging();
+
   try {
-    await initPerformanceMonitoring();
+    await initPerformanceMonitoring({
+      sessionReplaySampleRate: await getSessionReplaySampleRateOverride(),
+    });
   } catch (error) {
     console.error("Failed to initialize performance monitoring", error);
   }

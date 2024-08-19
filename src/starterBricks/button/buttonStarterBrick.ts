@@ -75,8 +75,8 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/jQueryInitialize";
-import { $safeFind } from "@/utils/domUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import { $safeFind, isSingleHtmlElementString } from "@/utils/domUtils";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { ReusableAbortController, onAbort } from "abort-utils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
@@ -512,13 +512,13 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
     if (modComponent.config.if) {
       // Read the latest state at the time of the action
       const input = await ctxtPromise;
-      const serviceContext = await makeIntegrationsContextFromDependencies(
+      const integrationContext = await makeIntegrationContextFromDependencies(
         modComponent.integrationDependencies,
       );
 
       console.debug("Checking button precondition", {
         input,
-        serviceContext,
+        integrationContext,
       });
 
       // There's no button at this point, so can't use the eventTarget targetMode
@@ -530,7 +530,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
 
       const initialValues: InitialValues = {
         input,
-        serviceContext,
+        integrationContext,
         optionsArgs: modComponent.optionsArgs,
         root: document,
       };
@@ -554,13 +554,13 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
-      const serviceContext = await makeIntegrationsContextFromDependencies(
+      const integrationContext = await makeIntegrationContextFromDependencies(
         modComponent.integrationDependencies,
       );
 
       // Integrations take precedence over the other context
       // XXX: don't support adding "@mod" variable for now. Dynamic Captions are not available in the Page Editor
-      const modComponentContext = { ...ctxt, ...serviceContext };
+      const modComponentContext = { ...ctxt, ...integrationContext };
 
       html = (await renderMustache(this.getTemplate(), {
         caption: (await mapArgs(caption, modComponentContext, {
@@ -614,7 +614,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
                 $buttonElement: $button,
               }),
             ),
-            serviceContext: await makeIntegrationsContextFromDependencies(
+            integrationContext: await makeIntegrationContextFromDependencies(
               modComponent.integrationDependencies,
             ),
             optionsArgs: modComponent.optionsArgs,
@@ -953,7 +953,18 @@ export class RemoteButtonStarterBrick extends ButtonStarterBrickABC {
     unsanitizedHTML: string,
     modComponent: HydratedModComponent<ButtonStarterBrickConfig>,
   ): JQuery {
-    const sanitizedHTML = sanitize(unsanitizedHTML);
+    let sanitizedHTML = "<button>Invalid Template</button>";
+
+    try {
+      // Try to avoid crash: https://github.com/pixiebrix/pixiebrix-extension/issues/8526
+      // Sanitize will exclude any custom elements
+      const sanitized = sanitize(unsanitizedHTML);
+      if (isSingleHtmlElementString(sanitized)) {
+        sanitizedHTML = sanitized;
+      }
+    } catch {
+      // NOP
+    }
 
     let $root: JQuery;
 

@@ -152,7 +152,7 @@ describe("IfElse", () => {
         root: document.createElement("div"),
         input: {},
         optionsArgs: {},
-        serviceContext: {},
+        integrationContext: {},
       },
       reduceOptionsFactory("v3"),
     );

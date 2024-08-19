@@ -15,6 +15,7 @@ import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
 import { type JsonValue } from "type-fest";
 import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
+import { UNSAFE_assumeFeatureFlag } from "@/testUtils/factories/featureFlagFactories";
 
 /**
  * A test helper brick that returns and stores the BrickOptions.context.
@@ -93,7 +94,7 @@ export class EchoBrick extends BrickABC {
 class FeatureFlagBrick extends BrickABC {
   static BRICK_ID = validateRegistryId("test/flagged");
 
-  featureFlag = "test-flag-brick";
+  featureFlag = UNSAFE_assumeFeatureFlag("test-flag-brick");
 
   constructor() {
     super(FeatureFlagBrick.BRICK_ID, "Feature Flagged Brick");
@@ -374,7 +375,7 @@ export function simpleInput(input: UnknownObject): InitialValues {
   return {
     input,
     root: null,
-    serviceContext: {},
+    integrationContext: {},
     optionsArgs: {} as OptionsArgs,
   };
 }
