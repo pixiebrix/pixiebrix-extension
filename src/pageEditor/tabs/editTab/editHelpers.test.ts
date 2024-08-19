@@ -39,8 +39,8 @@ describe("getPipelineMap", () => {
     expect(Object.keys(pipelineMap)).toHaveLength(2);
 
     const firstBlock = pipeline[0];
-    expect(pipelineMap[firstBlock!.instanceId!]).toEqual({
-      blockId: firstBlock!.id,
+    expect(pipelineMap[firstBlock.instanceId]).toEqual({
+      blockId: firstBlock.id,
       path: `${PIPELINE_BRICKS_FIELD_NAME}.0`,
       blockConfig: firstBlock,
       index: 0,
@@ -50,8 +50,8 @@ describe("getPipelineMap", () => {
     });
 
     const secondBlock = pipeline[1];
-    expect(pipelineMap[secondBlock!.instanceId!]).toEqual({
-      blockId: secondBlock!.id,
+    expect(pipelineMap[secondBlock.instanceId]).toEqual({
+      blockId: secondBlock.id,
       path: `${PIPELINE_BRICKS_FIELD_NAME}.1`,
       blockConfig: secondBlock,
       index: 1,
@@ -78,8 +78,8 @@ describe("getPipelineMap", () => {
 
     const subPipelineFirstBlock = subPipeline[0];
 
-    expect(pipelineMap[subPipelineFirstBlock!.instanceId!]).toEqual({
-      blockId: subPipelineFirstBlock!.id,
+    expect(pipelineMap[subPipelineFirstBlock.instanceId]).toEqual({
+      blockId: subPipelineFirstBlock.id,
       path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__.0`,
       blockConfig: subPipelineFirstBlock,
       index: 0,
@@ -89,8 +89,8 @@ describe("getPipelineMap", () => {
     });
 
     const subPipelineSecondBlock = subPipeline[1];
-    expect(pipelineMap[subPipelineSecondBlock!.instanceId!]).toEqual({
-      blockId: subPipelineSecondBlock!.id,
+    expect(pipelineMap[subPipelineSecondBlock.instanceId]).toEqual({
+      blockId: subPipelineSecondBlock.id,
       path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.__value__.1`,
       blockConfig: subPipelineSecondBlock,
       index: 1,
@@ -106,7 +106,7 @@ describe("getPipelineMap", () => {
     (buttonElement.config.onClick as PipelineExpression).__value__ =
       subPipeline;
     const containerElement = createNewDocumentBuilderElement("container");
-    containerElement.children![0]!.children![0]!.children!.push(buttonElement);
+    containerElement.children[0].children[0].children.push(buttonElement);
     const documentBrick = brickConfigFactory({
       id: DocumentRenderer.BRICK_ID,
       config: {
@@ -120,8 +120,8 @@ describe("getPipelineMap", () => {
     expect(Object.keys(pipelineMap)).toHaveLength(3);
 
     const subPipelineFirstBlock = subPipeline[0];
-    expect(pipelineMap[subPipelineFirstBlock!.instanceId!]).toEqual({
-      blockId: subPipelineFirstBlock!.id,
+    expect(pipelineMap[subPipelineFirstBlock.instanceId]).toEqual({
+      blockId: subPipelineFirstBlock.id,
       path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.0`,
       blockConfig: subPipelineFirstBlock,
       index: 0,
@@ -131,8 +131,8 @@ describe("getPipelineMap", () => {
     });
 
     const subPipelineSecondBlock = subPipeline[1];
-    expect(pipelineMap[subPipelineSecondBlock!.instanceId!]).toEqual({
-      blockId: subPipelineSecondBlock!.id,
+    expect(pipelineMap[subPipelineSecondBlock.instanceId]).toEqual({
+      blockId: subPipelineSecondBlock.id,
       path: `${PIPELINE_BRICKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__.1`,
       blockConfig: subPipelineSecondBlock,
       index: 1,
