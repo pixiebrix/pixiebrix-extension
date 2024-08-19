@@ -163,8 +163,8 @@ describe("checkAvailableActivatedModComponents", () => {
     );
 
     expect(availableActivatedModComponentIds).toStrictEqual([
-      availableButton!.id,
-      availableQb!.id,
+      availableButton.id,
+      availableQb.id,
     ]);
   });
 });

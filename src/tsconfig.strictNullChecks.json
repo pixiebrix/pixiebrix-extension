@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./store/checkAvailableActivatedModComponents.test.ts",
     "./store/editorStorage.test.ts",
     "./store/sidebar/sidebarSlice.test.ts",
     "./background/contextMenus/initContextMenus.ts",
