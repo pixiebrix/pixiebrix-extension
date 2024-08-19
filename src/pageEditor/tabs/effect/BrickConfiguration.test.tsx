@@ -63,7 +63,7 @@ function renderBrickConfiguration(
       dispatch(actions.setActiveModComponentId(initialValues.uuid));
       dispatch(
         actions.setActiveNodeId(
-          initialValues.modComponent.brickPipeline[0].instanceId,
+          initialValues.modComponent.brickPipeline[0]!.instanceId!,
         ),
       );
     },
