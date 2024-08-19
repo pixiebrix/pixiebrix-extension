@@ -19,15 +19,15 @@ import styles from "./GetStartedView.module.scss";
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCubes, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
-import ModIcon from "@/extensionConsole/pages/mods/ModIcon";
 import { isMac } from "@/utils/browserUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import { Card } from "react-bootstrap";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;
@@ -79,7 +79,10 @@ const GetStartedView: React.VoidFunctionComponent<{
               Success!{" "}
               {!isFetchingRecipe && modDefinition && (
                 <>
-                  <ModIcon mod={modDefinition} />{" "}
+                  <MarketplaceListingIcon
+                    packageId={modDefinition.metadata.id}
+                    defaultIcon={faCubes}
+                  />{" "}
                 </>
               )}
               <ExternalLink
