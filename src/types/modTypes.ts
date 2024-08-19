@@ -19,6 +19,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * @deprecated
@@ -53,9 +54,22 @@ export type ModStatus =
   // The mod comes from a deployment that has been paused
   | "Paused";
 
+export type ModActionsEnabled = {
+  showPublishToMarketplace: boolean;
+  showViewDetails: boolean;
+  showShareWithTeams: boolean;
+  showViewLogs: boolean;
+  showEditInWorkshop: boolean;
+  showActivate: boolean;
+  showReactivate: boolean;
+  showDeactivate: boolean;
+  showDelete: boolean;
+};
+
 // Reshaped Mod to easily filter, sort, and group Mods
 export type ModViewItem = {
   modId: RegistryId;
+  editablePackageId: UUID | null;
   marketplaceListingUrl: string | null;
   name: string;
   description: string;
@@ -68,6 +82,7 @@ export type ModViewItem = {
    * True if the source package is no longer available
    */
   isUnavailable: boolean;
+  modActions: ModActionsEnabled;
 };
 
 /**

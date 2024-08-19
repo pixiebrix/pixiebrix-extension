@@ -22,16 +22,18 @@ import { appApi } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { type Mod, type ModViewItem } from "@/types/modTypes";
-import { mapModComponentToUnavailableMod } from "@/mods/useMods";
 import { uniqBy } from "lodash";
 import {
   getSharingSource,
   idHasScope,
   isUnavailableMod,
+  mapModComponentToUnavailableMod,
 } from "@/utils/modUtils";
 import * as semver from "semver";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { getScopeAndId } from "@/utils/registryUtils";
+import { isPackageEditorRole } from "@/auth/authUtils";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -53,12 +55,16 @@ export const selectModViewItems = createSelector(
   selectAllModDefinitions,
   selectOrganizations,
   appApi.endpoints.getMarketplaceListings.select(),
+  appApi.endpoints.getFeatureFlags.select(),
+  appApi.endpoints.getEditablePackages.select(),
   (
     userScope,
     activatedModComponents,
     { data: modDefinitions },
     organizations,
     { data: listings },
+    { data: featureFlags },
+    { data: editablePackages },
     // eslint-disable-next-line max-params -- Needed for selector
   ) => {
     const mods: Mod[] = [];
@@ -178,30 +184,74 @@ export const selectModViewItems = createSelector(
       };
     };
 
+    // Don't allow actions until flags have loaded
+    const canPublish =
+      featureFlags && featureFlags.includes("publish-to-marketplace");
+    const canUninstall =
+      featureFlags && !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`);
+    const canEditInWorkshop = featureFlags && featureFlags.includes("workshop");
+
     return mods.map<ModViewItem>((mod) => {
       const { hasUpdate, activatedModVersion } =
         getHasUpdateAndActivatedVersion(mod);
 
       const listingId = listings?.[mod.metadata.id]?.id;
+      const marketplaceListingUrl = listingId
+        ? `${MARKETPLACE_URL}${listingId}/`
+        : null;
+      const isUnavailable = isUnavailableMod(mod);
+      const sharingSource = getSharingSource({
+        mod,
+        organizations,
+        userScope,
+        modComponents: activatedModComponents,
+      });
+      const isDeployment = sharingSource.type === "Deployment";
+      const isRestricted = isDeployment && !canUninstall;
+      const status = getStatus(mod);
+      const isActive = status === "Active" || status === "Paused";
+      const canEditModScope =
+        sharingSource.type === "Personal" ||
+        organizations.some((membership) => {
+          const { scope: packageScope } = getScopeAndId(mod.metadata.id);
+          return (
+            isPackageEditorRole(membership.role) &&
+            packageScope &&
+            membership.scope === packageScope
+          );
+        });
+      const packageMetadata = editablePackages?.find(
+        ({ name }) => name === mod.metadata.id,
+      );
+      const showEditInWorkshop =
+        canEditInWorkshop && packageMetadata != null && canEditModScope;
+      const showDelete =
+        !isActive && packageMetadata != null && canEditModScope;
 
       return {
         modId: mod.metadata.id,
-        marketplaceListingUrl: listingId
-          ? `${MARKETPLACE_URL}${listingId}/`
-          : null,
+        editablePackageId: packageMetadata?.id ?? null,
+        marketplaceListingUrl,
         name: mod.metadata.name,
         description: mod.metadata.description,
-        sharingSource: getSharingSource({
-          mod,
-          organizations,
-          userScope,
-          modComponents: activatedModComponents,
-        }),
+        sharingSource,
         updatedAt: mod.updated_at,
-        status: getStatus(mod),
+        status,
         hasUpdate,
         activatedModVersion,
-        isUnavailable: isUnavailableMod(mod),
+        isUnavailable,
+        modActions: {
+          showPublishToMarketplace:
+            canPublish && listingId == null && !isUnavailable && !isDeployment,
+          showViewDetails: marketplaceListingUrl != null,
+          showShareWithTeams: !isUnavailable && !isDeployment,
+          showViewLogs: isActive,
+          showEditInWorkshop,
+          showActivate: status === "Inactive",
+          showReactivate: isActive && !isRestricted && !isUnavailable,
+          showDeactivate: isActive && !isRestricted,
+          showDelete,
+        },
       };
     });
   },

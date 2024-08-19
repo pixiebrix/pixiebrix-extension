@@ -46,7 +46,7 @@ export async function deactivateMod(
   modComponents: SerializedModComponent[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
-  const draftModComponentsToDeactivate =
+  const removedDraftModComponentIds =
     await removeDraftModComponentsForMod(modId);
 
   dispatch(modComponentActions.removeModById(modId));
@@ -54,7 +54,7 @@ export async function deactivateMod(
   removeModComponentsFromAllTabs(
     uniq([
       ...modComponents.map(({ id }) => id),
-      ...draftModComponentsToDeactivate,
+      ...removedDraftModComponentIds,
     ]),
   );
 }

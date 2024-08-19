@@ -24,7 +24,6 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type UnavailableMod } from "@/types/modTypes";
-import { mapModComponentToUnavailableMod } from "@/mods/useMods";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   modComponentFactory,
@@ -33,6 +32,7 @@ import {
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import { mapModComponentToUnavailableMod } from "@/utils/modUtils";
 
 const axiosMock = new MockAdapter(axios);
 

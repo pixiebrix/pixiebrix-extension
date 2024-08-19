@@ -29,18 +29,34 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { type ModViewItem } from "@/types/modTypes";
-import useModsPageActions from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
+import { useSelector } from "react-redux";
+import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
+import useModPermissions from "@/mods/hooks/useModPermissions";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { useHistory } from "react-router";
+import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
-  const { activate, reactivate, requestPermissions } =
-    useModsPageActions(modViewItem);
+  const history = useHistory();
 
-  const { hasUpdate, status, installedVersionNumber, unavailable } =
-    modViewItem;
+  const {
+    modId,
+    hasUpdate,
+    status,
+    activatedModVersion,
+    isUnavailable,
+    modActions: { showActivate, showReactivate },
+  } = modViewItem;
 
-  if (unavailable) {
+  const modComponents = useSelector(selectModComponentsForMod(modId));
+
+  const { hasPermissions, requestPermissions } =
+    useModPermissions(modComponents);
+
+  if (isUnavailable) {
     return (
       <div className="text-warning">
         <div className={styles.root}>
@@ -54,23 +70,47 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
-  if (activate) {
+  if (showActivate) {
     return (
-      <Button size="sm" variant="outline-primary" onClick={activate}>
+      <Button
+        size="sm"
+        variant="outline-primary"
+        onClick={() => {
+          reportEvent(Events.START_MOD_ACTIVATE, {
+            modId,
+            screen: "extensionConsole",
+            reinstall: false,
+          });
+          history.push(getActivateModHashRoute(modId));
+        }}
+      >
         Activate
       </Button>
     );
   }
 
-  if (hasUpdate && reactivate) {
+  if (hasUpdate && showReactivate) {
     return (
-      <Button size="sm" variant="info" onClick={reactivate}>
+      <Button
+        size="sm"
+        variant="info"
+        onClick={() => {
+          reportEvent(Events.START_MOD_ACTIVATE, {
+            modId,
+            screen: "extensionConsole",
+            reinstall: true,
+          });
+          history.push(
+            `marketplace/activate/${encodeURIComponent(modId)}?reinstall=1`,
+          );
+        }}
+      >
         <FontAwesomeIcon icon={faSync} /> Update
       </Button>
     );
   }
 
-  if (requestPermissions) {
+  if (!hasPermissions) {
     // Use "Allow" for caption because the original "Grant Permissions" was too long
     return (
       <AsyncButton size="sm" variant="info" onClick={requestPermissions}>
@@ -86,11 +126,9 @@ const Status: React.VoidFunctionComponent<{
           <FontAwesomeIcon icon={faPause} />
           <span className={styles.textStatus}>
             Paused
-            {installedVersionNumber && (
-              <span className={styles.versionNumber}>
-                version {installedVersionNumber}
-              </span>
-            )}
+            <span className={styles.versionNumber}>
+              version {activatedModVersion}
+            </span>
           </span>
         </div>
       </div>
@@ -103,11 +141,9 @@ const Status: React.VoidFunctionComponent<{
         <FontAwesomeIcon icon={faCheck} />
         <span className={styles.textStatus}>
           Active
-          {installedVersionNumber && (
-            <span className={styles.versionNumber}>
-              version {installedVersionNumber}
-            </span>
-          )}
+          <span className={styles.versionNumber}>
+            version {activatedModVersion}
+          </span>
         </span>
       </div>
     </div>

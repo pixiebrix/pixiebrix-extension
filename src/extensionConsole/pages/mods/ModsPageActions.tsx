@@ -29,16 +29,82 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import useModsPageActions from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 import { type ModViewItem } from "@/types/modTypes";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { deactivateMod } from "@/store/deactivateUtils";
+import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
+import useUserAction from "@/hooks/useUserAction";
+import { useDeletePackageMutation } from "@/data/service/api";
+import { useModals } from "@/components/ConfirmationModal";
+import { CancelError } from "@/errors/businessErrors";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
-  const actions = useModsPageActions(modViewItem);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { showConfirmation } = useModals();
+  const [deleteModPackage] = useDeletePackageMutation();
 
-  const { marketplaceListingUrl, hasUpdate } = modViewItem;
+  const {
+    modId,
+    editablePackageId,
+    name,
+    marketplaceListingUrl,
+    hasUpdate,
+    modActions: {
+      showPublishToMarketplace,
+      showViewDetails,
+      showShareWithTeams,
+      showViewLogs,
+      showEditInWorkshop,
+      showReactivate,
+      showDeactivate,
+      showDelete,
+    },
+  } = modViewItem;
+
+  const modComponents = useSelector(selectModComponentsForMod(modId));
+
+  const deactivateModAction = useUserAction(
+    async () => {
+      reportEvent(Events.MOD_REMOVE, { modId });
+      await deactivateMod(modId, modComponents, dispatch);
+    },
+    {
+      successMessage: `Deactivated mod: ${name}`,
+      errorMessage: `Error deactivating mod: ${name}`,
+    },
+    [modId],
+  );
+
+  const deleteModAction = useUserAction(
+    async () => {
+      const isConfirmed = await showConfirmation({
+        title: "Permanently Delete?",
+        message: `Permanently delete the mod from the package registry: ${name}`,
+        submitCaption: "Delete",
+        cancelCaption: "Back to Safety",
+      });
+
+      if (!isConfirmed) {
+        throw new CancelError();
+      }
+
+      await deleteModPackage({ id: editablePackageId }).unwrap();
+    },
+    {
+      successMessage: `Deleted mod ${name} from the package registry`,
+      errorMessage: `Error deleting mod ${name} from the package registry`,
+      event: Events.PACKAGE_DELETE,
+    },
+    [name, editablePackageId],
+  );
 
   const actionItems = useMemo(
     (): EllipsisMenuItem[] => [
@@ -46,56 +112,98 @@ const ModsPageActions: React.FunctionComponent<{
         title: "Publish to Marketplace",
         // Applying the same classes which <FontAwesomeIcon/> applies
         icon: <PublishIcon className="svg-inline--fa fa-w-16 fa-fw" />,
-        action: actions.viewPublish,
-        hide: !actions.viewPublish,
+        action() {
+          dispatch(modModalsSlice.actions.setPublishContext({ modId }));
+        },
+        hide: !showPublishToMarketplace,
       },
       {
         title: "View Mod Details",
         icon: <FontAwesomeIcon fixedWidth icon={faStore} />,
         href: marketplaceListingUrl,
-        hide: marketplaceListingUrl == null,
+        hide: !showViewDetails,
       },
       {
         title: "Share with Teams",
         icon: <FontAwesomeIcon fixedWidth icon={faShare} />,
-        action: actions.viewShare,
-        hide: !actions.viewShare,
+        action() {
+          dispatch(modModalsSlice.actions.setShareContext({ modId }));
+        },
+        hide: !showShareWithTeams,
       },
       {
         title: "View Logs",
         icon: <FontAwesomeIcon fixedWidth icon={faList} />,
-        action: actions.viewLogs,
-        hide: !actions.viewLogs,
+        action() {
+          dispatch(
+            modModalsSlice.actions.setLogsContext({
+              title: name,
+              messageContext: {
+                label: name,
+                modId,
+              },
+            }),
+          );
+        },
+        hide: !showViewLogs,
       },
       {
         title: "Edit in Workshop",
         icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
-        action: actions.editInWorkshop,
-        hide: !actions.editInWorkshop,
+        action() {
+          history.push(`/workshop/bricks/${modId}`);
+        },
+        hide: !showEditInWorkshop,
       },
       {
         title: hasUpdate ? "Update" : "Reactivate",
         icon: <FontAwesomeIcon fixedWidth icon={faSyncAlt} />,
         className: "text-info",
-        action: actions.reactivate,
-        hide: !actions.reactivate,
+        action() {
+          reportEvent(Events.START_MOD_ACTIVATE, {
+            modId,
+            screen: "extensionConsole",
+            reinstall: true,
+          });
+          history.push(
+            `marketplace/activate/${encodeURIComponent(modId)}?reinstall=1`,
+          );
+        },
+        hide: !showReactivate,
       },
       {
         title: "Deactivate",
         icon: <FontAwesomeIcon fixedWidth icon={faTimes} />,
         className: "text-danger",
-        action: actions.deactivate,
-        hide: !actions.deactivate,
+        action: deactivateModAction,
+        hide: !showDeactivate,
       },
       {
         title: "Delete",
         icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
         className: "text-danger",
-        action: actions.delete,
-        hide: !actions.delete,
+        action: deleteModAction,
+        hide: !showDelete,
       },
     ],
-    [actions, hasUpdate],
+    [
+      deactivateModAction,
+      deleteModAction,
+      dispatch,
+      hasUpdate,
+      history,
+      marketplaceListingUrl,
+      modId,
+      name,
+      showDeactivate,
+      showDelete,
+      showEditInWorkshop,
+      showPublishToMarketplace,
+      showReactivate,
+      showShareWithTeams,
+      showViewDetails,
+      showViewLogs,
+    ],
   );
 
   return <EllipsisMenu ariaLabel="mods-page-actions" items={actionItems} />;

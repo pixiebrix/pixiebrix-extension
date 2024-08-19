@@ -23,7 +23,11 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import Modals from "./modals/Modals";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { useGetMarketplaceListingsQuery } from "@/data/service/api";
+import {
+  useGetEditablePackagesQuery,
+  useGetFeatureFlagsQuery,
+  useGetMarketplaceListingsQuery,
+} from "@/data/service/api";
 import Loader from "@/components/Loader";
 import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
@@ -36,6 +40,10 @@ const ModsPage: React.FunctionComponent = () => {
   const { error: listingsError } = useGetMarketplaceListingsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
+  useGetFeatureFlagsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  useGetEditablePackagesQuery();
 
   const error = modsError || listingsError;
 

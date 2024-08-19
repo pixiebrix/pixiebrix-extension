@@ -35,7 +35,11 @@ import {
   type ModComponentRef,
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
-import { INNER_SCOPE, type RegistryId } from "@/types/registryTypes";
+import {
+  DefinitionKinds,
+  INNER_SCOPE,
+  type RegistryId,
+} from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { assertNotNullish, type Nullishable } from "./nullishUtils";
 import {
@@ -333,4 +337,16 @@ export function normalizeModDefinition<
       },
     );
   });
+}
+
+export function mapModComponentToUnavailableMod(
+  modComponent: ModComponentBase,
+): UnavailableMod {
+  return {
+    metadata: modComponent._recipe,
+    kind: DefinitionKinds.MOD,
+    isStub: true,
+    updated_at: modComponent._recipe.updated_at,
+    sharing: modComponent._recipe.sharing,
+  };
 }
