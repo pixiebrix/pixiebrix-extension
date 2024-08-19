@@ -44,7 +44,7 @@ export const FeatureFlags = {
   /**
    * Enable performance and RUM sampling.
    */
-  RUM_FLAG: "telemetry-performance",
+  RUM_SESSION_RECORDING: "telemetry-performance",
 
   /**
    * Turn on local navigation tracing for debugging navigation/page load bugs.
@@ -80,7 +80,7 @@ export const FeatureFlags = {
   /**
    * Strip the `sandbox` attribute from iframes so the content script can be injected.
    */
-  SANDBOX_SRCDOC_HACK_FLAG: "iframe-srcdoc-sandbox-hack",
+  SANDBOX_SRCDOC_HACK: "iframe-srcdoc-sandbox-hack",
 
   /**
    * Show deployment key UI.

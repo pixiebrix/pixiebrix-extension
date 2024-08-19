@@ -79,7 +79,7 @@ onUncaughtError((error) => {
  */
 const initSandboxedSrcdocIframeInjection = async () => {
   const isSandboxSrcdocHackEnabled = await flagOn(
-    FeatureFlags.SANDBOX_SRCDOC_HACK_FLAG,
+    FeatureFlags.SANDBOX_SRCDOC_HACK,
   );
   if (!isSandboxSrcdocHackEnabled) {
     return;

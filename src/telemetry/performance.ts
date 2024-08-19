@@ -47,7 +47,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
     return;
   }
 
-  if (!(await flagOn(FeatureFlags.RUM_FLAG))) {
+  if (!(await flagOn(FeatureFlags.RUM_SESSION_RECORDING))) {
     return;
   }
 
