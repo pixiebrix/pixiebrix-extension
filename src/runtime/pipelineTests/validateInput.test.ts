@@ -349,6 +349,6 @@ describe("URLPattern smoke tests", () => {
     const result = pattern.exec(
       "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
     );
-    expect(result.pathname.groups.id).toBe("@scope/collection/name");
+    expect(result!.pathname.groups.id).toBe("@scope/collection/name");
   });
 });
