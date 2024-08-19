@@ -4,12 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./pageEditor/hooks/useSaveMod.test.ts",
-    "./pageEditor/modals/addBrickModal/AddBrickModal.test.tsx",
-    "./pageEditor/modListingPanel/ModListItem.test.tsx",
-    "./pageEditor/starterBricks/base.test.ts",
-    "./pageEditor/starterBricks/pipelineMapping.test.ts",
-    "./pageEditor/store/editor/editorSlice.test.ts",
     "./pageEditor/store/editor/editorSliceHelpers.test.ts",
     "./pageEditor/tabs/editTab/dataPanel/BrickDataPanel.test.tsx",
     "./pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel.test.tsx",

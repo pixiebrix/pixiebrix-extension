@@ -83,7 +83,7 @@ describe("normalizePipeline", () => {
     const actual = await normalizePipelineForEditor(pipeline);
 
     // Checking the loop config
-    const loopConfig = actual[0]!.config.body;
+    const loopConfig = actual[0].config.body;
     expect(isPipelineExpression(loopConfig)).toBeTrue();
     for (const config of (loopConfig as PipelineExpression).__value__) {
       expect(config.instanceId).toBeDefined();
@@ -133,7 +133,7 @@ describe("normalizePipeline", () => {
     const actual = await normalizePipelineForEditor(pipeline);
 
     // Checking IF branch
-    const ifConfig = actual[0]!.config.if;
+    const ifConfig = actual[0].config.if;
     expect(isPipelineExpression(ifConfig)).toBeTrue();
     const ifConfigPipeline = ifConfig as PipelineExpression;
     for (const config of ifConfigPipeline.__value__) {
@@ -141,7 +141,7 @@ describe("normalizePipeline", () => {
     }
 
     // ELSE branch should be undefined
-    expect(actual[0]!.config.else).toBeUndefined();
+    expect(actual[0].config.else).toBeUndefined();
   });
 
   test("Try-Except block", async () => {
@@ -185,7 +185,7 @@ describe("normalizePipeline", () => {
     const actual = await normalizePipelineForEditor(pipeline);
 
     // Checking TRY branch
-    const tryConfig = actual[0]!.config.try;
+    const tryConfig = actual[0].config.try;
     expect(isPipelineExpression(tryConfig)).toBeTrue();
     const tryConfigPipeline = tryConfig as PipelineExpression;
     for (const config of tryConfigPipeline.__value__) {
@@ -193,7 +193,7 @@ describe("normalizePipeline", () => {
     }
 
     // EXCEPT branch should be undefined
-    expect(actual[0]!.config.except).toBeUndefined();
+    expect(actual[0].config.except).toBeUndefined();
   });
 
   test("nested pipelines", async () => {
@@ -220,13 +220,13 @@ describe("normalizePipeline", () => {
 
     // 2nd level
     const loopConfig1: PipelineExpression = actual[0].config.body;
-    expect(loopConfig1.__value__[0]!.instanceId).toBeDefined();
+    expect(loopConfig1.__value__[0].instanceId).toBeDefined();
 
     // 3d level
     expect(
-      isPipelineExpression(loopConfig1.__value__[0]!.config.body),
+      isPipelineExpression(loopConfig1.__value__[0].config.body),
     ).toBeTrue();
-    const loopConfig2 = loopConfig1.__value__[0]!.config
+    const loopConfig2 = loopConfig1.__value__[0].config
       .body as PipelineExpression;
     expect(loopConfig2.__value__).toHaveLength(2);
     for (const config of loopConfig2.__value__) {
@@ -365,10 +365,10 @@ describe("omitEditorMetadata", () => {
 
     // 2nd level
     const loopConfig1: PipelineExpression = actual[0].config.body;
-    expect(loopConfig1.__value__[0]!.instanceId).toBeUndefined();
+    expect(loopConfig1.__value__[0].instanceId).toBeUndefined();
 
     // 3d level
-    const loopConfig2 = loopConfig1.__value__[0]!.config
+    const loopConfig2 = loopConfig1.__value__[0].config
       .body as PipelineExpression;
     expect(loopConfig2.__value__).toHaveLength(2);
     for (const config of loopConfig2.__value__) {
