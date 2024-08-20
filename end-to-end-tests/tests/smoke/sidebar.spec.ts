@@ -34,11 +34,8 @@ test.describe("sidebar page smoke test", () => {
 
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
-    // The default integration values are not immediately loaded and are temporarily empty.
-    // If we try activating too fast, the activation will fail due to missing configuration, so we wait for the values to load.
-    await expect(
-      modActivationPage.getByText("OpenAI — ✨ Built-in", { exact: true }),
-    ).toBeVisible();
+
+    await modActivationPage.selectIntegrationOption(1, "OpenAI — ✨ Built-in");
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await page.goto("/bootstrap-5");
