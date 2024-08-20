@@ -58,7 +58,7 @@ describe("DocumentOptions", () => {
 
   function renderDocumentOptions(
     formState: ModComponentFormState,
-    initialActiveElement: string = null,
+    initialActiveElement: string | null = null,
   ) {
     return render(
       <DocumentOptions
@@ -72,7 +72,7 @@ describe("DocumentOptions", () => {
           dispatch(actions.setActiveModComponentId(formState.uuid));
           dispatch(
             actions.setActiveNodeId(
-              formState.modComponent.brickPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0]!.instanceId!,
             ),
           );
           dispatch(
@@ -89,8 +89,8 @@ describe("DocumentOptions", () => {
         createNewDocumentBuilderElement("text"),
         createNewDocumentBuilderElement("text"),
       ];
-      documentElements[0].config.text = "test text 1";
-      documentElements[1].config.text = "test text 2";
+      documentElements[0]!.config.text = "test text 1";
+      documentElements[1]!.config.text = "test text 2";
       renderDocumentOptions(basicFormState(documentElements), "0");
 
       // The first text element is active
@@ -119,8 +119,8 @@ describe("DocumentOptions", () => {
         createNewDocumentBuilderElement("text"),
         createNewDocumentBuilderElement("text"),
       ];
-      documentElements[0].config.text = "test text 1";
-      documentElements[1].config.text = "test text 2";
+      documentElements[0]!.config.text = "test text 1";
+      documentElements[1]!.config.text = "test text 2";
       renderDocumentOptions(basicFormState(documentElements), "1");
 
       // The second text element is active
@@ -191,7 +191,7 @@ describe("DocumentOptions", () => {
 
       await userEvent.click(screen.getByText("Remove current element"));
 
-      expect(getFormState().integrationDependencies).toStrictEqual([]);
+      expect(getFormState()!.integrationDependencies).toStrictEqual([]);
     });
   });
 
@@ -201,8 +201,8 @@ describe("DocumentOptions", () => {
         createNewDocumentBuilderElement("text"),
         createNewDocumentBuilderElement("text"),
       ];
-      documentElements[0].config.text = "test text 1";
-      documentElements[1].config.text = "test text 2";
+      documentElements[0]!.config.text = "test text 1";
+      documentElements[1]!.config.text = "test text 2";
       const { getFormState } = renderDocumentOptions(
         basicFormState(documentElements),
         "0",
@@ -214,7 +214,7 @@ describe("DocumentOptions", () => {
 
       const stylesheetsLabel = await screen.findByText("CSS Stylesheet URLs");
       // eslint-disable-next-line testing-library/no-node-access -- ArrayWidget is hard to use with jest
-      const stylesheetsFieldContainer = stylesheetsLabel.parentElement;
+      const stylesheetsFieldContainer = stylesheetsLabel.parentElement!;
 
       // Add a stylesheet
       const addItemButton = await within(stylesheetsFieldContainer).findByText(
@@ -227,7 +227,7 @@ describe("DocumentOptions", () => {
 
       // The form state should be updated
       expect(
-        getFormState().modComponent.brickPipeline[0].config.stylesheets,
+        getFormState()!.modComponent.brickPipeline[0].config.stylesheets,
       ).toStrictEqual([
         toExpression("nunjucks", "https://example.com/stylesheet.css"),
       ]);

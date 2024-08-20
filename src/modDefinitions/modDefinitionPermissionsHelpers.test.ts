@@ -19,12 +19,12 @@ beforeEach(() => {
 describe("checkModDefinitionPermissions", () => {
   it("handles required clipboard write permissions", async () => {
     const modDefinition = modDefinitionFactory();
-    modDefinition.extensionPoints[0].permissions.permissions = [
+    modDefinition.extensionPoints[0]!.permissions!.permissions = [
       "clipboardWrite",
     ];
     const starterBrick = fromJS(starterBrickDefinitionFactory());
     starterBrickRegistry.register([starterBrick]);
-    modDefinition.extensionPoints[0].id = starterBrick.id;
+    modDefinition.extensionPoints[0]!.id = starterBrick.id;
 
     await expect(
       checkModDefinitionPermissions(modDefinition, []),
@@ -33,7 +33,7 @@ describe("checkModDefinitionPermissions", () => {
       permissions: {
         origins: starterBrick.permissions.origins,
         permissions: [
-          ...starterBrick.permissions.permissions,
+          ...starterBrick.permissions.permissions!,
           "clipboardWrite",
         ],
       },
@@ -41,18 +41,18 @@ describe("checkModDefinitionPermissions", () => {
 
     expect(containsMock).toHaveBeenCalledExactlyOnceWith({
       origins: starterBrick.permissions.origins,
-      permissions: [...starterBrick.permissions.permissions, "clipboardWrite"],
+      permissions: [...starterBrick.permissions.permissions!, "clipboardWrite"],
     });
   });
 
   it("handles optional clipboard write permissions", async () => {
     const modDefinition = modDefinitionFactory();
-    modDefinition.extensionPoints[0].permissions.permissions = [
+    modDefinition.extensionPoints[0]!.permissions!.permissions = [
       "clipboardWrite",
     ];
     const starterBrick = fromJS(starterBrickDefinitionFactory());
     starterBrickRegistry.register([starterBrick]);
-    modDefinition.extensionPoints[0].id = starterBrick.id;
+    modDefinition.extensionPoints[0]!.id = starterBrick.id;
 
     await expect(
       checkModDefinitionPermissions(modDefinition, [], {
@@ -63,7 +63,7 @@ describe("checkModDefinitionPermissions", () => {
       permissions: {
         origins: starterBrick.permissions.origins,
         permissions: [
-          ...starterBrick.permissions.permissions,
+          ...starterBrick.permissions.permissions!,
           "clipboardWrite",
         ],
       },
@@ -72,7 +72,7 @@ describe("checkModDefinitionPermissions", () => {
     expect(containsMock).toHaveBeenCalledExactlyOnceWith({
       origins: starterBrick.permissions.origins,
       // `clipboardWrite` is included in the declared permissions, but not in the call to contains
-      permissions: [...starterBrick.permissions.permissions],
+      permissions: [...starterBrick.permissions.permissions!],
     });
   });
 });
