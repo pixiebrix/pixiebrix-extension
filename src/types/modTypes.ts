@@ -17,9 +17,9 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type RegistryId, SemVerString } from "@/types/registryTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { Timestamp, type UUID } from "@/types/stringTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 /**
  * @deprecated
@@ -48,11 +48,16 @@ export type SharingSource = {
   organization?: Nullishable<Organization>;
 };
 
-export type ModStatus =
+export type ModActivationStatus =
   | "Active"
   | "Inactive"
   // The mod comes from a deployment that has been paused
   | "Paused";
+
+export type ModVersionStatus = {
+  hasUpdate: boolean;
+  activatedModVersion: SemVerString | null;
+};
 
 export type ModActionsEnabled = {
   showPublishToMarketplace: boolean;
@@ -75,9 +80,9 @@ export type ModViewItem = {
   description: string;
   sharingSource: SharingSource;
   updatedAt: Timestamp;
-  status: ModStatus;
+  status: ModActivationStatus;
   hasUpdate: boolean;
-  activatedModVersion: SemVerString;
+  activatedModVersion: SemVerString | null;
   /**
    * True if the source package is no longer available
    */

@@ -16,11 +16,11 @@
  */
 
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { type Mod, type ModStatus } from "@/types/modTypes";
+import { type Mod, type ModActivationStatus } from "@/types/modTypes";
 
-export default function buildGetModStatus(
+export default function buildGetModActivationStatus(
   activatedModComponents: ActivatedModComponent[],
-): (mod: Mod) => ModStatus {
+): (mod: Mod) => ModActivationStatus {
   return (mod: Mod) => {
     const activatedComponentsForMod = activatedModComponents.filter(
       ({ _recipe }) => _recipe?.id === mod.metadata.id,
