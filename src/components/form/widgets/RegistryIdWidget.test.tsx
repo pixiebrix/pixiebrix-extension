@@ -89,12 +89,12 @@ describe("RegistryIdWidget", () => {
 
     // Ensure all valid options are shown
     for (const organization of validOrganizations) {
-      expect(screen.getByText(organization.scope)).toBeVisible();
+      expect(screen.getByText(organization.scope!)).toBeVisible();
     }
 
     // Ensure invalid options are not shown
     for (const organization of invalidOrganizations) {
-      expect(screen.queryByText(organization.scope)).toBeNull();
+      expect(screen.queryByText(organization.scope!)).toBeNull();
     }
   });
 
@@ -106,9 +106,9 @@ describe("RegistryIdWidget", () => {
 
     const anotherOrganization = authState.organizations.find(
       (organization: { id: string; role: number }) =>
-        organization.id !== authState.organization.id &&
+        organization.id !== authState.organization!.id &&
         editorRoles.has(organization.role),
-    );
+    )!;
 
     const { getFormState } = render(<RegistryIdWidget name="testField" />, {
       initialValues: { testField: id },
@@ -121,7 +121,7 @@ describe("RegistryIdWidget", () => {
     expect(selected).toBeVisible();
     await userEvent.click(selected);
 
-    await userEvent.click(screen.getByText(anotherOrganization.scope));
+    await userEvent.click(screen.getByText(anotherOrganization.scope!));
 
     const newTestId = "new-identifier";
     const idInput = screen.getByTestId("registryId-testField-id");
@@ -155,7 +155,7 @@ describe("RegistryIdWidget", () => {
     await userEvent.click(screen.getByText(testUserScope));
 
     // eslint-disable-next-line testing-library/no-node-access  -- TODO: use better selector method
-    const reactSelectOptions = screen.getByRole("combobox").closest("div");
+    const reactSelectOptions = screen.getByRole("combobox").closest("div")!;
 
     // eslint-disable-next-line testing-library/no-node-access  -- TODO: use better selector method
     expect(reactSelectOptions.children).toHaveLength(1);

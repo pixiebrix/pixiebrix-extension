@@ -116,7 +116,7 @@ const renderWithValues = async (initialValues: FormikValues) => {
 beforeAll(() => {
   registerDefaultWidgets();
   findSanitizedIntegrationConfigMock.mockImplementation(
-    async (serviceId) => servicesLookup[serviceId],
+    async (serviceId) => servicesLookup[serviceId]!,
   );
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
 });

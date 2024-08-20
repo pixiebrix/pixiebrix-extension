@@ -72,8 +72,8 @@ const FormBuilderTemplate: ComponentStory<typeof Formik> = (args) => (
   <Provider store={settingsStore()}>
     <Formik
       validationSchema={schemaShape}
-      onSubmit={action("onSubmit")}
       {...args}
+      onSubmit={action("onSubmit")}
     >
       {({ handleSubmit }) => (
         <BootstrapForm noValidate onSubmit={handleSubmit}>
