@@ -21,7 +21,7 @@ import { idHasScope } from "@/utils/modUtils";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { isPackageEditorRole } from "@/auth/authUtils";
 
-export default function buildCanEditModScope(
+export default function buildGetCanEditModScope(
   userScope: string,
   organizations: AuthUserOrganization[],
 ): (mod: Mod) => boolean {

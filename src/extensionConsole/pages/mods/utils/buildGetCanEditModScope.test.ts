@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import buildCanEditModScope from "@/extensionConsole/pages/mods/utils/buildCanEditModScope";
+import buildGetCanEditModScope from "@/extensionConsole/pages/mods/utils/buildGetCanEditModScope";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
@@ -24,9 +24,9 @@ import { UserRole } from "@/types/contract";
 
 const userScope = "my-test-user";
 
-describe("buildCanEditModScope", () => {
+describe("buildGetCanEditModScope", () => {
   it("returns true for a mod with the user's scope", () => {
-    const canEditModScope = buildCanEditModScope(userScope, []);
+    const canEditModScope = buildGetCanEditModScope(userScope, []);
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory({
         id: validateRegistryId(`${userScope}/my-test-mod`),
@@ -37,7 +37,7 @@ describe("buildCanEditModScope", () => {
 
   it("returns true for a mod with a package editor role", () => {
     const organization = organizationStateFactory();
-    const canEditModScope = buildCanEditModScope(userScope, [organization]);
+    const canEditModScope = buildGetCanEditModScope(userScope, [organization]);
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory({
         id: validateRegistryId(`${organization.scope}/my-test-mod`),
@@ -50,7 +50,7 @@ describe("buildCanEditModScope", () => {
     const organization = organizationStateFactory({
       role: UserRole.member,
     });
-    const canEditModScope = buildCanEditModScope(userScope, [organization]);
+    const canEditModScope = buildGetCanEditModScope(userScope, [organization]);
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory({
         id: validateRegistryId(`${organization.scope}/my-test-mod`),
@@ -61,7 +61,7 @@ describe("buildCanEditModScope", () => {
 
   it("returns false when membership scope does not match mod scope", () => {
     const organization = organizationStateFactory();
-    const canEditModScope = buildCanEditModScope(userScope, [organization]);
+    const canEditModScope = buildGetCanEditModScope(userScope, [organization]);
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory({
         id: validateRegistryId("@some-other-scope/my-test-mod"),

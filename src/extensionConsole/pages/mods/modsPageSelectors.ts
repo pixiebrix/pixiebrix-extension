@@ -21,21 +21,13 @@ import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelector
 import { appApi } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import { type Mod, type ModViewItem } from "@/types/modTypes";
-import { uniqBy } from "lodash";
-import {
-  getSharingSource,
-  idHasScope,
-  isUnavailableMod,
-  mapModComponentToUnavailableMod,
-} from "@/utils/modUtils";
-import * as semver from "semver";
-import { assertNotNullish } from "@/utils/nullishUtils";
-import { MARKETPLACE_URL } from "@/urlConstants";
-import { getScopeAndId } from "@/utils/registryUtils";
-import { isPackageEditorRole } from "@/auth/authUtils";
 import { RESTRICTED_PREFIX } from "@/hooks/useFlags";
-import { SemVerString } from "@/types/registryTypes";
+import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
+import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
+import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
+import buildGetModSharingSource from "@/extensionConsole/pages/mods/utils/buildGetModSharingSource";
+import buildGetCanEditModScope from "@/extensionConsole/pages/mods/utils/buildGetCanEditModScope";
+import { buildModViewItems } from "@/extensionConsole/pages/mods/utils/buildModViewItems";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -51,232 +43,71 @@ export const selectActiveTab = ({ modsPage }: ModsPageRootState) =>
 export const selectSearchQuery = ({ modsPage }: ModsPageRootState) =>
   modsPage.searchQuery;
 
-export const selectModViewItems = createSelector(
+const selectActivatedModIds = createSelector(
+  selectActivatedModComponents,
+  (activatedModComponents) =>
+    new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+);
+
+export const selectModsList = createSelector(
   selectScope,
   selectActivatedModComponents,
   selectAllModDefinitions,
-  selectOrganizations,
-  appApi.endpoints.getMarketplaceListings.select(),
-  appApi.endpoints.getFeatureFlags.select(),
-  appApi.endpoints.getEditablePackages.select(),
-  (
-    userScope,
-    activatedModComponents,
-    { data: modDefinitions },
-    organizations,
-    { data: listings },
-    { data: featureFlags },
-    { data: editablePackages },
-    // eslint-disable-next-line max-params -- Needed for selector
-  ) => {
-    const mods: Mod[] = [];
+  selectActivatedModIds,
+  buildModsList,
+);
 
-    if (!modDefinitions || modDefinitions.length === 0) {
-      return [] as ModViewItem[];
+const selectGetModActivationStatus = createSelector(
+  selectActivatedModComponents,
+  buildGetModActivationStatus,
+);
+
+const selectGetModVersionStatus = createSelector(
+  selectActivatedModComponents,
+  buildGetModVersionStatus,
+);
+
+const selectModsPageUserPermissions = createSelector(
+  appApi.endpoints.getFeatureFlags.select(),
+  ({ data: featureFlags }) => {
+    // Don't allow if flags have not loaded
+    if (featureFlags == null) {
+      return {
+        canPublish: false,
+        canUninstall: false,
+        canEditInWorkshop: false,
+      };
     }
 
-    const activatedModIds = new Set(
-      activatedModComponents.map(({ _recipe }) => _recipe?.id),
-    );
-
-    const knownPersonalOrTeamModDefinitions = modDefinitions.filter(
-      ({ metadata: { id }, sharing }) =>
-        // Is personal mod
-        idHasScope(id, userScope) ||
-        // Is mod shared with the current user
-        sharing.organizations.length > 0 ||
-        // Is mod active, e.g. activated via marketplace
-        activatedModIds.has(id),
-    );
-
-    mods.push(...knownPersonalOrTeamModDefinitions);
-
-    const knownModIds = new Set(
-      knownPersonalOrTeamModDefinitions.map(({ metadata }) => metadata.id),
-    );
-
-    // Find mod components that were activated by a mod definitions that's no longer available to the user, e.g.,
-    // because it was deleted, or because the user no longer has access to it.
-    const unavailableModComponents = activatedModComponents.filter(
-      (modComponent) =>
-        modComponent._recipe != null &&
-        !knownModIds.has(modComponent._recipe.id),
-    );
-
-    const unavailableMods = uniqBy(
-      unavailableModComponents,
-      ({ _recipe }) => _recipe?.id,
-    ).map((modComponent) => mapModComponentToUnavailableMod(modComponent));
-
-    mods.push(...unavailableMods);
-
-    const getStatus = (mod: Mod) => {
-      if (activatedModIds.has(mod.metadata.id)) {
-        return "Active";
-      }
-
-      const deploymentMetadata = activatedModComponents.find(
-        (activatedModComponent) =>
-          activatedModComponent._recipe?.id === mod.metadata.id &&
-          activatedModComponent._deployment != null,
-      )?._deployment;
-
-      if (deploymentMetadata == null) {
-        return "Inactive";
-      }
-
-      if (
-        // Check for null/undefined to preserve backward compatability
-        // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
-        deploymentMetadata.active == null ||
-        deploymentMetadata.active
-      ) {
-        return "Active";
-      }
-
-      return "Paused";
+    return {
+      canPublish: featureFlags.includes("publish-to-marketplace"),
+      canUninstall: !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`),
+      canEditInWorkshop: featureFlags.includes("workshop"),
     };
-
-    const getHasUpdateAndActivatedVersion = (
-      mod: Mod,
-    ): {
-      hasUpdate: boolean;
-      activatedModVersion: SemVerString;
-    } => {
-      const activatedModComponent = activatedModComponents.find(
-        ({ _recipe }) => _recipe?.id === mod.metadata.id,
-      );
-      assertNotNullish(
-        activatedModComponent,
-        `Activated mod component not found for mod: ${mod.metadata.id}, something went wrong`,
-      );
-
-      const metadataFromActivatedModComponent = activatedModComponent?._recipe;
-      assertNotNullish(
-        metadataFromActivatedModComponent,
-        "Found activated component without mod metadata, something went wrong",
-      );
-
-      const {
-        version: activatedModVersion,
-        updated_at: activatedModUpdatedAt,
-      } = metadataFromActivatedModComponent;
-      assertNotNullish(
-        activatedModVersion,
-        `Activated mod version is null for mod: ${mod.metadata.id}, something went wrong`,
-      );
-      assertNotNullish(
-        activatedModUpdatedAt,
-        `Activated mod updated_at is null for mod: ${mod.metadata.id}, something went wrong`,
-      );
-
-      if (isUnavailableMod(mod)) {
-        // Unavailable mods are never update-able
-        return {
-          hasUpdate: false,
-          activatedModVersion,
-        };
-      }
-
-      assertNotNullish(
-        mod.metadata.version,
-        `Mod version is null for mod: ${mod.metadata.id}, something went wrong`,
-      );
-
-      if (semver.gt(mod.metadata.version, activatedModVersion)) {
-        return {
-          hasUpdate: true,
-          activatedModVersion,
-        };
-      }
-
-      if (semver.lt(mod.metadata.version, activatedModVersion)) {
-        return {
-          hasUpdate: false,
-          activatedModVersion,
-        };
-      }
-
-      // Versions are equal, compare updated_at
-      const modUpdatedDate = new Date(mod.updated_at);
-      const activatedComponentUpdatedDate = new Date(activatedModUpdatedAt);
-      return {
-        hasUpdate: modUpdatedDate > activatedComponentUpdatedDate,
-        activatedModVersion,
-      };
-    };
-
-    // Don't allow actions until flags have loaded
-    const canPublish =
-      featureFlags != null && featureFlags.includes("publish-to-marketplace");
-    const canUninstall =
-      featureFlags != null &&
-      !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`);
-    const canEditInWorkshop =
-      featureFlags != null && featureFlags.includes("workshop");
-
-    return mods.map<ModViewItem>((mod) => {
-      const { hasUpdate, activatedModVersion } =
-        getHasUpdateAndActivatedVersion(mod);
-
-      const listingId = listings?.[mod.metadata.id]?.id;
-      const marketplaceListingUrl = listingId
-        ? `${MARKETPLACE_URL}${listingId}/`
-        : null;
-      const isUnavailable = isUnavailableMod(mod);
-      const sharingSource = getSharingSource({
-        mod,
-        organizations,
-        userScope,
-        modComponents: activatedModComponents,
-      });
-      const isDeployment = sharingSource.type === "Deployment";
-      const isRestricted = isDeployment && !canUninstall;
-      const status = getStatus(mod);
-      const isActive = status === "Active" || status === "Paused";
-      const canEditModScope =
-        sharingSource.type === "Personal" ||
-        organizations.some((membership) => {
-          const { scope: packageScope } = getScopeAndId(mod.metadata.id);
-          return (
-            isPackageEditorRole(membership.role) &&
-            packageScope &&
-            membership.scope === packageScope
-          );
-        });
-      const packageMetadata = editablePackages?.find(
-        ({ name }) => name === mod.metadata.id,
-      );
-      const showEditInWorkshop =
-        canEditInWorkshop && packageMetadata != null && canEditModScope;
-      const showDelete =
-        !isActive && packageMetadata != null && canEditModScope;
-
-      return {
-        modId: mod.metadata.id,
-        editablePackageId: packageMetadata?.id ?? null,
-        marketplaceListingUrl,
-        name: mod.metadata.name,
-        description: mod.metadata.description ?? "",
-        sharingSource,
-        updatedAt: mod.updated_at,
-        status,
-        hasUpdate,
-        activatedModVersion,
-        isUnavailable,
-        modActions: {
-          showPublishToMarketplace:
-            canPublish && listingId == null && !isUnavailable && !isDeployment,
-          showViewDetails: marketplaceListingUrl != null,
-          showShareWithTeams: !isUnavailable && !isDeployment,
-          showViewLogs: isActive,
-          showEditInWorkshop,
-          showActivate: status === "Inactive",
-          showReactivate: isActive && !isRestricted && !isUnavailable,
-          showDeactivate: isActive && !isRestricted,
-          showDelete,
-        },
-      };
-    });
   },
+);
+
+const selectGetModSharingSource = createSelector(
+  selectScope,
+  selectOrganizations,
+  selectActivatedModComponents,
+  buildGetModSharingSource,
+);
+
+const selectCanEditModScope = createSelector(
+  selectScope,
+  selectOrganizations,
+  buildGetCanEditModScope,
+);
+
+export const selectModViewItems = createSelector(
+  selectModsList,
+  selectGetModActivationStatus,
+  selectGetModVersionStatus,
+  selectGetModSharingSource,
+  selectCanEditModScope,
+  selectModsPageUserPermissions,
+  appApi.endpoints.getMarketplaceListings.select(),
+  appApi.endpoints.getEditablePackages.select(),
+  buildModViewItems,
 );
