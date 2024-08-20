@@ -22,7 +22,7 @@ let milestoneId = 0;
 /**
  * Assume a string is a milestone for testing.
  */
-export function UNSAFE_assumeMilestone(milestone: string): Milestone {
+function UNSAFE_assumeMilestone(milestone: string): Milestone {
   return milestone as Milestone;
 }
 
