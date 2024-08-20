@@ -117,6 +117,23 @@ test("can activate a mod with built-in integration", async ({
   });
 });
 
+test("validates activating a mod with required integrations", async ({
+  page,
+  extensionId,
+  context,
+}) => {
+  const modId = "@e2e-testing/summarize-text-open-ai";
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
+
+  await expect(
+    modActivationPage.getByRole("heading", { name: "Activate Summarize Text" }),
+  ).toBeVisible();
+  await modActivationPage.clickActivateAndViewValidationError(
+    "Please select a configuration",
+  );
+});
+
 test("can activate a mod with a database", async ({ page, extensionId }) => {
   const modId = "@e2e-testing/shared-notes-sidebar";
   const note = `This is a test note ${Date.now()}`;
