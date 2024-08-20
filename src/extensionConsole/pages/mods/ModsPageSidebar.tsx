@@ -117,17 +117,16 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   const isFreemiumUser = !me?.primaryOrganization;
 
   const hasSomeModEngagement = modViewItems?.some((modViewItem) => {
-    if (modViewItem.sharing.source.type === "Personal") {
+    if (modViewItem.sharingSource.type === "Personal") {
       return true;
     }
 
-    if (onboardingModId === modViewItem.sharing.packageId) {
+    if (onboardingModId === modViewItem.modId) {
       return false;
     }
 
     const isStarterMod = starterBlueprints?.some(
-      (starterBlueprint) =>
-        modViewItem.sharing.packageId === starterBlueprint.metadata.id,
+      (starterBlueprint) => modViewItem.modId === starterBlueprint.metadata.id,
     );
 
     return modViewItem.status === "Active" && !isStarterMod;

@@ -24,7 +24,7 @@ import {
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import { mergeAsyncState } from "@/utils/asyncStateUtils";
 
-const RESTRICTED_PREFIX = "restricted";
+export const RESTRICTED_PREFIX = "restricted";
 
 // Flags controlled on backend at http://github.com/pixiebrix/pixiebrix-app/blob/f082ff5161ff79f696d9a8c35c755430e88fa4ab/api/serializers/account.py#L173-L173
 type RestrictedFeature =

@@ -34,6 +34,8 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { isPackageEditorRole } from "@/auth/authUtils";
+import { RESTRICTED_PREFIX } from "@/hooks/useFlags";
+import { SemVerString } from "@/types/registryTypes";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -96,7 +98,9 @@ export const selectModViewItems = createSelector(
     // Find mod components that were activated by a mod definitions that's no longer available to the user, e.g.,
     // because it was deleted, or because the user no longer has access to it.
     const unavailableModComponents = activatedModComponents.filter(
-      (modComponents) => !knownModIds.has(modComponents._recipe?.id),
+      (modComponent) =>
+        modComponent._recipe != null &&
+        !knownModIds.has(modComponent._recipe.id),
     );
 
     const unavailableMods = uniqBy(
@@ -111,21 +115,21 @@ export const selectModViewItems = createSelector(
         return "Active";
       }
 
-      const { _deployment } = activatedModComponents.find(
+      const deploymentMetadata = activatedModComponents.find(
         (activatedModComponent) =>
           activatedModComponent._recipe?.id === mod.metadata.id &&
           activatedModComponent._deployment != null,
-      );
+      )?._deployment;
 
-      if (!_deployment) {
+      if (deploymentMetadata == null) {
         return "Inactive";
       }
 
       if (
         // Check for null/undefined to preserve backward compatability
         // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
-        _deployment?.active == null ||
-        _deployment.active
+        deploymentMetadata.active == null ||
+        deploymentMetadata.active
       ) {
         return "Active";
       }
@@ -137,21 +141,34 @@ export const selectModViewItems = createSelector(
       mod: Mod,
     ): {
       hasUpdate: boolean;
-      activatedModVersion: string;
+      activatedModVersion: SemVerString;
     } => {
-      const metadataFromActivatedModComponent = activatedModComponents.find(
+      const activatedModComponent = activatedModComponents.find(
         ({ _recipe }) => _recipe?.id === mod.metadata.id,
-      )?._recipe;
+      );
+      assertNotNullish(
+        activatedModComponent,
+        `Activated mod component not found for mod: ${mod.metadata.id}, something went wrong`,
+      );
 
+      const metadataFromActivatedModComponent = activatedModComponent?._recipe;
       assertNotNullish(
         metadataFromActivatedModComponent,
-        "Found component without mod metadata!",
+        "Found activated component without mod metadata, something went wrong",
       );
 
       const {
         version: activatedModVersion,
         updated_at: activatedModUpdatedAt,
       } = metadataFromActivatedModComponent;
+      assertNotNullish(
+        activatedModVersion,
+        `Activated mod version is null for mod: ${mod.metadata.id}, something went wrong`,
+      );
+      assertNotNullish(
+        activatedModUpdatedAt,
+        `Activated mod updated_at is null for mod: ${mod.metadata.id}, something went wrong`,
+      );
 
       if (isUnavailableMod(mod)) {
         // Unavailable mods are never update-able
@@ -160,6 +177,11 @@ export const selectModViewItems = createSelector(
           activatedModVersion,
         };
       }
+
+      assertNotNullish(
+        mod.metadata.version,
+        `Mod version is null for mod: ${mod.metadata.id}, something went wrong`,
+      );
 
       if (semver.gt(mod.metadata.version, activatedModVersion)) {
         return {
@@ -186,10 +208,12 @@ export const selectModViewItems = createSelector(
 
     // Don't allow actions until flags have loaded
     const canPublish =
-      featureFlags && featureFlags.includes("publish-to-marketplace");
+      featureFlags != null && featureFlags.includes("publish-to-marketplace");
     const canUninstall =
-      featureFlags && !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`);
-    const canEditInWorkshop = featureFlags && featureFlags.includes("workshop");
+      featureFlags != null &&
+      !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`);
+    const canEditInWorkshop =
+      featureFlags != null && featureFlags.includes("workshop");
 
     return mods.map<ModViewItem>((mod) => {
       const { hasUpdate, activatedModVersion } =
@@ -233,7 +257,7 @@ export const selectModViewItems = createSelector(
         editablePackageId: packageMetadata?.id ?? null,
         marketplaceListingUrl,
         name: mod.metadata.name,
-        description: mod.metadata.description,
+        description: mod.metadata.description ?? "",
         sharingSource,
         updatedAt: mod.updated_at,
         status,

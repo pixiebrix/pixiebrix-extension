@@ -60,6 +60,7 @@ import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBric
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
 import { validateRegistryId } from "@/types/helpers";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 /**
  * Returns a synthetic mod id for a standalone mod component for use in the runtime
@@ -171,8 +172,11 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
   return "isStub" in mod && mod.isStub;
 }
 
-export function idHasScope(id: RegistryId, scope?: string): boolean {
-  return scope && id.startsWith(scope + "/");
+export function idHasScope(
+  id: RegistryId,
+  scope: Nullishable<string>,
+): boolean {
+  return scope != null && id.startsWith(scope + "/");
 }
 
 export function getSharingSource({
@@ -342,11 +346,18 @@ export function normalizeModDefinition<
 export function mapModComponentToUnavailableMod(
   modComponent: ModComponentBase,
 ): UnavailableMod {
+  assertNotNullish(
+    modComponent._recipe,
+    "modComponent._recipe is nullish, can't map to unavailable mod, something went wrong, this shouldn't happen",
+  );
   return {
     metadata: modComponent._recipe,
     kind: DefinitionKinds.MOD,
     isStub: true,
-    updated_at: modComponent._recipe.updated_at,
-    sharing: modComponent._recipe.sharing,
+    updated_at: modComponent._recipe.updated_at ?? nowTimestamp(),
+    sharing: modComponent._recipe.sharing ?? {
+      public: false,
+      organizations: [],
+    },
   };
 }

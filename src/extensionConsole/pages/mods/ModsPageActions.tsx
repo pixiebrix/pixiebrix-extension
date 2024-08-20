@@ -42,6 +42,7 @@ import useUserAction from "@/hooks/useUserAction";
 import { useDeletePackageMutation } from "@/data/service/api";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
@@ -95,6 +96,11 @@ const ModsPageActions: React.FunctionComponent<{
       if (!isConfirmed) {
         throw new CancelError();
       }
+
+      assertNotNullish(
+        editablePackageId,
+        `Editable package id is missing for mod being deleted: ${modId}, something went wrong`,
+      );
 
       await deleteModPackage({ id: editablePackageId }).unwrap();
     },

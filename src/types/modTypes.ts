@@ -17,9 +17,9 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type RegistryId } from "@/types/registryTypes";
+import { type RegistryId, SemVerString } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { type UUID } from "@/types/stringTypes";
+import { Timestamp, type UUID } from "@/types/stringTypes";
 
 /**
  * @deprecated
@@ -74,10 +74,10 @@ export type ModViewItem = {
   name: string;
   description: string;
   sharingSource: SharingSource;
-  updatedAt: string;
+  updatedAt: Timestamp;
   status: ModStatus;
   hasUpdate: boolean;
-  activatedModVersion: string;
+  activatedModVersion: SemVerString;
   /**
    * True if the source package is no longer available
    */
