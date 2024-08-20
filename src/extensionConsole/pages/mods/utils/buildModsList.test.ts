@@ -44,21 +44,36 @@ describe("buildModsList", () => {
     const allModDefinitions: ModDefinition[] = [];
     const activatedModComponents: ActivatedModComponent[] = [];
 
-    // Not activated
-    const personalModMetadata = modMetadataFactory({
-      id: validateRegistryId(`${userScope}/my-test-mod`),
+    // Personal, inactive
+    const inactivePersonalModMetadata = modMetadataFactory({
+      id: validateRegistryId(`${userScope}/my-inactive-test-mod`),
     });
     allModDefinitions.push(
       modDefinitionFactory({
-        metadata: personalModMetadata,
+        metadata: inactivePersonalModMetadata,
       }),
     );
 
-    // Not activated
-    const sharedModMetadata = modMetadataFactory();
+    // Personal, active
+    const activePersonalModMetadata = modMetadataFactory({
+      id: validateRegistryId(`${userScope}/my-inactive-test-mod`),
+    });
     allModDefinitions.push(
       modDefinitionFactory({
-        metadata: sharedModMetadata,
+        metadata: activePersonalModMetadata,
+      }),
+    );
+    activatedModComponents.push(
+      activatedModComponentFactory({
+        _recipe: activePersonalModMetadata,
+      }),
+    );
+
+    // Team shared, inactive
+    const inactiveSharedModMetadata = modMetadataFactory();
+    allModDefinitions.push(
+      modDefinitionFactory({
+        metadata: inactiveSharedModMetadata,
         sharing: {
           public: true,
           organizations: [autoUUIDSequence()],
@@ -66,34 +81,61 @@ describe("buildModsList", () => {
       }),
     );
 
-    const activatedModMetadata = modMetadataFactory();
+    // Team shared, active
+    const activeSharedModMetadata = modMetadataFactory();
     allModDefinitions.push(
       modDefinitionFactory({
-        metadata: activatedModMetadata,
+        metadata: activeSharedModMetadata,
+        sharing: {
+          public: true,
+          organizations: [autoUUIDSequence()],
+        },
       }),
     );
     activatedModComponents.push(
       activatedModComponentFactory({
-        _recipe: activatedModMetadata,
+        _recipe: activeSharedModMetadata,
       }),
       activatedModComponentFactory({
-        _recipe: activatedModMetadata,
+        _recipe: activeSharedModMetadata,
       }),
       activatedModComponentFactory({
-        _recipe: activatedModMetadata,
+        _recipe: activeSharedModMetadata,
+      }),
+      activatedModComponentFactory({
+        _recipe: activeSharedModMetadata,
       }),
     );
 
-    // Not activated
-    const marketplaceModMetadata = modMetadataFactory({
-      sharing: {
-        public: true,
-        organizations: [],
-      },
-    });
+    // Public mod, inactive -- should be filtered out
+    const inactivePublicModMetadata = modMetadataFactory();
     allModDefinitions.push(
       modDefinitionFactory({
-        metadata: marketplaceModMetadata,
+        metadata: inactivePublicModMetadata,
+        sharing: {
+          public: true,
+          organizations: [],
+        },
+      }),
+    );
+
+    // Public mod, active
+    const activePublicModMetadata = modMetadataFactory();
+    allModDefinitions.push(
+      modDefinitionFactory({
+        metadata: activePublicModMetadata,
+        sharing: {
+          public: true,
+          organizations: [],
+        },
+      }),
+    );
+    activatedModComponents.push(
+      activatedModComponentFactory({
+        _recipe: activePublicModMetadata,
+      }),
+      activatedModComponentFactory({
+        _recipe: activePublicModMetadata,
       }),
     );
 
@@ -107,10 +149,13 @@ describe("buildModsList", () => {
     });
 
     expect(result).toStrictEqual([
-      expect.objectContaining({ metadata: personalModMetadata }),
-      expect.objectContaining({ metadata: sharedModMetadata }),
-      expect.objectContaining({ metadata: activatedModMetadata }),
-      // Marketplace mod is filtered out
+      expect.objectContaining({ metadata: inactivePersonalModMetadata }),
+      expect.objectContaining({ metadata: activePersonalModMetadata }),
+      expect.objectContaining({ metadata: inactiveSharedModMetadata }),
+      expect.objectContaining({ metadata: activeSharedModMetadata }),
+      // Public mods that are not activated should be filtered out
+      // expect.objectContaining({ metadata: inactivePublicModMetadata }),
+      expect.objectContaining({ metadata: activePublicModMetadata }),
     ]);
   });
 
