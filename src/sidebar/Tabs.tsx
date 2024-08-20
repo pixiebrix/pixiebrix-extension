@@ -46,18 +46,20 @@ import {
   selectClosedTabs,
   selectModComponentFromEventKey,
   selectSidebarActiveTabKey,
+  selectSidebarEntries,
   selectSidebarForms,
   selectSidebarModActivationPanel,
   selectSidebarPanels,
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
+  selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
-import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
+import useHideEmptySidebarEffect from "@/sidebar/hooks/useHideEmptySidebarEffect";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
@@ -122,6 +124,28 @@ const TabWithDivider = ({
   );
 };
 
+function useSidebarTelemetryMountEffect(): void {
+  const activeKey = useSelector(selectSidebarActiveTabKey);
+  const getModComponentFromEventKey = useSelector(
+    selectModComponentFromEventKey,
+  );
+  const visiblePanelCount = useSelector(selectVisiblePanelCount);
+  const sidebarEntries = useSelector(selectSidebarEntries);
+
+  useOnMountOnly(() => {
+    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
+      ...selectEventData(getModComponentFromEventKey(activeKey)),
+      initialLoad: true,
+      // Include metadata to help diagnose bugs during onboarding/welcome page. On welcome page:
+      // 1. Inbound via mod activation: should show mod activation panel (as active) and the panel for the mod, if any
+      // 2. Other: should show mod launcher
+      activeKey,
+      visiblePanelCount,
+      sidebarEntryCount: sidebarEntries.length,
+    });
+  });
+}
+
 const Tabs: React.FC = () => {
   const dispatch = useDispatch<AsyncDispatch>();
   const activeKey = useSelector(selectSidebarActiveTabKey);
@@ -130,7 +154,9 @@ const Tabs: React.FC = () => {
   const temporaryPanels = useSelector(selectSidebarTemporaryPanels);
   const modActivationPanel = useSelector(selectSidebarModActivationPanel);
   const staticPanels = useSelector(selectSidebarStaticPanels);
-  const getExtensionFromEventKey = useSelector(selectModComponentFromEventKey);
+  const getModComponentFromEventKey = useSelector(
+    selectModComponentFromEventKey,
+  );
   const closedTabs = useSelector(selectClosedTabs);
 
   const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
@@ -145,7 +171,7 @@ const Tabs: React.FC = () => {
     }
 
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
-      ...selectEventData(getExtensionFromEventKey(eventKey)),
+      ...selectEventData(getModComponentFromEventKey(eventKey)),
       initialLoad: false,
       source: "tabClick",
     });
@@ -154,7 +180,7 @@ const Tabs: React.FC = () => {
 
   const onOpenModLauncher = () => {
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
-      ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
+      ...selectEventData(getModComponentFromEventKey(modLauncherEventKey)),
       initialLoad: false,
       source: "modLauncher open button",
     });
@@ -186,15 +212,10 @@ const Tabs: React.FC = () => {
     }
   };
 
-  // Other views are handled by onSelect
-  useOnMountOnly(() => {
-    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
-      ...selectEventData(getExtensionFromEventKey(activeKey)),
-      initialLoad: true,
-    });
-  });
+  // Other telemetry are handled by onSelect
+  useSidebarTelemetryMountEffect();
 
-  useHideEmptySidebar();
+  useHideEmptySidebarEffect();
 
   const isPanelActive = (key: SidebarEntry) =>
     eventKeyForEntry(key) === activeKey;

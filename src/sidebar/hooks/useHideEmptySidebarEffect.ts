@@ -28,7 +28,7 @@ import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.
  */
-export const useHideEmptySidebar = () => {
+function useHideEmptySidebarEffect(): void {
   const visiblePanelCount = useSelector(selectVisiblePanelCount);
   const closedTabs = useSelector(selectClosedTabs);
 
@@ -56,4 +56,6 @@ export const useHideEmptySidebar = () => {
     },
     [visiblePanelCount],
   );
-};
+}
+
+export default useHideEmptySidebarEffect;
