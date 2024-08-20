@@ -4,6 +4,14 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/documentBuilder/hooks/useMoveElement.test.ts",
+    "./pageEditor/documentBuilder/preview/DocumentPreview.test.tsx",
+    "./pageEditor/documentBuilder/preview/ElementPreview.test.tsx",
+    "./pageEditor/fields/FormModalOptions.test.tsx",
+    "./pageEditor/fields/FormRendererOptions.test.tsx",
+    "./pageEditor/fields/PipelineToggleField.test.tsx",
+    "./pageEditor/fields/UrlMatchPatternField.stories.tsx",
+    "./pageEditor/fields/UrlPatternField.stories.tsx",
     "./pageEditor/panes/save/saveHelpers.test.ts",
     "./pageEditor/hooks/useBuildAndValidateMod.test.ts",
     "./pageEditor/hooks/useCheckModStarterBrickInvariants.test.ts",
