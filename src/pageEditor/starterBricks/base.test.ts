@@ -53,7 +53,7 @@ describe("removeEmptyValues()", () => {
   test("convert undefined to null in expression values", () => {
     expect(
       removeEmptyValues({
-        foo: toExpression("nunjucks", undefined),
+        foo: toExpression("nunjucks", undefined as unknown as null),
       }),
     ).toStrictEqual({
       foo: toExpression("nunjucks", null),

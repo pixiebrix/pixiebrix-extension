@@ -112,6 +112,8 @@ describe("sidebarSlice.addTemporaryPanel", () => {
       temporaryPanels: [existingPanel, otherExistingPanel],
     };
 
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment -- Flaky error
+    // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite"
     const store = configureStore({
       reducer: { sidebar: sidebarSlice.reducer },
       preloadedState: { sidebar: initialState },
@@ -609,23 +611,23 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
         modComponentId: extensionId,
       }),
     });
-    const nullModId = sidebarEntryFactory("form", {
+    const undefinedModId = sidebarEntryFactory("form", {
       modComponentRef: modComponentRefFactory({
         modComponentId: extensionId,
-        modId: null,
+        modId: undefined,
       }),
     });
     const newPanel = sidebarEntryFactory("temporaryPanel", {
       modComponentRef: modComponentRefFactory({
         modComponentId: extensionId,
-        modId: null,
+        modId: undefined,
       }),
     });
 
     const state = {
       ...sidebarSlice.getInitialState(),
       activeKey: eventKeyForEntry(newPanel),
-      forms: [firstFormPanel, nullModId],
+      forms: [firstFormPanel, undefinedModId],
       panels: [originalPanel],
       temporaryPanels: [],
     } as SidebarState;

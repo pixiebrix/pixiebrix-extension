@@ -34,7 +34,7 @@ bricksRegistry.register([echoBrick]);
 const { formState, records } = formStateWithTraceDataFactory();
 const renderDataPanel = () => {
   const modComponentId = formState.uuid;
-  const { instanceId } = formState.modComponent.brickPipeline[1];
+  const { instanceId } = formState.modComponent.brickPipeline[1]!;
 
   return render(<BrickDataPanel />, {
     initialValues: formState,
@@ -47,7 +47,7 @@ const renderDataPanel = () => {
           records,
         }),
       );
-      dispatch(editorActions.setActiveNodeId(instanceId));
+      dispatch(editorActions.setActiveNodeId(instanceId!));
       dispatch(
         editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Input),
       );
@@ -76,7 +76,7 @@ describe("BrickDataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Input,
-      brickId: formState.modComponent.brickPipeline[1].id,
+      brickId: formState.modComponent.brickPipeline[1]!.id,
       modId: undefined,
     });
 
@@ -95,7 +95,7 @@ describe("BrickDataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledOnce();
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Comments,
-      brickId: formState.modComponent.brickPipeline[1].id,
+      brickId: formState.modComponent.brickPipeline[1]!.id,
       modId: undefined,
     });
   });
