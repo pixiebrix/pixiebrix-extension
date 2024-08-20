@@ -28,7 +28,7 @@ describe("StarterBrickDataPanel", () => {
   it("renders with form state and trace data", async () => {
     const { formState, records } = formStateWithTraceDataFactory();
     const modComponentId = formState.uuid;
-    const { instanceId } = formState.modComponent.brickPipeline[0];
+    const { instanceId } = formState.modComponent.brickPipeline[0]!;
     const { asFragment } = render(<StarterBrickDataPanel />, {
       initialValues: formState,
       setupRedux(dispatch) {
@@ -40,7 +40,7 @@ describe("StarterBrickDataPanel", () => {
             records,
           }),
         );
-        dispatch(editorActions.setActiveNodeId(instanceId));
+        dispatch(editorActions.setActiveNodeId(instanceId!));
       },
     });
     await waitForEffect();

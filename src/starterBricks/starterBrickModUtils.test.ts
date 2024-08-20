@@ -72,7 +72,9 @@ describe("starterBrickModUtils", () => {
     });
 
     test("returns non-null values", async () => {
-      starterBrickRegistryLookupMock.mockResolvedValue(null);
+      starterBrickRegistryLookupMock.mockResolvedValue(
+        null as unknown as StarterBrick,
+      );
 
       const result = await getContainedStarterBrickTypes(
         defaultModDefinitionFactory({
@@ -85,7 +87,9 @@ describe("starterBrickModUtils", () => {
     });
 
     test("inner definition not found", async () => {
-      starterBrickRegistryLookupMock.mockResolvedValue(null);
+      starterBrickRegistryLookupMock.mockResolvedValue(
+        null as unknown as StarterBrick,
+      );
 
       const result = await getContainedStarterBrickTypes(
         defaultModDefinitionFactory({

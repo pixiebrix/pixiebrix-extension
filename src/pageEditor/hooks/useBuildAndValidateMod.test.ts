@@ -55,7 +55,7 @@ describe("useBuildAndValidateMod", () => {
     modDefinition: UnsavedModDefinition,
   ): StarterBrickDefinitionLike[] {
     return modDefinition.extensionPoints.map(({ id }) => {
-      const definition = modDefinition.definitions[id]
+      const definition = modDefinition.definitions![id]!
         .definition as StarterBrickDefinitionProp;
       return {
         apiVersion: modDefinition.apiVersion,
@@ -112,12 +112,12 @@ describe("useBuildAndValidateMod", () => {
         const starterBricks = selectStarterBricks(modDefinition);
 
         for (let i = 0; i < dirtyModComponentCount; i++) {
-          const starterBrick = starterBricks[i];
+          const starterBrick = starterBricks[i]!;
           // Mock this lookup for the adapter call that follows
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
           // Mod was activated, so get the mod component from state
-          const modComponent = state.activatedModComponents[i];
+          const modComponent = state.activatedModComponents[i]!;
 
           // Load the adapter for this mod component
           const { fromModComponent } = adapter(starterBrick.definition.type);
