@@ -99,7 +99,7 @@ describe("replaceModComponent round trip", () => {
   test("single mod component with versioned starter brick", async () => {
     const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id!,
     })();
 
     const state = modComponentSlice.reducer(
@@ -115,7 +115,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        state.activatedModComponents[0],
+        state.activatedModComponents[0]!,
       );
     modComponentFormState.label = "New Label";
 
@@ -130,7 +130,7 @@ describe("replaceModComponent round trip", () => {
     expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         castDraft(draft.metadata).id = newId;
-        draft.extensionPoints[0].label = "New Label";
+        draft.extensionPoints[0]!.label = "New Label";
       }),
     );
   });
@@ -139,11 +139,11 @@ describe("replaceModComponent round trip", () => {
     const starterBrick = starterBrickDefinitionFactory();
 
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id!,
     })();
 
     modDefinition.extensionPoints.push({
-      ...modDefinition.extensionPoints[0],
+      ...modDefinition.extensionPoints[0]!,
       label: "Other Mod Component",
     });
 
@@ -160,7 +160,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        state.activatedModComponents[0],
+        state.activatedModComponents[0]!,
       );
     modComponentFormState.label = "New Label";
 
@@ -175,7 +175,7 @@ describe("replaceModComponent round trip", () => {
     expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         castDraft(draft.metadata).id = newId;
-        draft.extensionPoints[0].label = "New Label";
+        draft.extensionPoints[0]!.label = "New Label";
       }),
     );
   });
@@ -193,9 +193,11 @@ describe("replaceModComponent round trip", () => {
     );
 
     jest.mocked(lookupStarterBrick).mockResolvedValue({
-      ...modDefinition.definitions.extensionPoint,
+      ...modDefinition.definitions!.extensionPoint!,
       metadata: {
-        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(
+          modDefinition.definitions!.extensionPoint!,
+        ),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -203,7 +205,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        state.activatedModComponents[0],
+        state.activatedModComponents[0]!,
       );
 
     modComponentFormState.label = "New Label";
@@ -219,7 +221,7 @@ describe("replaceModComponent round trip", () => {
 
     const target = produce(modDefinition, (draft) => {
       castDraft(draft.metadata).id = newId;
-      draft.extensionPoints[0].label = "New Label";
+      draft.extensionPoints[0]!.label = "New Label";
     });
 
     expect(normalizeModDefinition(newMod)).toStrictEqual(
@@ -229,8 +231,8 @@ describe("replaceModComponent round trip", () => {
 
   test("remove excess starter brick definitions", async () => {
     const modDefinition = innerStarterBrickModDefinitionFactory()();
-    const originalId = Object.keys(modDefinition.definitions)[0];
-    modDefinition.definitions.excess = starterBrickInnerDefinitionFactory();
+    const originalId = Object.keys(modDefinition.definitions!)[0];
+    modDefinition.definitions!.excess = starterBrickInnerDefinitionFactory();
 
     const state = modComponentSlice.reducer(
       { activatedModComponents: [] },
@@ -242,9 +244,11 @@ describe("replaceModComponent round trip", () => {
     );
 
     jest.mocked(lookupStarterBrick).mockResolvedValue({
-      ...modDefinition.definitions.extensionPoint,
+      ...modDefinition.definitions!.extensionPoint!,
       metadata: {
-        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(
+          modDefinition.definitions!.extensionPoint!,
+        ),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -252,7 +256,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        state.activatedModComponents[0],
+        state.activatedModComponents[0]!,
       );
 
     modComponentFormState.label = "New Label";
@@ -265,14 +269,14 @@ describe("replaceModComponent round trip", () => {
     );
 
     // Expect the excess definition was removed
-    expect(Object.keys(newMod.definitions)).toStrictEqual([originalId]);
+    expect(Object.keys(newMod.definitions!)).toStrictEqual([originalId]);
   });
 
   test("generate fresh identifier definition changed", async () => {
     const modDefinition = innerStarterBrickModDefinitionFactory()();
 
     modDefinition.extensionPoints.push({
-      ...modDefinition.extensionPoints[0],
+      ...modDefinition.extensionPoints[0]!,
       label: "Other Mod Component",
     });
 
@@ -286,9 +290,11 @@ describe("replaceModComponent round trip", () => {
     );
 
     jest.mocked(lookupStarterBrick).mockResolvedValue({
-      ...modDefinition.definitions.extensionPoint,
+      ...modDefinition.definitions!.extensionPoint!,
       metadata: {
-        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(
+          modDefinition.definitions!.extensionPoint!,
+        ),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -296,7 +302,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        state.activatedModComponents[0],
+        state.activatedModComponents[0]!,
       );
 
     modComponentFormState.label = "New Label";
@@ -315,14 +321,14 @@ describe("replaceModComponent round trip", () => {
     const target = produce(modDefinition, (draft) => {
       castDraft(draft.metadata).id = newId;
 
-      draft.definitions.extensionPoint2 = cloneDeep(
-        modDefinition.definitions.extensionPoint,
+      draft.definitions!.extensionPoint2 = cloneDeep(
+        modDefinition.definitions!.extensionPoint!,
       );
       (
-        draft.definitions.extensionPoint2.definition as ButtonDefinition
+        draft.definitions!.extensionPoint2.definition as ButtonDefinition
       ).template = newTemplate;
-      draft.extensionPoints[0].id = "extensionPoint2" as InnerDefinitionRef;
-      draft.extensionPoints[0].label = "New Label";
+      draft.extensionPoints[0]!.id = "extensionPoint2" as InnerDefinitionRef;
+      draft.extensionPoints[0]!.label = "New Label";
     });
 
     expect(normalizeModDefinition(newMod)).toStrictEqual(
@@ -334,7 +340,7 @@ describe("replaceModComponent round trip", () => {
     const modDefinition = innerStarterBrickModDefinitionFactory()();
 
     modDefinition.extensionPoints.push({
-      ...modDefinition.extensionPoints[0],
+      ...modDefinition.extensionPoints[0]!,
       label: "Other Mod Component",
     });
 
@@ -348,9 +354,11 @@ describe("replaceModComponent round trip", () => {
     );
 
     jest.mocked(lookupStarterBrick).mockResolvedValue({
-      ...modDefinition.definitions.extensionPoint,
+      ...modDefinition.definitions!.extensionPoint!,
       metadata: {
-        id: calculateInnerRegistryId(modDefinition.definitions.extensionPoint),
+        id: calculateInnerRegistryId(
+          modDefinition.definitions!.extensionPoint!,
+        ),
         name: "Internal Starter Brick",
         version: normalizeSemVerString("1.0.0"),
       },
@@ -358,7 +366,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        state.activatedModComponents[0],
+        state.activatedModComponents[0]!,
       );
 
     modComponentFormState.label = "New Label";
@@ -375,7 +383,7 @@ describe("replaceModComponent round trip", () => {
     expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         castDraft(draft.metadata).id = newId;
-        draft.extensionPoints[0].label = "New Label";
+        draft.extensionPoints[0]!.label = "New Label";
       }),
     );
   });
@@ -385,7 +393,7 @@ describe("replaceModComponent round trip", () => {
       apiVersion: "v2",
     });
 
-    const starterBrickId = starterBrick.metadata.id;
+    const starterBrickId = starterBrick.metadata!.id!;
     const modDefinition = innerStarterBrickModDefinitionFactory({
       extensionPointRef: starterBrickId as any,
     })({
@@ -408,7 +416,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent({
-        ...state.activatedModComponents[0],
+        ...state.activatedModComponents[0]!,
         apiVersion: "v3",
       });
     modComponentFormState.label = "New Label";
@@ -425,8 +433,8 @@ describe("replaceModComponent round trip", () => {
       produce(modDefinition, (draft) => {
         draft.apiVersion = "v3";
         castDraft(draft.metadata).id = newId;
-        draft.definitions[starterBrick.metadata.id].apiVersion = "v3";
-        draft.extensionPoints[0].label = "New Label";
+        draft.definitions![starterBrick.metadata!.id!]!.apiVersion = "v3";
+        draft.extensionPoints[0]!.label = "New Label";
       }),
     );
   });
@@ -434,12 +442,12 @@ describe("replaceModComponent round trip", () => {
   test("throws when API version mismatch and cannot update mod", async () => {
     const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id!,
     })({
       apiVersion: "v2",
       extensionPoints: [
         modComponentDefinitionFactory({
-          id: starterBrick.metadata.id,
+          id: starterBrick.metadata!.id!,
         }),
         modComponentDefinitionFactory(),
       ],
@@ -458,7 +466,7 @@ describe("replaceModComponent round trip", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent({
-        ...state.activatedModComponents[0],
+        ...state.activatedModComponents[0]!,
         apiVersion: "v3",
       });
     modComponentFormState.label = "New Label";
@@ -495,7 +503,7 @@ describe("mod options", () => {
 
     const modComponentFormState =
       await brickModComponentAdapter.fromModComponent(
-        modComponentState.activatedModComponents[0],
+        modComponentState.activatedModComponents[0]!,
       );
 
     modComponentFormState.optionsDefinition = modComponentModOptions;
@@ -512,7 +520,7 @@ describe("mod options", () => {
     const emptyOptions = emptyModOptionsDefinitionFactory();
 
     const updatedModDefinition = await runReplaceModComponent(
-      undefined,
+      {} as ModOptionsDefinition,
       emptyOptions,
     );
 
@@ -536,7 +544,7 @@ describe("mod options", () => {
     };
 
     const updatedModDefinition = await runReplaceModComponent(
-      undefined,
+      {} as ModOptionsDefinition,
       modOptionsDefinition,
     );
 
@@ -609,7 +617,7 @@ function selectStarterBricks(
   modDefinition: UnsavedModDefinition,
 ): StarterBrickDefinitionLike[] {
   return modDefinition.extensionPoints.map(({ id }) => {
-    const definition = modDefinition.definitions[id]
+    const definition = modDefinition.definitions![id]!
       .definition as StarterBrickDefinitionProp;
     return {
       apiVersion: modDefinition.apiVersion,
@@ -628,13 +636,13 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: null,
+      sourceMod: undefined,
       cleanModComponents: [modComponent],
       dirtyModComponentFormStates: [],
     });
 
     expect(newMod.extensionPoints).toHaveLength(1);
-    expect(newMod.extensionPoints[0].id).toBe(modComponent.extensionPointId);
+    expect(newMod.extensionPoints[0]!.id).toBe(modComponent.extensionPointId);
   });
 
   test("Dirty mod component with integrations", async () => {
@@ -649,7 +657,7 @@ describe("buildNewMod", () => {
       integrationDependencies: [
         integrationDependencyFactory({ integrationId, outputKey }),
       ],
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id!,
     }) as SerializedModComponent;
 
     const { fromModComponent } = adapter(starterBrick.definition.type);
@@ -664,14 +672,14 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: null,
+      sourceMod: undefined,
       cleanModComponents: [],
       dirtyModComponentFormStates: [modComponentFormState],
     });
 
     expect(newMod.extensionPoints).toHaveLength(1);
-    expect(newMod.extensionPoints[0].id).toBe(modComponent.extensionPointId);
-    expect(newMod.extensionPoints[0].services).toStrictEqual({
+    expect(newMod.extensionPoints[0]!.id).toBe(modComponent.extensionPointId);
+    expect(newMod.extensionPoints[0]!.services).toStrictEqual({
       [outputKey]: integrationId,
     });
   });
@@ -702,18 +710,18 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: null,
+      sourceMod: undefined,
       cleanModComponents: modComponents,
       dirtyModComponentFormStates: [],
     });
 
-    expect(Object.keys(newMod.definitions)).toStrictEqual([
+    expect(Object.keys(newMod.definitions!)).toStrictEqual([
       "extensionPoint",
       "extensionPoint2",
     ]);
     expect(newMod.extensionPoints).toHaveLength(2);
-    expect(newMod.extensionPoints[0].id).toBe("extensionPoint");
-    expect(newMod.extensionPoints[1].id).toBe("extensionPoint2");
+    expect(newMod.extensionPoints[0]!.id).toBe("extensionPoint");
+    expect(newMod.extensionPoints[1]!.id).toBe("extensionPoint2");
   });
 
   test("Delete excess starter brick definitions", async () => {
@@ -741,12 +749,12 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: null,
+      sourceMod: undefined,
       cleanModComponents: modComponents,
       dirtyModComponentFormStates: [],
     });
 
-    expect(Object.keys(newMod.definitions)).toStrictEqual([
+    expect(Object.keys(newMod.definitions!)).toStrictEqual([
       "extensionPoint",
       "extensionPoint2",
     ]);
@@ -775,12 +783,12 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: null,
+      sourceMod: undefined,
       cleanModComponents: modComponents,
       dirtyModComponentFormStates: [],
     });
 
-    expect(Object.keys(newMod.definitions)).toStrictEqual(["extensionPoint"]);
+    expect(Object.keys(newMod.definitions!)).toStrictEqual(["extensionPoint"]);
     expect(newMod.extensionPoints).toHaveLength(modComponents.length);
     expect(uniq(newMod.extensionPoints.map((x) => x.id))).toStrictEqual([
       "extensionPoint",
@@ -833,12 +841,12 @@ describe("buildNewMod", () => {
         const starterBricks = selectStarterBricks(modDefinition);
 
         for (let i = 0; i < dirtyModComponentCount; i++) {
-          const starterBrick = starterBricks[i];
+          const starterBrick = starterBricks[i]!;
           // Mock this lookup for the adapter call that follows
           jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
           // Mod was activated, so get the mod component from state
-          const modComponent = state.activatedModComponents[i];
+          const modComponent = state.activatedModComponents[i]!;
 
           // Load the adapter for this mod component
           const { fromModComponent } = adapter(starterBrick.definition.type);
@@ -948,10 +956,10 @@ describe("selectModComponentIntegrations", () => {
       ],
     };
     expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
-      [modComponent.integrationDependencies[0].outputKey]:
-        modComponent.integrationDependencies[0].integrationId,
-      [modComponent.integrationDependencies[1].outputKey]:
-        modComponent.integrationDependencies[1].integrationId,
+      [modComponent.integrationDependencies![0]!.outputKey]:
+        modComponent.integrationDependencies![0]!.integrationId,
+      [modComponent.integrationDependencies![1]!.outputKey]:
+        modComponent.integrationDependencies![1]!.integrationId,
     });
   });
 
@@ -974,17 +982,23 @@ describe("selectModComponentIntegrations", () => {
     };
     expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
       properties: {
-        [modComponent.integrationDependencies[0].outputKey]: {
-          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,
+        [modComponent.integrationDependencies![0]!.outputKey]: {
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${
+            modComponent.integrationDependencies![0]!.integrationId
+          }`,
         },
-        [modComponent.integrationDependencies[1].outputKey]: {
-          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[1].integrationId}`,
+        [modComponent.integrationDependencies![1]!.outputKey]: {
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${
+            modComponent.integrationDependencies![1]!.integrationId
+          }`,
         },
-        [modComponent.integrationDependencies[2].outputKey]: {
-          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${modComponent.integrationDependencies[2].integrationId}`,
+        [modComponent.integrationDependencies![2]!.outputKey]: {
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${
+            modComponent.integrationDependencies![2]!.integrationId
+          }`,
         },
       },
-      required: [modComponent.integrationDependencies[1].outputKey],
+      required: [modComponent.integrationDependencies![1]!.outputKey],
     });
   });
 });

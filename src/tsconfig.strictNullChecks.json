@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/panes/save/saveHelpers.test.ts",
     "./pageEditor/hooks/useBuildAndValidateMod.test.ts",
     "./pageEditor/hooks/useCheckModStarterBrickInvariants.test.ts",
     "./pageEditor/hooks/useSaveMod.test.ts",
