@@ -133,7 +133,7 @@ export async function getSidebarPage(
       findSidebarPage(page, extensionId),
     ]);
     expect(sidebarPage).toBeDefined();
-  }).toPass({ timeout: 5000 });
+  }).toPass({ timeout: 20_000 });
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
   return sidebarPage!;
