@@ -53,7 +53,7 @@ export const selectSidebarModActivationPanel = ({
   sidebar,
 }: SidebarRootState) => sidebar.modActivationPanel;
 
-const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
+export const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
   ...sidebar.panels,
   ...sidebar.forms,
   ...sidebar.temporaryPanels,
@@ -61,7 +61,7 @@ const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
   sidebar.modActivationPanel,
 ];
 
-const extensionForEventKeySelector = createSelector(
+const modComponentForEventKeySelector = createSelector(
   selectSidebarEntries,
   selectActivatedModComponents,
   (_state: SidebarRootState, eventKey: string) => eventKey,
@@ -84,7 +84,7 @@ const extensionForEventKeySelector = createSelector(
 
 export const selectModComponentForEventKey =
   (eventKey: string) => (state: SidebarRootState) =>
-    extensionForEventKeySelector(state, eventKey);
+    modComponentForEventKeySelector(state, eventKey);
 
 export const selectModComponentFromEventKey =
   (state: SidebarRootState) =>
