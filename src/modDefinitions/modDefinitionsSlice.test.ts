@@ -16,11 +16,7 @@
  */
 
 import { serializeError } from "serialize-error";
-import {
-  initialState,
-  modDefinitionsActions,
-  modDefinitionsSlice,
-} from "./modDefinitionsSlice";
+import { initialState, modDefinitionsActions } from "./modDefinitionsSlice";
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 import modDefinitionsRegistry from "./registry";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
@@ -55,9 +51,18 @@ describe("loadModDefinitionsFromCache", () => {
       undefined,
     );
     expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setModDefinitionsFromCache(cachedModDefinitions),
-    );
+
+    // These mock calls have a weird nested array structure
+    const dispatchCallHistory = dispatch.mock.calls.map((call) => call[0]);
+    expect(dispatchCallHistory).toStrictEqual([
+      expect.objectContaining({
+        type: modDefinitionsActions.loadModDefinitionsFromCache.pending.type,
+      }),
+      expect.objectContaining({
+        type: modDefinitionsActions.loadModDefinitionsFromCache.fulfilled.type,
+        payload: cachedModDefinitions,
+      }),
+    ]);
   });
 });
 
@@ -96,14 +101,19 @@ describe("syncRemoteModDefinitions", () => {
       undefined,
     );
 
-    expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.startFetchingFromRemote(),
-    );
     expect(syncRemotePackagesMock).toHaveBeenCalledTimes(1);
     expect(modDefinitionsRegistry.all).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setModDefinitions(cachedModDefinitions),
-    );
+
+    const dispatchCallHistory = dispatch.mock.calls.map((call) => call[0]);
+    expect(dispatchCallHistory).toStrictEqual([
+      expect.objectContaining({
+        type: modDefinitionsActions.syncRemoteModDefinitions.pending.type,
+      }),
+      expect.objectContaining({
+        type: modDefinitionsActions.syncRemoteModDefinitions.fulfilled.type,
+        payload: cachedModDefinitions,
+      }),
+    ]);
   });
 
   test("sets error state", async () => {
@@ -120,55 +130,16 @@ describe("syncRemoteModDefinitions", () => {
     );
 
     const serializedError = serializeError(error, { useToJSON: false });
-    expect(dispatch).toHaveBeenCalledWith(
-      modDefinitionsActions.setError(serializedError),
-    );
-  });
-});
 
-describe("reducers", () => {
-  test("startFetchingFromRemote does not set isLoading", () => {
-    const state = { ...initialState };
-    const nextState = modDefinitionsSlice.reducer(
-      state,
-      modDefinitionsActions.startFetchingFromRemote(),
-    );
-    expect(nextState.isFetching).toBeTrue();
-    expect(nextState.isLoading).toBeFalse();
-  });
-
-  test("sets mod definitions", () => {
-    const modDefinitions = [defaultModDefinitionFactory()];
-    const state = {
-      ...initialState,
-      isFetching: true,
-      isLoading: true,
-      isError: true,
-      isSuccess: false,
-      isCacheUninitialized: false,
-      isRemoteUninitialized: false,
-      error: new Error("test"),
-    };
-    const nextState = modDefinitionsSlice.reducer(
-      state,
-      modDefinitionsActions.setModDefinitions(modDefinitions),
-    );
-
-    expect(nextState).toEqual({
-      data: modDefinitions,
-      currentData: modDefinitions,
-      isFetching: false,
-      isLoading: false,
-      isUninitialized: false,
-      isError: false,
-      isSuccess: true,
-      error: undefined,
-      // Cache-specific aysnc state
-      isLoadingFromCache: false,
-      isFetchingFromRemote: false,
-      isLoadingFromRemote: false,
-      isCacheUninitialized: false,
-      isRemoteUninitialized: false,
-    });
+    const dispatchCallHistory = dispatch.mock.calls.map((call) => call[0]);
+    expect(dispatchCallHistory).toStrictEqual([
+      expect.objectContaining({
+        type: modDefinitionsActions.syncRemoteModDefinitions.pending.type,
+      }),
+      expect.objectContaining({
+        type: modDefinitionsActions.syncRemoteModDefinitions.rejected.type,
+        error: serializedError,
+      }),
+    ]);
   });
 });
