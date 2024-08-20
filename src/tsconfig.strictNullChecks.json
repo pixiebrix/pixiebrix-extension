@@ -1598,7 +1598,7 @@
     "./sidebar/staticPanelUtils.tsx",
     "./sidebar/store.ts",
     "./sidebar/testHelpers.ts",
-    "./sidebar/useHideEmptySidebar.ts",
+    "./sidebar/useHideEmptySidebarEffect.ts",
     "./starterBricks/button/buttonStarterBrick.test.ts",
     "./starterBricks/button/buttonStarterBrick.ts",
     "./starterBricks/button/buttonStarterBrickTypes.ts",
