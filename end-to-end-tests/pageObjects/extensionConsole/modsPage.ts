@@ -179,4 +179,10 @@ export class ActivateModPage extends BasePageObject {
     });
     return modsPage;
   }
+
+  async clickActivateAndViewValidationError(error: string) {
+    await this.activateButton.click();
+
+    await expect(this.getByText(error)).toBeVisible();
+  }
 }

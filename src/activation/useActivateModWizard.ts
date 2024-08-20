@@ -182,7 +182,7 @@ export function wizardStateFactory({
         (value) =>
           value.integrationId === PIXIEBRIX_INTEGRATION_ID ||
           value.configId != null ||
-          value.isOptional != null,
+          Boolean(value.isOptional),
       ),
     ),
     optionsArgs: optionsValidationSchema,
