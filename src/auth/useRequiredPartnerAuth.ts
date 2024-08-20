@@ -33,7 +33,7 @@ import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type UserPartner } from "@/data/model/UserPartner";
 import { type ControlRoom } from "@/data/model/ControlRoom";
-import { type UserMilestone } from "@/data/model/UserMilestone";
+import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
 
 /**
  * Map from partner keys to partner service IDs
@@ -196,7 +196,8 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // `organization?.control_room?.id` can only be set when authenticated or the auth is cached
   const hasControlRoom = controlRoom != null || Boolean(managedControlRoomUrl);
   const isCommunityEditionUser = userMilestones.some(
-    ({ milestoneName }) => milestoneName === "aa_community_edition_register",
+    ({ milestoneName }) =>
+      milestoneName === Milestones.AA_COMMUNITY_EDITION_REGISTER,
   );
 
   const hasPartner =
