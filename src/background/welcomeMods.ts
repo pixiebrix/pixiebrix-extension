@@ -61,6 +61,7 @@ import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { sleep } from "@/utils/timeUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -70,7 +71,7 @@ const { reducer: sidebarReducer, actions: sidebarActions } = sidebarSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
 const MOD_ACTIVATION_DEBOUNCE_MS = 10_000;
-const MOD_ACTIVATION_MAX_MS = 60_000;
+const MOD_ACTIVATION_MAX_MS = 120_000;
 
 function activateModInOptionsState(
   state: ModComponentState,
@@ -292,6 +293,8 @@ async function getStarterMods(): Promise<ModDefinition[]> {
  * @returns true if any of the starter mods were activated
  */
 async function _activateStarterMods(): Promise<boolean> {
+  await sleep(8_000);
+
   const starterMods = await getStarterMods();
 
   try {
@@ -318,6 +321,32 @@ export const debouncedActivateStarterMods = debounce(
     maxWait: MOD_ACTIVATION_MAX_MS,
   },
 );
+
+// export const debouncedActivateStarterMods = _activateStarterMods;
+
+// export const debouncedActivateStarterMods: () => Promise<boolean> = () => {
+//   const debounced = debounce(
+//     (resolve, reject) => {
+//       _activateStarterMods()
+//         .then((activated) => {
+//           resolve(activated);
+//         })
+//         .catch((error) => {
+//           reject(error);
+//         });
+//     },
+//     MOD_ACTIVATION_DEBOUNCE_MS,
+//     {
+//       leading: true,
+//       trailing: false,
+//       maxWait: MOD_ACTIVATION_MAX_MS,
+//     },
+//   );
+//
+//   return new Promise((resolve, reject) => {
+//     debounced(resolve, reject);
+//   });
+// };
 
 function initStarterMods(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {

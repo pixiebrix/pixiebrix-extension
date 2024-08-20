@@ -37,7 +37,7 @@ import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deploymentUpdater";
 import initTheme from "@/background/initTheme";
-import initStarterMods from "@/background/starterMods";
+import initStarterMods from "@/background/welcomeMods";
 import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";

@@ -197,7 +197,7 @@
     "./background/setToolbarIconFromTheme.test.ts",
     "./background/setToolbarIconFromTheme.ts",
     "./background/sidePanel.ts",
-    "./background/starterMods.ts",
+    "./background/welcomeMods.ts",
     "./background/tabs.ts",
     "./background/telemetry.test.ts",
     "./background/telemetry.ts",

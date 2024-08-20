@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { debouncedActivateStarterMods } from "@/background/starterMods";
+import { debouncedActivateStarterMods } from "@/background/welcomeMods";
 import {
   getModComponentState,
   saveModComponentState,

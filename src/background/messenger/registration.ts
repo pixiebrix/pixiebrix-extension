@@ -80,7 +80,7 @@ import {
 } from "@/background/executor";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods";
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/welcomeMods";
 import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
 import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
