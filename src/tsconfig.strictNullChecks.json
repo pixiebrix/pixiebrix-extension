@@ -1694,6 +1694,7 @@
     "./testUtils/factories/marketplaceFactories.ts",
     "./testUtils/factories/messengerFactories.ts",
     "./testUtils/factories/metadataFactory.ts",
+    "./testUtils/factories/milestoneFactories.ts",
     "./testUtils/factories/modComponentFactories.ts",
     "./testUtils/factories/modDefinitionFactories.ts",
     "./testUtils/factories/pageEditorFactories.ts",
