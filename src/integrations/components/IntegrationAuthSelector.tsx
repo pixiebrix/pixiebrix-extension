@@ -158,6 +158,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
       data-testid={`integration-auth-selector-${field.name}`}
     >
       <Select
+        id={`integration-auth-selector-${field.name}-select`}
         styles={customStyles}
         name={field.name}
         options={options}
