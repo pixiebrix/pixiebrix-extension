@@ -167,6 +167,16 @@ export class ActivateModPage extends BasePageObject {
     });
   }
 
+  async selectIntegrationOption(integrationIndex: number, option: string) {
+    await this.page
+      .getByTestId(
+        `integration-auth-selector-integrationDependencies.${integrationIndex}.configId`,
+      )
+      .locator("svg")
+      .click();
+    await this.page.getByRole("option", { name: option }).click();
+  }
+
   /** Successfully activating the mod will navigate to the "All Mods" page. */
   async clickActivateAndWaitForModsPageRedirect() {
     await this.activateButton.click();
