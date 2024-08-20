@@ -17,11 +17,24 @@
 
 import { type RequiredMeMilestoneResponse } from "@/data/service/responseTypeHelpers";
 
+import { type ValueOf } from "type-fest";
+
+export const Milestones = {
+  FIRST_TIME_PUBLIC_MOD_ACTIVATION: "first_time_public_blueprint_install",
+  AA_COMMUNITY_EDITION_REGISTER: "aa_community_edition_register",
+} as const;
+
+/**
+ * @see Milestones
+ */
+export type Milestone = ValueOf<typeof Milestones>;
+
 export type UserMilestone = {
   /**
-   * A lower-snake-case, human-readable identifier for the Milestone, e.g. "first_time_extension_install"
+   * A lower-snake-case, human-readable identifier for the Milestone.
+   * @see Milestones
    */
-  milestoneName: string;
+  milestoneName: Milestone;
   /**
    * Optional additional information to provide context about the Milestone
    */
@@ -32,7 +45,7 @@ export function transformUserMilestoneResponse(
   response: RequiredMeMilestoneResponse,
 ): UserMilestone {
   return {
-    milestoneName: response.key,
+    milestoneName: response.key as Milestone,
     metadata: response.metadata ?? {},
   };
 }
