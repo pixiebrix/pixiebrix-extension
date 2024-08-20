@@ -35,7 +35,7 @@ describe("buildGetModActivationStatus", () => {
     const modMetadata = modMetadataFactory();
     const mod = modDefinitionFactory({
       metadata: modMetadata,
-    }) as Mod;
+    });
     const activatedModComponents = [
       activatedModComponentFactory({ _recipe: modMetadata }),
     ];
@@ -50,7 +50,7 @@ describe("buildGetModActivationStatus", () => {
     const modMetadata = modMetadataFactory();
     const mod = modDefinitionFactory({
       metadata: modMetadata,
-    }) as Mod;
+    });
     const activatedModComponents = [
       activatedModComponentFactory({
         _recipe: modMetadata,
@@ -72,7 +72,7 @@ describe("buildGetModActivationStatus", () => {
     const modMetadata = modMetadataFactory();
     const mod = modDefinitionFactory({
       metadata: modMetadata,
-    }) as Mod;
+    });
     const activatedModComponents = [
       activatedModComponentFactory({
         _recipe: modMetadata,

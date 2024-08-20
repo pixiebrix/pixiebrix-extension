@@ -20,20 +20,13 @@ import {
   type ModOptionsDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type Organization } from "@/types/contract";
-import {
-  type Mod,
-  type SharingSource,
-  type SharingType,
-  type UnavailableMod,
-} from "@/types/modTypes";
+import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import {
   type HydratedModComponent,
   type ModComponentBase,
   type ModComponentRef,
-  type SerializedModComponent,
 } from "@/types/modComponentTypes";
 import {
   DefinitionKinds,
@@ -177,68 +170,6 @@ export function idHasScope(
   scope: Nullishable<string>,
 ): boolean {
   return scope != null && id.startsWith(scope + "/");
-}
-
-export function getSharingSource({
-  mod,
-  organizations,
-  userScope,
-  modComponents,
-}: {
-  mod: Mod;
-  organizations: Organization[];
-  userScope: Nullishable<string>;
-  modComponents: SerializedModComponent[];
-}): SharingSource {
-  let sharingType: SharingType | null = null;
-  const organization = organizations.find(
-    (org) => org.id && mod.sharing.organizations.includes(org.id),
-  );
-  let label: string;
-  const modId = mod.metadata.id;
-
-  switch (true) {
-    case idHasScope(modId, userScope): {
-      sharingType = "Personal";
-      break;
-    }
-
-    case modComponents.some(
-      ({ _recipe, _deployment }) => _recipe?.id === modId && _deployment,
-    ): {
-      sharingType = "Deployment";
-      // There's a corner case for team deployments of marketplace bricks. The organization will come through as
-      // nullish here.
-      if (organization?.name) {
-        label = organization.name;
-      }
-
-      break;
-    }
-
-    case organization != null: {
-      sharingType = "Team";
-      label = organization.name;
-      break;
-    }
-
-    case mod.sharing.public: {
-      sharingType = "Public";
-      break;
-    }
-
-    default: {
-      sharingType = "Unknown";
-    }
-  }
-
-  label ??= sharingType;
-
-  return {
-    type: sharingType,
-    label,
-    organization,
-  };
 }
 
 /**
