@@ -19,13 +19,13 @@ import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
 import { appApi } from "@/data/service/api";
-import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type Milestone, type UserMilestone } from "@/data/model/UserMilestone";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 type MilestoneHelpers = {
-  getMilestone: (milestoneKey: string) => Nullishable<UserMilestone>;
-  hasMilestone: (milestoneKey: string) => boolean;
-  hasEveryMilestone: (milestoneNames: string[]) => boolean;
+  getMilestone: (milestoneKey: Milestone) => Nullishable<UserMilestone>;
+  hasMilestone: (milestoneKey: Milestone) => boolean;
+  hasEveryMilestone: (milestoneNames: Milestone[]) => boolean;
   isFetching: boolean;
   isLoading: boolean;
   refetch: () => void;
@@ -45,13 +45,13 @@ function useMilestones(): MilestoneHelpers {
       ]),
     );
 
-    const getMilestone = (milestoneKey: string) =>
+    const getMilestone = (milestoneKey: Milestone) =>
       milestonesByName.get(milestoneKey);
 
-    const hasMilestone = (milestoneKey: string) =>
+    const hasMilestone = (milestoneKey: Milestone) =>
       milestonesByName.has(milestoneKey);
 
-    const hasEveryMilestone = (milestoneKeys: string[]) =>
+    const hasEveryMilestone = (milestoneKeys: Milestone[]) =>
       milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
 
     return {

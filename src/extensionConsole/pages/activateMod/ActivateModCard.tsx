@@ -42,6 +42,7 @@ import { getModActivationInstructions } from "@/utils/modUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { isInternalRegistryId } from "@/utils/registryUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { Milestones } from "@/data/model/UserMilestone";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;
@@ -144,9 +145,9 @@ const ActivateModCard: React.FC<{
     if (success) {
       notify.success(`Activated ${modDefinition.metadata.name}`);
 
-      if (!hasMilestone("first_time_public_blueprint_install")) {
+      if (!hasMilestone(Milestones.FIRST_TIME_PUBLIC_MOD_ACTIVATION)) {
         await createMilestone({
-          milestoneName: "first_time_public_blueprint_install",
+          milestoneName: Milestones.FIRST_TIME_PUBLIC_MOD_ACTIVATION,
           metadata: {
             blueprintId: modDefinition.metadata.id,
           },
