@@ -56,7 +56,7 @@ type VarMenuProps = {
    * The underlying var or text input element.
    */
   inputElementRef: React.MutableRefObject<
-    HTMLTextAreaElement | HTMLInputElement
+    HTMLTextAreaElement | HTMLInputElement | null
   >;
   /**
    * The likely variable the user is interacting with.

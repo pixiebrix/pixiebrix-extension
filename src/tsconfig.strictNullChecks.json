@@ -4,6 +4,11 @@
     "strictNullChecks": true
   },
   "files": [
+    "./components/fields/schemaFields/widgets/SchemaButtonVariantWidget.test.tsx",
+    "./components/fields/schemaFields/widgets/varPopup/getMenuOptions.test.ts",
+    "./components/fields/schemaFields/widgets/varPopup/menuFilters.test.ts",
+    "./components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation.test.ts",
+    "./components/fields/schemaFields/widgets/varPopup/VarMenu.test.tsx",
     "./components/form/Form.stories.tsx",
     "./components/form/makeFieldActionForAnnotationAction.test.tsx",
     "./components/form/widgets/AsyncRemoteSelectWidget.test.tsx",
