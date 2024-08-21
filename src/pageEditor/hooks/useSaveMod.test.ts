@@ -29,6 +29,7 @@ import type { components } from "@/types/swagger";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { type UUID } from "@/types/stringTypes";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -46,7 +47,7 @@ describe("useSaveMod", () => {
     const definition = defaultModDefinitionFactory({
       metadata: {
         id: editablePackage.name,
-        name: editablePackage.verbose_name,
+        name: editablePackage.verbose_name!,
         version: editablePackage.version as SemVerString,
       },
     });
@@ -95,7 +96,7 @@ describe("useSaveMod", () => {
     const definition = defaultModDefinitionFactory({
       metadata: {
         id: editablePackage.name,
-        name: editablePackage.verbose_name,
+        name: editablePackage.verbose_name!,
         version: editablePackage.version as SemVerString,
       },
       options: {
@@ -148,7 +149,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put[0].data,
+        putMock.history.put![0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 
@@ -174,7 +175,7 @@ describe("useSaveMod", () => {
     const definition = defaultModDefinitionFactory({
       metadata: {
         id: editablePackage.name,
-        name: editablePackage.verbose_name,
+        name: editablePackage.verbose_name!,
         version: editablePackage.version as SemVerString,
       },
     });
@@ -230,7 +231,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put[0].data,
+        putMock.history.put![0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 
@@ -255,11 +256,11 @@ describe("isModEditable", () => {
     const mod = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
-        id: null,
+        id: null as unknown as UUID,
         name: validateRegistryId("test/mod"),
       },
       {
-        id: null,
+        id: null as unknown as UUID,
         name: mod.metadata.id,
       },
     ] as EditablePackageMetadata[];
@@ -271,7 +272,7 @@ describe("isModEditable", () => {
     const mod = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
-        id: null,
+        id: null as unknown as UUID,
         name: validateRegistryId("test/mod"),
       },
     ] as EditablePackageMetadata[];
@@ -282,11 +283,13 @@ describe("isModEditable", () => {
   test("returns false if mod is null", () => {
     const editablePackages: EditablePackageMetadata[] = [
       {
-        id: null,
+        id: null as unknown as UUID,
         name: validateRegistryId("test/mod"),
       },
     ] as EditablePackageMetadata[];
 
-    expect(isModEditable(editablePackages, null)).toBe(false);
+    expect(
+      isModEditable(editablePackages, null as unknown as ModDefinition),
+    ).toBe(false);
   });
 });

@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import { selectActiveTab } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 export type OnboardingType =
   | "default"
@@ -57,7 +58,7 @@ function useOnboarding(): {
         return "hasDeployments";
       }
 
-      if (restrict("marketplace")) {
+      if (restrict(RestrictedFeatures.MARKETPLACE)) {
         return "restricted";
       }
 

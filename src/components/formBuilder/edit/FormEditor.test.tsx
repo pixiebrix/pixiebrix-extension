@@ -297,7 +297,7 @@ describe("FormEditor", () => {
         onSubmitMock.mock.calls[callNumber][0][
           RJSF_SCHEMA_PROPERTY_NAME
         ] as RJSFSchema
-      ).schema.required;
+      ).schema!.required;
 
     // Check the field is not required
     await fireFormSubmit();
@@ -305,7 +305,7 @@ describe("FormEditor", () => {
 
     // Make it required
     // eslint-disable-next-line testing-library/no-container -- TODO: refactor to use better selector
-    const requiredSwitch = container.querySelector(".switch.btn");
+    const requiredSwitch = container.querySelector(".switch.btn")!;
     fireEvent.click(requiredSwitch);
 
     // Check the field is required
@@ -394,7 +394,7 @@ describe("FormEditor", () => {
     expect(
       (
         (onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
-          .schema.properties[fieldName] as Schema
+          .schema!.properties![fieldName] as Schema
       ).default,
     ).toBeUndefined();
   });

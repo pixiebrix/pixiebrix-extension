@@ -45,17 +45,17 @@ describe("filterVarMapByVariable", () => {
     const { input: inputMap } = varMap.getMap();
 
     // Prefix match for possibly unfinished variable name
-    expect(filterVarMapByVariable(inputMap, "@inpu")).toContainKey("@input");
+    expect(filterVarMapByVariable(inputMap!, "@inpu")).toContainKey("@input");
 
     // Exact match
-    expect(filterVarMapByVariable(inputMap, "@input")).toContainKey("@input");
+    expect(filterVarMapByVariable(inputMap!, "@input")).toContainKey("@input");
 
     // Empty because trailing period indicates final variable name
-    expect(filterVarMapByVariable(inputMap, "@inpu.")).not.toContainKey(
+    expect(filterVarMapByVariable(inputMap!, "@inpu.")).not.toContainKey(
       "@input",
     );
 
-    expect(filterVarMapByVariable(inputMap, "@input2")).not.toContainKey(
+    expect(filterVarMapByVariable(inputMap!, "@input2")).not.toContainKey(
       "@input",
     );
   });
@@ -74,7 +74,7 @@ describe("filterVarMapByVariable", () => {
     const { input: inputMap } = varMap.getMap();
 
     // Prefix match for possibly unfinished variable name
-    expect(filterVarMapByVariable(inputMap, "@input.f")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input.f")).toEqual(
       expect.objectContaining({
         "@input": expect.objectContaining({
           foo: expect.toBeObject(),
@@ -83,7 +83,7 @@ describe("filterVarMapByVariable", () => {
     );
 
     // Exact match
-    expect(filterVarMapByVariable(inputMap, "@input.foo")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input.foo")).toEqual(
       expect.objectContaining({
         "@input": expect.objectContaining({
           foo: expect.toBeObject(),
@@ -92,7 +92,7 @@ describe("filterVarMapByVariable", () => {
     );
 
     // Exact match with chaining
-    expect(filterVarMapByVariable(inputMap, "@input?.foo")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input?.foo")).toEqual(
       expect.objectContaining({
         "@input": expect.objectContaining({
           foo: expect.toBeObject(),
@@ -101,14 +101,14 @@ describe("filterVarMapByVariable", () => {
     );
 
     // Empty because trailing period indicates final variable name
-    expect(filterVarMapByVariable(inputMap, "@input.fo.")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input.fo.")).toEqual(
       expect.objectContaining({
         "@input": expect.not.toContainKey("foo"),
       }),
     );
 
     // Empty due to extra characters
-    expect(filterVarMapByVariable(inputMap, "@input.food")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input.food")).toEqual(
       expect.objectContaining({
         "@input": expect.not.toContainKey("foo"),
       }),
@@ -128,7 +128,7 @@ describe("filterVarMapByVariable", () => {
 
     const { input: inputMap } = varMap.getMap();
 
-    expect(filterVarMapByVariable(inputMap, "@input.items[0].f")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input.items[0].f")).toEqual(
       expect.objectContaining({
         "@input": expect.objectContaining({
           // Assert exactly to assert only 0 is present
@@ -143,7 +143,7 @@ describe("filterVarMapByVariable", () => {
     );
 
     // Array is known to only have 2 elements
-    expect(filterVarMapByVariable(inputMap, "@input.items[3]")).toEqual(
+    expect(filterVarMapByVariable(inputMap!, "@input.items[3]")).toEqual(
       expect.objectContaining({
         "@input": expect.objectContaining({
           items: expect.objectContaining({
@@ -171,7 +171,7 @@ describe("expandCurrentVariableLevel", () => {
 
     const { input: inputMap } = varMap.getMap();
 
-    const shouldExpand = expandCurrentVariableLevel(inputMap, "@");
+    const shouldExpand = expandCurrentVariableLevel(inputMap!, "@");
     expect(shouldExpand(["@input"], null, 0)).toBe(false);
     expect(shouldExpand(["@input"], null, 1)).toBe(false);
   });
@@ -189,7 +189,7 @@ describe("expandCurrentVariableLevel", () => {
 
     const { input: inputMap } = varMap.getMap();
 
-    const shouldExpand = expandCurrentVariableLevel(inputMap, "@foo");
+    const shouldExpand = expandCurrentVariableLevel(inputMap!, "@foo");
     expect(shouldExpand(["@input"], null, 0)).toBe(true);
     // JSONTree builds keypath in reverse order
     expect(shouldExpand(["foo", "@input"], null, 1)).toBe(false);
@@ -208,7 +208,7 @@ describe("expandCurrentVariableLevel", () => {
 
     const { input: inputMap } = varMap.getMap();
 
-    const shouldExpand = expandCurrentVariableLevel(inputMap, "@input");
+    const shouldExpand = expandCurrentVariableLevel(inputMap!, "@input");
     expect(shouldExpand(["@input"], null, 0)).toBe(true);
     expect(shouldExpand(["foo", "@input"], null, 1)).toBe(false);
   });
@@ -226,7 +226,7 @@ describe("expandCurrentVariableLevel", () => {
 
     const { input: inputMap } = varMap.getMap();
 
-    const shouldExpand = expandCurrentVariableLevel(inputMap, "@input.");
+    const shouldExpand = expandCurrentVariableLevel(inputMap!, "@input.");
     expect(shouldExpand(["@input"], null, 0)).toBe(true);
     expect(shouldExpand(["foo", "@input"], null, 1)).toBe(true);
   });
@@ -246,7 +246,7 @@ describe("expandCurrentVariableLevel", () => {
 
     const { input: inputMap } = varMap.getMap();
 
-    const shouldExpand = expandCurrentVariableLevel(inputMap, "@input.foo.");
+    const shouldExpand = expandCurrentVariableLevel(inputMap!, "@input.foo.");
     expect(shouldExpand(["@input"], null, 0)).toBe(true);
     expect(shouldExpand(["foo", "@input"], null, 1)).toBe(true);
     expect(shouldExpand(["bar", "foo", "@input"], null, 2)).toBe(true);

@@ -35,13 +35,14 @@ import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 import useMigrateStandaloneComponentsToMods from "@/pageEditor/hooks/useMigrateStandaloneComponentsToMods";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { insertingStarterBrickType } = useInsertPane();
   const isInserting = Boolean(insertingStarterBrickType);
   const { restrict } = useFlags();
-  const isRestricted = restrict("page-editor");
+  const isRestricted = restrict(RestrictedFeatures.PAGE_EDITOR);
   const isStaleSession = useSelector(selectIsStaleSession);
 
   const url = useCurrentInspectedUrl();

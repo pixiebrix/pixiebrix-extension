@@ -265,3 +265,13 @@ export function isValidSelector(selector: string): boolean {
     throw error;
   }
 }
+
+/**
+ * Return true if the value is a single HTML element string.
+ */
+export function isSingleHtmlElementString(value: string): boolean {
+  const doc = new DOMParser().parseFromString(value, "text/html");
+  // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType#node.element_node
+  const nodes = [...doc.body.childNodes];
+  return nodes.length === 1 && nodes[0]?.nodeType === Node.ELEMENT_NODE;
+}

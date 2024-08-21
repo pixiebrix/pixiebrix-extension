@@ -33,6 +33,7 @@ import useMilestones from "@/hooks/useMilestones";
 import { type RegistryId } from "@/types/registryTypes";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 type ModsPageSidebarProps = {
   teamFilters: string[];
@@ -259,7 +260,7 @@ const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
             setActiveTab(MODS_PAGE_TABS.all);
           }}
         />
-        {permit("marketplace") && (
+        {permit(RestrictedFeatures.MARKETPLACE) && (
           <>
             <ListItem
               icon={faUser}

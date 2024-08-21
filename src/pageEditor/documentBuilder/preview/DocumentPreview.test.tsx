@@ -74,7 +74,7 @@ function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.modComponent.brickPipeline[0].instanceId,
+          formState.modComponent.brickPipeline[0]!.instanceId!,
         ),
       );
     },
@@ -99,11 +99,11 @@ describe("Add new element", () => {
       createNewDocumentBuilderElement("container");
     const containerElement = createNewDocumentBuilderElement("container");
     // eslint-disable-next-line testing-library/no-node-access -- There's a row in the container and a column in the row.
-    containerElement.children[0].children[0].children[0] = listElement;
+    containerElement.children![0]!.children![0]!.children![0] = listElement;
 
     const { container } = renderDocumentPreview(containerElement);
 
-    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
+    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0)!;
     // Select a dropdown inside a Col in List and open it
     await userEvent.click(firstDropdown);
 
@@ -111,19 +111,19 @@ describe("Add new element", () => {
 
     // Hover over the Col in the list
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-    fireEvent.mouseOver(container.querySelector(".col .col"));
+    fireEvent.mouseOver(container.querySelector(".col .col")!);
     expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
 
     // Hover over the Container of the List, .root.root - is the Document root element
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
-    fireEvent.mouseOver(container.querySelector(".root.root > .container"));
+    fireEvent.mouseOver(container.querySelector(".root.root > .container")!);
     expect(firstDropdown).toHaveAttribute("aria-haspopup", "true");
   });
 
   test("can add an element to a container", async () => {
     renderDocumentPreview(createNewDocumentBuilderElement("container"));
 
-    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0);
+    const firstDropdown = screen.getAllByTestId("ellipsis-menu-button").at(0)!;
 
     await userEvent.click(firstDropdown);
     await userEvent.click(screen.getByRole("menuitem", { name: "Header" }));
@@ -182,7 +182,7 @@ describe("Show live preview", () => {
       );
     };
 
-    const pipelineField = formState.modComponent.brickPipeline[0].config
+    const pipelineField = formState.modComponent.brickPipeline[0]!.config
       .body as PipelineExpression;
 
     return render(<PreviewContainer />, {
@@ -191,7 +191,7 @@ describe("Show live preview", () => {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.setActiveNodeId(pipelineField.__value__[0].instanceId),
+          actions.setActiveNodeId(pipelineField.__value__[0]!.instanceId!),
         );
       },
     });

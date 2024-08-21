@@ -38,6 +38,7 @@ import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();
@@ -65,7 +66,7 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
 
 const FoundationNodeConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
-  const showVersionField = flagOn("page-editor-developer");
+  const showVersionField = flagOn(FeatureFlags.PAGE_EDITOR_DEVELOPER);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

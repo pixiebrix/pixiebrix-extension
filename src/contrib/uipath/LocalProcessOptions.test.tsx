@@ -76,7 +76,7 @@ function makeBaseState() {
         id: RunLocalProcess.BRICK_ID,
         config: {
           service: null,
-          releaseKey: null,
+          releaseKey: "",
           inputArguments: {},
         },
       },
@@ -99,9 +99,9 @@ beforeEach(() => {
     valueToAsyncState(null),
   );
   useSelectedReleaseMock.mockReturnValue({
-    selectedRelease: null,
+    selectedRelease: undefined,
     releasesPromise: Promise.resolve([]),
-    releaseKey: null,
+    releaseKey: "",
   });
 });
 
@@ -110,7 +110,7 @@ describe("UiPath LocalProcess Options", () => {
     jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
     jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
       available: false,
-      consentCode: null,
+      consentCode: undefined,
       missingComponents: false,
     });
 
@@ -164,13 +164,13 @@ describe("UiPath LocalProcess Options", () => {
     jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
     jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
       available: true,
-      consentCode: null,
+      consentCode: undefined,
       missingComponents: false,
     });
 
     useSelectedReleaseMock.mockReturnValue({
       selectedRelease: {
-        release: null,
+        release: undefined,
         schema: {
           type: "object",
           properties: {
@@ -186,12 +186,12 @@ describe("UiPath LocalProcess Options", () => {
         },
       },
       releasesPromise: Promise.resolve([]),
-      releaseKey: null,
+      releaseKey: "",
     });
 
     const formState = makeBaseState();
-    formState.integrationDependencies[0].configId = configId;
-    formState.modComponent.brickPipeline[0].config.service = "@uipath";
+    formState.integrationDependencies[0]!.configId = configId;
+    formState.modComponent.brickPipeline[0]!.config.service = "@uipath";
 
     renderOptions();
 

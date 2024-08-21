@@ -67,12 +67,12 @@ describe("makeFieldActionForAnnotationAction", () => {
       initialValues: formState,
     });
 
-    expect(getFormState().modComponent.brickPipeline[0].if).toBeDefined();
+    expect(getFormState()!.modComponent.brickPipeline[0].if).toBeDefined();
 
     await act(async () => {
       screen.getByRole("button", { name: expectedCaption }).click();
     });
 
-    expect(getFormState().modComponent.brickPipeline[0].if).toBeUndefined();
+    expect(getFormState()!.modComponent.brickPipeline[0].if).toBeUndefined();
   });
 });

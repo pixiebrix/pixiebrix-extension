@@ -23,6 +23,7 @@ import { Container } from "react-bootstrap";
 import useFlags from "@/hooks/useFlags";
 import { isMac } from "@/utils/browserUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>
@@ -81,7 +82,7 @@ const DefaultPanel: React.FunctionComponent = () => {
 
   return (
     <div>
-      {restrict("marketplace") ? (
+      {restrict(RestrictedFeatures.MARKETPLACE) ? (
         <NoAvailablePanelsContent />
       ) : (
         <OnboardingContent />

@@ -35,7 +35,7 @@ import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtim
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -146,7 +146,7 @@ export default function useDocumentPreviewRunBlock(
   );
   const { data: integrationContext, isLoading: isLoadingIntegrationContext } =
     useAsyncState(
-      makeIntegrationsContextFromDependencies(integrationDependencies),
+      makeIntegrationContextFromDependencies(integrationDependencies),
       [integrationDependencies],
     );
   const context = {

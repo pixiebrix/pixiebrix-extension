@@ -40,7 +40,7 @@ import {
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_OUTPUT_KEY,
 } from "@/integrations/constants";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { toExpression } from "@/utils/expressionUtils";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
@@ -67,8 +67,8 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         }),
       ];
 
-      const serviceContext =
-        await makeIntegrationsContextFromDependencies(dependencies);
+      const integrationContext =
+        await makeIntegrationContextFromDependencies(dependencies);
 
       const result = await reducePipeline(
         {
@@ -77,7 +77,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         },
         {
           ...simpleInput({}),
-          serviceContext,
+          integrationContext,
         },
         reduceOptionsFactory(apiVersion),
       );
@@ -134,8 +134,8 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       );
 
       const dependencies: IntegrationDependency[] = [dependency1, dependency2];
-      const serviceContext =
-        await makeIntegrationsContextFromDependencies(dependencies);
+      const integrationContext =
+        await makeIntegrationContextFromDependencies(dependencies);
 
       const result = await reducePipeline(
         {
@@ -144,7 +144,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         },
         {
           ...simpleInput({}),
-          serviceContext,
+          integrationContext,
         },
         reduceOptionsFactory(apiVersion),
       );
@@ -174,8 +174,8 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       pixiebrixIntegrationDependencyFactory(),
     ];
 
-    const serviceContext =
-      await makeIntegrationsContextFromDependencies(dependencies);
+    const integrationContext =
+      await makeIntegrationContextFromDependencies(dependencies);
 
     const result = await reducePipeline(
       {
@@ -184,7 +184,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext,
+        integrationContext,
       },
       reduceOptionsFactory(apiVersion),
     );
@@ -211,22 +211,22 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const dependencies: IntegrationDependency[] = [
       integrationDependencyFactory({
         integrationId: serviceId,
-        outputKey: validateOutputKey("service"),
+        outputKey: validateOutputKey("integration"),
         configId: authId,
       }),
     ];
 
-    const serviceContext =
-      await makeIntegrationsContextFromDependencies(dependencies);
+    const integrationContext =
+      await makeIntegrationContextFromDependencies(dependencies);
 
     const result = await reducePipeline(
       {
         id: identityBrick.id,
-        config: { data: "@service.prop" },
+        config: { data: "@integration.prop" },
       },
       {
         ...simpleInput({}),
-        serviceContext,
+        integrationContext,
       },
       reduceOptionsFactory(apiVersion),
     );
@@ -242,8 +242,8 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       pixiebrixIntegrationDependencyFactory(),
     ];
 
-    const serviceContext =
-      await makeIntegrationsContextFromDependencies(dependencies);
+    const integrationContext =
+      await makeIntegrationContextFromDependencies(dependencies);
 
     const result = await reducePipeline(
       {
@@ -254,7 +254,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext,
+        integrationContext,
       },
       reduceOptionsFactory(apiVersion),
     );
@@ -284,7 +284,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       configId: authId,
     });
 
-    const serviceContext = await makeIntegrationsContextFromDependencies([
+    const integrationContext = await makeIntegrationContextFromDependencies([
       dependency,
     ]);
 
@@ -297,7 +297,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
       {
         ...simpleInput({}),
-        serviceContext,
+        integrationContext,
       },
       reduceOptionsFactory(apiVersion),
     );
@@ -330,24 +330,24 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       const dependencies: IntegrationDependency[] = [
         integrationDependencyFactory({
           integrationId: serviceId,
-          outputKey: validateOutputKey("service"),
+          outputKey: validateOutputKey("integration"),
           configId: authId,
         }),
       ];
 
-      const serviceContext =
-        await makeIntegrationsContextFromDependencies(dependencies);
+      const integrationContext =
+        await makeIntegrationContextFromDependencies(dependencies);
 
       const result = await reducePipeline(
         {
           id: identityBrick.id,
           config: {
-            data: toExpression(templateEngine, "{{ @service.prop }}"),
+            data: toExpression(templateEngine, "{{ @integration.prop }}"),
           },
         },
         {
           ...simpleInput({}),
-          serviceContext,
+          integrationContext,
         },
         reduceOptionsFactory(apiVersion),
       );

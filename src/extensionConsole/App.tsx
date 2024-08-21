@@ -54,6 +54,7 @@ import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 // Register the built-in bricks
 registerEditors();
@@ -93,16 +94,16 @@ const AuthenticatedContent: React.VFC = () => {
 
               <Route exact path="/settings" component={SettingsPage} />
 
-              {permit("services") && (
+              {permit(RestrictedFeatures.LOCAL_INTEGRATIONS) && (
                 <Route path="/services/:id?" component={ServicesEditor} />
               )}
 
               {/* Switch does not support consolidating Routes using a React fragment */}
-              {permit("workshop") && (
+              {permit(RestrictedFeatures.WORKSHOP) && (
                 <Route exact path="/workshop" component={WorkshopPage} />
               )}
 
-              {permit("workshop") && (
+              {permit(RestrictedFeatures.WORKSHOP) && (
                 <Route
                   exact
                   path="/workshop/create/"
@@ -110,7 +111,7 @@ const AuthenticatedContent: React.VFC = () => {
                 />
               )}
 
-              {permit("workshop") && (
+              {permit(RestrictedFeatures.WORKSHOP) && (
                 <Route
                   exact
                   path="/workshop/bricks/:id/"

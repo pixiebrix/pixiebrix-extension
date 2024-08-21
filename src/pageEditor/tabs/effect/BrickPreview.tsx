@@ -40,7 +40,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
@@ -178,7 +178,7 @@ const BrickPreview: React.FunctionComponent<{
           },
           context: {
             ...context,
-            ...(await makeIntegrationsContextFromDependencies(
+            ...(await makeIntegrationContextFromDependencies(
               integrationDependencies,
             )),
           },

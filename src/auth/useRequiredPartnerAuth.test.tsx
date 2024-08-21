@@ -35,6 +35,7 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import usePartnerAuthData from "@/auth/usePartnerAuthData";
+import { Milestones } from "@/data/model/UserMilestone";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
@@ -148,7 +149,7 @@ describe("useRequiredPartnerAuth", () => {
   test("requires integration for CE user", async () => {
     await mockAuthenticatedMeApiResponse(
       meWithPartnerApiResponseFactory({
-        milestones: [{ key: "aa_community_edition_register" }],
+        milestones: [{ key: Milestones.AA_COMMUNITY_EDITION_REGISTER }],
       }),
     );
 
@@ -169,7 +170,7 @@ describe("useRequiredPartnerAuth", () => {
   test("does not require integration for CE user once partner is removed", async () => {
     await mockAuthenticatedMeApiResponse(
       meApiResponseFactory({
-        milestones: [{ key: "aa_community_edition_register" }],
+        milestones: [{ key: Milestones.AA_COMMUNITY_EDITION_REGISTER }],
       }),
     );
 

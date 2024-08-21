@@ -893,7 +893,7 @@ exports[`ActivateModDefinitionPage renders instructions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateModDefinitionPage renders successfully with null services property 1`] = `
+exports[`ActivateModDefinitionPage renders successfully with undefined services property 1`] = `
 <DocumentFragment>
   <div>
     <div

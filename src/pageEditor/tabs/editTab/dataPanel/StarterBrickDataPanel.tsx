@@ -29,13 +29,14 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import StarterBrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickInputTab";
 import StarterBrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickOutputTab";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * @see DataPanel
  */
 const StarterBrickDataPanel: React.FC = () => {
   const { flagOn } = useFlags();
-  const showDeveloperTabs = flagOn("page-editor-developer");
+  const showDeveloperTabs = flagOn(FeatureFlags.PAGE_EDITOR_DEVELOPER);
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,

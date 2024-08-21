@@ -50,7 +50,7 @@ import {
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { ReusableAbortController } from "abort-utils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
@@ -179,10 +179,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     );
 
     try {
-      const integrationsContext = await makeIntegrationsContextFromDependencies(
+      const integrationContext = await makeIntegrationContextFromDependencies(
         modComponent.integrationDependencies,
       );
-      const modComponentContext = { ...readerContext, ...integrationsContext };
+      const modComponentContext = { ...readerContext, ...integrationContext };
 
       heading = Mustache.render(heading, modComponentContext);
 
@@ -192,7 +192,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         input: readerContext,
         optionsArgs: modComponent.optionsArgs,
         root: document,
-        serviceContext: integrationsContext,
+        integrationContext,
       };
 
       /**

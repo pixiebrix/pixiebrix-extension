@@ -68,7 +68,7 @@ describe("setting values", () => {
   });
 
   test("returns options in correct order when no trace is available", () => {
-    const actual = getMenuOptions(knownVars, null);
+    const actual = getMenuOptions(knownVars!, {});
 
     // Validate the order of the options
     expect(actual.map(([key]) => key)).toEqual([
@@ -83,13 +83,13 @@ describe("setting values", () => {
       values: trace,
     });
 
-    const actual = getMenuOptions(knownVars, null);
+    const actual = getMenuOptions(knownVars!, {});
 
     expect(actual.map(([key]) => key)).not.toContain(KnownSources.TRACE);
   });
 
   test("returns options in correct order when trace is available", () => {
-    const actual = getMenuOptions(knownVars, trace);
+    const actual = getMenuOptions(knownVars!, trace);
 
     // Validate the order of the options
     expect(actual.map(([key]) => key)).toEqual([
@@ -123,7 +123,7 @@ describe("setting values", () => {
         title: "PixieBrix Testing Page",
       },
     };
-    expect(actual[0][1]).toEqual(readerNode);
+    expect(actual[0]![1]).toEqual(readerNode);
 
     const jqNode = {
       "@jq": {
@@ -134,7 +134,7 @@ describe("setting values", () => {
         foo: "bar",
       },
     };
-    expect(actual[1][1]).toEqual(jqNode);
+    expect(actual[1]![1]).toEqual(jqNode);
   });
 });
 
@@ -149,7 +149,7 @@ describe("arrays", () => {
       isArray: true,
     });
 
-    const actual = getMenuOptions(varMap, null);
+    const actual = getMenuOptions(varMap, {});
 
     expect(actual).toEqual([
       [
@@ -188,7 +188,7 @@ describe("mod variables", () => {
       .getKnownVars()
       .get("modComponent.brickPipeline.0");
 
-    const actual = getMenuOptions(knownVars, null);
+    const actual = getMenuOptions(knownVars!, {});
     expect(actual).toEqual([
       ["mod", expect.toBeObject()],
       ["input", expect.toBeObject()],

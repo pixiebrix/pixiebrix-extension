@@ -113,8 +113,8 @@ describe("moveElement", () => {
       },
     );
 
-    expect(result[0].children[0].children[0].children).toHaveLength(2);
-    expect(result[0].children[1].children).toHaveLength(1);
+    expect(result[0]!.children![0]!.children![0]!.children).toHaveLength(2);
+    expect(result[0]!.children![1]!.children).toHaveLength(1);
   });
 
   test("can move elements earlier in container", () => {
@@ -132,9 +132,9 @@ describe("moveElement", () => {
       },
     );
 
-    expect(result[0].children).toHaveLength(2);
-    expect(result[0].children[0]).toStrictEqual(original[0].children[1]);
-    expect(result[0].children[1]).toStrictEqual(original[0].children[0]);
+    expect(result[0]!.children).toHaveLength(2);
+    expect(result[0]!.children![0]).toStrictEqual(original[0]!.children![1]);
+    expect(result[0]!.children![1]).toStrictEqual(original[0]!.children![0]);
   });
 
   test("can move elements later in container", () => {
@@ -150,6 +150,6 @@ describe("moveElement", () => {
       },
     );
 
-    expect(result[0].children).toHaveLength(2);
+    expect(result[0]!.children).toHaveLength(2);
   });
 });

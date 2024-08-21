@@ -105,7 +105,7 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.service = toExpression(
+    base.modComponent.brickPipeline[0]!.config.service = toExpression(
       "var",
       "@automationAnywhere",
     );
@@ -136,7 +136,7 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.service = toExpression(
+    base.modComponent.brickPipeline[0]!.config.service = toExpression(
       "var",
       "@automationAnywhere",
     );
@@ -168,8 +168,8 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.workspaceType = "public";
-    base.modComponent.brickPipeline[0].config.service = toExpression(
+    base.modComponent.brickPipeline[0]!.config.workspaceType = "public";
+    base.modComponent.brickPipeline[0]!.config.service = toExpression(
       "var",
       "@automationAnywhere",
     );
@@ -201,9 +201,9 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.workspaceType = "public";
-    base.modComponent.brickPipeline[0].config.isAttended = true;
-    base.modComponent.brickPipeline[0].config.service = toExpression(
+    base.modComponent.brickPipeline[0]!.config.workspaceType = "public";
+    base.modComponent.brickPipeline[0]!.config.isAttended = true;
+    base.modComponent.brickPipeline[0]!.config.service = toExpression(
       "var",
       "@automationAnywhere",
     );
@@ -235,8 +235,8 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.awaitResult = true;
-    base.modComponent.brickPipeline[0].config.service = toExpression(
+    base.modComponent.brickPipeline[0]!.config.awaitResult = true;
+    base.modComponent.brickPipeline[0]!.config.service = toExpression(
       "var",
       "@automationAnywhere",
     );

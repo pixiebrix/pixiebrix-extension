@@ -48,8 +48,8 @@ function getTabState(
   state: EditorState,
   tabKey: DataPanelTabKey = DataPanelTabKey.Input,
 ) {
-  return state.brickPipelineUIStateById[state.activeModComponentId]
-    .nodeUIStates[FOUNDATION_NODE_ID].dataPanel[tabKey];
+  return state.brickPipelineUIStateById[state.activeModComponentId!]!
+    .nodeUIStates[FOUNDATION_NODE_ID]!.dataPanel[tabKey];
 }
 
 const GOOGLE_SHEET_INTEGRATION_ID = validateRegistryId("google/sheet");
@@ -154,7 +154,7 @@ describe("Add/Remove Bricks", () => {
   test("Add Brick", async () => {
     // Get initial bricks
     const initialBricks =
-      editor.modComponentFormStates[0].modComponent.brickPipeline;
+      editor.modComponentFormStates[0]!.modComponent.brickPipeline;
 
     // Add a Brick
     editor = editorSlice.reducer(
@@ -168,51 +168,51 @@ describe("Add/Remove Bricks", () => {
 
     // Ensure we have one more brick than we started with
     expect(
-      editor.modComponentFormStates[0].modComponent.brickPipeline,
+      editor.modComponentFormStates[0]!.modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length + 1);
   });
 
   test("Remove Brick with Integration Dependency", async () => {
     // Get initial bricks and integration dependencies
     const initialBricks =
-      editor.modComponentFormStates[0].modComponent.brickPipeline;
+      editor.modComponentFormStates[0]!.modComponent.brickPipeline;
     const initialIntegrationDependencies =
-      editor.modComponentFormStates[0].integrationDependencies;
+      editor.modComponentFormStates[0]!.integrationDependencies;
 
     // Remove the brick with integration dependency
     editor = editorSlice.reducer(
       editor,
-      actions.removeNode(brickWithIntegration.instanceId),
+      actions.removeNode(brickWithIntegration.instanceId!),
     );
 
     // Ensure Integration Dependency was removed
     expect(
-      editor.modComponentFormStates[0].modComponent.brickPipeline,
+      editor.modComponentFormStates[0]!.modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);
     expect(
-      editor.modComponentFormStates[0].integrationDependencies,
+      editor.modComponentFormStates[0]!.integrationDependencies,
     ).toBeArrayOfSize(initialIntegrationDependencies.length - 1);
   });
 
   test("Remove Brick without Integration Dependency", async () => {
     // Get initial bricks and integrations
     const initialBricks =
-      editor.modComponentFormStates[0].modComponent.brickPipeline;
+      editor.modComponentFormStates[0]!.modComponent.brickPipeline;
     const initialIntegrationDependencies =
-      editor.modComponentFormStates[0].integrationDependencies;
+      editor.modComponentFormStates[0]!.integrationDependencies;
 
     // Remove the brick with integration
     editor = editorSlice.reducer(
       editor,
-      actions.removeNode(standardBrick.instanceId),
+      actions.removeNode(standardBrick.instanceId!),
     );
 
     // Ensure integration was NOT removed
     expect(
-      editor.modComponentFormStates[0].modComponent.brickPipeline,
+      editor.modComponentFormStates[0]!.modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length - 1);
     expect(
-      editor.modComponentFormStates[0].integrationDependencies,
+      editor.modComponentFormStates[0]!.integrationDependencies,
     ).toBeArrayOfSize(initialIntegrationDependencies.length);
   });
 

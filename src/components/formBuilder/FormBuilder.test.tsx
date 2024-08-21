@@ -33,6 +33,7 @@ import FormBuilder from "./FormBuilder";
 import { type RJSFSchema } from "./formBuilderTypes";
 import userEvent from "@testing-library/user-event";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 
 let exampleFormSchema: RJSFSchema;
 let defaultFieldName: string;
@@ -41,10 +42,10 @@ beforeAll(() => {
   registerDefaultWidgets();
   const { schema, uiSchema } = getExampleBrickConfig(
     CustomFormRenderer.BRICK_ID,
-  );
+  )!;
   exampleFormSchema = {
-    schema,
-    uiSchema,
+    schema: schema as Schema,
+    uiSchema: uiSchema as UiSchema,
   };
   defaultFieldName = "notes";
 });
@@ -101,7 +102,7 @@ function getAllReactSelectOptionLabels(
  * a wrapper with the testid and get the first div as the container.
  */
 const getReactSelectContainer = (): HTMLElement =>
-  screen.getByTestId("formbuilder-select-wrapper").querySelector("div");
+  screen.getByTestId("formbuilder-select-wrapper").querySelector("div")!;
 
 describe("Dropdown field", () => {
   async function addOption() {
@@ -247,7 +248,7 @@ describe("Dropdown with labels field", () => {
     // Set option value
     const firstOptionValueInput = container.querySelector(
       `[name="form.schema.properties.${defaultFieldName}.oneOf.0.const"]`,
-    );
+    )!;
 
     fireTextInput(firstOptionValueInput, "1");
     await waitForEffect();
@@ -255,7 +256,7 @@ describe("Dropdown with labels field", () => {
     // Set option label
     const firstOptionLabelInput = container.querySelector(
       `[name="form.schema.properties.${defaultFieldName}.oneOf.0.title"]`,
-    );
+    )!;
     fireTextInput(firstOptionLabelInput, "Test option");
     await waitForEffect();
   }

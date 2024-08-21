@@ -186,7 +186,7 @@ describe("useSubmitPackage", () => {
     const id = uuidv4();
 
     await act(async () => {
-      await result.current.remove({ id, name: "Test" });
+      await result.current.remove!({ id, name: "Test" });
     });
 
     expect(showConfirmation).toHaveBeenCalledOnce();

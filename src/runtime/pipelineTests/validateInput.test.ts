@@ -34,7 +34,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { ContextError } from "@/errors/genericErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import makeIntegrationsContextFromDependencies from "@/integrations/util/makeIntegrationsContextFromDependencies";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import type {
   SanitizedConfig,
   SanitizedIntegrationConfig,
@@ -191,7 +191,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
     brickRegistry.register([new IntegrationBrick()]);
 
-    const serviceContext = await makeIntegrationsContextFromDependencies([
+    const integrationContext = await makeIntegrationContextFromDependencies([
       {
         integrationId: integrationDefinition.metadata.id,
         configId: config.id,
@@ -214,7 +214,7 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       pipeline,
       {
         ...simpleInput({}),
-        serviceContext,
+        integrationContext,
       },
       reduceOptionsFactory(apiVersion),
     );
@@ -349,6 +349,6 @@ describe("URLPattern smoke tests", () => {
     const result = pattern.exec(
       "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
     );
-    expect(result.pathname.groups.id).toBe("@scope/collection/name");
+    expect(result!.pathname.groups.id).toBe("@scope/collection/name");
   });
 });

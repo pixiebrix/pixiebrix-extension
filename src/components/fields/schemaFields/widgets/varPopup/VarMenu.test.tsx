@@ -27,7 +27,7 @@ import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 
 const TestWrapper: React.FunctionComponent<{
   renderMenu: (
-    inputElementRef: MutableRefObject<HTMLInputElement>,
+    inputElementRef: MutableRefObject<HTMLInputElement | null>,
   ) => React.ReactNode;
 }> = ({ renderMenu }) => {
   const inputElementRef = React.useRef<HTMLInputElement>(null);
@@ -75,7 +75,7 @@ describe("VarMenu", () => {
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
             editorActions.setActiveNodeId(
-              formState.modComponent.brickPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0]!.instanceId!,
             ),
           );
         },
@@ -110,7 +110,7 @@ describe("VarMenu", () => {
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
             editorActions.setActiveNodeId(
-              formState.modComponent.brickPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0]!.instanceId!,
             ),
           );
 
@@ -155,7 +155,7 @@ describe("VarMenu", () => {
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
           dispatch(
             editorActions.setActiveNodeId(
-              formState.modComponent.brickPipeline[0].instanceId,
+              formState.modComponent.brickPipeline[0]!.instanceId!,
             ),
           );
 

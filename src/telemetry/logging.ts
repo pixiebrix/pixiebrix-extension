@@ -46,6 +46,7 @@ import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
 import { readAuthData } from "@/auth/authStorage";
 import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
 import { type RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -342,8 +343,7 @@ export async function reportToApplicationErrorTelemetry(
   // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
   if (
     hasSpecificErrorCause(error, BusinessError) ||
-    // `application-error-telemetry-disable-report` is a kill switch for Application error telemetry
-    (await flagOn("application-error-telemetry-disable-report"))
+    (await flagOn(FeatureFlags.APPLICATION_ERROR_TELEMETRY_DISABLE_REPORT))
   ) {
     return;
   }

@@ -23,26 +23,17 @@ import {
 } from "@/auth/authStorage";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import { mergeAsyncState } from "@/utils/asyncStateUtils";
-
-export const RESTRICTED_PREFIX = "restricted";
-
-// Flags controlled on backend at http://github.com/pixiebrix/pixiebrix-app/blob/f082ff5161ff79f696d9a8c35c755430e88fa4ab/api/serializers/account.py#L173-L173
-type RestrictedFeature =
-  | "workshop"
-  | "services"
-  | "permissions"
-  | "reset"
-  | "marketplace"
-  | "uninstall"
-  | "clear-token"
-  | "service-url"
-  | "page-editor";
+import {
+  type FeatureFlag,
+  mapRestrictedFeatureToFeatureFlag,
+  type RestrictedFeature,
+} from "@/auth/featureFlags";
 
 export type FlagHelpers = {
   permit: (area: RestrictedFeature) => boolean;
   restrict: (area: RestrictedFeature) => boolean;
-  flagOn: (flag: string) => boolean;
-  flagOff: (flag: string) => boolean;
+  flagOn: (flag: FeatureFlag) => boolean;
+  flagOff: (flag: FeatureFlag) => boolean;
 };
 
 type HookResult = FlagHelpers & {
@@ -82,11 +73,11 @@ function useFlags(): HookResult {
 
     const helpers: FlagHelpers = {
       permit: (area: RestrictedFeature) =>
-        !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
+        !flagSet.has(mapRestrictedFeatureToFeatureFlag(area)),
       restrict: (area: RestrictedFeature) =>
-        flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
-      flagOn: (flag: string) => flagSet.has(flag),
-      flagOff: (flag: string) => !flagSet.has(flag),
+        flagSet.has(mapRestrictedFeatureToFeatureFlag(area)),
+      flagOn: (flag: FeatureFlag) => flagSet.has(flag),
+      flagOff: (flag: FeatureFlag) => !flagSet.has(flag),
     };
 
     return {

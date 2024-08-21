@@ -36,7 +36,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       break;
     }
 
-    case KnownSources.SERVICE: {
+    case KnownSources.INTEGRATION: {
       label = "Integrations";
       break;
     }

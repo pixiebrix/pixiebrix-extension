@@ -24,6 +24,7 @@ import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { transformUserMilestoneResponse } from "@/data/model/UserMilestone";
 import { type components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
+import { milestoneFactory } from "@/testUtils/factories/milestoneFactories";
 
 const renderUseMilestones = (
   milestonesApiResponses: components["schemas"]["Me"]["milestones"],
@@ -51,53 +52,55 @@ describe("useMilestones", () => {
   });
 
   test("has milestone", () => {
+    const userMilestone = milestoneFactory();
+
     const {
       result: {
         current: { hasMilestone },
       },
     } = renderUseMilestones([
       {
-        key: "test_milestone",
+        key: userMilestone,
       },
     ]);
 
-    expect(hasMilestone("test_milestone")).toBe(true);
-    expect(hasMilestone("does_not_exist")).toBe(false);
+    expect(hasMilestone(userMilestone)).toBe(true);
+    expect(hasMilestone(milestoneFactory())).toBe(false);
   });
 
   test("has every milestone", () => {
+    const milestone1 = milestoneFactory();
+    const milestone2 = milestoneFactory();
+
     const {
       result: {
         current: { hasEveryMilestone },
       },
     } = renderUseMilestones([
       {
-        key: "test_milestone_1",
+        key: milestone1,
       },
       {
-        key: "test_milestone_2",
+        key: milestone2,
       },
     ]);
 
-    expect(hasEveryMilestone(["test_milestone_1"])).toBe(true);
-    expect(hasEveryMilestone(["test_milestone_1", "test_milestone_2"])).toBe(
-      true,
-    );
+    expect(hasEveryMilestone([milestone1])).toBe(true);
+    expect(hasEveryMilestone([milestone1, milestone2])).toBe(true);
     expect(
-      hasEveryMilestone([
-        "test_milestone_1",
-        "test_milestone_2",
-        "does_not_exist",
-      ]),
+      hasEveryMilestone([milestone1, milestone2, milestoneFactory()]),
     ).toBe(false);
     expect(hasEveryMilestone([])).toBe(true);
   });
 
   test("get milestone", () => {
+    const milestone1 = milestoneFactory();
+    const milestone2 = milestoneFactory();
+
     const test_milestone_response: NonNullable<
       components["schemas"]["Me"]["milestones"]
     >[number] = {
-      key: "test_milestone_1",
+      key: milestone1,
       metadata: {
         value: "foo",
       },
@@ -109,16 +112,16 @@ describe("useMilestones", () => {
     } = renderUseMilestones([
       test_milestone_response,
       {
-        key: "test_milestone_2",
+        key: milestone2,
         metadata: {
           value: "bar",
         },
       },
     ]);
 
-    expect(getMilestone("test_milestone_1")).toStrictEqual(
+    expect(getMilestone(milestone1)).toStrictEqual(
       transformUserMilestoneResponse(test_milestone_response),
     );
-    expect(getMilestone("does_not_exist")).toBeUndefined();
+    expect(getMilestone(milestoneFactory())).toBeUndefined();
   });
 });

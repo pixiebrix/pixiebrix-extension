@@ -41,6 +41,7 @@ import { uninstallContextMenu } from "@/background/contextMenus/uninstallContext
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -300,7 +301,9 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
 }
 
 export async function updateModsIfForceUpdatesAvailable() {
-  const autoModUpdatesEnabled = await flagOn("automatic-mod-updates");
+  const autoModUpdatesEnabled = await flagOn(
+    FeatureFlags.AUTOMATIC_MOD_UPDATES,
+  );
   if (!autoModUpdatesEnabled) {
     return;
   }

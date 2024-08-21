@@ -23,12 +23,16 @@ import { type JsonObject } from "type-fest";
 import { containsTemplateExpression } from "@/utils/expressionUtils";
 // XXX: should this be using the platform from reducePipeline?
 import { getPlatform } from "@/platform/platformContext";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 export type AsyncTemplateRenderer = (
-  template: string,
+  template: Nullishable<string>,
   context: unknown,
 ) => Promise<unknown>;
-export type TemplateRenderer = (template: string, context: unknown) => unknown;
+export type TemplateRenderer = (
+  template: Nullishable<string>,
+  context: unknown,
+) => unknown;
 
 export type RendererOptions = {
   autoescape?: boolean | null;
@@ -40,15 +44,19 @@ export function engineRenderer(
 ): AsyncTemplateRenderer | null {
   const autoescape = options.autoescape ?? true;
 
-  if (templateEngine == null) {
-    throw new Error("templateEngine is required");
-  }
+  // Defensive check
+  assertNotNullish(templateEngine, "templateEngine is required");
 
   switch (templateEngine.toLowerCase()) {
     case "mustache": {
       // Mustache can run directly (not in sandbox) because it doesn't use eval or Function constructor
-      return async (template, ctxt) =>
-        Mustache.render(
+      return async (template, ctxt) => {
+        if (template == null) {
+          // Avoid crashing on nullish
+          return "";
+        }
+
+        return Mustache.render(
           template,
           ctxt,
           {},
@@ -57,17 +65,23 @@ export function engineRenderer(
             escape: autoescape ? undefined : identity,
           },
         );
+      };
     }
 
     case "nunjucks": {
       return async (template, ctxt) => {
+        if (template == null) {
+          // Avoid crashing on nullish
+          return "";
+        }
+
         if (!containsTemplateExpression(template)) {
           // Avoid trip to sandbox for literal values
           return template;
         }
 
         // Convert top level data from kebab case to snake case in order to be valid identifiers
-        const snakeCased = mapKeys(ctxt as UnknownObject, (value, key) =>
+        const snakeCased = mapKeys(ctxt as UnknownObject, (_value, key) =>
           key.replaceAll("-", "_"),
         );
 
@@ -82,6 +96,11 @@ export function engineRenderer(
 
     case "handlebars": {
       return async (template, ctxt) => {
+        if (template == null) {
+          // Avoid crashing on nullish
+          return "";
+        }
+
         if (!containsTemplateExpression(template)) {
           // Avoid trip to sandbox for literal values
           return template;
@@ -98,6 +117,11 @@ export function engineRenderer(
 
     case "var": {
       return async (template, ctxt) => {
+        if (template == null) {
+          // XXX: consider converting to null because undefined is not a valid JSON value?
+          return template;
+        }
+
         // `var` can run directly (not in sandbox) because it doesn't use eval or Function constructor
         const value = getPropByPath(ctxt as UnknownObject, template);
         if (value && typeof value === "object" && "__service" in value) {
