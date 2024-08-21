@@ -46,23 +46,17 @@ export const selectIsModComponentSavedOnCloud =
   (modComponentId: UUID) => (state: ModComponentsRootState) =>
     isModComponentSavedOnCloudSelector(state, modComponentId);
 
-const activatedModComponentsForModSelector = createSelector(
+export const selectGetModComponentsForMod = createSelector(
   selectActivatedModComponents,
-  (state: ModComponentsRootState, modId: RegistryId) => modId,
-  (activatedModComponents, modId) =>
-    activatedModComponents.filter(
-      (activatedModComponent) => activatedModComponent._recipe?.id === modId,
+  (activatedModComponents) =>
+    memoize((modId: RegistryId) =>
+      activatedModComponents.filter(
+        (activatedModComponent) => activatedModComponent._recipe?.id === modId,
+      ),
     ),
-);
-
-export const selectModComponentsForMod = memoize(
-  (modId: RegistryId) => (state: ModComponentsRootState) =>
-    activatedModComponentsForModSelector(state, modId),
 );
 
 export const selectModHasAnyActivatedModComponents =
   (modId?: RegistryId) =>
   (state: ModComponentsRootState): boolean =>
-    Boolean(
-      modId && !isEmpty(activatedModComponentsForModSelector(state, modId)),
-    );
+    Boolean(modId && !isEmpty(selectGetModComponentsForMod(state)(modId)));

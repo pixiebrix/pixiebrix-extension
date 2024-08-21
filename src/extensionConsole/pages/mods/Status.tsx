@@ -29,13 +29,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { type ModViewItem } from "@/types/modTypes";
-import { useSelector } from "react-redux";
-import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
 import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
+import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
@@ -51,7 +50,7 @@ const Status: React.VoidFunctionComponent<{
     modActions: { showActivate, showReactivate },
   } = modViewItem;
 
-  const modComponents = useSelector(selectModComponentsForMod(modId));
+  const modComponents = useActivatedModComponents(modId);
 
   const { hasPermissions, requestPermissions } =
     useModPermissions(modComponents);

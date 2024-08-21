@@ -32,17 +32,17 @@ import {
 import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
 import { type ModViewItem } from "@/types/modTypes";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { deactivateMod } from "@/store/deactivateUtils";
-import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
 import useUserAction from "@/hooks/useUserAction";
 import { useDeletePackageMutation } from "@/data/service/api";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
@@ -70,7 +70,7 @@ const ModsPageActions: React.FunctionComponent<{
     },
   } = modViewItem;
 
-  const modComponents = useSelector(selectModComponentsForMod(modId));
+  const modComponents = useActivatedModComponents(modId);
 
   const deactivateModAction = useUserAction(
     async () => {

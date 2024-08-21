@@ -43,7 +43,6 @@ import {
   getAllModComponentDefinitionsWithType,
   getModComponentIdsForModComponentDefinitions,
 } from "@/starterBricks/starterBrickModUtils";
-import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
 import { type SidebarState } from "@/types/sidebarTypes";
 import { getEventKeyForPanel } from "@/store/sidebar/eventKeyUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -61,6 +60,7 @@ import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -119,11 +119,10 @@ function closeStarterModTabs({
     modDefinition,
     StarterBrickTypes.SIDEBAR_PANEL,
   );
-  const activatedModComponents = selectModComponentsForMod(
+  const activatedModComponents = getModComponentsForMod(
     modDefinition.metadata.id,
-  )({
-    options: optionsState,
-  });
+    optionsState,
+  );
   const actionPanelIds = getModComponentIdsForModComponentDefinitions(
     activatedModComponents,
     actionPanelDefinitions,
