@@ -30,7 +30,7 @@ modDefinitionsListenerMiddleware.startListening({
     apiEndpoints.updatePackage.matchFulfilled,
     apiEndpoints.deletePackage.matchFulfilled,
   ),
-  effect(action, { dispatch, getState }) {
+  effect(action, { dispatch }) {
     void dispatch(syncRemoteModDefinitions());
   },
 });

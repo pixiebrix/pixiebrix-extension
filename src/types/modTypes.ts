@@ -33,7 +33,6 @@ export type UnavailableMod = Pick<
   isStub: true;
 };
 
-// XXX: should this be SerializedModComponent instead of HydratedModComponent? The old screens used ResolvedModComponent
 export type Mod = ModDefinition | UnavailableMod;
 
 export type SharingType =
