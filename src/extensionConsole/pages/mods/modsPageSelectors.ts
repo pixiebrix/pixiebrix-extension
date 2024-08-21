@@ -32,6 +32,7 @@ import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -50,7 +51,16 @@ export const selectSearchQuery = ({ modsPage }: ModsPageRootState) =>
 const selectActivatedModIds = createSelector(
   selectActivatedModComponents,
   (activatedModComponents) =>
-    new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+    new Set(
+      activatedModComponents.map((modComponent) => {
+        assertNotNullish(
+          modComponent._recipe,
+          "Found activated mod component without a _recipe! " +
+            modComponent.label,
+        );
+        return modComponent._recipe.id;
+      }),
+    ),
 );
 
 const selectModsList = createSelector(
