@@ -71,8 +71,8 @@ export const WithFormikField: ComponentStory<typeof Form> = (args) => (
   <Provider store={editorStore()}>
     <Form
       validationSchema={SchemaShape}
-      initialValues={initialValues}
       {...args}
+      initialValues={initialValues}
     >
       <ConnectedFieldTemplate name="title" placeholder="Title" />
       <ConnectedFieldTemplate
@@ -91,8 +91,8 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   <Provider store={editorStore()}>
     <Form
       validationSchema={SchemaShape}
-      initialValues={initialValues}
       {...args}
+      initialValues={initialValues}
       renderSubmit={() => <button type="submit">Click to submit</button>}
     >
       <ConnectedFieldTemplate name="title" placeholder="Title" />
@@ -118,9 +118,13 @@ const selectOptions: Array<Option<number>> = range(1, 16).map((x: number) => ({
   value: x,
 }));
 
-const BootstrapFormControlWidget: CustomFieldWidget = (props) => (
+const BootstrapFormControlWidget: CustomFieldWidget = ({ value, ...props }) => (
   <div style={{ border: "1px solid black" }}>
-    <BootstrapForm.Control type="password" {...props} />
+    <BootstrapForm.Control
+      type="password"
+      {...props}
+      value={value ?? undefined}
+    />
   </div>
 );
 
@@ -128,8 +132,8 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
   <Provider store={editorStore()}>
     <Form
       validationSchema={AllFieldsSchema}
-      initialValues={allFieldsInitialValues}
       {...args}
+      initialValues={allFieldsInitialValues}
     >
       <ConnectedFieldTemplate name="name" label="Name" description="A name" />
       <ConnectedFieldTemplate

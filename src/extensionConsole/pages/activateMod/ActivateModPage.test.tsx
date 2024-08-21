@@ -95,10 +95,12 @@ describe("ActivateModDefinitionPage", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("renders successfully with null services property", async () => {
+  test("renders successfully with undefined services property", async () => {
     setupMod(
       defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory({ services: null })],
+        extensionPoints: [
+          modComponentDefinitionFactory({ services: undefined }),
+        ],
       }),
     );
     const { asFragment } = render(<ActivateModDefinitionPageWrapper />);

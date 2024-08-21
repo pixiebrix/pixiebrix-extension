@@ -47,7 +47,7 @@ const Template: ComponentStory<
         apiVersion: "v3",
         matchPatterns: [],
       }}
-      validationSchema={null}
+      validationSchema={undefined}
       onSubmit={(values, { setSubmitting }) => {
         action("onSubmit")(values);
         setSubmitting(false);

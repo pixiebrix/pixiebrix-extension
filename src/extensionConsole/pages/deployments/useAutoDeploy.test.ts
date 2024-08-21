@@ -47,7 +47,9 @@ const mockHooks = ({
     requestPermissions: jest.fn(),
   }));
 
-  jest.mocked(activateDeployments).mockReturnValue(activateDeploymentsResponse);
+  jest
+    .mocked(activateDeployments)
+    .mockResolvedValue(activateDeploymentsResponse);
 };
 
 describe("useAutoDeploy", () => {

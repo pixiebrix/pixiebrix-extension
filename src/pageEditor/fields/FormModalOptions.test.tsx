@@ -47,7 +47,7 @@ describe("FormModalOptions", () => {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
           dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
-          dispatch(editorActions.setActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId!));
         },
       },
     );

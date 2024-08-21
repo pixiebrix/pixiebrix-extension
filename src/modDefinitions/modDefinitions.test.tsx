@@ -28,6 +28,8 @@ import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type AsyncState } from "@/types/sliceTypes";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/components/ConfirmationModal", () => ({
@@ -71,7 +73,7 @@ test("load mod definitions and save one", async () => {
   await localRegistry.syncPackages();
 
   // Sanity check that localRegistry.syncPackages fetches from server
-  expect(appApiMock.history.get).toHaveLength(1);
+  expect(appApiMock.history.get!).toHaveLength(1);
 
   // Skip the messenger, and use the IDB registry directly
   jest
@@ -91,10 +93,10 @@ test("load mod definitions and save one", async () => {
     // - load the mod definitions from server
     // - parse the raw mod definitions and save them to the registry (local storage)
     // - return all the mod definitions from the registry to the caller
-    const { data: allModDefinitions, isFetching } = defaultInitialValue(
-      useAllModDefinitions(),
-      [],
-    );
+    const { data: allModDefinitions, isFetching } = defaultInitialValue<
+      ModDefinition[],
+      AsyncState<ModDefinition[]>
+    >(useAllModDefinitions(), []);
 
     const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
 
@@ -103,7 +105,7 @@ test("load mod definitions and save one", async () => {
     // Track if re-fetching of the mod definitions by the registry has been called
     const calledRefetch = React.useRef(false);
 
-    if (!isFetching && allModDefinitions.length > 0 && !calledSave.current) {
+    if (!isFetching && allModDefinitions!.length > 0 && !calledSave.current) {
       // The saveRecipe action involves
       // - preparing a recipe for saving
       // - calling RTK Query mutation
@@ -125,7 +127,7 @@ test("load mod definitions and save one", async () => {
     return (
       <div>
         {isFetching ? "Fetching" : "Not Fetching"}
-        {`Got ${allModDefinitions.length} mod definitions`}
+        {`Got ${allModDefinitions!.length} mod definitions`}
         {isSavingRecipe ? "Saving" : "Not Saving"}
         {calledSave.current ? "Called Save" : "Not Called Save"}
       </div>
@@ -147,7 +149,7 @@ test("load mod definitions and save one", async () => {
   // Let the registry and the RTK Query to load and update a mod definition
   await act(async () => fetchingSavingPromise.promise);
 
-  expect(appApiMock.history.get.map((x) => x.url)).toEqual([
+  expect(appApiMock.history.get!.map((x) => x.url)).toEqual([
     "/api/registry/bricks/",
     "/api/bricks/",
     "/api/registry/bricks/",

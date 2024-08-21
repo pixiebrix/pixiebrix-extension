@@ -38,14 +38,14 @@ describe("PipelineToggleField", () => {
     );
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
-    await userEvent.click(document.querySelector(".btn"));
+    await userEvent.click(document.querySelector(".btn")!);
 
-    expect(getFormState().test).toStrictEqual(toExpression("pipeline", []));
+    expect(getFormState()!.test).toStrictEqual(toExpression("pipeline", []));
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
-    await userEvent.click(document.querySelector(".btn"));
+    await userEvent.click(document.querySelector(".btn")!);
 
-    expect(getFormState().test).toBeNull();
+    expect(getFormState()!.test).toBeNull();
   });
 
   it("can start toggled", async () => {
@@ -63,13 +63,13 @@ describe("PipelineToggleField", () => {
     );
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
-    await userEvent.click(document.querySelector(".btn"));
+    await userEvent.click(document.querySelector(".btn")!);
 
-    expect(getFormState().test).toBeNull();
+    expect(getFormState()!.test).toBeNull();
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
-    await userEvent.click(document.querySelector(".btn"));
+    await userEvent.click(document.querySelector(".btn")!);
 
-    expect(getFormState().test).toStrictEqual(toExpression("pipeline", []));
+    expect(getFormState()!.test).toStrictEqual(toExpression("pipeline", []));
   });
 });

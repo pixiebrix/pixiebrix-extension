@@ -57,7 +57,7 @@ describe("useKeyboardNavigation", () => {
 
     expect(result.all).toHaveLength(3);
 
-    const prevResult = result.all[1];
+    const prevResult = result.all[1]!;
 
     if (prevResult instanceof Error) {
       throw new TypeError("prevResult is an error");
@@ -97,7 +97,7 @@ describe("useKeyboardNavigation", () => {
 
     expect(result.all).toHaveLength(4);
 
-    const prevResult = result.all[2];
+    const prevResult = result.all[2]!;
 
     if (prevResult instanceof Error) {
       throw new TypeError("prevResult is an error");

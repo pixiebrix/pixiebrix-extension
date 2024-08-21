@@ -241,20 +241,20 @@ describe("When rendered in panel", () => {
     expect(rows).toHaveLength(2);
 
     // First row should have 1 column with h1
-    const firstRowColumn = within(rows[0]).getByTestId("column");
+    const firstRowColumn = within(rows[0]!).getByTestId("column");
     expect(firstRowColumn).toBeInTheDocument();
     expect(
       within(firstRowColumn).getByRole("heading", { level: 1 }),
     ).toBeInTheDocument();
 
     // Second row should have a class and 2 columns
-    const secondRow = rows[1];
+    const secondRow = rows[1]!;
     expect(secondRow).toHaveClass("row-test-class");
     const columns = within(secondRow).getAllByTestId("column");
     expect(columns).toHaveLength(2);
     expect(columns[0]).toHaveClass("column-test-class");
-    expect(within(columns[0]).getByText(/left column/i)).toBeInTheDocument();
-    expect(within(columns[1]).getByText(/right column/i)).toBeInTheDocument();
+    expect(within(columns[0]!).getByText(/left column/i)).toBeInTheDocument();
+    expect(within(columns[1]!).getByText(/right column/i)).toBeInTheDocument();
   });
 
   describe("button", () => {

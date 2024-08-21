@@ -182,7 +182,7 @@ async function expectTabsAndHeadersToBeLoaded() {
 beforeAll(() => {
   registerDefaultWidgets();
   findSanitizedIntegrationConfigMock.mockImplementation(
-    async (serviceId) => servicesLookup[serviceId],
+    async (serviceId) => servicesLookup[serviceId]!,
   );
   useAuthOptionsMock.mockReturnValue(
     valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption]),

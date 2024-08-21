@@ -63,7 +63,7 @@ describe("IntegrationConfigEditorModal", () => {
     expect(screen.getByText("Close")).not.toBeNull();
 
     const dialogRoot = screen.getByRole("dialog");
-    for (const property of Object.keys(integration.schema.properties)) {
+    for (const property of Object.keys(integration.schema.properties!)) {
       expect(
         within(dialogRoot).getByLabelText(fieldLabel(property)),
       ).toBeVisible();

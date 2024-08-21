@@ -31,12 +31,11 @@ export default {
   },
 } as ComponentMeta<typeof GatePanel>;
 
-function optionsStore(initialState?: unknown) {
+function optionsStore() {
   return configureStore({
     reducer: {
       editor: editorSlice.reducer,
     },
-    preloadedState: initialState,
   });
 }
 

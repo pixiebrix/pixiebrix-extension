@@ -38,7 +38,7 @@ export default {
 type StoryType = ComponentProps<typeof DeploymentModal> & {
   updateAvailable?: boolean;
   enforceUpdateMillis?: number | null;
-  updatePromptTimestamp?: number | null;
+  updatePromptTimestamp: number | null;
 };
 
 const Template: Story<StoryType> = ({
