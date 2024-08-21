@@ -17,8 +17,14 @@
 
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 
-export function selectAllModDefinitions({
+export function selectModDefinitionsAsyncState({
   modDefinitions,
 }: ModDefinitionsRootState): ModDefinitionsRootState["modDefinitions"] {
   return modDefinitions;
+}
+
+export function selectAllModDefinitions({
+  modDefinitions,
+}: ModDefinitionsRootState): ModDefinitionsRootState["modDefinitions"]["data"] {
+  return modDefinitions.data ?? [];
 }

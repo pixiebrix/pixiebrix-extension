@@ -22,19 +22,14 @@ import { idHasScope, mapModComponentToUnavailableMod } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 
-export type BuildModsListInputs = {
-  userScope: string;
-  activatedModComponents: ActivatedModComponent[];
-  allModDefinitions: ModDefinition[];
-  activatedModIds: Set<RegistryId>;
-};
-
-export default function buildModsList({
-  userScope,
-  activatedModComponents,
-  allModDefinitions,
-  activatedModIds,
-}: BuildModsListInputs): Mod[] {
+// Note: Using regular function inputs here instead of an object for better
+// ergonomics when using as the "result function" with reselect selectors.
+export default function buildModsList(
+  userScope: string,
+  activatedModComponents: ActivatedModComponent[],
+  allModDefinitions: ModDefinition[],
+  activatedModIds: Set<RegistryId>,
+): Mod[] {
   if (allModDefinitions.length === 0 && activatedModComponents.length === 0) {
     return [] as Mod[];
   }

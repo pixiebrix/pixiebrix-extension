@@ -30,8 +30,12 @@ export const modViewItemFactory = define<ModViewItem>({
     return `Mod view item ${n} created for testing`;
   },
   isUnavailable: false,
-  sharingSource: undefined,
-  status: undefined,
+  sharingSource: {
+    type: "Personal",
+    label: "Personal",
+    organization: undefined,
+  },
+  status: "Active",
   updatedAt: nowTimestamp(),
   modId: registryIdFactory,
   editablePackageId: autoUUIDSequence(),

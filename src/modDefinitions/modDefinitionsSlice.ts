@@ -55,10 +55,6 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   void,
   { state: ModDefinitionsRootState }
 >("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
-  if (!getState().modDefinitions.isCacheUninitialized) {
-    throw new Error("Already loaded mod definitions from cache");
-  }
-
   const registryModDefinitions = await modDefinitionRegistry.all();
   // Remove the top level registry item id to satisfy types properly
   return registryModDefinitions.map((x) => {
@@ -72,10 +68,6 @@ export const syncRemoteModDefinitions = createAsyncThunk<
   void,
   { state: ModDefinitionsRootState }
 >("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
-  if (getState().modDefinitions.isFetchingFromRemote) {
-    throw new Error("Already fetching mod definitions from server");
-  }
-
   await syncRemotePackages();
   const registryModDefinitions = await modDefinitionRegistry.all();
   // Remove the top level registry item id to satisfy types properly

@@ -74,14 +74,14 @@ const selectModsPageUserPermissions = createSelector(
     if (featureFlags == null) {
       return {
         canPublish: false,
-        canUninstall: false,
+        canDeactivate: false,
         canEditInWorkshop: false,
       };
     }
 
     return {
       canPublish: featureFlags.includes("publish-to-marketplace"),
-      canUninstall: !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`),
+      canDeactivate: !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`),
       canEditInWorkshop: featureFlags.includes("workshop"),
     };
   },
@@ -109,5 +109,25 @@ export const selectModViewItems = createSelector(
   selectModsPageUserPermissions,
   appApi.endpoints.getMarketplaceListings.select(),
   appApi.endpoints.getEditablePackages.select(),
-  buildModViewItems,
+  (
+    mods,
+    getActivationStatus,
+    getVersionStatus,
+    getSharingSource,
+    getCanEditModScope,
+    userPermissions,
+    { data: listings = {} },
+    { data: editablePackages = [] },
+    // eslint-disable-next-line max-params -- Can't make a selector have an inputs object
+  ) =>
+    buildModViewItems({
+      mods,
+      getActivationStatus,
+      getVersionStatus,
+      getSharingSource,
+      getCanEditModScope,
+      userPermissions,
+      listings,
+      editablePackages,
+    }),
 );

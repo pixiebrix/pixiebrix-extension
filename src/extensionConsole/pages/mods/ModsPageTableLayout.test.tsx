@@ -16,11 +16,9 @@
  */
 
 import React from "react";
-import { render } from "@/extensionConsole/testHelpers";
+import { act, render, screen } from "@/extensionConsole/testHelpers";
 import ModsPageTableLayout from "@/extensionConsole/pages/mods/ModsPageTableLayout";
-import { type Mod } from "@/types/modTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { act, screen } from "@testing-library/react";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
 import { mockAuthenticatedMeApiResponse } from "@/testUtils/userMock";
@@ -44,8 +42,6 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
 jest.mock("@/extensionConsole/pages/deployments/useAutoDeploy");
 jest.mocked(useAutoDeploy).mockReturnValue({ isAutoDeploying: false });
 
-const mods: Mod[] = [];
-
 describe("ModsPageTableLayout", () => {
   const { env } = process;
 
@@ -65,8 +61,11 @@ describe("ModsPageTableLayout", () => {
   test("renders", async () => {
     const { asFragment } = render(
       <DeploymentsProvider>
-        <ModsPageTableLayout mods={mods} />
+        <ModsPageTableLayout />
       </DeploymentsProvider>,
+      {
+        setupRedux(dispatch) {},
+      },
     );
     await waitForEffect();
 
@@ -78,7 +77,7 @@ describe("ModsPageTableLayout", () => {
 
     const deferred = onDeferredGet("/api/onboarding/starter-blueprints/");
 
-    render(<ModsPageTableLayout mods={mods} />);
+    render(<ModsPageTableLayout />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console"),
@@ -95,7 +94,7 @@ describe("ModsPageTableLayout", () => {
   });
 
   test("get started tab is active by default", async () => {
-    render(<ModsPageTableLayout mods={mods} />);
+    render(<ModsPageTableLayout />);
     await waitForEffect();
     expect(
       screen.getByText("Welcome to the PixieBrix Extension Console"),
@@ -110,7 +109,7 @@ describe("ModsPageTableLayout", () => {
         organization: meOrganizationApiResponseFactory(),
       }),
     );
-    render(<ModsPageTableLayout mods={mods} />);
+    render(<ModsPageTableLayout />);
     await waitForEffect();
     expect(
       screen.queryByText("Welcome to the PixieBrix Extension Console"),
@@ -120,7 +119,7 @@ describe("ModsPageTableLayout", () => {
 
   test("search query heading renders", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    render(<ModsPageTableLayout mods={mods} />);
+    render(<ModsPageTableLayout />);
 
     await waitForEffect();
 
@@ -149,7 +148,7 @@ describe("ModsPageTableLayout", () => {
 describe("Serializable Data Test", () => {
   test("Pushes unserializable data to redux", async () => {
     const spy = jest.spyOn(console, "error");
-    render(<ModsPageTableLayout mods={mods} />, {
+    render(<ModsPageTableLayout />, {
       setupRedux(dispatch) {
         dispatch(
           modsPageSlice.actions.setSearchQuery((() => {}) as unknown as string),
