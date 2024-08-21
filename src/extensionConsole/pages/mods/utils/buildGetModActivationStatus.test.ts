@@ -21,7 +21,6 @@ import {
   activatedModComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { type Mod } from "@/types/modTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { nowTimestamp } from "@/utils/timeUtils";
 
