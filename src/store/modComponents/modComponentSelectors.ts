@@ -19,7 +19,7 @@ import { type ModComponentsRootState } from "@/store/modComponents/modComponentT
 import { createSelector } from "@reduxjs/toolkit";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { isEmpty } from "lodash";
+import { isEmpty, memoize } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 
 export function selectActivatedModComponents({
@@ -55,9 +55,10 @@ const activatedModComponentsForModSelector = createSelector(
     ),
 );
 
-export const selectModComponentsForMod =
+export const selectModComponentsForMod = memoize(
   (modId: RegistryId) => (state: ModComponentsRootState) =>
-    activatedModComponentsForModSelector(state, modId);
+    activatedModComponentsForModSelector(state, modId),
+);
 
 export const selectModHasAnyActivatedModComponents =
   (modId?: RegistryId) =>
