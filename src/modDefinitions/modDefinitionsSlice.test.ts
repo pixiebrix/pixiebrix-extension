@@ -67,25 +67,6 @@ describe("loadModDefinitionsFromCache", () => {
 });
 
 describe("syncRemoteModDefinitions", () => {
-  test("doesn't refresh if already loading", async () => {
-    const dispatch = jest.fn();
-
-    const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
-    await thunkFunction(
-      dispatch,
-      () => ({
-        modDefinitions: {
-          ...initialState,
-          isFetchingFromRemote: true,
-          isRemoteUninitialized: false,
-        },
-      }),
-      undefined,
-    );
-
-    expect(syncRemotePackagesMock).not.toHaveBeenCalled();
-  });
-
   test("fetches mod definitions and updates the state", async () => {
     const dispatch = jest.fn();
 

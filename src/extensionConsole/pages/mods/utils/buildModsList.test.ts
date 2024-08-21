@@ -30,14 +30,7 @@ const userScope = "my-test-user";
 
 describe("buildModsList", () => {
   it("returns an empty array when inputs are empty", () => {
-    expect(
-      buildModsList({
-        userScope,
-        activatedModComponents: [],
-        allModDefinitions: [],
-        activatedModIds: new Set(),
-      }),
-    ).toEqual([]);
+    expect(buildModsList(userScope, [], [], new Set())).toEqual([]);
   });
 
   it("filters known personal and team mod definitions correctly", () => {
@@ -139,14 +132,12 @@ describe("buildModsList", () => {
       }),
     );
 
-    const result = buildModsList({
+    const result = buildModsList(
       userScope,
       activatedModComponents,
       allModDefinitions,
-      activatedModIds: new Set(
-        activatedModComponents.map(({ _recipe }) => _recipe?.id),
-      ),
-    });
+      new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+    );
 
     expect(result).toStrictEqual([
       expect.objectContaining({ metadata: inactivePersonalModMetadata }),
@@ -199,14 +190,12 @@ describe("buildModsList", () => {
       }),
     ];
 
-    const result = buildModsList({
+    const result = buildModsList(
       userScope,
       activatedModComponents,
       allModDefinitions,
-      activatedModIds: new Set(
-        activatedModComponents.map(({ _recipe }) => _recipe?.id),
-      ),
-    });
+      new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+    );
 
     expect(result).toStrictEqual([
       expect.objectContaining({ metadata: personalModMetadata }),
@@ -228,14 +217,12 @@ describe("buildModsList", () => {
       }),
     ];
 
-    const result = buildModsList({
+    const result = buildModsList(
       userScope,
       activatedModComponents,
-      allModDefinitions: [],
-      activatedModIds: new Set(
-        activatedModComponents.map(({ _recipe }) => _recipe?.id),
-      ),
-    });
+      [],
+      new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+    );
 
     expect(result).toStrictEqual([
       expect.objectContaining({
