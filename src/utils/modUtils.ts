@@ -21,8 +21,6 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
-import { createSelector } from "@reduxjs/toolkit";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import {
   type HydratedModComponent,
   type ModComponentBase,
@@ -171,17 +169,6 @@ export function idHasScope(
 ): boolean {
   return scope != null && id.startsWith(scope + "/");
 }
-
-/**
- * Select ActivatedModComponents currently activated from the mod.
- */
-export const selectComponentsFromMod = createSelector(
-  [selectActivatedModComponents, (_state: unknown, mod: Mod) => mod],
-  (activeModComponents, mod) =>
-    activeModComponents.filter(
-      (extension) => extension._recipe?.id === mod.metadata.id,
-    ),
-);
 
 /**
  * Returns a minimal mod options definition in a normalized format.

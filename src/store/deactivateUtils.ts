@@ -59,20 +59,6 @@ export async function deactivateMod(
   );
 }
 
-/**
- * Use this helper outside the Page Editor context to deactivate a collections of mod components.
- */
-export async function deactivateModComponents(
-  modComponentIds: UUID[],
-  dispatch: Dispatch<unknown>,
-): Promise<void> {
-  await removeDraftModComponents(modComponentIds);
-
-  dispatch(modComponentActions.removeModComponents({ modComponentIds }));
-
-  removeModComponentsFromAllTabs(modComponentIds);
-}
-
 export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {
   for (const modComponentId of modComponentIds) {
     removeModComponentForEveryTab(modComponentId);

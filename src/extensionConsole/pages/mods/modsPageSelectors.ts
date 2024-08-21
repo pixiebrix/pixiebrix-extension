@@ -53,7 +53,7 @@ const selectActivatedModIds = createSelector(
     new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
 );
 
-export const selectModsList = createSelector(
+const selectModsList = createSelector(
   selectScope,
   selectActivatedModComponents,
   selectAllModDefinitions,
