@@ -43,7 +43,9 @@ const ModsPage: React.FunctionComponent = () => {
   useGetFeatureFlagsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  useGetEditablePackagesQuery();
+  useGetEditablePackagesQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const error = modsError || listingsError;
 
