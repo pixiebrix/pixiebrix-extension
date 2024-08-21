@@ -104,7 +104,7 @@ const selectGetModSharingSource = createSelector(
   buildGetModSharingSource,
 );
 
-const selectCanEditModScope = createSelector(
+const selectGetCanEditModScope = createSelector(
   selectScope,
   selectOrganizations,
   buildGetCanEditModScope,
@@ -115,7 +115,7 @@ export const selectModViewItems = createSelector(
   selectGetModActivationStatus,
   selectGetModVersionStatus,
   selectGetModSharingSource,
-  selectCanEditModScope,
+  selectGetCanEditModScope,
   selectModsPageUserPermissions,
   appApi.endpoints.getMarketplaceListings.select(),
   appApi.endpoints.getEditablePackages.select(),
