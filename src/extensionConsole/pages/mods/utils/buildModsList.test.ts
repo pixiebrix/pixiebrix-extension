@@ -136,7 +136,7 @@ describe("buildModsList", () => {
       userScope,
       activatedModComponents,
       allModDefinitions,
-      new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+      new Set(activatedModComponents.map(({ _recipe }) => _recipe!.id)),
     );
 
     expect(result).toStrictEqual([
@@ -194,7 +194,7 @@ describe("buildModsList", () => {
       userScope,
       activatedModComponents,
       allModDefinitions,
-      new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+      new Set(activatedModComponents.map(({ _recipe }) => _recipe!.id)),
     );
 
     expect(result).toStrictEqual([
@@ -221,7 +221,7 @@ describe("buildModsList", () => {
       userScope,
       activatedModComponents,
       [],
-      new Set(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+      new Set(activatedModComponents.map(({ _recipe }) => _recipe!.id)),
     );
 
     expect(result).toStrictEqual([
