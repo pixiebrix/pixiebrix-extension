@@ -16,10 +16,7 @@
  */
 
 import { type Dispatch } from "react";
-import {
-  removeDraftModComponents,
-  removeDraftModComponentsForMod,
-} from "@/store/editorStorage";
+import { removeDraftModComponentsForMod } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";

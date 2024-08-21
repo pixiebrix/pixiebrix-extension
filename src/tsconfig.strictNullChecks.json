@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./extensionConsole/pages/mods/ModsPageActions.test.tsx",
     "./components/fields/schemaFields/widgets/SchemaButtonVariantWidget.test.tsx",
     "./components/fields/schemaFields/widgets/varPopup/getMenuOptions.test.ts",
     "./components/fields/schemaFields/widgets/varPopup/menuFilters.test.ts",
