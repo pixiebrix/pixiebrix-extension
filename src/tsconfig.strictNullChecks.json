@@ -6,6 +6,8 @@
   "files": [
     "./extensionConsole/pages/mods/ModsPageActions.test.tsx",
     "./extensionConsole/pages/mods/utils/buildGetCanEditModScope.test.ts",
+    "./extensionConsole/pages/mods/utils/buildGetCanEditModScope.ts",
+    "./extensionConsole/pages/mods/utils/buildGetModActivationStatus.test.ts",
     "./extensionConsole/pages/mods/utils/buildGetModActivationStatus.ts",
     "./extensionConsole/pages/mods/utils/buildGetModSharingSource.test.ts",
     "./extensionConsole/pages/mods/utils/buildGetModSharingSource.ts",
