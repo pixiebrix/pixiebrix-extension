@@ -23,6 +23,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { Formik } from "formik";
 import selectEvent from "react-select-event";
 import userEvent from "@testing-library/user-event";
+import { noop } from "lodash";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -43,7 +44,10 @@ const schema: Schema = {
   ],
 };
 
-const renderSelect = (value: string, onSubmit?: (formVals: any) => void) =>
+const renderSelect = (
+  value: string,
+  onSubmit: (formVals: any) => void = noop,
+) =>
   render(
     <Formik
       initialValues={{ testField: value }}
@@ -82,7 +86,7 @@ describe("SchemaButtonVariantWidget", () => {
     const options = screen.getAllByTestId("variant-option");
     expect(options).toHaveLength(10);
 
-    await userEvent.click(options[4]);
+    await userEvent.click(options[4]!);
 
     expect(screen.getByTestId("selected-variant")).toHaveClass("btn-success");
     expect(onSubmit).toHaveBeenCalledWith({ testField: "success" });

@@ -40,7 +40,7 @@ function useKeyboardNavigation({
   menuOptions,
   onSelect,
 }: {
-  inputElementRef: MutableRefObject<HTMLElement>;
+  inputElementRef: MutableRefObject<HTMLElement | null>;
   isVisible: boolean;
   likelyVariable: string | null;
   menuOptions: MenuOptions;

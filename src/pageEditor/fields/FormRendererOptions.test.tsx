@@ -20,7 +20,7 @@ function expectToBeCollapsed(element: HTMLElement): void {
   const collapse = element.closest(".collapse");
 
   expect(collapse).toBeDefined();
-  expect(collapse.classList.contains("show")).toBeFalse();
+  expect(collapse!.classList.contains("show")).toBeFalse();
 }
 
 // TODO: figure out how to properly add to extendedExpectations
@@ -29,7 +29,7 @@ function expectToBeExpanded(element: HTMLElement): void {
   const collapse = element.closest(".collapse");
 
   expect(collapse).toBeDefined();
-  expect(collapse.classList.contains("show")).toBeTrue();
+  expect(collapse!.classList.contains("show")).toBeTrue();
 }
 
 describe("FormRendererOptions", () => {
@@ -48,7 +48,7 @@ describe("FormRendererOptions", () => {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
           dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
-          dispatch(editorActions.setActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId!));
         },
       },
     );
@@ -73,7 +73,7 @@ describe("FormRendererOptions", () => {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
           dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
-          dispatch(editorActions.setActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId!));
         },
       },
     );
@@ -106,7 +106,7 @@ describe("FormRendererOptions", () => {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(initialValues));
           dispatch(editorActions.setActiveModComponentId(initialValues.uuid));
-          dispatch(editorActions.setActiveNodeId(brick.instanceId));
+          dispatch(editorActions.setActiveNodeId(brick.instanceId!));
         },
       },
     );

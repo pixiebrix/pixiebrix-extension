@@ -35,7 +35,7 @@ export default {
 
 const fromJS = partial(nativeFromJS, brickRegistry);
 
-function optionsStore(initialState?: unknown) {
+function optionsStore() {
   return configureStore({
     reducer: {
       [appApi.reducerPath]: appApi.reducer,
@@ -43,7 +43,6 @@ function optionsStore(initialState?: unknown) {
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware().concat(appApi.middleware);
     },
-    preloadedState: initialState,
   });
 }
 

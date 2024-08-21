@@ -158,7 +158,7 @@ describe("AuthWidget", () => {
     const integrationWithOptionalField = produce(
       integrationDefinition,
       (draft) => {
-        draft.inputSchema.properties.optionalField = {
+        draft.inputSchema.properties!.optionalField = {
           type: "string",
           title: "Optional Field",
           default: optionalFieldDefaultValue,

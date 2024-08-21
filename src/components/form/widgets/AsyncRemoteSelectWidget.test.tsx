@@ -251,7 +251,7 @@ describe("AsyncRemoteSelectWidget", () => {
       );
 
       // We need to force a re-mount of the component for the error to clear
-      rerender(null);
+      rerender(<div />);
       rerender(
         <ConnectedFieldTemplate
           name={name}

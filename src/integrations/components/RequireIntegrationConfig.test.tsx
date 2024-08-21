@@ -146,7 +146,7 @@ describe("RequireIntegrationConfig", () => {
     ).not.toBeInTheDocument();
     // Select the first config
     await act(async () => {
-      await selectEvent.select(select, localConfig1.label);
+      await selectEvent.select(select, localConfig1.label!);
     });
     // Child 1 should now be visible
     await expect(
@@ -157,7 +157,7 @@ describe("RequireIntegrationConfig", () => {
     ).not.toBeInTheDocument();
     // Select the second config
     await act(async () => {
-      await selectEvent.select(select, localConfig2.label);
+      await selectEvent.select(select, localConfig2.label!);
     });
     // Child 2 should now be visible
     expect(
@@ -203,7 +203,7 @@ describe("RequireIntegrationConfig", () => {
     ).not.toBeInTheDocument();
     // Select the first config
     await act(async () => {
-      await selectEvent.select(select, localConfig1.label);
+      await selectEvent.select(select, localConfig1.label!);
     });
     // Error alert should be visible
     expect(
@@ -223,7 +223,7 @@ describe("RequireIntegrationConfig", () => {
     checkIntegrationAuthMock.mockResolvedValue(true);
     // Select the second config
     await act(async () => {
-      await selectEvent.select(select, localConfig2.label);
+      await selectEvent.select(select, localConfig2.label!);
     });
     // Error alert should not be visible
     expect(

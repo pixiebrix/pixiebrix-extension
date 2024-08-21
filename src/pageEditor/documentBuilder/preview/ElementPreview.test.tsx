@@ -70,7 +70,7 @@ const renderElementPreview = (
       dispatch(actions.setActiveModComponentId(formState.uuid));
       dispatch(
         actions.setActiveNodeId(
-          formState.modComponent.brickPipeline[0].instanceId,
+          formState.modComponent.brickPipeline[0]!.instanceId!,
         ),
       );
       dispatch(actions.setActiveBuilderPreviewElement("0"));

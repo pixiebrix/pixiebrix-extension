@@ -105,9 +105,9 @@ beforeEach(() => {
     valueToAsyncState(null),
   );
   useSelectedReleaseMock.mockReturnValue({
-    selectedRelease: null,
+    selectedRelease: undefined,
     releasesPromise: Promise.resolve([]),
-    releaseKey: null,
+    releaseKey: "",
   });
 });
 
@@ -125,14 +125,14 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.uipath = toExpression(
+    base.modComponent.brickPipeline[0]!.config.uipath = toExpression(
       "var",
       "@uipath",
     );
 
     useSelectedReleaseMock.mockReturnValue({
       selectedRelease: {
-        release: null,
+        release: undefined,
         schema: {
           type: "object",
           properties: {
@@ -148,7 +148,7 @@ describe("UiPath Options", () => {
         },
       },
       releasesPromise: Promise.resolve([]),
-      releaseKey: null,
+      releaseKey: "",
     });
 
     renderOptions(base);
@@ -173,11 +173,11 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.modComponent.brickPipeline[0].config.uipath = toExpression(
+    base.modComponent.brickPipeline[0]!.config.uipath = toExpression(
       "var",
       "@uipath",
     );
-    base.modComponent.brickPipeline[0].config.awaitResult = true;
+    base.modComponent.brickPipeline[0]!.config.awaitResult = true;
 
     renderOptions(base);
 

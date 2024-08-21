@@ -75,12 +75,12 @@ const activatedModComponentFactory = define<
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: null,
+  _recipe: undefined,
   label: "Test Mod Component",
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
   }),
-  _serializedModComponentBrand: null,
+  _serializedModComponentBrand: null as never,
   createTimestamp: timestampFactory,
   updateTimestamp: timestampFactory,
   active: true,
@@ -106,7 +106,7 @@ describe("lifecycle", () => {
     brickRegistry.clear();
     brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
-    rootReader.ref = undefined;
+    rootReader.ref = null;
   });
 
   it("getRunningStarterBricks smoke test", () => {

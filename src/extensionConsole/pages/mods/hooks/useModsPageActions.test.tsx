@@ -224,7 +224,7 @@ describe("useModsPageActions", () => {
     });
 
     ((teamMod.mod as ModDefinition).metadata as any).id =
-      authState.organizations[0].scope;
+      authState.organizations[0]!.scope;
 
     const {
       result: { current: actions },
@@ -452,7 +452,7 @@ describe("actions", () => {
         },
       } = renderHook(() => useModsPageActions(modViewItem));
 
-      deactivate();
+      deactivate!();
 
       expect(deactivateMod).toHaveBeenCalledWith(
         (modViewItem.mod as ModDefinition).metadata.id,
