@@ -17,12 +17,12 @@
 
 import { type IntegrationsState } from "@/integrations/store/integrationsSlice";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import { createSelector } from "@reduxjs/toolkit";
 
-export const selectIntegrationConfigs = ({
-  integrations,
-}: {
-  integrations: IntegrationsState;
-}): IntegrationConfig[] => Object.values(integrations.configured);
+export const selectIntegrationConfigs = createSelector(
+  (state: { integrations: IntegrationsState }) => state.integrations,
+  (integrations) => Object.values(integrations.configured),
+);
 
 export const selectIntegrationConfigMap = ({
   integrations,
