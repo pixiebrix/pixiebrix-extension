@@ -29,7 +29,6 @@
     "./extensionConsole/pages/deployments/DeploymentModal.stories.tsx",
     "./extensionConsole/pages/deployments/DeploymentsContext.test.tsx",
     "./extensionConsole/pages/deployments/useAutoDeploy.test.ts",
-    "./extensionConsole/pages/mods/hooks/useModsPageActions.test.tsx",
     "./extensionConsole/pages/mods/onboardingView/OnboardingView.stories.tsx",
     "./extensionConsole/pages/packageEditor/referenceTab/PackageDetail.stories.tsx",
     "./extensionConsole/pages/packageEditor/useSubmitPackage.test.tsx",

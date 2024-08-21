@@ -21,13 +21,17 @@ import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelector
 import { appApi } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import { RESTRICTED_PREFIX } from "@/hooks/useFlags";
 import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
 import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
 import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
 import buildGetModSharingSource from "@/extensionConsole/pages/mods/utils/buildGetModSharingSource";
 import buildGetCanEditModScope from "@/extensionConsole/pages/mods/utils/buildGetCanEditModScope";
 import { buildModViewItems } from "@/extensionConsole/pages/mods/utils/buildModViewItems";
+import {
+  FeatureFlags,
+  mapRestrictedFeatureToFeatureFlag,
+  RestrictedFeatures,
+} from "@/auth/featureFlags";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -80,9 +84,15 @@ const selectModsPageUserPermissions = createSelector(
     }
 
     return {
-      canPublish: featureFlags.includes("publish-to-marketplace"),
-      canDeactivate: !featureFlags.includes(`${RESTRICTED_PREFIX}-uninstall`),
-      canEditInWorkshop: featureFlags.includes("workshop"),
+      canPublish: featureFlags.includes(FeatureFlags.PUBLISH_TO_MARKETPLACE),
+      canDeactivate: !featureFlags.includes(
+        mapRestrictedFeatureToFeatureFlag(
+          RestrictedFeatures.DEACTIVATE_DEPLOYMENT,
+        ),
+      ),
+      canEditInWorkshop: !featureFlags.includes(
+        mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.WORKSHOP),
+      ),
     };
   },
 );
