@@ -16,10 +16,7 @@
  */
 
 import { type Dispatch } from "react";
-import {
-  removeDraftModComponents,
-  removeDraftModComponentsForMod,
-} from "@/store/editorStorage";
+import { removeDraftModComponentsForMod } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
@@ -46,7 +43,7 @@ export async function deactivateMod(
   modComponents: SerializedModComponent[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
-  const draftModComponentsToDeactivate =
+  const removedDraftModComponentIds =
     await removeDraftModComponentsForMod(modId);
 
   dispatch(modComponentActions.removeModById(modId));
@@ -54,23 +51,9 @@ export async function deactivateMod(
   removeModComponentsFromAllTabs(
     uniq([
       ...modComponents.map(({ id }) => id),
-      ...draftModComponentsToDeactivate,
+      ...removedDraftModComponentIds,
     ]),
   );
-}
-
-/**
- * Use this helper outside the Page Editor context to deactivate a collections of mod components.
- */
-export async function deactivateModComponents(
-  modComponentIds: UUID[],
-  dispatch: Dispatch<unknown>,
-): Promise<void> {
-  await removeDraftModComponents(modComponentIds);
-
-  dispatch(modComponentActions.removeModComponents({ modComponentIds }));
-
-  removeModComponentsFromAllTabs(modComponentIds);
 }
 
 export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {

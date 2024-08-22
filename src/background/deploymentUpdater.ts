@@ -22,10 +22,7 @@ import { getUUID } from "@/telemetry/telemetryHelpers";
 import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
 import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import {
-  selectActivatedModComponents,
-  selectModComponentsForMod,
-} from "@/store/modComponents/modComponentSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import {
   queueReloadModEveryTab,
@@ -33,7 +30,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
-import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import {
   getModComponentState,
@@ -81,6 +78,7 @@ import { getMe } from "@/data/service/backgroundApi";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "@/mv3/SessionStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
+import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -266,13 +264,13 @@ async function deactivateMod(
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
+  const activatedModComponentsForMod = getModComponentsForMod(
+    modId,
+    optionsState,
+  );
+
   let _optionsState = optionsState;
   let _editorState = editorState;
-
-  const modComponentsForModSelector = selectModComponentsForMod(modId);
-  const activatedModComponentsForMod = modComponentsForModSelector({
-    options: optionsState,
-  });
 
   for (const activatedModComponent of activatedModComponentsForMod) {
     const result = deactivateModComponentFromStates(

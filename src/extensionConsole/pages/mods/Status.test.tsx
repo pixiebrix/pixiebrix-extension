@@ -16,85 +16,125 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { modViewItemFactory } from "@/testUtils/factories/modViewItemFactory";
+import { render, screen } from "@/extensionConsole/testHelpers";
 import Status from "@/extensionConsole/pages/mods/Status";
-import useModsPageActions, {
-  type ModsPageActions,
-} from "@/extensionConsole/pages/mods/hooks/useModsPageActions";
+import type { ModActionsEnabled } from "@/types/modTypes";
+import useModPermissions from "@/mods/hooks/useModPermissions";
+import userEvent from "@testing-library/user-event";
 
-jest.mock("@/extensionConsole/pages/mods/hooks/useModsPageActions", () => ({
+jest.mock("react-router", () => {
+  const actual = jest.requireActual("react-router");
+  return {
+    ...actual,
+    useHistory: jest.fn(),
+  };
+});
+
+jest.mock("@/mods/hooks/useModPermissions", () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue({}),
+  default: jest.fn().mockReturnValue({
+    hasPermissions: true,
+    requestPermissions: jest.fn(),
+  }),
 }));
 
-const useModPageActionsMock = jest.mocked(useModsPageActions);
+const requestPermissionsMock = jest.fn();
 
 describe("Status", () => {
   beforeEach(() => {
-    useModPageActionsMock.mockReturnValue({} as ModsPageActions);
+    requestPermissionsMock.mockClear();
+    jest.mocked(useModPermissions).mockReturnValue({
+      hasPermissions: true,
+      requestPermissions: requestPermissionsMock,
+    });
   });
 
-  it("shows active", async () => {
-    const { asFragment } = render(
-      <Status
-        modViewItem={
-          {
-            active: true,
-          } as any
-        }
-      />,
-    );
+  it("handles unavailable mod", () => {
+    const mod = modViewItemFactory({
+      isUnavailable: true,
+    });
 
-    expect(screen.getByText("Active")).toBeVisible();
-    expect(asFragment()).toMatchSnapshot();
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.getByText("No longer available")).toBeInTheDocument();
   });
 
-  it("shows activate", async () => {
-    useModPageActionsMock.mockReturnValue({
-      activate: jest.fn(),
-    } as unknown as ModsPageActions);
+  it("handles inactive mod", () => {
+    const mod = modViewItemFactory({
+      modActions: {
+        showReactivate: false,
+        showActivate: true,
+      } as unknown as ModActionsEnabled,
+    });
 
-    const { asFragment } = render(
-      <Status
-        modViewItem={
-          {
-            active: true,
-          } as any
-        }
-      />,
-    );
+    render(<Status modViewItem={mod} />);
 
-    expect(screen.getByText("Activate")).toBeVisible();
-    expect(asFragment()).toMatchSnapshot();
+    expect(screen.getByText("Activate")).toBeInTheDocument();
   });
 
-  it("shows warning for unavailable", async () => {
-    const { asFragment } = render(
-      <Status
-        modViewItem={
-          {
-            unavailable: true,
-          } as any
-        }
-      />,
-    );
+  it("shows update properly", () => {
+    const mod = modViewItemFactory({
+      hasUpdate: true,
+      modActions: {
+        showReactivate: true,
+        showActivate: false,
+      } as unknown as ModActionsEnabled,
+    });
 
-    expect(screen.getByText("No longer available")).toBeVisible();
-    expect(asFragment()).toMatchSnapshot();
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.getByText("Update")).toBeInTheDocument();
   });
 
-  it("paused", async () => {
-    const { asFragment } = render(
-      <Status
-        modViewItem={
-          {
-            status: "Paused",
-          } as any
-        }
-      />,
-    );
+  it("shows allow properly", async () => {
+    jest.mocked(useModPermissions).mockReturnValue({
+      hasPermissions: false,
+      requestPermissions: requestPermissionsMock,
+    });
 
-    expect(screen.getByText("Paused")).toBeVisible();
-    expect(asFragment()).toMatchSnapshot();
+    const mod = modViewItemFactory({
+      hasUpdate: false,
+      modActions: {
+        showReactivate: true,
+        showActivate: false,
+      } as unknown as ModActionsEnabled,
+    });
+
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.getByText("Allow")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText("Allow"));
+
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("handles paused deployment", () => {
+    const mod = modViewItemFactory({
+      status: "Paused",
+      modActions: {
+        showReactivate: true,
+        showActivate: false,
+      } as unknown as ModActionsEnabled,
+    });
+
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.getByText("Paused")).toBeInTheDocument();
+  });
+
+  it("handles basic active mod", () => {
+    const mod = modViewItemFactory({
+      status: "Active",
+      modActions: {
+        showReactivate: true,
+        showActivate: false,
+      } as unknown as ModActionsEnabled,
+    });
+
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.getByText("Active")).toBeInTheDocument();
   });
 });

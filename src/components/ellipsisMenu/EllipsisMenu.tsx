@@ -37,7 +37,7 @@ type MenuItemBase = {
 };
 
 type ActionEllipsisMenuItem = MenuItemBase & {
-  action: (() => void) | null;
+  action: (() => void | Promise<void>) | null;
 };
 
 type LinkEllipsisMenuItem = MenuItemBase & {

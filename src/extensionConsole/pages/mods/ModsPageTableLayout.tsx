@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ModsPageLayout.module.scss";
-
-import { Card } from "react-bootstrap";
-import React, { useContext, useMemo } from "react";
+import styles from "./ModsPageTableLayout.module.scss";
+import React, { useMemo } from "react";
 import {
   type Column,
   type Row,
@@ -32,18 +30,16 @@ import ModsPageSidebar from "./ModsPageSidebar";
 import {
   selectActiveTab,
   selectGroupBy,
+  selectModViewItems,
   selectSearchQuery,
   selectSortBy,
 } from "./modsPageSelectors";
 import { useSelector } from "react-redux";
-import { uniq, sortBy as _lodashSortBy } from "lodash";
-import useModViewItems from "@/mods/useModViewItems";
+import { sortBy as _lodashSortBy, uniq } from "lodash";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
 import ModsPageToolbar from "@/extensionConsole/pages/mods/ModsPageToolbar";
 import ModsPageContent from "@/extensionConsole/pages/mods/ModsPageContent";
-import Loader from "@/components/Loader";
-import type { Mod, ModViewItem } from "@/types/modTypes";
-import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import type { ModViewItem } from "@/types/modTypes";
 
 const statusFilter = (
   rows: Array<Row<ModViewItem>>,
@@ -78,8 +74,7 @@ const columns: Array<Column<ModViewItem>> = [
   },
   {
     Header: "Package ID",
-    // @ts-expect-error -- react-table allows nested accessors
-    accessor: "sharing.packageId",
+    accessor: "modId",
     disableGroupBy: true,
     disableFilters: true,
     disableSortBy: true,
@@ -87,7 +82,7 @@ const columns: Array<Column<ModViewItem>> = [
   {
     Header: "Source",
     // @ts-expect-error -- react-table allows nested accessors
-    accessor: "sharing.source.label",
+    accessor: "sharingSource.label",
     disableGlobalFilter: true,
   },
   {
@@ -106,18 +101,15 @@ const columns: Array<Column<ModViewItem>> = [
   },
 ];
 
-const ModsPageLayout: React.FunctionComponent<{
-  mods: Mod[];
-}> = ({ mods }) => {
-  const { modViewItems, isLoading } = useModViewItems(mods);
-  const { isAutoDeploying } = useContext(DeploymentsContext);
+const ModsPageTableLayout: React.FC = () => {
+  const modViewItems = useSelector(selectModViewItems);
 
   const teamFilters = useMemo(
     () =>
       _lodashSortBy(
-        uniq(modViewItems.map((mod) => mod.sharing.source.label)).filter(
-          (label) => label !== "Public" && label !== "Personal",
-        ),
+        uniq(
+          modViewItems.map(({ sharingSource }) => sharingSource.label),
+        ).filter((label) => label !== "Public" && label !== "Personal"),
       ),
     [modViewItems],
   );
@@ -166,32 +158,19 @@ const ModsPageLayout: React.FunctionComponent<{
         <ModsPageToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          {/*
-          Do not show the Mod cards while they are being fetched or while any
-          deployments may be automatially activated If we show the cards while
-          deployments are auto-activated, the user will see an unnecessary Update button
-          */}
-          {isLoading || isAutoDeploying ? (
-            <Card>
-              <Card.Body>
-                <Loader />
-              </Card.Body>
-            </Card>
-          ) : (
-            <AutoSizer defaultHeight={500}>
-              {({ height, width }: Size) => (
-                <ModsPageContent
-                  tableInstance={tableInstance}
-                  width={width}
-                  height={height}
-                />
-              )}
-            </AutoSizer>
-          )}
+          <AutoSizer defaultHeight={500}>
+            {({ height, width }: Size) => (
+              <ModsPageContent
+                tableInstance={tableInstance}
+                width={width}
+                height={height}
+              />
+            )}
+          </AutoSizer>
         </div>
       </div>
     </div>
   );
 };
 
-export default ModsPageLayout;
+export default ModsPageTableLayout;

@@ -24,7 +24,7 @@ import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmi
 import { useDispatch } from "react-redux";
 import { useCreateMilestoneMutation } from "@/data/service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagic } from "@fortawesome/free-solid-svg-icons";
+import { faCubes, faMagic } from "@fortawesome/free-solid-svg-icons";
 import useActivateMod from "@/activation/useActivateMod";
 import useMilestones from "@/hooks/useMilestones";
 import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
@@ -35,7 +35,6 @@ import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
-import ModIcon from "@/mods/ModIcon";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
@@ -43,6 +42,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { isInternalRegistryId } from "@/utils/registryUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { Milestones } from "@/data/model/UserMilestone";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;
@@ -53,7 +53,10 @@ const WizardHeader: React.VoidFunctionComponent<{
     <div className={styles.wizardHeaderLayout}>
       <div className={styles.wizardMainInfo}>
         <span className={styles.blueprintIcon}>
-          <ModIcon mod={mod} />
+          <MarketplaceListingIcon
+            packageId={mod.metadata.id}
+            defaultIcon={faCubes}
+          />
         </span>
         <span>
           <Card.Title>{mod.metadata.name}</Card.Title>
