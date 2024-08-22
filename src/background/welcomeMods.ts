@@ -60,6 +60,7 @@ import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
@@ -106,7 +107,7 @@ function closeSidebarTab(
   );
 }
 
-function closeStarterModTabs({
+function closeWelcomeModTabs({
   modDefinition,
   optionsState,
   sidebarState,
@@ -152,9 +153,40 @@ function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
   );
 }
 
-async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
+export type ActivateModsResult = {
+  /**
+   * Total number of available welcome mods
+   */
+  welcomeModCount: number;
+
+  /**
+   * Number of welcome mods skpped because they are already activated
+   */
+  skippedModCount?: number;
+
+  /**
+   * Number of welcome mods that were rejected because of errors, should always be 0 currently
+   */
+  rejectedModCount?: number;
+
+  /**
+   * Number of welcome mods that were successfully activated activated
+   */
+  resolvedModCount?: number;
+
+  /**
+   * Error message if any
+   */
+  error?: string;
+};
+
+async function activateMods(
+  modDefinitions: ModDefinition[],
+): Promise<ActivateModsResult> {
   if (modDefinitions.length === 0) {
-    return false;
+    return {
+      welcomeModCount: 0,
+    };
   }
 
   const unconfiguredIntegrationDependencies =
@@ -164,7 +196,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   const builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
 
-  // XXX: do we want to fail all starter mod activations if one starter mod is invalid?
+  // XXX: do we want to fail all welcome mod activations if one welcome mod is invalid?
   const builtInDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => {
       if (unconfiguredDependency.integrationId === PIXIEBRIX_INTEGRATION_ID) {
@@ -183,7 +215,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
       if (!builtInConfig && !unconfiguredDependency.isOptional) {
         throw new Error(
-          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that starter mods have built-in configuration options for all required integrations.`,
+          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that welcome mods have built-in configuration options for all required integrations.`,
         );
       }
 
@@ -205,7 +237,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       ),
   );
 
-  // XXX: do we want to fail all starter mod activations if a DB fails to get created?
+  // XXX: do we want to fail all welcome mod activations if a DB fails to get created?
   const newModConfigs = await Promise.all(
     newMods.map(async (modDefinition) => {
       const optionsArgs = initialOptionsArgs(modDefinition);
@@ -216,7 +248,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
         async (args) => {
           const client = await getLinkedApiClient();
 
-          // If the starter mod has been previously activated, we need to use the existing database ID
+          // If the welcome mod has been previously activated, we need to use the existing database ID
           // Otherwise, we create a new database
           // See: https://github.com/pixiebrix/pixiebrix-extension/pull/8499
           const existingDatabases =
@@ -249,7 +281,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       optionsArgs,
     });
 
-    sidebarState = closeStarterModTabs({
+    sidebarState = closeWelcomeModTabs({
       modDefinition,
       optionsState,
       sidebarState,
@@ -263,23 +295,28 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   reloadModsEveryTab();
 
-  return newModConfigs.length > 0;
+  return {
+    welcomeModCount: modDefinitions.length,
+    skippedModCount: modDefinitions.length - newMods.length,
+    rejectedModCount: newModConfigs.length - newMods.length,
+    resolvedModCount: newModConfigs.length,
+  };
 }
 
-async function getStarterMods(): Promise<ModDefinition[]> {
+async function getWelcomeMods(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping starter mod activation because the mod is not linked to the PixieBrix service",
+      "Skipping welcome mod activation because the mod is not linked to the PixieBrix service",
     );
     return [];
   }
 
   try {
-    const { data: starterMods } = await client.get<ModDefinition[]>(
+    const { data: welcomeMods } = await client.get<ModDefinition[]>(
       "/api/onboarding/starter-blueprints/",
     );
-    return starterMods;
+    return welcomeMods;
   } catch (error) {
     reportError(error);
     return [];
@@ -287,29 +324,32 @@ async function getStarterMods(): Promise<ModDefinition[]> {
 }
 
 /**
- * Activates starter mods and refreshes local registries from remote.
- * @returns true if any of the starter mods were activated
+ * Activates welcome mods and refreshes local registries from remote.
+ * @returns true if any of the welcome mods were activated
  */
-async function _activateStarterMods(): Promise<boolean> {
-  const starterMods = await getStarterMods();
+async function _activateWelcomeMods(): Promise<ActivateModsResult> {
+  const welcomeMods = await getWelcomeMods();
 
   try {
-    // Activating Starter Mods and pulling the updates from remote registries to make sure
-    // that all the bricks used in starter mods are available
+    // Activating Welcome Mods and pulling the updates from remote registries to make sure
+    // that all the bricks used in welcome mods are available
     const [activated] = await Promise.all([
-      activateMods(starterMods),
+      activateMods(welcomeMods),
       refreshRegistries(),
     ]);
 
     return activated;
   } catch (error) {
     reportError(error);
-    return false;
+    return {
+      welcomeModCount: welcomeMods.length,
+      error: getErrorMessage(error),
+    };
   }
 }
 
-export const debouncedActivateStarterMods = debounce(
-  memoizeUntilSettled(_activateStarterMods),
+export const debouncedActivateWelcomeMods = debounce(
+  memoizeUntilSettled(_activateWelcomeMods),
   MOD_ACTIVATION_DEBOUNCE_MS,
   {
     leading: true,
@@ -318,12 +358,12 @@ export const debouncedActivateStarterMods = debounce(
   },
 );
 
-function initStarterMods(): void {
+function initWelcomeMods(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
-      void debouncedActivateStarterMods();
+      void debouncedActivateWelcomeMods();
     }
   });
 }
 
-export default initStarterMods;
+export default initWelcomeMods;

@@ -97,7 +97,7 @@ const ListItem: BsPrefixRefForwardingComponent<
 );
 
 const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
-  const { data: starterBlueprints, isLoading: isStarterBlueprintsLoading } =
+  const { data: welcomeMods, isLoading: isWelcomeModsLoading } =
     useGetStarterBlueprintsQuery();
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
@@ -126,20 +126,20 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
       return false;
     }
 
-    const isStarterMod = starterBlueprints?.some(
+    const isWelcomeMod = welcomeMods?.some(
       (starterBlueprint) => modViewItem.modId === starterBlueprint.metadata.id,
     );
 
-    return modViewItem.status === "Active" && !isStarterMod;
+    return modViewItem.status === "Active" && !isWelcomeMod;
   });
 
   const showGetStartedTab =
-    !isStarterBlueprintsLoading && !isMeLoading && !isMeFetching
+    !isWelcomeModsLoading && !isMeLoading && !isMeFetching
       ? isFreemiumUser && !hasSomeModEngagement
       : false;
 
   useEffect(() => {
-    if (isStarterBlueprintsLoading || isMeLoading || isMeFetching) {
+    if (isWelcomeModsLoading || isMeLoading || isMeFetching) {
       return;
     }
 
@@ -164,8 +164,8 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   }, [
     isMeLoading,
     isMeFetching,
-    starterBlueprints,
-    isStarterBlueprintsLoading,
+    welcomeMods,
+    isWelcomeModsLoading,
     activeTab.key,
     showGetStartedTab,
     setActiveTab,
