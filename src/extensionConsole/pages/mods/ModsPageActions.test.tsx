@@ -191,7 +191,7 @@ describe("ModsPageActions", () => {
     await userEvent.click(screen.getByText("Edit in Workshop"));
 
     expect(historyPushMock).toHaveBeenCalledWith(
-      `/workshop/bricks/${modViewItem.modId}`,
+      `/workshop/bricks/${modViewItem.editablePackageId}`,
     );
   });
 
