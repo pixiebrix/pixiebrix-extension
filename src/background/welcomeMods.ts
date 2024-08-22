@@ -161,6 +161,9 @@ export type ActivateModsResult = {
   // Number of welcome mods skpped because they are already activated
   skippedModCount?: number;
 
+  // Number of welcome mods that were rejected because of errors, should always be 0 currently
+  rejectedModCount?: number;
+
   // Number of welcome mods that were successfully activated activated
   resolvedModCount?: number;
 
@@ -286,6 +289,7 @@ async function activateMods(
   return {
     welcomeModCount: modDefinitions.length,
     skippedModCount: modDefinitions.length - newMods.length,
+    rejectedModCount: newModConfigs.length - newMods.length,
     resolvedModCount: newModConfigs.length,
   };
 }
