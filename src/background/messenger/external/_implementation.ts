@@ -23,7 +23,7 @@ import { linkExtension } from "@/auth/authStorage";
 import { type TokenAuthData } from "@/auth/authTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
+import { activateWelcomeModsInBackground } from "@/background/messenger/api";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
@@ -212,9 +212,9 @@ export async function openExtensionConsole(): Promise<true> {
 }
 
 /**
- * Activate starter mods via the background page.
- * @see installStarterBlueprintsInBackground
+ * Activate welcome mods via the background page.
+ * @see activateWelcomeModsInBackground
  */
-export async function activateStarterMods(): Promise<boolean | undefined> {
-  return installStarterBlueprintsInBackground();
+export async function activateWelcomeMods(): Promise<boolean | undefined> {
+  return activateWelcomeModsInBackground();
 }

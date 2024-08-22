@@ -61,6 +61,7 @@ import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -153,9 +154,41 @@ function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
   );
 }
 
-async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
+/**
+ * ActivateMods paths:
+ *
+ * modDefinitions.length === 0 -- return false
+ * newModConfigs.length === 0 -- return false
+ * newModConfigs.length > 0 -- return true
+ *
+ * { modDefinitionsCount, unactivatedModsCount, activatedModsCount}
+ *
+ * throw error if can't find built-in config for required integration
+ * throw error if can't create database
+ *
+ */
+
+type ActivateModsResult = {
+  // Total number of welcome mods
+  welcomeModsCount: number;
+
+  // Number of welcome mods that were not previously activated
+  unactivatedModsCount?: number;
+
+  // Number of welcome mods that were activated
+  activatedModsCount?: number;
+
+  // Error message if any
+  error?: string;
+};
+
+async function activateMods(
+  modDefinitions: ModDefinition[],
+): Promise<ActivateModsResult> {
   if (modDefinitions.length === 0) {
-    return false;
+    return {
+      welcomeModsCount: 0,
+    };
   }
 
   const unconfiguredIntegrationDependencies =
@@ -264,7 +297,11 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   reloadModsEveryTab();
 
-  return newModConfigs.length > 0;
+  return {
+    welcomeModsCount: modDefinitions.length,
+    unactivatedModsCount: newMods.length,
+    activatedModsCount: newModConfigs.length,
+  };
 }
 
 async function getWelcomeMods(): Promise<ModDefinition[]> {
@@ -291,7 +328,7 @@ async function getWelcomeMods(): Promise<ModDefinition[]> {
  * Activates welcome mods and refreshes local registries from remote.
  * @returns true if any of the welcome mods were activated
  */
-async function _activateWelcomeMods(): Promise<boolean> {
+async function _activateWelcomeMods(): Promise<ActivateModsResult> {
   const welcomeMods = await getWelcomeMods();
 
   try {
@@ -305,7 +342,10 @@ async function _activateWelcomeMods(): Promise<boolean> {
     return activated;
   } catch (error) {
     reportError(error);
-    return false;
+    return {
+      welcomeModsCount: welcomeMods.length,
+      error: getErrorMessage(error),
+    };
   }
 }
 
