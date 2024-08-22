@@ -154,21 +154,7 @@ function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
   );
 }
 
-/**
- * ActivateMods paths:
- *
- * modDefinitions.length === 0 -- return false
- * newModConfigs.length === 0 -- return false
- * newModConfigs.length > 0 -- return true
- *
- * { modDefinitionsCount, unactivatedModsCount, activatedModsCount}
- *
- * throw error if can't find built-in config for required integration
- * throw error if can't create database
- *
- */
-
-type ActivateModsResult = {
+export type ActivateModsResult = {
   // Total number of welcome mods
   welcomeModsCount: number;
 
