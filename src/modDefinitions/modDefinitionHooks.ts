@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelectors";
+import { selectModDefinitionsAsyncState } from "@/modDefinitions/modDefinitionsSelectors";
 import { useCallback, useEffect } from "react";
 import { modDefinitionsActions } from "./modDefinitionsSlice";
 import { type RegistryId } from "@/types/registryTypes";
@@ -149,7 +149,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
     () => dispatch(modDefinitionsActions.syncRemoteModDefinitions()),
     [dispatch],
   );
-  const state = useSelector(selectAllModDefinitions);
+  const state = useSelector(selectModDefinitionsAsyncState);
 
   // First load from local database
   useEffect(() => {

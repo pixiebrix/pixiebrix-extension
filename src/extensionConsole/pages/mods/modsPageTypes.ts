@@ -23,3 +23,9 @@ export type ModsPageContentProps = {
   width: number;
   height: number;
 };
+
+export type ModsPageUserPermissions = {
+  canPublish: boolean;
+  canDeactivate: boolean;
+  canEditInWorkshop: boolean;
+};

@@ -16,168 +16,22 @@
  */
 
 import {
-  getSharingSource,
   getStandaloneModComponentRuntimeModId,
-  isStandaloneModComponent,
   isUnavailableMod,
   normalizeModOptionsDefinition,
 } from "./modUtils";
-import { isRegistryId, uuidv4 } from "@/types/helpers";
-import { UserRole } from "@/types/contract";
-import { type Mod, type UnavailableMod } from "@/types/modTypes";
-import { type HydratedModComponent } from "@/types/modComponentTypes";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { isRegistryId } from "@/types/helpers";
+import { type UnavailableMod } from "@/types/modTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { InvalidTypeError } from "@/errors/genericErrors";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { freeze } from "@/utils/objectUtils";
-import {
-  autoUUIDSequence,
-  timestampFactory,
-} from "@/testUtils/factories/stringFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 describe("getStandaloneModComponentRuntimeModId", () => {
   it("returns valid registry id", () => {
     expect(
       isRegistryId(getStandaloneModComponentRuntimeModId(autoUUIDSequence())),
     ).toBe(true);
-  });
-});
-
-describe("getSharingType", () => {
-  test("throws on invalid type", () => {
-    const mod: Mod = {} as any;
-    expect(() =>
-      getSharingSource({
-        mod,
-        organizations: [],
-        scope: "test_scope",
-        installedExtensions: [],
-      }),
-    ).toThrow(InvalidTypeError);
-  });
-
-  test("personal extension", () => {
-    const mod: Mod = modComponentFactory() as any;
-    const { type, label } = getSharingSource({
-      mod,
-      organizations: [],
-      scope: "test_scope",
-      installedExtensions: [],
-    });
-
-    expect(type).toBe("Personal");
-    expect(label).toBe("Personal");
-  });
-
-  test("public deployment", () => {
-    const mod: Mod = modComponentFactory({
-      _deployment: {
-        id: uuidv4(),
-        active: true,
-        timestamp: timestampFactory(),
-      },
-    }) as any;
-    const { type, label } = getSharingSource({
-      mod,
-      organizations: [],
-      scope: "test_scope",
-      installedExtensions: [],
-    });
-
-    expect(type).toBe("Deployment");
-    expect(label).toBe("Deployment");
-  });
-
-  test("organization deployment", () => {
-    const orgId = uuidv4();
-    const mod: Mod = modComponentFactory({
-      _deployment: {
-        id: orgId,
-        active: true,
-        timestamp: timestampFactory(),
-      },
-    }) as any;
-
-    // @ts-expect-error -- we are generating a test extension
-    mod._recipe = {
-      id: "test_org",
-      sharing: {
-        organizations: [orgId],
-      },
-    };
-
-    const testOrganizations = [
-      {
-        id: orgId,
-        name: "test_org",
-        role: UserRole.admin,
-      },
-    ];
-
-    const { type, label } = getSharingSource({
-      mod,
-      organizations: testOrganizations,
-      scope: "test_scope",
-      installedExtensions: [],
-    });
-
-    expect(type).toBe("Deployment");
-    expect(label).toBe("test_org");
-  });
-
-  test("team mod", () => {
-    const mod = defaultModDefinitionFactory();
-    const orgId = uuidv4();
-
-    mod.sharing.organizations = [orgId];
-
-    const testOrganizations = [
-      {
-        id: orgId,
-        name: "test_org",
-        role: UserRole.admin,
-      },
-    ];
-
-    const { type, label } = getSharingSource({
-      mod,
-      organizations: testOrganizations,
-      scope: "test_scope",
-      installedExtensions: [],
-    });
-
-    expect(type).toBe("Team");
-    expect(label).toBe("test_org");
-  });
-
-  test("public mod", () => {
-    const mod: Mod = defaultModDefinitionFactory({
-      sharing: sharingDefinitionFactory({ public: true }),
-    }) as any;
-
-    const { type, label } = getSharingSource({
-      mod,
-      organizations: [],
-      scope: "test_scope",
-      installedExtensions: [],
-    });
-
-    expect(type).toBe("Public");
-    expect(label).toBe("Public");
-  });
-});
-
-describe("isExtension", () => {
-  it("returns true for an extension", () => {
-    const mod = modComponentFactory() as HydratedModComponent;
-    expect(isStandaloneModComponent(mod)).toBe(true);
-  });
-
-  it("returns false for a recipe", () => {
-    const mod = defaultModDefinitionFactory();
-    expect(isStandaloneModComponent(mod)).toBe(false);
   });
 });
 
@@ -192,11 +46,6 @@ describe("isUnavailableMod", () => {
       isStub: true,
     } as UnavailableMod;
     expect(isUnavailableMod(mod)).toBe(true);
-  });
-
-  it("returns false for an extension", () => {
-    const mod = modComponentFactory() as HydratedModComponent;
-    expect(isUnavailableMod(mod)).toBe(false);
   });
 });
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/extensionConsole/pages/mods/ModsPageLayout.module.scss";
+import styles from "@/extensionConsole/pages/mods/ModsPageTableLayout.module.scss";
 import Select from "react-select";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -56,7 +56,7 @@ class ListItemErrorBoundary extends ErrorBoundary<Props> {
               An error occurred retrieving mod
             </p>
             <div className={styles.packageId}>
-              {this.props.modViewItem.sharing.packageId}
+              {this.props.modViewItem.modId}
             </div>
           </div>
           <div className="flex-shrink-0"></div>

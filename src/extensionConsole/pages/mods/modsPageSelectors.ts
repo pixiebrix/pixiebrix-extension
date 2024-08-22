@@ -16,6 +16,23 @@
  */
 
 import { type ModsPageState } from "@/extensionConsole/pages/mods/modsPageSlice";
+import { createSelector } from "@reduxjs/toolkit";
+import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelectors";
+import { appApi } from "@/data/service/api";
+import { selectOrganizations, selectScope } from "@/auth/authSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
+import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
+import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
+import buildGetModSharingSource from "@/extensionConsole/pages/mods/utils/buildGetModSharingSource";
+import buildGetCanEditModScope from "@/extensionConsole/pages/mods/utils/buildGetCanEditModScope";
+import { buildModViewItems } from "@/extensionConsole/pages/mods/utils/buildModViewItems";
+import {
+  FeatureFlags,
+  mapRestrictedFeatureToFeatureFlag,
+  RestrictedFeatures,
+} from "@/auth/featureFlags";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -30,3 +47,107 @@ export const selectActiveTab = ({ modsPage }: ModsPageRootState) =>
   modsPage.activeTab;
 export const selectSearchQuery = ({ modsPage }: ModsPageRootState) =>
   modsPage.searchQuery;
+
+const selectActivatedModIds = createSelector(
+  selectActivatedModComponents,
+  (activatedModComponents) =>
+    new Set(
+      activatedModComponents.map((modComponent) => {
+        assertNotNullish(
+          modComponent._recipe,
+          "Found activated mod component without a _recipe! " +
+            modComponent.label,
+        );
+        return modComponent._recipe.id;
+      }),
+    ),
+);
+
+const selectModsList = createSelector(
+  selectScope,
+  selectActivatedModComponents,
+  selectAllModDefinitions,
+  selectActivatedModIds,
+  buildModsList,
+);
+
+const selectGetModActivationStatus = createSelector(
+  selectActivatedModComponents,
+  buildGetModActivationStatus,
+);
+
+const selectGetModVersionStatus = createSelector(
+  selectActivatedModComponents,
+  buildGetModVersionStatus,
+);
+
+const selectModsPageUserPermissions = createSelector(
+  appApi.endpoints.getFeatureFlags.select(),
+  ({ data: featureFlags }) => {
+    // Don't allow if flags have not loaded
+    if (featureFlags == null) {
+      return {
+        canPublish: false,
+        canDeactivate: false,
+        canEditInWorkshop: false,
+      };
+    }
+
+    return {
+      canPublish: featureFlags.includes(FeatureFlags.PUBLISH_TO_MARKETPLACE),
+      canDeactivate: !featureFlags.includes(
+        mapRestrictedFeatureToFeatureFlag(
+          RestrictedFeatures.DEACTIVATE_DEPLOYMENT,
+        ),
+      ),
+      canEditInWorkshop: !featureFlags.includes(
+        mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.WORKSHOP),
+      ),
+    };
+  },
+);
+
+const selectGetModSharingSource = createSelector(
+  selectScope,
+  selectOrganizations,
+  selectActivatedModComponents,
+  buildGetModSharingSource,
+);
+
+const selectGetCanEditModScope = createSelector(
+  selectScope,
+  selectOrganizations,
+  buildGetCanEditModScope,
+);
+
+export const selectModViewItems = createSelector(
+  selectModsList,
+  selectGetModActivationStatus,
+  selectGetModVersionStatus,
+  selectGetModSharingSource,
+  selectGetCanEditModScope,
+  selectModsPageUserPermissions,
+  appApi.endpoints.getMarketplaceListings.select(),
+  appApi.endpoints.getEditablePackages.select(),
+  (
+    mods,
+    getActivationStatus,
+    getVersionStatus,
+    getSharingSource,
+    getCanEditModScope,
+    userPermissions,
+    { data: listings = {} },
+    { data: editablePackages = [] },
+    // eslint-disable-next-line max-params -- Can't make a selector have an inputs object
+  ) =>
+    buildModViewItems({
+      mods,
+      getActivationStatus,
+      getVersionStatus,
+      getSharingSource,
+      getCanEditModScope,
+      userPermissions,
+      listings,
+      editablePackages,
+    }),
+);

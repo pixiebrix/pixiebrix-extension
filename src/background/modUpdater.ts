@@ -24,7 +24,6 @@ import {
 } from "@/store/modComponents/modComponentStorage";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import { selectModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
 import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
@@ -42,6 +41,7 @@ import collectExistingConfiguredDependenciesForMod from "@/integrations/util/col
 import { flagOn } from "@/auth/featureFlagStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { FeatureFlags } from "@/auth/featureFlags";
+import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -191,12 +191,9 @@ export function deactivateMod(
 } {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
-  const activatedModComponentSelector = selectModComponentsForMod(modId);
-  const activatedModComponents = activatedModComponentSelector({
-    options: newOptionsState,
-  });
-
+  const activatedModComponents = getModComponentsForMod(modId, newOptionsState);
   const deactivatedModComponents: ActivatedModComponent[] = [];
+
   for (const activatedModComponent of activatedModComponents) {
     const { options: nextOptionsState, editor: nextEditorState } =
       deactivateModComponent(activatedModComponent, {

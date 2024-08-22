@@ -49,7 +49,7 @@ class GridCardErrorBoundary extends ErrorBoundary<Props> {
                     An error occurred retrieving mod
                   </span>
                   <div className={styles.packageId}>
-                    {this.props.modViewItem.sharing.packageId}
+                    {this.props.modViewItem.modId}
                   </div>
                 </div>
                 <span className="mb-2">

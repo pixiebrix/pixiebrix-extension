@@ -24,7 +24,11 @@ import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
 import Status from "@/extensionConsole/pages/mods/Status";
 import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
 import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
-import ModIcon from "@/mods/ModIcon";
+import {
+  faCubes,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
 type GridCardProps = {
   modViewItem: ModViewItem;
@@ -33,7 +37,8 @@ type GridCardProps = {
 const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
   modViewItem,
 }) => {
-  const { name, updatedAt, sharing, mod, description } = modViewItem;
+  const { modId, name, updatedAt, sharingSource, description, isUnavailable } =
+    modViewItem;
 
   return (
     <div className={styles.root}>
@@ -43,10 +48,14 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
             <div>
               <h5 className={styles.name}>{name}</h5>
               <span className={styles.description}>{description}</span>
-              <div className={styles.packageId}>{sharing.packageId}</div>
+              <div className={styles.packageId}>{modId}</div>
             </div>
             <span className="mb-2">
-              <ModIcon size="2x" mod={mod} />
+              <MarketplaceListingIcon
+                packageId={modId}
+                defaultIcon={isUnavailable ? faExclamationCircle : faCubes}
+                size="2x"
+              />
             </span>
           </div>
           <div>
@@ -59,7 +68,7 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
         <Card.Footer className={styles.cardFooter}>
           <span className={styles.sharing}>
             <SharingLabel
-              sharing={sharing.source}
+              sharing={sharingSource}
               className={styles.sharingLabel}
             />
           </span>

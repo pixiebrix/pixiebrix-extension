@@ -15,15 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModViewItem } from "@/types/modTypes";
+import type {
+  ModComponentsRootState,
+  ModComponentState,
+} from "@/store/modComponents/modComponentTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
+import type { RegistryId } from "@/types/registryTypes";
+import { selectGetModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
 
-import { MARKETPLACE_URL } from "@/urlConstants";
-
-function useMarketplaceUrl(modViewItem: ModViewItem): string | null {
-  const { sharing } = modViewItem;
-  const isPublished = Boolean(sharing.listingId);
-
-  return isPublished ? `${MARKETPLACE_URL}${sharing.listingId}/` : null;
+export default function getModComponentsForMod(
+  modId: RegistryId,
+  modComponentState: ModComponentState,
+): ActivatedModComponent[] {
+  const modComponentsState: ModComponentsRootState = {
+    options: modComponentState,
+  };
+  const getModComponentsForMod =
+    selectGetModComponentsForMod(modComponentsState);
+  return getModComponentsForMod(modId);
 }
-
-export default useMarketplaceUrl;

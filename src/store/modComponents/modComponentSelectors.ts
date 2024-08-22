@@ -19,7 +19,7 @@ import { type ModComponentsRootState } from "@/store/modComponents/modComponentT
 import { createSelector } from "@reduxjs/toolkit";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { isEmpty } from "lodash";
+import { isEmpty, memoize } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 
 export function selectActivatedModComponents({
@@ -46,22 +46,17 @@ export const selectIsModComponentSavedOnCloud =
   (modComponentId: UUID) => (state: ModComponentsRootState) =>
     isModComponentSavedOnCloudSelector(state, modComponentId);
 
-const activatedModComponentsForModSelector = createSelector(
+export const selectGetModComponentsForMod = createSelector(
   selectActivatedModComponents,
-  (state: ModComponentsRootState, modId: RegistryId) => modId,
-  (activatedModComponents, modId) =>
-    activatedModComponents.filter(
-      (activatedModComponent) => activatedModComponent._recipe?.id === modId,
+  (activatedModComponents) =>
+    memoize((modId: RegistryId) =>
+      activatedModComponents.filter(
+        (activatedModComponent) => activatedModComponent._recipe?.id === modId,
+      ),
     ),
 );
-
-export const selectModComponentsForMod =
-  (modId: RegistryId) => (state: ModComponentsRootState) =>
-    activatedModComponentsForModSelector(state, modId);
 
 export const selectModHasAnyActivatedModComponents =
   (modId?: RegistryId) =>
   (state: ModComponentsRootState): boolean =>
-    Boolean(
-      modId && !isEmpty(activatedModComponentsForModSelector(state, modId)),
-    );
+    Boolean(modId && !isEmpty(selectGetModComponentsForMod(state)(modId)));

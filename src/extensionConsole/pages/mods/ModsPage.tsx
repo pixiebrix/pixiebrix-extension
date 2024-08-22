@@ -15,26 +15,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
-import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
-import useMods from "@/mods/useMods";
+import React, { useContext, useEffect } from "react";
+import ModsPageTableLayout from "@/extensionConsole/pages/mods/ModsPageTableLayout";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import Modals from "./modals/Modals";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import {
+  useGetEditablePackagesQuery,
+  useGetFeatureFlagsQuery,
+  useGetMarketplaceListingsQuery,
+} from "@/data/service/api";
+import Loader from "@/components/Loader";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 const ModsPage: React.FunctionComponent = () => {
   useSetDocumentTitle("Mods");
-  const { mods, error } = useMods();
+
+  // Ensure all the data is loaded
+  // Note: We only need to show a loading indicator until mods are loaded
+  const { isLoading, error: modsError } = useAllModDefinitions();
+  const { error: listingsError } = useGetMarketplaceListingsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  useGetFeatureFlagsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  useGetEditablePackagesQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const error = modsError || listingsError;
+
+  const { isAutoDeploying } = useContext(DeploymentsContext);
 
   useEffect(() => {
     reportEvent(Events.MODS_PAGE_VIEW);
   }, []);
 
+  if (isLoading || isAutoDeploying) {
+    return <Loader />;
+  }
+
   return (
     <div className="h-100">
-      {error ? <ErrorDisplay error={error} /> : <ModsPageLayout mods={mods} />}
+      {error ? <ErrorDisplay error={error} /> : <ModsPageTableLayout />}
       <Modals />
     </div>
   );
