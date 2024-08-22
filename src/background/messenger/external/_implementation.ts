@@ -30,7 +30,7 @@ import { StorageItem } from "webext-storage";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
-import { type ActivateModsResult } from "@/background/starterMods";
+import { type ActivateModsResult } from "@/background/welcomeMods";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
