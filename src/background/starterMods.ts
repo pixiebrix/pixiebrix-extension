@@ -106,7 +106,7 @@ function closeSidebarTab(
   );
 }
 
-function closeStarterModTabs({
+function closeWelcomeModTabs({
   modDefinition,
   optionsState,
   sidebarState,
@@ -165,7 +165,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
   const builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
 
-  // XXX: do we want to fail all starter mod activations if one starter mod is invalid?
+  // XXX: do we want to fail all welcome mod activations if one welcome mod is invalid?
   const builtInDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => {
       if (unconfiguredDependency.integrationId === PIXIEBRIX_INTEGRATION_ID) {
@@ -184,7 +184,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
 
       if (!builtInConfig && !unconfiguredDependency.isOptional) {
         throw new Error(
-          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that starter mods have built-in configuration options for all required integrations.`,
+          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that welcome mods have built-in configuration options for all required integrations.`,
         );
       }
 
@@ -206,7 +206,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       ),
   );
 
-  // XXX: do we want to fail all starter mod activations if a DB fails to get created?
+  // XXX: do we want to fail all welcome mod activations if a DB fails to get created?
   const newModConfigs = await Promise.all(
     newMods.map(async (modDefinition) => {
       const optionsArgs = initialOptionsArgs(modDefinition);
@@ -217,7 +217,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
         async (args) => {
           const client = await getLinkedApiClient();
 
-          // If the starter mod has been previously activated, we need to use the existing database ID
+          // If the welcome mod has been previously activated, we need to use the existing database ID
           // Otherwise, we create a new database
           // See: https://github.com/pixiebrix/pixiebrix-extension/pull/8499
           const existingDatabases =
@@ -250,7 +250,7 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       optionsArgs,
     });
 
-    sidebarState = closeStarterModTabs({
+    sidebarState = closeWelcomeModTabs({
       modDefinition,
       optionsState,
       sidebarState,
@@ -267,20 +267,20 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
   return newModConfigs.length > 0;
 }
 
-async function getStarterMods(): Promise<ModDefinition[]> {
+async function getWelcomeMods(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping starter mod activation because the mod is not linked to the PixieBrix service",
+      "Skipping welcome mod activation because the mod is not linked to the PixieBrix service",
     );
     return [];
   }
 
   try {
-    const { data: starterMods } = await client.get<ModDefinition[]>(
+    const { data: welcomeMods } = await client.get<ModDefinition[]>(
       "/api/onboarding/starter-blueprints/",
     );
-    return starterMods;
+    return welcomeMods;
   } catch (error) {
     reportError(error);
     return [];
@@ -288,17 +288,17 @@ async function getStarterMods(): Promise<ModDefinition[]> {
 }
 
 /**
- * Activates starter mods and refreshes local registries from remote.
- * @returns true if any of the starter mods were activated
+ * Activates welcome mods and refreshes local registries from remote.
+ * @returns true if any of the welcome mods were activated
  */
-async function _activateStarterMods(): Promise<boolean> {
-  const starterMods = await getStarterMods();
+async function _activateWelcomeMods(): Promise<boolean> {
+  const welcomeMods = await getWelcomeMods();
 
   try {
-    // Activating Starter Mods and pulling the updates from remote registries to make sure
-    // that all the bricks used in starter mods are available
+    // Activating Welcome Mods and pulling the updates from remote registries to make sure
+    // that all the bricks used in welcome mods are available
     const [activated] = await Promise.all([
-      activateMods(starterMods),
+      activateMods(welcomeMods),
       refreshRegistries(),
     ]);
 
@@ -309,8 +309,8 @@ async function _activateStarterMods(): Promise<boolean> {
   }
 }
 
-export const debouncedActivateStarterMods = debounce(
-  memoizeUntilSettled(_activateStarterMods),
+export const debouncedActivateWelcomeMods = debounce(
+  memoizeUntilSettled(_activateWelcomeMods),
   MOD_ACTIVATION_DEBOUNCE_MS,
   {
     leading: true,
@@ -319,12 +319,12 @@ export const debouncedActivateStarterMods = debounce(
   },
 );
 
-function initStarterMods(): void {
+function initWelcomeMods(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
-      void debouncedActivateStarterMods();
+      void debouncedActivateWelcomeMods();
     }
   });
 }
 
-export default initStarterMods;
+export default initWelcomeMods;

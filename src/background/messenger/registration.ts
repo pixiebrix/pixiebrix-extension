@@ -80,7 +80,7 @@ import {
 } from "@/background/executor";
 import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
 import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
-import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods";
+import { debouncedActivateWelcomeMods as installWelcomeMods } from "@/background/starterMods";
 import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
 import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
@@ -158,7 +158,7 @@ declare global {
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     REMOVE_MOD_COMPONENT_EVERY_TAB: typeof removeModComponentForEveryTab;
-    INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
+    INSTALL_STARTER_BLUEPRINTS: typeof installWelcomeMods;
 
     REFRESH_PARTNER_AUTHENTICATION: typeof refreshPartnerAuthentication;
     REMOVE_OAUTH2_TOKEN: typeof removeOAuth2Token;
@@ -245,7 +245,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     REMOVE_MOD_COMPONENT_EVERY_TAB: removeModComponentForEveryTab,
-    INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
+    INSTALL_STARTER_BLUEPRINTS: installWelcomeMods,
 
     REFRESH_PARTNER_AUTHENTICATION: refreshPartnerAuthentication,
     REMOVE_OAUTH2_TOKEN: removeOAuth2Token,

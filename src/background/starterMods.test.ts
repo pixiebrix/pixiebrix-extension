@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { debouncedActivateStarterMods } from "@/background/starterMods";
+import { debouncedActivateWelcomeMods } from "@/background/starterMods";
 import {
   getModComponentState,
   saveModComponentState,
@@ -127,7 +127,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -153,7 +153,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -195,7 +195,7 @@ describe("debouncedActivateStarterMods", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(0);
@@ -220,7 +220,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -267,7 +267,7 @@ describe("debouncedActivateStarterMods", () => {
       },
     ]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -293,7 +293,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(2);
@@ -316,7 +316,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(1);
@@ -354,7 +354,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toBeArrayOfSize(1);
@@ -398,7 +398,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toBeArrayOfSize(1);
@@ -475,7 +475,7 @@ describe("debouncedActivateStarterMods", () => {
           ];
         });
 
-      await debouncedActivateStarterMods();
+      await debouncedActivateWelcomeMods();
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(1);
@@ -495,7 +495,7 @@ describe("debouncedActivateStarterMods", () => {
         .onGet("/api/onboarding/starter-blueprints/")
         .reply(200, [modDefinition]);
 
-      await debouncedActivateStarterMods();
+      await debouncedActivateWelcomeMods();
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(1);
@@ -519,7 +519,7 @@ describe("debouncedActivateStarterMods", () => {
         // Should not be called
         .reply(400);
 
-      await debouncedActivateStarterMods();
+      await debouncedActivateWelcomeMods();
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(1);

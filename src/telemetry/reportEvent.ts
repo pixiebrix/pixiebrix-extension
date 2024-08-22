@@ -36,7 +36,7 @@ const _record = getNotifier("RECORD_EVENT", bg);
  * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
  * @see selectEventData
  */
-export default function reportEvent<TData extends UnknownObject>(
+export default function reportEvent(
   event: TelemetryEvent,
   data: ReportEventData = {},
 ): void {
