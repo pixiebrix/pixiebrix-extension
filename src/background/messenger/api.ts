@@ -158,7 +158,7 @@ export const clearIntegrationRegistry = getMethod(
 );
 export const getUserData = getMethod("GET_USER_DATA", bg);
 export const activateWelcomeModsInBackground = getMethod(
-  "INSTALL_STARTER_BLUEPRINTS",
+  "ACTIVATE_WELCOME_MODS",
   bg,
 );
 

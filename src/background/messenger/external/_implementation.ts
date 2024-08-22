@@ -30,6 +30,7 @@ import { StorageItem } from "webext-storage";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
+import { type ActivateModsResult } from "@/background/starterMods";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -215,6 +216,8 @@ export async function openExtensionConsole(): Promise<true> {
  * Activate welcome mods via the background page.
  * @see activateWelcomeModsInBackground
  */
-export async function activateWelcomeMods(): Promise<boolean | undefined> {
+export async function activateWelcomeMods(): Promise<
+  ActivateModsResult | undefined
+> {
   return activateWelcomeModsInBackground();
 }

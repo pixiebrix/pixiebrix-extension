@@ -158,7 +158,7 @@ declare global {
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     REMOVE_MOD_COMPONENT_EVERY_TAB: typeof removeModComponentForEveryTab;
-    INSTALL_STARTER_BLUEPRINTS: typeof activateWelcomeMods;
+    ACTIVATE_WELCOME_MODS: typeof activateWelcomeMods;
 
     REFRESH_PARTNER_AUTHENTICATION: typeof refreshPartnerAuthentication;
     REMOVE_OAUTH2_TOKEN: typeof removeOAuth2Token;
@@ -245,7 +245,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     REMOVE_MOD_COMPONENT_EVERY_TAB: removeModComponentForEveryTab,
-    INSTALL_STARTER_BLUEPRINTS: activateWelcomeMods,
+    ACTIVATE_WELCOME_MODS: activateWelcomeMods,
 
     REFRESH_PARTNER_AUTHENTICATION: refreshPartnerAuthentication,
     REMOVE_OAUTH2_TOKEN: removeOAuth2Token,
