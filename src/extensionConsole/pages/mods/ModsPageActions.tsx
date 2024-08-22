@@ -157,7 +157,7 @@ const ModsPageActions: React.FunctionComponent<{
         title: "Edit in Workshop",
         icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
         action() {
-          history.push(`/workshop/bricks/${modId}`);
+          history.push(`/workshop/bricks/${editablePackageId}`);
         },
         hide: !showEditInWorkshop,
       },
