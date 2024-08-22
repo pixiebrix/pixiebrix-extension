@@ -155,14 +155,14 @@ function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
 }
 
 export type ActivateModsResult = {
-  // Total number of welcome mods
-  welcomeModsCount: number;
+  // Total number of available welcome mods
+  welcomeModCount: number;
 
-  // Number of welcome mods that were not previously activated
-  unactivatedModsCount?: number;
+  // Number of welcome mods skpped because they are already activated
+  skippedModCount?: number;
 
-  // Number of welcome mods that were activated
-  activatedModsCount?: number;
+  // Number of welcome mods that were successfully activated activated
+  resolvedModCount?: number;
 
   // Error message if any
   error?: string;
@@ -173,7 +173,7 @@ async function activateMods(
 ): Promise<ActivateModsResult> {
   if (modDefinitions.length === 0) {
     return {
-      welcomeModsCount: 0,
+      welcomeModCount: 0,
     };
   }
 
@@ -284,9 +284,9 @@ async function activateMods(
   reloadModsEveryTab();
 
   return {
-    welcomeModsCount: modDefinitions.length,
-    unactivatedModsCount: newMods.length,
-    activatedModsCount: newModConfigs.length,
+    welcomeModCount: modDefinitions.length,
+    skippedModCount: modDefinitions.length - newMods.length,
+    resolvedModCount: newModConfigs.length,
   };
 }
 
@@ -329,7 +329,7 @@ async function _activateWelcomeMods(): Promise<ActivateModsResult> {
   } catch (error) {
     reportError(error);
     return {
-      welcomeModsCount: welcomeMods.length,
+      welcomeModCount: welcomeMods.length,
       error: getErrorMessage(error),
     };
   }
