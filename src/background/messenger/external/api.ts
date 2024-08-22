@@ -64,7 +64,8 @@ export const getPartnerToken = liftExternal(
   getPartnerAuthData,
 );
 
-export const installStarterBlueprints = liftExternal(
+export const activateWelcomeMods = liftExternal(
+  // Can't change INSTALL_STARTER_BLUEPRINTS constant due to backward compatability.
   "INSTALL_STARTER_BLUEPRINTS",
-  local.activateStarterMods,
+  local.activateWelcomeMods,
 );

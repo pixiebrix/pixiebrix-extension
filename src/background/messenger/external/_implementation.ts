@@ -23,13 +23,14 @@ import { linkExtension } from "@/auth/authStorage";
 import { type TokenAuthData } from "@/auth/authTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
+import { activateWelcomeModsInBackground } from "@/background/messenger/api";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
+import { type ActivateModsResult } from "@/background/welcomeMods";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -212,9 +213,11 @@ export async function openExtensionConsole(): Promise<true> {
 }
 
 /**
- * Activate starter mods via the background page.
- * @see installStarterBlueprintsInBackground
+ * Activate welcome mods via the background page.
+ * @see activateWelcomeModsInBackground
  */
-export async function activateStarterMods(): Promise<boolean | undefined> {
-  return installStarterBlueprintsInBackground();
+export async function activateWelcomeMods(): Promise<
+  ActivateModsResult | undefined
+> {
+  return activateWelcomeModsInBackground();
 }

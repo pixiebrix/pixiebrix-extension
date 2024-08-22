@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { debouncedActivateStarterMods } from "@/background/starterMods";
+import { debouncedActivateWelcomeMods } from "@/background/welcomeMods";
 import {
   getModComponentState,
   saveModComponentState,
@@ -102,7 +102,7 @@ beforeEach(async () => {
   axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
 });
 
-describe("debouncedActivateStarterMods", () => {
+describe("debouncedActivateWelcomeMods", () => {
   function overrideStarterBrickType(
     modDefinition: ModDefinition,
     type: StarterBrickType,
@@ -115,7 +115,7 @@ describe("debouncedActivateStarterMods", () => {
     });
   }
 
-  test("user has starter mods available to activate, with sidebar starter bricks", async () => {
+  test("user has welcome mods available to activate, with sidebar starter bricks", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = overrideStarterBrickType(
@@ -127,7 +127,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -144,7 +144,7 @@ describe("debouncedActivateStarterMods", () => {
     expect(refreshRegistriesMock).toHaveBeenCalledOnce();
   });
 
-  test("user has starter mods available to activate, no sidebar starter bricks", async () => {
+  test("user has welcome mods available to activate, no sidebar starter bricks", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
@@ -153,7 +153,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -190,18 +190,18 @@ describe("debouncedActivateStarterMods", () => {
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
   });
 
-  test("starter mods request fails", async () => {
+  test("welcome mods request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(0);
   });
 
-  test("activate starter mod with built-in auths", async () => {
+  test("activate welcome mod with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition: _modDefinition, builtInIntegrationConfigs } =
@@ -220,7 +220,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -248,7 +248,7 @@ describe("debouncedActivateStarterMods", () => {
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
-  test("starter mod already activated", async () => {
+  test("welcome mod already activated", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
@@ -267,7 +267,7 @@ describe("debouncedActivateStarterMods", () => {
       },
     ]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
     const { closedTabs } = await getSidebarState();
 
@@ -293,13 +293,13 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(2);
   });
 
-  test("activate starter mod with optional integrations", async () => {
+  test("activate welcome mod with optional integrations", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
@@ -316,7 +316,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(1);
@@ -329,7 +329,7 @@ describe("debouncedActivateStarterMods", () => {
     ).toBeUndefined();
   });
 
-  test("activate starter mods with optional integrations, 1 with built-in auth", async () => {
+  test("activate welcome mods with optional integrations, 1 with built-in auth", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition, builtInIntegrationConfigs } =
@@ -354,7 +354,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toBeArrayOfSize(1);
@@ -378,7 +378,7 @@ describe("debouncedActivateStarterMods", () => {
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
-  test("activate starter mod with required pixiebrix integration", async () => {
+  test("activate welcome mod with required pixiebrix integration", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
@@ -398,7 +398,7 @@ describe("debouncedActivateStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedActivateStarterMods();
+    await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toBeArrayOfSize(1);
@@ -455,7 +455,7 @@ describe("debouncedActivateStarterMods", () => {
       return modDefinition;
     }
 
-    test("activate starter mod with required pixiebrix database", async () => {
+    test("activate welcome mod with required pixiebrix database", async () => {
       const modDefinition = modFactory();
       const databaseId = autoUUIDSequence();
 
@@ -475,7 +475,7 @@ describe("debouncedActivateStarterMods", () => {
           ];
         });
 
-      await debouncedActivateStarterMods();
+      await debouncedActivateWelcomeMods();
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(1);
@@ -495,7 +495,7 @@ describe("debouncedActivateStarterMods", () => {
         .onGet("/api/onboarding/starter-blueprints/")
         .reply(200, [modDefinition]);
 
-      await debouncedActivateStarterMods();
+      await debouncedActivateWelcomeMods();
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(1);
@@ -519,7 +519,7 @@ describe("debouncedActivateStarterMods", () => {
         // Should not be called
         .reply(400);
 
-      await debouncedActivateStarterMods();
+      await debouncedActivateWelcomeMods();
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(1);
