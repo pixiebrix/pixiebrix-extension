@@ -22,14 +22,13 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useState,
+  useRef,
 } from "react";
 import { type ModViewItem } from "@/types/modTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { type Row } from "react-table";
 import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHeader";
-import { uuidv4 } from "@/types/helpers";
 import GridCardErrorBoundary from "@/extensionConsole/pages/mods/gridView/GridCardErrorBoundary";
 import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 
@@ -92,7 +91,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   width,
   height,
 }) => {
-  const [listKey, setListKey] = useState(uuidv4());
+  const listRef = useRef<List>();
 
   const columnCount = useMemo(
     () => Math.floor(width / MIN_CARD_WIDTH_PX),
@@ -112,12 +111,9 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
     [expandedGridRows],
   );
 
-  // `react-window` caches itemSize which causes inconsistent
-  // row heights/row height flickering on scroll when data changes,
-  // even with non-index `itemKeys`.
   // Re-render the list when expandedRows changes.
   useEffect(() => {
-    setListKey(uuidv4());
+    listRef.current?.resetAfterIndex(0);
   }, [expandedGridRows, columnCount]);
 
   const GridRow = useCallback(
@@ -161,7 +157,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
       width={width}
       itemSize={getItemSize}
       itemCount={expandedGridRows.length}
-      key={listKey}
+      ref={listRef}
     >
       {GridRow}
     </List>
