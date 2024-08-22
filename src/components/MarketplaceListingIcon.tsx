@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useGetMarketplaceListingQuery } from "@/data/service/api";
 import { useAsyncIcon } from "@/components/asyncIcon";
@@ -38,8 +38,7 @@ const MarketplaceListingIcon: React.FC<{
   faIconClass = "",
   inheritColor = false,
 }) => {
-  const queryInput = useMemo(() => ({ packageId }), [packageId]);
-  const { data: listing } = useGetMarketplaceListingQuery(queryInput);
+  const { data: listing } = useGetMarketplaceListingQuery({ packageId });
 
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
