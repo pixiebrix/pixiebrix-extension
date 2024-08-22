@@ -19,6 +19,8 @@ import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
+import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
+import { validateRegistryId } from "@/types/helpers";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.getByTestId("ellipsis-menu-button");
@@ -150,9 +152,9 @@ export class ActivateModPage extends BasePageObject {
   ) {
     super(page);
     this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
-    this.activateModUrl = `${
-      this.baseConsoleUrl
-    }#/marketplace/activate/${encodeURIComponent(modId)}`;
+    this.activateModUrl = `${this.baseConsoleUrl}#${getActivateModHashRoute(
+      validateRegistryId(modId),
+    )}`;
   }
 
   async goto() {

@@ -15,17 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationsState } from "@/integrations/store/integrationsSlice";
-import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import { createSelector } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { selectGetModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
+import { useMemo } from "react";
+import type { RegistryId } from "@/types/registryTypes";
 
-export const selectIntegrationConfigs = createSelector(
-  (state: { integrations: IntegrationsState }) => state.integrations,
-  (integrations) => Object.values(integrations.configured),
-);
-
-export const selectIntegrationConfigMap = ({
-  integrations,
-}: {
-  integrations: IntegrationsState;
-}): Record<string, IntegrationConfig> => integrations.configured;
+export default function useActivatedModComponents(modId: RegistryId) {
+  const getModComponentsForMod = useSelector(selectGetModComponentsForMod);
+  return useMemo(
+    () => getModComponentsForMod(modId),
+    [modId, getModComponentsForMod],
+  );
+}

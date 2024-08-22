@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModsPageLayout renders 1`] = `
+exports[`ModsPageTableLayout renders 1`] = `
 <DocumentFragment>
   <div
     class="root"

@@ -17,9 +17,9 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
-import { type HydratedModComponent } from "@/types/modComponentTypes";
-import { type RegistryId } from "@/types/registryTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 /**
  * @deprecated
@@ -33,8 +33,7 @@ export type UnavailableMod = Pick<
   isStub: true;
 };
 
-// XXX: should this be SerializedModComponent instead of HydratedModComponent? The old screens used ResolvedModComponent
-export type Mod = ModDefinition | HydratedModComponent | UnavailableMod;
+export type Mod = ModDefinition | UnavailableMod;
 
 export type SharingType =
   | "Personal"
@@ -42,37 +41,53 @@ export type SharingType =
   | "Public"
   | "Deployment"
   | "Unknown";
+
 export type SharingSource = {
   type: SharingType;
   label: string;
   organization?: Nullishable<Organization>;
 };
 
-export type ModStatus =
+export type ModActivationStatus =
   | "Active"
   | "Inactive"
   // The mod comes from a deployment that has been paused
   | "Paused";
 
+export type ModVersionStatus = {
+  hasUpdate: boolean;
+  activatedModVersion: SemVerString | null;
+};
+
+export type ModActionsEnabled = {
+  showPublishToMarketplace: boolean;
+  showViewDetails: boolean;
+  showShareWithTeams: boolean;
+  showViewLogs: boolean;
+  showEditInWorkshop: boolean;
+  showActivate: boolean;
+  showReactivate: boolean;
+  showDeactivate: boolean;
+  showDelete: boolean;
+};
+
 // Reshaped Mod to easily filter, sort, and group Mods
 export type ModViewItem = {
+  modId: RegistryId;
+  editablePackageId: UUID | null;
+  marketplaceListingUrl: string | null;
   name: string;
   description: string;
-  sharing: {
-    packageId: RegistryId | undefined;
-    source: SharingSource;
-    listingId: string | null;
-  };
-  updatedAt: string | null;
-  status: ModStatus;
+  sharingSource: SharingSource;
+  updatedAt: Timestamp;
+  status: ModActivationStatus;
   hasUpdate: boolean;
-  installedVersionNumber: string | undefined;
-  // Used to get Mod actions from useModActions
-  mod: Mod;
+  activatedModVersion: SemVerString | null;
   /**
    * True if the source package is no longer available
    */
-  unavailable: boolean;
+  isUnavailable: boolean;
+  modActions: ModActionsEnabled;
 };
 
 /**
