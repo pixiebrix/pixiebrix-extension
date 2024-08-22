@@ -47,8 +47,12 @@ export default function useMigrateStandaloneComponentsToMods() {
       if (activatedModComponent._recipe == null) {
         dispatch(actions.removeModComponentFormState(formState.uuid));
       } else {
-        formState.modMetadata = activatedModComponent._recipe;
-        dispatch(actions.syncModComponentFormState(formState));
+        dispatch(
+          actions.syncModComponentFormState({
+            ...formState,
+            modMetadata: activatedModComponent._recipe,
+          }),
+        );
       }
     }
     // eslint-disable-next-line -- Only need to run this migration once
