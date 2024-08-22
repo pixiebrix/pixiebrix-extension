@@ -155,19 +155,29 @@ function initialOptionsArgs(modDefinition: ModDefinition): OptionsArgs {
 }
 
 export type ActivateModsResult = {
-  // Total number of available welcome mods
+  /**
+   * Total number of available welcome mods
+   */
   welcomeModCount: number;
 
-  // Number of welcome mods skpped because they are already activated
+  /**
+   * Number of welcome mods skpped because they are already activated
+   */
   skippedModCount?: number;
 
-  // Number of welcome mods that were rejected because of errors, should always be 0 currently
+  /**
+   * Number of welcome mods that were rejected because of errors, should always be 0 currently
+   */
   rejectedModCount?: number;
 
-  // Number of welcome mods that were successfully activated activated
+  /**
+   * Number of welcome mods that were successfully activated activated
+   */
   resolvedModCount?: number;
 
-  // Error message if any
+  /**
+   * Error message if any
+   */
   error?: string;
 };
 
