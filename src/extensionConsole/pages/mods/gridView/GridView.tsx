@@ -18,11 +18,11 @@
 import styles from "./GridView.module.scss";
 
 import React, {
+  createRef,
   type HTMLAttributes,
   useCallback,
   useEffect,
   useMemo,
-  useRef,
 } from "react";
 import { type ModViewItem } from "@/types/modTypes";
 import { VariableSizeList as List } from "react-window";
@@ -91,7 +91,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   width,
   height,
 }) => {
-  const listRef = useRef<List | undefined>();
+  const listRef = createRef<List>();
 
   const columnCount = useMemo(
     () => Math.floor(width / MIN_CARD_WIDTH_PX),

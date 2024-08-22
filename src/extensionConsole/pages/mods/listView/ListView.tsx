@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { createRef, useCallback, useEffect, useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
 import { VariableSizeList as List } from "react-window";
@@ -32,7 +32,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   height,
   width,
 }) => {
-  const listRef = useRef<List | undefined>();
+  const listRef = createRef<List>();
 
   const expandedRows = useMemo(
     () => tableInstance.rows.flatMap((row) => [row, ...row.subRows]),
