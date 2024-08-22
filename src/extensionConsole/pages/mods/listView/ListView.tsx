@@ -32,7 +32,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   height,
   width,
 }) => {
-  const listRef = useRef<List>();
+  const listRef = useRef<List | undefined>();
 
   const expandedRows = useMemo(
     () => tableInstance.rows.flatMap((row) => [row, ...row.subRows]),

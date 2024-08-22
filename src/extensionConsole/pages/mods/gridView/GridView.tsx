@@ -91,7 +91,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   width,
   height,
 }) => {
-  const listRef = useRef<List>();
+  const listRef = useRef<List | undefined>();
 
   const columnCount = useMemo(
     () => Math.floor(width / MIN_CARD_WIDTH_PX),
