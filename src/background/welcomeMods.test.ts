@@ -109,7 +109,7 @@ describe("debouncedActivateWelcomeMods", () => {
   ) {
     return produce(modDefinition, (draft) => {
       (
-        draft.definitions.extensionPoint
+        draft.definitions!.extensionPoint!
           .definition as StarterBrickDefinitionProp
       ).type = type;
     });
@@ -132,12 +132,12 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toEqual(
+    expect(activatedModComponents[0]!._recipe!.id).toEqual(
       modDefinition.metadata.id,
     );
 
     expect(closedTabs).toStrictEqual({
-      [getEventKeyForPanel(activatedModComponents[0].id)]: true,
+      [getEventKeyForPanel(activatedModComponents[0]!.id)]: true,
       [eventKeyForEntry(MOD_LAUNCHER)]: false,
     });
 
@@ -158,7 +158,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toEqual(
+    expect(activatedModComponents[0]!._recipe!.id).toEqual(
       modDefinition.metadata.id,
     );
 
@@ -225,7 +225,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toBeArrayOfSize(1);
-    const activatedModComponent = activatedModComponents[0];
+    const activatedModComponent = activatedModComponents[0]!;
 
     expect(closedTabs).toStrictEqual({
       [getEventKeyForPanel(activatedModComponent.id)]: true,
@@ -233,19 +233,19 @@ describe("debouncedActivateWelcomeMods", () => {
     });
 
     expect(activatedModComponent.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id,
+      modDefinition.extensionPoints[0]!.id,
     );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = activatedModComponent.integrationDependencies.find(
+    const dependency1 = activatedModComponent.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
-    );
-    const dependency2 = activatedModComponent.integrationDependencies.find(
+    )!;
+    const dependency2 = activatedModComponent.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
-    );
+    )!;
 
-    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
-    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
+    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0]!.id);
+    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1]!.id);
   });
 
   test("welcome mod already activated", async () => {
@@ -262,8 +262,8 @@ describe("debouncedActivateWelcomeMods", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
-        extensionPoints: [activatedModComponent],
         ...modDefinition,
+        extensionPoints: [activatedModComponent],
       },
     ]);
 
@@ -272,7 +272,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toEqual(
+    expect(activatedModComponents[0]!._recipe!.id).toEqual(
       modDefinition.metadata.id,
     );
 
@@ -303,7 +303,7 @@ describe("debouncedActivateWelcomeMods", () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
-    modDefinition.extensionPoints[0].services = {
+    modDefinition.extensionPoints[0]!.services = {
       properties: {
         google: {
           $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
@@ -320,12 +320,14 @@ describe("debouncedActivateWelcomeMods", () => {
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(1);
-    const activatedModComponent = activatedModComponents[0];
-    expect(activatedModComponent._recipe.id).toEqual(modDefinition.metadata.id);
+    const activatedModComponent = activatedModComponents[0]!;
+    expect(activatedModComponent._recipe!.id).toEqual(
+      modDefinition.metadata.id,
+    );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
     // Expect the optional dependency NOT to be configured
     expect(
-      activatedModComponent.integrationDependencies[0].configId,
+      activatedModComponent.integrationDependencies![0]!.configId,
     ).toBeUndefined();
   });
 
@@ -334,7 +336,7 @@ describe("debouncedActivateWelcomeMods", () => {
 
     const { modDefinition, builtInIntegrationConfigs } =
       getModDefinitionWithBuiltInIntegrationConfigs();
-    modDefinition.extensionPoints[0].services = {
+    modDefinition.extensionPoints[0]!.services = {
       properties: {
         service1: {
           $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/service1",
@@ -359,30 +361,30 @@ describe("debouncedActivateWelcomeMods", () => {
 
     expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const activatedModComponent1 = activatedModComponents[0];
+    const activatedModComponent1 = activatedModComponents[0]!;
     expect(activatedModComponent1.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id,
+      modDefinition.extensionPoints[0]!.id,
     );
     expect(activatedModComponent1.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = activatedModComponent1.integrationDependencies.find(
+    const dependency1 = activatedModComponent1.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
-    );
-    const dependency2 = activatedModComponent1.integrationDependencies.find(
+    )!;
+    const dependency2 = activatedModComponent1.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
-    );
+    )!;
 
     // Expect the optional dependency NOT to be configured
-    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
+    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0]!.id);
     // Expect the required dependency to be configured
-    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
+    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1]!.id);
   });
 
   test("activate welcome mod with required pixiebrix integration", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
-    modDefinition.extensionPoints[0].services = {
+    modDefinition.extensionPoints[0]!.services = {
       type: "object",
       properties: {
         service: {
@@ -403,15 +405,15 @@ describe("debouncedActivateWelcomeMods", () => {
 
     expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const activatedModComponent = activatedModComponents[0];
+    const activatedModComponent = activatedModComponents[0]!;
     expect(activatedModComponent.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id,
+      modDefinition.extensionPoints[0]!.id,
     );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
 
-    const dependency = activatedModComponent.integrationDependencies.find(
+    const dependency = activatedModComponent.integrationDependencies!.find(
       ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
-    );
+    )!;
 
     // As of 1.8.13, a sentinel value is used for the configId of the integration to simplify strict null checks
     expect(dependency.configId).toBe(PIXIEBRIX_INTEGRATION_CONFIG_ID);
@@ -442,7 +444,7 @@ describe("debouncedActivateWelcomeMods", () => {
         },
       };
 
-      modDefinition.extensionPoints[0].services = {
+      modDefinition.extensionPoints[0]!.services = {
         type: "object",
         properties: {
           service: {
@@ -480,7 +482,7 @@ describe("debouncedActivateWelcomeMods", () => {
 
       expect(activatedModComponents).toBeArrayOfSize(1);
 
-      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+      expect(activatedModComponents[0]!.optionsArgs).toStrictEqual({
         // Activated with the ID of the database created
         database: databaseId,
       });
@@ -489,7 +491,7 @@ describe("debouncedActivateWelcomeMods", () => {
     test("optional database is not created", async () => {
       // Mark DB as optional
       const modDefinition = modFactory();
-      modDefinition.options.schema.required = [];
+      modDefinition.options!.schema.required = [];
 
       axiosMock
         .onGet("/api/onboarding/starter-blueprints/")
@@ -501,7 +503,7 @@ describe("debouncedActivateWelcomeMods", () => {
       expect(activatedModComponents).toBeArrayOfSize(1);
 
       // Database should not be created
-      expect(activatedModComponents[0].optionsArgs).toStrictEqual({});
+      expect(activatedModComponents[0]!.optionsArgs).toStrictEqual({});
     });
 
     test("database is not created if already exists", async () => {
@@ -524,7 +526,7 @@ describe("debouncedActivateWelcomeMods", () => {
 
       expect(activatedModComponents).toBeArrayOfSize(1);
 
-      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+      expect(activatedModComponents[0]!.optionsArgs).toStrictEqual({
         // Activated with the ID of the database created
         database: databaseId,
       });

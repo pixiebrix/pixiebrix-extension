@@ -391,7 +391,7 @@ describe("syncDeployments", () => {
 
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id,
     }) as ActivatedModComponent;
     delete modComponent._recipe;
     delete modComponent._deployment;
@@ -430,7 +430,7 @@ describe("syncDeployments", () => {
     expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
     // Expect unrelated draft mod component not to be removed
-    expect(foo.modComponentFormStates).toBeArrayOfSize(1);
+    expect(foo!.modComponentFormStates).toBeArrayOfSize(1);
   });
 
   test("deactivate existing mod with no draft mod components", async () => {
@@ -445,7 +445,7 @@ describe("syncDeployments", () => {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
-        updated_at: deployment.updated_at,
+        updated_at: deployment.updated_at!,
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
@@ -474,7 +474,7 @@ describe("syncDeployments", () => {
 
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
-    expect(activatedModComponents[0]._recipe.version).toBe(
+    expect(activatedModComponents[0]!._recipe!.version).toBe(
       deployment.package.version,
     );
   });
@@ -494,12 +494,12 @@ describe("syncDeployments", () => {
 
     // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id,
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
-        updated_at: deployment.updated_at,
+        updated_at: deployment.updated_at!,
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
@@ -534,10 +534,10 @@ describe("syncDeployments", () => {
 
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
-    const { modComponentFormStates } = await getEditorState();
+    const { modComponentFormStates } = (await getEditorState()) ?? {};
     // Expect draft mod component to be removed
     expect(modComponentFormStates).toBeArrayOfSize(0);
-    expect(activatedModComponents[0]._recipe.version).toBe(
+    expect(activatedModComponents[0]!._recipe!.version).toBe(
       deployment.package.version,
     );
   });
@@ -773,7 +773,7 @@ describe("syncDeployments", () => {
     };
 
     const standaloneModComponent = modComponentFactory({
-      extensionPointId: personalStarterBrick.metadata.id,
+      extensionPointId: personalStarterBrick.metadata!.id,
     }) as ActivatedModComponent;
 
     const recipeModComponent = modComponentFactory({
@@ -787,7 +787,7 @@ describe("syncDeployments", () => {
     };
 
     const deploymentModComponent = modComponentFactory({
-      extensionPointId: deploymentStarterBrick.metadata.id,
+      extensionPointId: deploymentStarterBrick.metadata!.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
       _recipe: modMetadataFactory(),
     }) as ActivatedModComponent;
@@ -850,9 +850,9 @@ describe("syncDeployments", () => {
     expect(activatedModComponentIds).toContain(standaloneModComponent.id);
     expect(activatedModComponentIds).toContain(recipeModComponent.id);
 
-    const { modComponentFormStates } = await getEditorState();
+    const { modComponentFormStates } = (await getEditorState()) ?? {};
     expect(modComponentFormStates).toBeArrayOfSize(1);
-    expect(modComponentFormStates[0]).toEqual(personalModComponentFormState);
+    expect(modComponentFormStates![0]!).toEqual(personalModComponentFormState);
   });
 
   test("deactivates old mod when deployed mod id is changed", async () => {
@@ -879,18 +879,18 @@ describe("syncDeployments", () => {
     await syncDeployments();
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toBe(
+    expect(activatedModComponents[0]!._recipe!.id).toBe(
       deployment.package.package_id,
     );
 
     // Remove package from the deployment so that it can be updated
-    delete deployment.package;
+    const { package: deploymentPackage, ...prevDeployment } = deployment;
     const {
       deployment: updatedDeployment,
       modDefinition: updatedModDefinition,
     } = activatableDeploymentFactory({
       deploymentOverride: {
-        ...deployment,
+        ...prevDeployment,
       },
     });
 
@@ -914,7 +914,7 @@ describe("syncDeployments", () => {
     const { activatedModComponents: expectedModComponents } =
       await getModComponentState();
     expect(expectedModComponents).toHaveLength(1);
-    expect(expectedModComponents[0]._recipe.id).toBe(
+    expect(expectedModComponents[0]!._recipe!.id).toBe(
       updatedDeployment.package.package_id,
     );
   });

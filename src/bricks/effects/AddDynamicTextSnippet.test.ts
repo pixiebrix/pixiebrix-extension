@@ -77,7 +77,7 @@ describe("AddDynamicTextSnippet", () => {
       ]);
 
       await expect(
-        snippetRegistry.snippetShortcuts[0].handler("current text"),
+        snippetRegistry.snippetShortcuts[0]!.handler("current text"),
       ).resolves.toBe("current text");
     },
   );
@@ -118,7 +118,7 @@ describe("AddDynamicTextSnippet", () => {
       ]);
 
       await expect(
-        snippetRegistry.snippetShortcuts[0].handler("current text"),
+        snippetRegistry.snippetShortcuts[0]!.handler("current text"),
       ).resolves.toBe("current text");
     },
   );

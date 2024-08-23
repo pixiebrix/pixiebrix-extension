@@ -350,7 +350,7 @@ describe("SchemaField", () => {
       expect(widgetLoadingIndicator).toBeNull();
 
       const toggle = within(
-        screen.queryByTestId(`toggle-${fieldName}`),
+        screen.getByTestId(`toggle-${fieldName}`),
       ).getByRole("button");
       expect(toggle).toBeInTheDocument();
 

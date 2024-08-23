@@ -67,9 +67,7 @@ describe("useActivateModWizard", () => {
       ),
     );
 
-    const {
-      data: { wizardSteps },
-    } = result.current;
+    const { data: { wizardSteps } = {} } = result.current;
     expect(wizardSteps).toHaveLength(2);
   });
 
@@ -81,9 +79,7 @@ describe("useActivateModWizard", () => {
       useActivateModWizard(defaultModDefinitionFactory()),
     );
 
-    const {
-      data: { wizardSteps },
-    } = result.current;
+    const { data: { wizardSteps } = {} } = result.current;
     expect(wizardSteps).toHaveLength(1);
   });
 
@@ -95,9 +91,7 @@ describe("useActivateModWizard", () => {
       useActivateModWizard(defaultModDefinitionFactory()),
     );
 
-    const {
-      data: { wizardSteps },
-    } = result.current;
+    const { data: { wizardSteps } = {} } = result.current;
     expect(wizardSteps).toHaveLength(1);
   });
 
@@ -123,7 +117,7 @@ describe("useActivateModWizard", () => {
     );
     const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
-    expect(result.current.data.initialValues.optionsArgs).toEqual({
+    expect(result.current.data!.initialValues.optionsArgs).toEqual({
       [name]: makeDatabasePreviewName(modDefinition, optionSchema, name),
     });
   });
@@ -161,7 +155,7 @@ describe("useActivateModWizard", () => {
     );
     const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
-    expect(result.current.data.initialValues.optionsArgs).toEqual({
+    expect(result.current.data!.initialValues.optionsArgs).toEqual({
       [name]: databaseId,
     });
   });

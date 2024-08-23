@@ -49,7 +49,7 @@ beforeEach(() => {
     isLoading: false,
   });
 
-  usePartnerAuthDataMock.mockReturnValue(valueToAsyncState(null));
+  usePartnerAuthDataMock.mockReturnValue(valueToAsyncState(undefined));
 });
 
 describe("useRequiredPartnerAuth", () => {
