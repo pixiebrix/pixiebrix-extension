@@ -115,7 +115,7 @@ describe("useMigrateStandaloneComponentsToMods", () => {
 
     expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "Found activated mod component without recipe",
+      "Found activated mod component without mod metadata",
       standaloneComponent,
     );
 
