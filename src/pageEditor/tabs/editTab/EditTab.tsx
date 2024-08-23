@@ -45,6 +45,7 @@ import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
 import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -90,6 +91,10 @@ const EditTab: React.FC<{
               name="copyNode"
               icon={faCopy}
               onClick={() => {
+                assertNotNullish(
+                  activeNodeId,
+                  "activeNodeId is required to copy a node",
+                );
                 copyBlock(activeNodeId);
               }}
               tooltipText="Copy Brick"
@@ -100,6 +105,10 @@ const EditTab: React.FC<{
               name="removeNode"
               icon={faTrash}
               onClick={() => {
+                assertNotNullish(
+                  activeNodeId,
+                  "activeNodeId is required to remove a node",
+                );
                 removeBlock(activeNodeId);
               }}
               tooltipText="Remove Brick"

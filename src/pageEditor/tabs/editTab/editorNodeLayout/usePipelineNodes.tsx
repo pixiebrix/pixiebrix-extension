@@ -82,6 +82,7 @@ import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentB
 import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -131,7 +132,7 @@ function getBuilderPreviewElementId(
  * @param blockConfig the block config
  */
 function getSubPipelinesForBlock(
-  block: Brick | null,
+  block: Brick | undefined,
   blockConfig: BrickConfig,
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
@@ -293,7 +294,7 @@ const usePipelineNodes = (): {
   }: {
     index: number;
     blockConfig: BrickConfig;
-    latestPipelineCall: Branch[];
+    latestPipelineCall: Branch[] | undefined;
     flavor: PipelineFlavor;
     pipelinePath: string;
     lastIndex: number;
@@ -304,13 +305,16 @@ const usePipelineNodes = (): {
     nestingLevel: number;
     modComponentHasTraces?: boolean;
   }): MapOutput {
+    const { instanceId } = blockConfig;
+    assertNotNullish(instanceId, "instanceId is required");
+
     const nodes: EditorNodeProps[] = [];
     const block = allBricks.get(blockConfig.id)?.block;
-    const isNodeActive = blockConfig.instanceId === activeNodeId;
+    const isNodeActive = instanceId === activeNodeId;
 
     const traceRecord = getLatestBrickCall(
       filterTracesByCall(traces, latestPipelineCall),
-      blockConfig.instanceId,
+      instanceId,
     );
 
     let modComponentHasTraces =
@@ -318,7 +322,7 @@ const usePipelineNodes = (): {
 
     const subPipelines = getSubPipelinesForBlock(block, blockConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
-    const collapsed = collapsedNodes.includes(blockConfig.instanceId);
+    const collapsed = collapsedNodes.includes(instanceId);
     const expanded = hasSubPipelines && !collapsed;
 
     const onClick = () => {
@@ -331,14 +335,12 @@ const usePipelineNodes = (): {
       }
 
       if (!isNodeActive) {
-        setActiveNodeId(blockConfig.instanceId);
+        setActiveNodeId(instanceId);
         return;
       }
 
       if (hasSubPipelines) {
-        dispatch(
-          actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId),
-        );
+        dispatch(actions.toggleCollapseBrickPipelineNode(instanceId));
       }
     };
 
@@ -351,20 +353,20 @@ const usePipelineNodes = (): {
 
     const onClickMoveUp = canMoveUp
       ? () => {
-          moveBlockUp(blockConfig.instanceId);
+          moveBlockUp(instanceId);
         }
       : undefined;
     const onClickMoveDown = canMoveDown
       ? () => {
-          moveBlockDown(blockConfig.instanceId);
+          moveBlockDown(instanceId);
         }
       : undefined;
 
-    const hovered = hoveredState[blockConfig.instanceId];
+    const hovered = hoveredState[instanceId];
     const onHoverChange = (hovered: boolean) => {
       setHoveredState((previousState) => ({
         ...previousState,
-        [blockConfig.instanceId]: hovered,
+        [instanceId as string]: hovered,
       }));
     };
 
@@ -373,7 +375,7 @@ const usePipelineNodes = (): {
     const showAddMessage = showAddBlock && showBiggerActions;
 
     const brickNodeActions: NodeAction[] = [];
-    const nodeId = blockConfig.instanceId;
+    const nodeId = instanceId;
 
     // TODO: Refactoring - remove code duplication in the node actions here
     if (showAddBlock) {
@@ -411,6 +413,7 @@ const usePipelineNodes = (): {
     };
 
     if (block) {
+      assertNotNullish(nodeId, "nodeId is required to get block annotations");
       // Handle race condition on pipelineMap updates
       // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
       const blockPath = maybePipelineMap?.[nodeId]?.path;
@@ -426,7 +429,8 @@ const usePipelineNodes = (): {
         }),
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block?.name
-          : blockConfig.label,
+          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by isNullOrBlank
+            blockConfig.label!,
         brickSummary: getBrickPipelineNodeSummary(blockConfig),
         outputKey: expanded ? undefined : blockConfig.outputKey,
       };
@@ -462,7 +466,7 @@ const usePipelineNodes = (): {
 
     nodes.push({
       type: "brick",
-      key: blockConfig.instanceId,
+      key: instanceId,
       ...contentProps,
       ...restBrickNodeProps,
     });
@@ -519,14 +523,14 @@ const usePipelineNodes = (): {
           nestingLevel,
           nodeActions: headerActions,
           pipelineInputKey: inputKey,
-          active: isHeaderNodeActive,
+          active: isHeaderNodeActive || false,
           isParentActive: !isSiblingHeaderActive && isNodeActive,
           isAncestorActive: !isSiblingHeaderActive && isParentActive,
           builderPreviewElement: builderPreviewElementId
             ? {
                 name: builderPreviewElementId,
                 focus() {
-                  setActiveNodeId(blockConfig.instanceId);
+                  setActiveNodeId(instanceId);
                   dispatch(
                     editorActions.setActiveBuilderPreviewElement(
                       builderPreviewElementId,
@@ -553,12 +557,14 @@ const usePipelineNodes = (): {
           flavor,
           pipelinePath: fullSubPath,
           nestingLevel: nestingLevel + 1,
-          isParentActive: isSiblingHeaderActive
-            ? isHeaderNodeActive
-            : isNodeActive || isParentActive,
-          isAncestorActive: isSiblingHeaderActive
-            ? isHeaderNodeActive
-            : isParentActive || isAncestorActive,
+          isParentActive:
+            (isSiblingHeaderActive
+              ? isHeaderNodeActive
+              : isNodeActive || isParentActive) || false,
+          isAncestorActive:
+            (isSiblingHeaderActive
+              ? isHeaderNodeActive
+              : isParentActive || isAncestorActive) || false,
           // If this pipeline is a sub-pipeline that doesn't have traces yet, fall back to the latest parent call
           // That prevents deeply nested stale traces from appearing in the UI
           latestParentCall: traceRecord?.branches ?? latestPipelineCall,
@@ -576,6 +582,11 @@ const usePipelineNodes = (): {
         modComponentHasTraces ||= subPipelineHasTraces;
       }
 
+      assertNotNullish(
+        blockConfig.outputKey,
+        "outputKey is required for footer",
+      );
+
       const footerNodeProps: PipelineFooterNodeProps = {
         outputKey: blockConfig.outputKey,
         nodeActions: brickNodeActions,
@@ -590,7 +601,7 @@ const usePipelineNodes = (): {
       };
       nodes.push({
         type: "footer",
-        key: `${blockConfig.instanceId}-footer`,
+        key: `${instanceId}-footer`,
         ...footerNodeProps,
       });
     }
@@ -633,14 +644,14 @@ const usePipelineNodes = (): {
     const nodes: EditorNodeProps[] = [];
 
     // Determine which execution of the pipeline to show. Currently, getting the latest execution
-    let latestPipelineCall: Branch[] | null;
+    let latestPipelineCall: Branch[] | undefined;
     if (pipeline.length > 0) {
       // Pass [] as default to include all traces
       const latestTraces = filterTracesByCall(traces, latestParentCall ?? []);
       // Use first block in pipeline to determine the latest run
       latestPipelineCall = getLatestBrickCall(
         latestTraces,
-        pipeline[0].instanceId,
+        pipeline[0]?.instanceId,
       )?.branches;
     }
 
