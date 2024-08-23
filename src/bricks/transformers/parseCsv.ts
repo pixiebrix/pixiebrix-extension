@@ -77,7 +77,7 @@ export class ParseCsv extends TransformerABC {
 
     if (errors.length > 0) {
       logger.warn("Error(s) parsing CSV file", { errors });
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- Just checked length
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Just checked length
       throw new BusinessError(errors[0]!.message);
     }
 

@@ -31,7 +31,7 @@ export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
     return false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The regex above ensures that `maybePath` is not empty
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The regex above ensures that `maybePath` is not empty
   const head = maybePath.split(".", 1)[0]!;
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
   return ctxt ? Object.hasOwn(ctxt, path) : false;
@@ -145,7 +145,7 @@ export function getFieldNamesFromPathString(
   name: string,
 ): [parentFieldName: string | undefined, fieldName: string] {
   const path = toPath(name);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The path always has at least one item
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The path always has at least one item
   const fieldName = path.pop()!;
   const parentFieldName = path.length > 0 ? joinName(null, ...path) : undefined;
   return [parentFieldName, fieldName];

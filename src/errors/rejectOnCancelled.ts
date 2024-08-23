@@ -33,7 +33,7 @@ export async function rejectOnCancelled<T>(
       throw new PromiseCancelled();
     }
 
-    throw error ?? new Error("Undefined error awaiting promise");
+    throw (error as Error) ?? new Error("Undefined error awaiting promise");
   }
 
   if (isCancelled()) {

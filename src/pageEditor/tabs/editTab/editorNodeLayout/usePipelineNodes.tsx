@@ -431,7 +431,7 @@ const usePipelineNodes = (): {
         }),
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block?.name
-          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by isNullOrBlank
+          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked by isNullOrBlank
             blockConfig.label!,
         brickSummary: getBrickPipelineNodeSummary(blockConfig),
         outputKey: expanded ? undefined : blockConfig.outputKey,

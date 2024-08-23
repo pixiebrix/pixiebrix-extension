@@ -86,7 +86,7 @@ const CancelPublishContent: React.FunctionComponent = () => {
         isSingleObjectBadRequestError(error) &&
         Number(error.response.data.config?.length) > 0
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
         setError(error.response.data.config!.join(" "));
       } else {
         const message = getErrorMessage(error);

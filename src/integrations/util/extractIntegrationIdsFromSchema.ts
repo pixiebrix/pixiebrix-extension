@@ -39,7 +39,7 @@ export default function extractIntegrationIdsFromSchema(
 ): RegistryId[] {
   if (schema.$ref) {
     const match = INTEGRATION_ID_URL_REGEX.exec(schema.$ref);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by regex
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Guaranteed by regex
     return match ? [match.groups!.id as RegistryId] : [];
   }
 

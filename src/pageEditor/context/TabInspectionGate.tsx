@@ -55,7 +55,7 @@ const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
               data-testid={`tab-${tab.url}`}
               variant="link"
               onClick={() => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-assertion -- checked above
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
                 onSelect(tab.id!);
               }}
             >

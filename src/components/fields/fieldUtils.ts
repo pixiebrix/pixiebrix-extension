@@ -52,7 +52,7 @@ const FIELD_TITLE_ACRONYMS = new Set([
  * @param name the form name, including field name separators
  */
 export function fieldLabel(name: string): string {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Presumably the name is never empty, so there's always a "last item"
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Presumably the name is never empty, so there's always a "last item"
   const namePart = name.split(".").at(-1)!;
 
   return startCase(namePart)

@@ -234,7 +234,7 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
       : parseLookUp(target, inLoop);
 
   if (val instanceof Literal) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- targetVars can't be empty
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- targetVars can't be empty
     const parentVar = targetVars.at(-1)!;
     const newVar = new Variable(String(val.value), {
       parent: parentVar,

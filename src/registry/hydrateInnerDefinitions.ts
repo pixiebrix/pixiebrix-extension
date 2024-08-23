@@ -251,7 +251,7 @@ export async function hydrateModComponentInnerDefinitions<
 
     delete draft.definitions;
     if (hydratedDefinitions[draft.extensionPointId] != null) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
       draft.extensionPointId = hydratedDefinitions[draft.extensionPointId]!.id;
     }
   }) as Promise<HydratedModComponent<T>>;
@@ -295,7 +295,7 @@ export async function hydrateModInnerDefinitions(
     modComponentDefinitions?.map(
       (definition) =>
         (definition.id in hydratedDefinitions
-          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+          ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
             { ...definition, id: hydratedDefinitions[definition.id]!.id }
           : definition) as HydratedModComponentDefinition,
     ) ?? []

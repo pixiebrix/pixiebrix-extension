@@ -210,7 +210,7 @@ const EditPage: React.FC = () => {
   useTouchPackage(id);
 
   if (error) {
-    throw error;
+    throw error as Error;
   }
 
   if (isFetching) {

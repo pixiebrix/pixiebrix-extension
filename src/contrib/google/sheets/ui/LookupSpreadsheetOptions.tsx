@@ -92,7 +92,7 @@ const HeaderField: React.FunctionComponent<{
       }
 
       // Remaining cases are either empty expression or invalid, selected header, so set to first header
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- headers guaranteed to be non-empty by this point in the flow
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- headers guaranteed to be non-empty by this point in the flow
       await setHeader(headers[0]!);
     },
     // Hash just in case tabName is an expression, and we

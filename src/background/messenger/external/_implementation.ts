@@ -191,7 +191,7 @@ export async function openActivateModPage({
     // For extension console activation, only support a single mod id
     // TODO: support passing options to the Extension Console activation page
     getExtensionConsoleUrl(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
       `marketplace/activate/${encodeURIComponent(mods[0]!.modId)}`,
     );
 
