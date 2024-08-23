@@ -61,7 +61,7 @@ const WizardNavItem: React.FunctionComponent<{
 const ModComponentFormStateWizard: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
-  const [step, setStep] = useState(wizard[0].step);
+  const [step, setStep] = useState(wizard[0]?.step);
 
   const { isValid, status, handleReset } =
     useFormikContext<ModComponentFormState>();

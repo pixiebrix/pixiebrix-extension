@@ -40,7 +40,7 @@ test("can view error logs", async ({
   const logs = await logsTabPane.getLogsTableRows();
   expect(logs).toHaveLength(1);
 
-  const log = logs[0];
+  const log = logs[0]!;
   await expect(log.timestamp).toBeVisible();
   await expect(log.level).toHaveText("ERROR");
   await expect(log.label).toHaveText("Raise business error");

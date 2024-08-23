@@ -112,7 +112,7 @@ type SubPipeline = {
 function getBuilderPreviewElementId(
   brickConfig: BrickConfig,
   path: string,
-): string | null {
+): string | undefined {
   if (brickConfig.id === DocumentRenderer.BRICK_ID) {
     // The Document Preview element name is a substring of the header node path, e.g.
     // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
@@ -123,8 +123,6 @@ function getBuilderPreviewElementId(
       return result[1];
     }
   }
-
-  return null;
 }
 
 /**
@@ -204,6 +202,10 @@ const usePipelineNodes = (): {
   const dispatch = useDispatch();
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
+  );
+  assertNotNullish(
+    activeModComponentFormState,
+    "activeModComponentFormState is required",
   );
   const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveModComponentTraces);

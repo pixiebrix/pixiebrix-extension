@@ -203,7 +203,7 @@ const componentState = createSlice({
       const integrations = action.payload as Draft<Integration[]>;
       if (state.editingIntegrationConfig && isEmpty(state.integrations)) {
         const selectedIntegration = integrations.find(
-          ({ id }) => id === state.editingIntegrationConfig.integrationId,
+          ({ id }) => id === state.editingIntegrationConfig?.integrationId,
         );
         if (!selectedIntegration) {
           throw new Error(

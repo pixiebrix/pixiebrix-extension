@@ -60,7 +60,11 @@ export function uuidv4(): UUID {
   return v4() as UUID;
 }
 
-export function isUUID(uuid: string): uuid is UUID {
+export function isUUID(uuid: string | undefined): uuid is UUID {
+  if (uuid == null) {
+    return false;
+  }
+
   return validate(uuid);
 }
 
