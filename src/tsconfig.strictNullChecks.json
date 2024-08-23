@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./pageEditor/hooks/useMigrateStandaloneComponentsToMods.test.ts",
     "./mods/util/getModComponentsForMod.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/environmentCheck.ts",
