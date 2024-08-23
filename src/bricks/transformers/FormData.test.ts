@@ -102,7 +102,7 @@ describe("FormData block", () => {
     const result = await brick.run(
       arg,
       brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#fooForm"),
+        root: document.querySelector<HTMLElement>("#fooForm")!,
       }),
     );
 

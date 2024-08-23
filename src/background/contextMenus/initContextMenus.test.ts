@@ -79,7 +79,7 @@ describe("contextMenus", () => {
     starterBrickRegistry.register([fromJS(getPlatform(), extensionPoint)]);
 
     const menuModComponent = modComponentFactory({
-      extensionPointId: extensionPoint.metadata.id,
+      extensionPointId: extensionPoint.metadata!.id,
     }) as ModComponentBase<ContextMenuConfig>;
     menuModComponent.config.title = "Test Menu";
 

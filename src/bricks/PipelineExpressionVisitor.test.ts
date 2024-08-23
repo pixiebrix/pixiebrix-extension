@@ -69,7 +69,7 @@ test("should invoke the callback for a Document expression", () => {
   textElement.config.text = toExpression("nunjucks", "test");
 
   const containerElement = createNewDocumentBuilderElement("container");
-  containerElement.children[0].children[0].children.push(textElement);
+  containerElement.children![0]!.children![0]!.children!.push(textElement);
 
   const documentBrick = brickConfigFactory({
     id: DocumentRenderer.BRICK_ID,

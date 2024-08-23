@@ -109,15 +109,15 @@ describe("ObjectWidget", () => {
     const [nameInput, valueInput] = screen.getAllByRole("textbox");
 
     // Change the property name
-    await userEvent.clear(nameInput);
-    await userEvent.type(nameInput, "myProp");
+    await userEvent.clear(nameInput!);
+    await userEvent.type(nameInput!, "myProp");
 
     // Change the value
-    await userEvent.click(valueInput);
-    await userEvent.type(screen.getAllByRole("textbox")[1], "myValue");
+    await userEvent.click(valueInput!);
+    await userEvent.type(screen.getAllByRole("textbox")[1]!, "myValue");
 
     // Blur the value input to set the value
-    await userEvent.click(nameInput);
+    await userEvent.click(nameInput!);
 
     expect(getFormState()).toStrictEqual({
       [fieldName]: {

@@ -25,7 +25,7 @@ import {
 describe("getAuthHeaders", () => {
   beforeEach(async () => {
     await deploymentKeyStorage.remove();
-    await TEST_setAuthData(null);
+    await TEST_setAuthData({});
   });
 
   it("returns null for unauthenticated", async () => {

@@ -24,7 +24,7 @@ import { type RenderedArgs } from "@/types/runtimeTypes";
 
 describe("TraceAnalysis.mapErrorAnnotations", () => {
   test("handles invalid field value", async () => {
-    let inputError;
+    let inputError = null;
     try {
       await throwIfInvalidInput(new JQTransformer(), {
         filter: 42,
@@ -40,11 +40,11 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
     );
 
     expect(annotations).toHaveLength(1);
-    expect(annotations[0].position).toEqual({ path: "config.filter" });
+    expect(annotations[0]!.position).toEqual({ path: "config.filter" });
   });
 
   test("handles required field value", async () => {
-    let inputError;
+    let inputError = null;
     try {
       await throwIfInvalidInput(new JQTransformer(), {} as RenderedArgs);
       expect.fail("Invalid test, expected validateInput to throw");
@@ -58,8 +58,8 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
     );
 
     expect(annotations).toHaveLength(1);
-    expect(annotations[0].position).toEqual({ path: "config.filter" });
-    expect(annotations[0].message).toBe(
+    expect(annotations[0]!.position).toEqual({ path: "config.filter" });
+    expect(annotations[0]!.message).toBe(
       "Error from the last run: This field is required.",
     );
   });
@@ -71,7 +71,7 @@ describe("TraceAnalysis.mapErrorAnnotations", () => {
     );
 
     expect(annotations).toHaveLength(1);
-    expect(annotations[0].position).toEqual({ path: "" });
-    expect(annotations[0].message).toBe("foo");
+    expect(annotations[0]!.position).toEqual({ path: "" });
+    expect(annotations[0]!.message).toBe("foo");
   });
 });

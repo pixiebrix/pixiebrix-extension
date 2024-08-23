@@ -222,7 +222,7 @@ describe("selectVariables", () => {
       ],
       permissions: emptyPermissionsFactory(),
       optionsArgs: {},
-      modMetadata: null,
+      modMetadata: undefined,
       modComponent: {
         brickPipeline: [
           {

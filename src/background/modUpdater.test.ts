@@ -110,8 +110,8 @@ describe("getActivatedMarketplaceModVersions function", () => {
     const result = await getActivatedMarketplaceModVersions();
     expect(result).toEqual([
       {
-        name: publicActivatedMod._recipe.id,
-        version: publicActivatedMod._recipe.version,
+        name: publicActivatedMod._recipe!.id,
+        version: publicActivatedMod._recipe!.version,
       },
     ]);
   });
@@ -131,12 +131,12 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
     expect(result).toEqual([
       {
-        name: publicActivatedMod._recipe.id,
-        version: publicActivatedMod._recipe.version,
+        name: publicActivatedMod._recipe!.id,
+        version: publicActivatedMod._recipe!.version,
       },
       {
-        name: anotherPublicActivatedMod._recipe.id,
-        version: anotherPublicActivatedMod._recipe.version,
+        name: anotherPublicActivatedMod._recipe!.id,
+        version: anotherPublicActivatedMod._recipe!.version,
       },
     ]);
   });
@@ -170,8 +170,8 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
     expect(result).toEqual([
       {
-        name: onePublicActivatedMod._recipe.id,
-        version: onePublicActivatedMod._recipe.version,
+        name: onePublicActivatedMod!._recipe!.id,
+        version: onePublicActivatedMod!._recipe!.version,
       },
     ]);
     expect(reportError).toHaveBeenCalled();
@@ -204,17 +204,17 @@ describe("fetchModUpdates function", () => {
     await fetchModUpdates();
 
     expect(axiosMock.history.post).toHaveLength(1);
-    const payload = JSON.parse(String(axiosMock.history.post[0].data));
+    const payload = JSON.parse(String(axiosMock.history.post![0]!.data));
 
     expect(payload).toEqual({
       versions: [
         {
-          name: activatedMods[0]._recipe.id,
-          version: activatedMods[0]._recipe.version,
+          name: activatedMods[0]!._recipe!.id,
+          version: activatedMods[0]!._recipe!.version,
         },
         {
-          name: activatedMods[1]._recipe.id,
-          version: activatedMods[1]._recipe.version,
+          name: activatedMods[1]!._recipe!.id,
+          version: activatedMods[1]!._recipe!.version,
         },
       ],
     });
@@ -259,35 +259,39 @@ describe("deactivateMod function", () => {
     const {
       reduxState: { options: resultingState },
       deactivatedModComponents,
-    } = deactivateMod(modToDeactivate.id, {
+    } = deactivateMod(modToDeactivate!.id, {
       options: priorOptionsState,
       editor: priorEditorState,
     });
 
     expect(deactivatedModComponents).toHaveLength(2);
-    expect(deactivatedModComponents[0]._recipe.id).toEqual(modToDeactivate.id);
-    expect(deactivatedModComponents[1]._recipe.id).toEqual(modToDeactivate.id);
+    expect(deactivatedModComponents[0]!._recipe!.id).toEqual(
+      modToDeactivate!.id,
+    );
+    expect(deactivatedModComponents[1]!._recipe!.id).toEqual(
+      modToDeactivate!.id,
+    );
     expect(resultingState.activatedModComponents).toHaveLength(1);
 
     // Verify that deactivate removes the context menu UI globally. See call for explanation of why that's necessary.
     expect(uninstallContextMenuMock).toHaveBeenCalledTimes(2);
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      modComponentId: deactivatedModComponents[0].id,
+      modComponentId: deactivatedModComponents[0]!.id,
     });
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      modComponentId: deactivatedModComponents[1].id,
+      modComponentId: deactivatedModComponents[1]!.id,
     });
   });
 
   it("should do nothing if mod id does not have any activated mod components", async () => {
-    const extensionPoint = starterBrickDefinitionFactory();
-    const extension = activatedModComponentFactory({
-      extensionPointId: extensionPoint.metadata.id,
+    const starterBrick = starterBrickDefinitionFactory();
+    const modComponent = activatedModComponentFactory({
+      extensionPointId: starterBrick.metadata!.id,
       _recipe: modMetadataFactory({}),
     });
 
     await saveModComponentState({
-      activatedModComponents: [extension],
+      activatedModComponents: [modComponent],
     });
 
     const priorOptionsState = await getModComponentState();
@@ -404,7 +408,7 @@ describe("updateModsIfUpdatesAvailable", () => {
     const resultingOptionsState = await getModComponentState();
     expect(resultingOptionsState.activatedModComponents).toHaveLength(1);
     expect(
-      resultingOptionsState.activatedModComponents[0]._recipe.version,
+      resultingOptionsState.activatedModComponents[0]!._recipe!.version,
     ).toBe("2.0.1");
   });
 });

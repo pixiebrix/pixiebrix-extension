@@ -243,7 +243,7 @@ describe("getModVariableSchema", () => {
 
     const brick = fromJS(json);
     await expect(
-      brick.getModVariableSchema({
+      brick.getModVariableSchema!({
         id: validateRegistryId("test/pipeline-echo"),
         config: {},
       }),
@@ -393,13 +393,13 @@ describe("tracing", () => {
       },
     );
 
-    expect(OptionsBrick.options[0].meta).toStrictEqual({
+    expect(OptionsBrick.options[0]!.meta).toStrictEqual({
       runId,
       modComponentRef,
       branches: initialBranches,
     });
 
-    expect(OptionsBrick.options[1].meta).toStrictEqual({
+    expect(OptionsBrick.options[1]!.meta).toStrictEqual({
       runId,
       modComponentRef,
       branches: [
