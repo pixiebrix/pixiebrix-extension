@@ -22,8 +22,16 @@ import { expectContext } from "@/utils/expectContext";
 import { isScriptableUrl } from "webext-content-scripts";
 import { waitForContentScript } from "./contentScript";
 
-async function handleCommand(command: string, tab: Tab): Promise<void> {
-  if (command !== "toggle-quick-bar" || !isScriptableUrl(tab.url)) {
+async function handleCommand(
+  command: string,
+  tab: Tab | undefined,
+): Promise<void> {
+  if (
+    !tab ||
+    command !== "toggle-quick-bar" ||
+    !isScriptableUrl(tab.url) ||
+    !tab.id
+  ) {
     return;
   }
 
