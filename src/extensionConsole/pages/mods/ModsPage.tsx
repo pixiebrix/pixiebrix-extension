@@ -28,11 +28,14 @@ import {
   useGetFeatureFlagsQuery,
   useGetMarketplaceListingsQuery,
 } from "@/data/service/api";
-import Loader from "@/components/Loader";
 import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import { useDispatch } from "react-redux";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 
 const ModsPage: React.FunctionComponent = () => {
   useSetDocumentTitle("Mods");
+
+  const dispatch = useDispatch();
 
   // Ensure all the data is loaded
   // Note: We only need to show a loading indicator until mods are loaded
@@ -55,9 +58,11 @@ const ModsPage: React.FunctionComponent = () => {
     reportEvent(Events.MODS_PAGE_VIEW);
   }, []);
 
-  if (isLoading || isAutoDeploying) {
-    return <Loader />;
-  }
+  useEffect(() => {
+    if (!isLoading && !isAutoDeploying) {
+      dispatch(modsPageSlice.actions.setIsLoadingData(false));
+    }
+  }, [dispatch, isAutoDeploying, isLoading]);
 
   return (
     <div className="h-100">

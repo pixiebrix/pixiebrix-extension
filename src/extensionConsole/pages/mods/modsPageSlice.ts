@@ -37,6 +37,7 @@ export type ModsPageState = {
   sortBy: Array<SortingRule<ModViewItem>>;
   activeTab: ActiveTab;
   searchQuery: string;
+  isLoadingData: boolean;
 };
 
 const initialState: ModsPageState = {
@@ -48,6 +49,7 @@ const initialState: ModsPageState = {
     filters: [],
   },
   searchQuery: "",
+  isLoadingData: true,
 };
 
 const modsPageSlice = createSlice({
@@ -71,6 +73,12 @@ const modsPageSlice = createSlice({
     },
     setSearchQuery(state, { payload: searchQuery }: PayloadAction<string>) {
       state.searchQuery = searchQuery;
+    },
+    setIsLoadingData(
+      state,
+      { payload: isLoadingData }: PayloadAction<boolean>,
+    ) {
+      state.isLoadingData = isLoadingData;
     },
   },
   extraReducers(builder) {
