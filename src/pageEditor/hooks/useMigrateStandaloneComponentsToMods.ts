@@ -46,7 +46,7 @@ export default function useMigrateStandaloneComponentsToMods() {
 
       if (activatedModComponent._recipe == null) {
         console.warn(
-          "Found activated mod component without recipe",
+          "Found activated mod component without mod metadata",
           activatedModComponent,
         );
       } else {
