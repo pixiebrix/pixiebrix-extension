@@ -59,7 +59,7 @@ describe("EphemeralPanel", () => {
       panelNonce: null,
       entry: null,
       error: null,
-      isLoading: null,
+      isLoading: false,
     });
 
     const { asFragment } = render(<EphemeralPanel />);
@@ -76,7 +76,7 @@ describe("EphemeralPanel", () => {
       panelNonce: uuidv4(),
       entry: null,
       error: new Error("test error"),
-      isLoading: null,
+      isLoading: false,
     });
 
     const { asFragment } = render(<EphemeralPanel />);
@@ -104,7 +104,7 @@ describe("EphemeralPanel", () => {
           actions: [{ type: "testClick", variant: "light" }],
         }),
         error: null,
-        isLoading: null,
+        isLoading: false,
       });
 
       const { asFragment } = render(<EphemeralPanel />);

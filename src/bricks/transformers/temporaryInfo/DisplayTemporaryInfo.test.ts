@@ -98,7 +98,7 @@ describe("DisplayTemporaryInfo", () => {
   it("returns run payload for sidebar panel", async () => {
     const modComponentRef = modComponentRefFactory();
 
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
@@ -145,12 +145,12 @@ describe("DisplayTemporaryInfo", () => {
         title: "Test Temp Panel",
         body: toExpression("pipeline", [
           { id: throwBrick.id, config: { message } },
-          { id: renderer.id, config: getExampleBrickConfig(renderer.id) },
+          { id: renderer.id, config: getExampleBrickConfig(renderer.id)! },
         ]),
       },
     };
 
-    let payload: PanelPayload;
+    let payload: PanelPayload | null = null;
     jest
       .mocked(showTemporarySidebarPanel)
       .mockImplementation(async (entry: TemporaryPanelEntry) => {
@@ -164,14 +164,14 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), reduceOptionsFactory());
 
-    expect(isRendererErrorPayload(payload)).toBe(true);
-    const error = payload as RendererErrorPayload;
+    expect(isRendererErrorPayload(payload!)).toBe(true);
+    const error = payload! as RendererErrorPayload;
     const errorMessage = (error.error as BusinessError).message;
     expect(errorMessage).toStrictEqual(message);
   });
 
   it("registers panel for modal", async () => {
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
@@ -208,7 +208,7 @@ describe("DisplayTemporaryInfo", () => {
     const modComponentRef = modComponentRefFactory();
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
 
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
@@ -232,7 +232,7 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("requires target for popover", async () => {
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
@@ -251,7 +251,7 @@ describe("DisplayTemporaryInfo", () => {
   it("registers a popover panel", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
@@ -287,7 +287,7 @@ describe("DisplayTemporaryInfo", () => {
       .mocked(waitForTemporaryPanel)
       .mockImplementation(async () => deferredPromise.promise);
 
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
@@ -321,7 +321,7 @@ describe("DisplayTemporaryInfo", () => {
       .mocked(waitForTemporaryPanel)
       .mockImplementation(async () => deferredPromise.promise);
 
-    const config = getExampleBrickConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id)!;
 
     const pipeline = {
       id: displayTemporaryInfoBlock.id,

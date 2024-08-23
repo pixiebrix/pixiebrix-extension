@@ -45,10 +45,18 @@ export default function useMigrateStandaloneComponentsToMods() {
       }
 
       if (activatedModComponent._recipe == null) {
-        dispatch(actions.removeModComponentFormState(formState.uuid));
+        console.warn(
+          "Found activated mod component without mod metadata",
+          activatedModComponent,
+        );
       } else {
-        formState.modMetadata = activatedModComponent._recipe;
-        dispatch(actions.syncModComponentFormState(formState));
+        dispatch(
+          // Spread the previous form state here, original is not mutable, so we can't set the modMetadata directly
+          actions.syncModComponentFormState({
+            ...formState,
+            modMetadata: activatedModComponent._recipe,
+          }),
+        );
       }
     }
     // eslint-disable-next-line -- Only need to run this migration once
