@@ -173,7 +173,7 @@ describe("useActivateMod", () => {
       },
     });
 
-    let success: boolean | undefined;
+    let success = false;
     let error: unknown;
     await act(async () => {
       const result = await activateMod(formValues, modDefinition);
@@ -247,7 +247,7 @@ describe("useActivateMod", () => {
       },
     });
 
-    let success: boolean | undefined;
+    let success = false;
     let error: unknown;
     await act(async () => {
       const result = await activateMod(formValues, modDefinition);
@@ -320,7 +320,7 @@ describe("useActivateMod", () => {
       },
     });
 
-    let success: boolean | undefined;
+    let success = false;
     let error: unknown;
     await act(async () => {
       const result = await activateMod(formValues, modDefinition);
