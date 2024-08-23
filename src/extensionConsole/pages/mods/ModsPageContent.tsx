@@ -54,6 +54,7 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
 
   if (isLoadingTableData) {
     return (
+      // Loader looks better if it's more central on the page vs centered on the table UI area
       <div style={{ width: 0.8 * width, height, marginRight: "20%" }}>
         <Loader />
       </div>
