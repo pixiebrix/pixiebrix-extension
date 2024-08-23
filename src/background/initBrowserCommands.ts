@@ -27,8 +27,8 @@ async function handleCommand(
   tab: Tab | undefined,
 ): Promise<void> {
   if (
-    !tab ||
     command !== "toggle-quick-bar" ||
+    !tab ||
     !isScriptableUrl(tab.url) ||
     !tab.id
   ) {
