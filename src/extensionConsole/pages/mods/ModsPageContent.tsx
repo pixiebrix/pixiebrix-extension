@@ -53,7 +53,11 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
   }
 
   if (isLoadingTableData) {
-    return <Loader />;
+    return (
+      <div style={{ width: 0.8 * width, height, marginRight: "20%" }}>
+        <Loader />
+      </div>
+    );
   }
 
   if (rows.length > 0) {
@@ -68,6 +72,7 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
     );
   }
 
+  // If there is no set table filter and the table rows (mods) are still empty, show the onboarding view
   return (
     <OnboardingView
       onboardingType={onboardingType}
