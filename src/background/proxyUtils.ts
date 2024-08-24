@@ -47,8 +47,10 @@ export function selectRemoteResponseErrorMessage(
 }
 
 /**
- * Convert a proxied response from the PixieBrix API proxy /api/proxy/ to an Axios-like response
+ * Convert a proxied response from the PixieBrix API proxy endpoint to an Axios-like response
  * @param data the response from the PixieBrix proxy
+ *
+ * @see API_PATHS.PROXY
  */
 export function proxyResponseToAxiosResponse(
   data: ProxyResponseData,

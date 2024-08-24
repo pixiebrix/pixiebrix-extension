@@ -40,13 +40,14 @@ import type { AsyncState } from "@/types/sliceTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { absoluteApiUrl } from "@/data/service/apiClient";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 function useHooks(): AsyncState<Webhook[]> {
   return useAsyncState(async () => {
     const { data } = await getPlatform().request<{
       new_push_fields: Webhook[];
     }>(pixiebrixConfigurationFactory(), {
-      url: await absoluteApiUrl("/api/webhooks/hooks/"),
+      url: await absoluteApiUrl(API_PATHS.WEBHOOKS),
       method: "get",
     });
 

@@ -51,9 +51,13 @@ export const API_PATHS = {
   ORGANIZATION_GROUPS: (organizationId: string) =>
     `/api/organizations/${organizationId}/groups/`,
 
+  PROXY: "/api/proxy/",
+
   REGISTRY_BRICKS: "/api/registry/bricks/",
+  REGISTRY_UPDATES: "/api/registry/updates/",
 
   SETTINGS: "/api/settings/",
 
+  WEBHOOKS: "/api/webhooks/hooks/",
   WEBHOOKS_KEY: "/api/webhooks/key/",
 };

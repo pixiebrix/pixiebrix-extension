@@ -256,7 +256,7 @@ describe("ModsPageActions", () => {
 
     expect(appApiMock.history.delete).toBeArrayOfSize(1);
     expect(appApiMock.history.delete![0]!.url).toBe(
-      API_PATHS.BRICK(modViewItem.editablePackageId),
+      API_PATHS.BRICK(String(modViewItem.editablePackageId)),
     );
   });
 });
