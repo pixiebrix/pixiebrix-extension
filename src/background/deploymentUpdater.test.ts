@@ -252,7 +252,7 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -279,7 +279,7 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -305,7 +305,7 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -348,7 +348,7 @@ describe("syncDeployments", () => {
     });
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -413,7 +413,7 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -456,7 +456,7 @@ describe("syncDeployments", () => {
       activatedModComponents: [modComponent],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -519,7 +519,7 @@ describe("syncDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -553,7 +553,7 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -600,7 +600,7 @@ describe("syncDeployments", () => {
       flags: ["deployment-permissions-strict"],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -654,7 +654,7 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -673,7 +673,7 @@ describe("syncDeployments", () => {
     });
 
     const { deployment } = activatableDeploymentFactory();
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     await syncDeployments();
 
@@ -690,7 +690,7 @@ describe("syncDeployments", () => {
       flags: ["restricted-version"],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -713,7 +713,7 @@ describe("syncDeployments", () => {
       enforce_update_millis: 5000,
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -736,7 +736,7 @@ describe("syncDeployments", () => {
       enforce_update_millis: 5000,
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -756,7 +756,7 @@ describe("syncDeployments", () => {
       flags: ["restricted-version"],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -861,7 +861,7 @@ describe("syncDeployments", () => {
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
       .onGet(
@@ -895,7 +895,7 @@ describe("syncDeployments", () => {
       },
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, [updatedDeployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [updatedDeployment]);
 
     appApiMock
       .onGet(

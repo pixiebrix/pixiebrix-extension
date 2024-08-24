@@ -59,6 +59,7 @@ import {
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -464,9 +465,9 @@ describe("debouncedActivateWelcomeMods", () => {
       axiosMock
         .onGet("/api/onboarding/starter-blueprints/")
         .reply(200, [modDefinition])
-        .onGet("/api/databases/")
+        .onGet(API_PATHS.DATABASES)
         .reply(200, [])
-        .onPost("/api/databases/")
+        .onPost(API_PATHS.DATABASES)
         .reply((args) => {
           const data = JSON.parse(args.data) as UnknownObject;
           expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
@@ -515,9 +516,9 @@ describe("debouncedActivateWelcomeMods", () => {
       axiosMock
         .onGet("/api/onboarding/starter-blueprints/")
         .reply(200, [modDefinition])
-        .onGet("/api/databases/")
+        .onGet(API_PATHS.DATABASES)
         .reply(200, [database])
-        .onPost("/api/databases/")
+        .onPost(API_PATHS.DATABASES)
         // Should not be called
         .reply(400);
 

@@ -18,7 +18,9 @@
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
   BRICK: (id: string) => `/api/bricks/${id}/`,
+  BRICK_MATCH_ANY: /api\/bricks\/[\w-]*\/$/,
   BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,
+  BRICK_VERSION_MATCH_ANY: /api\/bricks\/[\w-]*\/versions\/$/,
 
   DATABASES: "/api/databases/",
 

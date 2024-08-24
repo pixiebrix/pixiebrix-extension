@@ -28,6 +28,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { authSlice } from "@/auth/authSlice";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { MemoryRouter } from "react-router";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("useSearchOptions", () => {
   it("consolidates reader and block options", () => {
@@ -63,7 +64,7 @@ describe("WorkshopPage", () => {
 
   it("renders empty workshop", async () => {
     appApiMock.reset();
-    appApiMock.onGet("/api/bricks/").reply(200, []);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
 
     const { asFragment } = render(
       <MemoryRouter>

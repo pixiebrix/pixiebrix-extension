@@ -53,7 +53,7 @@ const mockDeploymentActivationRequests = (
   deployment: Deployment,
   modDefinition: ModDefinition,
 ) => {
-  axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+  axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, [deployment]);
   axiosMock
     .onGet(
       `/api/registry/bricks/${encodeURIComponent(
@@ -95,7 +95,7 @@ describe("DeploymentsContext", () => {
   });
 
   it("doesn't error on activating empty list of deployments", async () => {
-    axiosMock.onPost("/api/deployments/").reply(200, []);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, []);
 
     render(
       <DeploymentsProvider>
@@ -234,7 +234,7 @@ describe("DeploymentsContext", () => {
   it("automatically deactivates unassigned deployments", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory({});
     // Deployment has been unassigned
-    axiosMock.onPost("/api/deployments/").reply(200, []);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, []);
 
     const { getReduxStore } = render(
       <DeploymentsProvider>
@@ -460,7 +460,7 @@ describe("DeploymentsContext", () => {
 
   it("unlinked extension error is ignored", async () => {
     getLinkedApiClientMock.mockRejectedValue(new ExtensionNotLinkedError());
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, [deploymentFactory()]);
     requestPermissionsMock.mockResolvedValue(true);
 
     render(
@@ -475,7 +475,7 @@ describe("DeploymentsContext", () => {
   });
 
   it("other deployment errors are preserved", async () => {
-    axiosMock.onPost("/api/deployments/").reply(500);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(500);
     requestPermissionsMock.mockResolvedValue(true);
 
     render(

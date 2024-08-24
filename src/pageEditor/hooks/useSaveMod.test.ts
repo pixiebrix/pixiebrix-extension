@@ -30,6 +30,7 @@ import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type UUID } from "@/types/stringTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -60,9 +61,10 @@ describe("useSaveMod", () => {
       },
     ]);
 
-    appApiMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
-    appApiMock.onPut(`/api/bricks/${editablePackage.id}/`).reply(200, {});
+    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
+    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -121,10 +123,10 @@ describe("useSaveMod", () => {
       },
     ]);
 
-    appApiMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
     const putMock = appApiMock
-      .onPut(`/api/bricks/${editablePackage.id}/`)
+      .onPut(API_PATHS.BRICK(editablePackage.id))
       .reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
@@ -190,10 +192,10 @@ describe("useSaveMod", () => {
       },
     ]);
 
-    appApiMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
     const putMock = appApiMock
-      .onPut(`/api/bricks/${editablePackage.id}/`)
+      .onPut(API_PATHS.BRICK(editablePackage.id))
       .reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {

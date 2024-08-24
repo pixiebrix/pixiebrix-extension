@@ -24,6 +24,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -53,7 +54,7 @@ describe("useCreateModFromModComponent", () => {
     });
 
     appApiMock
-      .onPost("/api/bricks/")
+      .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() =>
@@ -82,7 +83,7 @@ describe("useCreateModFromModComponent", () => {
     });
 
     appApiMock
-      .onPost("/api/bricks/")
+      .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() =>
@@ -104,7 +105,7 @@ describe("useCreateModFromModComponent", () => {
     });
 
     appApiMock
-      .onPost("/api/bricks/")
+      .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() =>

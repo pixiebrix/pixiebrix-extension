@@ -30,6 +30,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AsyncState } from "@/types/sliceTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/components/ConfirmationModal", () => ({
@@ -56,14 +57,14 @@ test("load mod definitions and save one", async () => {
   appApiMock
     .onGet("/api/registry/bricks/")
     .reply(200, [sourceModDefinition])
-    .onGet("/api/bricks/")
+    .onGet(API_PATHS.BRICKS)
     .reply(200, [
       {
         id: packageId,
         name: modDefinitionId,
       },
     ])
-    .onPut(`/api/bricks/${packageId}/`)
+    .onPut(API_PATHS.BRICK(packageId))
     .reply(({ data }) => {
       resultModDefinition = JSON.parse(data as string);
       return [201, { data }];
@@ -151,9 +152,9 @@ test("load mod definitions and save one", async () => {
 
   expect(appApiMock.history.get!.map((x) => x.url)).toEqual([
     "/api/registry/bricks/",
-    "/api/bricks/",
+    API_PATHS.BRICKS,
     "/api/registry/bricks/",
-    "/api/bricks/",
+    API_PATHS.BRICKS,
   ]);
 
   // Validate the config sent to server

@@ -79,6 +79,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "@/mv3/SessionStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
 import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -558,7 +559,7 @@ export async function syncDeployments(): Promise<void> {
   void updateUserData(selectUserDataUpdate(meData));
 
   const { data: deployments } = await client.post<Deployment[]>(
-    "/api/deployments/",
+    API_PATHS.DEPLOYMENTS,
     {
       uid: await getUUID(),
       version: getExtensionVersion(),

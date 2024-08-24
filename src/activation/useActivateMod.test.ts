@@ -40,6 +40,7 @@ import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { appApiMock } from "@/testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -235,7 +236,7 @@ describe("useActivateMod", () => {
     setUserAcceptedPermissions(true);
 
     const createdDatabase = databaseFactory({ name: databaseName });
-    appApiMock.onPost("/api/databases/").reply(201, createdDatabase);
+    appApiMock.onPost(API_PATHS.DATABASES).reply(201, createdDatabase);
 
     const {
       result: { current: activateMod },
@@ -278,13 +279,13 @@ describe("useActivateMod", () => {
     {
       title: "handles network error in auto-created personal database",
       mockResponse(adapter: MockAdapter) {
-        adapter.onPost("/api/databases/").networkError();
+        adapter.onPost(API_PATHS.DATABASES).networkError();
       },
     },
     {
       title: "handles error response in auto-created personal database request",
       mockResponse(adapter: MockAdapter) {
-        adapter.onPost("/api/databases/").reply(400, { error: errorMessage });
+        adapter.onPost(API_PATHS.DATABASES).reply(400, { error: errorMessage });
       },
     },
   ];
