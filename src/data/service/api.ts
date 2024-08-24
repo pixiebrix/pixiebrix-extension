@@ -47,6 +47,7 @@ import baseQuery from "@/data/service/baseQuery";
 import { type InstalledDeployment } from "@/utils/deploymentUtils";
 import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -73,7 +74,7 @@ export const appApi = createApi({
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
       query: () => ({
-        url: "/api/me/",
+        url: API_PATHS.ME,
         method: "get",
       }),
       providesTags: ["Me"],
@@ -81,9 +82,9 @@ export const appApi = createApi({
     }),
     getFeatureFlags: builder.query<string[], void>({
       query: () => ({
-        url: "/api/me/",
+        url: API_PATHS.ME,
         method: "get",
-        // The /api/me/ endpoint returns an object with only feature flags if not authenticated
+        // The Me endpoint returns an object with only feature flags if not authenticated
         requireLinked: false,
       }),
       transformResponse: (response: components["schemas"]["Me"]) => [
@@ -91,7 +92,7 @@ export const appApi = createApi({
       ],
     }),
     getDatabases: builder.query<Database[], void>({
-      query: () => ({ url: "/api/databases/", method: "get" }),
+      query: () => ({ url: API_PATHS.DATABASES, method: "get" }),
       providesTags: ["Databases"],
     }),
     createDatabase: builder.mutation<
@@ -100,8 +101,8 @@ export const appApi = createApi({
     >({
       query: ({ name, organizationId }) => ({
         url: organizationId
-          ? `/api/organizations/${organizationId}/databases/`
-          : "/api/databases/",
+          ? API_PATHS.ORGANIZATION_DATABASES(organizationId)
+          : API_PATHS.DATABASES,
         method: "post",
         data: { name },
       }),
@@ -112,7 +113,7 @@ export const appApi = createApi({
       { groupId: string; databaseIds: string[] }
     >({
       query: ({ groupId, databaseIds }) => ({
-        url: `/api/groups/${groupId}/databases/`,
+        url: API_PATHS.GROUP_DATABASES(groupId),
         method: "post",
         data: databaseIds.map((id) => ({
           database: id,
@@ -122,7 +123,7 @@ export const appApi = createApi({
     }),
     getIntegrations: builder.query<IntegrationDefinition[], void>({
       query: () => ({
-        url: "/api/services/",
+        url: API_PATHS.SERVICES,
         method: "get",
         // Returns public service definitions if not authenticated
         requireLinked: false,
@@ -131,14 +132,14 @@ export const appApi = createApi({
     }),
     getIntegrationAuths: builder.query<RemoteIntegrationConfig[], void>({
       query: () => ({
-        url: "/api/services/shared/",
+        url: API_PATHS.SHARED_SERVICES,
         method: "get",
         params: { meta: 1 },
       }),
       providesTags: ["IntegrationAuths"],
     }),
     getOrganizations: builder.query<Organization[], void>({
-      query: () => ({ url: "/api/organizations/", method: "get" }),
+      query: () => ({ url: API_PATHS.ORGANIZATIONS, method: "get" }),
       providesTags: ["Organizations"],
       transformResponse: (
         baseQueryReturnValue: Array<components["schemas"]["Organization"]>,
@@ -166,7 +167,7 @@ export const appApi = createApi({
     }),
     getGroups: builder.query<Record<string, Group[]>, string>({
       query: (organizationId) => ({
-        url: `/api/organizations/${organizationId}/groups/`,
+        url: API_PATHS.ORGANIZATION_GROUPS(organizationId),
         method: "get",
         meta: { organizationId },
         includeRequestData: true,
@@ -186,7 +187,7 @@ export const appApi = createApi({
       { packageId: RegistryId }
     >({
       query: (params) => ({
-        url: "/api/marketplace/listings/",
+        url: API_PATHS.MARKETPLACE_LISTINGS,
         method: "get",
         // Returns public marketplace
         requireLinked: false,
@@ -202,7 +203,7 @@ export const appApi = createApi({
       { package__name?: RegistryId } | void
     >({
       query: (params) => ({
-        url: "/api/marketplace/listings/",
+        url: API_PATHS.MARKETPLACE_LISTINGS,
         method: "get",
         // Returns public marketplace
         requireLinked: false,
@@ -218,17 +219,17 @@ export const appApi = createApi({
       },
     }),
     getMarketplaceTags: builder.query<MarketplaceTag[], void>({
-      query: () => ({ url: "/api/marketplace/tags/", method: "get" }),
+      query: () => ({ url: API_PATHS.MARKETPLACE_TAGS, method: "get" }),
       providesTags: ["MarketplaceTags"],
     }),
     getEditablePackages: builder.query<EditablePackageMetadata[], void>({
-      query: () => ({ url: "/api/bricks/", method: "get" }),
+      query: () => ({ url: API_PATHS.BRICKS, method: "get" }),
       providesTags: ["EditablePackages"],
     }),
     getModDefinition: builder.query<ModDefinition, { modId: RegistryId }>({
       query: ({ modId }) => ({
         // TODO: switch endpoint https://github.com/pixiebrix/pixiebrix-app/issues/4355
-        url: `/api/recipes/${encodeURIComponent(modId)}/`,
+        url: API_PATHS.RECIPE(modId),
         method: "get",
       }),
       transformResponse(
@@ -272,7 +273,7 @@ export const appApi = createApi({
         const config = dumpBrickYaml(modDefinition);
 
         return {
-          url: "/api/bricks/",
+          url: API_PATHS.BRICKS,
           method: "post",
           data: {
             config,
@@ -297,7 +298,7 @@ export const appApi = createApi({
         };
 
         return {
-          url: `/api/bricks/${packageId}/`,
+          url: API_PATHS.BRICK(packageId),
           method: "put",
           data: {
             id: packageId,
@@ -319,21 +320,21 @@ export const appApi = createApi({
       },
     }),
     getInvitations: builder.query<PendingInvitation[], void>({
-      query: () => ({ url: "/api/invitations/me/", method: "get" }),
+      query: () => ({ url: API_PATHS.INVITATIONS_ME, method: "get" }),
       providesTags: ["Invitations"],
     }),
     getZapierKey: builder.query<{ api_key: string }, void>({
-      query: () => ({ url: "/api/webhooks/key/", method: "get" }),
+      query: () => ({ url: API_PATHS.WEBHOOKS_KEY, method: "get" }),
       providesTags: ["ZapierKey"],
     }),
     getPackage: builder.query<Package, { id: UUID }>({
-      query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
+      query: ({ id }) => ({ url: API_PATHS.BRICK(id), method: "get" }),
       providesTags: (result, error, { id }) => [{ type: "Package", id }],
     }),
     createPackage: builder.mutation<PackageUpsertResponse, UnknownObject>({
       query(data) {
         return {
-          url: "api/bricks/",
+          url: API_PATHS.BRICKS,
           method: "post",
           data,
         };
@@ -346,7 +347,7 @@ export const appApi = createApi({
     >({
       query(data) {
         return {
-          url: `api/bricks/${data.id}/`,
+          url: API_PATHS.BRICK(data.id),
           method: "put",
           data,
         };
@@ -362,7 +363,7 @@ export const appApi = createApi({
     }),
     deletePackage: builder.mutation<void, { id: UUID }>({
       query({ id }) {
-        return { url: `/api/bricks/${id}/`, method: "delete" };
+        return { url: API_PATHS.BRICK(id), method: "delete" };
       },
       invalidatesTags: (result, error, { id }) => [
         { type: "Package", id },
@@ -374,7 +375,7 @@ export const appApi = createApi({
       { id: UUID }
     >({
       query: ({ id }) => ({
-        url: `/api/bricks/${id}/versions/`,
+        url: API_PATHS.BRICK_VERSIONS(id),
         method: "get",
       }),
       providesTags: (result, error, { id }) => [
@@ -386,7 +387,7 @@ export const appApi = createApi({
       Required<Pick<components["schemas"]["Settings"], "scope">>
     >({
       query: ({ scope }) => ({
-        url: "api/settings/",
+        url: API_PATHS.SETTINGS,
         method: "patch",
         data: { scope },
       }),
@@ -394,7 +395,7 @@ export const appApi = createApi({
     }),
     getStarterBlueprints: builder.query<ModDefinition[], void>({
       query: () => ({
-        url: "/api/onboarding/starter-blueprints/",
+        url: API_PATHS.ONBOARDING_STARTER_BLUEPRINTS,
         method: "get",
       }),
       providesTags: (result, error) => [
@@ -403,7 +404,7 @@ export const appApi = createApi({
     }),
     createMilestone: builder.mutation<UserMilestone, UserMilestone>({
       query: (data) => ({
-        url: "/api/me/milestones/",
+        url: API_PATHS.ME_MILESTONES,
         method: "post",
         data,
       }),
@@ -416,7 +417,7 @@ export const appApi = createApi({
       { uid: UUID; version: string; active: InstalledDeployment[] }
     >({
       query: (data) => ({
-        url: "/api/deployments/",
+        url: API_PATHS.DEPLOYMENTS,
         method: "post",
         data,
         // @since 1.8.10 -- API version 1.1 excludes the package config
