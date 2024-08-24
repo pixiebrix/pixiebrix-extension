@@ -55,7 +55,7 @@ test("load mod definitions and save one", async () => {
   let resultModDefinition: any; // Holds the data that will be sent to the API
 
   appApiMock
-    .onGet("/api/registry/bricks/")
+    .onGet(API_PATHS.REGISTRY_BRICKS)
     .reply(200, [sourceModDefinition])
     .onGet(API_PATHS.BRICKS)
     .reply(200, [
@@ -151,9 +151,9 @@ test("load mod definitions and save one", async () => {
   await act(async () => fetchingSavingPromise.promise);
 
   expect(appApiMock.history.get!.map((x) => x.url)).toEqual([
-    "/api/registry/bricks/",
+    API_PATHS.REGISTRY_BRICKS,
     API_PATHS.BRICKS,
-    "/api/registry/bricks/",
+    API_PATHS.REGISTRY_BRICKS,
     API_PATHS.BRICKS,
   ]);
 

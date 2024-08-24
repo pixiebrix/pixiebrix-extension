@@ -25,6 +25,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 import { type DefinitionKind } from "@/types/registryTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -122,7 +123,9 @@ export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
   const client = await getApiClient();
-  const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
+  const { data } = await client.get<RegistryPackage[]>(
+    API_PATHS.REGISTRY_BRICKS,
+  );
 
   const packages = data.map((x) => ({
     ...parsePackage(x),

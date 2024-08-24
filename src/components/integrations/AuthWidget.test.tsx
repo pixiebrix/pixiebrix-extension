@@ -62,7 +62,9 @@ beforeAll(async () => {
   registerDefaultWidgets();
   appApiMock.onGet(API_PATHS.INTEGRATIONS).reply(200, [integrationDefinition]);
   appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [remoteConfig]);
-  appApiMock.onGet("/api/registry/bricks/").reply(200, [integrationDefinition]);
+  appApiMock
+    .onGet(API_PATHS.REGISTRY_BRICKS)
+    .reply(200, [integrationDefinition]);
   // Wire up directly to the background implementations for integration testing
   jest
     .mocked(integrationConfigLocator.refresh)
@@ -171,7 +173,7 @@ describe("AuthWidget", () => {
       .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationWithOptionalField]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationWithOptionalField]);
     await refreshRegistries();
 

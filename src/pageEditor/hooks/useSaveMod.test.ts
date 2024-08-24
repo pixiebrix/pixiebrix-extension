@@ -53,7 +53,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with "/api/registry/bricks/" is mocked
+    // Register directly in modDefinitionRegistry because background call to sync with the bricks registry endpoint is mocked
     modDefinitionRegistry.register([
       {
         id: modId,
@@ -113,7 +113,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with "/api/registry/bricks/" is mocked
+    // Register directly in modDefinitionRegistry because background call to sync with API_PATHS.REGISTRY_BRICKS is mocked
     // This data structure is not quite what happens in practice because the modDefinitionRegistry factory calls
     // normalizeModOptionsDefinition during hydration.
     modDefinitionRegistry.register([
@@ -182,7 +182,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with "/api/registry/bricks/" is mocked
+    // Register directly in modDefinitionRegistry because background call to sync with API_PATHS.REGISTRY_BRICKS is mocked
     // This data structure is not quite what happens in practice because the modDefinitionRegistry factory calls
     // normalizeModOptionsDefinition during hydration.
     modDefinitionRegistry.register([

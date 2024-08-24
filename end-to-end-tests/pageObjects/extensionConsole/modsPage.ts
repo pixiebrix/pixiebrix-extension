@@ -21,6 +21,7 @@ import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
 import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 import { validateRegistryId } from "@/types/helpers";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.getByTestId("ellipsis-menu-button");
@@ -62,7 +63,8 @@ export class ModsPage extends BasePageObject {
     const registryPromise = this.page
       .context()
       .waitForEvent("requestfinished", {
-        predicate: (request) => request.url().includes("/api/registry/bricks/"),
+        predicate: (request) =>
+          request.url().includes(API_PATHS.REGISTRY_BRICKS),
         timeout: 15_000,
       });
     await this.page.goto(this.extensionConsoleUrl);

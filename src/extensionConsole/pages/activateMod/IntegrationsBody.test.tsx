@@ -115,7 +115,7 @@ beforeAll(async () => {
     .reply(200, [integrationDefinition1, integrationDefinition2]);
   appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
   appApiMock
-    .onGet("/api/registry/bricks/")
+    .onGet(API_PATHS.REGISTRY_BRICKS)
     .reply(200, [integrationDefinition1, integrationDefinition2]);
   // Wire up directly to the background implementations for integration testing
   jest

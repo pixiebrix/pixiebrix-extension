@@ -32,6 +32,9 @@ export const API_PATHS = {
 
   INVITATIONS_ME: "/api/invitations/me/",
 
+  INTEGRATIONS: "/api/services/",
+  INTEGRATIONS_SHARED: "/api/services/shared/",
+
   MARKETPLACE_LISTINGS: "/api/marketplace/listings/",
   MARKETPLACE_TAGS: "/api/marketplace/tags/",
 
@@ -48,8 +51,7 @@ export const API_PATHS = {
   ORGANIZATION_GROUPS: (organizationId: string) =>
     `/api/organizations/${organizationId}/groups/`,
 
-  INTEGRATIONS: "/api/services/",
-  INTEGRATIONS_SHARED: "/api/services/shared/",
+  REGISTRY_BRICKS: "/api/registry/bricks/",
 
   SETTINGS: "/api/settings/",
 

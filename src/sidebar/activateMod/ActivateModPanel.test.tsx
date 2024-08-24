@@ -263,7 +263,7 @@ describe("ActivateModPanel", () => {
       .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationDefinition]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationDefinition]);
 
     await refreshRegistries();
@@ -309,7 +309,7 @@ describe("ActivateModPanel", () => {
       .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationDefinition]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationDefinition]);
 
     await refreshRegistries();
@@ -356,7 +356,7 @@ describe("ActivateModPanel", () => {
       .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationDefinition]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationDefinition]);
 
     await refreshRegistries();
@@ -402,7 +402,7 @@ describe("ActivateModPanel", () => {
       .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationDefinition]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationDefinition]);
 
     await refreshRegistries();
@@ -445,7 +445,7 @@ describe("ActivateModPanel", () => {
       .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationDefinition1, integrationDefinition2]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationDefinition1, integrationDefinition2]);
 
     await refreshRegistries();

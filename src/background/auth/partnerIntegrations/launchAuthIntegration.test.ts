@@ -53,7 +53,7 @@ describe("launchAuthIntegration", () => {
     appApiMock.reset();
 
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [oauth2IntegrationDefinition]);
 
     appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
