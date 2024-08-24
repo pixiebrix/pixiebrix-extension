@@ -34,6 +34,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 import { type Timestamp } from "@/types/stringTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export default {
   title: "ModsPage/GetStartedView",
@@ -103,17 +104,19 @@ ActivateBlueprint.args = {
 ActivateBlueprint.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/marketplace/listings/", async (request, result, context) =>
-        result(
-          context.json([
-            {
-              package: {
-                name: testRecipe.metadata.id,
-                verbose_name: testRecipe.metadata.name,
+      rest.get(
+        API_PATHS.MARKETPLACE_LISTINGS,
+        async (request, result, context) =>
+          result(
+            context.json([
+              {
+                package: {
+                  name: testRecipe.metadata.id,
+                  verbose_name: testRecipe.metadata.name,
+                },
               },
-            },
-          ]),
-        ),
+            ]),
+          ),
       ),
     ],
   },

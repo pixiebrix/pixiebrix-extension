@@ -45,8 +45,8 @@ beforeAll(() => {
   const listings = array(marketplaceListingFactory, 10)({ tags });
 
   appApiMock.reset();
-  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
-  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_TAGS).reply(200, tags);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_LISTINGS).reply(200, listings);
 });
 
 describe("AddBrickModal", () => {

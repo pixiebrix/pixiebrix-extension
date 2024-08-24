@@ -53,6 +53,7 @@ import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");
@@ -160,7 +161,7 @@ function setupMocksAndRender(
   });
 
   // Tests can override by calling before setupMocksAndRender
-  appApiMock.onGet("/api/marketplace/listings/").reply(200, [listing]);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_LISTINGS).reply(200, [listing]);
   appApiMock.onGet().reply(200, []);
 
   const entry = sidebarEntryFactory("activateMods", {
