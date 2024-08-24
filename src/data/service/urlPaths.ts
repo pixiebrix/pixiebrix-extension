@@ -48,8 +48,8 @@ export const API_PATHS = {
   ORGANIZATION_GROUPS: (organizationId: string) =>
     `/api/organizations/${organizationId}/groups/`,
 
-  SERVICES: "/api/services/",
-  SHARED_SERVICES: "/api/services/shared/",
+  INTEGRATIONS: "/api/services/",
+  INTEGRATIONS_SHARED: "/api/services/shared/",
 
   SETTINGS: "/api/settings/",
 

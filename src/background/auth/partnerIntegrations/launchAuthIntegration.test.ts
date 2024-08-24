@@ -56,7 +56,7 @@ describe("launchAuthIntegration", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [oauth2IntegrationDefinition]);
 
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
 
     readRawConfigurationsMock.mockReset();
     launchOAuth2FlowMock.mockReset();

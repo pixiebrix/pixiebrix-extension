@@ -40,6 +40,7 @@ import {
   setCachedAuthData,
 } from "@/background/auth/authStorage";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -99,7 +100,7 @@ describe("error handling", () => {
     });
 
     // No remote integration configurations
-    axiosMock.onGet("/api/services/shared/").reply(200, []);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
 
     readRawConfigurationsMock.mockResolvedValue([integrationConfig]);
 

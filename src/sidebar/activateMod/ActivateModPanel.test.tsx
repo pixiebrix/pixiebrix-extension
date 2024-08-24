@@ -258,8 +258,10 @@ describe("ActivateModPanel", () => {
   it("activates mod automatically with optional integration dependency and no auth options and renders well-done page", async () => {
     const { integrationDefinition } = generateIntegrationAndRemoteConfig();
     // Don't include a remote auth option
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
+    appApiMock
+      .onGet(API_PATHS.INTEGRATIONS)
+      .reply(200, [integrationDefinition]);
     appApiMock
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
@@ -302,8 +304,10 @@ describe("ActivateModPanel", () => {
   it("activates mod automatically with required integration dependency and built-in auth option and renders well-done page", async () => {
     const { remoteConfig, integrationDefinition } =
       generateIntegrationAndRemoteConfig();
-    appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
-    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [remoteConfig]);
+    appApiMock
+      .onGet(API_PATHS.INTEGRATIONS)
+      .reply(200, [integrationDefinition]);
     appApiMock
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
@@ -347,8 +351,10 @@ describe("ActivateModPanel", () => {
     const { remoteConfig, integrationDefinition } =
       generateIntegrationAndRemoteConfig();
     // Include the remote auth option
-    appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
-    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [remoteConfig]);
+    appApiMock
+      .onGet(API_PATHS.INTEGRATIONS)
+      .reply(200, [integrationDefinition]);
     appApiMock
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
@@ -391,8 +397,10 @@ describe("ActivateModPanel", () => {
   it("does not activate mod automatically when required integration does not have built-in config available", async () => {
     const { integrationDefinition } = generateIntegrationAndRemoteConfig();
     // Don't include the remote auth option
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
-    appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
+    appApiMock
+      .onGet(API_PATHS.INTEGRATIONS)
+      .reply(200, [integrationDefinition]);
     appApiMock
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
@@ -432,9 +440,9 @@ describe("ActivateModPanel", () => {
     const { integrationDefinition: integrationDefinition2 } =
       generateIntegrationAndRemoteConfig();
     // Don't include the remote configs
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
     appApiMock
-      .onGet("/api/services/")
+      .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationDefinition1, integrationDefinition2]);
     appApiMock
       .onGet("/api/registry/bricks/")
@@ -595,7 +603,7 @@ describe("ActivateModPanel", () => {
   it("doesn't flicker while built-in auths are loading", async () => {
     const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
-    onDeferredGet("/api/services/shared/");
+    onDeferredGet(API_PATHS.INTEGRATIONS_SHARED);
 
     setupMocksAndRender(modDefinition);
 
@@ -613,7 +621,7 @@ describe("ActivateMultipleModsPanel", () => {
       });
 
     appApiMock
-      .onGet("/api/services/shared/")
+      .onGet(API_PATHS.INTEGRATIONS_SHARED)
       .reply(200, builtInIntegrationConfigs);
 
     const { asFragment } = setupMocksAndRender(modDefinition, {

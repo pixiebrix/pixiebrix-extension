@@ -32,6 +32,7 @@ import {
 import { registry } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
@@ -68,7 +69,7 @@ describe("getPartnerPrincipals", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [tokenIntegrationDefinition, oauthIntegrationDefinition]);
 
-    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
 
     readRawConfigurationsMock.mockReset();
   });

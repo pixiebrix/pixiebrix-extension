@@ -123,7 +123,7 @@ export const appApi = createApi({
     }),
     getIntegrations: builder.query<IntegrationDefinition[], void>({
       query: () => ({
-        url: API_PATHS.SERVICES,
+        url: API_PATHS.INTEGRATIONS,
         method: "get",
         // Returns public service definitions if not authenticated
         requireLinked: false,
@@ -132,7 +132,7 @@ export const appApi = createApi({
     }),
     getIntegrationAuths: builder.query<RemoteIntegrationConfig[], void>({
       query: () => ({
-        url: API_PATHS.SHARED_SERVICES,
+        url: API_PATHS.INTEGRATIONS_SHARED,
         method: "get",
         params: { meta: 1 },
       }),

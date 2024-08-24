@@ -316,7 +316,7 @@ async function getWelcomeMods(): Promise<ModDefinition[]> {
 
   try {
     const { data: welcomeMods } = await client.get<ModDefinition[]>(
-      "/api/onboarding/starter-blueprints/",
+      API_PATHS.ONBOARDING_STARTER_BLUEPRINTS,
     );
     return welcomeMods;
   } catch (error) {
