@@ -35,6 +35,7 @@ import {
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
 import { PipelineFlavor } from "@/bricks/types";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // Need at least one item so callers see the registry as initialized
 brickRegistry.register([echoBrick, featureFlagBrick]);
@@ -78,7 +79,7 @@ describe("AddBrickModal", () => {
   });
 
   it("includes feature flagged brick", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [featureFlagBrick.featureFlag],
     });
 

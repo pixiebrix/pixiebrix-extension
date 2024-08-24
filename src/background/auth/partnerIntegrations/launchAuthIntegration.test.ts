@@ -28,6 +28,7 @@ import {
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { type Metadata } from "@/types/registryTypes";
 import { setPartnerAuthData } from "@/auth/authStorage";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
@@ -86,7 +87,7 @@ describe("launchAuthIntegration", () => {
       refresh_token: "test_refresh_token",
     });
 
-    appApiMock.onGet("/api/me/").reply(200, {});
+    appApiMock.onGet(API_PATHS.ME).reply(200, {});
 
     await launchAuthIntegration({ integrationId });
 
@@ -168,12 +169,12 @@ describe("launchAuthIntegration", () => {
       refresh_token: "test_refresh_token",
     });
 
-    appApiMock.onGet("/api/me/").reply(200, {});
+    appApiMock.onGet(API_PATHS.ME).reply(200, {});
 
     await launchAuthIntegration({ integrationId });
 
     expect(appApiMock.history.get).toBeArrayOfSize(1);
-    expect(appApiMock.history.get![0]!.url).toBe("/api/me/");
+    expect(appApiMock.history.get![0]!.url).toBe(API_PATHS.ME);
   });
 
   it("when the token check fails with an auth error, clears the oauth2 token and throws rejected error", async () => {
@@ -192,7 +193,7 @@ describe("launchAuthIntegration", () => {
       refresh_token: "test_refresh_token",
     });
 
-    appApiMock.onGet("/api/me/").reply(401, {});
+    appApiMock.onGet(API_PATHS.ME).reply(401, {});
 
     await expect(launchAuthIntegration({ integrationId })).rejects.toThrow(
       "Control Room rejected login",
@@ -217,7 +218,7 @@ describe("launchAuthIntegration", () => {
       refresh_token: "test_refresh_token",
     });
 
-    appApiMock.onGet("/api/me/").reply(200, {});
+    appApiMock.onGet(API_PATHS.ME).reply(200, {});
 
     await launchAuthIntegration({ integrationId });
 
@@ -259,7 +260,7 @@ describe("launchAuthIntegration", () => {
       access_token: "test_access_token",
     });
 
-    appApiMock.onGet("/api/me/").reply(200, {});
+    appApiMock.onGet(API_PATHS.ME).reply(200, {});
 
     await launchAuthIntegration({ integrationId });
 

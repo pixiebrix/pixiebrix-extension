@@ -16,26 +16,40 @@
  */
 
 export const API_PATHS = {
-  ME: "/api/me/",
+  BRICKS: "/api/bricks/",
+  BRICK: (id: string) => `/api/bricks/${id}/`,
+  BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,
+
   DATABASES: "/api/databases/",
-  ORGANIZATION_DATABASES: (organizationId: string) =>
-    `/api/organizations/${organizationId}/databases/`,
+
+  DEPLOYMENTS: "/api/deployments/",
+
+  FEATURE_FLAGS: "/api/me/",
+
   GROUP_DATABASES: (groupId: string) => `/api/groups/${groupId}/databases/`,
-  SERVICES: "/api/services/",
-  SHARED_SERVICES: "/api/services/shared/",
-  ORGANIZATIONS: "/api/organizations/",
-  ORGANIZATION_GROUPS: (organizationId: string) =>
-    `/api/organizations/${organizationId}/groups/`,
+
+  INVITATIONS_ME: "/api/invitations/me/",
+
   MARKETPLACE_LISTINGS: "/api/marketplace/listings/",
   MARKETPLACE_TAGS: "/api/marketplace/tags/",
-  BRICKS: "/api/bricks/",
-  RECIPE: (modId: string) => `/api/recipes/${encodeURIComponent(modId)}/`,
-  BRICK: (id: string) => `/api/bricks/${id}/`,
-  INVITATIONS_ME: "/api/invitations/me/",
-  WEBHOOKS_KEY: "/api/webhooks/key/",
-  BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,
-  SETTINGS: "/api/settings/",
-  ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",
+
+  ME: "/api/me/",
   ME_MILESTONES: "/api/me/milestones/",
-  DEPLOYMENTS: "/api/deployments/",
+
+  MOD: (modId: string) => `/api/recipes/${encodeURIComponent(modId)}/`,
+
+  ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",
+
+  ORGANIZATIONS: "/api/organizations/",
+  ORGANIZATION_DATABASES: (organizationId: string) =>
+    `/api/organizations/${organizationId}/databases/`,
+  ORGANIZATION_GROUPS: (organizationId: string) =>
+    `/api/organizations/${organizationId}/groups/`,
+
+  SERVICES: "/api/services/",
+  SHARED_SERVICES: "/api/services/shared/",
+
+  SETTINGS: "/api/settings/",
+
+  WEBHOOKS_KEY: "/api/webhooks/key/",
 };

@@ -25,6 +25,7 @@ import { transformUserMilestoneResponse } from "@/data/model/UserMilestone";
 import { type components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
 import { milestoneFactory } from "@/testUtils/factories/milestoneFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const renderUseMilestones = (
   milestonesApiResponses: components["schemas"]["Me"]["milestones"],
@@ -33,7 +34,7 @@ const renderUseMilestones = (
     milestones: milestonesApiResponses,
   });
 
-  appApiMock.onGet("/api/me/").reply(200, meResponse);
+  appApiMock.onGet(API_PATHS.ME).reply(200, meResponse);
 
   return renderHook(() => useMilestones(), {
     setupRedux(dispatch) {

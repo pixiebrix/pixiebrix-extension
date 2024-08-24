@@ -68,6 +68,7 @@ import {
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 TEST_setContext("background");
 
@@ -133,7 +134,7 @@ beforeEach(async () => {
   jest.clearAllMocks();
   appApiMock.reset();
 
-  appApiMock.onGet("/api/me/").reply(200, {
+  appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
     flags: [],
   });
 
@@ -595,7 +596,7 @@ describe("syncDeployments", () => {
     });
     const registryId = deployment.package.package_id;
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["deployment-permissions-strict"],
     });
 
@@ -667,7 +668,7 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(false);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-version"],
     });
 
@@ -685,7 +686,7 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-version"],
     });
 
@@ -707,7 +708,7 @@ describe("syncDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.ME).reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
@@ -730,7 +731,7 @@ describe("syncDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.ME).reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
@@ -751,7 +752,7 @@ describe("syncDeployments", () => {
       nextUpdate: Date.now() + 1_000_000,
     } as any);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-version"],
     });
 

@@ -30,6 +30,7 @@ import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { removeOAuth2Token } from "@/background/messenger/api";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.
@@ -104,7 +105,7 @@ export async function launchAuthIntegration({
     // in just-in-time user initialization.
     const apiClient = await getApiClient();
     try {
-      await apiClient.get("/api/me/", {
+      await apiClient.get(API_PATHS.ME, {
         headers: {
           Authorization: `Bearer ${token}`,
           "X-Control-Room": controlRoomUrl,
