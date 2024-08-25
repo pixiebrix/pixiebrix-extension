@@ -75,6 +75,7 @@
     "./activation/modOptionsHelpers.ts",
     "./activation/useActivateMod.ts",
     "./activation/useActivateModWizard.ts",
+    "./activation/useOrganizationActivationPolicy.ts",
     "./activation/wizardTypes.ts",
     "./analysis/AnalysisAnnotationsContext.ts",
     "./analysis/ReduxAnalysisManager.ts",

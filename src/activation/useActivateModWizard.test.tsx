@@ -25,13 +25,18 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
+import { useGetFeatureFlagsQuery } from "@/data/service/api";
+import {
+  mapRestrictedFeatureToFeatureFlag,
+  RestrictedFeatures,
+} from "@/auth/featureFlags";
+import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { BusinessError } from "@/errors/businessErrors";
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("@/data/service/api", () => ({
-  useGetServiceAuthsQuery: jest.fn().mockReturnValue({
-    data: [],
-  }),
+  useGetFeatureFlagsQuery: jest.fn(() => valueToAsyncState([])),
 }));
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
@@ -158,5 +163,30 @@ describe("useActivateModWizard", () => {
     expect(result.current.data!.initialValues.optionsArgs).toEqual({
       [name]: databaseId,
     });
+  });
+
+  test("reject public marketplace activations", () => {
+    const modDefinition = defaultModDefinitionFactory({
+      sharing: sharingDefinitionFactory({
+        public: true,
+      }),
+    });
+
+    jest
+      .mocked(useGetFeatureFlagsQuery)
+      .mockReturnValue(
+        valueToAsyncState([
+          mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
+        ]) as any,
+      );
+
+    const { result } = renderHook(() => useActivateModWizard(modDefinition));
+
+    const { isError, error } = result.current;
+    expect(isError).toBe(true);
+    expect(error).toBeInstanceOf(BusinessError);
+    expect((error as BusinessError).message).toBe(
+      "Your team's policy does not permit you to activate this mod. Contact your team admin for assistance",
+    );
   });
 });
