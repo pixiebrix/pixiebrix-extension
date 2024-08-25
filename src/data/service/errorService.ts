@@ -44,6 +44,7 @@ import { selectAbsoluteUrl } from "@/utils/urlUtils";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { FeatureFlags, OrganizationFlags } from "@/auth/featureFlags";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -63,7 +64,7 @@ async function flush(): Promise<void> {
     if (client) {
       const events = buffer.splice(0, buffer.length);
       // Pass as list, the request payload is not in an envelope
-      await client.post("/api/telemetry/errors/", events);
+      await client.post(API_PATHS.TELEMETRY_ERRORS, events);
     }
   }
 }

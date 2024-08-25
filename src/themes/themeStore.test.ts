@@ -31,6 +31,7 @@ import {
   meOrganizationApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const reportErrorMock = jest.mocked(reportError);
 
@@ -44,7 +45,7 @@ describe("getActiveTheme", () => {
   describe("managed storage is set", () => {
     beforeEach(async () => {
       appApiMock
-        .onGet(`/api/organizations/${expectedManagedOrganizationId}/theme/`)
+        .onGet(API_PATHS.ORGANIZATION_THEME(expectedManagedOrganizationId))
         .reply(200, {
           show_sidebar_logo: true,
           logo: "some_managed_logo.svg",

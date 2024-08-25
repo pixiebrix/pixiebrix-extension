@@ -19,6 +19,7 @@ import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { getSharingType } from "@/hooks/auth";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import reportError from "@/telemetry/reportError";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export async function getBuiltInIntegrationConfigs(): Promise<
   RemoteIntegrationConfig[]
@@ -31,7 +32,7 @@ export async function getBuiltInIntegrationConfigs(): Promise<
   try {
     const { data: integrationConfigs } = await client.get<
       RemoteIntegrationConfig[]
-    >("/api/services/shared/?meta=1");
+    >(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1);
 
     return integrationConfigs.filter(
       (auth) => getSharingType(auth) === "built-in",

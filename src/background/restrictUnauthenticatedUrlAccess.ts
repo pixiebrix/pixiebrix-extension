@@ -28,6 +28,7 @@ import { forEachTab } from "@/utils/extensionUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { StorageItem } from "webext-storage";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const authUrlPatternCache = new SessionValue<string[]>(
   "authUrlPatterns",
@@ -60,7 +61,7 @@ async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
     const client = await getApiClient();
     const { data: authUrlPatterns } = await client.get<
       OrganizationAuthUrlPattern[]
-    >(`/api/organizations/${organizationId}/auth-url-patterns/`);
+    >(API_PATHS.ORGANIZATION_AUTH_URL_PATTERNS(organizationId));
     return authUrlPatterns.map(({ url_pattern }) => url_pattern);
   } catch (error) {
     reportError(error);

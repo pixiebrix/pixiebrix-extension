@@ -52,6 +52,7 @@ import {
   type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 interface DatabaseResult {
   success: boolean;
@@ -425,9 +426,7 @@ async function getInitialData(
       const {
         data: { data },
       } = await getPlatform().request<DatabaseResult>(storage.service, {
-        url: `/api/databases/${storage.databaseId}/records/${encodeURIComponent(
-          recordId,
-        )}/`,
+        url: API_PATHS.DATABASE_RECORD_BY_ID(storage.databaseId, recordId),
         params: {
           missing_key: "blank",
         },
@@ -458,7 +457,7 @@ async function setData(
   switch (storage.type) {
     case "database": {
       await getPlatform().request(storage.service, {
-        url: `/api/databases/${storage.databaseId}/records/`,
+        url: API_PATHS.DATABASE_RECORDS(storage.databaseId),
         method: "put",
         data: {
           id: recordId,

@@ -23,6 +23,10 @@ export const API_PATHS = {
   BRICK_VERSION_MATCH_ANY: /api\/bricks\/[\w-]*\/versions\/$/,
 
   DATABASES: "/api/databases/",
+  DATABASE_RECORDS: (databaseId: string) =>
+    `/api/databases/${databaseId}/records/`,
+  DATABASE_RECORD_BY_ID: (databaseId: string, recordId: string) =>
+    `/api/databases/${databaseId}/records/${recordId}/`,
 
   DEPLOYMENTS: "/api/deployments/",
 
@@ -34,6 +38,7 @@ export const API_PATHS = {
 
   INTEGRATIONS: "/api/services/",
   INTEGRATIONS_SHARED: "/api/services/shared/",
+  INTEGRATIONS_SHARED_PARAM_META_1: "/api/services/shared/?meta=1",
 
   MARKETPLACE_LISTINGS: "/api/marketplace/listings/",
   MARKETPLACE_TAGS: "/api/marketplace/tags/",
@@ -46,10 +51,14 @@ export const API_PATHS = {
   ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",
 
   ORGANIZATIONS: "/api/organizations/",
+  ORGANIZATION_AUTH_URL_PATTERNS: (organizationId: string) =>
+    `/api/organizations/${organizationId}/auth-url-patterns/`,
   ORGANIZATION_DATABASES: (organizationId: string) =>
     `/api/organizations/${organizationId}/databases/`,
   ORGANIZATION_GROUPS: (organizationId: string) =>
     `/api/organizations/${organizationId}/groups/`,
+  ORGANIZATION_THEME: (organizationId: string) =>
+    `/api/organizations/${organizationId}/theme/`,
 
   PROXY: "/api/proxy/",
 
@@ -57,6 +66,8 @@ export const API_PATHS = {
   REGISTRY_UPDATES: "/api/registry/updates/",
 
   SETTINGS: "/api/settings/",
+
+  TELEMETRY_ERRORS: "/api/telemetry/errors/",
 
   WEBHOOKS: "/api/webhooks/hooks/",
   WEBHOOKS_KEY: "/api/webhooks/key/",
