@@ -314,7 +314,7 @@ async function init(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
 
   if (client && (await allowsTrack())) {
-    await client.post("/api/identify/", {
+    await client.post(API_PATHS.IDENTIFY_USER, {
       uid: await getUUID(),
       data: await collectUserSummary(),
     });
@@ -367,7 +367,7 @@ export async function sendDeploymentAlert({
   data: UnknownObject;
 }) {
   const client = await getLinkedApiClient();
-  await client.post(`/api/deployments/${deploymentId}/alerts/`, data);
+  await client.post(API_PATHS.DEPLOYMENT_ALERTS(deploymentId), data);
 }
 
 /**

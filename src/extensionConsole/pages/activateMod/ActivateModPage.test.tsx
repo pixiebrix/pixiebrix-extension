@@ -37,6 +37,7 @@ import useActivateMod, {
 } from "@/activation/useActivateMod";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 registerDefaultWidgets();
 
@@ -68,7 +69,7 @@ function setupMod(modDefinition: ModDefinition) {
   };
 
   appApiMock
-    .onGet(`/api/recipes/${encodeURIComponent(testModId)}/`)
+    .onGet(API_PATHS.MOD(encodeURIComponent(testModId)))
     .reply(200, modResponse)
     // Databases, organizations, etc.
     .onGet()

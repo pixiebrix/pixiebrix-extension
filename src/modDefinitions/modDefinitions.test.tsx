@@ -47,7 +47,7 @@ beforeAll(() => {
 // The test "loads" mod definitions from server and attempts to save the first (and the only) mod definition
 // It verifies the proper API calls and the mod definition schema "sent" to the server
 test("load mod definitions and save one", async () => {
-  // This is the shape of a mod definition that we get from the API /api/recipes/ endpoint
+  // This is the shape of a mod definition that we get from the API endpoint
   const sourceModDefinition = defaultModDefinitionFactory();
 
   const packageId = uuidv4();

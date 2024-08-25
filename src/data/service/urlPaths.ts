@@ -29,12 +29,16 @@ export const API_PATHS = {
     `/api/databases/${databaseId}/records/${recordId}/`,
 
   DEPLOYMENTS: "/api/deployments/",
+  DEPLOYMENT_ALERTS: (deploymentId: string) =>
+    `/api/deployments/${deploymentId}/alerts/`,
 
   EVENTS: "/api/events/",
 
   FEATURE_FLAGS: "/api/me/",
 
   GROUP_DATABASES: (groupId: string) => `/api/groups/${groupId}/databases/`,
+
+  IDENTIFY_USER: "/api/identify/",
 
   INVITATIONS_ME: "/api/invitations/me/",
 
