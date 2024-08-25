@@ -173,7 +173,7 @@ export type ActivateModsResult = {
   rejectedModCount?: number;
 
   /**
-   * Number of welcome mods that were successfully activated activated
+   * Number of welcome mods that were successfully activated
    */
   resolvedModCount?: number;
 

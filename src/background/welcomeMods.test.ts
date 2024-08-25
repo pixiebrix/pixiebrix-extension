@@ -113,9 +113,9 @@ beforeEach(async () => {
 
   await TEST_deleteFeatureFlagsCache();
 
-  axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+  axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1).reply(200, []);
 
-  axiosMock.onGet("/api/me/").reply(
+  axiosMock.onGet(API_PATHS.ME).reply(
     200,
     meApiResponseFactory({
       flags: [],
@@ -567,7 +567,7 @@ describe("debouncedActivateWelcomeMods", () => {
       ]);
 
       axiosMock
-        .onGet("/api/onboarding/starter-blueprints/")
+        .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
         .reply(200, [modDefinition]);
 
       const { error } = await debouncedActivateWelcomeMods();
