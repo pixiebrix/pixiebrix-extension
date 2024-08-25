@@ -232,9 +232,7 @@ export function valueToAsyncState<Value>(
 /**
  * Lift a known value to a FetchableAsyncState.
  */
-export function errorToAsyncState<Value>(
-  error: unknown,
-): FetchableAsyncState<Value> {
+export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
   return {
     isError: true,
     error,
@@ -244,7 +242,6 @@ export function errorToAsyncState<Value>(
     isLoading: false,
     isFetching: false,
     isSuccess: false,
-    refetch: noop,
   };
 }
 

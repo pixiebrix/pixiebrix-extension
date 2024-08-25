@@ -46,7 +46,7 @@ export async function TEST_deleteFeatureFlagsCache(
 
 // Wrapped in jest.fn() so test file can check if it's using the mock or not.
 export const flagOn = jest.fn().mockImplementation(async (flag: string) => {
-  if (flags === null) {
+  if (flags == null) {
     flags = await fetchFeatureFlags();
   }
   return flags?.includes(flag) ?? false;
@@ -54,7 +54,7 @@ export const flagOn = jest.fn().mockImplementation(async (flag: string) => {
 
 // Wrapped in jest.fn() so test file can check if it's using the mock or not.
 export const restrict = jest.fn().mockImplementation(async (area: string) => {
-  if (flags === null) {
+  if (flags == null) {
     flags = await fetchFeatureFlags();
   }
   return flags?.includes(mapRestrictedFeatureToFeatureFlag(area)) ?? false;

@@ -66,7 +66,10 @@ import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
-import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
+import {
+  TEST_deleteFeatureFlagsCache,
+  TEST_overrideFeatureFlags,
+} from "@/auth/featureFlagStorage";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -550,23 +553,26 @@ describe("debouncedActivateWelcomeMods", () => {
 
       expect(axiosMock.history.post).toHaveLength(0);
     });
+  });
 
-    it("rejects if flag set", async () => {
-      const modDefinition = modFactory();
+  describe("organization policy", () => {
+    it("rejects if restricted-marketplace flag set", async () => {
+      const modDefinition = defaultModDefinitionFactory();
 
-      axiosMock.onGet("/api/me/").reply(200, [
-        meApiResponseFactory({
-          flags: [
-            mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
-          ],
-        }),
+      await TEST_overrideFeatureFlags([
+        mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
       ]);
 
       axiosMock
         .onGet("/api/onboarding/starter-blueprints/")
         .reply(200, [modDefinition]);
 
-      await debouncedActivateWelcomeMods();
+      const { error } = await debouncedActivateWelcomeMods();
+
+      expect(error).toBe(
+        "Your team's policy does not permit you to activate marketplace mods. Contact your team admin for assistance",
+      );
+
       const { activatedModComponents } = await getModComponentState();
 
       expect(activatedModComponents).toBeArrayOfSize(0);

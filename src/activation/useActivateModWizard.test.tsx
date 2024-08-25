@@ -31,6 +31,7 @@ import {
   RestrictedFeatures,
 } from "@/auth/featureFlags";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { BusinessError } from "@/errors/businessErrors";
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
@@ -183,8 +184,9 @@ describe("useActivateModWizard", () => {
 
     const { isError, error } = result.current;
     expect(isError).toBe(true);
-    expect(error).toMatchInlineSnapshot(
-      "[BusinessError: Your team's policy does not permit you to activate this mod. Contact your team admin for assistance]",
+    expect(error).toBeInstanceOf(BusinessError);
+    expect((error as BusinessError).message).toBe(
+      "Your team's policy does not permit you to activate this mod. Contact your team admin for assistance",
     );
   });
 });
