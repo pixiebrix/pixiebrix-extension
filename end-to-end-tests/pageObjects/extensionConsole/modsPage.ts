@@ -19,7 +19,6 @@ import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
-import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { API_PATHS } from "@/data/service/urlPaths";
 
@@ -154,8 +153,8 @@ export class ActivateModPage extends BasePageObject {
   ) {
     super(page);
     this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
-    this.activateModUrl = `${this.baseConsoleUrl}#${getActivateModHashRoute(
-      validateRegistryId(modId),
+    this.activateModUrl = `${this.baseConsoleUrl}#${API_PATHS.MOD_ACTIVATE(
+      encodeURIComponent(validateRegistryId(modId)),
     )}`;
   }
 

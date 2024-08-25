@@ -31,6 +31,7 @@ import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { type ActivateModsResult } from "@/background/welcomeMods";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -178,7 +179,9 @@ export async function openActivateModPage({
 }: ActivateModsOptions): Promise<boolean> {
   const { mods } = options;
 
-  if (mods.length === 0) {
+  const firstMod = mods[0];
+
+  if (firstMod == null) {
     throw new Error("No mods provided");
   } else if (redirectUrl == null && mods.length > 1) {
     reportError(
@@ -191,8 +194,7 @@ export async function openActivateModPage({
     // For extension console activation, only support a single mod id
     // TODO: support passing options to the Extension Console activation page
     getExtensionConsoleUrl(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
-      `marketplace/activate/${encodeURIComponent(mods[0]!.modId)}`,
+      API_PATHS.MOD_ACTIVATE(encodeURIComponent(firstMod.modId)),
     );
 
   if (newTab) {

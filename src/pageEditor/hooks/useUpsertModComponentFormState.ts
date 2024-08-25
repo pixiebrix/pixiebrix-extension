@@ -38,6 +38,7 @@ import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const { saveModComponent } = modComponentSlice.actions;
 const { markClean } = editorSlice.actions;
@@ -52,9 +53,9 @@ async function upsertPackageConfig(
   const data = { config: objToYaml(config as UnknownObject), kind };
 
   if (packageUUID) {
-    await client.put(`api/bricks/${packageUUID}/`, data);
+    await client.put(API_PATHS.BRICK(packageUUID), data);
   } else {
-    await client.post("api/bricks/", data);
+    await client.post(API_PATHS.BRICKS, data);
   }
 }
 

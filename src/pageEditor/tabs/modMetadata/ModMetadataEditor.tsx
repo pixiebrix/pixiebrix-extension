@@ -41,9 +41,9 @@ import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store
 import cx from "classnames";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type RegistryId } from "@/types/registryTypes";
-import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 import { pick } from "lodash";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -84,7 +84,7 @@ const OldModVersionAlert: React.FunctionComponent<{
     You are editing version {activatedModVersion} of this mod, the latest
     version is {latestModVersion}. To get the latest version,{" "}
     <a
-      href={`/options.html#${getActivateModHashRoute(modId)}`}
+      href={`/options.html#${API_PATHS.MOD_ACTIVATE(modId)}`}
       target="_blank"
       title="Re-activate the mod"
       rel="noreferrer"

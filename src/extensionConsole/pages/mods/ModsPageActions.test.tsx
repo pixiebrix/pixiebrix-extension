@@ -206,9 +206,7 @@ describe("ModsPageActions", () => {
     await userEvent.click(screen.getByText("Reactivate"));
 
     expect(historyPushMock).toHaveBeenCalledWith(
-      `marketplace/activate/${encodeURIComponent(
-        modViewItem.modId,
-      )}?reinstall=1`,
+      API_PATHS.MOD_ACTIVATE(encodeURIComponent(modViewItem.modId)),
     );
   });
 

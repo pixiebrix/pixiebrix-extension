@@ -27,6 +27,7 @@ import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
 import { renderHook } from "@/extensionConsole/testHelpers";
 
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/hooks/useFlags");
 jest.mock("@/modDefinitions/modDefinitionHooks");
@@ -41,7 +42,7 @@ const mockOnboarding = ({
   hasRestrictedFlag?: boolean;
 } = {}) => {
   appApiMock
-    .onGet("/api/organizations/")
+    .onGet(API_PATHS.ORGANIZATIONS)
     .reply(200, [hasOrganization ? [organizationStateFactory()] : []]);
 
   mockAllApiEndpoints();
