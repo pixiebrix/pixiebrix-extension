@@ -206,7 +206,7 @@ describe("ModsPageActions", () => {
     await userEvent.click(screen.getByText("Reactivate"));
 
     expect(historyPushMock).toHaveBeenCalledWith(
-      API_PATHS.MOD_ACTIVATE(modViewItem.modId),
+      API_PATHS.MOD_ACTIVATE(modViewItem.modId, true),
     );
   });
 

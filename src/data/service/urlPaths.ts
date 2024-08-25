@@ -86,5 +86,5 @@ export const API_PATHS = {
   WEBHOOKS: "/api/webhooks/hooks/",
   WEBHOOKS_KEY: "/api/webhooks/key/",
 
-  WORKSHOP_BRICK: (id: string) => `/api/workshop/bricks/${id}/`,
+  WORKSHOP_BRICK: (id: string) => `/workshop/bricks/${id}`,
 };
