@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RegistryId } from "@/types/registryTypes";
+
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
   BRICK: (id: string) => `/api/bricks/${id}/`,
@@ -52,9 +54,11 @@ export const API_PATHS = {
   ME: "/api/me/",
   ME_MILESTONES: "/api/me/milestones/",
 
-  MOD: (modId: string) => `/api/recipes/${modId}/`,
-  MOD_ACTIVATE: (modId: string, isReactivate?: boolean) =>
-    `marketplace/activate/${modId + (isReactivate ? "?reinstall=1" : "")}`,
+  MOD: (modId: RegistryId) => `/api/recipes/${encodeURIComponent(modId)}/`,
+  MOD_ACTIVATE: (modId: RegistryId, isReactivate?: boolean) =>
+    `marketplace/activate/${
+      encodeURIComponent(modId) + (isReactivate ? "?reinstall=1" : "")
+    }`,
   MOD_COMPONENTS_ALL: "/api/extensions/",
 
   ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",

@@ -99,9 +99,7 @@ const Status: React.VoidFunctionComponent<{
             screen: "extensionConsole",
             reinstall: true,
           });
-          history.push(
-            `marketplace/activate/${encodeURIComponent(modId)}?reinstall=1`,
-          );
+          history.push(API_PATHS.MOD_ACTIVATE(modId, true));
         }}
       >
         <FontAwesomeIcon icon={faSync} /> Update

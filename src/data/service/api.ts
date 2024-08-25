@@ -229,7 +229,7 @@ export const appApi = createApi({
     getModDefinition: builder.query<ModDefinition, { modId: RegistryId }>({
       query: ({ modId }) => ({
         // TODO: switch endpoint https://github.com/pixiebrix/pixiebrix-app/issues/4355
-        url: API_PATHS.MOD(encodeURIComponent(modId)),
+        url: API_PATHS.MOD(modId),
         method: "get",
       }),
       transformResponse(

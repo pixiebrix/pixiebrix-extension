@@ -69,7 +69,7 @@ function setupMod(modDefinition: ModDefinition) {
   };
 
   appApiMock
-    .onGet(API_PATHS.MOD(encodeURIComponent(testModId)))
+    .onGet(API_PATHS.MOD(testModId))
     .reply(200, modResponse)
     // Databases, organizations, etc.
     .onGet()

@@ -154,7 +154,7 @@ export class ActivateModPage extends BasePageObject {
     super(page);
     this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
     this.activateModUrl = `${this.baseConsoleUrl}#${API_PATHS.MOD_ACTIVATE(
-      encodeURIComponent(validateRegistryId(modId)),
+      validateRegistryId(modId),
     )}`;
   }
 

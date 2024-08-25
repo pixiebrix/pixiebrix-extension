@@ -193,9 +193,7 @@ export async function openActivateModPage({
     redirectUrl ??
     // For extension console activation, only support a single mod id
     // TODO: support passing options to the Extension Console activation page
-    getExtensionConsoleUrl(
-      API_PATHS.MOD_ACTIVATE(encodeURIComponent(firstMod.modId)),
-    );
+    getExtensionConsoleUrl(API_PATHS.MOD_ACTIVATE(firstMod.modId));
 
   if (newTab) {
     await browser.tabs.create({ url });

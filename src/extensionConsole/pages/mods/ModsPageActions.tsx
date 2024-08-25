@@ -173,7 +173,7 @@ const ModsPageActions: React.FunctionComponent<{
             screen: "extensionConsole",
             reinstall: true,
           });
-          history.push(API_PATHS.MOD_ACTIVATE(encodeURIComponent(modId), true));
+          history.push(API_PATHS.MOD_ACTIVATE(modId, true));
         },
         hide: !showReactivate,
       },
