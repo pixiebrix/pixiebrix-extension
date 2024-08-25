@@ -62,6 +62,8 @@ import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegration
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
+import { restrict } from "@/auth/featureFlagStorage";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -69,7 +71,7 @@ const { reducer: modComponentReducer, actions: modComponentActions } =
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reduce and actions
 const { reducer: sidebarReducer, actions: sidebarActions } = sidebarSlice;
 
-const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
+const WELCOME_URL = "https://www.pixiebrix.com/welcome";
 const MOD_ACTIVATION_DEBOUNCE_MS = 10_000;
 const MOD_ACTIVATION_MAX_MS = 60_000;
 
@@ -330,6 +332,14 @@ async function getWelcomeMods(): Promise<ModDefinition[]> {
 async function _activateWelcomeMods(): Promise<ActivateModsResult> {
   const welcomeMods = await getWelcomeMods();
 
+  if (await restrict(RestrictedFeatures.MARKETPLACE)) {
+    return {
+      welcomeModCount: welcomeMods.length,
+      error:
+        "Your team's policy does not permit you to activate marketplace mods. Contact your team admin for assistance",
+    };
+  }
+
   try {
     // Activating Welcome Mods and pulling the updates from remote registries to make sure
     // that all the bricks used in welcome mods are available
@@ -360,7 +370,7 @@ export const debouncedActivateWelcomeMods = debounce(
 
 function initWelcomeMods(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (tab?.url?.startsWith(PLAYGROUND_URL)) {
+    if (tab?.url?.startsWith(WELCOME_URL)) {
       void debouncedActivateWelcomeMods();
     }
   });

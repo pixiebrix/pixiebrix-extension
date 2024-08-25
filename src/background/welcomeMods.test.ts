@@ -34,7 +34,10 @@ import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { meOrganizationApiResponseFactory } from "@/testUtils/factories/authFactories";
+import {
+  meApiResponseFactory,
+  meOrganizationApiResponseFactory,
+} from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import {
   getSidebarState,
@@ -59,6 +62,11 @@ import {
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
+import {
+  mapRestrictedFeatureToFeatureFlag,
+  RestrictedFeatures,
+} from "@/auth/featureFlags";
+import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -99,7 +107,16 @@ beforeEach(async () => {
 
   jest.clearAllMocks();
 
+  await TEST_deleteFeatureFlagsCache();
+
   axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+
+  axiosMock.onGet("/api/me/").reply(
+    200,
+    meApiResponseFactory({
+      flags: [],
+    }),
+  );
 });
 
 describe("debouncedActivateWelcomeMods", () => {
@@ -532,6 +549,27 @@ describe("debouncedActivateWelcomeMods", () => {
       });
 
       expect(axiosMock.history.post).toHaveLength(0);
+    });
+
+    it("rejects if flag set", async () => {
+      const modDefinition = modFactory();
+
+      axiosMock.onGet("/api/me/").reply(200, [
+        meApiResponseFactory({
+          flags: [
+            mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
+          ],
+        }),
+      ]);
+
+      axiosMock
+        .onGet("/api/onboarding/starter-blueprints/")
+        .reply(200, [modDefinition]);
+
+      await debouncedActivateWelcomeMods();
+      const { activatedModComponents } = await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(0);
     });
   });
 });

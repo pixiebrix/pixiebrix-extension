@@ -36,7 +36,7 @@ export type FlagHelpers = {
   flagOff: (flag: FeatureFlag) => boolean;
 };
 
-type HookResult = FlagHelpers & {
+type UseFlagsResult = FlagHelpers & {
   // The async state for use in deriving values that require valid flags. NOTE: the data is not serializable,
   // so the state might not work with any state helpers that require serializable data (e.g., due to cloning, Immer,
   // or Redux).
@@ -52,7 +52,7 @@ type HookResult = FlagHelpers & {
  *
  * @see flagOn
  */
-function useFlags(): HookResult {
+function useFlags(): UseFlagsResult {
   const queryState = useGetFeatureFlagsQuery();
   const { refetch } = queryState;
 
