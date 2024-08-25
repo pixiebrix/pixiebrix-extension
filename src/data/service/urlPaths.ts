@@ -30,6 +30,8 @@ export const API_PATHS = {
 
   DEPLOYMENTS: "/api/deployments/",
 
+  EVENTS: "/api/events/",
+
   FEATURE_FLAGS: "/api/me/",
 
   GROUP_DATABASES: (groupId: string) => `/api/groups/${groupId}/databases/`,
@@ -63,6 +65,7 @@ export const API_PATHS = {
   PROXY: "/api/proxy/",
 
   REGISTRY_BRICKS: "/api/registry/bricks/",
+  REGISTRY_BRICK: (id: string) => `/api/registry/bricks/${id}/`,
   REGISTRY_UPDATES: "/api/registry/updates/",
 
   SETTINGS: "/api/settings/",

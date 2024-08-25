@@ -22,6 +22,7 @@ import {
 } from "@/background/telemetry";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { type TelemetryEvent } from "@/telemetry/telemetryTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {
@@ -32,7 +33,7 @@ const expectedManifestValues = {
 
 beforeEach(async () => {
   appApiMock.reset();
-  appApiMock.onPost("/api/events/").reply(201, {});
+  appApiMock.onPost(API_PATHS.EVENTS).reply(201, {});
 
   Object.defineProperty(global, "navigator", {
     value: {

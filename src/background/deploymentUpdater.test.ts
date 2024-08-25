@@ -255,7 +255,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -282,7 +282,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -308,7 +308,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -351,7 +351,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -416,7 +416,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -459,7 +459,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -522,7 +522,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -556,7 +556,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -603,7 +603,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -865,9 +865,9 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(
-        `/api/registry/bricks/${encodeURIComponent(
-          deployment.package.package_id,
-        )}/`,
+        API_PATHS.REGISTRY_BRICK(
+          encodeURIComponent(deployment.package.package_id),
+        ),
       )
       .reply(
         200,
@@ -899,9 +899,9 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(
-        `/api/registry/bricks/${encodeURIComponent(
-          updatedDeployment.package.package_id,
-        )}/`,
+        API_PATHS.REGISTRY_BRICK(
+          encodeURIComponent(deployment.package.package_id),
+        ),
       )
       .reply(
         200,
