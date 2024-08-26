@@ -113,7 +113,7 @@ beforeEach(async () => {
 
   await TEST_deleteFeatureFlagsCache();
 
-  axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1).reply(200, []);
+  axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
 
   axiosMock.onGet(API_PATHS.ME).reply(
     200,
@@ -189,7 +189,7 @@ describe("debouncedActivateWelcomeMods", () => {
   });
 
   test("getBuiltInIntegrationConfigs", async () => {
-    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1).reply(200, [
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, [
       remoteIntegrationConfigurationFactory(),
       remoteIntegrationConfigurationFactory({
         organization: meOrganizationApiResponseFactory(),
@@ -200,12 +200,12 @@ describe("debouncedActivateWelcomeMods", () => {
     let builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(1);
 
-    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1).reply(200, []);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
 
     builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
 
-    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1).reply(500);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(500);
 
     builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
@@ -234,7 +234,7 @@ describe("debouncedActivateWelcomeMods", () => {
     );
 
     axiosMock
-      .onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1)
+      .onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED)
       .reply(200, builtInIntegrationConfigs);
 
     axiosMock
@@ -370,7 +370,7 @@ describe("debouncedActivateWelcomeMods", () => {
     };
 
     axiosMock
-      .onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1)
+      .onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED)
       .reply(200, builtInIntegrationConfigs);
 
     axiosMock
@@ -415,7 +415,7 @@ describe("debouncedActivateWelcomeMods", () => {
       required: ["service"],
     };
 
-    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1).reply(200, []);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
 
     axiosMock
       .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
@@ -444,9 +444,7 @@ describe("debouncedActivateWelcomeMods", () => {
     beforeEach(() => {
       isLinkedMock.mockResolvedValue(true);
       axiosMock.resetHistory();
-      axiosMock
-        .onGet(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1)
-        .reply(200, []);
+      axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
     });
 
     function modFactory() {

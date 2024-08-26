@@ -34,25 +34,21 @@ export const API_PATHS = {
   DEPLOYMENT_ALERTS: (deploymentId: string) =>
     `/api/deployments/${deploymentId}/alerts/`,
 
-  EVENTS: "/api/events/",
-
   FEATURE_FLAGS: "/api/me/",
 
   GROUP_DATABASES: (groupId: string) => `/api/groups/${groupId}/databases/`,
 
-  IDENTIFY_USER: "/api/identify/",
-
-  INVITATIONS_ME: "/api/invitations/me/",
-
   INTEGRATIONS: "/api/services/",
   INTEGRATIONS_SHARED: "/api/services/shared/",
-  INTEGRATIONS_SHARED_PARAM_META_1: "/api/services/shared/?meta=1",
+  INTEGRATIONS_SHARED_SANITIZED: "/api/services/shared/?meta=1",
 
   MARKETPLACE_LISTINGS: "/api/marketplace/listings/",
   MARKETPLACE_TAGS: "/api/marketplace/tags/",
 
   ME: "/api/me/",
+  ME_INVITATIONS: "/api/invitations/me/",
   ME_MILESTONES: "/api/me/milestones/",
+  ME_SETTINGS: "/api/settings/",
 
   MOD: (modId: RegistryId) => `/api/recipes/${encodeURIComponent(modId)}/`,
   MOD_ACTIVATE: (modId: RegistryId, isReactivate?: boolean) =>
@@ -80,9 +76,9 @@ export const API_PATHS = {
     `/api/registry/bricks/${encodeURIComponent(id)}/`,
   REGISTRY_UPDATES: "/api/registry/updates/",
 
-  SETTINGS: "/api/settings/",
-
   TELEMETRY_ERRORS: "/api/telemetry/errors/",
+  TELEMETRY_EVENTS: "/api/events/",
+  TELEMETRY_IDENTIFY_USER: "/api/identify/",
 
   WEBHOOKS: "/api/webhooks/hooks/",
   WEBHOOKS_KEY: "/api/webhooks/key/",

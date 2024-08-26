@@ -320,7 +320,7 @@ export const appApi = createApi({
       },
     }),
     getInvitations: builder.query<PendingInvitation[], void>({
-      query: () => ({ url: API_PATHS.INVITATIONS_ME, method: "get" }),
+      query: () => ({ url: API_PATHS.ME_INVITATIONS, method: "get" }),
       providesTags: ["Invitations"],
     }),
     getZapierKey: builder.query<{ api_key: string }, void>({
@@ -387,7 +387,7 @@ export const appApi = createApi({
       Required<Pick<components["schemas"]["Settings"], "scope">>
     >({
       query: ({ scope }) => ({
-        url: API_PATHS.SETTINGS,
+        url: API_PATHS.ME_SETTINGS,
         method: "patch",
         data: { scope },
       }),

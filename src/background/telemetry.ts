@@ -256,7 +256,7 @@ async function flush(): Promise<void> {
     const events = await flushEvents();
 
     if (events.length > 0) {
-      await client.post(API_PATHS.EVENTS, {
+      await client.post(API_PATHS.TELEMETRY_EVENTS, {
         events,
       });
     }
@@ -314,7 +314,7 @@ async function init(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
 
   if (client && (await allowsTrack())) {
-    await client.post(API_PATHS.IDENTIFY_USER, {
+    await client.post(API_PATHS.TELEMETRY_IDENTIFY_USER, {
       uid: await getUUID(),
       data: await collectUserSummary(),
     });

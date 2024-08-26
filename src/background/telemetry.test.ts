@@ -33,7 +33,7 @@ const expectedManifestValues = {
 
 beforeEach(async () => {
   appApiMock.reset();
-  appApiMock.onPost(API_PATHS.EVENTS).reply(201, {});
+  appApiMock.onPost(API_PATHS.TELEMETRY_EVENTS).reply(201, {});
 
   Object.defineProperty(global, "navigator", {
     value: {

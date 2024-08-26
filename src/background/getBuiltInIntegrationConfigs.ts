@@ -32,7 +32,7 @@ export async function getBuiltInIntegrationConfigs(): Promise<
   try {
     const { data: integrationConfigs } = await client.get<
       RemoteIntegrationConfig[]
-    >(API_PATHS.INTEGRATIONS_SHARED_PARAM_META_1);
+    >(API_PATHS.INTEGRATIONS_SHARED_SANITIZED);
 
     return integrationConfigs.filter(
       (auth) => getSharingType(auth) === "built-in",
