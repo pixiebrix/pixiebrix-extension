@@ -158,7 +158,7 @@ const ModsPageActions: React.FunctionComponent<{
         title: "Edit in Workshop",
         icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
         action() {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- Checked in the 'hide' input below
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Checked in the 'hide' input below
           history.push(API_PATHS.WORKSHOP_BRICK(editablePackageId!));
         },
         hide: !showEditInWorkshop || !editablePackageId,
