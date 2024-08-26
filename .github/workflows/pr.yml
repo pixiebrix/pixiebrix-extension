@@ -56,7 +56,7 @@ jobs:
           fetch-depth: 0
       - name: Get list of changed vendored files
         id: changedfiles
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: "src/vendors/**/*.*"
       - name: Leave annotations
