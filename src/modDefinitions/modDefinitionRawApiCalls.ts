@@ -51,7 +51,7 @@ async function fetchDeploymentModDefinition({
 }: Deployment["package"]): Promise<ModDefinition> {
   const client = await getLinkedApiClient();
   const { data } = await client.get<PackageConfigDetail>(
-    API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)),
+    API_PATHS.REGISTRY_BRICK(registryId),
     { params: { version } },
   );
 

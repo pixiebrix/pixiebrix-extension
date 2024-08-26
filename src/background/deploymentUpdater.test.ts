@@ -846,11 +846,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(
-        API_PATHS.REGISTRY_BRICK(
-          encodeURIComponent(deployment.package.package_id),
-        ),
-      )
+      .onGet(API_PATHS.REGISTRY_BRICK(deployment.package.package_id))
       .reply(
         200,
         packageConfigDetailFactory({
