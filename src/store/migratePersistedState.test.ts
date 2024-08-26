@@ -28,7 +28,8 @@ describe("migratePersistedState", () => {
     expect(newState).toEqual({
       foo: "bar",
       _persist: {
-        version: 0,
+        // Redux-persist defaults to version -1
+        version: -1,
         rehydrated: true,
       },
     });
