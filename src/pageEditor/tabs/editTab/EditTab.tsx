@@ -91,6 +91,10 @@ const EditTab: React.FC<{
               name="copyNode"
               icon={faCopy}
               onClick={() => {
+                assertNotNullish(
+                  activeNodeId,
+                  "activeNodeId is required to copy a node",
+                );
                 copyBlock(activeNodeId);
               }}
               tooltipText="Copy Brick"
