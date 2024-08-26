@@ -76,7 +76,8 @@ export const API_PATHS = {
   PROXY: "/api/proxy/",
 
   REGISTRY_BRICKS: "/api/registry/bricks/",
-  REGISTRY_BRICK: (id: string) => `/api/registry/bricks/${id}/`,
+  REGISTRY_BRICK: (id: RegistryId) =>
+    `/api/registry/bricks/${encodeURIComponent(id)}/`,
   REGISTRY_UPDATES: "/api/registry/updates/",
 
   SETTINGS: "/api/settings/",

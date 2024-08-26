@@ -254,15 +254,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -281,15 +279,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -307,15 +303,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -350,15 +344,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -415,15 +407,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -458,15 +448,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     // Make sure we're testing the case where getEditorState() returns undefined
     await expect(getEditorState()).resolves.toBeUndefined();
@@ -521,15 +509,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -555,15 +541,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -602,15 +586,13 @@ describe("syncDeployments", () => {
 
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(API_PATHS.REGISTRY_BRICK(encodeURIComponent(registryId)))
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -898,11 +880,7 @@ describe("syncDeployments", () => {
     appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [updatedDeployment]);
 
     appApiMock
-      .onGet(
-        API_PATHS.REGISTRY_BRICK(
-          encodeURIComponent(deployment.package.package_id),
-        ),
-      )
+      .onGet(API_PATHS.REGISTRY_BRICK(updatedDeployment.package.package_id))
       .reply(
         200,
         packageConfigDetailFactory({

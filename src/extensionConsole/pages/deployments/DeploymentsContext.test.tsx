@@ -55,11 +55,7 @@ const mockDeploymentActivationRequests = (
 ) => {
   axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, [deployment]);
   axiosMock
-    .onGet(
-      API_PATHS.REGISTRY_BRICK(
-        encodeURIComponent(deployment.package.package_id),
-      ),
-    )
+    .onGet(API_PATHS.REGISTRY_BRICK(deployment.package.package_id))
     .reply(
       200,
       packageConfigDetailFactory({
