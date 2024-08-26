@@ -17,6 +17,7 @@
 
 // noinspection ES6PreferShortImport -- Override mock
 import { fetchFeatureFlags } from "../../../auth/featureFlagStorage";
+import { mapRestrictedFeatureToFeatureFlag } from "@/auth/featureFlags";
 
 let flags: string[] | null = null;
 
@@ -45,8 +46,16 @@ export async function TEST_deleteFeatureFlagsCache(
 
 // Wrapped in jest.fn() so test file can check if it's using the mock or not.
 export const flagOn = jest.fn().mockImplementation(async (flag: string) => {
-  if (flags === null) {
+  if (flags == null) {
     flags = await fetchFeatureFlags();
   }
   return flags?.includes(flag) ?? false;
+});
+
+// Wrapped in jest.fn() so test file can check if it's using the mock or not.
+export const restrict = jest.fn().mockImplementation(async (area: string) => {
+  if (flags == null) {
+    flags = await fetchFeatureFlags();
+  }
+  return flags?.includes(mapRestrictedFeatureToFeatureFlag(area)) ?? false;
 });
