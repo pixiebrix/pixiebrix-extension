@@ -112,7 +112,7 @@ function commonAttribute(items: Element[], attribute: string) {
     const classNames = attributeValues.map((x) => (x ? x.split(" ") : []));
     unfiltered = intersection(...classNames);
   } else if (uniq(attributeValues).length === 1) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
     unfiltered = attributeValues[0]!.split(" ");
   } else {
     // Single attribute doesn't match
@@ -179,7 +179,7 @@ function removeUnstyledLayout(node: Node): Node | null {
       isNullOrBlank(element.className) &&
       nonEmptyChildren.length === 1
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
       return removeUnstyledLayout(nonEmptyChildren[0]!);
     }
 
@@ -500,11 +500,11 @@ export function inferPanelHTML(
 
   if (selected.length > 1) {
     const children = containerChildren($container, selected);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
     return commonPanelHTML(selected[0]!.tagName, $(children));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
   return inferSinglePanelHTML(container, selected[0]!);
 }
 
@@ -527,7 +527,7 @@ export function inferButtonHTML(
     return commonButtonHTML(tag, children);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
   const element = selected[0]!;
   for (const buttonTag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
     const $items = $container.children(buttonTag);

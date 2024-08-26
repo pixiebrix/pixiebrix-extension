@@ -76,7 +76,7 @@ export const test = base.extend<
     }
 
     const temporaryProfileDirectory = await fs.mkdtemp(
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- checked above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
       path.join(path.dirname(authSetupProfileDirectory!), "e2e-test-"),
     );
     // Copy the auth setup profile to a new temp directory to avoid modifying the original auth profile

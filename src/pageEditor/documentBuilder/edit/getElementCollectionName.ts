@@ -36,7 +36,7 @@ function getElementCollectionName(elementName: string): {
   );
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by the regexp
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Guaranteed by the regexp
     collectionName: match.collectionName!,
     elementIndex: Number(match.elementIndex),
   };

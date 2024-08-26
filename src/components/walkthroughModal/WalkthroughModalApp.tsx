@@ -153,7 +153,7 @@ const WalkthroughModalApp: React.FunctionComponent = () => {
   const openerParam = params.get("opener");
   assertNotNullish(openerParam, "Can't find opener URL parameter");
   const opener = JSON.parse(openerParam) as Target;
-  // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- steps are constants defined in this file, and logic will never allow this to go out of bounds
+  // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-non-null-assertion -- steps are constants defined in this file, and logic will never allow this to go out of bounds
   const currentStep = steps[stepIndex]!;
 
   useEffect(() => {

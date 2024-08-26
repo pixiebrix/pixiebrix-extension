@@ -104,7 +104,7 @@ function integrationResolverFactory({
         throw new Error(`Invalid integration URL ${file.url}`);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- linter and compiler disagree
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- linter and compiler disagree
       const integrationId = result.pathname.groups.id!;
 
       try {
@@ -356,13 +356,13 @@ export function validatePackageDefinition(
   // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
   const schemaWithMetadata = cloneDeep(originalSchema);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- `properties` is always defined on these schemas
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `properties` is always defined on these schemas
   schemaWithMetadata.properties!.updated_at = {
     type: "string",
     format: "date-time",
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- `properties` is always defined on these schemas
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `properties` is always defined on these schemas
   schemaWithMetadata.properties!.sharing = {
     // Exact metadata shape doesn't matter for definition validation
     type: "object",

@@ -331,7 +331,7 @@ async function _performConfiguredRequest(
     });
 
     throw (
-      error ??
+      (error as Error) ??
       new Error("Unknown error making request from the background page")
     );
   }

@@ -111,7 +111,7 @@ test("create, run, package, and update mod", async ({
   });
 
   await test.step("View and update mod in the Workshop", async () => {
-    const workshopPage = new WorkshopPage(newPage, extensionId);
+    const workshopPage = new WorkshopPage(newPage!, extensionId);
     await workshopPage.goto();
     const editWorkshopModPage = await workshopPage.findAndSelectMod(modId);
     await editWorkshopModPage.editor.findAndReplaceText(
@@ -126,7 +126,7 @@ test("create, run, package, and update mod", async ({
   });
 
   await test.step("View the updated mod on the mods page", async () => {
-    const modsPage = new ModsPage(newPage, extensionId);
+    const modsPage = new ModsPage(newPage!, extensionId);
     await modsPage.goto();
 
     await modsPage.viewActiveMods();
@@ -134,7 +134,7 @@ test("create, run, package, and update mod", async ({
     await expect(modTableItem.getByText("version 1.0.1")).toBeVisible();
     await modTableItem.clickAction("Reactivate");
 
-    const modActivatePage = new ActivateModPage(newPage, extensionId, modId);
+    const modActivatePage = new ActivateModPage(newPage!, extensionId, modId);
 
     await expect(modActivatePage.locator("form")).toContainText(
       "Created through Playwright Automation",

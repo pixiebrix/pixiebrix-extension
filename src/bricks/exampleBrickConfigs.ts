@@ -136,7 +136,7 @@ export function getExampleBrickConfig(
         textElement.config.text =
           "Example step content. **Markdown** is supported.";
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know this is safe
         containerElement.children![0]!.children![0]!.children!.push(
           textElement,
         );
@@ -148,13 +148,13 @@ export function getExampleBrickConfig(
 
       // Creating container with 2 rows and 1 column in each row
       const containerElement = createNewDocumentBuilderElement("container");
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know this is safe
       containerElement.children!.push(createNewDocumentBuilderElement("row"));
 
       // Adding Header to the first row
       const headerElement = createNewDocumentBuilderElement("header");
       headerElement.config.title = "Example document";
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know this is safe
       containerElement.children![0]!.children![0]!.children!.push(
         headerElement,
       );
@@ -163,7 +163,7 @@ export function getExampleBrickConfig(
       const textElement = createNewDocumentBuilderElement("text");
       textElement.config.text =
         "Example text element. **Markdown** is supported.";
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- we know this is safe
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know this is safe
       containerElement.children![1]!.children![0]!.children!.push(textElement);
 
       return {

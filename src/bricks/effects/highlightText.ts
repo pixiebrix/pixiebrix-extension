@@ -142,7 +142,7 @@ class HighlightText extends EffectABC {
     { root = document }: BrickOptions,
   ): Promise<void> {
     // Don't make replacements outside the `body`, like in `title`
-    const { body } = root.ownerDocument ?? (root as Document);
+    const { body } = root.ownerDocument ?? root;
     if (root.contains(body)) {
       root = body;
     }

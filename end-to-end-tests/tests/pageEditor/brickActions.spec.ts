@@ -36,8 +36,8 @@ test("brick actions panel behavior", async ({
     "Longer test due to verifying each brick action in one user flow",
   );
 
-  const { id: modId } = modDefinitionsMap[testModDefinitionName];
-  const { id: otherModId } = modDefinitionsMap[otherTestMod];
+  const { id: modId } = modDefinitionsMap[testModDefinitionName]!;
+  const { id: otherModId } = modDefinitionsMap[otherTestMod]!;
   let pageEditorPage: PageEditorPage;
 
   await test.step("Activate mods, and initialize page editor", async () => {
@@ -52,7 +52,7 @@ test("brick actions panel behavior", async ({
     pageEditorPage = await newPageEditorPage(page.url());
   });
 
-  const { brickActionsPanel } = pageEditorPage;
+  const { brickActionsPanel } = pageEditorPage!;
   await test.step("Select the mod in the page editor and verify brick actions panel is hidden", async () => {
     const modListItem =
       pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
@@ -103,7 +103,7 @@ test("brick actions panel behavior", async ({
   });
 
   await test.step("Copy a brick from one mod to another", async () => {
-    const targetModId = modDefinitionsMap[otherTestMod].id;
+    const targetModId = modDefinitionsMap[otherTestMod]!.id;
 
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").select();
     await brickActionsPanel.copyActiveBrick();

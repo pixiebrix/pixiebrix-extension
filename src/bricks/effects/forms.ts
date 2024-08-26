@@ -261,7 +261,7 @@ export class FormFill extends EffectABC {
     if (typeof submit === "boolean") {
       if (submit) {
         if (!$form.is("form")) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Validated above
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Validated above
           const form = $form.get(0)!;
 
           if (form instanceof Document) {

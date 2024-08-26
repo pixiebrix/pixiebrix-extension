@@ -62,7 +62,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- 2d always exists
     const canvasContext = canvas.getContext("2d")!;
 
     canvas.width = crop.width * pixelRatio * scaleX;

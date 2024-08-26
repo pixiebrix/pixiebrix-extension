@@ -96,9 +96,9 @@ export const makeUpdatedFilter =
     if (
       modMatch &&
       gte(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- modMatch is checked above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- modMatch is checked above
         modMatch._recipe!.version!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- deployment package is checked above
         deployment.package.version!,
       )
     ) {
@@ -167,7 +167,7 @@ export function selectInstalledDeployments(
       .map(
         (x) =>
           ({
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- _deployment is checked above
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- _deployment is checked above
             deployment: x._deployment!.id,
             blueprint: x._recipe?.id,
             blueprintVersion: x._recipe?.version,

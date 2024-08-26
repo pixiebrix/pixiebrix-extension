@@ -95,7 +95,6 @@ function AsyncStateGate<Data>(
     throw error;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- at this point, the data can only be null/undefined if Data is explicitly set to be nullable
   const dataResult = data as Data;
   return <>{children({ data: dataResult })}</>;
 }

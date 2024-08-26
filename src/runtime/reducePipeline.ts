@@ -771,7 +771,7 @@ export async function brickReducer(
 
   // Above we had wrapped the call to renderBrickArg in a try-catch to always have an entry trace entry
   if (renderError) {
-    throw renderError;
+    throw renderError as Error;
   }
 
   const props: BrickProps = {

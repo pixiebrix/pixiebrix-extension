@@ -1,5 +1,5 @@
 /*
-eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  --
+eslint-disable @typescript-eslint/no-non-null-assertion  --
 "Every property exists" (via Proxy), TypeScript doesn't offer such type
 Also strictNullChecks config mismatch */
 /*

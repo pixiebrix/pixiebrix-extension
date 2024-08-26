@@ -35,7 +35,7 @@ export function transformPartnerPrincipalResponse(
   return {
     controlRoomUserId: response.control_room_user_id,
     // Can assume a control room response will always have a url
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- validated in the back end code that this will always be populated
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- validated in the back end code that this will always be populated
     controlRoomUrl: new URL(response.control_room_url!),
   };
 }

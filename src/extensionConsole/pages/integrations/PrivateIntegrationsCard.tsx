@@ -29,11 +29,13 @@ import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import PackageIcon from "@/components/PackageIcon";
 import {
+  type SecretsConfig,
   type Integration,
   type IntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import { type RegistryId } from "@/types/registryTypes";
 
 type TableData = {
   integration: Integration;
@@ -53,7 +55,7 @@ type OwnProps = {
   /**
    * Force page to show integration config with id
    */
-  forceShowIntegrationConfigId?: UUID;
+  forceShowIntegrationConfigId: UUID | null;
 };
 
 const Actions: React.VoidFunctionComponent<{
@@ -167,11 +169,11 @@ const dataFactory = ({
 }): TableData[] => [
   {
     label: "Zapier - use to connect to PixieBrix from Zapier",
-    integrationId: null,
+    integrationId: null as unknown as RegistryId,
     _rawIntegrationConfigBrand: null,
-    id: null,
-    config: null,
-    integration: null,
+    id: null as unknown as UUID,
+    config: null as unknown as SecretsConfig,
+    integration: null as unknown as Integration,
   },
   ...integrationConfigs.map((integrationConfig) => {
     const integration = integrations.find(
@@ -215,13 +217,14 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
     [integrationConfigs, integrations],
   );
 
-  const forceShowRecord: (config: IntegrationConfig) => boolean = useMemo(
-    () =>
-      forceShowIntegrationConfigId
-        ? ({ id }) => id === forceShowIntegrationConfigId
-        : null,
-    [forceShowIntegrationConfigId],
-  );
+  const forceShowRecord: ((config: IntegrationConfig) => boolean) | undefined =
+    useMemo(
+      () =>
+        forceShowIntegrationConfigId
+          ? ({ id }) => id === forceShowIntegrationConfigId
+          : undefined,
+      [forceShowIntegrationConfigId],
+    );
 
   return (
     <PaginatedTable<TableData>

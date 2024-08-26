@@ -95,7 +95,7 @@ const PackageDetail = <T extends PackageInstance>({
 
   const copyHandler = useUserAction(
     async () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- see ternary above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- see ternary above
       await writeToClipboard({ text: makeArgumentYaml(schema!) });
     },
     {

@@ -604,7 +604,7 @@ export const editorSlice = createSlice({
       }
 
       const modComponentFormState =
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
         state.modComponentFormStates[modComponentFormStateIndex]!;
 
       const newId = uuidv4();
@@ -649,7 +649,7 @@ export const editorSlice = createSlice({
       }
 
       const modComponentFormState =
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
         state.modComponentFormStates[modComponentFormStateIndex]!;
       assertNotNullish(
         modComponentFormState.modMetadata,

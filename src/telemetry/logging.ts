@@ -482,7 +482,7 @@ export async function getLoggingConfig(): Promise<LoggingConfig> {
     return lastValue;
   } catch {
     // The context was probably invalidated. Logging utilities shouldn't throw errors
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Incomplete types
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Incomplete types
     return lastValue ?? loggingConfig.defaultValue!;
   }
 }

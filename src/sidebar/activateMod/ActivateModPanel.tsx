@@ -393,7 +393,7 @@ const ActivateModPanel: React.FC<{ mod: ModActivationConfig }> = ({ mod }) => {
 
   return (
     <RequireMods mods={memoizedMods}>
-      {/* eslint-disable-next-line  @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Wrapped in RequireMods */}
+      {/* eslint-disable-next-line  @typescript-eslint/no-non-null-assertion -- Wrapped in RequireMods */}
       {(modDefinitions) => <ActivateModWizardPanel {...modDefinitions[0]!} />}
     </RequireMods>
   );

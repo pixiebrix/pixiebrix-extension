@@ -107,7 +107,7 @@ async function initErrorReporter(
           // Include the slash because location.origin does not have a trailing slash but the ENV does
           location.origin + "/",
 
-          /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+          /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           -- Webpack enforces its presence */
           process.env.SOURCE_MAP_PUBLIC_PATH!,
         );
