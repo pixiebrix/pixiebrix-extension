@@ -375,4 +375,22 @@ describe("migratePersistedState", () => {
       },
     });
   });
+
+  it("handles state with default version -1", () => {
+    const state = {
+      foo: "bar",
+      _persist: {
+        version: -1,
+        rehydrated: false,
+      },
+    };
+    const newState = migratePersistedState(state, {});
+    expect(newState).toEqual({
+      foo: "bar",
+      _persist: {
+        version: -1,
+        rehydrated: true,
+      },
+    });
+  });
 });

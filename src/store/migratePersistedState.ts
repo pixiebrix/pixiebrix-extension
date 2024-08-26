@@ -21,7 +21,8 @@ import { isEmpty } from "lodash";
 
 export function getMaxMigrationsVersion(migrations: MigrationManifest): number {
   if (isEmpty(migrations)) {
-    return 0;
+    // Redux-persist defaults the state to version -1 when there are no migrations
+    return -1;
   }
 
   return Math.max(...Object.keys(migrations).map(Number));
