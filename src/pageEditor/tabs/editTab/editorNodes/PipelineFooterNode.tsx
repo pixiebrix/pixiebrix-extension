@@ -28,7 +28,7 @@ import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessa
 import ClickableElement from "@/components/ClickableElement";
 
 export type PipelineFooterNodeProps = {
-  outputKey: OutputKey;
+  outputKey?: OutputKey;
   nodeActions: NodeAction[];
   showBiggerActions?: boolean;
   trailingMessage?: string;

@@ -63,7 +63,6 @@ const RemoteMethodOptions: React.FunctionComponent<
 
   return (
     <div>
-      {}
       <SchemaField
         name={configName("url")}
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required

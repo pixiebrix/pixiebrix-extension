@@ -21,7 +21,7 @@ import styles from "./OutputKeyView.module.scss";
 import cx from "classnames";
 
 const OutputKeyView: React.VFC<{
-  outputKey: OutputKey;
+  outputKey?: OutputKey;
   className?: string;
 }> = ({ outputKey, className }) =>
   outputKey ? (

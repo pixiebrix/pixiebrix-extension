@@ -430,7 +430,7 @@ const usePipelineNodes = (): {
           blockAnnotations,
         }),
         brickLabel: isNullOrBlank(blockConfig.label)
-          ? block?.name
+          ? block.name
           : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked by isNullOrBlank
             blockConfig.label!,
         brickSummary: getBrickPipelineNodeSummary(blockConfig),
@@ -583,11 +583,6 @@ const usePipelineNodes = (): {
 
         modComponentHasTraces ||= subPipelineHasTraces;
       }
-
-      assertNotNullish(
-        blockConfig.outputKey,
-        "outputKey is required for footer",
-      );
 
       const footerNodeProps: PipelineFooterNodeProps = {
         outputKey: blockConfig.outputKey,
