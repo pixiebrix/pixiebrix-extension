@@ -53,10 +53,10 @@ export async function insertButton(
     // if the parent is BUTTON, the user probably just selected the wrong thing
     if (
       selected.length === 1 &&
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check
       ["A", "BUTTON"].includes(selected[0]!.parentElement?.tagName ?? "")
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- verified above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- verified above
       selected = [selected[0]!.parentElement!];
     }
   }

@@ -25,7 +25,6 @@ import { Alert } from "react-bootstrap";
 import { isTemplateExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { type Schema } from "@/types/schemaTypes";
 
 export const REMOTE_METHOD_ID = validateRegistryId("@pixiebrix/http");
 
@@ -64,34 +63,39 @@ const RemoteMethodOptions: React.FunctionComponent<
 
   return (
     <div>
-      {/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks requires the cast */}
       <SchemaField
         name={configName("url")}
-        schema={inputProperties.url as Schema}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required
+        schema={inputProperties.url!}
         isRequired
       />
       <SchemaField
         name={configName("service")}
-        schema={inputProperties.service as Schema}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required
+        schema={inputProperties.service!}
       />
       <SchemaField
         name={configName("method")}
-        schema={inputProperties.method as Schema}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required
+        schema={inputProperties.method!}
       />
       <SchemaField
         name={configName("params")}
-        schema={inputProperties.params as Schema}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required
+        schema={inputProperties.params!}
       />
       <SchemaField
         name={configName("headers")}
-        schema={inputProperties.headers as Schema}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required
+        schema={inputProperties.headers!}
       />
       <SchemaField
         name={dataFieldName}
-        schema={inputProperties.data as Schema}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inputProperties is required
+        schema={inputProperties.data!}
         defaultType="object"
       />
-      {/* eslint-enable @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks requires the cast */}
+      {}
       {showJsonWarning && (
         <Alert variant="warning">
           <p>

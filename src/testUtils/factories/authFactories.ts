@@ -101,7 +101,6 @@ export const authStateFactory = define<AuthState>({
     ];
   },
   organization: derive<AuthState, OrganizationAuthState>(
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Entries defined above, this is non-null, non-empty
     ({ organizations }) => organizations![0]!,
     "organizations",
   ),

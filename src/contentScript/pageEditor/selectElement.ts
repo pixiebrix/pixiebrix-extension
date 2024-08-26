@@ -90,7 +90,7 @@ export default async function selectElement({
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- at least one element must be present
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- at least one element must be present
       const element = elements[0]!;
       // At least one must match, otherwise userSelectElement would have thrown
       activeRoot =

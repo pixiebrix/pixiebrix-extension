@@ -107,7 +107,7 @@ function useDeployments(): DeploymentsState {
 
   const deploymentsState = useGetDeploymentsQuery(
     {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- see skip
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- see skip
       uid: browserIdentifier!,
       version: getExtensionVersion(),
       active: activeDeployments,

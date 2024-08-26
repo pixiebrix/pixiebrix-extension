@@ -423,7 +423,7 @@ const Tabs: React.FC = () => {
                   }}
                 >
                   {modActivationPanel.mods.length === 1 ? (
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check
                     <ActivateModPanel mod={modActivationPanel.mods[0]!} />
                   ) : (
                     <ActivateMultipleModsPanel mods={modActivationPanel.mods} />

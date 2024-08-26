@@ -260,7 +260,7 @@ export function defaultMenuOption(
     // Must always have at least one option (e.g., the `@input`)
     // Prefer the last option, because that's the latest output
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
     const vars = reversedOptions[0]![1];
     const first = Object.keys(vars)[0];
 

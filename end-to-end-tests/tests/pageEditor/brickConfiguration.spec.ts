@@ -31,7 +31,7 @@ test("brick configuration", async ({
   newPageEditorPage,
   verifyModDefinitionSnapshot,
 }) => {
-  const { id: modId } = modDefinitionsMap[testModDefinitionName];
+  const { id: modId } = modDefinitionsMap[testModDefinitionName]!;
   let pageEditorPage: PageEditorPage;
   let brickConfigurationPanel: ConfigurationForm;
 
@@ -121,7 +121,7 @@ test("brick configuration", async ({
     await brickConfigurationPanel.clickShortcut("Sites/APIs", "All URLs");
   });
 
-  await pageEditorPage.saveActiveMod();
+  await pageEditorPage!.saveActiveMod();
 
   await verifyModDefinitionSnapshot({
     modId,

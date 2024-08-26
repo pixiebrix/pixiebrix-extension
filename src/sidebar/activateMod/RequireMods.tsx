@@ -193,7 +193,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
 
   // Throw error to hit error boundary
   if (state.isError) {
-    throw state.error ?? new Error("Error retrieving mods");
+    throw (state.error as Error) ?? new Error("Error retrieving mods");
   }
 
   if (state.isLoading) {

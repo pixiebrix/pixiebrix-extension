@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison -- It seems to be the correct option for now */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *

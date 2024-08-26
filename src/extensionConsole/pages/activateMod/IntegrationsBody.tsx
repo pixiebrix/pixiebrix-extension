@@ -79,7 +79,7 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
       return false;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- authOptions has a fallback value
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- authOptions has a fallback value
     const configurationOptions = authOptions!.filter(
       (option) => option.serviceId === integrationId,
     );
@@ -92,7 +92,7 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
     if (hideBuiltInIntegrations) {
       // Show the field if there are options for the service that are not built-in
       return (
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- authOptions has a fallback value
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- authOptions has a fallback value
         authOptions!.some(
           (option) =>
             option.serviceId === integrationId &&

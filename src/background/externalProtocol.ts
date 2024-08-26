@@ -57,7 +57,7 @@ function allowBackgroundSender(
   return (
     sender.id === browser.runtime.id ||
     ("origin" in sender &&
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We have it
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We have it
       patternToRegex(...externally_connectable!.matches!).test(sender.origin!))
   );
 }

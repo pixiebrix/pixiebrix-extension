@@ -121,7 +121,7 @@ test("Add new starter brick", async ({
     await expect(page).toHaveURL(templatesGalleryUrl);
     const pageRequest = await pageRequestPromise;
     const pageRequestResponse = await pageRequest.response();
-    expect(pageRequestResponse.status()).toBe(200);
+    expect(pageRequestResponse!.status()).toBe(200);
   });
 });
 

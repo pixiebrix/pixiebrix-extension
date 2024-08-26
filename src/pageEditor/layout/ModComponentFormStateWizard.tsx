@@ -40,7 +40,7 @@ const LOG_STEP_NAME = "Logs";
 const wizard: WizardStep[] = [
   { step: EDIT_STEP_NAME, Component: EditTab },
   { step: LOG_STEP_NAME, Component: LogsTab },
-];
+] as const;
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -61,7 +61,8 @@ const WizardNavItem: React.FunctionComponent<{
 const ModComponentFormStateWizard: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
-  const [step, setStep] = useState(wizard[0].step);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Hardcoded to have exactly 2 steps
+  const [step, setStep] = useState(wizard[0]!.step);
 
   const { isValid, status, handleReset } =
     useFormikContext<ModComponentFormState>();

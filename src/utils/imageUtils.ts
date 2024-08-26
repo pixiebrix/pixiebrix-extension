@@ -51,7 +51,7 @@ function paintImageOntoNewCanvas(image: HTMLImageElement): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- 2d always exists
   const context = canvas.getContext("2d")!;
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas;
@@ -66,7 +66,7 @@ async function getBase64FromImageViaCanvas(
   const canvas = paintImageOntoNewCanvas(image);
   const dataURL = canvas.toDataURL("image/png");
   const parsed = parseDataUrl(dataURL);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The browser just generated it, it's safe. If it fails, then it's likely a bug in `parseDataUrl` and it should be fixed.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The browser just generated it, it's safe. If it fails, then it's likely a bug in `parseDataUrl` and it should be fixed.
   return parsed!.encodedBody;
 }
 

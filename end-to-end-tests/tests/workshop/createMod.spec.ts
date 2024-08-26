@@ -30,7 +30,7 @@ test("can create a new mod from a yaml definition and update it", async ({
   verifyModDefinitionSnapshot,
 }) => {
   // Test uses the modDefinitionNames fixture to automatically create the mod definition
-  const { id } = modDefinitionsMap[testModName];
+  const { id } = modDefinitionsMap[testModName]!;
 
   const workshopPage = new WorkshopPage(page, extensionId);
   await workshopPage.goto();

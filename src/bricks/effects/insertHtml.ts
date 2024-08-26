@@ -118,7 +118,7 @@ class InsertHtml extends EffectABC {
     for (const anchorElement of anchorElements.get()) {
       try {
         anchorElement.insertAdjacentHTML(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- map is exhaustive
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- map is exhaustive
           POSITION_MAP.get(position)!,
           sanitizedElement.outerHTML,
         );

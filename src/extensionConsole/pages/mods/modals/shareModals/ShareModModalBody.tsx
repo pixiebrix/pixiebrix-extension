@@ -131,7 +131,7 @@ const ShareModModalBody: React.FunctionComponent = () => {
         isSingleObjectBadRequestError(error) &&
         Number(error.response.data.config?.length) > 0
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Length check above
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Length check above
         helpers.setStatus(error.response.data.config!.join(" "));
         return;
       }

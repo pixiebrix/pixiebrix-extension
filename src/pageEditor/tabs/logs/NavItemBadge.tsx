@@ -37,7 +37,7 @@ const NavItemBadge: React.VoidFunctionComponent = () => {
     ["error", "danger"],
     ["warning", "warning"],
   ]) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- constant levels above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- constant levels above
     const numLevel = unreadByLevels[level!];
     if (numLevel) {
       return (

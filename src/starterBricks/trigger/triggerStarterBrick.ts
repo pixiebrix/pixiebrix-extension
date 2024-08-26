@@ -468,7 +468,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    */
   private markRun(modComponentId: UUID, element: TriggerTarget): void {
     if (this.runningModComponentElements.has(modComponentId)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- .has() check
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- .has() check
       this.runningModComponentElements.get(modComponentId)!.add(element);
     } else {
       this.runningModComponentElements.set(modComponentId, new Set([element]));

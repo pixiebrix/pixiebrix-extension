@@ -43,8 +43,6 @@ const knipConfig = {
     "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
-    // Type-only strictNullChecks helper
-    "src/types/typeOnlyMessengerRegistration.ts",
     "end-to-end-tests/**",
 
     // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli

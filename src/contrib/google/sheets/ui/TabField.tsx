@@ -78,7 +78,7 @@ const TabField: React.FC<
     }
 
     // Remaining cases are either empty expression or invalid, selected tab name, so set to first tab name
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
     await setTabName(tabNames[0]!);
   }, [spreadsheet?.spreadsheetId, allTabNames]);
 

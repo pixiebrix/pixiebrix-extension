@@ -59,7 +59,7 @@ export async function launchAuthIntegration({
     console.warn("Multiple local configurations found for: %s", integration.id);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- just checked array length
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- just checked array length
   const authId = localAuths[0]!.id;
 
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_INTEGRATION_ID, they'll be the same
