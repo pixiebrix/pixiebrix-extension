@@ -47,7 +47,7 @@ function guessDirection(
   table: HTMLTableElement,
 ): ParsingOptions["orientation"] {
   const labelRatio =
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Empty tables are filtered out early
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Empty tables are filtered out early
     table.rows[0]!.querySelectorAll("th").length /
     table.querySelectorAll("th").length;
   return labelRatio < 0.5 ? "horizontal" : "vertical";
@@ -127,7 +127,7 @@ function extractData(
   const textTable = table.map((row) => row.map((cell) => cell.value));
   if (hasHeader) {
     const [headers, ...body] = textTable;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Empty tables are filtered out early
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Empty tables are filtered out early
     return { fieldNames: headers!, body };
   }
 

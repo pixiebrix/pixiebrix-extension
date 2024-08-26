@@ -111,7 +111,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
 
       const { interpretValue } = option;
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --  Already handled "omit" and returned above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion --  Already handled "omit" and returned above
       await setValue(interpretValue!(value));
       setFocusInput(true);
     },
@@ -162,7 +162,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
 
       assertNotNullish(selectedOption, `Option not found for ${inputMode}`);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Already handled "omit" by limiting to var or string
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Already handled "omit" by limiting to var or string
       await setValue(selectedOption.interpretValue!(newValue));
     },
     [inputMode, selectedOption, setValue],

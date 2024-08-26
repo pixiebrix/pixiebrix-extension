@@ -257,7 +257,7 @@ async function addABlock(addButton: Element, blockName: string) {
   await immediateUserEvent.click(
     screen.getAllByRole("button", {
       name: /^Add/,
-    })[0],
+    })[0]!,
   );
 }
 
@@ -269,12 +269,12 @@ describe("renders", () => {
 
   test("the first selected node", async () => {
     const formState = getSidebarPanelPlainFormState();
-    const { instanceId } = formState.modComponent.brickPipeline[0];
+    const { instanceId } = formState.modComponent.brickPipeline[0]!;
     const { asFragment } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        dispatch(editorActions.setActiveNodeId(instanceId));
+        dispatch(editorActions.setActiveNodeId(instanceId!));
       },
     });
 
@@ -320,7 +320,7 @@ describe("can add a node", () => {
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
-    const last = addButtons.at(-1);
+    const last = addButtons.at(-1)!;
     await addABlock(last, "jq - json processor");
 
     const nodes = screen.getAllByTestId("editor-node");
@@ -409,9 +409,9 @@ describe("can add a node", () => {
     const activeModComponentFormState =
       selectActiveModComponentFormState(reduxState);
     const jqNodeId = (
-      activeModComponentFormState.modComponent.brickPipeline[1].config
+      activeModComponentFormState!.modComponent.brickPipeline[1]!.config
         .body as PipelineExpression
-    ).__value__[0].instanceId;
+    ).__value__[0]!.instanceId;
     const addButtonInSubPipeline = screen.getByTestId(
       `icon-button-${jqNodeId}-add-brick`,
     );
@@ -432,7 +432,7 @@ describe("can add a node", () => {
 async function renderEditorPaneWithBasicFormState() {
   const modComponentFormState = getFormStateWithSubPipelines();
   const activeNodeId =
-    modComponentFormState.modComponent.brickPipeline[0].instanceId;
+    modComponentFormState.modComponent.brickPipeline[0]!.instanceId;
   const utils = render(
     <div>
       <EditorPane />
@@ -444,7 +444,7 @@ async function renderEditorPaneWithBasicFormState() {
         dispatch(
           editorActions.setActiveModComponentId(modComponentFormState.uuid),
         );
-        dispatch(editorActions.setActiveNodeId(activeNodeId));
+        dispatch(editorActions.setActiveNodeId(activeNodeId!));
       },
     },
   );
@@ -458,7 +458,7 @@ describe("can remove a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the first Echo brick
-    await immediateUserEvent.click(screen.getAllByText(/echo/i)[0]);
+    await immediateUserEvent.click(screen.getAllByText(/echo/i)[0]!);
 
     // Click the remove button
     await immediateUserEvent.click(
@@ -477,7 +477,7 @@ describe("can remove a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the second Echo block
-    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[1]);
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[1]!);
 
     // Click the remove button
     await immediateUserEvent.click(
@@ -504,7 +504,7 @@ describe("can move a node up", () => {
     expect(moveUpButtons[0]).toBeDisabled();
     // Click the second one
     expect(moveUpButtons[1]).not.toBeDisabled();
-    await immediateUserEvent.click(moveUpButtons[1]);
+    await immediateUserEvent.click(moveUpButtons[1]!);
 
     // Expect nodes to now be: Foundation, ForEach: [Echo], Echo
     const nodes = screen.getAllByTestId("editor-node");
@@ -522,7 +522,7 @@ describe("can move a node up", () => {
     const addButtons = screen.getAllByTestId(/-add-brick/i);
     expect(addButtons).toHaveLength(5);
     // Click the second-to-last one to add a brick to the sub-pipeline
-    await addABlock(addButtons[3], "jq - json processor");
+    await addABlock(addButtons[3]!, "jq - json processor");
     // Nodes should be: Foundation, Echo, ForEach: [Echo, JQ]
     // There should be 4 move up buttons
     const moveUpButtons = screen.getAllByTitle("Move brick higher");
@@ -530,7 +530,7 @@ describe("can move a node up", () => {
     // First one in sub-pipeline, second-to-last, should be disabled
     expect(moveUpButtons[2]).toBeDisabled();
     // Click the last one, last in sub-pipeline
-    await immediateUserEvent.click(moveUpButtons[3]);
+    await immediateUserEvent.click(moveUpButtons[3]!);
     // Expect nodes to be: Foundation, Echo, ForEach: [JQ, Echo]
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(5);
@@ -555,7 +555,7 @@ describe("can move a node down", () => {
     expect(moveDownButtons[1]).toBeDisabled();
     // Click the first one
     expect(moveDownButtons[0]).not.toBeDisabled();
-    await immediateUserEvent.click(moveDownButtons[0]);
+    await immediateUserEvent.click(moveDownButtons[0]!);
 
     // Expect nodes to now be: Foundation, ForEach: [Echo], Echo
     const nodes = screen.getAllByTestId("editor-node");
@@ -573,7 +573,7 @@ describe("can move a node down", () => {
     const addButtons = screen.getAllByTestId(/-add-brick/i);
     expect(addButtons).toHaveLength(5);
     // Click the second-to-last one to add a brick to the sub-pipeline
-    await addABlock(addButtons[3], "jq - json processor");
+    await addABlock(addButtons[3]!, "jq - json processor");
     // Nodes should be: Foundation, Echo, ForEach: [Echo, JQ]
     // There should be 4 move down buttons
     const moveDownButtons = screen.getAllByTitle("Move brick lower");
@@ -581,7 +581,7 @@ describe("can move a node down", () => {
     // Last one should be disabled
     expect(moveDownButtons[3]).toBeDisabled();
     // Click the second-to-last one, first in sub pipeline
-    await immediateUserEvent.click(moveDownButtons[2]);
+    await immediateUserEvent.click(moveDownButtons[2]!);
     // Expect nodes to be: Foundation, Echo, ForEach: [JQ, Echo]
     const nodes = screen.getAllByTestId("editor-node");
     expect(nodes).toHaveLength(5);
@@ -600,7 +600,7 @@ describe("can copy and paste a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the first Echo brick
-    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]);
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]!);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -609,7 +609,7 @@ describe("can copy and paste a node", () => {
     const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
     expect(pasteButtons).toHaveLength(5);
     // Click the last one
-    await immediateUserEvent.click(pasteButtons[4]);
+    await immediateUserEvent.click(pasteButtons[4]!);
 
     // Expect nodes to be: Foundation, Echo, ForEach: [Echo], Echo
     const nodes = screen.getAllByTestId("editor-node");
@@ -625,7 +625,7 @@ describe("can copy and paste a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the first Echo brick
-    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]);
+    await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[0]!);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -634,7 +634,7 @@ describe("can copy and paste a node", () => {
     const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
     expect(pasteButtons).toHaveLength(5);
     // Click the second-to-last one to paste the brick inside the sub pipeline
-    await immediateUserEvent.click(pasteButtons[3]);
+    await immediateUserEvent.click(pasteButtons[3]!);
 
     // Expect nodes to be: Foundation, Echo, ForEach: [Echo, Echo]
     const nodes = screen.getAllByTestId("editor-node");
@@ -650,7 +650,7 @@ describe("can copy and paste a node", () => {
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
     // Select the ForEach brick
-    await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]);
+    await immediateUserEvent.click(screen.getAllByText(/for-each loop/i)[0]!);
 
     // Click the copy button
     await immediateUserEvent.click(screen.getByTestId("icon-button-copyNode"));
@@ -659,7 +659,7 @@ describe("can copy and paste a node", () => {
     const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
     expect(pasteButtons).toHaveLength(5);
     // Click the last one
-    await immediateUserEvent.click(pasteButtons[4]);
+    await immediateUserEvent.click(pasteButtons[4]!);
 
     // Expect nodes to be: Foundation, Echo, ForEach: [Echo], ForEach: [Echo]
     const nodes = screen.getAllByTestId("editor-node");
@@ -686,13 +686,13 @@ describe("validation", () => {
   test("validates string templates", async () => {
     const formState = getFormStateWithSubPipelines();
     const subEchoNode = (
-      formState.modComponent.brickPipeline[1].config.body as PipelineExpression
-    ).__value__[0];
+      formState.modComponent.brickPipeline[1]!.config.body as PipelineExpression
+    ).__value__[0]!;
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        dispatch(editorActions.setActiveNodeId(subEchoNode.instanceId));
+        dispatch(editorActions.setActiveNodeId(subEchoNode.instanceId!));
       },
     });
 
@@ -726,7 +726,7 @@ describe("validation", () => {
 
     // Selecting the Echo brick in the first mod component
     const { instanceId: echoBlockInstanceId } =
-      modComponent1.modComponent.brickPipeline[0];
+      modComponent1.modComponent.brickPipeline[0]!;
     const { container, getReduxStore } = render(
       <>
         <EditorPane />
@@ -737,7 +737,7 @@ describe("validation", () => {
           dispatch(editorActions.addModComponentFormState(modComponent1));
           dispatch(editorActions.addModComponentFormState(modComponent2));
           dispatch(editorActions.setActiveModComponentId(modComponent1.uuid));
-          dispatch(editorActions.setActiveNodeId(echoBlockInstanceId));
+          dispatch(editorActions.setActiveNodeId(echoBlockInstanceId!));
         },
       },
     );
@@ -755,7 +755,7 @@ describe("validation", () => {
     const addButtons = screen.getAllByTestId(/icon-button-[\w-]+-add-brick/i, {
       exact: false,
     });
-    const addButton = addButtons.at(0);
+    const addButton = addButtons.at(0)!;
     await addABlock(addButton, "markdown");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
@@ -763,7 +763,7 @@ describe("validation", () => {
 
     // Select foundation node.
     // For testing purposes we don't want a node with error to be active when we select mod component 1 again
-    await immediateUserEvent.click(screen.getAllByTestId("editor-node")[0]);
+    await immediateUserEvent.click(screen.getAllByTestId("editor-node")[0]!);
 
     // Ensure 2 nodes have error badges
     expect(
@@ -797,12 +797,12 @@ describe("validation", () => {
     const editorNodes = screen.getAllByTestId("editor-node");
 
     // Selecting the markdown brick in the first mod component
-    await immediateUserEvent.click(editorNodes[1]);
+    await immediateUserEvent.click(editorNodes[1]!);
 
     expectEditorError(container, "A renderer must be the last brick.");
 
     // Selecting the echo brick
-    await immediateUserEvent.click(editorNodes[2]);
+    await immediateUserEvent.click(editorNodes[2]!);
 
     expectEditorError(
       container,
@@ -840,7 +840,7 @@ describe("validation", () => {
       exact: false,
     });
     const addButton = addButtons.at(0);
-    await addABlock(addButton, "markdown");
+    await addABlock(addButton!, "markdown");
 
     await tickAsyncEffects();
 
@@ -859,19 +859,19 @@ describe("validation", () => {
     );
 
     // Selecting the last node (renderer)
-    const { instanceId } = formState.modComponent.brickPipeline[2];
+    const { instanceId } = formState.modComponent.brickPipeline[2]!;
     const { container } = render(<EditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
-        dispatch(editorActions.setActiveNodeId(instanceId));
+        dispatch(editorActions.setActiveNodeId(instanceId!));
       },
     });
 
     await waitForEffect();
 
     const moveUpButton = within(
-      screen.getAllByTestId("editor-node").at(-1),
+      screen.getAllByTestId("editor-node").at(-1)!,
     ).getByTitle("Move brick higher");
 
     await immediateUserEvent.click(moveUpButton);
@@ -923,7 +923,7 @@ describe("validation", () => {
             }),
           );
           dispatch(
-            editorActions.setActiveNodeId(disallowedBlockConfig.instanceId),
+            editorActions.setActiveNodeId(disallowedBlockConfig.instanceId!),
           );
         },
       });
@@ -997,7 +997,7 @@ describe("brick validation in Add Brick Modal UI", () => {
       // Check for the alert on hover
       const firstResult =
         // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
-        screen.getAllByRole("button", { name: /add/i })[0].parentElement;
+        screen.getAllByRole("button", { name: /add/i })[0]!.parentElement!;
       await immediateUserEvent.hover(firstResult);
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     },

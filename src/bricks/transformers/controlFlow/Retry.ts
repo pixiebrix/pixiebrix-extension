@@ -104,7 +104,7 @@ class Retry extends TransformerABC {
       throw new BusinessError("Maximum number of retries exceeded");
     }
 
-    throw lastError;
+    throw lastError as Error;
   }
 }
 

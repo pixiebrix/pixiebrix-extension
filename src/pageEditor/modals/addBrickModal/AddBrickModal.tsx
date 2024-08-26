@@ -385,7 +385,7 @@ const AddBrickModal: React.FC = () => {
               </span>
             }
             onSelect={() => {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- existence checked above
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- existence checked above
               void addBrick(state.detailBrick!);
               closeModal();
             }}

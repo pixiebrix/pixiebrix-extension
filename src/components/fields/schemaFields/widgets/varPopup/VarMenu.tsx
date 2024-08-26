@@ -100,7 +100,7 @@ function usePositionVarPopup({
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.contentBoxSize) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- contentBoxSize is defined
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- contentBoxSize is defined
           setResize(entry.contentBoxSize[0]!.blockSize);
         }
       }

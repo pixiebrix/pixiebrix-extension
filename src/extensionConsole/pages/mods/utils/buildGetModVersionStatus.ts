@@ -37,7 +37,7 @@ export default function buildGetModVersionStatus(
     }
 
     const metadataFromActivatedModComponent =
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
       activatedComponentFromMod._recipe!;
 
     const { version: activatedModVersion, updated_at: activatedModUpdatedAt } =

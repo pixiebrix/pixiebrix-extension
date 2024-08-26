@@ -83,7 +83,7 @@ Default.args = {
 export const InitialValue = Story.bind({});
 InitialValue.args = {
   ...baseArgs,
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- hardcoded above
+
   inputValue: suggestions[0]!.value,
   inputPlaceholder: "Choose after InitialValue cleared...",
 };

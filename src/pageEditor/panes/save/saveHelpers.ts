@@ -203,7 +203,7 @@ function deleteUnusedStarterBrickDefinitions(
   for (const [id, definition] of Object.entries(innerDefinitions ?? {})) {
     // Only delete starter brick definitions. In the future, we may complete support for internal brick definitions
     if (isStarterBrickDefinitionLike(definition) && !referencedIds.has(id)) {
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- from Object.entries
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- from Object.entries
       delete innerDefinitions![id];
     }
   }

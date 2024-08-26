@@ -898,7 +898,7 @@ export class RemoteButtonStarterBrick extends ButtonStarterBrickABC {
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
       return $elements.get(0)!;
     }
 

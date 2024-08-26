@@ -181,7 +181,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
   if (meError && !ignoreApiError) {
-    throw meError;
+    throw meError as Error;
   }
 
   return <>{children}</>;

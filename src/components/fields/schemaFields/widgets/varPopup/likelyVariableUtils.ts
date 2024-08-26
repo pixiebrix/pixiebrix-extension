@@ -60,7 +60,7 @@ export function getLikelyVariableAtPosition(
   // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
   let match = varRegex.exec(template);
   while (match != null) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by regex
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Guaranteed by regex
     const varName = match.groups!.varName!;
     const startIndex = match.index;
     const variableEndIndex = startIndex + varName.length;
@@ -207,7 +207,7 @@ export function getFullVariableName(
 
   const likelyPath: string[] = [];
   for (let i = 0; i < pathWithChainElements.length; i++) {
-    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- numeric index
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-non-null-assertion -- numeric index
     const base: string = pathWithChainElements[i]!;
 
     if (pathWithChainElements[i + 1] === "?") {

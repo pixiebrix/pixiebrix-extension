@@ -30,7 +30,7 @@ test("mod editor pane behavior", async ({
   newPageEditorPage,
   verifyModDefinitionSnapshot,
 }) => {
-  const { id: modId } = modDefinitionsMap[testModDefinitionName];
+  const { id: modId } = modDefinitionsMap[testModDefinitionName]!;
   let pageEditorPage: PageEditorPage;
 
   await test.step("Activate mod, and initialize page editor", async () => {
@@ -42,7 +42,7 @@ test("mod editor pane behavior", async ({
     pageEditorPage = await newPageEditorPage(page.url());
   });
 
-  const { modEditorPane } = pageEditorPage;
+  const { modEditorPane } = pageEditorPage!;
   await test.step("Select the mod in the page editor and verify mod editor pane is visible", async () => {
     // The mod editor pane should be hidden initially
     await expect(modEditorPane.root).toBeHidden();

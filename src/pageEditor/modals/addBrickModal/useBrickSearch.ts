@@ -55,7 +55,7 @@ function useBrickSearch(
         return true;
       }
 
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- tag values come from the API
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- tag values come from the API
       return taggedBrickIds[searchTag]!.has(brick.id);
     }
 

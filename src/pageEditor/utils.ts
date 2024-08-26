@@ -82,7 +82,7 @@ export function getModId(
  * @see PipelineToggleField
  */
 export function getPipelinePropNames(
-  brick: Brick | null,
+  brick: Brick | undefined,
   brickConfig: BrickConfig,
 ): string[] {
   switch (brickConfig.id) {

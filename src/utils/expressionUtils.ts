@@ -157,7 +157,7 @@ export function castTextLiteralOrThrow(
   }
 
   if (literalOrTemplate == null || typeof literalOrTemplate === "string") {
-    return literalOrTemplate as string | null;
+    return literalOrTemplate;
   }
 
   return literalOrTemplate.__value__;

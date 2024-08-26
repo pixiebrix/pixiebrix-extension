@@ -83,7 +83,7 @@ const OutputActualBody: React.FC = () => {
   }
 
   if (isTraceError(traceRecord)) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- isTraceError type guard
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- isTraceError type guard
     return <ErrorDisplay error={traceRecord.error!} />;
   }
 

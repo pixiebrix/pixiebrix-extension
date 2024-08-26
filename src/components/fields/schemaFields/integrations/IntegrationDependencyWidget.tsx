@@ -305,7 +305,7 @@ const IntegrationDependencyWidget: React.FC<
             options,
           });
           // Try defaulting to the only option available.
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
           const authOption = options[0]!;
           const newState = setIntegrationAuthSelectionForField(
             rootValues,

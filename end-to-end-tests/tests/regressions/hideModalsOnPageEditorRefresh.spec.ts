@@ -49,7 +49,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
     await testStarterBrick.select();
   });
 
-  const { brickActionsPanel } = pageEditorPage;
+  const { brickActionsPanel } = pageEditorPage!;
   await test.step("Open the add brick modal", async () => {
     await brickActionsPanel.getAddBrickButton(0).click();
     await expect(pageEditorPage.getByText("Add Brick")).toBeVisible();

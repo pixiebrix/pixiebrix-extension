@@ -60,7 +60,7 @@ async function fetchDeploymentModDefinition({
     // XXX: cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
     // but currently marked as optional in PackageConfigDetail["sharing"]. Drop after API transformer work.
     sharing: data.sharing as ModDefinition["sharing"],
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- PackageConfigDetail.updated_at is always returned
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- PackageConfigDetail.updated_at is always returned
     updated_at: data.updated_at!,
   };
 }
