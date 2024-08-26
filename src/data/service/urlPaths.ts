@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId } from "@/types/registryTypes";
+import type { RegistryId } from "@/types/registryTypes";
 
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
