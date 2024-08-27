@@ -37,10 +37,12 @@ import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";
 
-const wizard: WizardStep[] = [
+const wizard = [
   { step: EDIT_STEP_NAME, Component: EditTab },
   { step: LOG_STEP_NAME, Component: LogsTab },
-] as const;
+] as const satisfies WizardStep[];
+
+type WizardStepName = (typeof wizard)[number]["step"];
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -61,8 +63,7 @@ const WizardNavItem: React.FunctionComponent<{
 const ModComponentFormStateWizard: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Hardcoded to have exactly 2 steps
-  const [step, setStep] = useState(wizard[0]!.step);
+  const [step, setStep] = useState<WizardStepName>(wizard[0].step);
 
   const { isValid, status, handleReset } =
     useFormikContext<ModComponentFormState>();
@@ -73,7 +74,7 @@ const ModComponentFormStateWizard: React.FunctionComponent<{
     dispatch(logActions.refreshEntries());
   };
 
-  const selectTabHandler = (step: string) => {
+  const selectTabHandler = (step: WizardStepName) => {
     setStep(step);
     if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
       // If user is clicking over to the logs tab, they most likely want to see the most recent logs
