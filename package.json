@@ -244,7 +244,7 @@
     "@types/sinonjs__fake-timers": "^8.1.5",
     "@types/use-sync-external-store": "^0.0.6",
     "@types/uuid": "^10.0.0",
-    "@types/webextension-polyfill": "^0.10.7",
+    "@types/webextension-polyfill": "^0.12.0",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.5",
     "@types/whatwg-mimetype": "^3.0.2",

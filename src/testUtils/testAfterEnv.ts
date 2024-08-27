@@ -46,7 +46,6 @@ browser.tabs.onRemoved = {
   addListener: jest.fn(),
   removeListener: jest.fn(),
   hasListener: jest.fn(),
-  hasListeners: jest.fn(),
 };
 
 // `jest-webextension-mock` is missing mocks for onChanged: https://github.com/clarkbw/jest-webextension-mock/issues/170

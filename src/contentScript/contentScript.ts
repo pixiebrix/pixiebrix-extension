@@ -67,9 +67,9 @@ async function initContentScript() {
   }
 
   // Do not use the Messenger, it cannot appear in this bundle
-  const context = (await browser.runtime.sendMessage({ type: "WHO_AM_I" })) as
-    | Runtime.MessageSender
-    | undefined;
+  const context: Runtime.MessageSender = await browser.runtime.sendMessage({
+    type: "WHO_AM_I",
+  });
   if (!context) {
     console.error(
       "contentScript: nobody answered the WHO_AM_I context check. Loading might fail later.",
