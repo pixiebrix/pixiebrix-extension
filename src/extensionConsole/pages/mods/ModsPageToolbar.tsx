@@ -139,7 +139,7 @@ const ModsPageToolbar: React.FunctionComponent<{
               variant="link"
               size="sm"
               onClick={() => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- this button doesn't appear unless isSorted is true, which means sortBy is non-empty
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- this button doesn't appear unless isSorted is true, which means sortBy is non-empty
                 const { id, desc } = sortBy[0]!;
                 setSortBy([{ id, desc: !desc }]);
               }}

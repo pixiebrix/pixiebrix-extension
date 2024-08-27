@@ -32,6 +32,7 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/auth/useLinkState");
 
@@ -40,7 +41,6 @@ browser.webNavigation.onBeforeNavigate = {
   addListener: jest.fn(),
   removeListener: jest.fn(),
   hasListener: jest.fn(),
-  hasListeners: jest.fn(),
 };
 
 jest.mock("@/contentScript/messenger/api", () => ({
@@ -56,8 +56,8 @@ const useLinkStateMock = jest.mocked(useLinkState);
 
 describe("SidebarApp", () => {
   beforeEach(() => {
-    appApiMock.onGet("/api/marketplace/listings/").reply(200, []);
-    appApiMock.onGet("/api/extensions/").reply(200, []);
+    appApiMock.onGet(API_PATHS.MARKETPLACE_LISTINGS).reply(200, []);
+    appApiMock.onGet(API_PATHS.MOD_COMPONENTS_ALL).reply(200, []);
 
     useLinkStateMock.mockReturnValue(valueToAsyncState(true));
   });

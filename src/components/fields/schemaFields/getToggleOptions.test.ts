@@ -34,8 +34,8 @@ describe("Database field", () => {
     });
 
     expect(options).toHaveLength(2);
-    expect(options[0].label).toBe("Database");
-    expect(options[1].label).toBe("Variable");
+    expect(options[0]!.label).toBe("Database");
+    expect(options[1]!.label).toBe("Variable");
   });
 
   test("without expressions", () => {
@@ -49,7 +49,7 @@ describe("Database field", () => {
     });
 
     expect(options).toHaveLength(1);
-    expect(options[0].label).toBe("Database");
+    expect(options[0]!.label).toBe("Database");
   });
 
   test("optional", () => {
@@ -63,9 +63,9 @@ describe("Database field", () => {
     });
 
     expect(options).toHaveLength(3);
-    expect(options[0].label).toBe("Database");
-    expect(options[1].label).toBe("Variable");
-    expect(options[2].label).toBe("Exclude");
+    expect(options[0]!.label).toBe("Database");
+    expect(options[1]!.label).toBe("Variable");
+    expect(options[2]!.label).toBe("Exclude");
   });
 });
 
@@ -84,7 +84,7 @@ describe("select field", () => {
     });
 
     expect(options).toHaveLength(1);
-    expect(options[0].label).toBe("Select...");
+    expect(options[0]!.label).toBe("Select...");
   });
 
   it("includes the text input if allowExpressions is true", () => {
@@ -101,9 +101,9 @@ describe("select field", () => {
     });
 
     expect(options).toHaveLength(3);
-    expect(options[0].label).toBe("Select...");
-    expect(options[1].label).toBe("Text");
-    expect(options[2].label).toBe("Variable");
+    expect(options[0]!.label).toBe("Select...");
+    expect(options[1]!.label).toBe("Text");
+    expect(options[2]!.label).toBe("Variable");
   });
 
   it("handles labelled enum field", () => {
@@ -120,9 +120,9 @@ describe("select field", () => {
     });
 
     expect(options).toHaveLength(4);
-    expect(options[0].label).toBe("Select...");
-    expect(options[1].label).toBe("Text");
-    expect(options[2].label).toBe("Variable");
-    expect(options[3].label).toBe("Exclude");
+    expect(options[0]!.label).toBe("Select...");
+    expect(options[1]!.label).toBe("Text");
+    expect(options[2]!.label).toBe("Variable");
+    expect(options[3]!.label).toBe("Exclude");
   });
 });

@@ -49,7 +49,7 @@ module.exports = {
     "new-cap": [
       "error",
       {
-        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
+        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_|API_PATHS.)",
       },
     ],
     "no-param-reassign": [
@@ -323,9 +323,10 @@ module.exports = {
       },
     },
     {
-      files: ["**/*.test.ts?(x)"],
+      files: ["**/*.test.ts?(x)", "**/*.spec.ts"],
       rules: {
         "@typescript-eslint/no-unnecessary-type-assertion": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
       },
     },
   ],

@@ -82,7 +82,7 @@ describe("JQueryReaderOptions", () => {
 
   it("shows workshop message on variable selector", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = {
+    state.modComponent.brickPipeline[0]!.config.selectors = {
       property: toExpression("var", "@foo"),
     };
 
@@ -96,7 +96,7 @@ describe("JQueryReaderOptions", () => {
 
   it("shows workshop message variable selectors", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = toExpression(
+    state.modComponent.brickPipeline[0]!.config.selectors = toExpression(
       "var",
       "@foo",
     );
@@ -111,7 +111,7 @@ describe("JQueryReaderOptions", () => {
 
   it("normalizes primitive selectors", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = { property: "h1" };
+    state.modComponent.brickPipeline[0]!.config.selectors = { property: "h1" };
 
     renderOptions(state);
 
@@ -132,7 +132,7 @@ describe("JQueryReaderOptions", () => {
 
   it("normalizes nested selectors", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = {
+    state.modComponent.brickPipeline[0]!.config.selectors = {
       outer: {
         selector: "div",
         find: {
@@ -161,7 +161,7 @@ describe("JQueryReaderOptions", () => {
 
   it("normalizes nunjucks literal selectors", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = {
+    state.modComponent.brickPipeline[0]!.config.selectors = {
       outer: {
         selector: toExpression("nunjucks", "div"),
         find: {
@@ -190,7 +190,7 @@ describe("JQueryReaderOptions", () => {
 
   it("allows rename of property", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = {
+    state.modComponent.brickPipeline[0]!.config.selectors = {
       outer: {
         selector: toExpression("nunjucks", "div"),
         find: {
@@ -204,7 +204,7 @@ describe("JQueryReaderOptions", () => {
     await waitForEffect();
 
     await userEvent.type(
-      screen.getAllByRole("textbox", { name: /property name/i }).at(0),
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0)!,
       "property",
     );
     // Click away to blur the field
@@ -219,7 +219,7 @@ describe("JQueryReaderOptions", () => {
 
   it("clearing a property name reverts the value to the initial value on blur", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = {
+    state.modComponent.brickPipeline[0]!.config.selectors = {
       outer: {
         selector: toExpression("nunjucks", "div"),
         find: {
@@ -233,7 +233,7 @@ describe("JQueryReaderOptions", () => {
     await waitForEffect();
 
     await userEvent.clear(
-      screen.getAllByRole("textbox", { name: /property name/i }).at(0),
+      screen.getAllByRole("textbox", { name: /property name/i }).at(0)!,
     );
     // Click away to blur the field
     await userEvent.click(document.body);
@@ -247,7 +247,7 @@ describe("JQueryReaderOptions", () => {
 
   it("generates example attributes for nested selectors", async () => {
     const state = baseStateFactory();
-    state.modComponent.brickPipeline[0].config.selectors = {
+    state.modComponent.brickPipeline[0]!.config.selectors = {
       outer: {
         selector: "div",
         find: {

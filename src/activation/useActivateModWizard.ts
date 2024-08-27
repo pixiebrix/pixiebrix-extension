@@ -46,6 +46,10 @@ import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
+import { BusinessError } from "@/errors/businessErrors";
+import useOrganizationActivationPolicy, {
+  type OrganizationActivationPolicyResult,
+} from "@/activation/useOrganizationActivationPolicy";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -205,21 +209,35 @@ function useActivateModWizard(
     modDefinition.options?.schema,
   );
 
+  const policyState = useOrganizationActivationPolicy(modDefinition);
+
   // Force-fetch latest database options
   const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
 
   return useMergeAsyncState(
     optionsValidationSchemaState,
     databaseOptionsState,
-    (optionsValidationSchema: AnyObjectSchema, databaseOptions: Option[]) =>
-      wizardStateFactory({
+    policyState,
+    (
+      optionsValidationSchema: AnyObjectSchema,
+      databaseOptions: Option[],
+      policy: OrganizationActivationPolicyResult,
+    ) => {
+      if (policy.block) {
+        throw new BusinessError(
+          "Your team's policy does not permit you to activate this mod. Contact your team admin for assistance",
+        );
+      }
+
+      return wizardStateFactory({
         modDefinition,
         defaultAuthOptions,
         databaseOptions,
         activatedModComponents,
         optionsValidationSchema,
         initialModOptions: initialOptions,
-      }),
+      });
+    },
   );
 }
 

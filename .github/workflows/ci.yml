@@ -149,8 +149,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:typescript
-      # Prevent regressions in the files that have already been made strictNullCheck-compliant
-      - run: npm run build:strictNullChecks
 
   lint:
     runs-on: ubuntu-latest

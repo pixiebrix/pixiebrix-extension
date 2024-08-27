@@ -38,7 +38,9 @@ function useAllBricks(): {
 } {
   // Use useAsyncEffect and useState to handle the promise. Can't use useAsyncState because it requires that
   // the data is serializable because it uses RTK.
-  const [allTyped, setAllTyped] = useState<TypedBrickMap>(new Map());
+  const [allTyped, setAllTyped] = useState<TypedBrickMap>(
+    new Map() as TypedBrickMap,
+  );
 
   const allTypedPromise = useSyncExternalStore(
     subscribe,

@@ -34,7 +34,10 @@ import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { meOrganizationApiResponseFactory } from "@/testUtils/factories/authFactories";
+import {
+  meApiResponseFactory,
+  meOrganizationApiResponseFactory,
+} from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import {
   getSidebarState,
@@ -59,6 +62,15 @@ import {
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
+import {
+  mapRestrictedFeatureToFeatureFlag,
+  RestrictedFeatures,
+} from "@/auth/featureFlags";
+import {
+  TEST_deleteFeatureFlagsCache,
+  TEST_overrideFeatureFlags,
+} from "@/auth/featureFlagStorage";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -99,7 +111,16 @@ beforeEach(async () => {
 
   jest.clearAllMocks();
 
-  axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+  await TEST_deleteFeatureFlagsCache();
+
+  axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
+
+  axiosMock.onGet(API_PATHS.ME).reply(
+    200,
+    meApiResponseFactory({
+      flags: [],
+    }),
+  );
 });
 
 describe("debouncedActivateWelcomeMods", () => {
@@ -109,7 +130,7 @@ describe("debouncedActivateWelcomeMods", () => {
   ) {
     return produce(modDefinition, (draft) => {
       (
-        draft.definitions.extensionPoint
+        draft.definitions!.extensionPoint!
           .definition as StarterBrickDefinitionProp
       ).type = type;
     });
@@ -124,7 +145,7 @@ describe("debouncedActivateWelcomeMods", () => {
     );
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [modDefinition]);
 
     await debouncedActivateWelcomeMods();
@@ -132,12 +153,12 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toEqual(
+    expect(activatedModComponents[0]!._recipe!.id).toEqual(
       modDefinition.metadata.id,
     );
 
     expect(closedTabs).toStrictEqual({
-      [getEventKeyForPanel(activatedModComponents[0].id)]: true,
+      [getEventKeyForPanel(activatedModComponents[0]!.id)]: true,
       [eventKeyForEntry(MOD_LAUNCHER)]: false,
     });
 
@@ -150,7 +171,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const modDefinition = defaultModDefinitionFactory();
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [modDefinition]);
 
     await debouncedActivateWelcomeMods();
@@ -158,7 +179,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toEqual(
+    expect(activatedModComponents[0]!._recipe!.id).toEqual(
       modDefinition.metadata.id,
     );
 
@@ -168,7 +189,7 @@ describe("debouncedActivateWelcomeMods", () => {
   });
 
   test("getBuiltInIntegrationConfigs", async () => {
-    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, [
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, [
       remoteIntegrationConfigurationFactory(),
       remoteIntegrationConfigurationFactory({
         organization: meOrganizationApiResponseFactory(),
@@ -179,12 +200,12 @@ describe("debouncedActivateWelcomeMods", () => {
     let builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(1);
 
-    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
 
     builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
 
-    axiosMock.onGet("/api/services/shared/?meta=1").reply(500);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(500);
 
     builtInIntegrationConfigs = await getBuiltInIntegrationConfigs();
     expect(builtInIntegrationConfigs).toBeArrayOfSize(0);
@@ -193,7 +214,7 @@ describe("debouncedActivateWelcomeMods", () => {
   test("welcome mods request fails", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
+    axiosMock.onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS).reply(500);
 
     await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
@@ -213,11 +234,11 @@ describe("debouncedActivateWelcomeMods", () => {
     );
 
     axiosMock
-      .onGet("/api/services/shared/?meta=1")
+      .onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED)
       .reply(200, builtInIntegrationConfigs);
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [modDefinition]);
 
     await debouncedActivateWelcomeMods();
@@ -225,7 +246,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toBeArrayOfSize(1);
-    const activatedModComponent = activatedModComponents[0];
+    const activatedModComponent = activatedModComponents[0]!;
 
     expect(closedTabs).toStrictEqual({
       [getEventKeyForPanel(activatedModComponent.id)]: true,
@@ -233,19 +254,19 @@ describe("debouncedActivateWelcomeMods", () => {
     });
 
     expect(activatedModComponent.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id,
+      modDefinition.extensionPoints[0]!.id,
     );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = activatedModComponent.integrationDependencies.find(
+    const dependency1 = activatedModComponent.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
-    );
-    const dependency2 = activatedModComponent.integrationDependencies.find(
+    )!;
+    const dependency2 = activatedModComponent.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
-    );
+    )!;
 
-    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
-    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
+    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0]!.id);
+    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1]!.id);
   });
 
   test("welcome mod already activated", async () => {
@@ -260,10 +281,10 @@ describe("debouncedActivateWelcomeMods", () => {
       activatedModComponents: [activatedModComponent],
     });
 
-    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
+    axiosMock.onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS).reply(200, [
       {
-        extensionPoints: [activatedModComponent],
         ...modDefinition,
+        extensionPoints: [activatedModComponent],
       },
     ]);
 
@@ -272,7 +293,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toEqual(
+    expect(activatedModComponents[0]!._recipe!.id).toEqual(
       modDefinition.metadata.id,
     );
 
@@ -290,7 +311,7 @@ describe("debouncedActivateWelcomeMods", () => {
     });
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedActivateWelcomeMods();
@@ -303,7 +324,7 @@ describe("debouncedActivateWelcomeMods", () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
-    modDefinition.extensionPoints[0].services = {
+    modDefinition.extensionPoints[0]!.services = {
       properties: {
         google: {
           $ref: "https://app.pixiebrix.com/schemas/services/google/oauth2-pkce",
@@ -313,19 +334,21 @@ describe("debouncedActivateWelcomeMods", () => {
     };
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [modDefinition]);
 
     await debouncedActivateWelcomeMods();
     const { activatedModComponents } = await getModComponentState();
 
     expect(activatedModComponents).toHaveLength(1);
-    const activatedModComponent = activatedModComponents[0];
-    expect(activatedModComponent._recipe.id).toEqual(modDefinition.metadata.id);
+    const activatedModComponent = activatedModComponents[0]!;
+    expect(activatedModComponent._recipe!.id).toEqual(
+      modDefinition.metadata.id,
+    );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
     // Expect the optional dependency NOT to be configured
     expect(
-      activatedModComponent.integrationDependencies[0].configId,
+      activatedModComponent.integrationDependencies![0]!.configId,
     ).toBeUndefined();
   });
 
@@ -334,7 +357,7 @@ describe("debouncedActivateWelcomeMods", () => {
 
     const { modDefinition, builtInIntegrationConfigs } =
       getModDefinitionWithBuiltInIntegrationConfigs();
-    modDefinition.extensionPoints[0].services = {
+    modDefinition.extensionPoints[0]!.services = {
       properties: {
         service1: {
           $ref: "https://app.pixiebrix.com/schemas/services/@pixiebrix/service1",
@@ -347,11 +370,11 @@ describe("debouncedActivateWelcomeMods", () => {
     };
 
     axiosMock
-      .onGet("/api/services/shared/?meta=1")
+      .onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED)
       .reply(200, builtInIntegrationConfigs);
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [modDefinition]);
 
     await debouncedActivateWelcomeMods();
@@ -359,30 +382,30 @@ describe("debouncedActivateWelcomeMods", () => {
 
     expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const activatedModComponent1 = activatedModComponents[0];
+    const activatedModComponent1 = activatedModComponents[0]!;
     expect(activatedModComponent1.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id,
+      modDefinition.extensionPoints[0]!.id,
     );
     expect(activatedModComponent1.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = activatedModComponent1.integrationDependencies.find(
+    const dependency1 = activatedModComponent1.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
-    );
-    const dependency2 = activatedModComponent1.integrationDependencies.find(
+    )!;
+    const dependency2 = activatedModComponent1.integrationDependencies!.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
-    );
+    )!;
 
     // Expect the optional dependency NOT to be configured
-    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
+    expect(dependency1.configId).toBe(builtInIntegrationConfigs[0]!.id);
     // Expect the required dependency to be configured
-    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
+    expect(dependency2.configId).toBe(builtInIntegrationConfigs[1]!.id);
   });
 
   test("activate welcome mod with required pixiebrix integration", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
-    modDefinition.extensionPoints[0].services = {
+    modDefinition.extensionPoints[0]!.services = {
       type: "object",
       properties: {
         service: {
@@ -392,10 +415,10 @@ describe("debouncedActivateWelcomeMods", () => {
       required: ["service"],
     };
 
-    axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+    axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
 
     axiosMock
-      .onGet("/api/onboarding/starter-blueprints/")
+      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
       .reply(200, [modDefinition]);
 
     await debouncedActivateWelcomeMods();
@@ -403,15 +426,15 @@ describe("debouncedActivateWelcomeMods", () => {
 
     expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const activatedModComponent = activatedModComponents[0];
+    const activatedModComponent = activatedModComponents[0]!;
     expect(activatedModComponent.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id,
+      modDefinition.extensionPoints[0]!.id,
     );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
 
-    const dependency = activatedModComponent.integrationDependencies.find(
+    const dependency = activatedModComponent.integrationDependencies!.find(
       ({ integrationId }) => integrationId === PIXIEBRIX_INTEGRATION_ID,
-    );
+    )!;
 
     // As of 1.8.13, a sentinel value is used for the configId of the integration to simplify strict null checks
     expect(dependency.configId).toBe(PIXIEBRIX_INTEGRATION_CONFIG_ID);
@@ -421,7 +444,7 @@ describe("debouncedActivateWelcomeMods", () => {
     beforeEach(() => {
       isLinkedMock.mockResolvedValue(true);
       axiosMock.resetHistory();
-      axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
+      axiosMock.onGet(API_PATHS.INTEGRATIONS_SHARED_SANITIZED).reply(200, []);
     });
 
     function modFactory() {
@@ -442,7 +465,7 @@ describe("debouncedActivateWelcomeMods", () => {
         },
       };
 
-      modDefinition.extensionPoints[0].services = {
+      modDefinition.extensionPoints[0]!.services = {
         type: "object",
         properties: {
           service: {
@@ -460,11 +483,11 @@ describe("debouncedActivateWelcomeMods", () => {
       const databaseId = autoUUIDSequence();
 
       axiosMock
-        .onGet("/api/onboarding/starter-blueprints/")
+        .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
         .reply(200, [modDefinition])
-        .onGet("/api/databases/")
+        .onGet(API_PATHS.DATABASES)
         .reply(200, [])
-        .onPost("/api/databases/")
+        .onPost(API_PATHS.DATABASES)
         .reply((args) => {
           const data = JSON.parse(args.data) as UnknownObject;
           expect(data).toStrictEqual({ name: "Test Mod - Test Database" });
@@ -480,7 +503,7 @@ describe("debouncedActivateWelcomeMods", () => {
 
       expect(activatedModComponents).toBeArrayOfSize(1);
 
-      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+      expect(activatedModComponents[0]!.optionsArgs).toStrictEqual({
         // Activated with the ID of the database created
         database: databaseId,
       });
@@ -489,10 +512,10 @@ describe("debouncedActivateWelcomeMods", () => {
     test("optional database is not created", async () => {
       // Mark DB as optional
       const modDefinition = modFactory();
-      modDefinition.options.schema.required = [];
+      modDefinition.options!.schema.required = [];
 
       axiosMock
-        .onGet("/api/onboarding/starter-blueprints/")
+        .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
         .reply(200, [modDefinition]);
 
       await debouncedActivateWelcomeMods();
@@ -501,7 +524,7 @@ describe("debouncedActivateWelcomeMods", () => {
       expect(activatedModComponents).toBeArrayOfSize(1);
 
       // Database should not be created
-      expect(activatedModComponents[0].optionsArgs).toStrictEqual({});
+      expect(activatedModComponents[0]!.optionsArgs).toStrictEqual({});
     });
 
     test("database is not created if already exists", async () => {
@@ -511,11 +534,11 @@ describe("debouncedActivateWelcomeMods", () => {
       const database = databaseFactory({ id: databaseId, name: databaseName });
 
       axiosMock
-        .onGet("/api/onboarding/starter-blueprints/")
+        .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
         .reply(200, [modDefinition])
-        .onGet("/api/databases/")
+        .onGet(API_PATHS.DATABASES)
         .reply(200, [database])
-        .onPost("/api/databases/")
+        .onPost(API_PATHS.DATABASES)
         // Should not be called
         .reply(400);
 
@@ -524,12 +547,36 @@ describe("debouncedActivateWelcomeMods", () => {
 
       expect(activatedModComponents).toBeArrayOfSize(1);
 
-      expect(activatedModComponents[0].optionsArgs).toStrictEqual({
+      expect(activatedModComponents[0]!.optionsArgs).toStrictEqual({
         // Activated with the ID of the database created
         database: databaseId,
       });
 
       expect(axiosMock.history.post).toHaveLength(0);
+    });
+  });
+
+  describe("organization policy", () => {
+    it("rejects if restricted-marketplace flag set", async () => {
+      const modDefinition = defaultModDefinitionFactory();
+
+      await TEST_overrideFeatureFlags([
+        mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
+      ]);
+
+      axiosMock
+        .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
+        .reply(200, [modDefinition]);
+
+      const { error } = await debouncedActivateWelcomeMods();
+
+      expect(error).toBe(
+        "Your team's policy does not permit you to activate marketplace mods. Contact your team admin for assistance",
+      );
+
+      const { activatedModComponents } = await getModComponentState();
+
+      expect(activatedModComponents).toBeArrayOfSize(0);
     });
   });
 });

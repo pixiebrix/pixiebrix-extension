@@ -30,6 +30,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AsyncState } from "@/types/sliceTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/components/ConfirmationModal", () => ({
@@ -46,7 +47,7 @@ beforeAll(() => {
 // The test "loads" mod definitions from server and attempts to save the first (and the only) mod definition
 // It verifies the proper API calls and the mod definition schema "sent" to the server
 test("load mod definitions and save one", async () => {
-  // This is the shape of a mod definition that we get from the API /api/recipes/ endpoint
+  // This is the shape of a mod definition that we get from the API endpoint
   const sourceModDefinition = defaultModDefinitionFactory();
 
   const packageId = uuidv4();
@@ -54,16 +55,16 @@ test("load mod definitions and save one", async () => {
   let resultModDefinition: any; // Holds the data that will be sent to the API
 
   appApiMock
-    .onGet("/api/registry/bricks/")
+    .onGet(API_PATHS.REGISTRY_BRICKS)
     .reply(200, [sourceModDefinition])
-    .onGet("/api/bricks/")
+    .onGet(API_PATHS.BRICKS)
     .reply(200, [
       {
         id: packageId,
         name: modDefinitionId,
       },
     ])
-    .onPut(`/api/bricks/${packageId}/`)
+    .onPut(API_PATHS.BRICK(packageId))
     .reply(({ data }) => {
       resultModDefinition = JSON.parse(data as string);
       return [201, { data }];
@@ -150,10 +151,10 @@ test("load mod definitions and save one", async () => {
   await act(async () => fetchingSavingPromise.promise);
 
   expect(appApiMock.history.get!.map((x) => x.url)).toEqual([
-    "/api/registry/bricks/",
-    "/api/bricks/",
-    "/api/registry/bricks/",
-    "/api/bricks/",
+    API_PATHS.REGISTRY_BRICKS,
+    API_PATHS.BRICKS,
+    API_PATHS.REGISTRY_BRICKS,
+    API_PATHS.BRICKS,
   ]);
 
   // Validate the config sent to server

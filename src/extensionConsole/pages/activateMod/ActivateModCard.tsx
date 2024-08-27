@@ -99,7 +99,7 @@ const ActivateModCard: React.FC<{
   }
 
   if (wizardError) {
-    throw wizardError;
+    throw wizardError as Error;
   }
 
   assertNotNullish(wizardState, "wizardState is nullish");

@@ -21,6 +21,7 @@ import { useCallback } from "react";
 import { assertProtocolUrl } from "@/utils/urlUtils";
 import notify from "@/utils/notify";
 import pTimeout from "p-timeout";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -64,7 +65,7 @@ function useServiceUrlSetting(): [
         if (newPixiebrixUrl) {
           // Ensure the new URL is connectable
           const response = await pTimeout(
-            fetch(new URL("api/me", newPixiebrixUrl).href),
+            fetch(new URL(API_PATHS.ME, newPixiebrixUrl).href),
             { milliseconds: SAVING_URL_TIMEOUT_MS },
           );
 

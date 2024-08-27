@@ -57,7 +57,7 @@ function useUndo<T>(
 
     const [oldValue, ...newHistory] = history.current;
     setRealValue(oldValue);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- strictNullChecks config mismatch
+
     debouncedValue.current = oldValue as T;
     history.current = newHistory;
   }, [history, setRealValue]);

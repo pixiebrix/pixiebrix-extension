@@ -42,6 +42,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { FeatureFlags } from "@/auth/featureFlags";
 import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -124,7 +125,7 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
   try {
     const {
       data: { updates },
-    } = await client.post<PackageVersionUpdates>("/api/registry/updates/", {
+    } = await client.post<PackageVersionUpdates>(API_PATHS.REGISTRY_UPDATES, {
       versions: modVersions,
     });
 

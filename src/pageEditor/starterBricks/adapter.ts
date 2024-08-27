@@ -99,7 +99,7 @@ export async function selectType(
   if (hasInnerStarterBrickRef(modComponent)) {
     const { extensionPointId: starterBrickId, definitions } = modComponent;
     return (
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerStarterBrickRef
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked by hasInnerStarterBrickRef
       (definitions![starterBrickId] as unknown as StarterBrickDefinitionLike)
         .definition.type
     );

@@ -20,6 +20,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment, type PackageConfigDetail } from "@/types/contract";
 import { allSettled } from "@/utils/promiseUtils";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 /**
  * Fetches the mod definition for the given deployment.
@@ -50,7 +51,7 @@ async function fetchDeploymentModDefinition({
 }: Deployment["package"]): Promise<ModDefinition> {
   const client = await getLinkedApiClient();
   const { data } = await client.get<PackageConfigDetail>(
-    `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
+    API_PATHS.REGISTRY_BRICK(registryId),
     { params: { version } },
   );
 
@@ -59,7 +60,7 @@ async function fetchDeploymentModDefinition({
     // XXX: cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
     // but currently marked as optional in PackageConfigDetail["sharing"]. Drop after API transformer work.
     sharing: data.sharing as ModDefinition["sharing"],
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- PackageConfigDetail.updated_at is always returned
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- PackageConfigDetail.updated_at is always returned
     updated_at: data.updated_at!,
   };
 }

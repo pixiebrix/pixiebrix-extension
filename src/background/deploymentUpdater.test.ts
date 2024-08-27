@@ -68,6 +68,7 @@ import {
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 TEST_setContext("background");
 
@@ -133,7 +134,7 @@ beforeEach(async () => {
   jest.clearAllMocks();
   appApiMock.reset();
 
-  appApiMock.onGet("/api/me/").reply(200, {
+  appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
     flags: [],
   });
 
@@ -251,17 +252,15 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -278,17 +277,15 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -304,17 +301,15 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -347,17 +342,15 @@ describe("syncDeployments", () => {
     });
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -391,7 +384,7 @@ describe("syncDeployments", () => {
 
     // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id,
     }) as ActivatedModComponent;
     delete modComponent._recipe;
     delete modComponent._deployment;
@@ -412,17 +405,15 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -430,7 +421,7 @@ describe("syncDeployments", () => {
     expect(activatedModComponents).toBeArrayOfSize(2);
     const foo = await getEditorState();
     // Expect unrelated draft mod component not to be removed
-    expect(foo.modComponentFormStates).toBeArrayOfSize(1);
+    expect(foo!.modComponentFormStates).toBeArrayOfSize(1);
   });
 
   test("deactivate existing mod with no draft mod components", async () => {
@@ -445,7 +436,7 @@ describe("syncDeployments", () => {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
-        updated_at: deployment.updated_at,
+        updated_at: deployment.updated_at!,
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
@@ -455,17 +446,15 @@ describe("syncDeployments", () => {
       activatedModComponents: [modComponent],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     // Make sure we're testing the case where getEditorState() returns undefined
     await expect(getEditorState()).resolves.toBeUndefined();
@@ -474,7 +463,7 @@ describe("syncDeployments", () => {
 
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
-    expect(activatedModComponents[0]._recipe.version).toBe(
+    expect(activatedModComponents[0]!._recipe!.version).toBe(
       deployment.package.version,
     );
   });
@@ -494,12 +483,12 @@ describe("syncDeployments", () => {
 
     // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
-      extensionPointId: starterBrick.metadata.id,
+      extensionPointId: starterBrick.metadata!.id,
       _recipe: {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
-        updated_at: deployment.updated_at,
+        updated_at: deployment.updated_at!,
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
@@ -518,26 +507,24 @@ describe("syncDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
-    const { modComponentFormStates } = await getEditorState();
+    const { modComponentFormStates } = (await getEditorState()) ?? {};
     // Expect draft mod component to be removed
     expect(modComponentFormStates).toBeArrayOfSize(0);
-    expect(activatedModComponents[0]._recipe.version).toBe(
+    expect(activatedModComponents[0]!._recipe!.version).toBe(
       deployment.package.version,
     );
   });
@@ -552,17 +539,15 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -595,21 +580,19 @@ describe("syncDeployments", () => {
     });
     const registryId = deployment.package.package_id;
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["deployment-permissions-strict"],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
-    appApiMock
-      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(
-        200,
-        packageConfigDetailFactory({
-          modDefinition,
-          packageVersionUUID: deployment.package.id,
-        }),
-      );
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICK(registryId)).reply(
+      200,
+      packageConfigDetailFactory({
+        modDefinition,
+        packageVersionUUID: deployment.package.id,
+      }),
+    );
 
     await syncDeployments();
 
@@ -653,7 +636,7 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -667,12 +650,12 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(false);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-version"],
     });
 
     const { deployment } = activatableDeploymentFactory();
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     await syncDeployments();
 
@@ -685,11 +668,11 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-version"],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -707,12 +690,12 @@ describe("syncDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.ME).reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -730,12 +713,12 @@ describe("syncDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.ME).reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -751,11 +734,11 @@ describe("syncDeployments", () => {
       nextUpdate: Date.now() + 1_000_000,
     } as any);
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-version"],
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, []);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, []);
 
     await syncDeployments();
 
@@ -773,7 +756,7 @@ describe("syncDeployments", () => {
     };
 
     const standaloneModComponent = modComponentFactory({
-      extensionPointId: personalStarterBrick.metadata.id,
+      extensionPointId: personalStarterBrick.metadata!.id,
     }) as ActivatedModComponent;
 
     const recipeModComponent = modComponentFactory({
@@ -787,7 +770,7 @@ describe("syncDeployments", () => {
     };
 
     const deploymentModComponent = modComponentFactory({
-      extensionPointId: deploymentStarterBrick.metadata.id,
+      extensionPointId: deploymentStarterBrick.metadata!.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
       _recipe: modMetadataFactory(),
     }) as ActivatedModComponent;
@@ -850,9 +833,9 @@ describe("syncDeployments", () => {
     expect(activatedModComponentIds).toContain(standaloneModComponent.id);
     expect(activatedModComponentIds).toContain(recipeModComponent.id);
 
-    const { modComponentFormStates } = await getEditorState();
+    const { modComponentFormStates } = (await getEditorState()) ?? {};
     expect(modComponentFormStates).toBeArrayOfSize(1);
-    expect(modComponentFormStates[0]).toEqual(personalModComponentFormState);
+    expect(modComponentFormStates![0]!).toEqual(personalModComponentFormState);
   });
 
   test("deactivates old mod when deployed mod id is changed", async () => {
@@ -860,14 +843,10 @@ describe("syncDeployments", () => {
 
     const { deployment, modDefinition } = activatableDeploymentFactory();
 
-    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [deployment]);
 
     appApiMock
-      .onGet(
-        `/api/registry/bricks/${encodeURIComponent(
-          deployment.package.package_id,
-        )}/`,
-      )
+      .onGet(API_PATHS.REGISTRY_BRICK(deployment.package.package_id))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -879,29 +858,25 @@ describe("syncDeployments", () => {
     await syncDeployments();
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]._recipe.id).toBe(
+    expect(activatedModComponents[0]!._recipe!.id).toBe(
       deployment.package.package_id,
     );
 
     // Remove package from the deployment so that it can be updated
-    delete deployment.package;
+    const { package: deploymentPackage, ...prevDeployment } = deployment;
     const {
       deployment: updatedDeployment,
       modDefinition: updatedModDefinition,
     } = activatableDeploymentFactory({
       deploymentOverride: {
-        ...deployment,
+        ...prevDeployment,
       },
     });
 
-    appApiMock.onPost("/api/deployments/").reply(201, [updatedDeployment]);
+    appApiMock.onPost(API_PATHS.DEPLOYMENTS).reply(201, [updatedDeployment]);
 
     appApiMock
-      .onGet(
-        `/api/registry/bricks/${encodeURIComponent(
-          updatedDeployment.package.package_id,
-        )}/`,
-      )
+      .onGet(API_PATHS.REGISTRY_BRICK(updatedDeployment.package.package_id))
       .reply(
         200,
         packageConfigDetailFactory({
@@ -914,7 +889,7 @@ describe("syncDeployments", () => {
     const { activatedModComponents: expectedModComponents } =
       await getModComponentState();
     expect(expectedModComponents).toHaveLength(1);
-    expect(expectedModComponents[0]._recipe.id).toBe(
+    expect(expectedModComponents[0]!._recipe!.id).toBe(
       updatedDeployment.package.package_id,
     );
   });

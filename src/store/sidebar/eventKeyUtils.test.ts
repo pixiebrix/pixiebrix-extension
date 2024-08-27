@@ -145,6 +145,7 @@ describe("defaultEventKey", () => {
 
 describe("eventKeyForEntry", () => {
   it.each([[undefined, null]])("returns undefined for %s", (value?: null) => {
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression -- verifying void behavior
     expect(eventKeyForEntry(value)).toBeUndefined();
   });
 

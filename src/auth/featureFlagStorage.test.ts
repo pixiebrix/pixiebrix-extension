@@ -34,6 +34,7 @@ import {
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 import { featureFlagFactory } from "@/testUtils/factories/featureFlagFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const testFlag = featureFlagFactory("test-flag");
 
@@ -46,7 +47,7 @@ describe("featureFlags", () => {
       .mocked(fetchFeatureFlagsInBackground)
       .mockImplementation(fetchFeatureFlags);
     appApiMock.reset();
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [],
     });
   });
@@ -77,7 +78,7 @@ describe("featureFlags", () => {
   });
 
   it("fetches flags on initial storage state", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [testFlag],
     });
 
@@ -92,7 +93,7 @@ describe("featureFlags", () => {
   });
 
   it("only fetches once if multiple calls are made", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [testFlag],
     });
 
@@ -108,7 +109,7 @@ describe("featureFlags", () => {
     // Mimic listener added by background.ts
     initFeatureFlagBackgroundListeners();
 
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [testFlag, secretFlag],
     });
 
@@ -121,7 +122,7 @@ describe("featureFlags", () => {
     TEST_triggerListeners(authData);
 
     // New user doesn't have secret flag
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [testFlag],
     });
 

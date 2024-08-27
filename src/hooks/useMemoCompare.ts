@@ -63,7 +63,7 @@ function useMemoCompare<T>(
   });
 
   // Finally, if equal, and dependencies have not changed, then return the previous value
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Can't be undefined if it's equal to T
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Can't be undefined if it's equal to T
   return isEqual && isDependenciesEqual ? previous! : next;
 }
 

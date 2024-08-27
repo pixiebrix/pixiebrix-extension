@@ -30,6 +30,7 @@ import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { removeOAuth2Token } from "@/background/messenger/api";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 /**
  * Launch the browser's web auth flow get a partner token for communicating with the PixieBrix server.
@@ -59,7 +60,7 @@ export async function launchAuthIntegration({
     console.warn("Multiple local configurations found for: %s", integration.id);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- just checked array length
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- just checked array length
   const authId = localAuths[0]!.id;
 
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_INTEGRATION_ID, they'll be the same
@@ -104,7 +105,7 @@ export async function launchAuthIntegration({
     // in just-in-time user initialization.
     const apiClient = await getApiClient();
     try {
-      await apiClient.get("/api/me/", {
+      await apiClient.get(API_PATHS.ME, {
         headers: {
           Authorization: `Bearer ${token}`,
           "X-Control-Room": controlRoomUrl,

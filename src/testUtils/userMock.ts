@@ -26,6 +26,7 @@ import useLinkState from "@/auth/useLinkState";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
@@ -33,7 +34,7 @@ import { transformMeResponse } from "@/data/model/Me";
 const useLinkStateMock = jest.mocked(useLinkState);
 
 export function mockAnonymousMeApiResponse(): void {
-  appApiMock.onGet("/api/me/").reply(200, {
+  appApiMock.onGet(API_PATHS.ME).reply(200, {
     // Anonymous users still get feature flags
     flags: [],
   });
@@ -44,7 +45,7 @@ export async function mockAuthenticatedMeApiResponse(
   meApiResponse?: components["schemas"]["Me"],
 ): Promise<void> {
   const meResponse = meApiResponse ?? meApiResponseFactory();
-  appApiMock.onGet("/api/me/").reply(200, meResponse);
+  appApiMock.onGet(API_PATHS.ME).reply(200, meResponse);
   const authData = selectUserDataUpdate(transformMeResponse(meResponse));
   const tokenData = tokenAuthDataFactory({
     ...authData,
@@ -55,9 +56,9 @@ export async function mockAuthenticatedMeApiResponse(
 }
 
 export function mockErrorMeApiResponse(error: unknown): void {
-  appApiMock.onGet("/api/me/").reply(500, error);
-  // `useLinkStateMock` is partially independent of calls to `/api/me/`. It's possible for the extension to be
-  // linked (i.e., have a valid token), but that the `/api/me/` call fails do to a server issue
+  appApiMock.onGet(API_PATHS.ME).reply(500, error);
+  // `useLinkStateMock` is partially independent of calls to the Me endpoint. It's possible for the extension to be
+  // linked (i.e., have a valid token), but the call fails on the server side.
   useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
 

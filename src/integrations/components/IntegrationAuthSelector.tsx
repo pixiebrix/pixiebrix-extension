@@ -71,7 +71,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
   CustomMenuList?: ComponentType<
     MenuListProps<AuthOption, boolean, GroupBase<AuthOption>>
   >;
-  sanitizeConfigArgs: (config: IntegrationConfigArgs) => SanitizedConfig;
+  sanitizeConfigArgs: (config: IntegrationConfigArgs | null) => SanitizedConfig;
 }> = ({
   authOptions,
   serviceId,

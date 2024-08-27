@@ -86,7 +86,7 @@ const ActionToolbar: React.FC<{
 const EphemeralPanel: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const initialNonce: UUID | undefined = validateUUID(params.get("nonce"));
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- works if opener is null, but TS doesn't know that
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- works if opener is null, but TS doesn't know that
   const opener = params.get("opener")!;
   const mode = params.get("mode") as Mode;
 
@@ -200,7 +200,7 @@ const EphemeralPanel: React.FC = () => {
             <>
               <hr className={styles.actionDivider} />
               <ActionToolbar
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
                 actions={entry.actions!}
                 onClick={(action) => {
                   resolveTemporaryPanel(target, panelNonce, action);
@@ -243,7 +243,7 @@ const EphemeralPanel: React.FC = () => {
       {Number(entry.actions?.length) > 0 && (
         <Modal.Footer>
           <ActionToolbar
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- length check above
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
             actions={entry.actions!}
             onClick={(action) => {
               resolveTemporaryPanel(target, panelNonce, action);

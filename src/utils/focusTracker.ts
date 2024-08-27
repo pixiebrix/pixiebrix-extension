@@ -40,7 +40,7 @@ export const lastFocusedTarget = new SessionValue<Sender | null>(
 
 export function rememberFocus(this: MessengerMeta): void {
   expectContext("background");
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- There's always at least one
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- There's always at least one
   void lastFocusedTarget.set(this.trace[0]!);
 }
 

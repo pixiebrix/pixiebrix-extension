@@ -42,6 +42,7 @@ import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { produce } from "immer";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/hooks/auth");
 jest.mock("@/integrations/util/getModDefinitionIntegrationIds");
@@ -110,11 +111,11 @@ const integrationDefinition2 = produce(_integrationDefinition2, (draft) => {
 beforeAll(async () => {
   // These are only used for the service names in the descriptors
   appApiMock
-    .onGet("/api/services/")
+    .onGet(API_PATHS.INTEGRATIONS)
     .reply(200, [integrationDefinition1, integrationDefinition2]);
-  appApiMock.onGet("/api/services/shared/").reply(200, []);
+  appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
   appApiMock
-    .onGet("/api/registry/bricks/")
+    .onGet(API_PATHS.REGISTRY_BRICKS)
     .reply(200, [integrationDefinition1, integrationDefinition2]);
   // Wire up directly to the background implementations for integration testing
   jest

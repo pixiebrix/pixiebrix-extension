@@ -29,6 +29,7 @@ import { Events } from "@/telemetry/events";
 import { array } from "cooky-cutter";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -58,7 +59,7 @@ describe("useCreateModFromMod", () => {
     });
 
     appApiMock
-      .onPost("/api/bricks/")
+      .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() => useCreateModFromMod(), {
@@ -100,7 +101,7 @@ describe("useCreateModFromMod", () => {
     });
 
     appApiMock
-      .onPost("/api/bricks/")
+      .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() => useCreateModFromMod(), {
@@ -134,7 +135,7 @@ describe("useCreateModFromMod", () => {
     });
 
     appApiMock
-      .onPost("/api/bricks/")
+      .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() => useCreateModFromMod(), {

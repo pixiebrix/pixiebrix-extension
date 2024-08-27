@@ -162,7 +162,7 @@ test("should invoke the callback for the Document button pipeline", () => {
     .__value__;
   subPipeline.push(brickConfigFactory());
   const containerElement = createNewDocumentBuilderElement("container");
-  containerElement.children[0].children[0].children.push(buttonElement);
+  containerElement.children![0]!.children![0]!.children!.push(buttonElement);
   const documentBrick = brickConfigFactory({
     id: DocumentRenderer.BRICK_ID,
     config: {

@@ -56,7 +56,7 @@ const useRequiredAuth = () => {
     data: me,
     isSuccess: isMeSuccess,
   } = useGetMeQuery(undefined, {
-    // Only call /api/me/ if the extension is "linked" is with an Authorization token. If not, the session id will
+    // Only call the Me endpoint if the extension is "linked" is with an Authorization token. If not, the session id will
     // be passed in the header which leads to inconsistent results depending on whether the session is still valid
     skip: !isLinked,
   });
@@ -89,7 +89,7 @@ const useRequiredAuth = () => {
     void setAuth(me);
   }, [isMeSuccess, me, dispatch]);
 
-  // Server returns 401 on /api/me/ only if the token (native token or partner JWT) is invalid
+  // Server returns 401 from the Me endpoint only if the token (native token or partner JWT) is invalid
   const isBadToken = (meError as AxiosError)?.response?.status === 401;
   useEffect(() => {
     if (isBadToken) {
@@ -181,7 +181,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
   if (meError && !ignoreApiError) {
-    throw meError;
+    throw meError as Error;
   }
 
   return <>{children}</>;

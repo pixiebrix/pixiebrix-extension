@@ -31,6 +31,7 @@ import { count as traceSize } from "@/telemetry/trace";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { getExtensionVersion, getTabsWithAccess } from "@/utils/extensionUtils";
 import { type TelemetryEvent } from "@/telemetry/telemetryTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -255,7 +256,7 @@ async function flush(): Promise<void> {
     const events = await flushEvents();
 
     if (events.length > 0) {
-      await client.post("/api/events/", {
+      await client.post(API_PATHS.TELEMETRY_EVENTS, {
         events,
       });
     }
@@ -313,7 +314,7 @@ async function init(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
 
   if (client && (await allowsTrack())) {
-    await client.post("/api/identify/", {
+    await client.post(API_PATHS.TELEMETRY_IDENTIFY_USER, {
       uid: await getUUID(),
       data: await collectUserSummary(),
     });
@@ -366,7 +367,7 @@ export async function sendDeploymentAlert({
   data: UnknownObject;
 }) {
   const client = await getLinkedApiClient();
-  await client.post(`/api/deployments/${deploymentId}/alerts/`, data);
+  await client.post(API_PATHS.DEPLOYMENT_ALERTS(deploymentId), data);
 }
 
 /**

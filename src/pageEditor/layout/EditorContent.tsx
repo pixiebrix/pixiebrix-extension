@@ -83,7 +83,7 @@ const EditorContent: React.FC = () => {
         hasError={true}
         error={editorError}
         errorMessage={getErrorMessage(editorError)}
-        stack={editorError instanceof Error ? editorError.stack : null}
+        stack={editorError instanceof Error ? editorError.stack : undefined}
       />
     );
   }

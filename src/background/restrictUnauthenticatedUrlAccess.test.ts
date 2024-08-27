@@ -28,6 +28,7 @@ import {
 } from "@/auth/authStorage";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { tabFactory } from "@/testUtils/factories/browserFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/auth/authStorage", () => ({
   __esModule: true,
@@ -59,7 +60,7 @@ describe("enforceAuthentication", () => {
   beforeEach(async () => {
     axiosMock
       .onGet(
-        `/api/organizations/${expectedManageOrganizationId}/auth-url-patterns/`,
+        API_PATHS.ORGANIZATION_AUTH_URL_PATTERNS(expectedManageOrganizationId),
       )
       .reply(200, expectedAuthUrlPatterns);
   });
@@ -94,7 +95,7 @@ describe("enforceAuthentication", () => {
   it("does not add event listener if network request fails", async () => {
     axiosMock
       .onGet(
-        `/api/organizations/${expectedManageOrganizationId}/auth-url-patterns/`,
+        API_PATHS.ORGANIZATION_AUTH_URL_PATTERNS(expectedManageOrganizationId),
       )
       .reply(500);
 

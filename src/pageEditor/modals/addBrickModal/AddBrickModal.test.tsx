@@ -35,6 +35,7 @@ import {
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
 import { PipelineFlavor } from "@/bricks/types";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // Need at least one item so callers see the registry as initialized
 brickRegistry.register([echoBrick, featureFlagBrick]);
@@ -44,8 +45,8 @@ beforeAll(() => {
   const listings = array(marketplaceListingFactory, 10)({ tags });
 
   appApiMock.reset();
-  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
-  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_TAGS).reply(200, tags);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_LISTINGS).reply(200, listings);
 });
 
 describe("AddBrickModal", () => {
@@ -78,7 +79,7 @@ describe("AddBrickModal", () => {
   });
 
   it("includes feature flagged brick", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [featureFlagBrick.featureFlag],
     });
 

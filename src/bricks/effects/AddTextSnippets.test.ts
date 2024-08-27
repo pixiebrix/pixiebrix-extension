@@ -59,7 +59,7 @@ describe("AddTextSnippets", () => {
       ]);
 
       await expect(
-        snippetRegistry.snippetShortcuts[0].handler(""),
+        snippetRegistry.snippetShortcuts[0]!.handler(""),
       ).resolves.toBe("test text");
     },
   );

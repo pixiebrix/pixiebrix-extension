@@ -36,7 +36,7 @@ async function getStarterBrickType(
 ): Promise<StarterBrickType | null> {
   // Look up the extension point in recipe inner definitions first
   if (modDefinition.definitions?.[modComponentDefinition.id]) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
     const definition: StarterBrickDefinitionProp = modDefinition.definitions[
       modComponentDefinition.id
     ]!.definition as StarterBrickDefinitionProp;

@@ -39,7 +39,7 @@ export async function blobToImageData(
 ): Promise<ImageData> {
   const image = await createImageBitmap(blob);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- 2d always exists
   const context = new OffscreenCanvas(width, height).getContext("2d")!;
 
   // Preserve aspect ratio (width/height) and center it (x/y)

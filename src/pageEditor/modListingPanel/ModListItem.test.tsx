@@ -24,11 +24,12 @@ import { Accordion, ListGroup } from "react-bootstrap";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { normalizeSemVerString } from "@/types/helpers";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("ModListItem", () => {
   it("renders expanded", async () => {
     const modMetadata = modMetadataFactory();
-    appApiMock.onGet(`/api/recipes/${modMetadata.id}/`).reply(
+    appApiMock.onGet(API_PATHS.MOD(modMetadata.id)).reply(
       200,
       modDefinitionFactory({
         metadata: modMetadata,
@@ -60,7 +61,7 @@ describe("ModListItem", () => {
 
   it("renders not expanded", async () => {
     const modMetadata = modMetadataFactory();
-    appApiMock.onGet(`/api/recipes/${modMetadata.id}/`).reply(
+    appApiMock.onGet(API_PATHS.MOD(modMetadata.id)).reply(
       200,
       modDefinitionFactory({
         metadata: modMetadata,
@@ -102,13 +103,11 @@ describe("ModListItem", () => {
         version: normalizeSemVerString("1.0.1"),
       },
     });
-    appApiMock
-      .onGet(`/api/recipes/${encodeURIComponent(modMetadata.id)}/`)
-      .reply(200, {
-        config: modDefinition,
-        sharing: modDefinition.sharing,
-        updated_at: modDefinition.updated_at,
-      });
+    appApiMock.onGet(API_PATHS.MOD(modMetadata.id)).reply(200, {
+      config: modDefinition,
+      sharing: modDefinition.sharing,
+      updated_at: modDefinition.updated_at,
+    });
     render(
       <Accordion defaultActiveKey={modMetadata.id}>
         <ListGroup>

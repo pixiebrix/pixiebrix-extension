@@ -21,6 +21,7 @@ import IntegrationConfigLocator from "@/integrations/integrationConfigLocator";
 import controlRoomTokenService from "@contrib/integrations/automation-anywhere.yaml";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import integrationRegistry from "@/integrations/registry";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const integration = fromJS(controlRoomTokenService as any);
 const locator = new IntegrationConfigLocator();
@@ -57,7 +58,7 @@ describe("locator", () => {
       pushdown: false,
     });
 
-    appApiMock.onGet("/api/services/shared/").reply(200, [config]);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [config]);
 
     await locator.refreshRemote();
 
@@ -88,7 +89,7 @@ describe("locator", () => {
       pushdown: true,
     });
 
-    appApiMock.onGet("/api/services/shared/").reply(200, [config]);
+    appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [config]);
 
     await locator.refreshRemote();
 

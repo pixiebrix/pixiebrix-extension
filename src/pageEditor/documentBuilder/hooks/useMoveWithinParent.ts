@@ -56,9 +56,9 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
 
     /* eslint-disable security/detect-object-injection -- swapping list elements  */
     [newElementsCollection[elementIndex], newElementsCollection[toIndex]] = [
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- protected by canMoveUp and canMoveDown
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- protected by canMoveUp and canMoveDown
       newElementsCollection[toIndex]!,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- protected by canMoveUp and canMoveDown
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- protected by canMoveUp and canMoveDown
       newElementsCollection[elementIndex]!,
     ];
     /* eslint-enable security/detect-object-injection  */

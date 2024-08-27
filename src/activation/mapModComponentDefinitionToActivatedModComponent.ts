@@ -90,7 +90,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
   if (deployment) {
     activatedModComponent._deployment = {
       id: deployment.id,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- This should be defined in practice
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This should be defined in practice
       timestamp: deployment.updated_at!,
       active: deployment.active,
     };

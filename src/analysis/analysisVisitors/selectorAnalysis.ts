@@ -334,7 +334,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     let brick;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- wrapped in try/catch
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- wrapped in try/catch
       brick = this.allBlocks.get(brickConfig.id)!.block;
     } catch {
       return;

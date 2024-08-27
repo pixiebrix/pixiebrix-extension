@@ -26,6 +26,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { absoluteApiUrl } from "@/data/service/apiClient";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
@@ -73,7 +74,7 @@ export class PushZap extends EffectABC {
     const { data: webhooks } = await options.platform.request<{
       new_push_fields: Webhook[];
     }>(pixiebrixConfigurationFactory(), {
-      url: await absoluteApiUrl("/api/webhooks/hooks/"),
+      url: await absoluteApiUrl(API_PATHS.WEBHOOKS),
       method: "get",
     });
 

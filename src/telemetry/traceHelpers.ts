@@ -69,7 +69,7 @@ export function hasBranchPrefix(
  */
 export function filterTracesByCall(
   records: TraceRecord[],
-  callBranches: Branch[] | null,
+  callBranches: Branch[] | undefined,
 ): TraceRecord[] {
   if (callBranches == null) {
     return [];

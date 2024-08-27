@@ -107,7 +107,7 @@ function findReactComponent(node: Node, traverseUp = 0): Fiber | null {
     key.startsWith("__reactInternalInstance$"),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- Internal React types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-non-null-assertion -- Internal React types
   const domFiber: Fiber | LegacyInstance | null = (node as any)[key!];
 
   if (domFiber == null) {

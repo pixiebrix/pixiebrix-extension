@@ -82,7 +82,7 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
     }
 
     const scrollIntoView = () => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
       elementRef.current!.scrollIntoView({
         behavior: "smooth",
         block: "center",

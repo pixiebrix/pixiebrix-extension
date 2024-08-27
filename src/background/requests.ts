@@ -67,6 +67,7 @@ import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConf
 import { type Nullishable } from "@/utils/nullishUtils";
 
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)
@@ -221,7 +222,7 @@ async function proxyRequest<T>(
   const authenticatedRequestConfig = await authenticate(
     pixiebrixConfigurationFactory(),
     {
-      url: await absoluteApiUrl("/api/proxy/"),
+      url: await absoluteApiUrl(API_PATHS.PROXY),
       method: "post" as Method,
       data: {
         ...requestConfig,
@@ -331,7 +332,7 @@ async function _performConfiguredRequest(
     });
 
     throw (
-      error ??
+      (error as Error) ??
       new Error("Unknown error making request from the background page")
     );
   }

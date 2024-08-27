@@ -31,6 +31,7 @@ import {
 } from "@/background/auth/authStorage";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const aaIntegration = fromJS(aaDefinition as any);
 const googleIntegration = fromJS(googleDefinition as any);
@@ -145,7 +146,7 @@ describe.each([googleIntegration, microsoftIntegration])(
       ]);
       await integrationConfigLocator.refreshLocal();
 
-      appApiMock.onGet("/api/services/shared/").reply(200, []);
+      appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
       appApiMock.onPost().reply(200, {
         access_token: "notatoken2",
         refresh_token: "notarefreshtoken2",
@@ -183,7 +184,7 @@ describe.each([googleIntegration, microsoftIntegration])(
       ]);
       await integrationConfigLocator.refreshLocal();
 
-      appApiMock.onGet("/api/services/shared/").reply(200, []);
+      appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
       appApiMock.onPost().reply(200, {
         access_token: "notatoken2",
       });
@@ -220,7 +221,7 @@ describe.each([googleIntegration, microsoftIntegration])(
       ]);
       await integrationConfigLocator.refreshLocal();
 
-      appApiMock.onGet("/api/services/shared/").reply(200, []);
+      appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, []);
       appApiMock.onPost().reply(401);
 
       await expect(

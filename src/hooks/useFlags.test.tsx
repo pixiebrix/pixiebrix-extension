@@ -32,6 +32,7 @@ import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const testFlag = featureFlagFactory();
 
@@ -56,7 +57,7 @@ describe("useFlags", () => {
   });
 
   it("only fetches once for multiple instances of the hook in nested/sibling components", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: [
         UNSAFE_assumeFeatureFlag("test-flag-parent"),
         UNSAFE_assumeFeatureFlag("test-flag-child1"),
@@ -91,7 +92,7 @@ describe("useFlags", () => {
   });
 
   it("re-fetches flags when the auth data changes", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["test-flag-parent", "test-flag-child1"],
     });
 
@@ -120,7 +121,7 @@ describe("useFlags", () => {
 
   describe("flagOn", () => {
     it("returns true if flag is present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: [testFlag],
       });
 
@@ -132,7 +133,7 @@ describe("useFlags", () => {
     });
 
     it("returns false if flag is not present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: [],
       });
 
@@ -146,7 +147,7 @@ describe("useFlags", () => {
 
   describe("flagOff", () => {
     it("returns true if flag is not present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: [],
       });
 
@@ -158,7 +159,7 @@ describe("useFlags", () => {
     });
 
     it("returns false if flag is present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: [testFlag],
       });
 
@@ -172,7 +173,7 @@ describe("useFlags", () => {
 
   describe("permit", () => {
     it("returns true if restricted flag for area is not present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.WORKSHOP),
       });
 
@@ -186,7 +187,7 @@ describe("useFlags", () => {
     });
 
     it("returns false if restricted flag for area is present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: [
           RestrictedFeatures.WORKSHOP,
           RestrictedFeatures.PAGE_EDITOR,
@@ -205,7 +206,7 @@ describe("useFlags", () => {
 
   describe("restrict", () => {
     it("returns true if restricted flag for area is present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: [
           RestrictedFeatures.WORKSHOP,
           RestrictedFeatures.PAGE_EDITOR,
@@ -222,7 +223,7 @@ describe("useFlags", () => {
     });
 
     it("returns false if restricted flag for area is not present", async () => {
-      appApiMock.onGet("/api/me/").reply(200, {
+      appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
         flags: ["restricted-workshop"],
       });
 

@@ -84,7 +84,7 @@ describe("form data normalization", () => {
     {
       name: "incoming data with null values",
       data: {
-        name: null as string,
+        name: null as unknown as string,
         age: 30,
       },
       expected: {

@@ -30,6 +30,7 @@ import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type UUID } from "@/types/stringTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -52,7 +53,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with "/api/registry/bricks/" is mocked
+    // Register directly in modDefinitionRegistry because background call to sync with the bricks registry endpoint is mocked
     modDefinitionRegistry.register([
       {
         id: modId,
@@ -60,9 +61,10 @@ describe("useSaveMod", () => {
       },
     ]);
 
-    appApiMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
-    appApiMock.onPut(`/api/bricks/${editablePackage.id}/`).reply(200, {});
+    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
+    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -111,7 +113,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with "/api/registry/bricks/" is mocked
+    // Register directly in modDefinitionRegistry because background call to sync with API_PATHS.REGISTRY_BRICKS is mocked
     // This data structure is not quite what happens in practice because the modDefinitionRegistry factory calls
     // normalizeModOptionsDefinition during hydration.
     modDefinitionRegistry.register([
@@ -121,10 +123,10 @@ describe("useSaveMod", () => {
       },
     ]);
 
-    appApiMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
     const putMock = appApiMock
-      .onPut(`/api/bricks/${editablePackage.id}/`)
+      .onPut(API_PATHS.BRICK(editablePackage.id))
       .reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
@@ -180,7 +182,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with "/api/registry/bricks/" is mocked
+    // Register directly in modDefinitionRegistry because background call to sync with API_PATHS.REGISTRY_BRICKS is mocked
     // This data structure is not quite what happens in practice because the modDefinitionRegistry factory calls
     // normalizeModOptionsDefinition during hydration.
     modDefinitionRegistry.register([
@@ -190,10 +192,10 @@ describe("useSaveMod", () => {
       },
     ]);
 
-    appApiMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
     const putMock = appApiMock
-      .onPut(`/api/bricks/${editablePackage.id}/`)
+      .onPut(API_PATHS.BRICK(editablePackage.id))
       .reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {

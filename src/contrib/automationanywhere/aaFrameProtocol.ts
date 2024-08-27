@@ -107,7 +107,7 @@ export async function initCopilotMessenger(): Promise<void> {
   });
 
   // Setting the runtime handler directly instead of the messenger to keep this file self-contained
-  browser.runtime.onMessage.addListener((message: UnknownObject) => {
+  browser.runtime.onMessage.addListener((message: UnknownObject): undefined => {
     // Mimic the page filtering of webext-messenger
     if (isSetCopilotDataMessage(message) && isMessageTarget(message)) {
       console.debug("Setting Co-Pilot data", {

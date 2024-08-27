@@ -22,7 +22,7 @@ import { AnnotationType } from "@/types/annotationTypes";
 
 type DecideBlockStatusArgs = {
   blockAnnotations: AnalysisAnnotation[];
-  traceRecord: TraceRecord;
+  traceRecord: TraceRecord | undefined;
 };
 
 export function decideBlockStatus({

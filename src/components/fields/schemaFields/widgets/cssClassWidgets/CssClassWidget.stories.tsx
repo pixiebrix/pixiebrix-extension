@@ -91,7 +91,7 @@ export const BlankLiteral: Story = {
 export const Omitted: Story = {
   args: {
     initialValues: {
-      cssClass: null,
+      cssClass: "",
     },
   },
 };
