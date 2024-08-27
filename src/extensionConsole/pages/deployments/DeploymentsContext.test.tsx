@@ -39,6 +39,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment } from "@/types/contract";
 import { validateTimestamp } from "@/utils/timeUtils";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -52,13 +53,9 @@ const mockDeploymentActivationRequests = (
   deployment: Deployment,
   modDefinition: ModDefinition,
 ) => {
-  axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+  axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, [deployment]);
   axiosMock
-    .onGet(
-      `/api/registry/bricks/${encodeURIComponent(
-        deployment.package.package_id,
-      )}/`,
-    )
+    .onGet(API_PATHS.REGISTRY_BRICK(deployment.package.package_id))
     .reply(
       200,
       packageConfigDetailFactory({
@@ -86,7 +83,7 @@ const Component: React.FC = () => {
 
 describe("DeploymentsContext", () => {
   beforeEach(() => {
-    axiosMock.onGet("/api/me/").reply(200, { flags: [] });
+    axiosMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, { flags: [] });
     jest.clearAllMocks();
     axiosMock.resetHistory();
 
@@ -94,7 +91,7 @@ describe("DeploymentsContext", () => {
   });
 
   it("doesn't error on activating empty list of deployments", async () => {
-    axiosMock.onPost("/api/deployments/").reply(200, []);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, []);
 
     render(
       <DeploymentsProvider>
@@ -233,7 +230,7 @@ describe("DeploymentsContext", () => {
   it("automatically deactivates unassigned deployments", async () => {
     const { deployment, modDefinition } = activatableDeploymentFactory({});
     // Deployment has been unassigned
-    axiosMock.onPost("/api/deployments/").reply(200, []);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, []);
 
     const { getReduxStore } = render(
       <DeploymentsProvider>
@@ -265,7 +262,9 @@ describe("DeploymentsContext", () => {
   });
 
   it("updating deployment reactivates mod that was previously unmanaged for restricted user", async () => {
-    axiosMock.onGet("/api/me/").reply(200, { flags: ["restricted-uninstall"] });
+    axiosMock
+      .onGet(API_PATHS.FEATURE_FLAGS)
+      .reply(200, { flags: ["restricted-uninstall"] });
     const { deployment, modDefinition } = activatableDeploymentFactory();
     mockDeploymentActivationRequests(deployment, modDefinition);
 
@@ -457,7 +456,7 @@ describe("DeploymentsContext", () => {
 
   it("unlinked extension error is ignored", async () => {
     getLinkedApiClientMock.mockRejectedValue(new ExtensionNotLinkedError());
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(200, [deploymentFactory()]);
     requestPermissionsMock.mockResolvedValue(true);
 
     render(
@@ -472,7 +471,7 @@ describe("DeploymentsContext", () => {
   });
 
   it("other deployment errors are preserved", async () => {
-    axiosMock.onPost("/api/deployments/").reply(500);
+    axiosMock.onPost(API_PATHS.DEPLOYMENTS).reply(500);
     requestPermissionsMock.mockResolvedValue(true);
 
     render(

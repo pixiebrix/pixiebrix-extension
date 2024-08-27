@@ -30,6 +30,7 @@ import {
   NO_RESPONSE_MESSAGE,
 } from "@/errors/networkErrorHelpers";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export default function enrichAxiosErrors(): void {
   expectContext("extension");
@@ -59,7 +60,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
     // Exclude app errors, unless they're proxied requests
     if (
       url.href.startsWith(DEFAULT_SERVICE_URL) &&
-      !url.pathname.startsWith("/api/proxy")
+      !url.pathname.startsWith(API_PATHS.PROXY)
     ) {
       // TODO: Maybe handle app errors here too, like we do in `selectServerErrorMessage`
       // eslint-disable-next-line @typescript-eslint/no-throw-literal -- Duck-typed Error, still works

@@ -33,8 +33,8 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
-import { getActivateModHashRoute } from "@/extensionConsole/shared/routeHelpers";
 import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
@@ -80,7 +80,7 @@ const Status: React.VoidFunctionComponent<{
             screen: "extensionConsole",
             reinstall: false,
           });
-          history.push(getActivateModHashRoute(modId));
+          history.push(API_PATHS.MOD_ACTIVATE(modId));
         }}
       >
         Activate
@@ -99,9 +99,7 @@ const Status: React.VoidFunctionComponent<{
             screen: "extensionConsole",
             reinstall: true,
           });
-          history.push(
-            `marketplace/activate/${encodeURIComponent(modId)}?reinstall=1`,
-          );
+          history.push(API_PATHS.MOD_ACTIVATE(modId, true));
         }}
       >
         <FontAwesomeIcon icon={faSync} /> Update

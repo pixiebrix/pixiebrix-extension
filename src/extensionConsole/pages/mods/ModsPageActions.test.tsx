@@ -31,6 +31,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { array } from "cooky-cutter";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("react-router", () => {
   const actual = jest.requireActual("react-router");
@@ -205,9 +206,7 @@ describe("ModsPageActions", () => {
     await userEvent.click(screen.getByText("Reactivate"));
 
     expect(historyPushMock).toHaveBeenCalledWith(
-      `marketplace/activate/${encodeURIComponent(
-        modViewItem.modId,
-      )}?reinstall=1`,
+      API_PATHS.MOD_ACTIVATE(modViewItem.modId, true),
     );
   });
 
@@ -255,7 +254,7 @@ describe("ModsPageActions", () => {
 
     expect(appApiMock.history.delete).toBeArrayOfSize(1);
     expect(appApiMock.history.delete![0]!.url).toBe(
-      `/api/bricks/${modViewItem.editablePackageId}/`,
+      API_PATHS.BRICK(String(modViewItem.editablePackageId)),
     );
   });
 });

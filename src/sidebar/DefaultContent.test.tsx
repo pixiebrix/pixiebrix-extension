@@ -23,6 +23,7 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
@@ -32,7 +33,7 @@ describe("renders DefaultPanel", () => {
   });
 
   it("renders restricted user content", async () => {
-    appApiMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
       flags: ["restricted-marketplace"],
     });
 

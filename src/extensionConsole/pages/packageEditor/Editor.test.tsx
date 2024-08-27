@@ -23,6 +23,7 @@ import notify from "@/utils/notify";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { renderHook } from "@/extensionConsole/testHelpers";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -44,7 +45,7 @@ describe("Editor", () => {
 
     it("opens the edit tab when brick is editable", async () => {
       const editablePackage = editablePackageMetadataFactory();
-      axiosMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+      axiosMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
       const { result } = renderHook(() => useOpenEditorTab());
       const openEditorTab = result.current;
@@ -55,7 +56,7 @@ describe("Editor", () => {
     });
 
     it("warns and does not open the edit tab with a brick is not editable", async () => {
-      axiosMock.onGet("/api/bricks/").reply(200, []);
+      axiosMock.onGet(API_PATHS.BRICKS).reply(200, []);
 
       const { result } = renderHook(() => useOpenEditorTab());
       const openEditorTab = result.current;
@@ -65,7 +66,7 @@ describe("Editor", () => {
     });
 
     it("displays error when request error", async () => {
-      axiosMock.onGet("/api/bricks/").reply(500);
+      axiosMock.onGet(API_PATHS.BRICKS).reply(500);
 
       const { result } = renderHook(() => useOpenEditorTab());
       const openEditorTab = result.current;

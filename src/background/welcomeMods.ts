@@ -64,6 +64,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 import { restrict } from "@/auth/featureFlagStorage";
 import { RestrictedFeatures } from "@/auth/featureFlags";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -172,7 +173,7 @@ export type ActivateModsResult = {
   rejectedModCount?: number;
 
   /**
-   * Number of welcome mods that were successfully activated activated
+   * Number of welcome mods that were successfully activated
    */
   resolvedModCount?: number;
 
@@ -253,8 +254,9 @@ async function activateMods(
           // If the welcome mod has been previously activated, we need to use the existing database ID
           // Otherwise, we create a new database
           // See: https://github.com/pixiebrix/pixiebrix-extension/pull/8499
-          const existingDatabases =
-            await client.get<Database[]>("/api/databases/");
+          const existingDatabases = await client.get<Database[]>(
+            API_PATHS.DATABASES,
+          );
           const database = existingDatabases.data.find(
             ({ name }) => name === args.name,
           );
@@ -262,7 +264,7 @@ async function activateMods(
             return database.id;
           }
 
-          const response = await client.post<Database>("/api/databases/", {
+          const response = await client.post<Database>(API_PATHS.DATABASES, {
             name: args.name,
           });
           return response.data.id;
@@ -316,7 +318,7 @@ async function getWelcomeMods(): Promise<ModDefinition[]> {
 
   try {
     const { data: welcomeMods } = await client.get<ModDefinition[]>(
-      "/api/onboarding/starter-blueprints/",
+      API_PATHS.ONBOARDING_STARTER_BLUEPRINTS,
     );
     return welcomeMods;
   } catch (error) {

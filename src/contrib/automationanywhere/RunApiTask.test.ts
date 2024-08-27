@@ -39,6 +39,7 @@ import { setCachedAuthData } from "@/background/auth/authStorage";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { sleep } from "@/utils/timeUtils";
 import { type NetworkRequestConfig } from "@/types/networkTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/utils/timeUtils", () => {
   const actual = jest.requireActual("@/utils/timeUtils");
@@ -96,7 +97,7 @@ beforeEach(async () => {
   });
   configId = config.id;
   appApiMock.reset();
-  appApiMock.onGet("/api/services/shared/").reply(200, [config]);
+  appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [config]);
   await integrationConfigLocator.refresh();
 
   await setCachedAuthData(configId, {

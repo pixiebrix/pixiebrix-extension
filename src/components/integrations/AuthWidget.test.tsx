@@ -37,6 +37,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { produce } from "immer";
 import { userEvent } from "@/pageEditor/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const { remoteConfig, integrationDefinition } =
   generateIntegrationAndRemoteConfig();
@@ -59,9 +60,11 @@ const authOption2: AuthOption = {
 
 beforeAll(async () => {
   registerDefaultWidgets();
-  appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
-  appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
-  appApiMock.onGet("/api/registry/bricks/").reply(200, [integrationDefinition]);
+  appApiMock.onGet(API_PATHS.INTEGRATIONS).reply(200, [integrationDefinition]);
+  appApiMock.onGet(API_PATHS.INTEGRATIONS_SHARED).reply(200, [remoteConfig]);
+  appApiMock
+    .onGet(API_PATHS.REGISTRY_BRICKS)
+    .reply(200, [integrationDefinition]);
   // Wire up directly to the background implementations for integration testing
   jest
     .mocked(integrationConfigLocator.refresh)
@@ -167,10 +170,10 @@ describe("AuthWidget", () => {
     );
 
     appApiMock
-      .onGet("/api/services/")
+      .onGet(API_PATHS.INTEGRATIONS)
       .reply(200, [integrationWithOptionalField]);
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [integrationWithOptionalField]);
     await refreshRegistries();
 

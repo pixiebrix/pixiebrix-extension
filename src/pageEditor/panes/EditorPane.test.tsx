@@ -66,6 +66,7 @@ import {
   starterBrickDefinitionPropFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] -- TODO: replace with native expect and it.each */
 
@@ -124,9 +125,9 @@ beforeAll(async () => {
       }) as EditablePackageMetadata,
   );
 
-  appApiMock.onGet("/api/marketplace/tags/").reply(200, tags);
-  appApiMock.onGet("/api/marketplace/listings/").reply(200, listings);
-  appApiMock.onGet("/api/bricks/").reply(200, packages);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_TAGS).reply(200, tags);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_LISTINGS).reply(200, listings);
+  appApiMock.onGet(API_PATHS.BRICKS).reply(200, packages);
 
   clock = sinonTimers.install();
 });

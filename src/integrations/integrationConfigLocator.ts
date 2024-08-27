@@ -38,6 +38,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type SetRequired } from "type-fest";
 import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 enum Visibility {
   Private = 0,
@@ -124,7 +125,7 @@ class IntegrationConfigLocator {
       const client = await getLinkedApiClient();
       const { data } = await client.get<RemoteIntegrationConfig[]>(
         // Fetch full configurations, including credentials for configurations with pushdown
-        "/api/services/shared/",
+        API_PATHS.INTEGRATIONS_SHARED,
       );
       this.remote = data;
       console.debug(

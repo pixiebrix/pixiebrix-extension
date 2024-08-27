@@ -29,6 +29,7 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
@@ -75,7 +76,7 @@ describe("ModsPageTableLayout", () => {
   test("doesn't flash the 'Get Started' tab while loading", async () => {
     appApiMock.reset();
 
-    const deferred = onDeferredGet("/api/onboarding/starter-blueprints/");
+    const deferred = onDeferredGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS);
 
     render(<ModsPageTableLayout />);
     await waitForEffect();

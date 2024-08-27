@@ -27,6 +27,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import pDefer from "p-defer";
 import { normalizeSemVerString } from "@/types/helpers";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("localRegistry", () => {
   beforeEach(() => {
@@ -39,22 +40,22 @@ describe("localRegistry", () => {
 
   it("should sync packages for empty db", async () => {
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(200, [defaultModDefinitionFactory()]);
     await syncPackages();
     const recipes = await getByKinds(["recipe"]);
     expect(recipes).toHaveLength(1);
-    expect(appApiMock.history.get![0]!.url).toBe("/api/registry/bricks/");
+    expect(appApiMock.history.get![0]!.url).toBe(API_PATHS.REGISTRY_BRICKS);
   });
 
   it("should sync packages", async () => {
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .replyOnce(200, [defaultModDefinitionFactory()]);
 
     await syncPackages();
 
-    appApiMock.onGet("/api/registry/bricks/").replyOnce(200, []);
+    appApiMock.onGet(API_PATHS.REGISTRY_BRICKS).replyOnce(200, []);
 
     await syncPackages();
 
@@ -68,7 +69,9 @@ describe("localRegistry", () => {
       draft.metadata.version = normalizeSemVerString("9.9.9");
     });
 
-    appApiMock.onGet("/api/registry/bricks/").reply(200, [updated, definition]);
+    appApiMock
+      .onGet(API_PATHS.REGISTRY_BRICKS)
+      .reply(200, [updated, definition]);
 
     await syncPackages();
 
@@ -85,7 +88,7 @@ describe("localRegistry", () => {
     const deferred = pDefer<unknown[]>();
 
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(async () => deferred.promise);
 
     const recipesPromise = getByKinds(["recipe"]);
@@ -103,7 +106,7 @@ describe("localRegistry", () => {
     const deferred = pDefer<unknown[]>();
 
     appApiMock
-      .onGet("/api/registry/bricks/")
+      .onGet(API_PATHS.REGISTRY_BRICKS)
       .reply(async () => deferred.promise);
 
     const packagePromise = find("foo/bar");

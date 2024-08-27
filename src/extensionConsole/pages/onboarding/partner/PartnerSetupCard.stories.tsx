@@ -34,6 +34,7 @@ import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
 import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
 import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { mockAnonymousMeApiResponse } from "@/testUtils/userMock";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -100,7 +101,7 @@ OAuth2.storyName = "OAuth2";
 OAuth2.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", async (request, result, context) =>
+      rest.get(API_PATHS.FEATURE_FLAGS, async (request, result, context) =>
         // State is blank for unauthenticated users
         result(context.json({ flags: [] })),
       ),
@@ -116,7 +117,7 @@ TokenUnlinked.storyName = "Token (Unlinked Extension)";
 TokenUnlinked.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", async (request, result, context) =>
+      rest.get(API_PATHS.FEATURE_FLAGS, async (request, result, context) =>
         // State is blank for unauthenticated users
         result(context.json({ flags: [] })),
       ),
@@ -132,7 +133,7 @@ TokenLinked.storyName = "Token (Linked Extension)";
 TokenLinked.parameters = {
   msw: {
     handlers: [
-      rest.get("/api/me/", async (request, result, context) =>
+      rest.get(API_PATHS.ME, async (request, result, context) =>
         result(context.json(meApiResponseFactory())),
       ),
     ],

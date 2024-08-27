@@ -20,6 +20,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment, type PackageConfigDetail } from "@/types/contract";
 import { allSettled } from "@/utils/promiseUtils";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 /**
  * Fetches the mod definition for the given deployment.
@@ -50,7 +51,7 @@ async function fetchDeploymentModDefinition({
 }: Deployment["package"]): Promise<ModDefinition> {
   const client = await getLinkedApiClient();
   const { data } = await client.get<PackageConfigDetail>(
-    `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
+    API_PATHS.REGISTRY_BRICK(registryId),
     { params: { version } },
   );
 

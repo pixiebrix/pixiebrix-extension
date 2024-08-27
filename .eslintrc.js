@@ -49,7 +49,7 @@ module.exports = {
     "new-cap": [
       "error",
       {
-        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
+        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_|API_PATHS.)",
       },
     ],
     "no-param-reassign": [

@@ -30,6 +30,7 @@ import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { components } from "@/types/swagger";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { getMe } from "@/data/service/backgroundApi";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export const initialTheme: ThemeAssets = {
   logo: getThemeLogo(DEFAULT_THEME),
@@ -79,7 +80,7 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
         components["schemas"]["OrganizationTheme"]
       >(
         // Is an unauthenticated endpoint
-        `/api/organizations/${managedOrganizationId}/theme/`,
+        API_PATHS.ORGANIZATION_THEME(managedOrganizationId),
       );
       organizationThemeApiResponse = data;
     } else if (meApiResponse.organization?.theme) {

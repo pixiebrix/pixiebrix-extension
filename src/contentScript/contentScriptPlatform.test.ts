@@ -25,6 +25,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import pDefer from "p-defer";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("@/contentScript/integrations/deferredLoginController");
 
@@ -47,7 +48,7 @@ afterEach(async () => {
 
 describe("contentScriptPlatform", () => {
   it("makes non-interactive successful call", async () => {
-    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, { flags: [] });
 
     const config = sanitizedIntegrationConfigFactory();
     const request = { url: "https://example.com" };
@@ -63,7 +64,7 @@ describe("contentScriptPlatform", () => {
   });
 
   it("handles interactive error", async () => {
-    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, { flags: [] });
 
     backgroundRequestMock.mockRejectedValueOnce(new Error("Other Error"));
 
@@ -83,7 +84,7 @@ describe("contentScriptPlatform", () => {
   });
 
   it("handles deferred login", async () => {
-    appApiMock.onGet("/api/me/").reply(200, { flags: [] });
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, { flags: [] });
 
     backgroundRequestMock.mockRejectedValueOnce(
       new InteractiveLoginRequiredError("Test error message"),

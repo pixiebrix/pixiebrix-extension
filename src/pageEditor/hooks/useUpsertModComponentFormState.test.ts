@@ -22,6 +22,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 const defaultOptions = {
@@ -39,7 +40,7 @@ describe("useUpsertModComponentFormState", () => {
   });
 
   beforeEach(() => {
-    axiosMock.onGet("/api/bricks/").reply(200, []);
+    axiosMock.onGet(API_PATHS.BRICKS).reply(200, []);
   });
 
   afterEach(() => {

@@ -29,6 +29,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 let modDefinition: ModDefinition;
 let auth: AuthState;
@@ -57,7 +58,7 @@ beforeEach(() => {
   });
 
   // XXX: why do we need to call this if it's already defined in appApiMock?
-  appApiMock.onGet("/api/marketplace/listings/").reply(200, []);
+  appApiMock.onGet(API_PATHS.MARKETPLACE_LISTINGS).reply(200, []);
 });
 
 afterEach(() => {
