@@ -66,8 +66,8 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
 
   let messageSeq = 0;
   const targetOrigin = currentWindow.origin;
-  const fulfillmentCallbacks: CallbackMap = new Map();
-  const rejectionCallbacks: CallbackMap = new Map();
+  const fulfillmentCallbacks = new Map() as CallbackMap;
+  const rejectionCallbacks = new Map() as CallbackMap;
 
   const listen = (
     type: string,

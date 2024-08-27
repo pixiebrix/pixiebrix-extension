@@ -56,7 +56,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
    * Infer the type of all blocks in the registry. Uses the brick cache if available.
    */
   private async inferAllTypes(): Promise<TypedBrickMap> {
-    const typeCache: TypedBrickMap = new Map();
+    const typeCache = new Map() as TypedBrickMap;
 
     const items = this.isCachedInitialized ? this.cached : await this.all();
 
