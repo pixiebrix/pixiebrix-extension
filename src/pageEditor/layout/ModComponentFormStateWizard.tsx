@@ -40,7 +40,7 @@ const LOG_STEP_NAME = "Logs";
 const wizard = [
   { step: EDIT_STEP_NAME, Component: EditTab },
   { step: LOG_STEP_NAME, Component: LogsTab },
-] as const;
+] as const satisfies WizardStep[];
 
 type WizardStepName = (typeof wizard)[number]["step"];
 
