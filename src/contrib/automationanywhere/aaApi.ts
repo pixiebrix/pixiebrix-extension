@@ -254,7 +254,7 @@ async function searchFiles(
           {
             operator: "eq",
             field: "id",
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above with isNullOrBlank
             value: options.value!,
           },
           fileTypeOperand,

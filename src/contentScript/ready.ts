@@ -99,7 +99,6 @@ export async function isTargetReady(target: Target): Promise<boolean> {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
 function respondToReadinessChecks(message: unknown): Promise<true> | undefined {
   if (
     isRemoteProcedureCallRequest(message) &&

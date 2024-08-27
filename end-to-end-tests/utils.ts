@@ -135,7 +135,7 @@ export async function getSidebarPage(
     expect(sidebarPage).toBeDefined();
   }).toPass({ timeout: 5000 });
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion  -- checked above
   return sidebarPage!;
 }
 

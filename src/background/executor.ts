@@ -206,7 +206,6 @@ export async function requestRunInAllFrames(
   return fulfilled;
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
 function onMessage(
   message: unknown,
   sender: Runtime.MessageSender,

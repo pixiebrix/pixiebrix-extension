@@ -70,7 +70,7 @@ export const modModalsSlice = createSlice({
       state.showShareContext = null;
     },
     setCancelingPublish(state) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Immer makes this safe
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Immer makes this safe
       state.showPublishContext!.cancelingPublish = true;
     },
     closeModal() {

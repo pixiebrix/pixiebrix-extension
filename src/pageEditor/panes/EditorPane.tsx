@@ -34,6 +34,7 @@ import {
   selectEditorUpdateKey,
 } from "@/pageEditor/store/editor/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -82,6 +83,10 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 const EditorPane: React.VFC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
+  );
+  assertNotNullish(
+    activeModComponentFormState,
+    "Editor Pane requires activeModComponentFormState",
   );
   const editorUpdateKey = useSelector(selectEditorUpdateKey);
   // Key to force reload of component when user selects a different mod component from the sidebar

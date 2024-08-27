@@ -83,7 +83,7 @@ export default function getUnconfiguredComponentIntegrations({
     if (notOptional) {
       dedupedIntegrationDependencies.push(notOptional);
     } else {
-      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       -- Groups can't be empty, they've just been created by groupBy */
       dedupedIntegrationDependencies.push(group[0]!);
     }

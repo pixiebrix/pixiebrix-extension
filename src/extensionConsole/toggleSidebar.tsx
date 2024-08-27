@@ -21,7 +21,7 @@ const sidebarActiveClassName = "active"; // Used to show/hide navbar on small sc
 const sidebarIconOnlyClassName = "sidebar-icon-only"; // Used to show/hide navbar on big screen
 
 function getSidebar(): Element {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We know it exists
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know it exists
   return document.querySelector(`#${SIDEBAR_ID}`)!;
 }
 

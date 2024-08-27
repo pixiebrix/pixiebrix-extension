@@ -281,7 +281,7 @@ export async function lookupStarterBrick<
   }
 
   if (hasInnerStarterBrickRef(config)) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked by hasInnerStarterBrickRef
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked by hasInnerStarterBrickRef
     const definition = config.definitions![config.extensionPointId];
     console.debug(
       "Converting mod component definition to temporary starter brick",

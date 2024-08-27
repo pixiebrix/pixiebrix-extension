@@ -42,7 +42,7 @@ function extractJsonString(content: string): string {
     throw new Error("No JSON object or array found");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- Just checked length
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Just checked length
   return sorted[0]!;
 }
 

@@ -204,13 +204,16 @@ export class GoogleSheetsLookup extends TransformerABC {
       const entries = zip(headers as string[], row).filter(
         ([rowHeader]) => !isNullOrBlank(rowHeader),
       );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- loose type we don't have control over
       return Object.fromEntries(entries);
     });
 
     if (multi || returnAllRows) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- loose type we don't have control over
       return matchRecords;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- loose type we don't have control over
     return matchRecords[0];
   }
 }

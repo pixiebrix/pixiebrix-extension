@@ -28,7 +28,8 @@ describe("migratePersistedState", () => {
     expect(newState).toEqual({
       foo: "bar",
       _persist: {
-        version: 0,
+        // Redux-persist defaults to version -1
+        version: -1,
         rehydrated: true,
       },
     });
@@ -371,6 +372,24 @@ describe("migratePersistedState", () => {
       ...v3State,
       _persist: {
         version: 3,
+        rehydrated: true,
+      },
+    });
+  });
+
+  it("handles state with default version -1", () => {
+    const state = {
+      foo: "bar",
+      _persist: {
+        version: -1,
+        rehydrated: false,
+      },
+    };
+    const newState = migratePersistedState(state, {});
+    expect(newState).toEqual({
+      foo: "bar",
+      _persist: {
+        version: -1,
         rehydrated: true,
       },
     });
