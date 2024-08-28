@@ -18,7 +18,6 @@
 import React from "react";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
-import { waitForAct } from "@/testUtils/testHelpers";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -33,7 +32,6 @@ import {
   loadingAsyncCacheStateFactory,
   valueToAsyncCacheState,
 } from "@/utils/asyncStateUtils";
-import { waitFor } from "@testing-library/react";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
@@ -88,9 +86,7 @@ describe("ModsPage", () => {
       },
     );
 
-    await waitFor(() => {
-      expect(screen.getByTestId("loader")).toBeInTheDocument();
-    });
+    expect(screen.getByTestId("loader")).toBeInTheDocument();
   });
 
   it("renders loading state when auto deploying", async () => {
@@ -102,9 +98,7 @@ describe("ModsPage", () => {
       </DeploymentsProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByTestId("loader")).toBeInTheDocument();
-    });
+    expect(screen.getByTestId("loader")).toBeInTheDocument();
   });
 
   it("renders error state when mods fail to load", async () => {
@@ -123,9 +117,7 @@ describe("ModsPage", () => {
       },
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("An error occurred")).toBeInTheDocument();
-    });
+    expect(screen.getByText("An error occurred")).toBeInTheDocument();
     expect(screen.getByText("Failed to load mods")).toBeInTheDocument();
   });
 
@@ -143,9 +135,9 @@ describe("ModsPage", () => {
       },
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("An error occurred")).toBeInTheDocument();
-    });
+    await expect(
+      screen.findByText("An error occurred"),
+    ).resolves.toBeInTheDocument();
     expect(screen.getByText("Internal Server Error")).toBeInTheDocument();
   });
 
@@ -164,11 +156,9 @@ describe("ModsPage", () => {
       },
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText("Welcome to the PixieBrix Extension Console"),
-      ).toBeInTheDocument();
-    });
+    expect(
+      screen.getByText("Welcome to the PixieBrix Extension Console"),
+    ).toBeInTheDocument();
   });
 
   test("renders active mods when there are mods", async () => {
@@ -215,7 +205,6 @@ describe("ModsPage", () => {
       },
     );
 
-    waitForAct();
     expect(screen.getByText("Test Mod 1")).toBeInTheDocument();
     expect(screen.getByText("Unavailable Test Mod")).toBeInTheDocument();
   });
@@ -256,8 +245,6 @@ describe("ModsPage", () => {
       },
     );
 
-    waitForAct();
-
     const searchQuery = "query doesn't match any mods";
     const searchInput = screen.getByTestId("mod-search-input");
     await userEvent.type(searchInput, searchQuery);
@@ -279,7 +266,6 @@ describe("ModsPage", () => {
       },
     );
 
-    waitForAct();
     expect(
       screen.getByRole("heading", {
         name: "Welcome to PixieBrix! Ready to get started?",
