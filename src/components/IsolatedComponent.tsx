@@ -40,6 +40,11 @@ async function discardStylesheetsWhilePending(
   lazyFactory: LazyFactory<unknown>,
 ) {
   const baseUrl = chrome.runtime.getURL("css");
+  /**
+   * Prevent listed stylesheets from being disabled
+   * @since 2.1.1
+   * @see https://github.com/pixiebrix/pixiebrix-extension/issues/8965
+   */
   const cssFileAllowList = [`${baseUrl}/ActivatePanels.css`] as const;
 
   const observer = new MutationObserver((mutations) => {
