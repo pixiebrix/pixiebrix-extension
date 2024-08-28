@@ -22,7 +22,9 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
-import { type OnboardingType } from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
+import useOnboarding, {
+  type OnboardingType,
+} from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
@@ -130,19 +132,17 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
   </Col>
 );
 
-const OnboardingView: React.VoidFunctionComponent<{
-  onboardingType: OnboardingType;
+export const OnboardingViewContent: React.FC<{
   isLoading: boolean;
-  filter?: string;
-  width: number;
-  height: number;
-}> = ({ onboardingType, filter, isLoading, width, height }) => {
+  onboardingType: OnboardingType;
+  onboardingFilter?: string;
+}> = ({ onboardingType, onboardingFilter, isLoading }) => {
   const onBoardingInformation = useMemo(() => {
-    if (!(onboardingType === "restricted") && filter === "public") {
+    if (!(onboardingType === "restricted") && onboardingFilter === "public") {
       return <ActivateFromMarketplaceColumn />;
     }
 
-    if (!(onboardingType === "restricted") && filter === "personal") {
+    if (!(onboardingType === "restricted") && onboardingFilter === "personal") {
       return <UnaffiliatedColumn />;
     }
 
@@ -168,7 +168,7 @@ const OnboardingView: React.VoidFunctionComponent<{
         return <UnaffiliatedColumn />;
       }
     }
-  }, [filter, onboardingType]);
+  }, [onboardingFilter, onboardingType]);
 
   const onboardingCallout = useMemo(() => {
     switch (onboardingType) {
@@ -177,35 +177,50 @@ const OnboardingView: React.VoidFunctionComponent<{
       }
 
       default: {
-        if (filter === "personal") {
+        if (onboardingFilter === "personal") {
           return "Create your own mods";
         }
 
-        if (filter === "public") {
+        if (onboardingFilter === "public") {
           return "Discover pre-made mods in the public marketplace";
         }
 
         return "Welcome to PixieBrix! Ready to get started?";
       }
     }
-  }, [filter, onboardingType]);
+  }, [onboardingFilter, onboardingType]);
 
   const headerImage =
-    filter === "personal" ? (
+    onboardingFilter === "personal" ? (
       <img src={workshopImage} alt="Workshop" width={300} />
     ) : (
       <img src={marketplaceImage} alt="Marketplace" width={300} />
     );
 
   return (
+    <Card className={styles.root}>
+      <Card.Body className={styles.cardBody}>
+        {headerImage}
+        <h3 className="mb-4 text-center">{onboardingCallout}</h3>
+        {!isLoading && <Row>{onBoardingInformation}</Row>}
+      </Card.Body>
+    </Card>
+  );
+};
+
+const OnboardingView: React.VoidFunctionComponent<{
+  width: number;
+  height: number;
+}> = ({ width, height }) => {
+  const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
+
+  return (
     <div style={{ height: `${height}px`, width: `${width}px` }}>
-      <Card className={styles.root}>
-        <Card.Body className={styles.cardBody}>
-          {headerImage}
-          <h3 className="mb-4 text-center">{onboardingCallout}</h3>
-          {!isLoading && <Row>{onBoardingInformation}</Row>}
-        </Card.Body>
-      </Card>
+      <OnboardingViewContent
+        isLoading={isLoading}
+        onboardingType={onboardingType}
+        onboardingFilter={onboardingFilter}
+      />
     </div>
   );
 };

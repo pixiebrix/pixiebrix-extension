@@ -47,6 +47,8 @@ export const selectActiveTab = ({ modsPage }: ModsPageRootState) =>
   modsPage.activeTab;
 export const selectSearchQuery = ({ modsPage }: ModsPageRootState) =>
   modsPage.searchQuery;
+export const selectIsLoadingData = ({ modsPage }: ModsPageRootState) =>
+  modsPage.isLoadingData;
 
 const selectActivatedModIds = createSelector(
   selectActivatedModComponents,

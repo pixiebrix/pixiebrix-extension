@@ -54,33 +54,67 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   ModDefinition[],
   void,
   { state: ModDefinitionsRootState }
->("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
-  const registryModDefinitions = await modDefinitionRegistry.all();
-  // Remove the top level registry item id to satisfy types properly
-  return registryModDefinitions.map((x) => {
-    const { id, ...rest } = x;
-    return rest;
-  });
-});
+>(
+  "modDefinitions/loadFromCache",
+  async () => {
+    const registryModDefinitions = await modDefinitionRegistry.all();
+    // Remove the top level registry item id to satisfy types properly
+    return registryModDefinitions.map((x) => {
+      const { id, ...rest } = x;
+      return rest;
+    });
+  },
+  {
+    condition(_, { getState }) {
+      const {
+        isCacheUninitialized,
+        isLoadingFromCache,
+        isLoadingFromRemote,
+        isFetchingFromRemote,
+      } = getState().modDefinitions;
+
+      return (
+        isCacheUninitialized &&
+        !isLoadingFromCache &&
+        !isLoadingFromRemote &&
+        !isFetchingFromRemote
+      );
+    },
+  },
+);
 
 export const syncRemoteModDefinitions = createAsyncThunk<
   ModDefinition[],
   void,
   { state: ModDefinitionsRootState }
->("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
-  await syncRemotePackages();
-  const registryModDefinitions = await modDefinitionRegistry.all();
-  // Remove the top level registry item id to satisfy types properly
-  return registryModDefinitions.map((x) => {
-    const { id, ...rest } = x;
-    return rest;
-  });
-});
+>(
+  "modDefinitions/refresh",
+  async () => {
+    await syncRemotePackages();
+    const registryModDefinitions = await modDefinitionRegistry.all();
+    // Remove the top level registry item id to satisfy types properly
+    return registryModDefinitions.map((x) => {
+      const { id, ...rest } = x;
+      return rest;
+    });
+  },
+  {
+    condition(_, { getState }) {
+      const { isLoadingFromRemote, isFetchingFromRemote } =
+        getState().modDefinitions;
+      return !isLoadingFromRemote && !isFetchingFromRemote;
+    },
+  },
+);
 
 export const modDefinitionsSlice = createSlice({
   name: "modDefinitions",
   initialState,
-  reducers: {},
+  reducers: {
+    initializeRemote(state) {
+      state.isRemoteUninitialized = false;
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(revertAll, () => initialState)
