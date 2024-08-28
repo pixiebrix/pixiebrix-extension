@@ -81,7 +81,7 @@ export type RootState = AuthRootState &
   SessionChangesRootState;
 
 const conditionalMiddleware: Middleware[] = [];
-if (typeof createLogger === "function") {
+if (typeof createLogger === "function" && process.env.JEST_WORKER_ID == null) {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
   conditionalMiddleware.push(

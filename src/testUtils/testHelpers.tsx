@@ -52,8 +52,9 @@ import {
 /**
  * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
  *
- * NOTE: this assumes you're using "react-dom/test-utils". For hooks you have to use act from
+ * NOTE: this assumes you're using "react-dom/test-utils". For hooks, you have to use act from
  * "@testing-library/react-hooks"
+ *
  */
 export const waitForEffect = async () =>
   // eslint-disable-next-line testing-library/no-unnecessary-act -- hack for testing some asynchronous code that the standard utilities have proven inadequate

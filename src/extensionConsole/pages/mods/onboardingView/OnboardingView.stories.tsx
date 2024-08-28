@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
+import { OnboardingViewContent } from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
@@ -28,8 +28,13 @@ import modsPageSlice, {
 
 export default {
   title: "Blueprints/OnboardingView",
-  component: OnboardingView,
+  component: OnboardingViewContent,
   argTypes: {
+    isLoading: {
+      control: {
+        type: "boolean",
+      },
+    },
     onboardingType: {
       options: ["default", "hasDeployments", "restricted", "hasTeamBlueprints"],
       control: {
@@ -43,7 +48,7 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof OnboardingView>;
+} as ComponentMeta<typeof OnboardingViewContent>;
 
 function optionsStore() {
   return configureStore({
@@ -57,13 +62,14 @@ function optionsStore() {
   });
 }
 
-const Template: ComponentStory<typeof OnboardingView> = (args) => (
+const Template: ComponentStory<typeof OnboardingViewContent> = (args) => (
   <Provider store={optionsStore()}>
-    <OnboardingView {...args} />
+    <OnboardingViewContent {...args} />
   </Provider>
 );
 
 export const Default = Template.bind({});
 Default.args = {
+  isLoading: false,
   onboardingType: "default",
 };

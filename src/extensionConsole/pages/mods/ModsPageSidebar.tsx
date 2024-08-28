@@ -220,7 +220,7 @@ const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
           placeholder="Search all mods"
           size="sm"
           value={searchInput}
-          data-testid="blueprints-search-input"
+          data-testid="mod-search-input"
           onChange={({ target }) => {
             setSearchInput(target.value);
           }}

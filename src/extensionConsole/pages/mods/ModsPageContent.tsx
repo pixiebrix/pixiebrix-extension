@@ -21,13 +21,14 @@ import GridView from "@/extensionConsole/pages/mods/gridView/GridView";
 import { useSelector } from "react-redux";
 import {
   selectActiveTab,
+  selectIsLoadingData,
   selectView,
 } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
 import EmptyView from "@/extensionConsole/pages/mods/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
-import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
+import Loader from "@/components/Loader";
 
 const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
   tableInstance,
@@ -36,7 +37,7 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
 }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
-  const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
+  const isLoadingTableData = useSelector(selectIsLoadingData);
 
   const {
     state: { globalFilter },
@@ -47,6 +48,15 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
 
   if (activeTab.key === "Get Started") {
     return <GetStartedView width={width} height={height} />;
+  }
+
+  if (isLoadingTableData) {
+    return (
+      // Loader looks better if it's more central on the page vs centered on the table UI area
+      <div style={{ width: 0.8 * width, height, marginRight: "20%" }}>
+        <Loader />
+      </div>
+    );
   }
 
   if (rows.length > 0) {
@@ -61,15 +71,8 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
     );
   }
 
-  return (
-    <OnboardingView
-      onboardingType={onboardingType}
-      isLoading={isLoading}
-      filter={onboardingFilter}
-      width={width}
-      height={height}
-    />
-  );
+  // If there is no set table filter and the table rows (mods) are still empty, show the onboarding view
+  return <OnboardingView width={width} height={height} />;
 };
 
 export default ModsPageContent;
