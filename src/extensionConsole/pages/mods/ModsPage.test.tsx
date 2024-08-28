@@ -65,6 +65,10 @@ describe("ModsPage", () => {
       flags: [],
     });
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
+    useOnboardingMock.mockReturnValue({
+      onboardingType: "default",
+      isLoading: false,
+    });
   });
 
   it("renders loading state when mods are loading", async () => {
@@ -264,11 +268,6 @@ describe("ModsPage", () => {
   });
 
   test("renders OnboardingView when there are no mods anfd no search query", async () => {
-    useOnboardingMock.mockReturnValue({
-      onboardingType: "default",
-      isLoading: false,
-    });
-
     render(
       <DeploymentsProvider>
         <ModsPage />
