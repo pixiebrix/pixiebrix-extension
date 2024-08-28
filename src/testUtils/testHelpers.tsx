@@ -52,13 +52,32 @@ import {
 /**
  * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
  *
- * NOTE: this assumes you're using "react-dom/test-utils". For hooks you have to use act from
+ * NOTE: this assumes you're using "react-dom/test-utils". For hooks, you have to use act from
  * "@testing-library/react-hooks"
+ *
+ * NOTE: If this is causing your test to hang, you may need to use waitForAct instead.
+ *
+ * @see waitForAct
  */
 export const waitForEffect = async () =>
   // eslint-disable-next-line testing-library/no-unnecessary-act -- hack for testing some asynchronous code that the standard utilities have proven inadequate
   act(async () => {
     // Awaiting the async state update
+  });
+
+/**
+ * Wait for side effects of rendering (e.g. children)
+ *
+ * This is needed for cases where there are NO async side effects,
+ * only synchronous ones involved with rendering the component. In
+ * these cases, waitForEffect causes the render to hang indefinitely.
+ *
+ *  @see waitForEffect
+ */
+export const waitForAct = () =>
+  // eslint-disable-next-line testing-library/no-unnecessary-act,@typescript-eslint/no-confusing-void-expression -- hack for testing some asynchronous code that the standard utilities have proven inadequate
+  act(() => {
+    // Awaiting the state update
   });
 
 type SetupRedux = (

@@ -44,17 +44,13 @@ jest.mock("@/extensionConsole/pages/deployments/useAutoDeploy");
 jest.mocked(useAutoDeploy).mockReturnValue({ isAutoDeploying: false });
 
 describe("ModsPageTableLayout", () => {
-  const { env } = process;
-
   beforeEach(() => {
     jest.resetModules();
-    process.env = { ...env };
     jest.clearAllMocks();
     jest.useFakeTimers();
   });
 
   afterEach(() => {
-    process.env = env;
     jest.runAllTimers();
     jest.useRealTimers();
   });
@@ -124,17 +120,14 @@ describe("ModsPageTableLayout", () => {
 
     await waitForEffect();
 
-    await user.type(
-      screen.getByTestId("blueprints-search-input"),
-      "hello world",
-    );
+    await user.type(screen.getByTestId("mod-search-input"), "hello world");
     act(() => {
       jest.runAllTimers();
     });
     expect(screen.getByText('0 results for "hello world"')).not.toBeNull();
 
     await user.type(
-      screen.getByTestId("blueprints-search-input"),
+      screen.getByTestId("mod-search-input"),
       " hello world again!",
     );
     act(() => {

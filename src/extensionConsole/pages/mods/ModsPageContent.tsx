@@ -27,7 +27,6 @@ import {
 import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
 import EmptyView from "@/extensionConsole/pages/mods/emptyView/EmptyView";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
-import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 import Loader from "@/components/Loader";
 
@@ -38,7 +37,6 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
 }) => {
   const view = useSelector(selectView);
   const activeTab = useSelector(selectActiveTab);
-  const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
   const isLoadingTableData = useSelector(selectIsLoadingData);
 
   const {
@@ -74,15 +72,7 @@ const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
   }
 
   // If there is no set table filter and the table rows (mods) are still empty, show the onboarding view
-  return (
-    <OnboardingView
-      onboardingType={onboardingType}
-      isLoading={isLoading}
-      filter={onboardingFilter}
-      width={width}
-      height={height}
-    />
-  );
+  return <OnboardingView width={width} height={height} />;
 };
 
 export default ModsPageContent;

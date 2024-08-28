@@ -13,7 +13,7 @@ exports[`ModsPageTableLayout renders 1`] = `
       >
         <input
           class="form-control form-control-sm"
-          data-testid="blueprints-search-input"
+          data-testid="mod-search-input"
           id="query"
           placeholder="Search all mods"
           value=""

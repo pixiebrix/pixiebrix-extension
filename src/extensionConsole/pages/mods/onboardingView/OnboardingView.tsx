@@ -22,7 +22,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
-import { type OnboardingType } from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
+import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useDispatch } from "react-redux";
 import workshopImage from "@img/workshop.svg";
@@ -131,18 +131,17 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
 );
 
 const OnboardingView: React.VoidFunctionComponent<{
-  onboardingType: OnboardingType;
-  isLoading: boolean;
-  filter?: string;
   width: number;
   height: number;
-}> = ({ onboardingType, filter, isLoading, width, height }) => {
+}> = ({ width, height }) => {
+  const { onboardingType, onboardingFilter, isLoading } = useOnboarding();
+
   const onBoardingInformation = useMemo(() => {
-    if (!(onboardingType === "restricted") && filter === "public") {
+    if (!(onboardingType === "restricted") && onboardingFilter === "public") {
       return <ActivateFromMarketplaceColumn />;
     }
 
-    if (!(onboardingType === "restricted") && filter === "personal") {
+    if (!(onboardingType === "restricted") && onboardingFilter === "personal") {
       return <UnaffiliatedColumn />;
     }
 
@@ -168,7 +167,7 @@ const OnboardingView: React.VoidFunctionComponent<{
         return <UnaffiliatedColumn />;
       }
     }
-  }, [filter, onboardingType]);
+  }, [onboardingFilter, onboardingType]);
 
   const onboardingCallout = useMemo(() => {
     switch (onboardingType) {
@@ -177,21 +176,21 @@ const OnboardingView: React.VoidFunctionComponent<{
       }
 
       default: {
-        if (filter === "personal") {
+        if (onboardingFilter === "personal") {
           return "Create your own mods";
         }
 
-        if (filter === "public") {
+        if (onboardingFilter === "public") {
           return "Discover pre-made mods in the public marketplace";
         }
 
         return "Welcome to PixieBrix! Ready to get started?";
       }
     }
-  }, [filter, onboardingType]);
+  }, [onboardingFilter, onboardingType]);
 
   const headerImage =
-    filter === "personal" ? (
+    onboardingFilter === "personal" ? (
       <img src={workshopImage} alt="Workshop" width={300} />
     ) : (
       <img src={marketplaceImage} alt="Marketplace" width={300} />

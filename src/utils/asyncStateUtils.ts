@@ -262,6 +262,43 @@ export function valueToAsyncCacheState<Value>(
   };
 }
 
+type LoadingOverride = {
+  isFetching?: boolean;
+  isLoadingFromCache?: boolean;
+  isLoadingFromRemote?: boolean;
+  isFetchingFromRemote?: boolean;
+  isCacheUninitialized?: boolean;
+  isRemoteUninitialized?: boolean;
+};
+
+export function loadingAsyncCacheStateFactory<Value>(
+  loadingOverride?: LoadingOverride,
+): UseCachedQueryResult<Value> {
+  return {
+    ...loadingAsyncStateFactory(),
+    refetch: noop,
+    isLoadingFromCache: loadingOverride?.isLoadingFromCache ?? false,
+    isFetchingFromRemote: loadingOverride?.isFetchingFromRemote ?? false,
+    isLoadingFromRemote: loadingOverride?.isLoadingFromRemote ?? false,
+    isCacheUninitialized: loadingOverride?.isCacheUninitialized ?? false,
+    isRemoteUninitialized: loadingOverride?.isRemoteUninitialized ?? false,
+  };
+}
+
+export function errorToAsyncCacheState<Value>(
+  error: unknown,
+): UseCachedQueryResult<Value> {
+  return {
+    ...errorToAsyncState(error),
+    refetch: noop,
+    isLoadingFromCache: false,
+    isFetchingFromRemote: false,
+    isLoadingFromRemote: false,
+    isCacheUninitialized: false,
+    isRemoteUninitialized: false,
+  };
+}
+
 /**
  * Throw an error if state has invalid status flag combinations.
  */

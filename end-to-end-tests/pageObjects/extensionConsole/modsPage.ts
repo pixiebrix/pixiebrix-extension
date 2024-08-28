@@ -47,7 +47,7 @@ export class ModsPage extends BasePageObject {
   private readonly extensionConsoleUrl: string;
 
   modTableItems = this.getByRole("table").locator(".list-group-item");
-  searchModsInput = this.getByTestId("blueprints-search-input");
+  searchModsInput = this.getByTestId("mod-search-input");
 
   constructor(page: Page, extensionId: string) {
     super(page);

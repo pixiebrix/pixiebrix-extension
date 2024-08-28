@@ -40,6 +40,7 @@ const ModsPage: React.FunctionComponent = () => {
   // Ensure all the data is loaded
   // Note: We only need to show a loading indicator until mods are loaded
   const { isLoading, error: modsError } = useAllModDefinitions();
+
   const { error: listingsError } = useGetMarketplaceListingsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
