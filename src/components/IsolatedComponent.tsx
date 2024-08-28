@@ -39,12 +39,18 @@ type LazyFactory<T> = () => Promise<{
 async function discardStylesheetsWhilePending(
   lazyFactory: LazyFactory<unknown>,
 ) {
-  const baseUrl = chrome.runtime.getURL("");
+  const baseUrl = chrome.runtime.getURL("css");
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
-        if (node instanceof HTMLLinkElement && node.href.startsWith(baseUrl)) {
+        if (
+          node instanceof HTMLLinkElement &&
+          // (node.href.startsWith(`${baseUrl}/isolated`) ||
+          //   node.href.startsWith(`${baseUrl}/src`))
+          node.href.startsWith(baseUrl) &&
+          node.href !== `${baseUrl}/ActivatePanels.css`
+        ) {
           // Disable stylesheet without removing it. Webpack still awaits its loading.
           node.media = "not all";
           node.dataset.pixiebrix = "Disabled by IsolatedComponent";

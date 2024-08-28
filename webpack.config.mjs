@@ -269,7 +269,9 @@ const createConfig = (env, options) =>
       }),
 
       new MiniCssExtractPlugin({
-        chunkFilename: "css/[id].css",
+        // Use [name] to keep the original filename; allowing us to filter on it
+        // See https://github.com/pixiebrix/pixiebrix-extension/issues/8965
+        chunkFilename: "css/[name].css",
       }),
       new CopyPlugin({
         patterns: [
