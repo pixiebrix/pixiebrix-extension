@@ -157,7 +157,8 @@ export function castTextLiteralOrThrow(
   }
 
   if (literalOrTemplate == null || typeof literalOrTemplate === "string") {
-    return literalOrTemplate;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Required for App until App is strict null checked
+    return literalOrTemplate as string | null;
   }
 
   return literalOrTemplate.__value__;
