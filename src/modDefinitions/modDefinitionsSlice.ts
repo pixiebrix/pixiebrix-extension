@@ -116,11 +116,7 @@ export const syncRemoteModDefinitions = createAsyncThunk<
 export const modDefinitionsSlice = createSlice({
   name: "modDefinitions",
   initialState,
-  reducers: {
-    initializeRemote(state) {
-      state.isRemoteUninitialized = false;
-    },
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       .addCase(revertAll, () => initialState)
