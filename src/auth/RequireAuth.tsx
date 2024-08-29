@@ -32,6 +32,7 @@ import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import useLinkState from "@/auth/useLinkState";
 import { type Me } from "@/data/model/Me";
 import castError from "@/utils/castError";
+import { type Location } from "history";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -41,6 +42,10 @@ type RequireAuthProps = {
    * or PixieBrix service degradation.
    */
   ignoreApiError?: boolean;
+  /**
+   * The current page location, exposed as a prop so that react-router can override the window location if needed
+   */
+  location?: Location;
 };
 
 /**
@@ -128,11 +133,12 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   children,
   LoginPage,
   ignoreApiError = false,
+  location = window.location,
 }) => {
   // This is a very simplified version of what otherwise useRouteMatch from react-router would do.
-  // We don't want to pull the Router in the Page Editor app.
-  const isSettingsPage = location.hash.startsWith("#/settings");
-  const isStartPage = location.hash.startsWith("#/start");
+  // We don't want to pull the Router into the Page Editor app when it uses this component.
+  const isSettingsPage = location.pathname.startsWith("/settings");
+  const isStartPage = location.pathname.startsWith("/start");
 
   const {
     isAccountUnlinked,
