@@ -196,6 +196,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: end-to-end-tests
+    # Allow depndabot to append the comment to the PR
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
