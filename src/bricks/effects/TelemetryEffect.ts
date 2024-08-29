@@ -24,7 +24,7 @@ import { getDNT } from "@/telemetry/dnt";
 import { PropError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 
-export class TelemetryEffect extends EffectABC {
+class TelemetryEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/telemetry",
@@ -58,6 +58,8 @@ export class TelemetryEffect extends EffectABC {
     }: BrickArgs<{ eventName: string; data: JsonObject }>,
     { logger }: BrickOptions,
   ): Promise<void> {
+    const { context } = logger;
+
     if ("$eventName" in data) {
       throw new PropError(
         "$eventName is a reserved value for eventName",
@@ -75,7 +77,10 @@ export class TelemetryEffect extends EffectABC {
 
     reportEvent(Events.CUSTOM_USER_EVENT, {
       $eventName: eventName,
+      deploymentId: context.deploymentId ?? null,
       ...data,
     });
   }
 }
+
+export default TelemetryEffect;
