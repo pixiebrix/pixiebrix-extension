@@ -33,7 +33,6 @@ import CancelEffect from "./CancelEffect";
 import CancelEphemeralElements from "@/bricks/effects/CancelEphemeralElements";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
-import { TelemetryEffect } from "./telemetry";
 import { ConfettiEffect } from "./confetti";
 import { TourEffect } from "./tourEffect";
 import { AttachAutocomplete } from "./attachAutocomplete";
@@ -62,6 +61,7 @@ import {
   StartCaptureAudioEffect,
   StopCaptureAudioEffect,
 } from "@/bricks/effects/captureAudio";
+import TelemetryEffect from "@/bricks/effects/TelemetryEffect";
 
 function getAllEffects(): Brick[] {
   return [
