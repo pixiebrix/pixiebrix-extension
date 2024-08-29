@@ -61,8 +61,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
     notify.success(
       "Cleared the browser extension token. Visit the web app to set it again",
     );
-    // Reload to force contentScripts and background page to reload. The RequireAuth component listens for auth changes,
-    // but we should for non-extension context to reload too.
+    // Reload to force content scripts and service worker to reload
     location.reload();
   }, []);
 

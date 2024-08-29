@@ -153,10 +153,8 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
 
   // First load from local database
   useEffect(() => {
-    if (state.isCacheUninitialized) {
-      dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
-    }
-  }, [dispatch, state.isCacheUninitialized]);
+    dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
+  }, [dispatch]);
 
   // Load from remote data source once the local data has been loaded
   useEffect(() => {
