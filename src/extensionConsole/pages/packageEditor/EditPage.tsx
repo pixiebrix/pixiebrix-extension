@@ -41,6 +41,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
 import { type Definition, DefinitionKinds } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import castError from "@/utils/castError";
 
 const { touchPackage } = workshopSlice.actions;
 
@@ -210,7 +211,7 @@ const EditPage: React.FC = () => {
   useTouchPackage(id);
 
   if (error) {
-    throw error as Error;
+    throw castError(error, "Error loading package data");
   }
 
   if (isFetching) {
