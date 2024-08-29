@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 // See similar file in the App codebase
+
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // See REST_FRAMEWORK["DEFAULT_VERSION"] in the Django settings
 const DEFAULT_API_VERSION = "1.0";
@@ -30,11 +31,15 @@ export type ApiVersion = (typeof API_VERSIONS)[number];
 // see getURLApiVersion().
 const API_VERSION_MAP = new Map<string, ApiVersion>([
   // @since 1.8.10 -- excludes the package config
-  ["/api/deployments/", "1.1"],
+  [API_PATHS.DEPLOYMENTS, "1.1"],
   // @since 2.0.6 -- includes organization.is_enterprise and excludes telemetry_organization
-  ["/api/me/", "1.1"],
+  [API_PATHS.ME, "1.1"],
 ]);
 
+/**
+ * Returns the API version for the given URL.
+ * @param url The URL. Can be undefined because AxiosRequestConfig.url is optional.
+ */
 export function getURLApiVersion(url: string | undefined): string {
   if (!url) {
     return DEFAULT_API_VERSION;
