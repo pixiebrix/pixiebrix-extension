@@ -37,7 +37,10 @@ import { isEmpty } from "lodash";
 import { util as apiUtil } from "@/data/service/api";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
 import AsyncButton from "@/components/AsyncButton";
-import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
+import {
+  getExtensionConsoleUrl,
+  reloadIfNewVersionIsReady,
+} from "@/utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
@@ -61,9 +64,19 @@ const AdvancedSettings: React.FunctionComponent = () => {
     notify.success(
       "Cleared the browser extension token. Visit the web app to set it again",
     );
-    // Reload to force contentScripts and background page to reload. The RequireAuth component listens for auth changes,
-    // but we should for non-extension context to reload too.
-    location.reload();
+    // The RequireAuth gate component checks for auth changes when it renders, but
+    // it also currently lives above react-router in the component tree, so it doesn't
+    // implicitly re-render when the react-router hash location changes. It also checks
+    // the current location on render, and doesn't show if the user is on the settings
+    // page.
+    //
+    // In order to force the linking screen to show when the Clear Token button is
+    // clicked, we need to force the entire component tree (including RequireAuth)
+    // to re-render, and the location when it renders cannot be the settings page.
+    //
+    // So, we assign window location directly to the mods page URL, instead of
+    // using the react-router api to change only the hash route.
+    location.assign(getExtensionConsoleUrl("mods"));
   }, []);
 
   const clearTokens = useUserAction(
