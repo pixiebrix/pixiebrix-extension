@@ -73,6 +73,8 @@ const loadModDefinitionsFromCache = createAsyncThunk<
         isFetchingFromRemote,
       } = getState().modDefinitions;
 
+      // Never load if the cache is already initialized
+      // Never load if already loading from cache or syncing with remote to prevent race conditions
       return (
         isCacheUninitialized &&
         !isLoadingFromCache &&
@@ -100,9 +102,13 @@ export const syncRemoteModDefinitions = createAsyncThunk<
   },
   {
     condition(_, { getState }) {
-      const { isLoadingFromRemote, isFetchingFromRemote } =
+      const { isLoadingFromRemote, isFetchingFromRemote, isLoadingFromCache } =
         getState().modDefinitions;
-      return !isLoadingFromRemote && !isFetchingFromRemote;
+
+      // Never load if already syncing with remote or loading from cache to prevent race conditions
+      return (
+        !isLoadingFromRemote && !isFetchingFromRemote && !isLoadingFromCache
+      );
     },
   },
 );
