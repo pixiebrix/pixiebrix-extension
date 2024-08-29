@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function castError(error: unknown, defaultMessage: string): Error {
+function castError(error: unknown, message: string): Error {
   if (error instanceof Error) {
     return error;
   }
 
-  return new Error(defaultMessage, { cause: error });
+  return new Error(message, { cause: error });
 }
 
 export default castError;

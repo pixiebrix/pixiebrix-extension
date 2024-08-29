@@ -18,11 +18,11 @@
 import castError from "@/utils/castError";
 
 describe("castError", () => {
-  const defaultMessage = "default message";
+  const message = "error message";
 
   it("should return an error if the input is an error", () => {
     const err = new Error("test error");
-    expect(castError(err, defaultMessage)).toBe(err);
+    expect(castError(err, message)).toBe(err);
   });
 
   it.each([
@@ -34,10 +34,10 @@ describe("castError", () => {
     ["an object", { message: "test error" }],
     ["an array", ["test error"]],
   ])("should return an error if the input is %s", (_, error) => {
-    const result = castError(error, defaultMessage);
+    const result = castError(error, message);
 
     expect(result).toBeInstanceOf(Error);
-    expect(result.message).toBe(defaultMessage);
+    expect(result.message).toBe(message);
     expect(result.cause).toBe(error);
   });
 });
