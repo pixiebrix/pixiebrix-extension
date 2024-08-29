@@ -15,26 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function castError(err: unknown, defaultMessage?: string): Error {
-  try {
-    if (err instanceof Error) {
-      return err;
-    }
-
-    if (err == null) {
-      return new Error(defaultMessage);
-    }
-
-    if (typeof err === "object") {
-      return new Error(JSON.stringify(err));
-    }
-
-    return new Error(String(err));
-  } catch {
-    return new Error(
-      `Error casting error: ${defaultMessage}, type: ${typeof err}`,
-    );
+function castError(error: unknown, defaultMessage: string): Error {
+  if (error instanceof Error) {
+    return error;
   }
+
+  return new Error(defaultMessage, { cause: error });
 }
 
 export default castError;

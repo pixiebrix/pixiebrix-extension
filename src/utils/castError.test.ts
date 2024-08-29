@@ -18,71 +18,26 @@
 import castError from "@/utils/castError";
 
 describe("castError", () => {
+  const defaultMessage = "default message";
+
   it("should return an error if the input is an error", () => {
     const err = new Error("test error");
-    expect(castError(err)).toBe(err);
+    expect(castError(err, defaultMessage)).toBe(err);
   });
 
-  it("should return an error if the input is a string", () => {
-    const err = "test error";
-    expect(castError(err)).toBeInstanceOf(Error);
-    expect(castError(err).message).toBe(err);
-  });
+  it.each([
+    ["a string", "test error"],
+    ["a number", 42],
+    ["a boolean", true],
+    ["null", null],
+    ["undefined", undefined],
+    ["an object", { message: "test error" }],
+    ["an array", ["test error"]],
+  ])("should return an error if the input is %s", (_, error) => {
+    const result = castError(error, defaultMessage);
 
-  it("should return an error if the input is a number", () => {
-    const err = 42;
-    expect(castError(err)).toBeInstanceOf(Error);
-    expect(castError(err).message).toBe(String(err));
-  });
-
-  it("should return an error if the input is an object", () => {
-    const err = { message: "test error" };
-    expect(castError(err)).toBeInstanceOf(Error);
-    expect(castError(err).message).toBe(JSON.stringify(err));
-  });
-
-  it("should return an error if the input is null", () => {
-    const err = null;
-    expect(castError(err)).toBeInstanceOf(Error);
-    expect(castError(err).message).toBe("");
-  });
-
-  it("should return an error with the default message if the input is null", () => {
-    const err = null;
-    const defaultMessage = "default message";
-    expect(castError(err, defaultMessage)).toBeInstanceOf(Error);
-    expect(castError(err, defaultMessage).message).toBe(defaultMessage);
-  });
-
-  it("should return an error if the input is undefined", () => {
-    const err = undefined;
-    expect(castError(err)).toBeInstanceOf(Error);
-    expect(castError(err).message).toBe("");
-  });
-
-  it("should return an error with the default message if the input is undefined", () => {
-    const err = null;
-    const defaultMessage = "default message";
-    expect(castError(err, defaultMessage)).toBeInstanceOf(Error);
-    expect(castError(err, defaultMessage).message).toBe(defaultMessage);
-  });
-
-  it("should return an error if the input is a boolean", () => {
-    const err = true;
-    expect(castError(err)).toBeInstanceOf(Error);
-    expect(castError(err).message).toBe(String(err));
-  });
-
-  it("should return formatted error when casting error fails", () => {
-    const err = {
-      toJSON() {
-        throw new Error("test error");
-      },
-    };
-    const defaultMessage = "default message";
-    expect(castError(err, defaultMessage)).toBeInstanceOf(Error);
-    expect(castError(err, defaultMessage).message).toBe(
-      `Error casting error: ${defaultMessage}, type: object`,
-    );
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe(defaultMessage);
+    expect(result.cause).toBe(error);
   });
 });
