@@ -8,10 +8,10 @@ on:
 
 jobs:
   end-to-end-tests:
+    secrets: inherit
     steps:
       - name: end-to-end-tests
         uses: ./.github/workflows/end-to-end-tests.yml
-        secrets: inherit
         with:
           # Include stable browsers for comparison
           projects: '["chrome-beta", "msedge-beta", "chromium", "chrome", "msedge"]'
