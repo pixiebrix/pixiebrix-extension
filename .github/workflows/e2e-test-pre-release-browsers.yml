@@ -8,9 +8,22 @@ on:
 
 jobs:
   end-to-end-tests:
-    name: end-to-end-tests
-    uses: ./.github/workflows/end-to-end-tests.yml
-    secrets: inherit
-    with:
-      # Include stable browsers for comparison
-      projects: '["chrome-beta", "msedge-beta", "chromium", "chrome", "msedge"]'
+    steps:
+      - name: end-to-end-tests
+        uses: ./.github/workflows/end-to-end-tests.yml
+        secrets: inherit
+        with:
+          # Include stable browsers for comparison
+          projects: '["chrome-beta", "msedge-beta", "chromium", "chrome", "msedge"]'
+
+      - name: Slack Notification
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: playwright-playground
+          SLACK_MESSAGE: "Nightly pre-release browser tests failed"
+          SLACK_COLOR: ${{ job.status }}
