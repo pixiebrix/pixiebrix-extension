@@ -16,16 +16,17 @@ jobs:
       projects: '["chrome-beta", "msedge-beta", "chromium", "chrome", "msedge"]'
 
   slack-notification:
-    name: Slack Notification
-    needs:
-      - end-to-end-tests
-    if: failure()
-    uses: rtCamp/action-slack-notify@v2
-    with:
-      status: ${{ job.status }}
-      notify_when: "failure"
-    env:
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      SLACK_CHANNEL: playwright-playground
-      SLACK_MESSAGE: "Nightly pre-release browser tests failed"
-      SLACK_COLOR: ${{ job.status }}
+    needs: end-to-end-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Notification
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: playwright-playground
+          SLACK_MESSAGE: "Nightly pre-release browser tests failed"
+          SLACK_COLOR: ${{ job.status }}
