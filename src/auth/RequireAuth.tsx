@@ -42,9 +42,7 @@ type RequireAuthProps = {
    */
   ignoreApiError?: boolean;
   /**
-   * The current page location, exposed as a prop so that react-router can override the window location if needed.
-   *
-   * Using a "shim" type because we don't want to pull in react-router here just for the location type.
+   * The current page location, exposed as a prop so that react-router can override the window location if needed
    */
   location?: Location;
 };
