@@ -94,11 +94,6 @@ export type Me = {
    */
   primaryOrganization?: MeOrganization;
   /**
-   * The enterprise organization used for telemetry collection. Generally,
-   * if set, this will be the same as the user's primary organization.
-   */
-  telemetryOrganization?: MeOrganization;
-  /**
    * The partner, controlling theme, documentation links, etc.
    */
   partner?: UserPartner;
@@ -148,12 +143,6 @@ export function transformMeResponse(response: components["schemas"]["Me"]): Me {
   if (response.organization) {
     me.primaryOrganization = transformMeOrganizationResponse(
       response.organization,
-    );
-  }
-
-  if (response.telemetry_organization) {
-    me.telemetryOrganization = transformMeOrganizationResponse(
-      response.telemetry_organization,
     );
   }
 

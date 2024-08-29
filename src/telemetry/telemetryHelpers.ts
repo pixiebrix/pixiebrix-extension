@@ -78,12 +78,12 @@ export async function mapAppUserToTelemetryUser(
   data: UserData,
 ): Promise<TelemetryUser> {
   const browserId = await getUUID();
-  const { user, email, telemetryOrganizationId, organizationId } = data;
+  const { user, email, organizationId } = data;
 
   return {
     id: user ?? browserId,
     email,
-    organizationId: telemetryOrganizationId ?? organizationId,
+    organizationId,
   };
 }
 

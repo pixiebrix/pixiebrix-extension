@@ -27,6 +27,3 @@ export const selectOrganizations = (state: AuthRootState) =>
   selectAuth(state).organizations;
 export const selectOrganization = (state: AuthRootState) =>
   selectAuth(state).organization;
-
-export const selectTelemetryOrganizationId = (state: AuthRootState) =>
-  selectAuth(state).telemetryOrganizationId;

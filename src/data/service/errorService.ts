@@ -157,11 +157,11 @@ export async function reportToErrorService(
   }
 
   const { extensionVersion, ...data } = await selectExtraContext(error);
-  const { telemetryOrganizationId, organizationId } = await getUserData();
+  const { organizationId } = await getUserData();
 
   const payload: ErrorItem = {
     uuid: uuidv4(),
-    organization: telemetryOrganizationId ?? organizationId,
+    organization: organizationId,
     class_name: error.name,
     message,
     deployment: flatContext.deploymentId,
