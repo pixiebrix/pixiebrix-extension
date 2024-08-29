@@ -21,7 +21,6 @@ jobs:
     if: always()
     steps:
       - name: Slack Notification
-        if: failure()
         uses: rtCamp/action-slack-notify@v2
         with:
           status: ${{ job.status }}
