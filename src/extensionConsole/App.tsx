@@ -55,6 +55,7 @@ import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/Deploy
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import { RestrictedFeatures } from "@/auth/featureFlags";
+import { useLocation } from "react-router";
 
 // Register the built-in bricks
 registerEditors();
@@ -135,13 +136,15 @@ const Layout = () => {
     isLoading: themeIsLoading,
   } = useTheme();
 
+  const location = useLocation();
+
   return (
     <div>
       {!themeIsLoading && <Navbar logo={logo} />}
       <Container fluid className="page-body-wrapper">
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
-          <RequireAuth LoginPage={SetupPage}>
+          <RequireAuth LoginPage={SetupPage} location={location}>
             <AuthenticatedContent />
           </RequireAuth>
         </ErrorBoundary>
