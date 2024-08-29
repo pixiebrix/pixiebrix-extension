@@ -54,28 +54,64 @@ const loadModDefinitionsFromCache = createAsyncThunk<
   ModDefinition[],
   void,
   { state: ModDefinitionsRootState }
->("modDefinitions/loadFromCache", async (arg, { dispatch, getState }) => {
-  const registryModDefinitions = await modDefinitionRegistry.all();
-  // Remove the top level registry item id to satisfy types properly
-  return registryModDefinitions.map((x) => {
-    const { id, ...rest } = x;
-    return rest;
-  });
-});
+>(
+  "modDefinitions/loadFromCache",
+  async () => {
+    const registryModDefinitions = await modDefinitionRegistry.all();
+    // Remove the top level registry item id to satisfy types properly
+    return registryModDefinitions.map((x) => {
+      const { id, ...rest } = x;
+      return rest;
+    });
+  },
+  {
+    condition(_, { getState }) {
+      const {
+        isCacheUninitialized,
+        isLoadingFromCache,
+        isLoadingFromRemote,
+        isFetchingFromRemote,
+      } = getState().modDefinitions;
+
+      // Never load if the cache is already initialized
+      // Never load if already loading from cache or syncing with remote to prevent race conditions
+      return (
+        isCacheUninitialized &&
+        !isLoadingFromCache &&
+        !isLoadingFromRemote &&
+        !isFetchingFromRemote
+      );
+    },
+  },
+);
 
 export const syncRemoteModDefinitions = createAsyncThunk<
   ModDefinition[],
   void,
   { state: ModDefinitionsRootState }
->("modDefinitions/refresh", async (arg, { dispatch, getState }) => {
-  await syncRemotePackages();
-  const registryModDefinitions = await modDefinitionRegistry.all();
-  // Remove the top level registry item id to satisfy types properly
-  return registryModDefinitions.map((x) => {
-    const { id, ...rest } = x;
-    return rest;
-  });
-});
+>(
+  "modDefinitions/refresh",
+  async () => {
+    await syncRemotePackages();
+    const registryModDefinitions = await modDefinitionRegistry.all();
+    // Remove the top level registry item id to satisfy types properly
+    return registryModDefinitions.map((x) => {
+      const { id, ...rest } = x;
+      return rest;
+    });
+  },
+  {
+    condition(_, { getState }) {
+      const { isLoadingFromRemote, isFetchingFromRemote, isLoadingFromCache } =
+        getState().modDefinitions;
+
+      // Never load if already syncing with remote or loading from cache to prevent race conditions
+      return (
+        !isLoadingFromRemote && !isFetchingFromRemote && !isLoadingFromCache
+      );
+    },
+  },
+);
 
 export const modDefinitionsSlice = createSlice({
   name: "modDefinitions",
