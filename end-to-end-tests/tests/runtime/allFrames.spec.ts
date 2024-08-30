@@ -24,7 +24,6 @@ import { range } from "lodash";
 test("8527: availability allFrames declaration", async ({
   page,
   extensionId,
-  chromiumChannel,
 }) => {
   const modId = "@pixies/test/8527-all-frames";
 

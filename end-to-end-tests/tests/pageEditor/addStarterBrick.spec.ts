@@ -20,11 +20,13 @@ import { test, expect } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
+import { SupportedChannels } from "playwright.config";
 
 test("Add new starter brick", async ({
   page,
   newPageEditorPage,
   extensionId,
+  chromiumChannel,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
@@ -90,8 +92,16 @@ test("Add new starter brick", async ({
       }),
     ).toHaveValue("Sidebar Panel");
 
-    const sidebarPage = await getSidebarPage(page, extensionId);
-    await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+    /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
+    if (
+      ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
+      const sidebarPage = await getSidebarPage(page, extensionId);
+      await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+    }
+    /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
   });
 
   await test.step("Add new Trigger starter brick", async () => {

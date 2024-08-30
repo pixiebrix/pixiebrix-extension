@@ -43,6 +43,7 @@ import { isInternalRegistryId } from "@/utils/registryUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { Milestones } from "@/data/model/UserMilestone";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
+import castError from "@/utils/castError";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;
@@ -99,7 +100,7 @@ const ActivateModCard: React.FC<{
   }
 
   if (wizardError) {
-    throw wizardError as Error;
+    throw castError(wizardError, "Error loading activate mod wizard state");
   }
 
   assertNotNullish(wizardState, "wizardState is nullish");

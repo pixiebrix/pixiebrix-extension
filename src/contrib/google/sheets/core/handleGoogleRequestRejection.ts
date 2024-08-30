@@ -21,6 +21,7 @@ import { isObject } from "@/utils/objectUtils";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
+import castError from "@/utils/castError";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";
@@ -85,5 +86,5 @@ export async function handleGoogleRequestRejection(
     );
   }
 
-  return error as unknown as Error;
+  return castError(error, "Unknown error making Google request");
 }

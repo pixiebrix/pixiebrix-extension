@@ -33,6 +33,7 @@ import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfi
 import type { ModActivationConfig } from "@/types/modTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import castError from "@/utils/castError";
 
 export type RequiredModDefinition = {
   /**
@@ -193,7 +194,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
 
   // Throw error to hit error boundary
   if (state.isError) {
-    throw (state.error as Error) ?? new Error("Error retrieving mods");
+    throw castError(state.error, "Error retrieving mods");
   }
 
   if (state.isLoading) {
