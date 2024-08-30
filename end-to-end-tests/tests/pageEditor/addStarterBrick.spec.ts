@@ -280,10 +280,18 @@ test("Add starter brick to mod", async ({
 
     await modListItem.select();
     await modListItem.saveButton.click();
-    await verifyModDefinitionSnapshot({
-      modId: modComponentName,
-      snapshotName: "add-trigger-starter-brick-to-mod",
-      mode: "diff",
-    });
+    /* eslint-disable playwright/no-conditional-in-test -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
+    if (
+      ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
+      await verifyModDefinitionSnapshot({
+        modId: modComponentName,
+        snapshotName: "add-trigger-starter-brick-to-mod",
+        mode: "diff",
+      });
+    }
+    /* eslint-enable playwright/no-conditional-in-test */
   });
 });
