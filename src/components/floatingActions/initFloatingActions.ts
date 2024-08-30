@@ -35,12 +35,11 @@ export default async function initFloatingActions(): Promise<void> {
     return;
   }
 
-  const [settings, isLinked] = await Promise.all([
+  const [settings, meApiResponse, isLinked] = await Promise.all([
     getSettingsState(),
+    getMe(),
     getIsLinked(),
   ]);
-
-  const meApiResponse = await getMe();
   const meData = transformMeResponse(meApiResponse);
 
   // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
