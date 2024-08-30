@@ -110,7 +110,6 @@ test.describe("Insert at Cursor", () => {
   test("8154: can insert at cursor after opening sidebar from selection menu", async ({
     page,
     extensionId,
-    chromiumChannel,
   }) => {
     test.skip(
       true,
