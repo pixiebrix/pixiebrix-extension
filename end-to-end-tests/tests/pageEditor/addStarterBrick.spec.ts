@@ -81,28 +81,28 @@ test("Add new starter brick", async ({
     ).toHaveValue("Quick Bar item");
   });
 
-  /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
-  if (
-    ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-      chromiumChannel,
-    )
-  ) {
-    await test.step("Add new Sidebar Panel starter brick", async () => {
-      await pageEditorPage.modListingPanel.addStarterBrick("Sidebar Panel");
-      await expect(brickPipeline).toHaveCount(2);
-      await expect(brickPipeline.first()).toContainText("Sidebar Panel");
-      await expect(brickPipeline.nth(1)).toContainText("Render Document");
-      await expect(
-        pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-          name: "Name",
-        }),
-      ).toHaveValue("Sidebar Panel");
+  await test.step("Add new Sidebar Panel starter brick", async () => {
+    await pageEditorPage.modListingPanel.addStarterBrick("Sidebar Panel");
+    await expect(brickPipeline).toHaveCount(2);
+    await expect(brickPipeline.first()).toContainText("Sidebar Panel");
+    await expect(brickPipeline.nth(1)).toContainText("Render Document");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Sidebar Panel");
 
+    /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
+    if (
+      ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+        chromiumChannel,
+      )
+    ) {
       const sidebarPage = await getSidebarPage(page, extensionId);
       await expect(sidebarPage.getByText("Example Document")).toBeVisible();
-    });
-  }
-  /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
+    }
+    /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
+  });
 
   await test.step("Add new Trigger starter brick", async () => {
     await pageEditorPage.modListingPanel.addStarterBrick("Trigger");
@@ -140,7 +140,6 @@ test("Add starter brick to mod", async ({
   newPageEditorPage,
   extensionId,
   verifyModDefinitionSnapshot,
-  chromiumChannel,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
@@ -233,38 +232,30 @@ test("Add starter brick to mod", async ({
     });
   });
 
-  /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
-  if (
-    ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-      chromiumChannel,
-    )
-  ) {
-    await test.step("Add Sidebar Panel starter brick to mod", async () => {
-      const modActionMenu = await openModActionMenu();
-      await modActionMenu.addStarterBrick("Sidebar Panel");
+  await test.step("Add Sidebar Panel starter brick to mod", async () => {
+    const modActionMenu = await openModActionMenu();
+    await modActionMenu.addStarterBrick("Sidebar Panel");
 
-      await expect(brickPipeline).toHaveCount(2);
-      await expect(brickPipeline.first()).toContainText("Sidebar Panel");
-      await expect(brickPipeline.nth(1)).toContainText("Render Document");
-      await expect(
-        pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-          name: "Name",
-        }),
-      ).toHaveValue("Sidebar Panel");
+    await expect(brickPipeline).toHaveCount(2);
+    await expect(brickPipeline.first()).toContainText("Sidebar Panel");
+    await expect(brickPipeline.nth(1)).toContainText("Render Document");
+    await expect(
+      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
+        name: "Name",
+      }),
+    ).toHaveValue("Sidebar Panel");
 
-      const sidebarPage = await getSidebarPage(page, extensionId);
-      await expect(sidebarPage.getByText("Example Document")).toBeVisible();
+    const sidebarPage = await getSidebarPage(page, extensionId);
+    await expect(sidebarPage.getByText("Example Document")).toBeVisible();
 
-      await modListItem.select();
-      await modListItem.saveButton.click();
-      await verifyModDefinitionSnapshot({
-        modId: modComponentName,
-        snapshotName: "add-sidebar-panel-starter-brick-to-mod",
-        mode: "diff",
-      });
+    await modListItem.select();
+    await modListItem.saveButton.click();
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-sidebar-panel-starter-brick-to-mod",
+      mode: "diff",
     });
-  }
-  /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
+  });
 
   await test.step("Add Trigger starter brick to mod", async () => {
     const modActionMenu = await openModActionMenu();
@@ -280,18 +271,10 @@ test("Add starter brick to mod", async ({
 
     await modListItem.select();
     await modListItem.saveButton.click();
-    /* eslint-disable playwright/no-conditional-in-test -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
-    if (
-      ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
-      await verifyModDefinitionSnapshot({
-        modId: modComponentName,
-        snapshotName: "add-trigger-starter-brick-to-mod",
-        mode: "diff",
-      });
-    }
-    /* eslint-enable playwright/no-conditional-in-test */
+    await verifyModDefinitionSnapshot({
+      modId: modComponentName,
+      snapshotName: "add-trigger-starter-brick-to-mod",
+      mode: "diff",
+    });
   });
 });
