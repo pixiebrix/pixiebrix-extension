@@ -81,6 +81,7 @@ import { getPlatform } from "@/platform/platformContext";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { flagOn } from "@/auth/featureFlagStorage";
+import castError from "@/utils/castError";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -771,7 +772,7 @@ export async function brickReducer(
 
   // Above we had wrapped the call to renderBrickArg in a try-catch to always have an entry trace entry
   if (renderError) {
-    throw renderError as Error;
+    throw castError(renderError, "Error rendering brick args");
   }
 
   const props: BrickProps = {

@@ -31,6 +31,7 @@ import { type AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import useLinkState from "@/auth/useLinkState";
 import { type Me } from "@/data/model/Me";
+import castError from "@/utils/castError";
 import { type Location } from "history";
 
 type RequireAuthProps = {
@@ -187,7 +188,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
   if (meError && !ignoreApiError) {
-    throw meError as Error;
+    throw castError(meError, "Error checking authentication status");
   }
 
   return <>{children}</>;

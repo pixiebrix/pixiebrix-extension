@@ -15,31 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PromiseCancelled } from "@/errors/genericErrors";
 import castError from "@/utils/castError";
 
-/**
- * Creates a new promise that's rejected if isCancelled returns true.
- * @throws PromiseCancelled
- */
-export async function rejectOnCancelled<T>(
-  promise: Promise<T>,
-  isCancelled: () => boolean,
-): Promise<T> {
-  let rv: T;
-  try {
-    rv = await promise;
-  } catch (error) {
-    if (isCancelled()) {
-      throw new PromiseCancelled();
-    }
+describe("castError", () => {
+  const message = "error message";
 
-    throw castError(error, "Undefined error awaiting promise");
-  }
+  it("should return an error if the input is an error", () => {
+    const err = new Error("test error");
+    expect(castError(err, message)).toBe(err);
+  });
 
-  if (isCancelled()) {
-    throw new PromiseCancelled();
-  }
+  it.each([
+    ["a string", "test error"],
+    ["a number", 42],
+    ["a boolean", true],
+    ["null", null],
+    ["undefined", undefined],
+    ["an object", { message: "test error" }],
+    ["an array", ["test error"]],
+  ])("should return an error if the input is %s", (_, error) => {
+    const result = castError(error, message);
 
-  return rv;
-}
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe(message);
+    expect(result.cause).toBe(error);
+  });
+});
