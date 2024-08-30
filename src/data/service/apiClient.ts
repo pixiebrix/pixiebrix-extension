@@ -76,6 +76,10 @@ async function setupApiClient(): Promise<void> {
   apiClientInstance.interceptors.request.use(async (config) => {
     const apiVersion = getURLApiVersion(config.url);
 
+    // If apiVersion is the default version (see DEFAULT_API_VERSION), we don't necessarily need the header,
+    // but let's include it because it has the following benefits:
+    // - The explicit version header makes troubleshooting easier
+    // - Allows us to change the default version without breaking clients, see https://github.com/pixiebrix/pixiebrix-app/issues/5060
     return {
       ...config,
       headers: {
