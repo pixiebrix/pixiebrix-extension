@@ -34,7 +34,6 @@ import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { getURLApiVersion } from "@/data/service/apiVersioning";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
-import { produce } from "immer";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -77,12 +76,13 @@ async function setupApiClient(): Promise<void> {
   apiClientInstance.interceptors.request.use(async (config) => {
     const apiVersion = getURLApiVersion(config.url);
 
-    return produce(config, (draft) => {
-      draft.headers = {
-        ...draft.headers,
+    return {
+      ...config,
+      headers: {
+        ...config.headers,
         Accept: `application/json; version=${apiVersion}`,
-      };
-    });
+      },
+    };
   });
 
   // Create auth interceptor for partner auth refresh tokens
