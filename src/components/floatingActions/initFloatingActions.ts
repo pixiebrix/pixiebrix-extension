@@ -17,12 +17,12 @@
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getSettingsState } from "@/store/settings/settingsStorage";
+import { getMeData } from "@/background/messenger/api";
+import { transformMeResponse } from "@/data/model/Me";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { isLinked as getIsLinked } from "@/auth/authStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
-import { transformMeResponse } from "@/data/model/Me";
-import { getMe } from "@/data/service/backgroundApi";
 
 /**
  * Add the floating action button to the page if the user is not an enterprise/partner user.
@@ -37,7 +37,7 @@ export default async function initFloatingActions(): Promise<void> {
 
   const [settings, meApiResponse, isLinked] = await Promise.all([
     getSettingsState(),
-    getMe(),
+    getMeData(),
     getIsLinked(),
   ]);
   const meData = transformMeResponse(meApiResponse);
