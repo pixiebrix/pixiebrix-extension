@@ -170,6 +170,12 @@ export class ActivateModPage extends BasePageObject {
     });
   }
 
+  async getIntegrationConfigField(index: number) {
+    return this.getByTestId(
+      `integration-auth-selector-integrationDependencies.${index}.configId`,
+    );
+  }
+
   async selectIntegrationOption(integrationIndex: number, option: string) {
     await this.page
       .getByTestId(

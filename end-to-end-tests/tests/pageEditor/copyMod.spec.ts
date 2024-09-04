@@ -115,11 +115,9 @@ test("run a copied mod with a built-in integration", async ({
       sourceModId,
     );
     await modActivationPage.goto();
-    await expect(
-      modActivationPage
-        .locator(".form-group")
-        .filter({ hasText: /^GIPHY — ✨ Built-in$/ }),
-    ).toBeVisible();
+    const integrationConfiguration =
+      await modActivationPage.getIntegrationConfigField(0);
+    await expect(integrationConfiguration).toHaveText("GIPHY — ✨ Built-in");
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await verifyModDefinitionSnapshot({
