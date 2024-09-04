@@ -17,7 +17,7 @@
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getSettingsState } from "@/store/settings/settingsStorage";
-import { getMeData } from "@/background/messenger/api";
+import { getMe } from "@/background/messenger/api";
 import { transformMeResponse } from "@/data/model/Me";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
@@ -37,7 +37,7 @@ export default async function initFloatingActions(): Promise<void> {
 
   const [settings, meApiResponse, isLinked] = await Promise.all([
     getSettingsState(),
-    getMeData(),
+    getMe(),
     getIsLinked(),
   ]);
   const meData = transformMeResponse(meApiResponse);

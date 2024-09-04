@@ -117,7 +117,7 @@ declare global {
     AUDIO_CAPTURE_EVENT: typeof forwardAudioCaptureEvent;
 
     GET_USER_DATA: typeof getUserData;
-    GET_ME_DATA: typeof getMe;
+    GET_ME: typeof getMe;
     RECORD_LOG: typeof recordLog;
     RECORD_ERROR: typeof recordError;
     CLEAR_LOGS: typeof clearLogs;
@@ -196,7 +196,7 @@ export default function registerMessenger(): void {
     AUDIO_CAPTURE_EVENT: forwardAudioCaptureEvent,
 
     GET_USER_DATA: getUserData,
-    GET_ME_DATA: getMe,
+    GET_ME: getMe,
     RECORD_LOG: recordLog,
     RECORD_ERROR: recordError,
     CLEAR_LOGS: clearLogs,

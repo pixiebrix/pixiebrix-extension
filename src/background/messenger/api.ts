@@ -157,7 +157,7 @@ export const clearIntegrationRegistry = getMethod(
   bg,
 );
 export const getUserData = getMethod("GET_USER_DATA", bg);
-export const getMeData = getMethod("GET_ME_DATA", bg);
+export const getMe = getMethod("GET_ME", bg);
 export const activateWelcomeModsInBackground = getMethod(
   "ACTIVATE_WELCOME_MODS",
   bg,
