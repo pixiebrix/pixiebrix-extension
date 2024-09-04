@@ -115,6 +115,9 @@ test("run a copied mod with a built-in integration", async ({
       sourceModId,
     );
     await modActivationPage.goto();
+    const integrationConfiguration =
+      await modActivationPage.getIntegrationConfigField(0);
+    await expect(integrationConfiguration).toHaveText("GIPHY — ✨ Built-in");
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await verifyModDefinitionSnapshot({
