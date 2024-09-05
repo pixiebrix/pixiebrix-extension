@@ -86,6 +86,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -318,6 +319,23 @@ export const editorSlice = createSlice({
     ) {
       const modComponentFormState =
         action.payload as Draft<ModComponentFormState>;
+
+      // Check if the new form state has modMetadata
+      if (modComponentFormState.modMetadata) {
+        const modId = modComponentFormState.modMetadata.id;
+
+        // Find existing activated mod components with the same mod id
+        const existingModComponents = state.modComponentFormStates.filter(
+          (formState) => formState.modMetadata?.id === modId,
+        );
+
+        // If there are existing components, collect their options, and assign
+        if (existingModComponents.length > 0) {
+          const collectedOptions = collectModOptions(existingModComponents);
+          modComponentFormState.optionsArgs = collectedOptions;
+        }
+      }
+
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentFormState.uuid] = true;
 
@@ -881,10 +899,7 @@ export const editorSlice = createSlice({
       const notDeletedFormStates = selectNotDeletedModComponentFormStates({
         editor: state,
       });
-      const modFormStates = notDeletedFormStates.filter(
-        (formState) => formState.modMetadata?.id === modId,
-      );
-      for (const formState of modFormStates) {
+      for (const formState of notDeletedFormStates) {
         formState.optionsArgs = action.payload;
         state.dirty[formState.uuid] = true;
       }
