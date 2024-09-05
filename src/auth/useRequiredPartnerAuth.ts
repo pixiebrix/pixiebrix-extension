@@ -34,6 +34,8 @@ import { type Nullishable } from "@/utils/nullishUtils";
 import { type UserPartner } from "@/data/model/UserPartner";
 import { type ControlRoom } from "@/data/model/ControlRoom";
 import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
+import useAsyncState from "@/hooks/useAsyncState";
+import { getDeploymentKey } from "@/auth/deploymentKey";
 
 /**
  * Map from partner keys to partner service IDs
@@ -165,6 +167,9 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     skip: !isLinked,
   });
 
+  const { data: deploymentKey, isLoading: isDeploymentKeyLoading } =
+    useAsyncState(async () => getDeploymentKey(), []);
+
   const localAuth = useSelector(selectAuth);
   const {
     authIntegrationId: authIntegrationIdOverride,
@@ -206,9 +211,9 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     hasControlRoom ||
     (Boolean(me?.partner) && isCommunityEditionUser);
 
-  if (authMethodOverride === "pixiebrix-token") {
-    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method. Keep the theme,
-    // if any, but don't require a partner integration configuration.
+  if (authMethodOverride === "pixiebrix-token" || deploymentKey) {
+    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method or deployment key is set
+    // Keep the theme, if any, but don't require a partner integration configuration.
     return {
       hasPartner,
       partnerKey: partner?.partnerTheme,
@@ -261,7 +266,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
       !isMissingPartnerJwt,
-    isLoading: isMeLoading || isLinkedLoading,
+    isLoading: isMeLoading || isLinkedLoading || isDeploymentKeyLoading,
     error: meError,
   };
 }

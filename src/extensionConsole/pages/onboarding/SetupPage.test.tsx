@@ -42,6 +42,7 @@ import reportError from "@/telemetry/reportError";
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.
 jest.mock("@/utils/notify");
 jest.mock("@/telemetry/reportError");
+jest.mock("@/auth/deploymentKey");
 
 const notifySuccessMock = jest.mocked(notify.success);
 const notifyWarnMock = jest.mocked(notify.warning);
