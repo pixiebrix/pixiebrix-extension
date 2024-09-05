@@ -51,7 +51,7 @@ const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   // Re-render the list when expandedRows changes.
   useEffect(() => {
     listRef.current?.resetAfterIndex(0);
-  }, [expandedRows, listRef]);
+  }, [expandedRows, listRef.current]);
 
   return (
     <ListGroup {...tableInstance.getTableProps()}>
