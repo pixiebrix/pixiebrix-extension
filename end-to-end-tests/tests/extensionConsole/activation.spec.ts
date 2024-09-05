@@ -95,6 +95,7 @@ test("can activate a mod with built-in integration", async ({
 
   const floatingActionButton = new FloatingActionButton(page);
   const button = await floatingActionButton.getActionButton();
+
   // Ensure the QuickBar is ready
   await expect(button).toBeVisible();
 
