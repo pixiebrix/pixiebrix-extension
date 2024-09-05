@@ -85,6 +85,21 @@ type DeploymentMetadata = {
    * @since 1.4.0
    */
   active?: boolean;
+
+  /**
+   * Organization context for the deployment. If this is undefined, the deployment is a personal deployment.
+   */
+  organization?: {
+    /**
+     * UUID of the organization
+     */
+    id: UUID;
+
+    /**
+     * Name of the organization
+     */
+    name: string;
+  };
 };
 
 /**
