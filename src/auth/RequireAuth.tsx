@@ -33,6 +33,8 @@ import useLinkState from "@/auth/useLinkState";
 import { type Me } from "@/data/model/Me";
 import castError from "@/utils/castError";
 import { type Location } from "history";
+import { getDeploymentKey } from "@/auth/deploymentKey";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -154,6 +156,9 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     isLoading: isPartnerAuthLoading,
   } = useRequiredPartnerAuth();
 
+  const { data: deploymentKey, isLoading: isDeploymentKeyLoading } =
+    useAsyncState(async () => getDeploymentKey(), []);
+
   if (isSettingsPage) {
     // Always let people see the settings page in order to fix broken settings
     return <>{children}</>;
@@ -168,7 +173,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     // See: https://github.com/pixiebrix/pixiebrix-extension/issues/3056
     isStartPage ||
     isAccountUnlinked ||
-    (requiresIntegration && !hasConfiguredIntegration)
+    (requiresIntegration && !hasConfiguredIntegration && !deploymentKey)
   ) {
     console.debug("Showing login page", {
       isStartPage,
@@ -176,13 +181,17 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
       requiresIntegration,
       hasConfiguredIntegration,
       hasPartner,
+      deploymentKey,
     });
 
     return <LoginPage />;
   }
 
   // Optimistically skip waiting if we have cached auth data
-  if (!hasCachedLoggedIn && (isRequiredAuthLoading || isPartnerAuthLoading)) {
+  if (
+    !hasCachedLoggedIn &&
+    (isRequiredAuthLoading || isPartnerAuthLoading || isDeploymentKeyLoading)
+  ) {
     return <Loader />;
   }
 
