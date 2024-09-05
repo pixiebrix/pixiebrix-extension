@@ -26,6 +26,7 @@ import {
   mockAuthenticatedMeApiResponse,
 } from "@/testUtils/userMock";
 import {
+  deploymentKeyFactory,
   meApiResponseFactory,
   meOrganizationApiResponseFactory,
   meWithPartnerApiResponseFactory,
@@ -36,14 +37,18 @@ import { integrationConfigFactory } from "@/testUtils/factories/integrationFacto
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
+import { getDeploymentKey } from "@/auth/deploymentKey";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
+jest.mock("@/auth/deploymentKey");
 
 const useManagedStorageStateMock = jest.mocked(useManagedStorageState);
 const usePartnerAuthDataMock = jest.mocked(usePartnerAuthData);
+const getDeploymentKeyMock = jest.mocked(getDeploymentKey);
 
 beforeEach(() => {
+  jest.clearAllMocks();
   useManagedStorageStateMock.mockReturnValue({
     data: {},
     isLoading: false,
@@ -222,6 +227,34 @@ describe("useRequiredPartnerAuth", () => {
         partnerKey: "automation-anywhere",
         requiresIntegration: true,
         hasConfiguredIntegration: true,
+        isLoading: false,
+        error: undefined,
+      });
+    });
+  });
+
+  test("does not require integration when a deployment key is provided", async () => {
+    getDeploymentKeyMock.mockResolvedValue(deploymentKeyFactory());
+
+    await mockAuthenticatedMeApiResponse(
+      meWithPartnerApiResponseFactory({
+        organization: meOrganizationApiResponseFactory({
+          control_room: {
+            id: uuidv4(),
+            url: "https://control-room.example.com",
+          },
+        }),
+      }),
+    );
+
+    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+
+    await waitFor(() => {
+      expect(result.current).toStrictEqual({
+        hasPartner: false,
+        partnerKey: undefined,
+        requiresIntegration: false,
+        hasConfiguredIntegration: false,
         isLoading: false,
         error: undefined,
       });
