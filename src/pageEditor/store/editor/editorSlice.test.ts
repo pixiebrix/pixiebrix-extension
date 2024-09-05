@@ -266,7 +266,7 @@ describe("persistEditorConfig", () => {
   });
 });
 
-describe("Mod Component and Mod Options handling", () => {
+describe("Mod Options editing", () => {
   let initialState: EditorState;
   const modId = validateRegistryId("test/mod");
   const modMetadata = modMetadataFactory({ id: modId });
@@ -364,7 +364,7 @@ describe("Mod Component and Mod Options handling", () => {
     );
     expect(updatedExistingComponent?.optionsArgs).toEqual(updatedOptionsArgs);
 
-    // Check if the deleted component's options are updated
+    // Check whether the deleted component's options are updated
     const updatedDeletedComponents =
       stateAfterEdit.deletedModComponentFormStatesByModId[modId];
     expect(updatedDeletedComponents).toBeDefined();
