@@ -66,12 +66,12 @@ export const MODS_PAGE_TABS: ModTabsMap = {
   personal: {
     key: "Personal",
     tabTitle: "Personal Mods",
-    filters: [{ id: "sharing.source.label", value: "Personal" }],
+    filters: [{ id: "sharingSource.label", value: "Personal" }],
   },
   public: {
     key: "Public",
     tabTitle: "Public Mods",
-    filters: [{ id: "sharing.source.label", value: "Public" }],
+    filters: [{ id: "sharingSource.label", value: "Public" }],
   },
   getStarted: {
     key: "Get Started",
