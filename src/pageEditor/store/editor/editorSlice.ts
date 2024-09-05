@@ -896,23 +896,12 @@ export const editorSlice = createSlice({
         return;
       }
 
-      const modFormStates = state.modComponentFormStates.filter(
-        (formState) => formState.modMetadata?.id === modId,
-      );
-      for (const formState of modFormStates) {
+      const notDeletedFormStates = selectNotDeletedModComponentFormStates({
+        editor: state,
+      });
+      for (const formState of notDeletedFormStates) {
         formState.optionsArgs = action.payload;
         state.dirty[formState.uuid] = true;
-      }
-
-      const deletedModFormStates =
-        state.deletedModComponentFormStatesByModId[modId];
-      if (deletedModFormStates == null) {
-        return;
-      }
-
-      for (const formState of deletedModFormStates) {
-        formState.optionsArgs = action.payload;
-        // Deleted form states should not be added to state.dirty
       }
     },
     setExpandedFieldSections(
