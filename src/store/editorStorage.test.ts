@@ -51,6 +51,10 @@ const setReduxStorageMock = jest.mocked(setReduxStorage);
 const currentPersistenceVersion = getMaxMigrationsVersion(migrations);
 
 describe("draftModComponentStorage", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   test("removes one active form state", async () => {
     const formState = formStateFactory();
     const brickConfigurationUIStates: Record<UUID, BrickConfigurationUIState> =
