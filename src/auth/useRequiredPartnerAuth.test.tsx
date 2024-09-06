@@ -40,17 +40,21 @@ import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
 import { UserRole } from "@/types/contract";
 import type { components } from "@/types/swagger";
+import { getExtensionToken } from "@/auth/authStorage";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
 jest.mock("@/auth/deploymentKey");
+jest.mock("@/auth/authStorage");
 
 const useManagedStorageStateMock = jest.mocked(useManagedStorageState);
 const usePartnerAuthDataMock = jest.mocked(usePartnerAuthData);
 const getDeploymentKeyMock = jest.mocked(getDeploymentKey);
+const getExtensionTokenMock = jest.mocked(getExtensionToken);
 
 beforeEach(() => {
   jest.clearAllMocks();
+  getExtensionTokenMock.mockResolvedValue(undefined);
   useManagedStorageStateMock.mockReturnValue({
     data: {},
     isLoading: false,
@@ -131,24 +135,17 @@ describe("useRequiredPartnerAuth", () => {
     });
   });
 
-  test("does not require integration for aa community admins", async () => {
-    const organization = meOrganizationApiResponseFactory({
-      control_room: {
-        id: uuidv4(),
-        url: "https://control-room.example.com",
-      },
-    });
+  test("does not require integration for users authenticated with pixiebrix token", async () => {
+    getExtensionTokenMock.mockResolvedValue("mock-token");
 
     await mockAuthenticatedMeApiResponse(
       meWithPartnerApiResponseFactory({
-        organization,
-        organization_memberships: [
-          {
-            organization: organization.id!,
-            role: UserRole.admin,
-            // @ts-expect-error -- This type cast is not working for some reason
-          } as components["schemas"]["Me"]["organization_memberships"][number],
-        ],
+        organization: meOrganizationApiResponseFactory({
+          control_room: {
+            id: uuidv4(),
+            url: "https://control-room.example.com",
+          },
+        }),
       }),
     );
 

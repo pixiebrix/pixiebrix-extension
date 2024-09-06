@@ -36,7 +36,7 @@ import { type ControlRoom } from "@/data/model/ControlRoom";
 import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getDeploymentKey } from "@/auth/deploymentKey";
-import { UserRole } from "@/types/contract";
+import { getExtensionToken } from "@/auth/authStorage";
 
 /**
  * Map from partner keys to partner service IDs
@@ -168,6 +168,14 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     skip: !isLinked,
   });
 
+  const {
+    data: isAuthenticatedWithPixiebrixToken,
+    isLoading: isGetPixiebrixTokenLoading,
+  } = useAsyncState(async () => {
+    const token = await getExtensionToken();
+    return Boolean(token);
+  }, []);
+
   const { data: deploymentKey, isLoading: isDeploymentKeyLoading } =
     useAsyncState(async () => getDeploymentKey(), []);
 
@@ -188,24 +196,13 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   let partner: Nullishable<UserPartner> = null;
   let controlRoom: Nullishable<ControlRoom> = null;
   const userMilestones: UserMilestone[] = [];
-  let isOrganizationAdmin = false;
 
   if (me) {
     const organization = me.primaryOrganization ?? null;
-    isOrganizationAdmin =
-      me.organizationMemberships.find(
-        (membership) =>
-          membership.organizationId === organization?.organizationId,
-      )?.userOrganizationRole === "admin";
     partner = me.partner;
     controlRoom = organization?.controlRoom ?? null;
     userMilestones.push(...me.userMilestones);
   } else if (localAuth) {
-    const organization = localAuth.organization ?? null;
-    const organizationMembership = localAuth.organizations.find(
-      (membership) => membership.id === organization?.id,
-    );
-    isOrganizationAdmin = organizationMembership?.role === UserRole.admin;
     partner = localAuth.partner;
     controlRoom = localAuth.organization?.control_room ?? null;
     userMilestones.push(...localAuth.milestones);
@@ -260,16 +257,17 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     partnerIntegrationIds.has(integrationConfig.integrationId),
   );
 
-  const requiresIntegration =
-    // Primary organization has a partner and linked control room
-    (hasPartner && controlRoom != null && !isOrganizationAdmin) ||
-    // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
-    managedPartnerId === "automation-anywhere" ||
-    // Community edition users are required to be linked until they join an organization
-    (me?.partner && isCommunityEditionUser) ||
-    // User has overridden local settings
-    authMethodOverride === "partner-oauth2" ||
-    authMethodOverride === "partner-token";
+  const requiresIntegration = isAuthenticatedWithPixiebrixToken
+    ? false
+    : // Primary organization has a partner and linked control room
+      (hasPartner && controlRoom != null) ||
+      // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
+      managedPartnerId === "automation-anywhere" ||
+      // Community edition users are required to be linked until they join an organization
+      (me?.partner && isCommunityEditionUser) ||
+      // User has overridden local settings
+      authMethodOverride === "partner-oauth2" ||
+      authMethodOverride === "partner-token";
 
   return {
     hasPartner,
@@ -279,7 +277,11 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
       !isMissingPartnerJwt,
-    isLoading: isMeLoading || isLinkedLoading || isDeploymentKeyLoading,
+    isLoading:
+      isMeLoading ||
+      isLinkedLoading ||
+      isDeploymentKeyLoading ||
+      isGetPixiebrixTokenLoading,
     error: meError,
   };
 }
