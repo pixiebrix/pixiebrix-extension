@@ -242,6 +242,10 @@ class ContentScriptPlatform extends PlatformBase {
     return {
       getState,
       setState,
+      addModVariableChangeListener(
+        callback: () => void,
+        options: { signal: AbortSignal },
+      ) {},
     };
   }
 

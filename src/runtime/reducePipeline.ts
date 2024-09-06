@@ -1007,7 +1007,8 @@ export async function reducePipeline(
       index,
       isLastBrick: index === pipelineArray.length - 1,
       previousOutput: output,
-      context: extendModVariableContext(localVariableContext, {
+      // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
+      context: await extendModVariableContext(localVariableContext, {
         modComponentRef: partialOptions.modComponentRef,
         options,
         // Mod variable is updated when each block is run
@@ -1080,7 +1081,8 @@ async function reducePipelineExpression(
       isLastBrick: index === pipeline.length - 1,
       previousOutput: legacyOutput,
       // Assume @input and @options are present
-      context: extendModVariableContext(context as BrickArgsContext, {
+      // eslint-disable-next-line no-await-in-loop -- can't parallelize because each step depends on previous step
+      context: await extendModVariableContext(context as BrickArgsContext, {
         modComponentRef: options.modComponentRef,
         options,
         // Update mod variable when each block is run

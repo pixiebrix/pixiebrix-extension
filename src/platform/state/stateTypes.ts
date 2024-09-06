@@ -17,7 +17,6 @@
 
 import type { ValueOf } from "type-fest";
 import type { UUID } from "@/types/stringTypes";
-import type { Nullishable } from "@/utils/nullishUtils";
 import type { RegistryId } from "@/types/registryTypes";
 
 export const MergeStrategies = {
@@ -37,6 +36,18 @@ export const StateNamespaces = {
 export type StateNamespace = ValueOf<typeof StateNamespaces>;
 
 /**
+ * [Experimental] policy to sync state changes across frames/tabs.
+ * @since 2.1.2
+ */
+export const SyncPolicies = {
+  NONE: "none",
+  // THIS_TAB: "this-tab",
+  ALL_TABS_FRAMES: "all-tabs-frames",
+};
+
+export type SyncPolicy = ValueOf<typeof SyncPolicies>;
+
+/**
  * JavaScript event name fired for state change events.
  */
 export const STATE_CHANGE_JS_EVENT_TYPE = "statechange" as const;
@@ -50,7 +61,7 @@ export type StateChangeEventDetail = {
   // Keep using extensionId/blueprintId for now for backward compatability because the values are made available
   // in `@input.event`. It's unlikely anyone is relying on them in the wild, though.
   extensionId: UUID;
-  blueprintId: Nullishable<RegistryId>;
+  blueprintId: RegistryId;
 };
 
 /**

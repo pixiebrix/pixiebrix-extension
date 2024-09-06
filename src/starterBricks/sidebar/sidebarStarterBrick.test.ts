@@ -43,7 +43,12 @@ import {
   SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import {
+  MergeStrategies,
+  StateNamespaces,
+  SyncPolicies,
+} from "@/platform/state/stateTypes";
+import { getModComponentRef } from "@/utils/modUtils";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -188,14 +193,12 @@ describe("sidebarExtension", () => {
 
     expect(rootReader.readCount).toBe(0);
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: {
-        modComponentId: modComponent.id,
-        modId: modComponent._recipe!.id,
-      },
+      syncPolicy: SyncPolicies.NONE,
+      modComponentRef: getModComponentRef(modComponent),
     });
 
     // Doesn't run because sidebar is not visible
@@ -210,15 +213,13 @@ describe("sidebarExtension", () => {
     // Runs because statechange mods also run on manual
     expect(rootReader.readCount).toBe(1);
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      modComponentRef: {
-        modComponentId: modComponent.id,
-        modId: modComponent._recipe!.id,
-      },
+      syncPolicy: SyncPolicies.NONE,
+      modComponentRef: getModComponentRef(modComponent),
     });
 
     await tick();
@@ -226,10 +227,11 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(2);
 
     // Should ignore state change from other mod
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
+      syncPolicy: SyncPolicies.NONE,
       modComponentRef: modComponentRefFactory(),
     });
 
@@ -255,12 +257,12 @@ describe("sidebarExtension", () => {
       })(),
     );
 
-    const extension = modComponentFactory({
+    const modComponent = modComponentFactory({
       extensionPointId: starterBrick.id,
       _recipe: modMetadataFactory(),
     });
 
-    starterBrick.registerModComponent(extension);
+    starterBrick.registerModComponent(modComponent);
 
     await starterBrick.install();
 
@@ -274,14 +276,13 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(1);
 
     for (let i = 0; i < 10; i++) {
-      setState({
+      // eslint-disable-next-line no-await-in-loop -- test code
+      await setState({
         namespace: StateNamespaces.MOD,
         data: { foo: i },
         mergeStrategy: MergeStrategies.REPLACE,
-        modComponentRef: {
-          modComponentId: extension.id,
-          modId: extension._recipe!.id,
-        },
+        syncPolicy: SyncPolicies.NONE,
+        modComponentRef: getModComponentRef(modComponent),
       });
     }
 

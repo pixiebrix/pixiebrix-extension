@@ -51,6 +51,7 @@ import {
   MergeStrategies,
   type StateNamespace,
   StateNamespaces,
+  SyncPolicies,
 } from "@/platform/state/stateTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
@@ -479,6 +480,8 @@ async function setData(
         namespace: storage.namespace ?? StateNamespaces.MOD,
         data: cleanValues,
         mergeStrategy: MergeStrategies.SHALLOW,
+        // TODO: read the sync policy from the mod definition
+        syncPolicy: SyncPolicies.NONE,
         modComponentRef,
       });
       return;

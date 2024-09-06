@@ -34,4 +34,15 @@ export type StateProtocol = {
    * Set the current state.
    */
   setState: typeof setState;
+
+  /**
+   * Register a callback to be called when a mod variable changes.
+   * @param callback the callback to be called when a mod variable changes
+   * @param options options for the callback
+   * @since 2.1.2
+   */
+  addModVariableChangeListener(
+    callback: () => void,
+    options: { signal: AbortSignal },
+  ): void;
 };

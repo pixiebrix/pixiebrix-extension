@@ -7,7 +7,11 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import {
+  MergeStrategies,
+  StateNamespaces,
+  SyncPolicies,
+} from "@/platform/state/stateTypes";
 
 /**
  * A simple brick to assign a value to a Mod Variable.
@@ -93,10 +97,11 @@ class AssignModVariable extends EffectABC {
     }>,
     { meta: { modComponentRef } }: BrickOptions,
   ): Promise<void> {
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
       mergeStrategy: MergeStrategies.SHALLOW,
+      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
   }

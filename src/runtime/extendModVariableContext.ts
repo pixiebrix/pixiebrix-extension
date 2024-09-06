@@ -87,7 +87,7 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
     [MOD_VARIABLE_REFERENCE]: pickBy(
       // eslint-disable-next-line security/detect-object-injection -- constant
       (context as ExtendedContext)[MOD_VARIABLE_REFERENCE] ?? {},
-      (value, key) => key !== MOD_VARIABLE_TAG,
+      (_value, key) => key !== MOD_VARIABLE_TAG,
     ),
   };
 }
@@ -100,7 +100,9 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
  * @param update If true, the mod variable will be updated with the latest state
  * @param options The runtime version API options
  */
-function extendModVariableContext<T extends UnknownObject = UnknownObject>(
+async function extendModVariableContext<
+  T extends UnknownObject = UnknownObject,
+>(
   originalContext: T,
   {
     modComponentRef,
@@ -111,7 +113,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     update?: boolean;
     options: Pick<ApiVersionOptions, "extendModVariable">;
   },
-): ExtendedContext<T> {
+): Promise<ExtendedContext<T>> {
   assertPlatformCapability("state");
 
   // For backward compatability, don't overwrite for older versions of the runtime. It should generally be safe, but
@@ -136,7 +138,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
   // Eagerly grab the state. It's fast/synchronous since it's in memory in the same JS context.
   // Previously, we had considered using a proxy to lazily load the state. However, eagerly reading is simpler.
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
-  const modState = getState({
+  const modState = await getState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
   });

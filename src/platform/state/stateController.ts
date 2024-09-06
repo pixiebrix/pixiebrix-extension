@@ -30,14 +30,25 @@ import {
   type StateChangeEventDetail,
   type StateNamespace,
   StateNamespaces,
+  SyncPolicies,
+  type SyncPolicy,
 } from "@/platform/state/stateTypes";
-
-const privateState = new Map<UUID, JsonObject>();
+import { SessionMap } from "@/mv3/SessionStorage";
 
 /**
- * The mod page state or null for shared page state.
+ * Map from mod component id to its private state.
  */
-const modState = new Map<RegistryId | null, JsonObject>();
+const framePrivateState = new Map<UUID, JsonObject>();
+
+/**
+ * Map from mod id to its mod state. Or null key for public page state.
+ */
+const frameModState = new Map<RegistryId | null, JsonObject>();
+
+const syncedModState = new SessionMap<JsonObject>(
+  "syncedModState",
+  import.meta.url,
+);
 
 function mergeState(
   previous: JsonObject,
@@ -65,6 +76,19 @@ function mergeState(
       throw new BusinessError(`Unknown merge strategy: ${exhaustiveCheck}`);
     }
   }
+}
+
+async function getModVariableState(modId: RegistryId): Promise<JsonObject> {
+  // TODO: depending on performance, consider caching in memory to avoid unnecessary reads from storage and invalidate
+  //  cache storage change events
+  const synced = (await syncedModState.get(modId)) ?? {};
+  const local = frameModState.get(modId) ?? {};
+
+  // Prefer synced state over local state
+  return {
+    ...local,
+    ...synced,
+  };
 }
 
 function dispatchStateChangeEventOnChange({
@@ -97,17 +121,19 @@ function dispatchStateChangeEventOnChange({
   }
 }
 
-export function setState({
+export async function setState({
   namespace,
   data,
   mergeStrategy,
+  syncPolicy,
   modComponentRef,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
+  syncPolicy: SyncPolicy;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
-}) {
+}): Promise<JsonObject> {
   assertPlatformCapability("state");
 
   const { modComponentId, modId } = modComponentRef;
@@ -123,17 +149,23 @@ export function setState({
 
   switch (namespace) {
     case StateNamespaces.PUBLIC: {
-      const previous = modState.get(null) ?? {};
+      const previous = frameModState.get(null) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(null, next);
+      frameModState.set(null, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case StateNamespaces.MOD: {
-      const previous = modState.get(modId) ?? {};
+      const previous = await getModVariableState(modId);
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(modId, next);
+
+      if (syncPolicy === SyncPolicies.ALL_TABS_FRAMES) {
+        await syncedModState.set(modId, next);
+      } else {
+        frameModState.set(modId, next);
+      }
+
       notifyOnChange(previous, next);
       return next;
     }
@@ -143,9 +175,9 @@ export function setState({
         modComponentId,
         "Invalid context: mod component id not found",
       );
-      const previous = privateState.get(modComponentId) ?? {};
+      const previous = framePrivateState.get(modComponentId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      privateState.set(modComponentId, next);
+      framePrivateState.set(modComponentId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -157,22 +189,22 @@ export function setState({
   }
 }
 
-export function getState({
+export async function getState({
   namespace,
   modComponentRef: { modComponentId, modId },
 }: {
   namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
-}): JsonObject {
+}): Promise<JsonObject> {
   assertPlatformCapability("state");
 
   switch (namespace) {
     case StateNamespaces.PUBLIC: {
-      return modState.get(null) ?? {};
+      return frameModState.get(null) ?? {};
     }
 
     case StateNamespaces.MOD: {
-      return modState.get(modId) ?? {};
+      return getModVariableState(modId);
     }
 
     case StateNamespaces.PRIVATE: {
@@ -180,7 +212,7 @@ export function getState({
         modComponentId,
         "Invalid context: mod component id not found",
       );
-      return privateState.get(modComponentId) ?? {};
+      return framePrivateState.get(modComponentId) ?? {};
     }
 
     default: {
@@ -191,6 +223,6 @@ export function getState({
 }
 
 export function TEST_resetState(): void {
-  privateState.clear();
-  modState.clear();
+  framePrivateState.clear();
+  frameModState.clear();
 }

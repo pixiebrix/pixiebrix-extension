@@ -21,46 +21,50 @@ import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
+  SyncPolicies,
 } from "@/platform/state/stateTypes";
 
 describe("pageState", () => {
-  it("deep merge triggers event", () => {
+  it("deep merge triggers event", async () => {
     const listener = jest.fn();
 
     document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: { foo: { bar: "baz" } },
       mergeStrategy: MergeStrategies.DEEP,
+      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
-  it("deep merges async state", () => {
+  it("deep merges async state", async () => {
     const listener = jest.fn();
 
     document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
       },
       mergeStrategy: MergeStrategies.DEEP,
+      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 
-    const updatedState = setState({
+    const updatedState = await setState({
       namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: MergeStrategies.DEEP,
+      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 

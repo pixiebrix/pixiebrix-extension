@@ -24,7 +24,11 @@ import {
   runMetadataFactory,
 } from "@/testUtils/factories/runtimeFactories";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import {
+  MergeStrategies,
+  StateNamespaces,
+  SyncPolicies,
+} from "@/platform/state/stateTypes";
 
 const brick = new AssignModVariable();
 
@@ -34,10 +38,11 @@ const brickOptions = brickOptionsFactory({
   meta: runMetadataFactory({ modComponentRef }),
 });
 
-beforeEach(() => {
-  setState({
+beforeEach(async () => {
+  await setState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
+    syncPolicy: SyncPolicies.NONE,
     mergeStrategy: MergeStrategies.REPLACE,
     data: {},
   });
@@ -55,12 +60,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
+    await expect(
       getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: { bar: 42 } });
+    ).resolves.toEqual({ foo: { bar: 42 } });
   });
 
   test("null is valid input", async () => {
@@ -88,12 +93,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
+    await expect(
       getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: null });
+    ).resolves.toEqual({ foo: null });
   });
 
   test("only sets variable", async () => {
@@ -107,12 +112,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
+    await expect(
       getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: 42, bar: 0 });
+    ).resolves.toEqual({ foo: 42, bar: 0 });
   });
 
   it("returns mod variables", async () => {

@@ -63,6 +63,7 @@ import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
+  SyncPolicies,
 } from "@/platform/state/stateTypes";
 import { RefreshTriggers } from "@/platform/panels/panelTypes";
 
@@ -351,10 +352,11 @@ describe("DisplayTemporaryInfo", () => {
     ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
+      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 

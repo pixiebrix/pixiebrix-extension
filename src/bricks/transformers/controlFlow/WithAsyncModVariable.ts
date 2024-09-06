@@ -33,7 +33,11 @@ import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import {
+  MergeStrategies,
+  StateNamespaces,
+  SyncPolicies,
+} from "@/platform/state/stateTypes";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
@@ -188,8 +192,11 @@ export class WithAsyncModVariable extends TransformerABC {
 
     const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
 
-    const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
-      setState({
+    const setModVariable = async (
+      data: JsonObject,
+      strategy: "put" | "patch",
+    ) => {
+      await setState({
         // Store as Mod Variable
         namespace: StateNamespaces.MOD,
         data: {
@@ -198,6 +205,7 @@ export class WithAsyncModVariable extends TransformerABC {
         // Using shallow will replace the state key, but keep other keys
         mergeStrategy:
           strategy === "put" ? MergeStrategies.SHALLOW : MergeStrategies.DEEP,
+        syncPolicy: SyncPolicies.NONE,
         modComponentRef,
       });
     };
@@ -206,7 +214,7 @@ export class WithAsyncModVariable extends TransformerABC {
     modVariableNonces.set(stateKey, requestId);
 
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
-    const currentState = getState({
+    const currentState = await getState({
       namespace: StateNamespaces.MOD,
       modComponentRef,
     });
@@ -216,7 +224,7 @@ export class WithAsyncModVariable extends TransformerABC {
 
     if (isEmpty(currentVariable)) {
       // Initialize the mod variable
-      setModVariable(
+      await setModVariable(
         {
           isLoading: true,
           isFetching: true,
@@ -232,7 +240,7 @@ export class WithAsyncModVariable extends TransformerABC {
       );
     } else {
       // Preserve the previous data/error, if any
-      setModVariable(
+      await setModVariable(
         {
           isFetching: true,
           currentData: null,
@@ -252,7 +260,7 @@ export class WithAsyncModVariable extends TransformerABC {
           return;
         }
 
-        setModVariable(
+        await setModVariable(
           {
             isLoading: false,
             isFetching: false,
@@ -270,7 +278,7 @@ export class WithAsyncModVariable extends TransformerABC {
           return;
         }
 
-        setModVariable(
+        await setModVariable(
           {
             isLoading: false,
             isFetching: false,
