@@ -33,10 +33,15 @@ import { FeatureFlags } from "@/auth/featureFlags";
  * any user interactions or network requests are made.
  *
  * @param sessionReplaySampleRate The percentage of sessions to record for session replay. Default is 20%.
+ * @param additionalGlobalContext Additional global context to include with all RUM events.
  */
 export async function initPerformanceMonitoring({
   sessionReplaySampleRate = 20,
-}: { sessionReplaySampleRate?: number } = {}): Promise<void> {
+  additionalGlobalContext = {},
+}: {
+  sessionReplaySampleRate?: number;
+  additionalGlobalContext?: UnknownObject;
+} = {}): Promise<void> {
   const environment = process.env.ENVIRONMENT;
   const applicationId = process.env.DATADOG_APPLICATION_ID;
   const clientToken = process.env.DATADOG_CLIENT_TOKEN;
@@ -99,15 +104,26 @@ export async function initPerformanceMonitoring({
     allowFallbackToLocalStorage: true,
   });
 
-  datadogRum.setGlobalContextProperty(
-    "code_version",
-    process.env.SOURCE_VERSION,
-  );
+  datadogRum.setGlobalContext({
+    code_version: process.env.SOURCE_VERSION,
+    ...additionalGlobalContext,
+  });
 
   // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
   datadogRum.setUser(await mapAppUserToTelemetryUser(await readAuthData()));
 
-  datadogRum.startSessionReplayRecording();
+  // NOTE: Datadog does not document this well, but when a rum session was already started for the
+  //   user (say from the extension console page), initializing datadogRum again will not reuse the
+  //   same session replay setting. Thus, if the initial session did not start a replay recording, any subsequent
+  //   datadogRum.init calls will not start the session replay, even if the sessionReplaySampleRate is 100.
+  //   Thus as a work-around, we call startSessionReplayRecording here with force: true to ensure that the session replay is started.
+  //   See: https://github.com/DataDog/browser-sdk/issues/1967
+  if (sessionReplaySampleRate === 100) {
+    console.debug("Forcing session replay recording");
+    datadogRum.startSessionReplayRecording({
+      force: true,
+    });
+  }
 
   addAuthListener(updatePerson);
 }

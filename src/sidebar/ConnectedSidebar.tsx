@@ -58,6 +58,8 @@ import {
   validateModComponentRef,
 } from "@/types/modComponentTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { CONNECTED_TAB_URL_PERFORMANCE_KEY } from "@/sidebar/telemetryConstants";
+import { datadogRum } from "@datadog/browser-rum";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -124,7 +126,7 @@ const ConnectedSidebar: React.VFC = () => {
     const navigationListener = (
       details: chrome.webNavigation.WebNavigationFramedCallbackDetails,
     ) => {
-      const { frameId, tabId, documentLifecycle } = details;
+      const { frameId, tabId, documentLifecycle, url } = details;
       const connectedTabId = getConnectedTabIdForSidebarTopFrame();
       if (
         documentLifecycle === "active" &&
@@ -133,6 +135,11 @@ const ConnectedSidebar: React.VFC = () => {
       ) {
         console.log("navigationListener:connectedTabId", connectedTabId);
         dispatch(sidebarSlice.actions.invalidatePanels());
+        datadogRum.addAction("connectedTabNavigation", { url });
+        datadogRum.setGlobalContextProperty(
+          CONNECTED_TAB_URL_PERFORMANCE_KEY,
+          url,
+        );
       }
     };
 
