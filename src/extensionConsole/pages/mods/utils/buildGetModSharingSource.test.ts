@@ -56,6 +56,7 @@ describe("buildGetModSharingSource", () => {
             id: autoUUIDSequence(),
             timestamp: nowTimestamp(),
             active: true,
+            organization,
           },
         }),
       ],
@@ -64,7 +65,7 @@ describe("buildGetModSharingSource", () => {
     const mod = modDefinitionFactory({
       metadata: modMetadata,
       sharing: {
-        public: true,
+        public: false,
         organizations: [organization.id],
       },
     });
@@ -111,6 +112,56 @@ describe("buildGetModSharingSource", () => {
     expect(getSharingSource(mod)).toStrictEqual({
       type: "Public",
       label: "Public",
+      organization: undefined,
+    });
+  });
+
+  it("handles personal deployment mod", () => {
+    const modMetadata = modMetadataFactory();
+    const getSharingSource = buildGetModSharingSource(
+      userScope,
+      [],
+      [
+        activatedModComponentFactory({
+          _recipe: modMetadata,
+          _deployment: {
+            id: autoUUIDSequence(),
+            timestamp: nowTimestamp(),
+            active: true,
+            organization: undefined,
+          },
+        }),
+      ],
+    );
+
+    const mod = modDefinitionFactory({
+      metadata: modMetadata,
+      sharing: {
+        public: false,
+        organizations: [],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "PersonalDeployment",
+      label: "Personal (Synced)",
+      organization: undefined,
+    });
+  });
+
+  it("handles unknown sharing type", () => {
+    const getSharingSource = buildGetModSharingSource(userScope, [], []);
+    const mod = modDefinitionFactory({
+      metadata: modMetadataFactory(),
+      sharing: {
+        public: false,
+        organizations: [],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "Unknown",
+      label: "Unknown",
       organization: undefined,
     });
   });
