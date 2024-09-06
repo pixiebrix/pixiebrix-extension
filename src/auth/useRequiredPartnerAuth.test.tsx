@@ -38,8 +38,6 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
-import { UserRole } from "@/types/contract";
-import type { components } from "@/types/swagger";
 import { getExtensionToken } from "@/auth/authStorage";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
