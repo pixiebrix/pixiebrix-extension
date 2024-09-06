@@ -67,6 +67,7 @@ describe("SidebarApp", () => {
     appApiMock.onGet(API_PATHS.MOD_COMPONENTS_ALL).reply(200, []);
 
     useLinkStateMock.mockReturnValue(valueToAsyncState(true));
+    jest.mocked(browser.webNavigation.onBeforeNavigate.addListener).mockReset();
   });
 
   test("renders not connected", async () => {
