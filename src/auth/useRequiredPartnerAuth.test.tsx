@@ -52,6 +52,7 @@ const getExtensionTokenMock = jest.mocked(getExtensionToken);
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // eslint-disable-next-line no-restricted-syntax -- we really do want to resolve to undefined
   getExtensionTokenMock.mockResolvedValue(undefined);
   useManagedStorageStateMock.mockReturnValue({
     data: {},
