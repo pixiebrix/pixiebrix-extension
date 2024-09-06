@@ -38,6 +38,8 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
+import { UserRole } from "@/types/contract";
+import type { components } from "@/types/swagger";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
@@ -122,6 +124,41 @@ describe("useRequiredPartnerAuth", () => {
         hasPartner: true,
         partnerKey: "automation-anywhere",
         requiresIntegration: true,
+        hasConfiguredIntegration: false,
+        isLoading: false,
+        error: undefined,
+      });
+    });
+  });
+
+  test("does not require integration for aa community admins", async () => {
+    const organization = meOrganizationApiResponseFactory({
+      control_room: {
+        id: uuidv4(),
+        url: "https://control-room.example.com",
+      },
+    });
+
+    await mockAuthenticatedMeApiResponse(
+      meWithPartnerApiResponseFactory({
+        organization,
+        organization_memberships: [
+          {
+            organization: organization.id!,
+            role: UserRole.admin,
+            // @ts-expect-error -- This type cast is not working for some reason
+          } as components["schemas"]["Me"]["organization_memberships"][number],
+        ],
+      }),
+    );
+
+    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+
+    await waitFor(() => {
+      expect(result.current).toStrictEqual({
+        hasPartner: true,
+        partnerKey: "automation-anywhere",
+        requiresIntegration: false,
         hasConfiguredIntegration: false,
         isLoading: false,
         error: undefined,
