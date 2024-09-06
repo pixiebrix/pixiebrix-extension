@@ -75,6 +75,7 @@ describe("PackageHistory", () => {
       organizations: [],
       updated_at: "2024-01-26T23:58:12.270168Z" as Timestamp,
       verbose_name: "AI Copilot",
+      share_dependencies: false,
     };
     axiosMock.onGet(API_PATHS.BRICK_VERSION_MATCH_ANY).reply(200, testVersions);
     axiosMock.onGet(API_PATHS.BRICK_MATCH_ANY).reply(200, testPackage);
