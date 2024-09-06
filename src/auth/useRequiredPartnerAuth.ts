@@ -36,10 +36,7 @@ import { type ControlRoom } from "@/data/model/ControlRoom";
 import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getDeploymentKey } from "@/auth/deploymentKey";
-import {
-  transformUserOrganizationMembershipRoleResponse,
-  type UserOrganizationMembershipRole,
-} from "@/data/model/UserOrganizationMembershipRole";
+import { UserRole } from "@/types/contract";
 
 /**
  * Map from partner keys to partner service IDs
@@ -191,15 +188,15 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   let partner: Nullishable<UserPartner> = null;
   let controlRoom: Nullishable<ControlRoom> = null;
   const userMilestones: UserMilestone[] = [];
-  let organizationRole: Nullishable<UserOrganizationMembershipRole> = null;
+  let isOrganizationAdmin = false;
 
   if (me) {
     const organization = me.primaryOrganization ?? null;
-    organizationRole =
+    isOrganizationAdmin =
       me.organizationMemberships.find(
         (membership) =>
           membership.organizationId === organization?.organizationId,
-      )?.userOrganizationRole ?? null;
+      )?.userOrganizationRole === "admin";
     partner = me.partner;
     controlRoom = organization?.controlRoom ?? null;
     userMilestones.push(...me.userMilestones);
@@ -208,11 +205,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     const organizationMembership = localAuth.organizations.find(
       (membership) => membership.id === organization?.id,
     );
-    organizationRole = organizationMembership
-      ? transformUserOrganizationMembershipRoleResponse(
-          organizationMembership.role,
-        )
-      : null;
+    isOrganizationAdmin = organizationMembership?.role === UserRole.admin;
     partner = localAuth.partner;
     controlRoom = localAuth.organization?.control_room ?? null;
     userMilestones.push(...localAuth.milestones);
@@ -269,7 +262,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   const requiresIntegration =
     // Primary organization has a partner and linked control room
-    (hasPartner && controlRoom != null && !(organizationRole === "admin")) ||
+    (hasPartner && controlRoom != null && !isOrganizationAdmin) ||
     // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
     managedPartnerId === "automation-anywhere" ||
     // Community edition users are required to be linked until they join an organization
