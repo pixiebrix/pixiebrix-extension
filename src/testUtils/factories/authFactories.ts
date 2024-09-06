@@ -101,7 +101,7 @@ export const authStateFactory = define<AuthState>({
     ];
   },
   organization: derive<AuthState, OrganizationAuthState>(
-    ({ organizations }) => organizations![0]!,
+    ({ organizations }) => ({ ...organizations![0]!, isEnterprise: false }),
     "organizations",
   ),
   groups() {
@@ -133,7 +133,6 @@ export const meApiResponseFactory = define<components["schemas"]["Me"]>({
   flags: (): components["schemas"]["Me"]["flags"] => [],
   is_onboarded: true,
   organization: undefined,
-  telemetry_organization: undefined,
   organization_memberships:
     (): components["schemas"]["Me"]["organization_memberships"] => [],
   group_memberships: (): components["schemas"]["Me"]["group_memberships"] => [],

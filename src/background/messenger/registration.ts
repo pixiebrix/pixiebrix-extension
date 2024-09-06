@@ -84,6 +84,7 @@ import { debouncedActivateWelcomeMods as activateWelcomeMods } from "@/backgroun
 import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
 import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
+import { getMe } from "@/data/service/backgroundApi";
 
 expectContext("background");
 
@@ -116,6 +117,7 @@ declare global {
     AUDIO_CAPTURE_EVENT: typeof forwardAudioCaptureEvent;
 
     GET_USER_DATA: typeof getUserData;
+    GET_ME: typeof getMe;
     RECORD_LOG: typeof recordLog;
     RECORD_ERROR: typeof recordError;
     CLEAR_LOGS: typeof clearLogs;
@@ -194,6 +196,7 @@ export default function registerMessenger(): void {
     AUDIO_CAPTURE_EVENT: forwardAudioCaptureEvent,
 
     GET_USER_DATA: getUserData,
+    GET_ME: getMe,
     RECORD_LOG: recordLog,
     RECORD_ERROR: recordError,
     CLEAR_LOGS: clearLogs,
