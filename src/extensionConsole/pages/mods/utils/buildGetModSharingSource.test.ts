@@ -77,6 +77,40 @@ describe("buildGetModSharingSource", () => {
     });
   });
 
+  it("handles deployment mod (old deployment metadata)", () => {
+    const modMetadata = modMetadataFactory();
+    const organization = organizationStateFactory();
+    const getSharingSource = buildGetModSharingSource(
+      userScope,
+      [organization],
+      [
+        activatedModComponentFactory({
+          _recipe: modMetadata,
+          _deployment: {
+            id: autoUUIDSequence(),
+            timestamp: nowTimestamp(),
+            active: true,
+            // Old deployment metadata doesn't include the organization directly
+          },
+        }),
+      ],
+    );
+
+    const mod = modDefinitionFactory({
+      metadata: modMetadata,
+      sharing: {
+        public: false,
+        organizations: [organization.id],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "Deployment",
+      label: organization.name,
+      organization,
+    });
+  });
+
   it("handles team mod", () => {
     const organization = organizationStateFactory();
     const getSharingSource = buildGetModSharingSource(
@@ -129,6 +163,7 @@ describe("buildGetModSharingSource", () => {
             timestamp: nowTimestamp(),
             active: true,
             organization: undefined,
+            isPersonalDeployment: true,
           },
         }),
       ],
@@ -158,11 +193,33 @@ describe("buildGetModSharingSource", () => {
         organizations: [],
       },
     });
-
     expect(getSharingSource(mod)).toStrictEqual({
       type: "Unknown",
       label: "Unknown",
       organization: undefined,
+    });
+  });
+
+  it("handles mod belonging to multiple organizations", () => {
+    const organization1 = organizationStateFactory();
+    const organization2 = organizationStateFactory();
+    const getSharingSource = buildGetModSharingSource(
+      userScope,
+      [organization1, organization2],
+      [],
+    );
+    const mod = modDefinitionFactory({
+      metadata: modMetadataFactory(),
+      sharing: {
+        public: false,
+        organizations: [organization1.id, organization2.id],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "Team",
+      label: organization1.name, // It should return the first matching organization
+      organization: organization1,
     });
   });
 });

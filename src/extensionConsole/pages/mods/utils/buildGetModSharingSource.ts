@@ -42,14 +42,17 @@ export default function buildGetModSharingSource(
     ) as ActivatedModComponentWithDeployment | undefined;
 
     if (activatedModComponentFromDeployment) {
-      const deploymentOrganization =
-        activatedModComponentFromDeployment._deployment.organization;
-      if (deploymentOrganization) {
-        sharingType = "Deployment";
-        label = deploymentOrganization.name;
-      } else {
+      if (
+        activatedModComponentFromDeployment._deployment.isPersonalDeployment
+      ) {
         sharingType = "PersonalDeployment";
         label = "Personal (Synced)";
+      } else {
+        sharingType = "Deployment";
+        label =
+          activatedModComponentFromDeployment._deployment.organization?.name ||
+          organization?.name || // In case organization is not on the _deployment object (due to an old deployment)
+          sharingType;
       }
     } else if (idHasScope(modId, userScope)) {
       sharingType = "Personal";
