@@ -65,7 +65,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   const menuItems: EllipsisMenuItem[] = [
     {
-      title: "Reset",
+      title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: onReset,
       disabled: !isDirty || disabled,
