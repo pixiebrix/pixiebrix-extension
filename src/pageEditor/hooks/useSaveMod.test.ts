@@ -26,11 +26,17 @@ import modDefinitionRegistry from "@/modDefinitions/registry";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
-import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import {
+  actions as editorActions,
+  editorSlice,
+} from "@/pageEditor/store/editor/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type UUID } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -250,6 +256,45 @@ describe("useSaveMod", () => {
         "ui:order": ["test", "*"],
       },
     });
+  });
+
+  it("opens the create mod modal if save is called with a temporary, internal mod", async () => {
+    const temporaryModId =
+      getStandaloneModComponentRuntimeModId(autoUUIDSequence());
+
+    const { result, waitForEffect, getReduxStore } = renderHook(
+      () => useSaveMod(),
+      {
+        setupRedux(dispatch, { store }) {
+          jest.spyOn(store, "dispatch");
+          dispatch(
+            modComponentSlice.actions.activateMod({
+              modDefinition: defaultModDefinitionFactory({
+                metadata: modMetadataFactory({
+                  id: temporaryModId,
+                }),
+              }),
+              screen: "pageEditor",
+              isReactivate: false,
+            }),
+          );
+        },
+      },
+    );
+
+    await waitForEffect();
+
+    const { dispatch } = getReduxStore();
+
+    await hookAct(async () => {
+      await result.current.save(temporaryModId);
+    });
+
+    expect(dispatch).toHaveBeenCalledWith(
+      editorActions.showCreateModModal({ keepLocalCopy: false }),
+    );
+    expect(notify.success).not.toHaveBeenCalled();
+    expect(notify.error).not.toHaveBeenCalled();
   });
 });
 
