@@ -63,7 +63,7 @@ const NewModButton: React.FunctionComponent = () => {
       variant="info"
       size="sm"
       title="New Mod"
-      id="add-starter-brick"
+      id="new-mod"
     >
       {modComponentFormStateAdapters.map((adapter) => (
         <DropdownEntry

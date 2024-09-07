@@ -372,7 +372,7 @@ export type ModParts = {
   /**
    * Dirty/new options to save. Undefined if there are no changes.
    */
-  dirtyModOptions?: ModOptionsDefinition;
+  dirtyModOptionsDefinition?: ModOptionsDefinition;
   /**
    * Dirty/new metadata to save. Undefined if there are no changes.
    */
@@ -407,7 +407,7 @@ export function buildNewMod({
   sourceMod,
   cleanModComponents,
   dirtyModComponentFormStates,
-  dirtyModOptions,
+  dirtyModOptionsDefinition,
   dirtyModMetadata,
 }: ModParts): UnsavedModDefinition {
   // If there's no source mod, then we're creating a new one, so we
@@ -416,8 +416,8 @@ export function buildNewMod({
     sourceMod ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
-    if (dirtyModOptions) {
-      draft.options = normalizeModOptionsDefinition(dirtyModOptions);
+    if (dirtyModOptionsDefinition) {
+      draft.options = normalizeModOptionsDefinition(dirtyModOptionsDefinition);
     }
 
     if (dirtyModMetadata) {

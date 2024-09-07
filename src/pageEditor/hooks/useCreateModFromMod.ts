@@ -67,7 +67,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           sourceMod: modDefinition,
           cleanModComponents,
           dirtyModComponentFormStates,
-          dirtyModOptions: modOptions,
+          dirtyModOptionsDefinition: modOptions,
           dirtyModMetadata: metadata,
         });
 

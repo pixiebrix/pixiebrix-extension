@@ -39,6 +39,10 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
+import { nowTimestamp } from "@/utils/timeUtils";
+import { type UUID } from "@/types/stringTypes";
+import { normalizeSemVerString } from "@/types/helpers";
+import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
@@ -83,6 +87,19 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
       if (modMetadata) {
         initialFormState.modMetadata = modMetadata;
+      } else {
+        // Create new mod metadata for standalone components
+        initialFormState.modMetadata = {
+          id: getStandaloneModComponentRuntimeModId(initialFormState.uuid),
+          name: initialFormState.label, // Changed from modComponent.name to label
+          description: "Created with the PixieBrix Page Editor",
+          version: normalizeSemVerString("1.0.0"),
+          sharing: {
+            public: false,
+            organizations: [] as UUID[],
+          },
+          updated_at: nowTimestamp(),
+        };
       }
 
       return initialFormState as ModComponentFormState;

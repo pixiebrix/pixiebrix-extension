@@ -36,11 +36,11 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
-  selectActiveModComponentFormState,
-  selectActiveBrickPipelineUIState,
   selectActiveBrickConfigurationUIState,
-  selectNotDeletedModComponentFormStates,
+  selectActiveBrickPipelineUIState,
+  selectActiveModComponentFormState,
   selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
 } from "./editorSelectors";
 import {
   isQuickBarStarterBrick,
@@ -48,12 +48,12 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  setActiveModComponentId,
   editModMetadata,
   editModOptionsDefinitions,
   ensureBrickPipelineUIState,
   removeModComponentFormState,
   removeModData,
+  setActiveModComponentId,
   setActiveModId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
@@ -62,8 +62,8 @@ import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import {
-  getRunningStarterBricks,
   checkAvailable,
+  getRunningStarterBricks,
 } from "@/contentScript/messenger/api";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";

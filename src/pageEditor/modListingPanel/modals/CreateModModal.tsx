@@ -21,6 +21,7 @@ import {
   testIsSemVerString,
   validateRegistryId,
   normalizeSemVerString,
+  isInnerDefinitionRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,6 +29,7 @@ import {
   selectActiveModId,
   selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
+  selectFirstModComponentFormStateForActiveMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
@@ -59,37 +61,51 @@ import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
+import useIsMounted from "@/hooks/useIsMounted";
 
 function useInitialFormState({
   activeMod,
   activeModComponentFormState,
+  activeModId,
 }: {
   activeModComponentFormState: Nullishable<ModComponentFormState>;
   activeMod: ModDefinition | null;
+  activeModId?: RegistryId;
 }): ModMetadataFormState | UnknownObject {
   const scope = useSelector(selectScope);
   assertNotNullish(scope, "Expected scope to create new mod");
 
-  const activeModId =
-    activeModComponentFormState?.modMetadata?.id ?? activeMod?.metadata?.id;
+  // For unsaved mods, if the mod metadata has not been modified, it will only exist on the components
+  const firstComponentFormStateForActiveMod = useSelector(
+    selectFirstModComponentFormStateForActiveMod,
+  );
 
   const dirtyModMetadata = useSelector(
     selectDirtyMetadataForModId(activeModId),
   );
-  const modMetadata = dirtyModMetadata ?? activeMod?.metadata;
+  const modMetadata =
+    dirtyModMetadata ??
+    activeMod?.metadata ??
+    firstComponentFormStateForActiveMod?.modMetadata;
 
-  // Handle the "Save As New" case, where an existing mod, or an
+  // Handle the "Save As New" case, where an existing mod, or a
   // mod component within an existing mod, is selected
   if (modMetadata) {
-    let newModId = generateScopeBrickId(scope, modMetadata.id);
+    const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
+    let newModId = isUnsavedMod
+      ? generatePackageId(scope, modMetadata.name)
+      : generateScopeBrickId(scope, modMetadata.id);
     if (newModId === modMetadata.id) {
       newModId = validateRegistryId(newModId + "-copy");
     }
 
     return {
       id: newModId,
-      name: `${modMetadata.name} (Copy)`,
-      version: normalizeSemVerString("1.0.0"),
+      name: isUnsavedMod ? modMetadata.name : `${modMetadata.name} (Copy)`,
+      version: isUnsavedMod
+        ? modMetadata.version
+        : normalizeSemVerString("1.0.0"),
       description: modMetadata.description,
     };
   }
@@ -137,6 +153,7 @@ function useFormSchema() {
 
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
+  const isMounted = useIsMounted();
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -155,6 +172,8 @@ const CreateModModalBody: React.FC = () => {
   const { data: activeMod = null, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
+  const { createModFromUnsavedMod } = useCreateModFromUnsavedMod(activeModId);
+
   const formSchema = useFormSchema();
 
   const hideModal = useCallback(() => {
@@ -164,6 +183,7 @@ const CreateModModalBody: React.FC = () => {
   const initialModMetadataFormState = useInitialFormState({
     activeModComponentFormState,
     activeMod,
+    activeModId,
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
@@ -174,6 +194,9 @@ const CreateModModalBody: React.FC = () => {
         await createModFromMod(activeMod, values);
       } else if (activeModComponentFormState) {
         await createModFromComponent(activeModComponentFormState, values);
+      } else if (activeModId) {
+        // New local mod, definition couldn't be fetched from the server
+        await createModFromUnsavedMod(values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
@@ -192,7 +215,9 @@ const CreateModModalBody: React.FC = () => {
         error,
       });
     } finally {
-      helpers.setSubmitting(false);
+      if (isMounted()) {
+        helpers.setSubmitting(false);
+      }
     }
   };
 

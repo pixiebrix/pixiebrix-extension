@@ -151,7 +151,7 @@ function useSaveMod(): ModSaver {
       sourceMod: modDefinition,
       cleanModComponents,
       dirtyModComponentFormStates,
-      dirtyModOptions,
+      dirtyModOptionsDefinition: dirtyModOptions,
       dirtyModMetadata,
     });
 
