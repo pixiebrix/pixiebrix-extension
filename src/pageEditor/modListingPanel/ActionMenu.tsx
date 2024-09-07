@@ -36,7 +36,7 @@ import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapte
 
 type ActionMenuProps = {
   labelRoot?: string;
-  onSave: () => Promise<void>;
+  onSave?: () => Promise<void>; // Make onSave optional
   onDelete?: () => Promise<void>;
   onDeactivate?: () => Promise<void>;
   onClone: () => Promise<void>;
@@ -135,11 +135,13 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
-      <SaveButton
-        ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
-        onClick={onSave}
-        disabled={!isDirty || disabled}
-      />
+      {onSave && ( // Only render SaveButton if onSave is provided
+        <SaveButton
+          ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
+          onClick={onSave}
+          disabled={!isDirty || disabled}
+        />
+      )}
       <EllipsisMenu
         ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
         items={menuItems}

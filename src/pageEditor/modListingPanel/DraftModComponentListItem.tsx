@@ -51,7 +51,6 @@ import {
   DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
   DELETE_STARTER_BRICK_MODAL_PROPS,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
-import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { selectIsModComponentSavedOnCloud } from "@/store/modComponents/modComponentSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -106,7 +105,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   }, []);
 
   const resetModComponent = useResetModComponent();
-  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
 
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
@@ -120,16 +118,6 @@ const DraftModComponentListItem: React.FunctionComponent<
       modComponentId: modComponentFormState.uuid,
       showConfirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
     });
-
-  const onSave = async () => {
-    if (modComponentFormState.modMetadata) {
-      await saveMod(modComponentFormState.modMetadata?.id);
-    } else {
-      dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
-    }
-  };
-
-  const isSaving = modComponentFormState.modMetadata ? isSavingMod : false;
 
   const onReset = async () =>
     resetModComponent({ modComponentId: modComponentFormState.uuid });
@@ -202,7 +190,6 @@ const DraftModComponentListItem: React.FunctionComponent<
       {isActive && (
         <ActionMenu
           labelRoot={`${getLabel(modComponentFormState)}`}
-          onSave={onSave}
           onDelete={onDelete}
           onDeactivate={onDeactivate}
           onClone={onClone}
@@ -222,7 +209,6 @@ const DraftModComponentListItem: React.FunctionComponent<
                 }
               : undefined
           }
-          disabled={isSaving}
         />
       )}
     </ListGroup.Item>

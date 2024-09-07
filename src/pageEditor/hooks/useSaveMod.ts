@@ -49,6 +49,7 @@ import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 const { actions: modComponentActions } = modComponentSlice;
 
@@ -107,6 +108,11 @@ function useSaveMod(): ModSaver {
    * @returns boolean indicating successful save
    */
   async function save(modId: RegistryId): Promise<boolean | undefined> {
+    if (isInnerDefinitionRegistryId(modId)) {
+      dispatch(editorActions.showCreateModModal({ keepLocalCopy: false }));
+      return;
+    }
+
     if (!editablePackages) {
       return;
     }
