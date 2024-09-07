@@ -62,7 +62,7 @@ const NewModButton: React.FunctionComponent = () => {
       disabled={!tabHasPermissions}
       variant="info"
       size="sm"
-      title="Add"
+      title="New Mod"
       id="add-starter-brick"
     >
       {modComponentFormStateAdapters.map((adapter) => (
