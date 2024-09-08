@@ -24,6 +24,7 @@ import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
 import cx from "classnames";
+import ClickableElement from "@/components/ClickableElement";
 
 type MenuItemBase = {
   /**
@@ -107,11 +108,16 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
     ) : (
       item.title
     );
-
     return (
-      <SubMenu label={label} key={item.title}>
-        {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
-      </SubMenu>
+      <ClickableElement
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        <SubMenu label={label} key={item.title}>
+          {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
+        </SubMenu>
+      </ClickableElement>
     );
   }
 
