@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import EllipsisMenu, { type EllipsisMenuItem } from "./EllipsisMenu";
 import ClickableElement from "@/components/ClickableElement";
+import { userEvent } from "@/pageEditor/testHelpers";
 
 describe("EllipsisMenu", () => {
   const mockItems: EllipsisMenuItem[] = [
@@ -9,7 +10,7 @@ describe("EllipsisMenu", () => {
     { title: "Item 2", action: jest.fn() },
   ];
 
-  it("prevents event propagation when clicking the menu button", () => {
+  it("prevents event propagation when clicking the menu button", async () => {
     const mockParentClick = jest.fn();
 
     render(
@@ -19,14 +20,12 @@ describe("EllipsisMenu", () => {
     );
 
     const menuButton = screen.getByTestId("ellipsis-menu-button");
-    fireEvent.click(menuButton);
+    await userEvent.click(menuButton);
 
     expect(mockParentClick).not.toHaveBeenCalled();
   });
 
-  // ... existing code ...
-
-  it("prevents event propagation when clicking a submenu item", () => {
+  it("prevents event propagation when clicking a submenu item", async () => {
     const mockParentClick = jest.fn();
     const submenuItems: EllipsisMenuItem[] = [
       {
@@ -45,10 +44,10 @@ describe("EllipsisMenu", () => {
     );
 
     const menuButton = screen.getByTestId("ellipsis-menu-button");
-    fireEvent.click(menuButton);
+    await userEvent.click(menuButton);
 
     const submenuItem = screen.getByText("Submenu");
-    fireEvent.click(submenuItem);
+    await userEvent.click(submenuItem);
 
     expect(mockParentClick).not.toHaveBeenCalled();
   });
