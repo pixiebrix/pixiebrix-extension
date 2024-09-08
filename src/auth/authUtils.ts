@@ -44,7 +44,6 @@ export async function getUserScope(): Promise<Nullishable<string>> {
 export function selectUserDataUpdate({
   email,
   primaryOrganization,
-  telemetryOrganization,
   organizationMemberships,
   groupMemberships,
   partner,
@@ -64,7 +63,6 @@ export function selectUserDataUpdate({
     -- email is always present, pending above type refactoring */
     email: email!,
     organizationId: primaryOrganization?.organizationId ?? null,
-    telemetryOrganizationId: telemetryOrganization?.organizationId ?? null,
     organizations,
     groups,
     partner: partner ?? null,
@@ -78,7 +76,6 @@ export function selectExtensionAuthState({
   email,
   scope,
   primaryOrganization,
-  telemetryOrganization,
   isOnboarded,
   isTestAccount,
   userMilestones: milestones,
@@ -98,6 +95,7 @@ export function selectExtensionAuthState({
       : {
           id: primaryOrganization.organizationId,
           name: primaryOrganization.organizationName,
+          isEnterprise: primaryOrganization.isEnterprise,
           scope: primaryOrganization.scope,
           theme: primaryOrganization.organizationTheme,
           control_room: primaryOrganization.controlRoom,
@@ -112,7 +110,6 @@ export function selectExtensionAuthState({
     isTestAccount,
     extension: true,
     organization,
-    telemetryOrganizationId: telemetryOrganization?.organizationId,
     organizations,
     groups,
     milestones,

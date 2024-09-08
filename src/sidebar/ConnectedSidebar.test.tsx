@@ -33,8 +33,15 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { getConnectedTabIdForSidebarTopFrame } from "@/sidebar/connectedTarget";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { datadogRum } from "@datadog/browser-rum";
 
 jest.mock("@/auth/useLinkState");
+jest.mock("@datadog/browser-rum", () => ({
+  datadogRum: { addAction: jest.fn(), setGlobalContextProperty: jest.fn() },
+}));
+jest.mock("@/sidebar/connectedTarget");
 
 // Needed until https://github.com/RickyMarou/jest-webextension-mock/issues/5 is implemented
 browser.webNavigation.onBeforeNavigate = {
@@ -60,6 +67,7 @@ describe("SidebarApp", () => {
     appApiMock.onGet(API_PATHS.MOD_COMPONENTS_ALL).reply(200, []);
 
     useLinkStateMock.mockReturnValue(valueToAsyncState(true));
+    jest.mocked(browser.webNavigation.onBeforeNavigate.addListener).mockReset();
   });
 
   test("renders not connected", async () => {
@@ -111,20 +119,51 @@ describe("SidebarApp", () => {
 
   it("registers the navigation listener", async () => {
     await mockAuthenticatedMeApiResponse();
-    const { unmount } = render(
+    const { unmount, getReduxStore } = render(
       <MemoryRouter>
         <ConnectedSidebar />
       </MemoryRouter>,
       {
-        setupRedux(dispatch) {
+        setupRedux(dispatch, { store }) {
           dispatch(authActions.setAuth(authStateFactory()));
+          jest.spyOn(store, "dispatch");
         },
       },
     );
+    jest.mocked(getConnectedTabIdForSidebarTopFrame).mockReturnValue(4);
 
     expect(
       browser.webNavigation.onBeforeNavigate.addListener,
     ).toHaveBeenCalledWith(expect.any(Function));
+
+    const listener = jest.mocked(
+      browser.webNavigation.onBeforeNavigate.addListener,
+    ).mock.calls[0]![0];
+
+    const mockDetails = {
+      frameId: 0,
+      tabId: 4,
+      documentLifecycle: "active",
+      url: "http://example.com",
+      parentFrameId: 0,
+      timeStamp: 0,
+    };
+
+    listener(mockDetails);
+
+    const { dispatch } = getReduxStore();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      sidebarSlice.actions.invalidatePanels(),
+    );
+    expect(datadogRum.addAction).toHaveBeenCalledWith(
+      "connectedTabNavigation",
+      { url: "http://example.com" },
+    );
+    expect(datadogRum.setGlobalContextProperty).toHaveBeenCalledWith(
+      "connectedTabUrl",
+      "http://example.com",
+    );
 
     unmount();
 

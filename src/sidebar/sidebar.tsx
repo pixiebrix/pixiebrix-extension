@@ -49,24 +49,26 @@ import { FeatureFlags } from "@/auth/featureFlags";
 // eslint-disable-next-line no-restricted-imports -- tsx file for the ReactDOM.render
 import { flagOn } from "@/auth/featureFlagStorage";
 import { isPixieBrixDomain } from "@/utils/urlUtils";
+import { CONNECTED_TAB_URL_PERFORMANCE_KEY } from "@/sidebar/telemetryConstants";
 
 /**
- * Return session replay sample rate for the sidebar session.
+ * Return performance init arguments, including session replay sample rate for the sidebar session.
  */
-async function getSessionReplaySampleRateOverride(): Promise<
-  number | undefined
-> {
+async function getInitPerformanceValues() {
   const [forceRecord, url] = await Promise.all([
     flagOn(FeatureFlags.ONBOARDING_SIDEBAR_FORCE_SESSION_REPLAY),
     getConnectedTargetUrl(),
   ]);
 
-  // For now, just check for pixiebrix domain. Activate anywhere with nextUrl might put the user back
-  // onto a non-welcome page landing page.
-  if (forceRecord && isPixieBrixDomain(url)) {
-    console.debug("Forcing session replay recording");
-    return 100;
-  }
+  return {
+    // Force replay recording on pixiebrix domains. Activate anywhere with nextUrl might put the user back
+    // onto a non-welcome page landing page.
+    sessionReplaySampleRate:
+      forceRecord && isPixieBrixDomain(url) ? 100 : undefined,
+    additionalGlobalContext: {
+      [CONNECTED_TAB_URL_PERFORMANCE_KEY]: url,
+    },
+  };
 }
 
 async function init(): Promise<void> {
@@ -75,9 +77,7 @@ async function init(): Promise<void> {
   void initRuntimeLogging();
 
   try {
-    await initPerformanceMonitoring({
-      sessionReplaySampleRate: await getSessionReplaySampleRateOverride(),
-    });
+    await initPerformanceMonitoring(await getInitPerformanceValues());
   } catch (error) {
     console.error("Failed to initialize performance monitoring", error);
   }
