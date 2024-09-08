@@ -260,7 +260,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "diff": "^5.2.0",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.0",
+    "eslint": "^9.10.0",
     "eslint-config-pixiebrix": "^0.39.0",
     "eslint-plugin-local-rules": "^3.0.2",
     "eslint-plugin-playwright": "^1.6.2",
