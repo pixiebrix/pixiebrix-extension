@@ -15,16 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MutableRefObject, type ReactElement } from "react";
-import { Menu, MenuItem, MenuButton, SubMenu } from "@szhsin/react-menu";
-import React from "react";
+import React, { type MutableRefObject, type ReactElement } from "react";
+import { Menu, MenuButton, MenuItem, SubMenu } from "@szhsin/react-menu";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 import styles from "./EllipsisMenu.module.scss";
 import cx from "classnames";
-import ClickableElement from "@/components/ClickableElement";
 
 type MenuItemBase = {
   /**
@@ -109,7 +107,8 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
       item.title
     );
     return (
-      <ClickableElement
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,no-restricted-syntax -- Just stopping propagation, don't need accessibility
+      <div
         onClick={(event) => {
           event.stopPropagation();
         }}
@@ -117,7 +116,7 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
         <SubMenu label={label} key={item.title}>
           {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
         </SubMenu>
-      </ClickableElement>
+      </div>
     );
   }
 

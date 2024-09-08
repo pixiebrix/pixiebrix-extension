@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import EllipsisMenu, { type EllipsisMenuItem } from "./EllipsisMenu";
-import ClickableElement from "@/components/ClickableElement";
 import { userEvent } from "@/pageEditor/testHelpers";
 
 describe("EllipsisMenu", () => {
@@ -14,9 +13,10 @@ describe("EllipsisMenu", () => {
     const mockParentClick = jest.fn();
 
     render(
-      <ClickableElement onClick={mockParentClick}>
+      // eslint-disable-next-line no-restricted-syntax -- Just a test
+      <div onClick={mockParentClick}>
         <EllipsisMenu items={mockItems} />
-      </ClickableElement>,
+      </div>,
     );
 
     const menuButton = screen.getByTestId("ellipsis-menu-button");
@@ -38,9 +38,10 @@ describe("EllipsisMenu", () => {
     ];
 
     render(
-      <ClickableElement onClick={mockParentClick}>
+      // eslint-disable-next-line no-restricted-syntax -- Just a test
+      <div onClick={mockParentClick}>
         <EllipsisMenu items={submenuItems} />
-      </ClickableElement>,
+      </div>,
     );
 
     const menuButton = screen.getByTestId("ellipsis-menu-button");
