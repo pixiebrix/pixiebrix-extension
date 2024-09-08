@@ -43,7 +43,7 @@ import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const brick = new CustomFormRenderer();
 
-// CustomForm uses @/contentScript/messenger/api instead of the platform API
+// CustomForm uses @/contentScript/messenger/api instead of the platform API. For tests, forward the methods directly
 jest.mock("@/contentScript/messenger/api", () => ({
   getPageState: jest.fn(async (_: Target, args: any) => getState(args)),
   setPageState: jest.fn(async (_: Target, args: any) => setState(args)),
@@ -349,12 +349,12 @@ describe("CustomFormRenderer", () => {
 
       expect(runPipelineMock).toHaveBeenCalledOnce();
 
-      expect(
+      await expect(
         getState({
           namespace: StateNamespaces.MOD,
           modComponentRef: options.meta.modComponentRef,
         }),
-      ).toStrictEqual({
+      ).resolves.toStrictEqual({
         name: value,
       });
 
