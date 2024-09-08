@@ -47,7 +47,6 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import { setState } from "@/platform/state/stateController";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
@@ -65,6 +64,7 @@ import {
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 import { RefreshTriggers } from "@/platform/panels/panelTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarController");
@@ -351,7 +351,7 @@ describe("DisplayTemporaryInfo", () => {
     ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,

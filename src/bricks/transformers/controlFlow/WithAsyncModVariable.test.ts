@@ -23,7 +23,6 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
-import { getState, setState } from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
@@ -33,6 +32,7 @@ import { toExpression } from "@/utils/expressionUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -58,7 +58,7 @@ const makeAsyncModVariablePipeline = (
 const modComponentRef = modComponentRefFactory();
 
 function expectPageState(expectedState: UnknownObject): void {
-  const pageState = getState({
+  const pageState = getPlatform().state.getState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
   });
@@ -72,7 +72,7 @@ describe("WithAsyncModVariable", () => {
 
   beforeEach(() => {
     // Reset the page state to avoid interference between tests
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       modComponentRef,

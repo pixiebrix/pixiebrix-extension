@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/platform/state/stateController";
+import { setState } from "@/contentScript/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
