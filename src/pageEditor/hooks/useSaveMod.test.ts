@@ -44,6 +44,10 @@ jest.mock("@/utils/notify");
 jest.mock("@/contentScript/messenger/api");
 
 describe("useSaveMod", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("saves with no dirty changes", async () => {
     appApiMock.reset();
 
@@ -69,7 +73,6 @@ describe("useSaveMod", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
-    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
     appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
@@ -259,6 +262,8 @@ describe("useSaveMod", () => {
   });
 
   it("opens the create mod modal if save is called with a temporary, internal mod", async () => {
+    appApiMock.reset();
+
     const temporaryModId =
       getStandaloneModComponentRuntimeModId(autoUUIDSequence());
 
