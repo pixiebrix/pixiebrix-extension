@@ -23,7 +23,6 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
-import { getState, setState } from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
@@ -32,11 +31,8 @@ import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import {
-  MergeStrategies,
-  StateNamespaces,
-  SyncPolicies,
-} from "@/platform/state/stateTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -61,8 +57,8 @@ const makeAsyncModVariablePipeline = (
 
 const modComponentRef = modComponentRefFactory();
 
-function expectPageState(expectedState: UnknownObject): void {
-  const pageState = getState({
+async function expectPageState(expectedState: UnknownObject): Promise<void> {
+  const pageState = await getPlatform().state.getState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
   });
@@ -76,12 +72,11 @@ describe("WithAsyncModVariable", () => {
 
   beforeEach(async () => {
     // Reset the page state to avoid interference between tests
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
     });
 
     // Most tests just require a single brick instance for testing
@@ -109,7 +104,7 @@ describe("WithAsyncModVariable", () => {
       requestId: expect.toBeString(),
     });
 
-    expectPageState({
+    await expectPageState({
       foo: {
         // Initializes loading state
         isLoading: true,
@@ -140,7 +135,7 @@ describe("WithAsyncModVariable", () => {
       requestId: expect.toBeString(),
     });
 
-    expectPageState({
+    await expectPageState({
       foo: {
         isLoading: false,
         isFetching: false,
@@ -170,7 +165,7 @@ describe("WithAsyncModVariable", () => {
       requestId: expect.toBeString(),
     });
 
-    expectPageState({
+    await expectPageState({
       foo: expect.objectContaining({
         isLoading: false,
         isFetching: false,
@@ -229,7 +224,7 @@ describe("WithAsyncModVariable", () => {
     );
 
     // Neither are resolved, should be in loading state
-    expectPageState({
+    await expectPageState({
       foo: {
         isLoading: true,
         isFetching: true,
@@ -246,7 +241,7 @@ describe("WithAsyncModVariable", () => {
     await tick();
 
     // State should update to be the second request, even though the first request is not completed
-    expectPageState({
+    await expectPageState({
       foo: {
         isLoading: false,
         isFetching: false,
@@ -264,7 +259,7 @@ describe("WithAsyncModVariable", () => {
     await tick();
 
     // State should not update, because the result from the first call is stale
-    expectPageState({
+    await expectPageState({
       foo: {
         isLoading: false,
         isFetching: false,

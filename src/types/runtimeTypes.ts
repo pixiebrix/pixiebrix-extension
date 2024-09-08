@@ -44,6 +44,7 @@ export const VARIABLE_REFERENCE_PREFIX = "@";
 
 /**
  * The HTMLElement or Document that the brick is targeting, or that a selector is being evaluated against.
+ * @see isDocument
  */
 export type SelectorRoot = HTMLElement | Document;
 

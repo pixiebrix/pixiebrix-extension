@@ -41,6 +41,7 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
 import { validateTimestamp } from "@/utils/timeUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const modComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts
@@ -120,6 +121,9 @@ export const modComponentFactory = define<ModComponentBase>({
     return [];
   },
   config: modComponentConfigFactory,
+  variables: () => ({
+    schema: minimalSchemaFactory(),
+  }),
   active: true,
 });
 

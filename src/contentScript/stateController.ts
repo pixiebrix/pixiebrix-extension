@@ -30,19 +30,20 @@ import {
   type StateChangeEventDetail,
   type StateNamespace,
   StateNamespaces,
-  SyncPolicies,
-  type SyncPolicy,
 } from "@/platform/state/stateTypes";
 import { SessionMap } from "@/mv3/SessionStorage";
+import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * Map from mod component id to its private state.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const framePrivateState = new Map<UUID, JsonObject>();
 
 /**
  * Map from mod id to its mod state. Or null key for public page state.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const frameModState = new Map<RegistryId | null, JsonObject>();
 
 const syncedModState = new SessionMap<JsonObject>(
@@ -91,6 +92,20 @@ async function getModVariableState(modId: RegistryId): Promise<JsonObject> {
   };
 }
 
+async function updateModState(
+  modId: RegistryId,
+  nextState: JsonObject,
+): Promise<void> {
+  // TODO: need to vary storage location based on the registered policy for the mod
+  frameModState.set(modId, nextState);
+
+  // if (syncPolicy === SyncPolicies.ALL_TABS_FRAMES) {
+  //   await syncedModState.set(modId, next);
+  // } else {
+  //   frameModState.set(modId, next);
+  // }
+}
+
 function dispatchStateChangeEventOnChange({
   previous,
   next,
@@ -125,13 +140,11 @@ export async function setState({
   namespace,
   data,
   mergeStrategy,
-  syncPolicy,
   modComponentRef,
 }: {
   namespace: StateNamespace;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  syncPolicy: SyncPolicy;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }): Promise<JsonObject> {
   assertPlatformCapability("state");
@@ -160,11 +173,7 @@ export async function setState({
       const previous = await getModVariableState(modId);
       const next = mergeState(previous, data, mergeStrategy);
 
-      if (syncPolicy === SyncPolicies.ALL_TABS_FRAMES) {
-        await syncedModState.set(modId, next);
-      } else {
-        frameModState.set(modId, next);
-      }
+      await updateModState(modId, next);
 
       notifyOnChange(previous, next);
       return next;
@@ -220,6 +229,20 @@ export async function getState({
       throw new BusinessError(`Invalid namespace: ${exhaustiveCheck}`);
     }
   }
+}
+
+export function registerModVariables(
+  modId: RegistryId,
+  variables: ModVariablesDefinition,
+): void {
+  console.warn("Not implemented");
+}
+
+export function addModVariableChangeListener(
+  callback: () => void,
+  options: { signal: AbortSignal },
+) {
+  console.warn("Not implemented");
 }
 
 export function TEST_resetState(): void {

@@ -2,16 +2,11 @@ import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject, type JsonPrimitive } from "type-fest";
-import { setState } from "@/platform/state/stateController";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import {
-  MergeStrategies,
-  StateNamespaces,
-  SyncPolicies,
-} from "@/platform/state/stateTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * A simple brick to assign a value to a Mod Variable.
@@ -95,13 +90,12 @@ class AssignModVariable extends EffectABC {
       // Input is validated, so we know value is a JsonPrimitive or JsonObject
       value: JsonPrimitive | JsonObject;
     }>,
-    { meta: { modComponentRef } }: BrickOptions,
+    { meta: { modComponentRef }, platform }: BrickOptions,
   ): Promise<void> {
-    await setState({
+    await platform.state.setState({
       namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
       mergeStrategy: MergeStrategies.SHALLOW,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
   }

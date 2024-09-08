@@ -17,18 +17,15 @@
 
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { getState, setState } from "@/platform/state/stateController";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import {
   brickOptionsFactory,
   runMetadataFactory,
 } from "@/testUtils/factories/runtimeFactories";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import {
-  MergeStrategies,
-  StateNamespaces,
-  SyncPolicies,
-} from "@/platform/state/stateTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform, setPlatform } from "@/platform/platformContext";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 
 const brick = new AssignModVariable();
 
@@ -39,10 +36,11 @@ const brickOptions = brickOptionsFactory({
 });
 
 beforeEach(async () => {
-  await setState({
+  setPlatform(contentScriptPlatform);
+
+  await getPlatform().state.setState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
-    syncPolicy: SyncPolicies.NONE,
     mergeStrategy: MergeStrategies.REPLACE,
     data: {},
   });
@@ -61,7 +59,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     await expect(
-      getState({
+      getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
@@ -94,7 +92,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     await expect(
-      getState({
+      getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
@@ -113,7 +111,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     await expect(
-      getState({
+      getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),

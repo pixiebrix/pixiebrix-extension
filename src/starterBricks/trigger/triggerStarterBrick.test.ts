@@ -57,6 +57,7 @@ import {
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 let hidden = false;
 
@@ -112,6 +113,7 @@ const modComponentFactory = define<HydratedModComponent<TriggerConfig>>({
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
+  variables: () => emptyModVariablesDefinitionFactory(),
   label: "Test Extension",
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,

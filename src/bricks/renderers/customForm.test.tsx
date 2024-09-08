@@ -37,7 +37,7 @@ import {
   TEST_resetState,
   getState,
   setState,
-} from "@/platform/state/stateController";
+} from "@/contentScript/stateController";
 import type { Target } from "@/types/messengerTypes";
 import { StateNamespaces } from "@/platform/state/stateTypes";
 
@@ -45,8 +45,8 @@ const brick = new CustomFormRenderer();
 
 // CustomForm uses @/contentScript/messenger/api instead of the platform API
 jest.mock("@/contentScript/messenger/api", () => ({
-  getPageState: jest.fn((_: Target, args: any) => getState(args)),
-  setPageState: jest.fn((_: Target, args: any) => setState(args)),
+  getPageState: jest.fn(async (_: Target, args: any) => getState(args)),
+  setPageState: jest.fn(async (_: Target, args: any) => setState(args)),
 }));
 
 // I couldn't get shadow-dom-testing-library working

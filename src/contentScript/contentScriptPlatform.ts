@@ -27,7 +27,12 @@ import {
   traces,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { getState, setState } from "@/platform/state/stateController";
+import {
+  addModVariableChangeListener,
+  getState,
+  registerModVariables,
+  setState,
+} from "@/contentScript/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -242,10 +247,8 @@ class ContentScriptPlatform extends PlatformBase {
     return {
       getState,
       setState,
-      addModVariableChangeListener(
-        callback: () => void,
-        options: { signal: AbortSignal },
-      ) {},
+      registerModVariables,
+      addModVariableChangeListener,
     };
   }
 

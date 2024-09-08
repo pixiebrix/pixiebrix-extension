@@ -48,6 +48,7 @@ import {
   type QuickBarConfig,
 } from "@/starterBricks/quickBar/quickBarTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -86,6 +87,7 @@ const modComponentFactory = define<HydratedModComponent<QuickBarConfig>>({
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
+  variables: () => emptyModVariablesDefinitionFactory(),
   label: "Test Mod Component",
   config: define<QuickBarConfig>({
     title: "Test Action",

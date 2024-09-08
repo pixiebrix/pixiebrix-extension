@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getState } from "@/platform/state/stateController";
 import apiVersionOptions, {
   type ApiVersionOptions,
 } from "@/runtime/apiVersionOptions";
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { assertPlatformCapability } from "@/platform/platformContext";
+import {
+  assertPlatformCapability,
+  getPlatform,
+} from "@/platform/platformContext";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import { type Except } from "type-fest";
 import { StateNamespaces } from "@/platform/state/stateTypes";
@@ -138,7 +140,7 @@ async function extendModVariableContext<
   // Eagerly grab the state. It's fast/synchronous since it's in memory in the same JS context.
   // Previously, we had considered using a proxy to lazily load the state. However, eagerly reading is simpler.
   // Additionally, in the future to pass the context to the sandbox we'd have to always load the state anyway.
-  const modState = await getState({
+  const modState = await getPlatform().state.getState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
   });

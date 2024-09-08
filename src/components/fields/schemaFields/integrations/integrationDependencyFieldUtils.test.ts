@@ -31,6 +31,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { normalizeAvailability } from "@/bricks/available";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -221,6 +222,7 @@ describe("selectVariables", () => {
         }),
       ],
       permissions: emptyPermissionsFactory(),
+      variablesDefinition: emptyModVariablesDefinitionFactory(),
       optionsArgs: {},
       modMetadata: undefined,
       modComponent: {

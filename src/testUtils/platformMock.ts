@@ -56,6 +56,8 @@ export const platformMock: PlatformProtocol = {
   state: {
     getState: jest.fn(),
     setState: jest.fn(),
+    registerModVariables: jest.fn(),
+    addModVariableChangeListener: jest.fn(),
   },
   templates: {
     render: jest.fn(),

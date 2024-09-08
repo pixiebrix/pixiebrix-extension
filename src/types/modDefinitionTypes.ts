@@ -38,6 +38,22 @@ export type ModOptionsDefinition = {
 };
 
 /**
+ * A section declaring mod variables that can be used in the mod's components.
+ *
+ * Introduced to support
+ * - Attaching descriptions and types to mod variables
+ * - Defining a synchronization policy for mod variables
+ *
+ * @see ModDefinition.variables
+ * @since 2.1.2
+ */
+export type ModVariablesDefinition = {
+  // Nest schema to make evolution easier in the future. Mod Variables shouldn't need a uiSchema in the future
+  // because the values are not user-facing/configurable.
+  schema: Schema;
+};
+
+/**
  * A ModComponent defined in a mod.
  * @see ModDefinition.extensionPoints
  */
@@ -101,6 +117,7 @@ export interface UnsavedModDefinition extends Definition {
   extensionPoints: ModComponentDefinition[];
   definitions?: InnerDefinitions;
   options?: ModOptionsDefinition;
+  variables?: ModVariablesDefinition;
 }
 
 /**
@@ -120,7 +137,7 @@ type SharingDefinition = {
 };
 
 /**
- * Config of a Package returned from the PixieBrix API. Used to activate ModComponents.
+ * Config of a Mod Package returned from the PixieBrix API. Used to activate ModComponents.
  *
  * If you are creating a mod definition locally, you probably want UnsavedModDefinition, which doesn't include
  * the `sharing` and `updated_at` fields which aren't stored on the YAML/JSON, but are added by the server on responses.

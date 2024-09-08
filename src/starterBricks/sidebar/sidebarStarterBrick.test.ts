@@ -29,26 +29,25 @@ import {
   isSidePanelOpen,
   sidebarShowEvents,
 } from "@/contentScript/sidebarController";
-import { setState } from "@/platform/state/stateController";
 import {
   modComponentRefFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
-import { getPlatform } from "@/platform/platformContext";
+import { getPlatform, setPlatform } from "@/platform/platformContext";
 import {
   type SidebarConfig,
   type SidebarDefinition,
   SidebarTriggers,
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 import {
-  MergeStrategies,
-  StateNamespaces,
-  SyncPolicies,
-} from "@/platform/state/stateTypes";
-import { getModComponentRef } from "@/utils/modUtils";
+  emptyModVariablesDefinitionFactory,
+  getModComponentRef,
+} from "@/utils/modUtils";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 
 jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
@@ -85,6 +84,7 @@ const modComponentFactory = define<HydratedModComponent<SidebarConfig>>({
     validateRegistryId(`test/starter-brick-${n}`),
   _recipe: undefined,
   label: "Test Extension",
+  variables: () => emptyModVariablesDefinitionFactory(),
   config: define<SidebarConfig>({
     heading: "Test Action",
     body: () => [] as BrickPipeline,
@@ -93,6 +93,7 @@ const modComponentFactory = define<HydratedModComponent<SidebarConfig>>({
 
 describe("sidebarExtension", () => {
   beforeEach(() => {
+    setPlatform(contentScriptPlatform);
     brickRegistry.clear();
     brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
@@ -193,11 +194,10 @@ describe("sidebarExtension", () => {
 
     expect(rootReader.readCount).toBe(0);
 
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef: getModComponentRef(modComponent),
     });
 
@@ -213,12 +213,11 @@ describe("sidebarExtension", () => {
     // Runs because statechange mods also run on manual
     expect(rootReader.readCount).toBe(1);
 
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef: getModComponentRef(modComponent),
     });
 
@@ -227,11 +226,10 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(2);
 
     // Should ignore state change from other mod
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef: modComponentRefFactory(),
     });
 
@@ -277,11 +275,10 @@ describe("sidebarExtension", () => {
 
     for (let i = 0; i < 10; i++) {
       // eslint-disable-next-line no-await-in-loop -- test code
-      await setState({
+      await getPlatform().state.setState({
         namespace: StateNamespaces.MOD,
         data: { foo: i },
         mergeStrategy: MergeStrategies.REPLACE,
-        syncPolicy: SyncPolicies.NONE,
         modComponentRef: getModComponentRef(modComponent),
       });
     }

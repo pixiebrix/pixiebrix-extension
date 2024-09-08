@@ -19,27 +19,27 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import { setState } from "@/platform/state/stateController";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import {
   modComponentRefFactory,
   standaloneModComponentRefFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import {
-  MergeStrategies,
-  StateNamespaces,
-  SyncPolicies,
-} from "@/platform/state/stateTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform, setPlatform } from "@/platform/platformContext";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+
+beforeEach(() => {
+  setPlatform(contentScriptPlatform);
+});
 
 describe("createModVariableProxy", () => {
   beforeEach(async () => {
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       modComponentRef: standaloneModComponentRefFactory(),
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
     });
   });
 
@@ -54,12 +54,11 @@ describe("createModVariableProxy", () => {
   it("reads from page state", async () => {
     const modComponentRef = standaloneModComponentRefFactory();
 
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
     });
 
     const ctxt = await extendModVariableContext(
@@ -118,12 +117,11 @@ describe("createModVariableProxy", () => {
       { modComponentRef, options: apiVersionOptions("v3") },
     );
 
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentRef: standaloneModComponentRefFactory(),
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
     });
 
     const ctxt2 = await extendModVariableContext(ctxt1, {
@@ -142,12 +140,11 @@ describe("createModVariableProxy", () => {
       { modComponentRef, options: apiVersionOptions("v3") },
     );
 
-    await setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentRef,
       mergeStrategy: MergeStrategies.REPLACE,
-      syncPolicy: SyncPolicies.NONE,
     });
 
     const ctxt2 = await extendModVariableContext(ctxt1, {

@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/platform/state/stateController";
+import { setState } from "@/contentScript/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
-  SyncPolicies,
 } from "@/platform/state/stateTypes";
 
-describe("pageState", () => {
+describe("stateController", () => {
   it("deep merge triggers event", async () => {
     const listener = jest.fn();
 
@@ -36,7 +35,6 @@ describe("pageState", () => {
       namespace: StateNamespaces.MOD,
       data: { foo: { bar: "baz" } },
       mergeStrategy: MergeStrategies.DEEP,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 
@@ -56,7 +54,6 @@ describe("pageState", () => {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
       },
       mergeStrategy: MergeStrategies.DEEP,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 
@@ -64,7 +61,6 @@ describe("pageState", () => {
       namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: MergeStrategies.DEEP,
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
 

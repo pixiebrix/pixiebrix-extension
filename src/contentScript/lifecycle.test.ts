@@ -36,6 +36,7 @@ import {
 import { type getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;
@@ -80,6 +81,7 @@ const activatedModComponentFactory = define<
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
   }),
+  variables: () => emptyModVariablesDefinitionFactory(),
   _serializedModComponentBrand: null as never,
   createTimestamp: timestampFactory,
   updateTimestamp: timestampFactory,

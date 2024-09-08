@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { getState, setState } from "@/platform/state/stateController";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModVariablesDefinition } from "@/types/modDefinitionTypes";
+import type {
+  MergeStrategy,
+  StateNamespace,
+} from "@/platform/state/stateTypes";
+import type { Except, JsonObject } from "type-fest";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The variable store/state for the platform.
@@ -26,21 +33,48 @@ import type { getState, setState } from "@/platform/state/stateController";
  */
 export type StateProtocol = {
   /**
-   * Get the current state.
+   * Get the current state for the given namespace.
    */
-  getState: typeof getState;
+  getState(args: {
+    namespace: StateNamespace;
+    modComponentRef: Except<ModComponentRef, "starterBrickId">;
+  }): Promise<JsonObject>;
 
   /**
-   * Set the current state.
+   * Set the current state for the given namespace.
    */
-  setState: typeof setState;
+  setState(args: {
+    namespace: StateNamespace;
+    modComponentRef: Except<ModComponentRef, "starterBrickId">;
+    data: JsonObject;
+    mergeStrategy: MergeStrategy;
+  }): Promise<JsonObject>;
+
+  /**
+   * Register variables and their synchronization policy for a mod.
+   *
+   * Mods can write to variable names dynamically, but declaring variables supports automatic synchronization across
+   * tabs/frames, and better development support (e.g., type checking, descriptions, etc.)
+   *
+   * @param modId the mod id
+   * @param variables the
+   * @since 2.1.2
+   */
+  registerModVariables(
+    modId: RegistryId,
+    variables: ModVariablesDefinition,
+  ): void;
 
   /**
    * Register a callback to be called when a mod variable changes.
+   *
+   * Previously, callsites would direct listen for an emitted custom JS event.
+   *
    * @param callback the callback to be called when a mod variable changes
    * @param options options for the callback
    * @since 2.1.2
    */
+  // TODO: where should this account/filter for mod id? In the listener, or in the registration
   addModVariableChangeListener(
     callback: () => void,
     options: { signal: AbortSignal },

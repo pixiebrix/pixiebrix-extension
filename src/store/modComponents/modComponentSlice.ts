@@ -189,6 +189,7 @@ const modComponentSlice = createSlice({
           extensionPointId,
           config,
           definitions,
+          variables,
           label,
           optionsArgs,
           integrationDependencies,
@@ -218,6 +219,7 @@ const modComponentSlice = createSlice({
         label,
         definitions,
         optionsArgs,
+        variables,
         integrationDependencies,
         config,
         // We are unfortunately not rehydrating the createTimestamp properly from the server, so in most cases the

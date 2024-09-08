@@ -18,6 +18,7 @@
 import {
   type ModDefinition,
   type ModOptionsDefinition,
+  ModVariablesDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
@@ -168,6 +169,15 @@ export function idHasScope(
   scope: Nullishable<string>,
 ): boolean {
   return scope != null && id.startsWith(scope + "/");
+}
+
+/**
+ * Returns a minimal mod variables definition in a normalized format.
+ */
+export function emptyModVariablesDefinitionFactory(): Required<ModVariablesDefinition> {
+  return {
+    schema: minimalSchemaFactory(),
+  };
 }
 
 /**

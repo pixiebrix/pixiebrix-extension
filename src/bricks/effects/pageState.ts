@@ -30,7 +30,6 @@ import {
   type MergeStrategy,
   type StateNamespace,
   StateNamespaces,
-  SyncPolicies,
 } from "@/platform/state/stateTypes";
 
 /**
@@ -155,8 +154,6 @@ export class SetPageState extends TransformerABC {
       namespace,
       data,
       mergeStrategy,
-      // TODO: read the sync policy from the mod definition
-      syncPolicy: SyncPolicies.NONE,
       modComponentRef,
     });
   }

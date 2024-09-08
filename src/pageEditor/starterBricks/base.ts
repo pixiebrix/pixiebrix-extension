@@ -58,7 +58,10 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 import {
   type Availability,
   type NormalizedAvailability,
@@ -123,6 +126,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
+  | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
   return {
@@ -134,6 +138,8 @@ export function baseFromModComponent<T extends StarterBrickType>(
     integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
+    variablesDefinition:
+      config.variables ?? emptyModVariablesDefinitionFactory(),
     type,
     modMetadata: config._recipe,
   };
@@ -165,6 +171,9 @@ export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
         uiSchema: mod.options.uiSchema,
       };
     }
+
+    modComponentFormState.variablesDefinition =
+      emptyModVariablesDefinitionFactory();
   }
 }
 
@@ -173,6 +182,7 @@ export function baseSelectModComponent({
   uuid,
   label,
   optionsArgs,
+  variablesDefinition,
   integrationDependencies,
   permissions,
   starterBrick,
@@ -187,6 +197,7 @@ export function baseSelectModComponent({
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
+  | "variables"
 > {
   return {
     id: uuid,
@@ -197,6 +208,7 @@ export function baseSelectModComponent({
     integrationDependencies,
     permissions,
     optionsArgs,
+    variables: variablesDefinition,
   };
 }
 
@@ -209,6 +221,7 @@ export function makeInitialBaseState(
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
+    variablesDefinition: emptyModVariablesDefinitionFactory(),
     modComponent: {
       brickPipeline: [],
     },
