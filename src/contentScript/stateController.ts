@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { cloneDeep, isEqual, merge } from "lodash";
+import { cloneDeep, isEmpty, isEqual, merge, omit, pick } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Except, type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
@@ -30,9 +30,24 @@ import {
   type StateChangeEventDetail,
   type StateNamespace,
   StateNamespaces,
+  SyncPolicies,
+  type SyncPolicy,
 } from "@/platform/state/stateTypes";
-import { SessionMap } from "@/mv3/SessionStorage";
 import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
+import { Storage } from "webextension-polyfill";
+import StorageChange = Storage.StorageChange;
+import { validateRegistryId } from "@/types/helpers";
+
+const keyPrefix = "#modVariables/";
+
+const SCHEMA_POLICY_PROP = "x-sync-policy";
+
+/**
+ * Map from mod variable name to it synchronization policy.
+ *
+ * Excludes variables with SyncPolicies.NONE.
+ */
+type ModSyncPolicy = Record<string, typeof SyncPolicies.SESSION>;
 
 /**
  * Map from mod component id to its private state.
@@ -46,10 +61,12 @@ const framePrivateState = new Map<UUID, JsonObject>();
 // eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const frameModState = new Map<RegistryId | null, JsonObject>();
 
-const syncedModState = new SessionMap<JsonObject>(
-  "syncedModState",
-  import.meta.url,
-);
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script state
+const modSyncPolicies = new Map<RegistryId, ModSyncPolicy>();
+
+function getSessionStorageKey(modId: RegistryId): string {
+  return `${keyPrefix}${modId}`;
+}
 
 function mergeState(
   previous: JsonObject,
@@ -79,16 +96,28 @@ function mergeState(
   }
 }
 
+/**
+ * Returns the current state of the mod variables according to the mod's variable synchronization policy.
+ */
 async function getModVariableState(modId: RegistryId): Promise<JsonObject> {
-  // TODO: depending on performance, consider caching in memory to avoid unnecessary reads from storage and invalidate
-  //  cache storage change events
-  const synced = (await syncedModState.get(modId)) ?? {};
+  const modPolicy = modSyncPolicies.get(modId);
+  const syncedVariableNames = Object.keys(modPolicy ?? {});
+
+  let synced = {};
+
+  if (!isEmpty(modPolicy)) {
+    const key = getSessionStorageKey(modId);
+    // Skip call if there are no synchronized variables
+    const value = await browser.storage.session.get(key);
+    // eslint-disable-next-line security/detect-object-injection -- key passed to .get
+    synced = value[key] ?? {};
+  }
+
   const local = frameModState.get(modId) ?? {};
 
-  // Prefer synced state over local state
   return {
-    ...local,
-    ...synced,
+    ...omit(local, syncedVariableNames),
+    ...pick(synced, syncedVariableNames),
   };
 }
 
@@ -96,14 +125,16 @@ async function updateModState(
   modId: RegistryId,
   nextState: JsonObject,
 ): Promise<void> {
-  // TODO: need to vary storage location based on the registered policy for the mod
-  frameModState.set(modId, nextState);
+  const modPolicy = modSyncPolicies.get(modId);
+  const syncedVariableNames = Object.keys(modPolicy ?? {});
 
-  // if (syncPolicy === SyncPolicies.ALL_TABS_FRAMES) {
-  //   await syncedModState.set(modId, next);
-  // } else {
-  //   frameModState.set(modId, next);
-  // }
+  frameModState.set(modId, omit(nextState, syncedVariableNames));
+
+  if (!isEmpty(modPolicy)) {
+    const key = getSessionStorageKey(modId);
+    const synced = pick(nextState, syncedVariableNames);
+    await browser.storage.session.set({ [key]: synced });
+  }
 }
 
 function dispatchStateChangeEventOnChange({
@@ -112,11 +143,24 @@ function dispatchStateChangeEventOnChange({
   namespace,
   modComponentRef: { modComponentId, modId },
 }: {
-  previous: unknown;
-  next: unknown;
+  previous: JsonObject;
+  next: JsonObject;
   namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
+  const modPolicy = modSyncPolicies.get(modId);
+  const syncedVariableNames = Object.keys(modPolicy ?? {});
+
+  if (
+    !isEqual(
+      pick(previous, syncedVariableNames),
+      pick(next, syncedVariableNames),
+    )
+  ) {
+    // Skip firing because it will be fired by the session storage listener
+    return;
+  }
+
   if (!isEqual(previous, next)) {
     // For now, leave off the event data because state controller in the content script uses JavaScript/DOM
     // events, which is a public channel (the host site/other extensions can see the event).
@@ -128,11 +172,12 @@ function dispatchStateChangeEventOnChange({
 
     console.debug("Dispatching statechange", detail);
 
-    const event = new CustomEvent(STATE_CHANGE_JS_EVENT_TYPE, {
-      detail,
-      bubbles: true,
-    });
-    document.dispatchEvent(event);
+    document.dispatchEvent(
+      new CustomEvent(STATE_CHANGE_JS_EVENT_TYPE, {
+        detail,
+        bubbles: true,
+      }),
+    );
   }
 }
 
@@ -231,18 +276,77 @@ export async function getState({
   }
 }
 
+function mapModVariablesToModSyncPolicy(
+  variables: ModVariablesDefinition,
+): ModSyncPolicy {
+  return Object.fromEntries(
+    Object.entries(variables.schema.properties ?? {})
+      .map(([key, definition]) => {
+        // eslint-disable-next-line security/detect-object-injection -- constant
+        const variablePolicy = (definition as UnknownObject)[
+          SCHEMA_POLICY_PROP
+        ] as SyncPolicy | undefined;
+
+        if (variablePolicy && variablePolicy !== SyncPolicies.NONE) {
+          if (variablePolicy !== SyncPolicies.SESSION) {
+            throw new BusinessError(
+              `Unsupported sync policy: ${variablePolicy}`,
+            );
+          }
+
+          return [key, variablePolicy] satisfies [string, SyncPolicy];
+        }
+
+        return null;
+      })
+      .filter((x) => x != null),
+  );
+}
+
+// Keep as separate method so it's safe to call addListener multiple times with the listener
+function onSessionStorageChange(
+  change: Record<string, StorageChange>,
+  areaName: string,
+): void {
+  if (areaName === "session") {
+    for (const key of Object.keys(change)) {
+      if (key.startsWith(keyPrefix)) {
+        const modId = validateRegistryId(key.slice(keyPrefix.length));
+
+        const detail = {
+          namespace: StateNamespaces.MOD,
+          blueprintId: modId,
+        } satisfies StateChangeEventDetail;
+
+        console.debug("Dispatching statechange", detail);
+
+        document.dispatchEvent(
+          new CustomEvent(STATE_CHANGE_JS_EVENT_TYPE, {
+            detail,
+            bubbles: true,
+          }),
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Register variables and their synchronization policy for a mod.
+ * @param modId the mod registry id
+ * @param variables the mod variables definition containing their synchronization policy
+ */
 export function registerModVariables(
   modId: RegistryId,
   variables: ModVariablesDefinition,
 ): void {
-  console.warn("Not implemented");
-}
+  const modSyncPolicy = mapModVariablesToModSyncPolicy(variables);
+  modSyncPolicies.set(modId, modSyncPolicy);
 
-export function addModVariableChangeListener(
-  callback: () => void,
-  options: { signal: AbortSignal },
-) {
-  console.warn("Not implemented");
+  // If any variables are set to sync, listen for changes to session storage to notify the mods running on this page
+  if (!isEmpty(modSyncPolicy)) {
+    browser.storage.onChanged.addListener(onSessionStorageChange);
+  }
 }
 
 export function TEST_resetState(): void {

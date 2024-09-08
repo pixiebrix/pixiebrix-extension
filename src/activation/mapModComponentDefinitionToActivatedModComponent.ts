@@ -27,6 +27,7 @@ import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 export type ActivateModComponentParam = {
   /**
@@ -80,6 +81,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
     extensionPointId: modComponentDefinition.id,
     config: modComponentDefinition.config as Config,
     active: true,
+    variables: modDefinition.variables ?? emptyModVariablesDefinitionFactory(),
     createTimestamp: timestamp,
     updateTimestamp: timestamp,
   } as ActivatedModComponent<Config>;

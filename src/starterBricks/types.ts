@@ -244,23 +244,34 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   ): void;
 
   synchronizeModComponents(
-    components: Array<HydratedModComponent<TConfig>>,
+    modComponents: Array<HydratedModComponent<TConfig>>,
   ): void {
     const before = this.modComponents.map((x) => x.id);
 
-    const updatedIds = new Set(components.map((x) => x.id));
+    const updatedIds = new Set(modComponents.map((x) => x.id));
     const removed = this.modComponents.filter(
       (currentComponent) => !updatedIds.has(currentComponent.id),
     );
     this.clearModComponentInterfaceAndEvents(removed.map((x) => x.id));
 
-    // Clear extensions and re-populate with updated components
+    // Clear modComponents and re-populate with updated components
     this.modComponents.length = 0;
-    this.modComponents.push(...components);
+    this.modComponents.push(...modComponents);
+
+    // `registerModVariables` is safe to call multiple times for the same modId because the variable definitions
+    // will be consistent across components.
+    for (const modComponent of modComponents) {
+      if (modComponent._recipe) {
+        this.platform.state.registerModVariables(
+          modComponent._recipe.id,
+          modComponent.variables,
+        );
+      }
+    }
 
     console.debug("synchronizeComponents for extension point %s", this.id, {
       before,
-      after: components.map((x) => x.id),
+      after: modComponents.map((x) => x.id),
       removed: removed.map((x) => x.id),
     });
   }

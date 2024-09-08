@@ -28,7 +28,6 @@ import {
   uninstallContextMenu,
 } from "@/background/messenger/api";
 import {
-  addModVariableChangeListener,
   getState,
   registerModVariables,
   setState,
@@ -248,7 +247,6 @@ class ContentScriptPlatform extends PlatformBase {
       getState,
       setState,
       registerModVariables,
-      addModVariableChangeListener,
     };
   }
 

@@ -54,6 +54,12 @@ import { initApiClient } from "@/data/service/apiClient";
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
 setPlatform(backgroundPlatform);
 
+// Allows the content script to directly access the session storage for mod variables. Without this, we'd need to
+// we'd need to use the messenger to synchronize state across frames.
+void chrome.storage.session.setAccessLevel({
+  accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS",
+});
+
 void initLocator();
 void initMessengerLogging();
 void initRuntimeLogging();

@@ -57,26 +57,11 @@ export type StateProtocol = {
    * tabs/frames, and better development support (e.g., type checking, descriptions, etc.)
    *
    * @param modId the mod id
-   * @param variables the
+   * @param variables the mod variables definition
    * @since 2.1.2
    */
   registerModVariables(
     modId: RegistryId,
     variables: ModVariablesDefinition,
-  ): void;
-
-  /**
-   * Register a callback to be called when a mod variable changes.
-   *
-   * Previously, callsites would direct listen for an emitted custom JS event.
-   *
-   * @param callback the callback to be called when a mod variable changes
-   * @param options options for the callback
-   * @since 2.1.2
-   */
-  // TODO: where should this account/filter for mod id? In the listener, or in the registration
-  addModVariableChangeListener(
-    callback: () => void,
-    options: { signal: AbortSignal },
   ): void;
 };

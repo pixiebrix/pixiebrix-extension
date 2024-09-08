@@ -387,12 +387,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       void this.debouncedRefreshPanels(this.modComponents);
     }
 
-    if (this.trigger === SidebarTriggers.STATE_CHANGE) {
-      // TODO: register stage change listener with the platform
-      this.platform.state.addModVariableChangeListener(() => {}, {
-        signal: this.abortController.signal,
-      });
-    } else if (this.trigger === SidebarTriggers.SELECTION_CHANGE) {
+    if (
+      this.trigger === SidebarTriggers.SELECTION_CHANGE ||
+      this.trigger === SidebarTriggers.STATE_CHANGE
+    ) {
       this.attachEventTrigger(this.trigger);
     } else if (
       this.trigger === SidebarTriggers.CUSTOM &&

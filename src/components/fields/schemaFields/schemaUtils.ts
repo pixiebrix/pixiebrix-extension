@@ -42,7 +42,7 @@ export function arraySchema(itemSchema: Schema): Schema {
 }
 
 /**
- * Returns a Schema. If an normal object is passed in, casts it to an object Schema.
+ * Returns a Schema. If a normal object is passed in, casts it to an object Schema.
  */
 export function castSchema(
   schemaOrProperties: Schema | SchemaProperties,
