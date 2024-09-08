@@ -107,16 +107,9 @@ const getMenuItemComponent = (item: EllipsisMenuItem): ReactElement => {
       item.title
     );
     return (
-      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,no-restricted-syntax -- Just stopping propagation, don't need accessibility
-      <div
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-      >
-        <SubMenu label={label} key={item.title}>
-          {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
-        </SubMenu>
-      </div>
+      <SubMenu label={label} key={item.title}>
+        {item.submenu.map((subItem) => getMenuItemComponent(subItem))}
+      </SubMenu>
     );
   }
 
@@ -139,28 +132,35 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   portal,
   classNames,
 }) => (
-  <Menu
-    align="end"
-    direction="bottom"
-    gap={4}
-    boundingBoxRef={boundingBoxRef}
-    portal={portal}
-    className={classNames?.menu}
-    menuButton={
-      <MenuButton
-        aria-label={ariaLabel}
-        className={cx(styles.button, classNames?.menuButton)}
-        data-testid="ellipsis-menu-button"
-        onClick={(event) => {
-          event.stopPropagation();
-        }}
-      >
-        <FontAwesomeIcon icon={faEllipsisV} />
-      </MenuButton>
-    }
+  // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,no-restricted-syntax -- Just stopping propagation, don't need accessibility
+  <div
+    onClick={(event) => {
+      event.stopPropagation();
+    }}
   >
-    {items.filter((x) => !x.hide).map((item) => getMenuItemComponent(item))}
-  </Menu>
+    <Menu
+      align="end"
+      direction="bottom"
+      gap={4}
+      boundingBoxRef={boundingBoxRef}
+      portal={portal}
+      className={classNames?.menu}
+      menuButton={
+        <MenuButton
+          aria-label={ariaLabel}
+          className={cx(styles.button, classNames?.menuButton)}
+          data-testid="ellipsis-menu-button"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          <FontAwesomeIcon icon={faEllipsisV} />
+        </MenuButton>
+      }
+    >
+      {items.filter((x) => !x.hide).map((item) => getMenuItemComponent(item))}
+    </Menu>
+  </div>
 );
 
 export default EllipsisMenu;
