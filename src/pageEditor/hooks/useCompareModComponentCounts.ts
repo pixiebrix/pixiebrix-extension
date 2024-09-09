@@ -29,16 +29,12 @@ type SourceModParts = {
   newModComponentFormState?: ModComponentFormState;
 };
 
-type RequiredModParts = Required<
-  Pick<SourceModParts, "sourceModDefinition" | "newModComponentFormState">
->;
-
 /**
  * @returns A function that compares the number of mod components in the redux state and the mod definition
  */
 function useCompareModComponentCounts(): (
   unsavedModDefinition: UnsavedModDefinition,
-  { sourceModDefinition, newModComponentFormState }: RequiredModParts,
+  { sourceModDefinition, newModComponentFormState }: SourceModParts,
 ) => boolean {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -47,9 +43,13 @@ function useCompareModComponentCounts(): (
   return useCallback(
     (
       unsavedModDefinition: UnsavedModDefinition,
-      { sourceModDefinition, newModComponentFormState }: RequiredModParts,
+      { sourceModDefinition, newModComponentFormState }: SourceModParts,
     ) => {
-      const modId = sourceModDefinition.metadata.id;
+      // Always compare to the pre-existing mod if it exists
+      const modId = sourceModDefinition
+        ? sourceModDefinition.metadata.id
+        : // See useCreateModFromModComponent.ts for an example where there is no sourceModDefinition
+          unsavedModDefinition.metadata.id;
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
