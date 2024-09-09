@@ -64,7 +64,7 @@ describe("modVariableContext", () => {
   test("use mod variable in nunjucks condition", async () => {
     const options = reduceOptionsFactory("v3");
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
