@@ -24,7 +24,6 @@ import {
   isMsEdge,
   PRE_RELEASE_BROWSER_WORKFLOW_NAME,
 } from "../../utils";
-import { SupportedChannels } from "playwright.config";
 
 test("Add new starter brick", async ({
   page,
@@ -97,11 +96,7 @@ test("Add new starter brick", async ({
     ).toHaveValue("Sidebar Panel");
 
     /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
-    if (
-      ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (!isMsEdge(chromiumChannel)) {
       const sidebarPage = await getSidebarPage(page, extensionId);
       await expect(sidebarPage.getByText("Example Document")).toBeVisible();
     }

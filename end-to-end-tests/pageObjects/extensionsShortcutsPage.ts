@@ -20,30 +20,22 @@ import {
   getModifierKey,
   getModifierSymbol,
   isChrome,
+  isChromium,
+  isMsEdge,
 } from "end-to-end-tests/utils";
 import { BasePageObject } from "./basePageObject";
-import {
-  type SupportedChannel,
-  SupportedChannels,
-} from "../../playwright.config";
+import { type SupportedChannel } from "../../playwright.config";
 
 function getExtensionShortcutsUrl(chromiumChannel: SupportedChannel) {
-  switch (chromiumChannel) {
-    case SupportedChannels.CHROME:
-    case SupportedChannels.CHROME_BETA:
-    case SupportedChannels.CHROMIUM: {
-      return "chrome://extensions/shortcuts";
-    }
-
-    case SupportedChannels.MSEDGE:
-    case SupportedChannels.MSEDGE_BETA: {
-      return "edge://extensions/shortcuts";
-    }
-
-    default: {
-      throw new Error(`Unexpected channel: ${chromiumChannel}`);
-    }
+  if (isChrome(chromiumChannel) || isChromium(chromiumChannel)) {
+    return "chrome://extensions/shortcuts";
   }
+
+  if (isMsEdge(chromiumChannel)) {
+    return "edge://extensions/shortcuts";
+  }
+
+  throw new Error(`Unexpected channel: ${chromiumChannel}`);
 }
 
 async function getShortcut(page: Page): Promise<string> {
