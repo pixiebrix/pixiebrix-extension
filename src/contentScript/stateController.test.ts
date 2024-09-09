@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/platform/state/stateController";
+import { setState } from "@/contentScript/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
@@ -24,14 +24,14 @@ import {
 } from "@/platform/state/stateTypes";
 
 describe("pageState", () => {
-  it("deep merge triggers event", () => {
+  it("deep merge triggers event", async () => {
     const listener = jest.fn();
 
     document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: { foo: { bar: "baz" } },
       mergeStrategy: MergeStrategies.DEEP,
@@ -41,14 +41,14 @@ describe("pageState", () => {
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
-  it("deep merges async state", () => {
+  it("deep merges async state", async () => {
     const listener = jest.fn();
 
     document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
 
     const modComponentRef = modComponentRefFactory();
 
-    setState({
+    await setState({
       namespace: StateNamespaces.MOD,
       data: {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
@@ -57,7 +57,7 @@ describe("pageState", () => {
       modComponentRef,
     });
 
-    const updatedState = setState({
+    const updatedState = await setState({
       namespace: StateNamespaces.MOD,
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: MergeStrategies.DEEP,
