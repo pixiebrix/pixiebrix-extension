@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { Except, JsonObject } from "type-fest";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 import type { RegistryId } from "@/types/registryTypes";
 import type { ModVariablesDefinition } from "@/types/modDefinitionTypes";
 import type {
   MergeStrategy,
   StateNamespace,
 } from "@/platform/state/stateTypes";
-import type { Except, JsonObject } from "type-fest";
-import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The variable store/state for the platform.
@@ -34,6 +34,8 @@ import type { ModComponentRef } from "@/types/modComponentTypes";
 export type StateProtocol = {
   /**
    * Get the current state for the given namespace.
+   *
+   * @since 2.1.2 asynchronous
    */
   getState(args: {
     namespace: StateNamespace;
@@ -42,6 +44,8 @@ export type StateProtocol = {
 
   /**
    * Set the current state for the given namespace.
+   *
+   * @since 2.1.2 asynchronous
    */
   setState(args: {
     namespace: StateNamespace;

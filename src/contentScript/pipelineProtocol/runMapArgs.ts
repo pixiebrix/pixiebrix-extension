@@ -53,6 +53,7 @@ export async function runMapArgs({
   };
 }): Promise<unknown> {
   expectContext("contentScript");
+
   const extendedContext = await extendModVariableContext(context, {
     modComponentRef,
     options,

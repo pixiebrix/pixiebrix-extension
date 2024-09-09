@@ -89,7 +89,7 @@ export function contextAsPlainObject<T extends UnknownObject = UnknownObject>(
     [MOD_VARIABLE_REFERENCE]: pickBy(
       // eslint-disable-next-line security/detect-object-injection -- constant
       (context as ExtendedContext)[MOD_VARIABLE_REFERENCE] ?? {},
-      (_value, key) => key !== MOD_VARIABLE_TAG,
+      (_, key) => key !== MOD_VARIABLE_TAG,
     ),
   };
 }

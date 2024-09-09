@@ -873,6 +873,24 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/me/deployments/{id}/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description View to create, get and delete user deployments. */
+    get: operations["retrieveUserDeployment"];
+    put?: never;
+    post?: never;
+    /** @description View to create, get and delete user deployments. */
+    delete: operations["destroyUserDeployment"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/memberships/{id}/": {
     parameters: {
       query?: never;
@@ -1747,6 +1765,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/me/deployments/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description View to create, get and delete user deployments. */
+    post: operations["createUserDeployment"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/onboarding/": {
     parameters: {
       query?: never;
@@ -2164,6 +2199,7 @@ export interface components {
         updated_at?: Timestamp;
       };
       package_version: string;
+      user?: string;
       services: {
         auth: string;
       }[];
@@ -2282,6 +2318,11 @@ export interface components {
       active?: boolean;
       options_config?: {
         [key: string]: unknown;
+      };
+      readonly organization?: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        name: string;
       };
       package_version: string;
       services: {
@@ -3218,6 +3259,7 @@ export interface components {
       users: {
         /** Format: email */
         email?: string;
+        readonly name?: string;
         readonly pending_invitations?: string[];
         scope?: string | null;
       }[];
@@ -5991,6 +6033,47 @@ export interface operations {
       };
     };
   };
+  retrieveUserDeployment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["Deployment"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Deployment"];
+        };
+      };
+    };
+  };
+  destroyUserDeployment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   retrieveOrganizationMembership: {
     parameters: {
       query?: never;
@@ -8198,6 +8281,32 @@ export interface operations {
         content: {
           "application/json; version=1.0": components["schemas"]["Milestone"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Milestone"];
+        };
+      };
+    };
+  };
+  createUserDeployment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["DeploymentTelemetry"];
+        "application/x-www-form-urlencoded": components["schemas"]["DeploymentTelemetry"];
+        "multipart/form-data": components["schemas"]["DeploymentTelemetry"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["Deployment"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Deployment"];
         };
       };
     };

@@ -95,6 +95,9 @@ export function mapModComponentDefinitionToActivatedModComponent<
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This should be defined in practice
       timestamp: deployment.updated_at!,
       active: deployment.active,
+      ...(deployment.organization
+        ? { organization: deployment.organization }
+        : { isPersonalDeployment: true }),
     };
   }
 

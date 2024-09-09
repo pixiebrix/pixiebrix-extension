@@ -24,8 +24,7 @@ import {
 } from "@/testUtils/factories/runtimeFactories";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
-import { getPlatform, setPlatform } from "@/platform/platformContext";
-import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+import { getPlatform } from "@/platform/platformContext";
 
 const brick = new AssignModVariable();
 
@@ -36,8 +35,6 @@ const brickOptions = brickOptionsFactory({
 });
 
 beforeEach(async () => {
-  setPlatform(contentScriptPlatform);
-
   await getPlatform().state.setState({
     namespace: StateNamespaces.MOD,
     modComponentRef,

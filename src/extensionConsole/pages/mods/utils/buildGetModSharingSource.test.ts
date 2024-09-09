@@ -56,6 +56,7 @@ describe("buildGetModSharingSource", () => {
             id: autoUUIDSequence(),
             timestamp: nowTimestamp(),
             active: true,
+            organization,
           },
         }),
       ],
@@ -64,7 +65,41 @@ describe("buildGetModSharingSource", () => {
     const mod = modDefinitionFactory({
       metadata: modMetadata,
       sharing: {
-        public: true,
+        public: false,
+        organizations: [organization.id],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "Deployment",
+      label: organization.name,
+      organization,
+    });
+  });
+
+  it("handles deployment mod (old deployment metadata)", () => {
+    const modMetadata = modMetadataFactory();
+    const organization = organizationStateFactory();
+    const getSharingSource = buildGetModSharingSource(
+      userScope,
+      [organization],
+      [
+        activatedModComponentFactory({
+          _recipe: modMetadata,
+          _deployment: {
+            id: autoUUIDSequence(),
+            timestamp: nowTimestamp(),
+            active: true,
+            // Old deployment metadata doesn't include the organization directly
+          },
+        }),
+      ],
+    );
+
+    const mod = modDefinitionFactory({
+      metadata: modMetadata,
+      sharing: {
+        public: false,
         organizations: [organization.id],
       },
     });
@@ -112,6 +147,79 @@ describe("buildGetModSharingSource", () => {
       type: "Public",
       label: "Public",
       organization: undefined,
+    });
+  });
+
+  it("handles personal deployment mod", () => {
+    const modMetadata = modMetadataFactory();
+    const getSharingSource = buildGetModSharingSource(
+      userScope,
+      [],
+      [
+        activatedModComponentFactory({
+          _recipe: modMetadata,
+          _deployment: {
+            id: autoUUIDSequence(),
+            timestamp: nowTimestamp(),
+            active: true,
+            organization: undefined,
+            isPersonalDeployment: true,
+          },
+        }),
+      ],
+    );
+
+    const mod = modDefinitionFactory({
+      metadata: modMetadata,
+      sharing: {
+        public: false,
+        organizations: [],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "PersonalDeployment",
+      label: "Personal (Synced)",
+      organization: undefined,
+    });
+  });
+
+  it("handles unknown sharing type", () => {
+    const getSharingSource = buildGetModSharingSource(userScope, [], []);
+    const mod = modDefinitionFactory({
+      metadata: modMetadataFactory(),
+      sharing: {
+        public: false,
+        organizations: [],
+      },
+    });
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "Unknown",
+      label: "Unknown",
+      organization: undefined,
+    });
+  });
+
+  it("handles mod belonging to multiple organizations", () => {
+    const organization1 = organizationStateFactory();
+    const organization2 = organizationStateFactory();
+    const getSharingSource = buildGetModSharingSource(
+      userScope,
+      [organization1, organization2],
+      [],
+    );
+    const mod = modDefinitionFactory({
+      metadata: modMetadataFactory(),
+      sharing: {
+        public: false,
+        organizations: [organization1.id, organization2.id],
+      },
+    });
+
+    expect(getSharingSource(mod)).toStrictEqual({
+      type: "Team",
+      label: organization1.name, // It should return the first matching organization
+      organization: organization1,
     });
   });
 });

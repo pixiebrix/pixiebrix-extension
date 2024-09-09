@@ -26,11 +26,9 @@ import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
-import { getPlatform, setPlatform } from "@/platform/platformContext";
-import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+import { getPlatform } from "@/platform/platformContext";
 
 beforeEach(() => {
-  setPlatform(contentScriptPlatform);
   brickRegistry.clear();
   brickRegistry.register([echoBrick, contextBrick]);
 });

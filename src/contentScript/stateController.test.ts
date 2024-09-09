@@ -23,7 +23,7 @@ import {
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 
-describe("stateController", () => {
+describe("pageState", () => {
   it("deep merge triggers event", async () => {
     const listener = jest.fn();
 

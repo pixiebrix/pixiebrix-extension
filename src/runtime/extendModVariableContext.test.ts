@@ -26,12 +26,7 @@ import {
   standaloneModComponentRefFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
-import { getPlatform, setPlatform } from "@/platform/platformContext";
-import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
-
-beforeEach(() => {
-  setPlatform(contentScriptPlatform);
-});
+import { getPlatform } from "@/platform/platformContext";
 
 describe("createModVariableProxy", () => {
   beforeEach(async () => {

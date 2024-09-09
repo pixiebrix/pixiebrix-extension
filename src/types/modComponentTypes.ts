@@ -62,11 +62,7 @@ export type ModMetadata = Metadata & {
   updated_at: Timestamp | null;
 };
 
-/**
- * Context about an automatically activated organization Deployment.
- */
-// Don't export -- context is clearer if it's always written as ModComponentBase[_deployment] property
-type DeploymentMetadata = {
+type BaseDeploymentMetadata = {
   /**
    * Unique id of the deployment
    */
@@ -87,6 +83,39 @@ type DeploymentMetadata = {
    */
   active?: boolean;
 };
+
+/**
+ * Context about an automatically activated organization Deployment.
+ * Don't export -- context is clearer if it's always written as ModComponentBase[_deployment] property
+ */
+type DeploymentMetadata =
+  | (BaseDeploymentMetadata & {
+      /**
+       * Indicates if the deployment is a personal deployment.
+       * If true, the organization property should be undefined.
+       * @since 2.1.2
+       */
+      isPersonalDeployment: true;
+      organization?: undefined;
+    })
+  | (BaseDeploymentMetadata & {
+      isPersonalDeployment?: false;
+      /**
+       * Context about the organization that the deployment is associated with.
+       * @since 2.1.2
+       */
+      organization?: {
+        /**
+         * UUID of the organization
+         */
+        id: UUID;
+
+        /**
+         * Name of the organization
+         */
+        name: string;
+      };
+    });
 
 /**
  * @deprecated - Do not use versioned state types directly

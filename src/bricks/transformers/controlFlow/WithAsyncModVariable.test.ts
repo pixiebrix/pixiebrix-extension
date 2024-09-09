@@ -113,7 +113,7 @@ describe("WithAsyncModVariable", () => {
         isError: false,
         currentData: null,
         data: null,
-        requestId: null,
+        requestId: expect.toBeString(),
         error: null,
       },
     });
@@ -232,7 +232,7 @@ describe("WithAsyncModVariable", () => {
         isError: false,
         currentData: null,
         data: null,
-        requestId: null,
+        requestId: expect.toBeString(),
         error: null,
       },
     });
