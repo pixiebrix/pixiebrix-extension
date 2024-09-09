@@ -27,7 +27,7 @@ import {
   traces,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { getState, setState } from "@/platform/state/stateController";
+import { getState, setState } from "@/contentScript/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";

@@ -19,7 +19,7 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import { TEST_resetState } from "@/platform/state/stateController";
+import { TEST_resetState } from "@/contentScript/stateController";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 beforeEach(() => {

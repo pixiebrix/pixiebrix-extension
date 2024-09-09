@@ -32,11 +32,13 @@ import {
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script
 const privateState = new Map<UUID, JsonObject>();
 
 /**
  * The mod page state or null for shared page state.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script
 const modState = new Map<RegistryId | null, JsonObject>();
 
 function mergeState(
@@ -97,16 +99,16 @@ function dispatchStateChangeEventOnChange({
   }
 }
 
-export function setState({
+export async function setState({
   namespace,
+  modComponentRef,
   data,
   mergeStrategy,
-  modComponentRef,
 }: {
   namespace: StateNamespace;
+  modComponentRef: Except<ModComponentRef, "starterBrickId">;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
   assertPlatformCapability("state");
 
@@ -157,13 +159,13 @@ export function setState({
   }
 }
 
-export function getState({
+export async function getState({
   namespace,
   modComponentRef: { modComponentId, modId },
 }: {
   namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
-}): JsonObject {
+}): Promise<JsonObject> {
   assertPlatformCapability("state");
 
   switch (namespace) {

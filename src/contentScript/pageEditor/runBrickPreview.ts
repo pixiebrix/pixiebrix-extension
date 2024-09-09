@@ -52,7 +52,7 @@ export async function runBrickPreview({
   }
 
   const state: IntermediateState = {
-    context: extendModVariableContext(context, {
+    context: await extendModVariableContext(context, {
       modComponentRef,
       update: true,
       options: versionOptions,
