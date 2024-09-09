@@ -111,10 +111,6 @@ test.describe("Insert at Cursor", () => {
     page,
     extensionId,
   }) => {
-    test.skip(
-      true,
-      "Skip test due to chromium bug. See: https://pixiebrix.slack.com/archives/C07DGPVQJKH",
-    );
     // This mod opens the sidebar with a selection menu option, and then inserts "Hello world!" at the cursor from the sidebar
     const modId = "@pixies/test/insert-at-cursor-with-selection-menu";
 

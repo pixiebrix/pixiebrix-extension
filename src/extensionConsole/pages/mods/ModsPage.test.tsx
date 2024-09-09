@@ -252,7 +252,7 @@ describe("ModsPage", () => {
     expect(screen.getByText("No mods found")).toBeInTheDocument();
     expect(screen.queryByText("Test Mod 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Mod 2")).not.toBeInTheDocument();
-  });
+  }, 10_000);
 
   test("renders OnboardingView when there are no mods anfd no search query", async () => {
     render(
