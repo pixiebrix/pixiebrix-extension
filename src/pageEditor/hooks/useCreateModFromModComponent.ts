@@ -31,7 +31,6 @@ import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils"
 import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { BusinessError } from "@/errors/businessErrors";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 type UseCreateModFromModReturn = {
@@ -72,66 +71,58 @@ function useCreateModFromModComponent(
           },
         );
 
-        try {
-          const newModDefinition = await buildAndValidateMod({
-            newModComponentFormState,
-            dirtyModMetadata: modMetadata,
-          });
+        const newModDefinition = await buildAndValidateMod({
+          newModComponentFormState,
+          dirtyModMetadata: modMetadata,
+        });
 
-          const upsertResponse = await createMod({
-            modDefinition: newModDefinition,
-            organizations: [],
-            public: false,
-          }).unwrap();
+        const upsertResponse = await createMod({
+          modDefinition: newModDefinition,
+          organizations: [],
+          public: false,
+        }).unwrap();
 
-          const newModComponent = produce(newModComponentFormState, (draft) => {
-            draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
-              newModDefinition,
-              upsertResponse,
-            );
-          });
+        const newModComponent = produce(newModComponentFormState, (draft) => {
+          draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
+            newModDefinition,
+            upsertResponse,
+          );
+        });
 
-          dispatch(editorActions.addModComponentFormState(newModComponent));
+        dispatch(editorActions.addModComponentFormState(newModComponent));
 
-          await upsertModComponentFormState({
-            modComponentFormState: newModComponent,
-            options: {
-              // Permissions are already checked above
-              checkPermissions: false,
-              // Need to provide user feedback
-              notifySuccess: true,
-              reactivateEveryTab: true,
+        await upsertModComponentFormState({
+          modComponentFormState: newModComponent,
+          options: {
+            // Permissions are already checked above
+            checkPermissions: false,
+            // Need to provide user feedback
+            notifySuccess: true,
+            reactivateEveryTab: true,
+          },
+          modId: newModDefinition.metadata.id,
+        });
+
+        if (!keepLocalCopy) {
+          console.debug(
+            "createModFromComponent - removing standalone component",
+            {
+              activeModComponent,
             },
-            modId: newModDefinition.metadata.id,
-          });
+          );
 
-          if (!keepLocalCopy) {
-            console.debug(
-              "createModFromComponent - removing standalone component",
-              {
-                activeModComponent,
-              },
-            );
+          const removePromises: Array<Promise<unknown>> = [
+            removeModComponentFromStorage({
+              modComponentId: activeModComponent.uuid,
+            }),
+          ];
 
-            const removePromises: Array<Promise<unknown>> = [
-              removeModComponentFromStorage({
-                modComponentId: activeModComponent.uuid,
-              }),
-            ];
-
-            await Promise.all(removePromises);
-          }
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newModDefinition.metadata.id,
-          });
-        } catch (error) {
-          if (error instanceof BusinessError) {
-            // Error is already handled by buildAndValidateMod.
-          } else {
-            throw error;
-          } // Other errors can be thrown during mod activation
+          await Promise.all(removePromises);
         }
+
+        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+          modId: newModDefinition.metadata.id,
+        });
       }),
     [
       activeModComponent,
