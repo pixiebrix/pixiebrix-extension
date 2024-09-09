@@ -19,8 +19,11 @@ import { test, expect } from "../../fixtures/testBase";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { getSidebarPage } from "../../utils";
-import { SupportedChannels } from "playwright.config";
+import {
+  getSidebarPage,
+  isMsEdge,
+  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
+} from "../../utils";
 
 test("Add new starter brick", async ({
   page,
@@ -93,11 +96,7 @@ test("Add new starter brick", async ({
     ).toHaveValue("Sidebar Panel");
 
     /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
-    if (
-      ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (!isMsEdge(chromiumChannel)) {
       const sidebarPage = await getSidebarPage(page, extensionId);
       await expect(sidebarPage.getByText("Example Document")).toBeVisible();
     }
@@ -140,6 +139,7 @@ test("Add starter brick to mod", async ({
   newPageEditorPage,
   extensionId,
   verifyModDefinitionSnapshot,
+  chromiumChannel,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
@@ -258,6 +258,12 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Trigger starter brick to mod", async () => {
+    test.fixme(
+      process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
+        isMsEdge(chromiumChannel),
+      "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
+    );
+
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Trigger");
 

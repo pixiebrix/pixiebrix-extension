@@ -24,9 +24,15 @@ import {
   // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
   test as base,
 } from "@playwright/test";
-import { ensureVisibility, getBrowserOs, getSidebarPage } from "../../utils";
+import {
+  ensureVisibility,
+  getBrowserOs,
+  getSidebarPage,
+  isMsEdge,
+  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
+} from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
-import { SupportedChannels } from "../../../playwright.config";
+import { type SupportedChannel } from "../../../playwright.config";
 
 async function openSidebar(page: Page, extensionId: string) {
   // The mod contains a trigger to open the sidebar on h1. If the sidePanel is already open, it's a NOP
@@ -51,14 +57,10 @@ async function reopenSidebar(page: Page, extensionId: string) {
 async function clickLinkInSidebarAndWaitForPage(
   context: BrowserContext,
   locator: Locator,
-  chromiumChannel: string,
+  chromiumChannel: SupportedChannel,
 ) {
   const pagePromise = context.waitForEvent("page");
-  if (
-    [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-      chromiumChannel,
-    )
-  ) {
+  if (isMsEdge(chromiumChannel)) {
     // On MS Edge, opening a new tab closes the sidebar. The click steps fail because MS Edge closes the sidebar when the new tab is opened
     //  Error: locator.click: Target page, context or browser has been closed.
     // Even though it errors, the link is still opened in a new tab.
@@ -80,6 +82,12 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   chromiumChannel,
   baseURL,
 }) => {
+  test.fixme(
+    process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
+      isMsEdge(chromiumChannel),
+    "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
+  );
+
   const browserOSName = await getBrowserOs(page);
   const modId = "@pixies/test/sidebar-links";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -104,11 +112,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
     );
 
     // eslint-disable-next-line playwright/no-conditional-in-test -- msedge bug
-    if (
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (isMsEdge(chromiumChannel)) {
       // Another msedge bug causes the browser to fail to open the extension console page from the sidebar until you refresh the page.
       //   "Error: This script should only be loaded in a browser extension."
       await extensionConsolePage.reload();
@@ -123,12 +127,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking markdown text link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge and linux bug that causes the sidebar to close on clicking a link */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -143,12 +142,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking react bootstrap link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -163,12 +157,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking html renderer link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -183,12 +172,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking embedded form link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -205,12 +189,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   // https://github.com/microsoft/MicrosoftEdge-Extensions/issues/145
   // For some reason this also happens in Chrome/Linux in the CI github workflow.
   /* eslint-disable playwright/no-conditional-in-test -- see above comment */
-  if (
-    browserOSName !== "Linux" &&
-    ![SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-      chromiumChannel,
-    )
-  ) {
+  if (browserOSName !== "Linux" && !isMsEdge(chromiumChannel)) {
     await test.step("Clicking link in IFrame", async () => {
       // PixieBrix uses 2 layers of frames to get around the host page CSP. Test page has 2 layers
       const pixiebrixFrame = sideBarPage.frameLocator("iframe").first();

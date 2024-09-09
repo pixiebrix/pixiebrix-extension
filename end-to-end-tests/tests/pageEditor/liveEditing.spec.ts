@@ -19,7 +19,12 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { getSidebarPage, isSidebarOpen } from "../../utils";
+import {
+  getSidebarPage,
+  isMsEdge,
+  isSidebarOpen,
+  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
+} from "../../utils";
 
 test("live editing behavior", async ({
   page,
@@ -27,7 +32,14 @@ test("live editing behavior", async ({
   modDefinitionsMap,
   newPageEditorPage,
   verifyModDefinitionSnapshot,
+  chromiumChannel,
 }) => {
+  test.fixme(
+    process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
+      isMsEdge(chromiumChannel),
+    "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
+  );
+
   await test.step("Activate test mod and navigate to testing site", async () => {
     const modId = "@e2e-testing/page-editor-live-editing-test";
     const activationPage = new ActivateModPage(page, extensionId, modId);

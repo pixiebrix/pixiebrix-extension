@@ -23,6 +23,9 @@ import {
   type BrowserContext,
 } from "@playwright/test";
 import { TOTP } from "otpauth";
+import { type SupportedChannel, SupportedChannels } from "../playwright.config";
+
+export const PRE_RELEASE_BROWSER_WORKFLOW_NAME = "Pre-release Browsers";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
@@ -232,4 +235,20 @@ export function generateOTP(secret: string) {
   });
 
   return totp.generate();
+}
+
+export function isMsEdge(chromiumChannel: SupportedChannel): boolean {
+  return [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+    chromiumChannel,
+  );
+}
+
+export function isChrome(chromiumChannel: SupportedChannel): boolean {
+  return [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
+    chromiumChannel,
+  );
+}
+
+export function isChromium(chromiumChannel: SupportedChannel): boolean {
+  return chromiumChannel === SupportedChannels.CHROMIUM;
 }

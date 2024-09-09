@@ -16,30 +16,26 @@
  */
 
 import { expect, type Page } from "@playwright/test";
-import { getModifierKey, getModifierSymbol } from "end-to-end-tests/utils";
-import { BasePageObject } from "./basePageObject";
 import {
-  type SupportedChannel,
-  SupportedChannels,
-} from "../../playwright.config";
+  getModifierKey,
+  getModifierSymbol,
+  isChrome,
+  isChromium,
+  isMsEdge,
+} from "end-to-end-tests/utils";
+import { BasePageObject } from "./basePageObject";
+import { type SupportedChannel } from "../../playwright.config";
 
 function getExtensionShortcutsUrl(chromiumChannel: SupportedChannel) {
-  switch (chromiumChannel) {
-    case SupportedChannels.CHROME:
-    case SupportedChannels.CHROME_BETA:
-    case SupportedChannels.CHROMIUM: {
-      return "chrome://extensions/shortcuts";
-    }
-
-    case SupportedChannels.MSEDGE:
-    case SupportedChannels.MSEDGE_BETA: {
-      return "edge://extensions/shortcuts";
-    }
-
-    default: {
-      throw new Error(`Unexpected channel: ${chromiumChannel}`);
-    }
+  if (isChrome(chromiumChannel) || isChromium(chromiumChannel)) {
+    return "chrome://extensions/shortcuts";
   }
+
+  if (isMsEdge(chromiumChannel)) {
+    return "edge://extensions/shortcuts";
+  }
+
+  throw new Error(`Unexpected channel: ${chromiumChannel}`);
 }
 
 async function getShortcut(page: Page): Promise<string> {
@@ -67,11 +63,7 @@ export class ExtensionsShortcutsPage extends BasePageObject {
   async goto() {
     await this.page.goto(this.pageUrl);
 
-    if (
-      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
-        this.chromiumChannel,
-      )
-    ) {
+    if (isChrome(this.chromiumChannel)) {
       await expect(
         this.getByRole("heading", { name: /PixieBrix/ }),
       ).toBeVisible();
@@ -85,11 +77,7 @@ export class ExtensionsShortcutsPage extends BasePageObject {
 
     const shortcut = await getShortcut(this.page);
 
-    if (
-      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
-        this.chromiumChannel,
-      )
-    ) {
+    if (isChrome(this.chromiumChannel)) {
       await expect(this.page.getByPlaceholder(/shortcut set: /i)).toHaveValue(
         shortcut,
       );
@@ -126,11 +114,7 @@ export class ExtensionsShortcutsPage extends BasePageObject {
     const modifierKey = await getModifierKey(this.page);
     const shortcut = await getShortcut(this.page);
 
-    if (
-      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
-        this.chromiumChannel,
-      )
-    ) {
+    if (isChrome(this.chromiumChannel)) {
       await expect(
         this.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/),
       ).toBeEmpty();

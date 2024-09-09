@@ -24,6 +24,7 @@ import {
   clickAndWaitForNewPage,
   runModViaQuickBar,
   getBrowserOs,
+  isChrome,
 } from "../../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
@@ -31,7 +32,6 @@ import { type Serializable } from "playwright-core/types/structs";
 import { SERVICE_URL } from "../../env";
 import { ExtensionsShortcutsPage } from "../../pageObjects/extensionsShortcutsPage";
 import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
-import { SupportedChannels } from "../../../playwright.config";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -182,12 +182,7 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
     const os = await getBrowserOs(firstTab);
     // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
     /* eslint-disable playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux */
-    if (
-      os === "MacOS" ||
-      [SupportedChannels.CHROME, SupportedChannels.CHROME_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (os === "MacOS" || isChrome(chromiumChannel)) {
       await shortcutsPage.clearQuickbarShortcut();
     }
   });
