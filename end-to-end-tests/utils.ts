@@ -248,7 +248,3 @@ export function isChrome(chromiumChannel: SupportedChannel): boolean {
     chromiumChannel,
   );
 }
-
-export function isChromium(chromiumChannel: SupportedChannel): boolean {
-  return chromiumChannel === SupportedChannels.CHROMIUM;
-}
