@@ -45,8 +45,8 @@ const brick = new CustomFormRenderer();
 
 // CustomForm uses @/contentScript/messenger/api instead of the platform API
 jest.mock("@/contentScript/messenger/api", () => ({
-  getPageState: jest.fn((_: Target, args: any) => getState(args)),
-  setPageState: jest.fn((_: Target, args: any) => setState(args)),
+  getPageState: jest.fn(async (_: Target, args: any) => getState(args)),
+  setPageState: jest.fn(async (_: Target, args: any) => setState(args)),
 }));
 
 // I couldn't get shadow-dom-testing-library working
@@ -349,12 +349,12 @@ describe("CustomFormRenderer", () => {
 
       expect(runPipelineMock).toHaveBeenCalledOnce();
 
-      expect(
+      await expect(
         getState({
           namespace: StateNamespaces.MOD,
           modComponentRef: options.meta.modComponentRef,
         }),
-      ).toStrictEqual({
+      ).resolves.toStrictEqual({
         name: value,
       });
 

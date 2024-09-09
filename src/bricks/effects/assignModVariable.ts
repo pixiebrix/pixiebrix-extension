@@ -92,7 +92,7 @@ class AssignModVariable extends EffectABC {
     }>,
     { meta: { modComponentRef }, platform }: BrickOptions,
   ): Promise<void> {
-    platform.state.setState({
+    await platform.state.setState({
       namespace: StateNamespaces.MOD,
       data: { [variableName]: value },
       mergeStrategy: MergeStrategies.SHALLOW,

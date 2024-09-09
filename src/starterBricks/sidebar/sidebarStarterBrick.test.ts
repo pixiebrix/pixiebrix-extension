@@ -187,7 +187,7 @@ describe("sidebarExtension", () => {
 
     expect(rootReader.readCount).toBe(0);
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
@@ -209,7 +209,7 @@ describe("sidebarExtension", () => {
     // Runs because statechange mods also run on manual
     expect(rootReader.readCount).toBe(1);
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
@@ -225,7 +225,7 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(2);
 
     // Should ignore state change from other mod
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       mergeStrategy: MergeStrategies.REPLACE,
@@ -273,7 +273,8 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(1);
 
     for (let i = 0; i < 10; i++) {
-      getPlatform().state.setState({
+      // eslint-disable-next-line no-await-in-loop -- test code
+      await getPlatform().state.setState({
         namespace: StateNamespaces.MOD,
         data: { foo: i },
         mergeStrategy: MergeStrategies.REPLACE,

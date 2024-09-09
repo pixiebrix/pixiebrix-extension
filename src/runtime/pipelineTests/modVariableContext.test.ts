@@ -37,7 +37,7 @@ describe("modVariableContext", () => {
   test("use mod variable in variable condition", async () => {
     const options = reduceOptionsFactory("v3");
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -64,7 +64,7 @@ describe("modVariableContext", () => {
   test("use mod variable in nunjucks condition", async () => {
     const options = reduceOptionsFactory("v3");
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -91,7 +91,7 @@ describe("modVariableContext", () => {
   test("mod variable appears in context", async () => {
     const options = reduceOptionsFactory("v3");
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -119,7 +119,7 @@ describe("modVariableContext", () => {
   test("use mod variable in nunjucks body", async () => {
     const options = reduceOptionsFactory("v3");
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -145,7 +145,7 @@ describe("modVariableContext", () => {
   test("use mod variable in variable body", async () => {
     const options = reduceOptionsFactory("v3");
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
