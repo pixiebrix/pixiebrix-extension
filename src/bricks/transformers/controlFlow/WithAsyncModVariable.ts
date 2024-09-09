@@ -25,7 +25,6 @@ import {
 } from "@/types/runtimeTypes";
 import { serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
-import { type UUID } from "@/types/stringTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
@@ -33,11 +32,6 @@ import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
-
-/**
- * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
- */
-const modVariableNonces = new Map<string, UUID>();
 
 /**
  * A brick that stores the result of an asynchronous operation in a Mod Variable.
@@ -185,59 +179,66 @@ export class WithAsyncModVariable extends TransformerABC {
       );
     }
 
-    const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
+    const isCurrentNonce = async () => {
+      const currentState = await platform.state.getState({
+        namespace: StateNamespaces.MOD,
+        modComponentRef,
+      });
 
-    const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
-      platform.state.setState({
+      // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
+      const currentVariable = (currentState[stateKey] ?? {}) as JsonObject;
+
+      const { requestId: currentRequestId } = currentVariable;
+
+      return currentRequestId == null || currentRequestId === requestId;
+    };
+
+    const setModVariable = async (data: JsonObject) => {
+      await platform.state.setState({
         // Store as Mod Variable
         namespace: StateNamespaces.MOD,
+        modComponentRef,
+        // Using shallow will replace the state key, but keep other keys. Always pass the full state object in order
+        // to ensure the shape is valid.
+        mergeStrategy: MergeStrategies.SHALLOW,
         data: {
           [stateKey]: data,
         },
-        // Using shallow will replace the state key, but keep other keys
-        mergeStrategy:
-          strategy === "put" ? MergeStrategies.SHALLOW : MergeStrategies.DEEP,
-        modComponentRef,
       });
     };
 
-    // Mark as current request
-    modVariableNonces.set(stateKey, requestId);
-
-    // Get/set page state calls are synchronous from the content script, so safe to call sequentially
-    const currentState = platform.state.getState({
+    // `getState/setState` are async. So calls need to account for interlacing state modifications (including deletes).
+    // The main concern is ensuring the shape of the async state is always valid.
+    // We don't need to have strong consistency guarantees on which calls "win" if the state is updated concurrently.
+    const currentState = await platform.state.getState({
       namespace: StateNamespaces.MOD,
       modComponentRef,
     });
 
     // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
-    const currentVariable = currentState[stateKey] ?? {};
+    const currentVariable = (currentState[stateKey] ?? {}) as JsonObject;
 
     if (isEmpty(currentVariable)) {
-      // Initialize the mod variable
-      setModVariable(
-        {
-          isLoading: true,
-          isFetching: true,
-          isSuccess: false,
-          isError: false,
-          currentData: null,
-          data: null,
-          // Nonce is set when setting the data/error
-          requestId: null,
-          error: null,
-        },
-        "patch",
-      );
+      // Initialize the mod variable.
+      await setModVariable({
+        isLoading: true,
+        isFetching: true,
+        isSuccess: false,
+        isError: false,
+        currentData: null,
+        data: null,
+        requestId: uuidv4(),
+        error: null,
+      });
     } else {
-      // Preserve the previous data/error, if any
-      setModVariable(
-        {
-          isFetching: true,
-          currentData: null,
-        },
-        "patch",
-      );
+      await setModVariable({
+        // Preserve the previous data/error, if any. Due to get/setState being async, it's possible that
+        // the state could have been deleted since the getState call. Therefore, pass a full state object
+        ...currentVariable,
+        requestId: uuidv4(),
+        isFetching: true,
+        currentData: null,
+      });
     }
 
     // Non-blocking async call
@@ -247,41 +248,36 @@ export class WithAsyncModVariable extends TransformerABC {
           key: "body",
           counter: 0,
         })) as JsonObject;
-        if (!isCurrentNonce()) {
+
+        if (!(await isCurrentNonce())) {
           return;
         }
 
-        setModVariable(
-          {
-            isLoading: false,
-            isFetching: false,
-            isSuccess: true,
-            isError: false,
-            currentData: data,
-            data,
-            requestId,
-            error: null,
-          },
-          "put",
-        );
+        await setModVariable({
+          isLoading: false,
+          isFetching: false,
+          isSuccess: true,
+          isError: false,
+          currentData: data,
+          data,
+          requestId,
+          error: null,
+        });
       } catch (error) {
-        if (!isCurrentNonce()) {
+        if (!(await isCurrentNonce())) {
           return;
         }
 
-        setModVariable(
-          {
-            isLoading: false,
-            isFetching: false,
-            isSuccess: false,
-            isError: true,
-            currentData: null,
-            data: null,
-            requestId,
-            error: serializeError(error) as JsonObject,
-          },
-          "put",
-        );
+        await setModVariable({
+          isLoading: false,
+          isFetching: false,
+          isSuccess: false,
+          isError: true,
+          currentData: null,
+          data: null,
+          requestId,
+          error: serializeError(error) as JsonObject,
+        });
       }
     })();
 

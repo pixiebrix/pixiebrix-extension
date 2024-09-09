@@ -55,12 +55,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
+    await expect(
       getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: { bar: 42 } });
+    ).resolves.toEqual({ foo: { bar: 42 } });
   });
 
   test("null is valid input", async () => {
@@ -88,12 +88,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
+    await expect(
       getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: null });
+    ).resolves.toEqual({ foo: null });
   });
 
   test("only sets variable", async () => {
@@ -107,12 +107,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
+    await expect(
       getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: 42, bar: 0 });
+    ).resolves.toEqual({ foo: 42, bar: 0 });
   });
 
   it("returns mod variables", async () => {

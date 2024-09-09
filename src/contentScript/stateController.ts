@@ -99,16 +99,16 @@ function dispatchStateChangeEventOnChange({
   }
 }
 
-export function setState({
+export async function setState({
   namespace,
+  modComponentRef,
   data,
   mergeStrategy,
-  modComponentRef,
 }: {
   namespace: StateNamespace;
+  modComponentRef: Except<ModComponentRef, "starterBrickId">;
   data: JsonObject;
   mergeStrategy: MergeStrategy;
-  modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
   assertPlatformCapability("state");
 
@@ -159,13 +159,13 @@ export function setState({
   }
 }
 
-export function getState({
+export async function getState({
   namespace,
   modComponentRef: { modComponentId, modId },
 }: {
   namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
-}): JsonObject {
+}): Promise<JsonObject> {
   assertPlatformCapability("state");
 
   switch (namespace) {

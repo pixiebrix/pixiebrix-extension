@@ -32,19 +32,23 @@ import type { ModComponentRef } from "@/types/modComponentTypes";
 export type StateProtocol = {
   /**
    * Get the current state.
+   *
+   * @since 2.1.2 asynchronous
    */
   getState(args: {
     namespace: StateNamespace;
     modComponentRef: Except<ModComponentRef, "starterBrickId">;
-  }): JsonObject;
+  }): Promise<JsonObject>;
 
   /**
-   * Set the current state.
+   * Set the state for a given namespace.
+   *
+   * @since 2.1.2 asynchronous
    */
   setState(args: {
     namespace: StateNamespace;
+    modComponentRef: Except<ModComponentRef, "starterBrickId">;
     data: JsonObject;
     mergeStrategy: MergeStrategy;
-    modComponentRef: Except<ModComponentRef, "starterBrickId">;
-  }): JsonObject;
+  }): Promise<JsonObject>;
 };
