@@ -25,18 +25,53 @@ import {
   faUsers,
   faQuestion,
   type IconDefinition,
+  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
-import { type SharingSource } from "@/types/modTypes";
+import { type SharingSource, type SharingType } from "@/types/modTypes";
 
 const sharingIcons = {
   Personal: faEyeSlash,
   Team: faUsers,
   Public: faGlobe,
   Deployment: faUsers,
+  PersonalDeployment: faEyeSlash,
   Unknown: faQuestion,
-} satisfies Record<string, IconDefinition>;
+} satisfies Record<SharingType, IconDefinition>;
+
+const getPopoverMessage = (sharing: SharingSource): string => {
+  switch (sharing.type) {
+    case "Personal": {
+      return "You created this mod.";
+    }
+
+    case "Team": {
+      return `This mod was shared with you by "${sharing.label}" team.`;
+    }
+
+    case "Public": {
+      return "You activated this mod from the public marketplace.";
+    }
+
+    case "Deployment": {
+      return `This mod was activated as a deployment from "${sharing.label}" team.`;
+    }
+
+    case "PersonalDeployment": {
+      return "You created this mod, and it is synced to all devices.";
+    }
+
+    case "Unknown": {
+      return "This mod originated from an unknown source.";
+    }
+
+    default: {
+      const exhaustiveCheck: never = sharing.type;
+      throw new Error(`Unhandled case: ${exhaustiveCheck}`);
+    }
+  }
+};
 
 // Omitted OverlayTrigger attributes aren't required
 // noinspection RequiredAttributes
@@ -50,17 +85,14 @@ const SharingLabel: React.VoidFunctionComponent<{
     delay={600}
     overlay={
       <Popover id="sharingLabelPopover">
-        <Popover.Content>
-          {sharing.type === "Personal" && "You created this mod."}
-          {sharing.type === "Team" &&
-            `This mod was shared with you by "${sharing.label}" team.`}
-          {sharing.type === "Public" &&
-            "You activated this mod from the public marketplace."}
-        </Popover.Content>
+        <Popover.Content>{getPopoverMessage(sharing)}</Popover.Content>
       </Popover>
     }
   >
     <div className={cx(className, styles.root)}>
+      {["Deployment", "PersonalDeployment"].includes(sharing.type) && (
+        <FontAwesomeIcon icon={faDownload} />
+      )}{" "}
       <FontAwesomeIcon icon={sharingIcons[sharing.type]} /> {sharing.label}
     </div>
   </OverlayTrigger>

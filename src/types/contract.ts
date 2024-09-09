@@ -113,16 +113,15 @@ export type RemoteIntegrationConfig = Except<
   user?: UUID;
 };
 
-export type Deployment = Except<
-  components["schemas"]["DeploymentDetail"],
-  "id" | "package"
-> & {
+export type Deployment = components["schemas"]["DeploymentDetail"] & {
   id: UUID;
   options_config: OptionsArgs;
-  package: Except<
-    NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
-    "package_id"
-  > & { package_id: RegistryId };
+  package: NonNullable<components["schemas"]["DeploymentDetail"]["package"]> & {
+    package_id: RegistryId;
+  };
+  organization?: components["schemas"]["DeploymentDetail"]["organization"] & {
+    id: UUID;
+  };
 };
 
 /**

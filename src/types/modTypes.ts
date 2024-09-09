@@ -40,6 +40,7 @@ export type SharingType =
   | "Team"
   | "Public"
   | "Deployment"
+  | "PersonalDeployment"
   | "Unknown";
 
 export type SharingSource = {
