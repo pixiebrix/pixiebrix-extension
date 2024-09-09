@@ -111,7 +111,7 @@
     "mustache": "^4.2.0",
     "nunjucks": "^3.2.4",
     "object-hash": "^2.2.0",
-    "one-event": "^4.2.0",
+    "one-event": "^4.3.0",
     "p-defer": "^4.0.1",
     "p-memoize": "^7.1.1",
     "p-retry": "^6.2.0",
