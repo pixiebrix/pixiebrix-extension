@@ -25,6 +25,8 @@ import {
 import { TOTP } from "otpauth";
 import { type SupportedChannel, SupportedChannels } from "../playwright.config";
 
+export const PRE_RELEASE_BROWSER_WORKFLOW_NAME = "Pre-release Browsers";
+
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
 function criticalViolationsFromAxeResults(

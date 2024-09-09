@@ -27,6 +27,7 @@ import {
   getSidebarPage,
   runModViaQuickBar,
   isMsEdge,
+  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
 } from "end-to-end-tests/utils";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
@@ -89,7 +90,7 @@ test("run a copied mod with a built-in integration", async ({
 }) => {
   // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
   test.skip(
-    process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
+    process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
       isMsEdge(chromiumChannel),
     "Skipping test for MS Edge in pre-release workflow",
   );

@@ -29,6 +29,7 @@ import {
   getBrowserOs,
   getSidebarPage,
   isMsEdge,
+  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
 } from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 import { SupportedChannels } from "../../../playwright.config";
@@ -87,7 +88,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 }) => {
   // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
   test.skip(
-    process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
+    process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
       isMsEdge(chromiumChannel),
     "Skipping test for MS Edge in pre-release workflow",
   );
