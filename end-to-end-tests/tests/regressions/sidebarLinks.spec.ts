@@ -80,6 +80,19 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   chromiumChannel,
   baseURL,
 }) => {
+  // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
+  // eslint-disable-next-line playwright/no-conditional-in-test -- see above
+  if (
+    // eslint-disable-next-line playwright/no-conditional-in-test -- see above
+    process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
+    [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
+      chromiumChannel,
+    )
+  ) {
+    test.skip();
+    return;
+  }
+
   const browserOSName = await getBrowserOs(page);
   const modId = "@pixies/test/sidebar-links";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
