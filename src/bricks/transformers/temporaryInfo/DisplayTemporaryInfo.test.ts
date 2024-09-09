@@ -351,7 +351,7 @@ describe("DisplayTemporaryInfo", () => {
     ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
     expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
-    getPlatform().state.setState({
+    await getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       mergeStrategy: MergeStrategies.REPLACE,

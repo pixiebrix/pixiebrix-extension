@@ -34,8 +34,8 @@ const brickOptions = brickOptionsFactory({
   meta: runMetadataFactory({ modComponentRef }),
 });
 
-beforeEach(() => {
-  getPlatform().state.setState({
+beforeEach(async () => {
+  await getPlatform().state.setState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
     mergeStrategy: MergeStrategies.REPLACE,
