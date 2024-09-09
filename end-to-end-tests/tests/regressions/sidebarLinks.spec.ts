@@ -24,7 +24,12 @@ import {
   // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
   test as base,
 } from "@playwright/test";
-import { ensureVisibility, getBrowserOs, getSidebarPage } from "../../utils";
+import {
+  ensureVisibility,
+  getBrowserOs,
+  getSidebarPage,
+  isMsEdge,
+} from "../../utils";
 import { getBaseExtensionConsoleUrl } from "../../pageObjects/constants";
 import { SupportedChannels } from "../../../playwright.config";
 
@@ -85,9 +90,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   if (
     // eslint-disable-next-line playwright/no-conditional-in-test -- see above
     process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
-    [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-      chromiumChannel,
-    )
+    isMsEdge(chromiumChannel)
   ) {
     test.skip();
     return;
@@ -136,12 +139,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking markdown text link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge and linux bug that causes the sidebar to close on clicking a link */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -156,12 +154,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking react bootstrap link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -176,12 +169,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking html renderer link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
@@ -196,12 +184,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
 
   await test.step("Clicking embedded form link", async () => {
     /* eslint-disable playwright/no-conditional-in-test -- msedge/linux bug */
-    if (
-      browserOSName === "Linux" ||
-      [SupportedChannels.MSEDGE, SupportedChannels.MSEDGE_BETA].includes(
-        chromiumChannel,
-      )
-    ) {
+    if (browserOSName === "Linux" || isMsEdge(chromiumChannel)) {
       sideBarPage = await reopenSidebar(page, extensionId);
     }
     /* eslint-enable playwright/no-conditional-in-test */
