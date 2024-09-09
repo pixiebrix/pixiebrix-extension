@@ -86,15 +86,11 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
   baseURL,
 }) => {
   // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
-  // eslint-disable-next-line playwright/no-conditional-in-test -- see above
-  if (
-    // eslint-disable-next-line playwright/no-conditional-in-test -- see above
+  test.skip(
     process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
-    isMsEdge(chromiumChannel)
-  ) {
-    test.skip();
-    return;
-  }
+      isMsEdge(chromiumChannel),
+    "Skipping test for MS Edge in pre-release workflow",
+  );
 
   const browserOSName = await getBrowserOs(page);
   const modId = "@pixies/test/sidebar-links";

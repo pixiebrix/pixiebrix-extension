@@ -19,12 +19,20 @@ import { test, expect } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
+import { getSidebarPage, runModViaQuickBar, isMsEdge } from "../../utils";
 
 test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async ({
   page,
   extensionId,
+  chromiumChannel,
 }) => {
+  // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
+  test.skip(
+    process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
+      isMsEdge(chromiumChannel),
+    "Skipping test for MS Edge in pre-release workflow",
+  );
+
   const modId = "@e2e-testing/open-sidebar-via-quickbar";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();

@@ -23,7 +23,11 @@ import { uuidv4 } from "@/types/helpers";
 import { type Serializable } from "playwright-core/types/structs";
 import path from "node:path";
 import { FloatingActionButton } from "end-to-end-tests/pageObjects/floatingActionButton";
-import { getSidebarPage, runModViaQuickBar } from "end-to-end-tests/utils";
+import {
+  getSidebarPage,
+  runModViaQuickBar,
+  isMsEdge,
+} from "end-to-end-tests/utils";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
 test("copying a mod that uses the PixieBrix API is copied correctly", async ({
@@ -81,7 +85,15 @@ test("run a copied mod with a built-in integration", async ({
   context,
   newPageEditorPage,
   verifyModDefinitionSnapshot,
+  chromiumChannel,
 }) => {
+  // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
+  test.skip(
+    process.env.GITHUB_WORKFLOW === "e2e-test-pre-release-browsers" &&
+      isMsEdge(chromiumChannel),
+    "Skipping test for MS Edge in pre-release workflow",
+  );
+
   let giphyRequestPostData: Serializable;
   // The giphy search request is proxied through the PixieBrix server, which is kicked off in the background/service
   // worker. Playwright experimentally supports mocking service worker requests, see
