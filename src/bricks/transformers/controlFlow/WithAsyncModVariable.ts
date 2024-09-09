@@ -227,7 +227,7 @@ export class WithAsyncModVariable extends TransformerABC {
         isError: false,
         currentData: null,
         data: null,
-        requestId: uuidv4(),
+        requestId,
         error: null,
       });
     } else {
@@ -235,7 +235,7 @@ export class WithAsyncModVariable extends TransformerABC {
         // Preserve the previous data/error, if any. Due to get/setState being async, it's possible that
         // the state could have been deleted since the getState call. Therefore, pass a full state object
         ...currentVariable,
-        requestId: uuidv4(),
+        requestId,
         isFetching: true,
         currentData: null,
       });
