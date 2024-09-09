@@ -92,12 +92,17 @@ type DeploymentMetadata =
       /**
        * Indicates if the deployment is a personal deployment.
        * If true, the organization property should be undefined.
+       * @since 2.1.2
        */
       isPersonalDeployment: true;
       organization?: undefined;
     })
   | (BaseDeploymentMetadata & {
       isPersonalDeployment?: false;
+      /**
+       * Context about the organization that the deployment is associated with.
+       * @since 2.1.2
+       */
       organization?: {
         /**
          * UUID of the organization
