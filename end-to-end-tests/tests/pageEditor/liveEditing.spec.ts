@@ -34,11 +34,10 @@ test("live editing behavior", async ({
   verifyModDefinitionSnapshot,
   chromiumChannel,
 }) => {
-  // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
-  test.skip(
+  test.fixme(
     process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
       isMsEdge(chromiumChannel),
-    "Skipping test for MS Edge in pre-release workflow",
+    "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
   );
 
   await test.step("Activate test mod and navigate to testing site", async () => {

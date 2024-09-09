@@ -31,11 +31,10 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
   extensionId,
   chromiumChannel,
 }) => {
-  // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
-  test.skip(
+  test.fixme(
     process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
       isMsEdge(chromiumChannel),
-    "Skipping test for MS Edge in pre-release workflow",
+    "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
   );
 
   const modId = "@e2e-testing/open-sidebar-via-quickbar";

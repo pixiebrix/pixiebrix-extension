@@ -263,11 +263,10 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Trigger starter brick to mod", async () => {
-    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9125
-    test.skip(
+    test.fixme(
       process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
         isMsEdge(chromiumChannel),
-      "Skipping test for MS Edge in pre-release workflow",
+      "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
     );
 
     const modActionMenu = await openModActionMenu();
