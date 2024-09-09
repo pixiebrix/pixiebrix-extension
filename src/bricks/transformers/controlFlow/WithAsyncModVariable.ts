@@ -18,7 +18,6 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { getState, setState } from "@/platform/state/stateController";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -173,7 +172,7 @@ export class WithAsyncModVariable extends TransformerABC {
       body: PipelineExpression;
       stateKey: string;
     }>,
-    { meta: { modComponentRef }, runPipeline }: BrickOptions,
+    { meta: { modComponentRef }, runPipeline, platform }: BrickOptions,
   ) {
     const requestId = uuidv4();
 
@@ -189,7 +188,7 @@ export class WithAsyncModVariable extends TransformerABC {
     const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
 
     const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
-      setState({
+      platform.state.setState({
         // Store as Mod Variable
         namespace: StateNamespaces.MOD,
         data: {
@@ -206,7 +205,7 @@ export class WithAsyncModVariable extends TransformerABC {
     modVariableNonces.set(stateKey, requestId);
 
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
-    const currentState = getState({
+    const currentState = platform.state.getState({
       namespace: StateNamespaces.MOD,
       modComponentRef,
     });

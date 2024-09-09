@@ -37,7 +37,7 @@ import {
   TEST_resetState,
   getState,
   setState,
-} from "@/platform/state/stateController";
+} from "@/contentScript/stateController";
 import type { Target } from "@/types/messengerTypes";
 import { StateNamespaces } from "@/platform/state/stateTypes";
 

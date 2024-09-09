@@ -19,7 +19,6 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import { setState } from "@/platform/state/stateController";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import {
@@ -27,10 +26,11 @@ import {
   standaloneModComponentRefFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 describe("createModVariableProxy", () => {
   beforeEach(() => {
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: {},
       modComponentRef: standaloneModComponentRefFactory(),
@@ -49,7 +49,7 @@ describe("createModVariableProxy", () => {
   it("reads from page state", () => {
     const modComponentRef = standaloneModComponentRefFactory();
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentRef,
@@ -112,7 +112,7 @@ describe("createModVariableProxy", () => {
       { modComponentRef, options: apiVersionOptions("v3") },
     );
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentRef: standaloneModComponentRefFactory(),
@@ -135,7 +135,7 @@ describe("createModVariableProxy", () => {
       { modComponentRef, options: apiVersionOptions("v3") },
     );
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { foo: 42 },
       modComponentRef,

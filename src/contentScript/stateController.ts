@@ -32,11 +32,13 @@ import {
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script
 const privateState = new Map<UUID, JsonObject>();
 
 /**
  * The mod page state or null for shared page state.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- content script
 const modState = new Map<RegistryId | null, JsonObject>();
 
 function mergeState(

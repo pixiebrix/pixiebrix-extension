@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { getState, setState } from "@/platform/state/stateController";
+import type {
+  MergeStrategy,
+  StateNamespace,
+} from "@/platform/state/stateTypes";
+import type { Except, JsonObject } from "type-fest";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The variable store/state for the platform.
@@ -28,10 +33,18 @@ export type StateProtocol = {
   /**
    * Get the current state.
    */
-  getState: typeof getState;
+  getState(args: {
+    namespace: StateNamespace;
+    modComponentRef: Except<ModComponentRef, "starterBrickId">;
+  }): JsonObject;
 
   /**
    * Set the current state.
    */
-  setState: typeof setState;
+  setState(args: {
+    namespace: StateNamespace;
+    data: JsonObject;
+    mergeStrategy: MergeStrategy;
+    modComponentRef: Except<ModComponentRef, "starterBrickId">;
+  }): JsonObject;
 };

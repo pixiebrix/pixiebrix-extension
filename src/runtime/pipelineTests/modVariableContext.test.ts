@@ -21,12 +21,12 @@ import {
   echoBrick,
   simpleInput,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { setState } from "@/platform/state/stateController";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 beforeEach(() => {
   brickRegistry.clear();
@@ -37,7 +37,7 @@ describe("modVariableContext", () => {
   test("use mod variable in variable condition", async () => {
     const options = reduceOptionsFactory("v3");
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -64,7 +64,7 @@ describe("modVariableContext", () => {
   test("use mod variable in nunjucks condition", async () => {
     const options = reduceOptionsFactory("v3");
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { run: true },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -91,7 +91,7 @@ describe("modVariableContext", () => {
   test("mod variable appears in context", async () => {
     const options = reduceOptionsFactory("v3");
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -119,7 +119,7 @@ describe("modVariableContext", () => {
   test("use mod variable in nunjucks body", async () => {
     const options = reduceOptionsFactory("v3");
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
@@ -145,7 +145,7 @@ describe("modVariableContext", () => {
   test("use mod variable in variable body", async () => {
     const options = reduceOptionsFactory("v3");
 
-    setState({
+    getPlatform().state.setState({
       namespace: StateNamespaces.MOD,
       data: { name: "Bob" },
       mergeStrategy: MergeStrategies.REPLACE,
