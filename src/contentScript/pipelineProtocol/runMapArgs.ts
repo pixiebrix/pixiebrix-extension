@@ -53,7 +53,8 @@ export async function runMapArgs({
   };
 }): Promise<unknown> {
   expectContext("contentScript");
-  const extendedContext = extendModVariableContext(context, {
+
+  const extendedContext = await extendModVariableContext(context, {
     modComponentRef,
     options,
     // The mod variable is only update when running a brick in a pipeline. It's not updated for `defer` expressions,

@@ -33,7 +33,7 @@ import {
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
-import { getState, setState } from "@/platform/state/stateController";
+import { getState, setState } from "@/contentScript/stateController";
 import {
   cancelTemporaryPanels,
   getPanelDefinition,

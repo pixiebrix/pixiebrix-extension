@@ -17,7 +17,6 @@
 
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { getState, setState } from "@/platform/state/stateController";
 import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import {
   brickOptionsFactory,
@@ -25,6 +24,7 @@ import {
 } from "@/testUtils/factories/runtimeFactories";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 const brick = new AssignModVariable();
 
@@ -34,8 +34,8 @@ const brickOptions = brickOptionsFactory({
   meta: runMetadataFactory({ modComponentRef }),
 });
 
-beforeEach(() => {
-  setState({
+beforeEach(async () => {
+  await getPlatform().state.setState({
     namespace: StateNamespaces.MOD,
     modComponentRef,
     mergeStrategy: MergeStrategies.REPLACE,
@@ -55,12 +55,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
-      getState({
+    await expect(
+      getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: { bar: 42 } });
+    ).resolves.toEqual({ foo: { bar: 42 } });
   });
 
   test("null is valid input", async () => {
@@ -88,12 +88,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
-      getState({
+    await expect(
+      getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: null });
+    ).resolves.toEqual({ foo: null });
   });
 
   test("only sets variable", async () => {
@@ -107,12 +107,12 @@ describe("@pixiebrix/state/assign", () => {
       brickOptions,
     );
 
-    expect(
-      getState({
+    await expect(
+      getPlatform().state.getState({
         namespace: StateNamespaces.MOD,
         modComponentRef,
       }),
-    ).toEqual({ foo: 42, bar: 0 });
+    ).resolves.toEqual({ foo: 42, bar: 0 });
   });
 
   it("returns mod variables", async () => {
