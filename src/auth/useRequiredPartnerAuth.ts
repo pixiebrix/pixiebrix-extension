@@ -257,17 +257,19 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     partnerIntegrationIds.has(integrationConfig.integrationId),
   );
 
-  const requiresIntegration = isAuthenticatedWithPixiebrixToken
-    ? false
-    : // Primary organization has a partner and linked control room
-      (hasPartner && controlRoom != null) ||
-      // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
-      managedPartnerId === "automation-anywhere" ||
-      // Community edition users are required to be linked until they join an organization
-      (me?.partner && isCommunityEditionUser) ||
-      // User has overridden local settings
-      authMethodOverride === "partner-oauth2" ||
-      authMethodOverride === "partner-token";
+  const requiresIntegration =
+    [null, "default"].includes(authMethodOverride) &&
+    isAuthenticatedWithPixiebrixToken
+      ? false
+      : // Primary organization has a partner and linked control room
+        (hasPartner && controlRoom != null) ||
+        // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
+        managedPartnerId === "automation-anywhere" ||
+        // Community edition users are required to be linked until they join an organization
+        (me?.partner && isCommunityEditionUser) ||
+        // User has overridden local settings
+        authMethodOverride === "partner-oauth2" ||
+        authMethodOverride === "partner-token";
 
   return {
     hasPartner,
