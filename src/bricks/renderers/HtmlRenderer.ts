@@ -41,6 +41,24 @@ class HtmlRenderer extends RendererABC {
         description: "The HTML string to render",
       },
       /**
+       * @since 2.1.2
+       */
+      css: {
+        title: "CSS",
+        type: "string",
+        description: "Custom CSS to apply to the rendered HTML",
+        default: "",
+      },
+      /**
+       * @since 2.1.2
+       */
+      javascript: {
+        title: "JavaScript",
+        type: "string",
+        description: "Custom JavaScript to run after the HTML is rendered",
+        default: "",
+      },
+      /**
        * @since 1.8.5
        */
       allowIFrames: {
