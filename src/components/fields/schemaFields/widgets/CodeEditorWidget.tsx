@@ -20,19 +20,23 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import AceEditor from "@/components/AceEditor";
 import { useField } from "formik";
 
-const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name }) => {
+const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name, uiSchema }) => {
   const [{ value }, , { setValue }] = useField<string | undefined>(name);
 
   const onChange = async (newValue: string) => {
     await setValue(newValue);
   };
 
+  const editorMode = String(
+    uiSchema?.["ui:options"]?.editorMode ?? "javascript",
+  );
+
   return (
     <Suspense fallback={<div className="text-muted">Loading...</div>}>
       <AceEditor
         name={name}
         className="border"
-        mode="javascript"
+        mode={editorMode}
         theme="chrome"
         value={value}
         onChange={onChange}
