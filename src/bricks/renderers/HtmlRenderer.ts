@@ -75,8 +75,24 @@ class HtmlRenderer extends RendererABC {
   async render({
     html,
     allowIFrames = false,
-  }: BrickArgs<{ html: string; allowIFrames?: boolean }>): Promise<SafeHTML> {
-    return sanitize(html, allowIFrames ? ADD_IFRAME_CONFIG : undefined);
+    css = "",
+    javascript = "",
+  }: BrickArgs<{
+    html: string;
+    allowIFrames?: boolean;
+    css?: string;
+    javascript?: string;
+  }>): Promise<SafeHTML> {
+    let result = sanitize(html, allowIFrames ? ADD_IFRAME_CONFIG : undefined);
+    if (css) {
+      result = `<style>${css}</style>${result}` as SafeHTML;
+    }
+
+    if (javascript) {
+      result = `${result}<script>${javascript}</script>` as SafeHTML;
+    }
+
+    return result;
   }
 }
 
