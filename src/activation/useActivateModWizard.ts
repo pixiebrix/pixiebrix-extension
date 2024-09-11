@@ -18,7 +18,7 @@
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import React, { useMemo } from "react";
+import React from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
 import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
@@ -237,6 +237,8 @@ export function wizardStateFactory({
   };
 }
 
+const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
+
 function useActivateModWizard(
   modDefinition: ModDefinition,
   defaultAuthOptions: Record<RegistryId, AuthOption | null> = {},
@@ -249,10 +251,9 @@ function useActivateModWizard(
 
   const { flagOn } = useFlags();
 
-  const emptyAuthOptions = useMemo(() => freeze<AuthOption[]>([]), []);
   const { data: authOptions } = fallbackValue(
     useAuthOptions(),
-    emptyAuthOptions,
+    NO_AUTH_OPTIONS,
   );
 
   const policyState = useOrganizationActivationPolicy(modDefinition);

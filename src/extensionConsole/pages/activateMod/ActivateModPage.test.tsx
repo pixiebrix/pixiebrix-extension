@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
@@ -192,11 +192,9 @@ describe("ActivateModDefinitionPage", () => {
 
     const { container } = render(<ActivateModDefinitionPageWrapper />);
 
-    await waitForEffect();
-
-    await waitFor(() => {
-      expect(screen.getByText("Synchronize Settings")).toBeInTheDocument();
-    });
+    await expect(
+      screen.findByText("Synchronize Settings"),
+    ).resolves.toBeInTheDocument();
 
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Boolean Widget needs a better selector
     await userEvent.click(container.querySelector(".switch")!);

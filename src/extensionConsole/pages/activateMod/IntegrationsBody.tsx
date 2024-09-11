@@ -38,6 +38,8 @@ import { freeze } from "@/utils/objectUtils";
 import type { AuthOption } from "@/auth/authTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 
+const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
+
 interface OwnProps {
   mod: ModDefinition;
   hideBuiltInIntegrations?: boolean;
@@ -55,10 +57,9 @@ const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
   hideBuiltInIntegrations,
   showOwnTitle,
 }) => {
-  const emptyAuthOptions = useMemo(() => freeze<AuthOption[]>([]), []);
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
     useAuthOptions(),
-    emptyAuthOptions,
+    NO_AUTH_OPTIONS,
   );
   assertNotNullish(authOptions, "authOptions must be defined");
   const [

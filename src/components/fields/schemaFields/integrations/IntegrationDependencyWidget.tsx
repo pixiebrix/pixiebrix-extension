@@ -175,6 +175,8 @@ function clearIntegrationSelection(
   return produceExcludeUnusedDependencies(nextState);
 }
 
+const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
+
 type SelectedEventPayload = {
   integration_id?: RegistryId;
   is_user_action?: boolean;
@@ -210,10 +212,10 @@ const IntegrationDependencyWidget: React.FC<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
   const { schema, isRequired } = props;
-  const emptyAuthOptions = useMemo(() => freeze<AuthOption[]>([]), []);
+
   const { data: authOptions, refetch: refreshOptions } = fallbackValue(
     useAuthOptions(),
-    emptyAuthOptions,
+    NO_AUTH_OPTIONS,
   );
   const { values: rootValues, setValues: setRootValues } =
     useFormikContext<IntegrationsFormSlice>();
