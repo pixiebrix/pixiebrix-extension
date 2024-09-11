@@ -19,7 +19,7 @@ import React from "react";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
-const SynchronizeBody: React.FunctionComponent = () => (
+const PersonalDeploymentField: React.FunctionComponent = () => (
   <ConnectedFieldTemplate
     name="personalDeployment"
     title="Sync across personal devices"
@@ -29,4 +29,4 @@ const SynchronizeBody: React.FunctionComponent = () => (
   />
 );
 
-export default SynchronizeBody;
+export default PersonalDeploymentField;

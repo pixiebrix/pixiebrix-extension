@@ -50,7 +50,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import useOrganizationActivationPolicy, {
   type OrganizationActivationPolicyResult,
 } from "@/activation/useOrganizationActivationPolicy";
-import SynchronizeBody from "@/activation/SynchronizeBody";
+import PersonalDeploymentField from "@/activation/PersonalDeploymentField";
 import useFlags from "@/hooks/useFlags";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
@@ -72,7 +72,7 @@ const STEPS: WizardStep[] = [
   {
     key: "synchronize",
     label: "Synchronize Settings",
-    Component: SynchronizeBody,
+    Component: PersonalDeploymentField,
   },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
