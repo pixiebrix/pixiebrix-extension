@@ -2,8 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://app.pixiebrix.com/schemas/recipe#",
   "type": "object",
-  "title": "PixieBrix Recipe",
-  "description": "A PixieBrix mod containing one or more installed bricks",
+  "title": "PixieBrix Mod",
+  "description": "A PixieBrix mod for one or more installed bricks",
   "properties": {
     "apiVersion": {
       "type": "string",
@@ -27,8 +27,24 @@
           "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "description": "JSON schema for options to show user during activation"
+        },
+        "uiSchema": {
+          "type": "object",
+          "description": "RJSF uiSchema for options to show user during activation"
         }
       }
+    },
+    "variables": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "description": "JSON schema for mod variables"
+        }
+      },
+      "required": ["schema"],
+      "additionalProperties": false
     },
     "extensionPoints": {
       "type": "array",
@@ -55,8 +71,7 @@
                 "type": "object",
                 "additionalProperties": {
                   "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
-                },
-                "description": "Record with outputKey property names and service registryId values"
+                }
               }
             ]
           }
