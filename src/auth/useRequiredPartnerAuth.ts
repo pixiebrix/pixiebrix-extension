@@ -36,6 +36,7 @@ import { type ControlRoom } from "@/data/model/ControlRoom";
 import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getDeploymentKey } from "@/auth/deploymentKey";
+import { getExtensionToken } from "@/auth/authStorage";
 
 /**
  * Map from partner keys to partner service IDs
@@ -167,6 +168,14 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     skip: !isLinked,
   });
 
+  const {
+    data: isAuthenticatedWithPixiebrixToken,
+    isLoading: isGetPixiebrixTokenLoading,
+  } = useAsyncState(async () => {
+    const token = await getExtensionToken();
+    return Boolean(token);
+  }, []);
+
   const { data: deploymentKey, isLoading: isDeploymentKeyLoading } =
     useAsyncState(async () => getDeploymentKey(), []);
 
@@ -189,8 +198,9 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const userMilestones: UserMilestone[] = [];
 
   if (me) {
+    const organization = me.primaryOrganization ?? null;
     partner = me.partner;
-    controlRoom = me.primaryOrganization?.controlRoom ?? null;
+    controlRoom = organization?.controlRoom ?? null;
     userMilestones.push(...me.userMilestones);
   } else if (localAuth) {
     partner = localAuth.partner;
@@ -248,15 +258,18 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   );
 
   const requiresIntegration =
-    // Primary organization has a partner and linked control room
-    (hasPartner && controlRoom != null) ||
-    // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
-    managedPartnerId === "automation-anywhere" ||
-    // Community edition users are required to be linked until they join an organization
-    (me?.partner && isCommunityEditionUser) ||
-    // User has overridden local settings
-    authMethodOverride === "partner-oauth2" ||
-    authMethodOverride === "partner-token";
+    [null, undefined, "default"].includes(authMethodOverride) &&
+    isAuthenticatedWithPixiebrixToken
+      ? false
+      : // Primary organization has a partner and linked control room
+        (hasPartner && controlRoom != null) ||
+        // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
+        managedPartnerId === "automation-anywhere" ||
+        // Community edition users are required to be linked until they join an organization
+        (me?.partner && isCommunityEditionUser) ||
+        // User has overridden local settings
+        authMethodOverride === "partner-oauth2" ||
+        authMethodOverride === "partner-token";
 
   return {
     hasPartner,
@@ -266,7 +279,11 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
       !isMissingPartnerJwt,
-    isLoading: isMeLoading || isLinkedLoading || isDeploymentKeyLoading,
+    isLoading:
+      isMeLoading ||
+      isLinkedLoading ||
+      isDeploymentKeyLoading ||
+      isGetPixiebrixTokenLoading,
     error: meError,
   };
 }
