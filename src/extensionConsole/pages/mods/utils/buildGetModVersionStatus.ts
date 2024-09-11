@@ -17,7 +17,7 @@
 
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Mod, type ModVersionStatus } from "@/types/modTypes";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, Nullishable } from "@/utils/nullishUtils";
 import { isUnavailableMod } from "@/utils/modUtils";
 import * as semver from "semver";
 import { type SemVerString } from "@/types/registryTypes";
@@ -29,8 +29,8 @@ type VersionInfo = {
 };
 
 function isLatestVersion(
-  activated: VersionInfo | null,
-  current: VersionInfo | null,
+  activated: Nullishable<VersionInfo>,
+  current: Nullishable<VersionInfo>,
 ): boolean {
   if (current == null || activated == null) {
     return true; // No update available if either version is null
