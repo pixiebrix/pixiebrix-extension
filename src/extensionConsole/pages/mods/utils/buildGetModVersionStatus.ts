@@ -29,9 +29,13 @@ type VersionInfo = {
 };
 
 function isLatestVersion(
-  current: VersionInfo,
-  activated: VersionInfo,
+  activated: VersionInfo | null,
+  current: VersionInfo | null,
 ): boolean {
+  if (current == null || activated == null) {
+    return true; // No update available if either version is null
+  }
+
   if (semver.gt(current.version, activated.version)) {
     return false;
   }
@@ -46,52 +50,76 @@ function isLatestVersion(
   return currentUpdatedDate <= activatedUpdatedDate;
 }
 
+function getCurrentModVersionInfo(mod: Mod): VersionInfo | null {
+  if (isUnavailableMod(mod)) {
+    return null;
+  }
+
+  assertNotNullish(
+    mod.metadata.version,
+    `Mod version is null for mod: ${mod.metadata.id}, something went wrong`,
+  );
+
+  return {
+    version: mod.metadata.version,
+    updatedAt: mod.updated_at,
+  };
+}
+
+function getActivatedModVersionInfo(
+  activatedModComponent: ActivatedModComponent | undefined,
+): VersionInfo | null {
+  if (activatedModComponent == null) {
+    return null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
+  const modMetadata = activatedModComponent._recipe!;
+  const { version: activatedModVersion, updated_at: activatedModUpdatedAt } =
+    modMetadata;
+
+  assertNotNullish(
+    activatedModVersion,
+    `Activated mod version is null for mod: ${modMetadata.id}, something went wrong`,
+  );
+  assertNotNullish(
+    activatedModUpdatedAt,
+    `Activated mod updated_at is null for mod: ${modMetadata.id}, something went wrong`,
+  );
+
+  return {
+    version: activatedModVersion,
+    updatedAt: activatedModUpdatedAt,
+  };
+}
+
 export default function buildGetModVersionStatus(
   activatedModComponents: ActivatedModComponent[],
 ): (mod: Mod) => ModVersionStatus {
   return (mod: Mod) => {
+    const status: ModVersionStatus = {
+      hasUpdate: false,
+      activatedModVersion: null,
+    };
+
     const activatedModComponent = activatedModComponents.find(
       ({ _recipe }) => _recipe?.id === mod.metadata.id,
     );
 
-    if (activatedModComponent == null) {
-      return {
-        hasUpdate: false,
-        activatedModVersion: null,
-      };
+    const currentVersionInfo = getCurrentModVersionInfo(mod);
+    const activatedVersionInfo = getActivatedModVersionInfo(
+      activatedModComponent,
+    );
+
+    if (activatedVersionInfo != null) {
+      status.activatedModVersion = activatedVersionInfo.version;
     }
 
-    const { version: activatedModVersion, updated_at: activatedModUpdatedAt } =
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
-      activatedModComponent._recipe!;
-    assertNotNullish(
-      activatedModVersion,
-      `Activated mod version is null for mod: ${mod.metadata.id}, something went wrong`,
-    );
-    assertNotNullish(
-      activatedModUpdatedAt,
-      `Activated mod updated_at is null for mod: ${mod.metadata.id}, something went wrong`,
+    status.hasUpdate = !isLatestVersion(
+      activatedVersionInfo,
+      currentVersionInfo,
     );
 
-    if (isUnavailableMod(mod)) {
-      // Unavailable mods are never update-able
-      return {
-        hasUpdate: false,
-        activatedModVersion,
-      };
-    }
-
-    assertNotNullish(
-      mod.metadata.version,
-      `Mod version is null for mod: ${mod.metadata.id}, something went wrong`,
-    );
-
-    return {
-      hasUpdate: !isLatestVersion(
-        { version: mod.metadata.version, updatedAt: mod.updated_at },
-        { version: activatedModVersion, updatedAt: activatedModUpdatedAt },
-      ),
-      activatedModVersion,
-    };
+    return status;
   };
 }
