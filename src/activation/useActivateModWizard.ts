@@ -18,7 +18,7 @@
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import type React from "react";
+import React, { useMemo } from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
 import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
@@ -54,7 +54,9 @@ import SynchronizeBody from "@/activation/SynchronizeBody";
 import useFlags from "@/hooks/useFlags";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
-import { useAuthOptionsWithEmptyFallback } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/auth";
+import { freeze } from "@/utils/objectUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -247,7 +249,11 @@ function useActivateModWizard(
 
   const { flagOn } = useFlags();
 
-  const { data: authOptions } = useAuthOptionsWithEmptyFallback();
+  const emptyAuthOptions = useMemo(() => freeze<AuthOption[]>([]), []);
+  const { data: authOptions } = fallbackValue(
+    useAuthOptions(),
+    emptyAuthOptions,
+  );
 
   const policyState = useOrganizationActivationPolicy(modDefinition);
 

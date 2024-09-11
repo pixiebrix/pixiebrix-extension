@@ -25,7 +25,7 @@ import {
 } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
-import { useAuthOptionsWithEmptyFallback } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/auth";
 import { isEmpty, isEqual, unset } from "lodash";
 import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
@@ -44,6 +44,8 @@ import { Events } from "@/telemetry/events";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { freeze } from "@/utils/objectUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
@@ -208,8 +210,11 @@ const IntegrationDependencyWidget: React.FC<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
   const { schema, isRequired } = props;
-  const { data: authOptions, refetch: refreshOptions } =
-    useAuthOptionsWithEmptyFallback();
+  const emptyAuthOptions = useMemo(() => freeze<AuthOption[]>([]), []);
+  const { data: authOptions, refetch: refreshOptions } = fallbackValue(
+    useAuthOptions(),
+    emptyAuthOptions,
+  );
   const { values: rootValues, setValues: setRootValues } =
     useFormikContext<IntegrationsFormSlice>();
   const [{ value, ...field }, , helpers] =

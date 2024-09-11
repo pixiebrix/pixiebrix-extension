@@ -100,11 +100,6 @@ function mapConfigurationsToOptions(
   return [...localOptions, ...sharedOptions];
 }
 
-const EMPTY_AUTH_OPTIONS = freeze<AuthOption[]>([]);
-export function useAuthOptionsWithEmptyFallback() {
-  return fallbackValue(useAuthOptions(), EMPTY_AUTH_OPTIONS);
-}
-
 /**
  * Return available integration configuration options suitable for display in a react-select dropdown.
  */
