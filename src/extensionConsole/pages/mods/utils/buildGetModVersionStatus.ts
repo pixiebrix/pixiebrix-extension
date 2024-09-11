@@ -20,28 +20,50 @@ import { type Mod, type ModVersionStatus } from "@/types/modTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isUnavailableMod } from "@/utils/modUtils";
 import * as semver from "semver";
+import { type SemVerString } from "@/types/registryTypes";
+import { type Timestamp } from "@/types/stringTypes";
+
+type VersionInfo = {
+  version: SemVerString;
+  updatedAt: Timestamp;
+};
+
+function isLatestVersion(
+  current: VersionInfo,
+  activated: VersionInfo,
+): boolean {
+  if (semver.gt(current.version, activated.version)) {
+    return false;
+  }
+
+  if (semver.lt(current.version, activated.version)) {
+    return true;
+  }
+
+  // Versions are equal, compare updated_at timestamp
+  const currentUpdatedDate = new Date(current.updatedAt);
+  const activatedUpdatedDate = new Date(activated.updatedAt);
+  return currentUpdatedDate <= activatedUpdatedDate;
+}
 
 export default function buildGetModVersionStatus(
   activatedModComponents: ActivatedModComponent[],
 ): (mod: Mod) => ModVersionStatus {
   return (mod: Mod) => {
-    const activatedComponentFromMod = activatedModComponents.find(
+    const activatedModComponent = activatedModComponents.find(
       ({ _recipe }) => _recipe?.id === mod.metadata.id,
     );
 
-    if (activatedComponentFromMod == null) {
+    if (activatedModComponent == null) {
       return {
         hasUpdate: false,
         activatedModVersion: null,
       };
     }
 
-    const metadataFromActivatedModComponent =
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
-      activatedComponentFromMod._recipe!;
-
     const { version: activatedModVersion, updated_at: activatedModUpdatedAt } =
-      metadataFromActivatedModComponent;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
+      activatedModComponent._recipe!;
     assertNotNullish(
       activatedModVersion,
       `Activated mod version is null for mod: ${mod.metadata.id}, something went wrong`,
@@ -64,25 +86,11 @@ export default function buildGetModVersionStatus(
       `Mod version is null for mod: ${mod.metadata.id}, something went wrong`,
     );
 
-    if (semver.gt(mod.metadata.version, activatedModVersion)) {
-      return {
-        hasUpdate: true,
-        activatedModVersion,
-      };
-    }
-
-    if (semver.lt(mod.metadata.version, activatedModVersion)) {
-      return {
-        hasUpdate: false,
-        activatedModVersion,
-      };
-    }
-
-    // Versions are equal, compare updated_at
-    const modUpdatedDate = new Date(mod.updated_at);
-    const activatedComponentUpdatedDate = new Date(activatedModUpdatedAt);
     return {
-      hasUpdate: modUpdatedDate > activatedComponentUpdatedDate,
+      hasUpdate: !isLatestVersion(
+        { version: mod.metadata.version, updatedAt: mod.updated_at },
+        { version: activatedModVersion, updatedAt: activatedModUpdatedAt },
+      ),
       activatedModVersion,
     };
   };
