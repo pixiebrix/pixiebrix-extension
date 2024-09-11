@@ -258,7 +258,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   );
 
   const requiresIntegration =
-    [null, "default"].includes(authMethodOverride) &&
+    [null, undefined, "default"].includes(authMethodOverride) &&
     isAuthenticatedWithPixiebrixToken
       ? false
       : // Primary organization has a partner and linked control room
