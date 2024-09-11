@@ -21,7 +21,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
-import { RemoteIntegrationConfig } from "@/types/contract";
+import { type RemoteIntegrationConfig } from "@/types/contract";
 import {
   integrationConfigFactory,
   remoteIntegrationConfigurationFactory,
