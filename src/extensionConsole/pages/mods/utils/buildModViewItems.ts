@@ -93,6 +93,7 @@ export function buildModViewItems({
       hasUpdate,
       activatedModVersion,
       isUnavailable,
+      isDeployment,
       modActions: {
         showPublishToMarketplace:
           canPublish && listingId == null && !isUnavailable && !isDeployment,

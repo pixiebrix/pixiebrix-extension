@@ -47,6 +47,7 @@ const Status: React.VoidFunctionComponent<{
     status,
     activatedModVersion,
     isUnavailable,
+    isDeployment,
     modActions: { showActivate, showReactivate },
   } = modViewItem;
 
@@ -88,7 +89,7 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
-  if (hasUpdate && showReactivate) {
+  if (hasUpdate && showReactivate && !isDeployment) {
     return (
       <Button
         size="sm"
