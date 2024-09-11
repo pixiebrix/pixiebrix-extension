@@ -20,9 +20,10 @@ import { useAuthOptions } from "./auth";
 import * as readRawConfigurationsModule from "@/integrations/util/readRawConfigurations";
 import { useGetIntegrationAuthsQuery } from "@/data/service/api";
 import { renderHook } from "@testing-library/react-hooks";
-import { IntegrationConfig } from "@/integrations/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
-// Mock the modules
 jest.mock("@/integrations/util/readRawConfigurations");
 jest.mock("@/data/service/api");
 
@@ -30,15 +31,17 @@ describe("useAuthOptions", () => {
   const mockLocalConfigs: IntegrationConfig[] = [
     {
       _rawIntegrationConfigBrand: null,
-      id: "local1",
+      id: "local1" as UUID,
       label: "Local Config 1",
-      integrationId: "service1",
+      integrationId: "service1" as RegistryId,
+      config: { _integrationConfigBrand: null },
     },
     {
       _rawIntegrationConfigBrand: null,
-      id: "local2",
+      id: "local2" as UUID,
       label: "Local Config 2",
-      integrationId: "service2",
+      integrationId: "service2" as RegistryId,
+      config: { _integrationConfigBrand: null },
     },
   ];
 
@@ -75,6 +78,7 @@ describe("useAuthOptions", () => {
       isSuccess: true,
       isUninitialized: false,
       isFetching: false,
+      refetch: jest.fn(),
     });
   });
 
@@ -134,6 +138,7 @@ describe("useAuthOptions", () => {
   it("should handle loading state", () => {
     jest.mocked(useGetIntegrationAuthsQuery).mockReturnValue({
       isLoading: true,
+      refetch: jest.fn(),
     });
 
     const { result } = renderHook(() => useAuthOptions());
@@ -145,6 +150,7 @@ describe("useAuthOptions", () => {
     jest.mocked(useGetIntegrationAuthsQuery).mockReturnValue({
       isError: true,
       error: new Error("Test error"),
+      refetch: jest.fn(),
     });
 
     const { result } = renderHook(() => useAuthOptions());
