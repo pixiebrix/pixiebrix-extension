@@ -41,16 +41,15 @@ function isLatestVersion(
   }
 
   if (semver.lt(current.version, activated.version)) {
+    // TODO: In what case would the current version be less than the activated version?
     return true;
   }
 
   // Versions are equal, compare updated_at timestamp
-  const currentUpdatedDate = new Date(current.updatedAt);
-  const activatedUpdatedDate = new Date(activated.updatedAt);
-  return currentUpdatedDate <= activatedUpdatedDate;
+  return new Date(current.updatedAt) <= new Date(activated.updatedAt);
 }
 
-function getCurrentModVersionInfo(mod: Mod): ModVersionInfo | null {
+function getModVersionInfo(mod: Mod): ModVersionInfo | null {
   if (isUnavailableMod(mod)) {
     return null;
   }
@@ -97,29 +96,18 @@ export default function buildGetModVersionStatus(
   activatedModComponents: ActivatedModComponent[],
 ): (mod: Mod) => ModVersionStatus {
   return (mod: Mod) => {
-    const status: ModVersionStatus = {
-      hasUpdate: false,
-      activatedModVersion: null,
-    };
-
     const activatedModComponent = activatedModComponents.find(
       ({ _recipe }) => _recipe?.id === mod.metadata.id,
     );
 
-    const currentVersionInfo = getCurrentModVersionInfo(mod);
+    const currentVersionInfo = getModVersionInfo(mod);
     const activatedVersionInfo = getActivatedModVersionInfo(
       activatedModComponent,
     );
 
-    if (activatedVersionInfo != null) {
-      status.activatedModVersion = activatedVersionInfo.version;
-    }
-
-    status.hasUpdate = !isLatestVersion(
-      activatedVersionInfo,
-      currentVersionInfo,
-    );
-
-    return status;
+    return {
+      hasUpdate: !isLatestVersion(activatedVersionInfo, currentVersionInfo),
+      activatedModVersion: activatedVersionInfo?.version ?? null,
+    };
   };
 }
