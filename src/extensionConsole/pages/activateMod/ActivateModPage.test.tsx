@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
@@ -159,16 +159,18 @@ describe("ActivateModDefinitionPage", () => {
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
-    await waitForEffect();
-    expect(activateModCallbackMock).toHaveBeenCalledWith(
-      {
-        modComponents: { "0": true },
-        optionsArgs: {},
-        integrationDependencies: [],
-        personalDeployment: false,
-      },
-      modDefinition,
-    );
+
+    await waitFor(() => {
+      expect(activateModCallbackMock).toHaveBeenCalledWith(
+        {
+          modComponents: { "0": true },
+          optionsArgs: {},
+          integrationDependencies: [],
+          personalDeployment: false,
+        },
+        modDefinition,
+      );
+    });
   });
 
   test("activate mod with personal deployment enabled", async () => {
@@ -200,17 +202,18 @@ describe("ActivateModDefinitionPage", () => {
     await userEvent.click(container.querySelector(".switch")!);
 
     await userEvent.click(screen.getByText("Activate"));
-    await waitForEffect();
 
-    expect(activateModCallbackMock).toHaveBeenCalledWith(
-      {
-        modComponents: { "0": true },
-        optionsArgs: {},
-        integrationDependencies: [],
-        personalDeployment: true,
-      },
-      modDefinition,
-    );
+    await waitFor(() => {
+      expect(activateModCallbackMock).toHaveBeenCalledWith(
+        {
+          modComponents: { "0": true },
+          optionsArgs: {},
+          integrationDependencies: [],
+          personalDeployment: true,
+        },
+        modDefinition,
+      );
+    });
   });
 
   test("user reject permissions", async () => {
@@ -235,11 +238,10 @@ describe("ActivateModDefinitionPage", () => {
     render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     await userEvent.click(screen.getByText("Activate"));
-    await waitForEffect();
 
-    expect(
-      screen.getByText("You must accept browser permissions to activate"),
-    ).toBeVisible();
+    await expect(
+      screen.findByText("You must accept browser permissions to activate"),
+    ).resolves.toBeVisible();
   });
 
   test("renders instructions", async () => {
@@ -253,9 +255,10 @@ describe("ActivateModDefinitionPage", () => {
     setupMod(mod);
     const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
 
-    await waitForEffect();
+    await expect(
+      screen.findByText("These are some instructions"),
+    ).resolves.toBeVisible();
 
-    expect(screen.getByText("These are some instructions")).toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
   });
 });
