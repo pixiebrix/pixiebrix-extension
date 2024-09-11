@@ -168,6 +168,7 @@ describe("ActivateModDefinitionPage", () => {
         modComponents: { "0": true },
         optionsArgs: {},
         integrationDependencies: [],
+        personalDeployment: false,
       },
       modDefinition,
     );
