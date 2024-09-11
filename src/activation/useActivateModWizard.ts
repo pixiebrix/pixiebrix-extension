@@ -18,7 +18,7 @@
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { useSelector } from "react-redux";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import React from "react";
+import type React from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
 import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
