@@ -18,6 +18,7 @@
 import {
   type ModDefinition,
   type ModOptionsDefinition,
+  ModVariablesDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
@@ -181,6 +182,15 @@ export function emptyModOptionsDefinitionFactory(): Required<ModOptionsDefinitio
 }
 
 /**
+ * Returns a minimal mod variables definition in a normalized format.
+ */
+export function emptyModVariablesDefinitionFactory(): Required<ModVariablesDefinition> {
+  return {
+    schema: minimalSchemaFactory(),
+  };
+}
+
+/**
  * Normalize the `options` section of a mod definition, ensuring that it has a schema and uiSchema.
  * @since 1.8.5
  */
@@ -243,6 +253,7 @@ export function normalizeModDefinition<
   return produce(definition, (draft) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type error due to nested readonly string array
     draft.options = normalizeModOptionsDefinition(draft.options) as any;
+    draft.variables ??= emptyModVariablesDefinitionFactory();
     draft.definitions = mapValues(
       draft.definitions ?? {},
       (innerDefinition) => {

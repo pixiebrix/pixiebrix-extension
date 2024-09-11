@@ -39,6 +39,7 @@ import {
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
+  type BaseFormStateV5,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export type AddBrickLocation = {
@@ -384,12 +385,17 @@ export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
 // Instead of maintaining old enums, just clearing data panel state on migration, see migrateEditorStateV5
 export type EditorStateV7 = EditorStateV6;
 
-export type EditorState = Except<
+export type EditorStateV8 = Except<
   EditorStateV7,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
-  modComponentFormStates: ModComponentFormState[];
+  modComponentFormStates: BaseFormStateV5[];
   deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
+};
+
+export type EditorState = Except<EditorStateV8, "modComponentFormStates"> & {
+  // `variablesDefinition` added to BaseFormState on ModComponentFormState
+  modComponentFormStates: ModComponentFormState[];
 };
 
 export type EditorRootState = {

@@ -27,6 +27,7 @@ import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 export type ActivateModComponentParam = {
   /**
@@ -75,6 +76,8 @@ export function mapModComponentDefinitionToActivatedModComponent<
     // Definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
     // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
     definitions: modDefinition.definitions ?? {},
+    // Mod variable definitions/declarations are pushed down into the mod components.
+    variables: modDefinition.variables ?? emptyModVariablesDefinitionFactory(),
     optionsArgs,
     label: modComponentDefinition.label,
     extensionPointId: modComponentDefinition.id,

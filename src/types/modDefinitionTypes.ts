@@ -38,6 +38,22 @@ export type ModOptionsDefinition = {
 };
 
 /**
+ * A section declaring mod variables that can be used in the mod's components.
+ *
+ * Introduced to support:
+ * - Attaching descriptions and types to mod variables
+ * - Mod variable synchronization policy
+ *
+ * @see ModDefinition.variables
+ * @since 2.1.2
+ */
+export type ModVariablesDefinition = {
+  // Nest schema to make evolution easier in the future. Mod Variables shouldn't ever need a uiSchema because the values
+  // are not user-facing/configurable.
+  schema: Schema;
+};
+
+/**
  * A ModComponent defined in a mod.
  * @see ModDefinition.extensionPoints
  */
@@ -101,6 +117,7 @@ export interface UnsavedModDefinition extends Definition {
   extensionPoints: ModComponentDefinition[];
   definitions?: InnerDefinitions;
   options?: ModOptionsDefinition;
+  variables?: ModVariablesDefinition;
 }
 
 /**

@@ -35,6 +35,7 @@ import {
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import { isRegistryId, isUUID } from "@/types/helpers";
+import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * ModMetadata that includes sharing information.
@@ -69,7 +70,7 @@ type BaseDeploymentMetadata = {
 
   /**
    * `updated_at` timestamp of the deployment object from the server (in ISO format). Used to determine whether the
-   * client has latest deployment settings installed.
+   * client has the latest deployment configuration activated.
    */
   timestamp: string;
 
@@ -143,8 +144,10 @@ export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
   _deployment?: DeploymentMetadata;
 
   /**
-   * Metadata about the recipe used to install the ModComponent, or `undefined` if the user created this ModComponent
+   * Metadata about the mod used to install the ModComponent, or `undefined` if the user created this ModComponent
    * directly
+   *
+   * (Previously mods were named "recipes")
    */
   _recipe: ModMetadata | undefined;
 
@@ -182,7 +185,7 @@ export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
   services?: IntegrationDependencyV1[];
 
   /**
-   * Options the end-user has configured (i.e., during blueprint activation)
+   * Options the end-user or deployment admin/manager has configured.
    */
   optionsArgs?: OptionsArgs;
 
@@ -212,9 +215,25 @@ export type ModComponentBaseV2<Config extends UnknownObject = UnknownObject> =
     integrationDependencies?: IntegrationDependencyV2[];
   };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentBaseV3<Config extends UnknownObject = UnknownObject> =
+  ModComponentBaseV2<Config> & {
+    /**
+     * Mod variables declared in the mod definition.
+     *
+     * Like OptionsArgs, must be replicated on each mod component within the mod because mod components are stored
+     * independently.
+     *
+     * @since 2.1.2
+     */
+    variables?: ModVariablesDefinition;
+  };
+
 // XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
 export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
-  ModComponentBaseV2<Config>;
+  ModComponentBaseV3<Config>;
 
 export type SerializedModComponentV1<
   Config extends UnknownObject = UnknownObject,
@@ -225,6 +244,12 @@ export type SerializedModComponentV1<
 export type SerializedModComponentV2<
   Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV2<Config> & {
+  _serializedModComponentBrand: never;
+};
+
+export type SerializedModComponentV3<
+  Config extends UnknownObject = UnknownObject,
+> = ModComponentBaseV3<Config> & {
   _serializedModComponentBrand: never;
 };
 
@@ -272,6 +297,10 @@ export type ActivatedModComponentV2<
   Config extends UnknownObject = UnknownObject,
 > = SerializedModComponentV2<Config> & ActivatedModComponentBase;
 
+export type ActivatedModComponentV3<
+  Config extends UnknownObject = UnknownObject,
+> = SerializedModComponentV3<Config> & ActivatedModComponentBase;
+
 /**
  * A ModComponent that has been activated locally
  * @see ModComponentBase
@@ -279,7 +308,7 @@ export type ActivatedModComponentV2<
  */
 export type ActivatedModComponent<
   Config extends UnknownObject = UnknownObject,
-> = ActivatedModComponentV2<Config>;
+> = ActivatedModComponentV3<Config>;
 
 /**
  * An `ModComponentBase` with all inner definitions hydrated.

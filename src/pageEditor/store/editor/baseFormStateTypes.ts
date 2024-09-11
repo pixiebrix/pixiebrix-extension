@@ -26,7 +26,10 @@ import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModOptionsDefinition,
+  ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type NormalizedAvailability } from "@/types/availabilityTypes";
@@ -207,7 +210,7 @@ export type BaseFormStateV4<
   "type"
 >;
 
-export type BaseFormState<
+export type BaseFormStateV5<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
@@ -218,4 +221,16 @@ export type BaseFormState<
    * Using the un-versioned type
    */
   integrationDependencies: IntegrationDependency[];
+};
+
+export type BaseFormState<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = BaseFormStateV5<TModComponent, TStarterBrick> & {
+  /**
+   * The mod variable definitions/declarations
+   * @see ModDefinition.variables
+   * @since 2.1.2
+   */
+  variablesDefinition: ModVariablesDefinition;
 };
