@@ -19,16 +19,14 @@ import React from "react";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
-const SynchronizeBody: React.FunctionComponent = () => {
-  return (
-    <ConnectedFieldTemplate
-      name="personalDeployment"
-      title="Sync across personal devices"
-      as={BooleanWidget}
-      label="Sync across personal devices"
-      description="Toggle on to sync the mod across all your devices and browser profiles with the PixieBrix extension installed"
-    />
-  );
-};
+const SynchronizeBody: React.FunctionComponent = () => (
+  <ConnectedFieldTemplate
+    name="personalDeployment"
+    title="Sync across personal devices"
+    as={BooleanWidget}
+    label="Sync across personal devices"
+    description="Toggle on to sync the mod across all your devices and browser profiles with the PixieBrix extension installed"
+  />
+);
 
 export default SynchronizeBody;

@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
@@ -38,6 +38,7 @@ import useActivateMod, {
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 registerDefaultWidgets();
 
@@ -169,6 +170,50 @@ describe("ActivateModDefinitionPage", () => {
         optionsArgs: {},
         integrationDependencies: [],
         personalDeployment: false,
+      },
+      modDefinition,
+    );
+  });
+
+  test("activate mod with personal deployment enabled", async () => {
+    const modDefinition = defaultModDefinitionFactory({
+      metadata: metadataFactory({
+        id: validateRegistryId("test/personal-deployment-mod"),
+        name: "Personal Deployment Mod",
+      }),
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          label: "Personal Deployment Mod Component",
+        }),
+      ],
+    });
+
+    appApiMock
+      .onGet(API_PATHS.FEATURE_FLAGS)
+      .reply(200, { flags: [FeatureFlags.MOD_PERSONAL_SYNC] });
+
+    setupMod(modDefinition);
+
+    const { container } = render(<ActivateModDefinitionPageWrapper />);
+
+    await waitForEffect();
+
+    await waitFor(() => {
+      expect(screen.getByText("Synchronize Settings")).toBeInTheDocument();
+    });
+
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Boolean Widget needs a better selector
+    await userEvent.click(container.querySelector(".switch")!);
+
+    await userEvent.click(screen.getByText("Activate"));
+    await waitForEffect();
+
+    expect(activateModCallbackMock).toHaveBeenCalledWith(
+      {
+        modComponents: { "0": true },
+        optionsArgs: {},
+        integrationDependencies: [],
+        personalDeployment: true,
       },
       modDefinition,
     );
