@@ -38,17 +38,22 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
+import { getExtensionToken } from "@/auth/authStorage";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
 jest.mock("@/auth/deploymentKey");
+jest.mock("@/auth/authStorage");
 
 const useManagedStorageStateMock = jest.mocked(useManagedStorageState);
 const usePartnerAuthDataMock = jest.mocked(usePartnerAuthData);
 const getDeploymentKeyMock = jest.mocked(getDeploymentKey);
+const getExtensionTokenMock = jest.mocked(getExtensionToken);
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // eslint-disable-next-line no-restricted-syntax -- we really do want to resolve to undefined
+  getExtensionTokenMock.mockResolvedValue(undefined);
   useManagedStorageStateMock.mockReturnValue({
     data: {},
     isLoading: false,
@@ -122,6 +127,34 @@ describe("useRequiredPartnerAuth", () => {
         hasPartner: true,
         partnerKey: "automation-anywhere",
         requiresIntegration: true,
+        hasConfiguredIntegration: false,
+        isLoading: false,
+        error: undefined,
+      });
+    });
+  });
+
+  test("does not require integration for users authenticated with pixiebrix token", async () => {
+    getExtensionTokenMock.mockResolvedValue("mock-token");
+
+    await mockAuthenticatedMeApiResponse(
+      meWithPartnerApiResponseFactory({
+        organization: meOrganizationApiResponseFactory({
+          control_room: {
+            id: uuidv4(),
+            url: "https://control-room.example.com",
+          },
+        }),
+      }),
+    );
+
+    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+
+    await waitFor(() => {
+      expect(result.current).toStrictEqual({
+        hasPartner: true,
+        partnerKey: "automation-anywhere",
+        requiresIntegration: false,
         hasConfiguredIntegration: false,
         isLoading: false,
         error: undefined,
