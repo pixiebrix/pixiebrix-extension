@@ -37,6 +37,7 @@ jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("@/data/service/api", () => ({
   useGetFeatureFlagsQuery: jest.fn(() => valueToAsyncState([])),
+  useGetIntegrationAuthsQuery: jest.fn(() => valueToAsyncState([])),
 }));
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({

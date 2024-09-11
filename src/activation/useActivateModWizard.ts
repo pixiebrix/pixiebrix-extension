@@ -50,6 +50,11 @@ import { BusinessError } from "@/errors/businessErrors";
 import useOrganizationActivationPolicy, {
   type OrganizationActivationPolicyResult,
 } from "@/activation/useOrganizationActivationPolicy";
+import SynchronizeBody from "@/activation/SynchronizeBody";
+import useFlags from "@/hooks/useFlags";
+import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
+import { useAuthOptions } from "@/hooks/auth";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -61,6 +66,11 @@ const STEPS: WizardStep[] = [
     Component: OptionsBody as React.FunctionComponent<{
       mod: ModDefinition;
     }>,
+  },
+  {
+    key: "synchronize",
+    label: "Synchronize Settings",
+    Component: SynchronizeBody,
   },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
@@ -76,14 +86,18 @@ export type UseActivateModWizardResult = {
 };
 
 export function wizardStateFactory({
+  flagOn,
   modDefinition,
+  authOptions = [],
   defaultAuthOptions = {},
   databaseOptions,
   activatedModComponents,
   optionsValidationSchema,
   initialModOptions,
 }: {
+  flagOn: (flag: FeatureFlag) => boolean;
   modDefinition: ModDefinition;
+  authOptions?: AuthOption[];
   defaultAuthOptions: Record<RegistryId, AuthOption | null>;
   databaseOptions: Option[];
   activatedModComponents: ActivatedModComponent[];
@@ -124,6 +138,10 @@ export function wizardStateFactory({
 
       case "options": {
         return !isEmpty(inputProperties(modDefinition.options?.schema ?? {}));
+      }
+
+      case "synchronize": {
+        return flagOn(FeatureFlags.MOD_PERSONAL_SYNC);
       }
 
       default: {
@@ -168,6 +186,7 @@ export function wizardStateFactory({
         return forcePrimitive(optionSchema.default);
       },
     ),
+    personalDeployment: false,
   };
 
   const validationSchema = Yup.object().shape({
@@ -190,6 +209,23 @@ export function wizardStateFactory({
       ),
     ),
     optionsArgs: optionsValidationSchema,
+    personalDeployment: Yup.boolean().test(
+      "personalDeploymentInvalidWithLocalIntegration",
+      'Local integrations are not supported for mods with "Sync across devices" enabled',
+      (value, { parent }) => {
+        const integrationDependencies =
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- parent is a Yup object
+          parent.integrationDependencies as IntegrationDependency[];
+
+        return !integrationDependencies.some(
+          (dependency: IntegrationDependency) =>
+            value &&
+            dependency.configId &&
+            authOptions.find((option) => option.value === dependency.configId)
+              ?.local,
+        );
+      },
+    ),
   });
 
   return {
@@ -208,6 +244,10 @@ function useActivateModWizard(
   const optionsValidationSchemaState = useAsyncModOptionsValidationSchema(
     modDefinition.options?.schema,
   );
+
+  const { flagOn } = useFlags();
+
+  const { data: authOptions } = useAuthOptions();
 
   const policyState = useOrganizationActivationPolicy(modDefinition);
 
@@ -230,7 +270,9 @@ function useActivateModWizard(
       }
 
       return wizardStateFactory({
+        flagOn,
         modDefinition,
+        authOptions,
         defaultAuthOptions,
         databaseOptions,
         activatedModComponents,

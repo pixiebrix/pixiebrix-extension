@@ -15,9 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe("ActivateMultipleModsPanel", () => {
-  // eslint-disable-next-line jest/expect-expect -- Tests are in other files
-  test("tests are in other file", () => {
-    // Tests are in the ActivateModPanel.test.tsx file to avoid duplicate mocking/setup logic
-  });
-});
+import React from "react";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+
+const SynchronizeBody: React.FunctionComponent = () => {
+  return (
+    <ConnectedFieldTemplate
+      name="personalDeployment"
+      title="Sync across personal devices"
+      as={BooleanWidget}
+      label="Sync across personal devices"
+      description="Toggle on to sync the mod across all your devices and browser profiles with the PixieBrix extension installed"
+    />
+  );
+};
+
+export default SynchronizeBody;
