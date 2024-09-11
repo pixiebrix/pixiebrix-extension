@@ -24,7 +24,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { appApiMock } from "@/testUtils/appApiMock";
+import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
 import { validateRegistryId } from "@/types/helpers";
 import { type RetrieveRecipeResponse } from "@/types/contract";
 import {
@@ -69,12 +69,8 @@ function setupMod(modDefinition: ModDefinition) {
     },
   };
 
-  appApiMock
-    .onGet(API_PATHS.MOD(testModId))
-    .reply(200, modResponse)
-    // Databases, organizations, etc.
-    .onGet()
-    .reply(200, []);
+  appApiMock.onGet(API_PATHS.MOD(testModId)).reply(200, modResponse);
+  mockAllApiEndpoints();
 }
 
 beforeEach(() => {
