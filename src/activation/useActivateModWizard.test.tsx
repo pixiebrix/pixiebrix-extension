@@ -16,27 +16,36 @@
  */
 
 import * as redux from "react-redux";
-import useActivateModWizard from "@/activation/useActivateModWizard";
+import useActivateModWizard, {
+  wizardStateFactory,
+} from "@/activation/useActivateModWizard";
 import { renderHook } from "@testing-library/react-hooks";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import * as Yup from "yup";
 
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  autoUUIDSequence,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
 import { useGetFeatureFlagsQuery } from "@/data/service/api";
 import {
+  FeatureFlags,
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { BusinessError } from "@/errors/businessErrors";
+import { type RegistryId } from "@/types/registryTypes";
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
 jest.mock("@/data/service/api", () => ({
   useGetFeatureFlagsQuery: jest.fn(() => valueToAsyncState([])),
+  useGetIntegrationAuthsQuery: jest.fn(() => valueToAsyncState([])),
 }));
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
@@ -98,6 +107,25 @@ describe("useActivateModWizard", () => {
 
     const { data: { wizardSteps } = {} } = result.current;
     expect(wizardSteps).toHaveLength(1);
+  });
+
+  test("show synchronize tab when MOD_PERSONAL_SYNC flag is on", () => {
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue([]);
+
+    jest
+      .mocked(useGetFeatureFlagsQuery)
+      .mockReturnValue(
+        valueToAsyncState([FeatureFlags.MOD_PERSONAL_SYNC]) as any,
+      );
+
+    const { result } = renderHook(() =>
+      useActivateModWizard(defaultModDefinitionFactory()),
+    );
+
+    const { data: { wizardSteps } = {} } = result.current;
+    expect(wizardSteps).toHaveLength(2);
+    expect(wizardSteps?.[0]?.key).toBe("synchronize");
   });
 
   test("sets database preview initial value", async () => {
@@ -187,6 +215,46 @@ describe("useActivateModWizard", () => {
     expect(error).toBeInstanceOf(BusinessError);
     expect((error as BusinessError).message).toBe(
       "Your team's policy does not permit you to activate this mod. Contact your team admin for assistance",
+    );
+  });
+
+  test("validation schema rejects personal deployment with local integrations", () => {
+    const testAuthConfigId = autoUUIDSequence();
+    const { validationSchema } = wizardStateFactory({
+      flagOn: () => true,
+      modDefinition: defaultModDefinitionFactory(),
+      authOptions: [
+        {
+          value: testAuthConfigId,
+          label: "Local Config",
+          local: true,
+          serviceId: "test-integration" as RegistryId,
+          sharingType: "private",
+        },
+      ],
+      defaultAuthOptions: {},
+      databaseOptions: [],
+      activatedModComponents: [],
+      optionsValidationSchema: Yup.object(),
+      initialModOptions: {},
+    });
+
+    const testValues = {
+      modComponents: {},
+      integrationDependencies: [
+        {
+          integrationId: "test-integration",
+          configId: testAuthConfigId,
+          serviceId: "test-integration" as RegistryId,
+          sharingType: "private",
+        },
+      ],
+      optionsArgs: {},
+      personalDeployment: true,
+    };
+
+    expect(() => validationSchema.validateSync(testValues)).toThrow(
+      'Local integrations are not supported for mods with "Sync across devices" enabled',
     );
   });
 });

@@ -37,15 +37,15 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { fallbackValue } from "@/utils/asyncStateUtils";
 import { freshIdentifier, makeVariableExpression } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
-import { freeze } from "@/utils/objectUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { freeze } from "@/utils/objectUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */
@@ -212,6 +212,7 @@ const IntegrationDependencyWidget: React.FC<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
   const { schema, isRequired } = props;
+
   const { data: authOptions, refetch: refreshOptions } = fallbackValue(
     useAuthOptions(),
     NO_AUTH_OPTIONS,

@@ -41,4 +41,9 @@ export type WizardValues = {
 
   // XXX: optionsArgs can contain periods, which will throw off formik
   optionsArgs: Record<string, Primitive>;
+
+  /**
+   * Whether to set up a personal deployment with the mod
+   */
+  personalDeployment?: boolean;
 };

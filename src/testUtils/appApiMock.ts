@@ -29,6 +29,8 @@ export const appApiMock = new MockAdapter(axios);
 
 /**
  * Mock all API endpoints to return empty responses.
+ * Make sure that this is the last rule applied to the appApiMock, as it will match all requests.
+ * Any subsequent mocks will be ignored if they are added after this one.
  */
 export function mockAllApiEndpoints() {
   // Ideally we could do this automatically, but rules provided to appApiMock are evaluated in order. So we can't

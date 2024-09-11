@@ -123,6 +123,11 @@ export const FeatureFlags = {
    * Support creating new dynamic quickbar starter bricks in the Page Editor.
    */
   PAGE_EDITOR_DYNAMIC_QUICKBAR: "pageeditor-quickbar-provider",
+
+  /**
+   * Enables the mod personal sync feature.
+   */
+  MOD_PERSONAL_SYNC: "mod-personal-sync",
 } as const;
 
 /**
