@@ -35,8 +35,6 @@ const TrialCallToActionLink = () => (
 const TeamTrialBanner: React.FunctionComponent = () => {
   const teamTrialStatus = useTeamTrialStatus();
 
-  console.log({ teamTrialStatus });
-
   return (
     <Collapse in={teamTrialStatus != null} mountOnEnter>
       <Banner
