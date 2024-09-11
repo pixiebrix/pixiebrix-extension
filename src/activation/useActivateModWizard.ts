@@ -54,7 +54,7 @@ import SynchronizeBody from "@/activation/SynchronizeBody";
 import useFlags from "@/hooks/useFlags";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptionsWithEmptyFallback } from "@/hooks/auth";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -247,7 +247,7 @@ function useActivateModWizard(
 
   const { flagOn } = useFlags();
 
-  const { data: authOptions } = useAuthOptions();
+  const { data: authOptions } = useAuthOptionsWithEmptyFallback();
 
   const policyState = useOrganizationActivationPolicy(modDefinition);
 

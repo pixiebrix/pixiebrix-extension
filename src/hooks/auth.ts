@@ -28,6 +28,8 @@ import { useGetIntegrationAuthsQuery } from "@/data/service/api";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { freeze } from "@/utils/objectUtils";
 
 function defaultLabel(label: Nullishable<string>): string {
   const normalized = (label ?? "").trim();
@@ -96,6 +98,11 @@ function mapConfigurationsToOptions(
   );
 
   return [...localOptions, ...sharedOptions];
+}
+
+const EMPTY_AUTH_OPTIONS = freeze<AuthOption[]>([]);
+export function useAuthOptionsWithEmptyFallback() {
+  return fallbackValue(useAuthOptions(), EMPTY_AUTH_OPTIONS);
 }
 
 /**

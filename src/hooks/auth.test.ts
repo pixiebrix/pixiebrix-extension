@@ -83,12 +83,8 @@ describe("useAuthOptions", () => {
   });
 
   it("should return the correct auth options", async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useAuthOptions());
+    const { result } = renderHook(() => useAuthOptions());
 
-    // Wait for the hook to finish its asynchronous operations
-    await waitForNextUpdate();
-
-    // Use waitFor to ensure the data is available before assertions
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
     });

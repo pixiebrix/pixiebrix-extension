@@ -23,19 +23,16 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/integrations/AuthWidget";
 import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
 import { useField } from "formik";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptionsWithEmptyFallback } from "@/hooks/auth";
 import { useGetIntegrationsQuery } from "@/data/service/api";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
-import { fallbackValue } from "@/utils/asyncStateUtils";
-import { type AuthOption } from "@/auth/authTypes";
 import { isEmpty } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { joinName } from "@/utils/formUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
-import { freeze } from "@/utils/objectUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 interface OwnProps {
@@ -50,17 +47,13 @@ type ValueField = {
   isOptional?: boolean;
 };
 
-const EMPTY_AUTH_OPTIONS = freeze<AuthOption[]>([]);
-
 const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
   mod,
   hideBuiltInIntegrations,
   showOwnTitle,
 }) => {
-  const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
-    useAuthOptions(),
-    EMPTY_AUTH_OPTIONS,
-  );
+  const { data: authOptions, refetch: refreshAuthOptions } =
+    useAuthOptionsWithEmptyFallback();
   assertNotNullish(authOptions, "authOptions must be defined");
   const [
     integrationDependenciesField,

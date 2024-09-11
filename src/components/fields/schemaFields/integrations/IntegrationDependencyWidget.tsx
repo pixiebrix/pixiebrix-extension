@@ -25,7 +25,7 @@ import {
 } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptionsWithEmptyFallback } from "@/hooks/auth";
 import { isEmpty, isEqual, unset } from "lodash";
 import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
@@ -37,13 +37,11 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { fallbackValue } from "@/utils/asyncStateUtils";
 import { freshIdentifier, makeVariableExpression } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
-import { freeze } from "@/utils/objectUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 
@@ -175,8 +173,6 @@ function clearIntegrationSelection(
   return produceExcludeUnusedDependencies(nextState);
 }
 
-const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
-
 type SelectedEventPayload = {
   integration_id?: RegistryId;
   is_user_action?: boolean;
@@ -212,10 +208,8 @@ const IntegrationDependencyWidget: React.FC<
   IntegrationDependencyWidgetProps
 > = ({ detectDefault = true, ...props }) => {
   const { schema, isRequired } = props;
-  const { data: authOptions, refetch: refreshOptions } = fallbackValue(
-    useAuthOptions(),
-    NO_AUTH_OPTIONS,
-  );
+  const { data: authOptions, refetch: refreshOptions } =
+    useAuthOptionsWithEmptyFallback();
   const { values: rootValues, setValues: setRootValues } =
     useFormikContext<IntegrationsFormSlice>();
   const [{ value, ...field }, , helpers] =
