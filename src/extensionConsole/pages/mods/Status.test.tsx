@@ -19,7 +19,7 @@ import React from "react";
 import { modViewItemFactory } from "@/testUtils/factories/modViewItemFactory";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import Status from "@/extensionConsole/pages/mods/Status";
-import type { ModActionsEnabled } from "@/types/modTypes";
+import type { ModActionsEnabled, SharingSource } from "@/types/modTypes";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import userEvent from "@testing-library/user-event";
 
@@ -85,6 +85,24 @@ describe("Status", () => {
     render(<Status modViewItem={mod} />);
 
     expect(screen.getByText("Update")).toBeInTheDocument();
+  });
+
+  it("doesn't show update for deployments", () => {
+    const mod = modViewItemFactory({
+      hasUpdate: true,
+      modActions: {
+        showReactivate: true,
+        showActivate: false,
+      } as unknown as ModActionsEnabled,
+      sharingSource: {
+        type: "Deployment",
+      } as SharingSource,
+    });
+
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.queryByText("Update")).not.toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
   it("shows allow properly", async () => {
