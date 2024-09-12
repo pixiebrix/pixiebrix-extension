@@ -45,16 +45,17 @@ const Status: React.VoidFunctionComponent<{
     modId,
     hasUpdate,
     status,
+    sharingSource,
     activatedModVersion,
     isUnavailable,
-    isDeployment,
     modActions: { showActivate, showReactivate },
   } = modViewItem;
 
-  const modComponents = useActivatedModComponents(modId);
+  const activatedModComponents = useActivatedModComponents(modId);
 
-  const { hasPermissions, requestPermissions } =
-    useModPermissions(modComponents);
+  const { hasPermissions, requestPermissions } = useModPermissions(
+    activatedModComponents,
+  );
 
   if (isUnavailable) {
     return (
@@ -89,7 +90,7 @@ const Status: React.VoidFunctionComponent<{
     );
   }
 
-  if (hasUpdate && showReactivate && !isDeployment) {
+  if (hasUpdate && showReactivate && !(sharingSource.type === "Deployment")) {
     return (
       <Button
         size="sm"
