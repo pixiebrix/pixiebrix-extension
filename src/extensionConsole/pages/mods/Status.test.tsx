@@ -73,7 +73,7 @@ describe("Status", () => {
     expect(screen.getByText("Activate")).toBeInTheDocument();
   });
 
-  it("shows update properly", () => {
+  it("shows update button for mod with update", () => {
     const mod = modViewItemFactory({
       hasUpdate: true,
       modActions: {
@@ -87,7 +87,7 @@ describe("Status", () => {
     expect(screen.getByText("Update")).toBeInTheDocument();
   });
 
-  it("doesn't show update for deployments", () => {
+  it("doesn't show update button for deployments", () => {
     const mod = modViewItemFactory({
       hasUpdate: true,
       modActions: {
@@ -103,6 +103,26 @@ describe("Status", () => {
 
     expect(screen.queryByText("Update")).not.toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
+  });
+
+  it("shows update button for personal deployments", () => {
+    const mod = modViewItemFactory({
+      hasUpdate: true,
+      modActions: {
+        showReactivate: true,
+        showActivate: false,
+      } as unknown as ModActionsEnabled,
+      sharingSource: {
+        type: "PersonalDeployment",
+      } as SharingSource,
+    });
+
+    render(<Status modViewItem={mod} />);
+
+    expect(screen.getByText("Update")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Update" })).toHaveClass(
+      "btn-info",
+    );
   });
 
   it("shows allow properly", async () => {
