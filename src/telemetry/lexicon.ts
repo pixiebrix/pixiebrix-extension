@@ -82,7 +82,7 @@ export function transformLexicon(lexiconMap: LexiconMap): JSONSchema {
         metadata: {
           "com.mixpanel": {
             tags: entry.tags,
-            ...(entry.displayName && { displayName: entry.displayName }),
+            displayName: entry.displayName ?? null,
             hidden: false,
             dropped: false,
           },
