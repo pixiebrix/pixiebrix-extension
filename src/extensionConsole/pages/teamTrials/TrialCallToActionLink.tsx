@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Banner from "@/components/banner/Banner";
-import useTeamTrialStatus, {
-  TeamTrialStatus,
-} from "@/extensionConsole/pages/useTeamTrialStatus";
 import React from "react";
-import { Collapse } from "react-bootstrap";
 
 const TrialCallToActionLink = () => (
   <a
@@ -32,25 +27,4 @@ const TrialCallToActionLink = () => (
   </a>
 );
 
-const TeamTrialBanner: React.FunctionComponent = () => {
-  const teamTrialStatus = useTeamTrialStatus();
-
-  return (
-    <Collapse in={teamTrialStatus != null} mountOnEnter>
-      <Banner
-        variant={
-          teamTrialStatus === TeamTrialStatus.EXPIRED ? "danger" : "warning"
-        }
-      >
-        {"Your team trial is "}
-        {teamTrialStatus === TeamTrialStatus.EXPIRED
-          ? "expired!"
-          : "in progress."}
-        {" Talk to an onboarding specialist now to upgrade. Schedule a time "}
-        <TrialCallToActionLink />
-      </Banner>
-    </Collapse>
-  );
-};
-
-export default TeamTrialBanner;
+export default TrialCallToActionLink;
