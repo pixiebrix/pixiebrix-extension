@@ -57,7 +57,7 @@ type LexiconMap = {
   [K in keyof typeof Events]: LexiconEventEntry;
 };
 
-// @ts-expect-error -- TODO: Incrementally add more events to the Lexicon
+// @ts-expect-error -- TODO: Remove this when the Lexicon is fully implemented https://github.com/pixiebrix/pixiebrix-extension/issues/9151
 export const lexicon: LexiconMap = {
   BRICK_ADD: {
     description:
