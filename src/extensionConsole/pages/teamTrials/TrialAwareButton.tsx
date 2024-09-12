@@ -37,7 +37,7 @@ const TrialExpiredTooltip = (
       Your Business Plan trial <strong>has ended</strong>.
     </p>
     <p>
-      Talk to an onboarding specialist to keep using team features.{" "}
+      Talk to an onboarding specialist to keep using team features{" "}
       <TrialCallToActionLink />
     </p>
   </Tooltip>
