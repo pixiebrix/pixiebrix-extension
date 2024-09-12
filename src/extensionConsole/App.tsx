@@ -56,6 +56,7 @@ import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner"
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import { useLocation } from "react-router";
+import TeamTrialBanner from "@/extensionConsole/pages/TeamTrialBanner";
 
 // Register the built-in bricks
 registerEditors();
@@ -84,6 +85,7 @@ const AuthenticatedContent: React.VFC = () => {
         <UpdateBanner />
         <DeploymentBanner />
         <InvitationBanner />
+        <TeamTrialBanner />
         <div className="content-wrapper">
           <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
             <Switch>
