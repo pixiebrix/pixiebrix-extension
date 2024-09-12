@@ -87,7 +87,7 @@ describe("Status", () => {
     expect(screen.getByText("Update")).toBeInTheDocument();
   });
 
-  it("doesn't show update button for deployments", () => {
+  it("doesn't show update button for team deployments", () => {
     const mod = modViewItemFactory({
       hasUpdate: true,
       modActions: {
