@@ -16,9 +16,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Compile TypeScript
-        run: npx tsc scripts/uploadLexicon.ts --esModuleInterop --resolveJsonModule
+        run: npx tsc scripts/uploadMixpanelLexicon.ts --esModuleInterop
       - name: Upload Lexicon
-        run: node scripts/uploadLexicon.js
+        run: node scripts/uploadMixpanelLexicon.js
         env:
           MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
           MIXPANEL_SERVICE_ACCOUNT_USERNAME: ${{ secrets.MIXPANEL_SERVICE_ACCOUNT }}
