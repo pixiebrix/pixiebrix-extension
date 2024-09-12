@@ -19,11 +19,16 @@ import { useGetOrganizationsQuery } from "@/data/service/api";
 import { useMemo } from "react";
 
 function useGetAllTeamScopes() {
-  const { data: organizations = [] } = useGetOrganizationsQuery();
+  const { data: organizations = [], isLoading } = useGetOrganizationsQuery();
 
   return useMemo(
-    () => organizations.map((org) => org.scope).filter((x) => x != null),
-    [organizations],
+    () => ({
+      teamScopes: organizations
+        .map((org) => org.scope)
+        .filter((x) => x != null),
+      isLoading,
+    }),
+    [organizations, isLoading],
   );
 }
 

@@ -64,13 +64,13 @@ export const TrialAwareButton = ({
 }: ButtonProps & { icon?: IconProp; modId: RegistryId }) => {
   const [show, setShow] = useState(false);
   const isExpired = useTeamTrialStatus() === TeamTrialStatus.EXPIRED;
-  const teamScopes = useGetAllTeamScopes();
+  const { teamScopes, isLoading: isLoadingTeamScopes } = useGetAllTeamScopes();
   const disableTeamButtons = shouldDisableTeamButtons({
     isExpired,
     modId,
     teamScopes,
   });
-  const disabled = disableTeamButtons || propsDisabled;
+  const disabled = isLoadingTeamScopes || disableTeamButtons || propsDisabled;
 
   return (
     <OverlayTrigger
