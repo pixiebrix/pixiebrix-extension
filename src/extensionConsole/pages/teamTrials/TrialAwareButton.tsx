@@ -31,7 +31,7 @@ import {
   Tooltip,
 } from "react-bootstrap";
 
-export const TrialExpiredTooltip = (
+const TrialExpiredTooltip = (
   <Tooltip id="trial-tooltip">
     <p>
       Your Business Plan trial <strong>has ended</strong>.
