@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type JSONSchema } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
 import { Events } from "./events";
-import { type JsonObject, type ValueOf } from "type-fest";
+import { type ValueOf } from "type-fest";
 
 const LexiconTags = {
   PAGE_EDITOR: "page editor",
@@ -43,8 +44,8 @@ export const lexicon: LexiconMap = {
   },
 };
 
-// Function to transform LexiconMap to Mixpanel Lexicon format
-export function transformLexicon(lexiconMap: LexiconMap): JsonObject {
+// Function to transform LexiconMap to Json format for use with the Mixpanel Lexicon API
+export function transformLexicon(lexiconMap: LexiconMap): JSONSchema {
   const entries = Object.entries(lexiconMap).map(
     ([eventKey, entry]: [keyof typeof Events, LexiconEventEntry]) => ({
       entityType: "event",
