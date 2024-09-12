@@ -36,3 +36,14 @@ export const getMe = memoizeUntilSettled(
     return data;
   },
 );
+
+export const getOrganizations = memoizeUntilSettled(
+  async (): Promise<Array<components["schemas"]["Organization"]>> => {
+    expectContext("background");
+    const client = await getApiClient();
+    const { data } = await client.get<
+      Array<components["schemas"]["Organization"]>
+    >(API_PATHS.ORGANIZATIONS);
+    return data;
+  },
+);
