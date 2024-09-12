@@ -54,7 +54,7 @@ import PersonalDeploymentField from "@/activation/PersonalDeploymentField";
 import useFlags from "@/hooks/useFlags";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { freeze } from "@/utils/objectUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 

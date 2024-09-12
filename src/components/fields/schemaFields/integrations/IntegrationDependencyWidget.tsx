@@ -25,7 +25,7 @@ import {
 } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { isEmpty, isEqual, unset } from "lodash";
 import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";

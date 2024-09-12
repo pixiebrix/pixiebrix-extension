@@ -24,7 +24,7 @@ import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type SanitizedConfig } from "@/integrations/integrationTypes";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
@@ -41,7 +41,7 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
 );
 
 jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/contentScript/messenger/api");
 
 function makeBaseState() {

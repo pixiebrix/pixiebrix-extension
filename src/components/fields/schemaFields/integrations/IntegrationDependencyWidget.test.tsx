@@ -27,7 +27,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 // eslint-disable-next-line no-restricted-imports -- test
 import { Formik } from "formik";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import {
   loadingAsyncStateFactory,
@@ -38,7 +38,7 @@ import { act, screen } from "@testing-library/react";
 
 import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 

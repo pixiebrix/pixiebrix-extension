@@ -26,7 +26,7 @@ import ProcessOptions from "@/contrib/uipath/ProcessOptions";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { TEST_setContext } from "webext-detect";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -43,9 +43,9 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,
 );
 
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/contrib/uipath/uipathHooks");
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/contrib/uipath/uipathHooks");

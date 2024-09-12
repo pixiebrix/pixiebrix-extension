@@ -23,7 +23,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/integrations/AuthWidget";
 import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
 import { useField } from "formik";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { useGetIntegrationsQuery } from "@/data/service/api";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";

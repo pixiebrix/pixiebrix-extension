@@ -46,7 +46,7 @@ import {
   getSpreadsheet,
   type SpreadsheetTarget,
 } from "@/contrib/google/sheets/core/sheetsApi";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -63,7 +63,7 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 // XXX: sheetsApi should likely be mocked at the network level, not the module level
 jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 const findSanitizedIntegrationConfigMock = jest.mocked(
   integrationConfigLocator.findSanitizedIntegrationConfig,
 );

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -36,7 +36,7 @@ import { pipelineFactory } from "@/testUtils/factories/brickFactories";
 import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
 import { makeVariableExpression } from "@/utils/variableUtils";
 
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/integrations/util/checkIntegrationAuth.ts");
 
 const findSanitizedIntegrationConfigMock = jest.mocked(
