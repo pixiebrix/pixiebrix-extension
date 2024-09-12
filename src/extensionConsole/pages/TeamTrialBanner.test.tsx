@@ -24,6 +24,16 @@ import { API_PATHS } from "@/data/service/urlPaths";
 import { appApiMock } from "@/testUtils/appApiMock";
 
 describe("TeamTrialBanner", () => {
+  const today = new Date().getDate();
+
+  const yesterday = new Date(
+    new Date().setDate(today - 1),
+  ).toISOString() as Timestamp;
+
+  const tomorrow = new Date(
+    new Date().setDate(today + 1),
+  ).toISOString() as Timestamp;
+
   beforeEach(() => {
     appApiMock.reset();
   });
@@ -53,9 +63,7 @@ describe("TeamTrialBanner", () => {
     it("renders the banner", async () => {
       const mockOrganizations = [
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() + 86_400_000,
-          ).toISOString() as Timestamp, // 1 day in the future
+          trial_end_timestamp: tomorrow,
         }),
       ];
 
@@ -75,9 +83,7 @@ describe("TeamTrialBanner", () => {
     it("renders the in progress message when any team is in progress and none are expired", async () => {
       const mockOrganizations = [
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() + 86_400_000,
-          ).toISOString() as Timestamp, // 1 day in the future
+          trial_end_timestamp: tomorrow,
         }),
         organizationFactory(),
       ];
@@ -98,9 +104,7 @@ describe("TeamTrialBanner", () => {
     it("renders the trial call to action link when the user is on an in progress team trial", async () => {
       const mockOrganizations = [
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() + 86_400_000,
-          ).toISOString() as Timestamp, // 1 day in the future
+          trial_end_timestamp: tomorrow,
         }),
       ];
 
@@ -124,9 +128,7 @@ describe("TeamTrialBanner", () => {
     it("renders the banner", async () => {
       const mockOrganizations = [
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() - 86_400_000,
-          ).toISOString() as Timestamp, // 1 day ago
+          trial_end_timestamp: yesterday,
         }),
       ];
 
@@ -146,14 +148,10 @@ describe("TeamTrialBanner", () => {
     it("renders the expired message even if other teams are not expired", async () => {
       const mockOrganizations = [
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() + 86_400_000,
-          ).toISOString() as Timestamp, // 1 day in the future
+          trial_end_timestamp: tomorrow,
         }),
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() - 86_400_000,
-          ).toISOString() as Timestamp, // 1 day ago
+          trial_end_timestamp: yesterday,
         }),
         organizationFactory(),
       ];
@@ -174,9 +172,7 @@ describe("TeamTrialBanner", () => {
     it("renders the trial call to action link when the user is on an expired team trial", async () => {
       const mockOrganizations = [
         organizationFactory({
-          trial_end_timestamp: new Date(
-            Date.now() - 86_400_000,
-          ).toISOString() as Timestamp, // 1 day ago
+          trial_end_timestamp: yesterday,
         }),
       ];
 
