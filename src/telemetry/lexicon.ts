@@ -18,30 +18,14 @@
 import { Events } from "./events";
 import { type JsonObject, type ValueOf } from "type-fest";
 
-// TODO: verify me
-type LexiconPropertyType =
-  | "string"
-  | "integer"
-  | "number"
-  | "boolean"
-  | "date-time";
-
 const LexiconTags = {
   PAGE_EDITOR: "page editor",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
 
-interface LexiconProperty {
-  type: LexiconPropertyType;
-  description: string;
-  examples?: unknown[];
-  displayName?: string;
-}
-
 interface LexiconEventEntry {
   description: string;
-  properties?: Record<string, LexiconProperty>;
   tags?: LexiconTag[];
   displayName?: string;
 }
@@ -73,29 +57,11 @@ export function transformLexicon(lexiconMap: LexiconMap): JsonObject {
         metadata: {
           "com.mixpanel": {
             tags: entry.tags,
-            displayName:
-              entry.displayName || Events[eventKey as keyof typeof Events],
+            ...(entry.displayName && { displayName: entry.displayName }),
             hidden: false,
             dropped: false,
           },
         },
-        properties: entry.properties
-          ? Object.fromEntries(
-              Object.entries(entry.properties).map(([propName, prop]) => [
-                propName,
-                {
-                  type: prop.type,
-                  description: prop.description,
-                  examples: prop.examples,
-                  metadata: {
-                    "com.mixpanel": {
-                      displayName: prop.displayName || propName,
-                    },
-                  },
-                },
-              ]),
-            )
-          : undefined,
       },
     }),
   );
