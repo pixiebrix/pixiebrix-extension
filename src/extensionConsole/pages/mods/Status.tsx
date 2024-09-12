@@ -18,7 +18,6 @@
 import styles from "./Status.module.scss";
 
 import React from "react";
-import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -94,6 +93,7 @@ const Status: React.VoidFunctionComponent<{
     return (
       <TrialAwareButton
         modId={modId}
+        icon={faSync}
         size="sm"
         variant="info"
         onClick={() => {
@@ -105,7 +105,7 @@ const Status: React.VoidFunctionComponent<{
           history.push(API_PATHS.MOD_ACTIVATE(modId, true));
         }}
       >
-        <FontAwesomeIcon icon={faSync} /> Update
+        Update
       </TrialAwareButton>
     );
   }

@@ -23,7 +23,7 @@ import useTeamTrialStatus, {
 import { type RegistryId } from "@/types/registryTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { type MutableRefObject, useState } from "react";
+import React, { useState } from "react";
 import {
   type ButtonProps,
   OverlayTrigger,
