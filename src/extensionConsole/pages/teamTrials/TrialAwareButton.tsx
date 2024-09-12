@@ -43,7 +43,7 @@ export const TrialExpiredTooltip = (
   </Tooltip>
 );
 
-function shouldDisableButton({
+function shouldDisableTeamButtons({
   isExpired,
   modId,
   teamScopes,
@@ -65,8 +65,12 @@ export const TrialAwareButton = ({
   const [show, setShow] = useState(false);
   const isExpired = useTeamTrialStatus() === TeamTrialStatus.EXPIRED;
   const teamScopes = useGetAllTeamScopes();
-  const disabled =
-    shouldDisableButton({ isExpired, modId, teamScopes }) || propsDisabled;
+  const disableTeamButtons = shouldDisableTeamButtons({
+    isExpired,
+    modId,
+    teamScopes,
+  });
+  const disabled = disableTeamButtons || propsDisabled;
 
   return (
     <OverlayTrigger
@@ -75,7 +79,7 @@ export const TrialAwareButton = ({
       placement="bottom"
       show={show}
       onToggle={(nextShow) => {
-        if (isExpired) {
+        if (disableTeamButtons) {
           setShow(nextShow);
         }
       }}
