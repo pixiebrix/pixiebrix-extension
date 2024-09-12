@@ -74,6 +74,7 @@ module.exports = {
         },
       },
     ],
+    "local-rules/preferAxiosMockAdapter": "error",
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",

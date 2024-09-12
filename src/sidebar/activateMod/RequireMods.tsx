@@ -20,7 +20,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
-import { getDefaultAuthOptionsForMod, useAuthOptions } from "@/hooks/auth";
+import {
+  getDefaultAuthOptionsForMod,
+  useAuthOptions,
+} from "@/hooks/useAuthOptions";
 import { isEmpty, zip } from "lodash";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";

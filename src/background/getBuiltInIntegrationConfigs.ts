@@ -16,7 +16,7 @@
  */
 
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import { getSharingType } from "@/hooks/auth";
+import { getSharingType } from "@/hooks/useAuthOptions";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import reportError from "@/telemetry/reportError";
 import { API_PATHS } from "@/data/service/urlPaths";

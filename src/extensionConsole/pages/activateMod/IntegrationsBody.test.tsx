@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useAuthOptions } from "@/hooks/auth";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import {
   type IntegrationDefinition,
   type IntegrationDependency,
@@ -44,7 +44,7 @@ import { produce } from "immer";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/integrations/util/getModDefinitionIntegrationIds");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);

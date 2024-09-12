@@ -33,6 +33,7 @@ import useActivateMod, {
 import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import type { ModActivationConfig } from "@/types/modTypes";
+import useFlags from "@/hooks/useFlags";
 
 type ModResultPair = {
   mod: RequiredModDefinition;
@@ -77,6 +78,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   const newMods = useMemo(() => mods.filter((x) => !x.isActive), [mods]);
   const activatedModComponents = useSelector(selectActivatedModComponents);
   const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
+  const { flagOn } = useFlags();
 
   // A bit hacky -- using useDeriveAsyncState to automatically activate the mods on mount
   const activationResultState = useDeriveAsyncState(
@@ -95,6 +97,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
           );
 
           const wizard = wizardStateFactory({
+            flagOn,
             modDefinition: mod.modDefinition,
             defaultAuthOptions: mod.defaultAuthOptions,
             databaseOptions,

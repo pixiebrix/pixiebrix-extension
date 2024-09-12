@@ -732,7 +732,7 @@ exports[`ActivateModDefinitionPage renders instructions 1`] = `
               <h3
                 class="page-title"
               >
-                Activate Mod 6
+                Activate Mod 7
               </h3>
               <div
                 class="page-documentation"
@@ -813,12 +813,12 @@ exports[`ActivateModDefinitionPage renders instructions 1`] = `
                   <div
                     class="card-title h5"
                   >
-                    Mod 6
+                    Mod 7
                   </div>
                   <code
                     class="packageId"
                   >
-                    test/mod-6
+                    test/mod-7
                   </code>
                 </span>
               </div>

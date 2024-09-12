@@ -18,13 +18,13 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { appApiMock } from "@/testUtils/appApiMock";
+import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
 import { validateRegistryId } from "@/types/helpers";
 import { type RetrieveRecipeResponse } from "@/types/contract";
 import {
@@ -38,6 +38,7 @@ import useActivateMod, {
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 registerDefaultWidgets();
 
@@ -68,12 +69,8 @@ function setupMod(modDefinition: ModDefinition) {
     },
   };
 
-  appApiMock
-    .onGet(API_PATHS.MOD(testModId))
-    .reply(200, modResponse)
-    // Databases, organizations, etc.
-    .onGet()
-    .reply(200, []);
+  appApiMock.onGet(API_PATHS.MOD(testModId)).reply(200, modResponse);
+  mockAllApiEndpoints();
 }
 
 beforeEach(() => {
@@ -162,15 +159,61 @@ describe("ActivateModDefinitionPage", () => {
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
-    await waitForEffect();
-    expect(activateModCallbackMock).toHaveBeenCalledWith(
-      {
-        modComponents: { "0": true },
-        optionsArgs: {},
-        integrationDependencies: [],
-      },
-      modDefinition,
-    );
+
+    await waitFor(() => {
+      expect(activateModCallbackMock).toHaveBeenCalledWith(
+        {
+          modComponents: { "0": true },
+          optionsArgs: {},
+          integrationDependencies: [],
+          personalDeployment: false,
+        },
+        modDefinition,
+      );
+    });
+  });
+
+  test("activate mod with personal deployment enabled", async () => {
+    const modDefinition = defaultModDefinitionFactory({
+      metadata: metadataFactory({
+        id: validateRegistryId("test/personal-deployment-mod"),
+        name: "Personal Deployment Mod",
+      }),
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          label: "Personal Deployment Mod Component",
+        }),
+      ],
+    });
+
+    appApiMock
+      .onGet(API_PATHS.FEATURE_FLAGS)
+      .reply(200, { flags: [FeatureFlags.MOD_PERSONAL_SYNC] });
+
+    setupMod(modDefinition);
+
+    const { container } = render(<ActivateModDefinitionPageWrapper />);
+
+    await expect(
+      screen.findByText("Synchronize Settings"),
+    ).resolves.toBeInTheDocument();
+
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- Boolean Widget needs a better selector
+    await userEvent.click(container.querySelector(".switch")!);
+
+    await userEvent.click(screen.getByText("Activate"));
+
+    await waitFor(() => {
+      expect(activateModCallbackMock).toHaveBeenCalledWith(
+        {
+          modComponents: { "0": true },
+          optionsArgs: {},
+          integrationDependencies: [],
+          personalDeployment: true,
+        },
+        modDefinition,
+      );
+    });
   });
 
   test("user reject permissions", async () => {
@@ -195,11 +238,10 @@ describe("ActivateModDefinitionPage", () => {
     render(<ActivateModDefinitionPageWrapper />);
     await waitForEffect();
     await userEvent.click(screen.getByText("Activate"));
-    await waitForEffect();
 
-    expect(
-      screen.getByText("You must accept browser permissions to activate"),
-    ).toBeVisible();
+    await expect(
+      screen.findByText("You must accept browser permissions to activate"),
+    ).resolves.toBeVisible();
   });
 
   test("renders instructions", async () => {
@@ -213,9 +255,10 @@ describe("ActivateModDefinitionPage", () => {
     setupMod(mod);
     const { asFragment } = render(<ActivateModDefinitionPageWrapper />);
 
-    await waitForEffect();
+    await expect(
+      screen.findByText("These are some instructions"),
+    ).resolves.toBeVisible();
 
-    expect(screen.getByText("These are some instructions")).toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
   });
 });

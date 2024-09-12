@@ -184,6 +184,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: prettier # only run the prettier hook since eslint is already run in the lint job
 
   end-to-end-tests:
     name: end-to-end-tests
@@ -196,7 +198,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: end-to-end-tests
-    # Allow depndabot to append the comment to the PR
+    # Allow dependabot to append the comment to the PR
     permissions:
       pull-requests: write
     steps:
