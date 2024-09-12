@@ -18,7 +18,7 @@
 import axios from "axios";
 import { lexicon, transformLexicon } from "@/telemetry/lexicon";
 
-async function uploadLexicon() {
+async function uploadMixpanelLexicon() {
   const transformedLexicon = transformLexicon(lexicon);
 
   const {
@@ -57,4 +57,4 @@ async function uploadLexicon() {
   }
 }
 
-void uploadLexicon();
+void uploadMixpanelLexicon();
