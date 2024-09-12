@@ -42,11 +42,11 @@ const TeamTrialBanner: React.FunctionComponent = () => {
           teamTrialStatus === TeamTrialStatus.EXPIRED ? "danger" : "warning"
         }
       >
-        Your team trial is{" "}
+        {"Your team trial is "}
         {teamTrialStatus === TeamTrialStatus.EXPIRED
           ? "expired!"
-          : "in progress."}{" "}
-        Talk to an onboarding specialist now to upgrade. Schedule a time{" "}
+          : "in progress."}
+        {" Talk to an onboarding specialist now to upgrade. Schedule a time "}
         <TrialCallToActionLink />
       </Banner>
     </Collapse>
