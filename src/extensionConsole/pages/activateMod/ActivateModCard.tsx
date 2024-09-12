@@ -18,7 +18,7 @@
 import styles from "./ActivateModCard.module.scss";
 
 import React, { useState } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import useActivateModWizard from "@/activation/useActivateModWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch } from "react-redux";
