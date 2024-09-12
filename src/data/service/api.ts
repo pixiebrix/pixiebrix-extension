@@ -33,6 +33,7 @@ import {
   type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
   UserRole,
+  type DeploymentPayload,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -422,6 +423,13 @@ export const appApi = createApi({
       }),
       providesTags: ["Deployments"],
     }),
+    createUserDeployment: builder.mutation<Deployment, DeploymentPayload>({
+      query: (data) => ({
+        url: API_PATHS.USER_DEPLOYMENTS,
+        method: "post",
+        data,
+      }),
+    }),
   }),
 });
 
@@ -451,5 +459,6 @@ export const {
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
   useGetDeploymentsQuery,
+  useCreateUserDeploymentMutation,
   util,
 } = appApi;

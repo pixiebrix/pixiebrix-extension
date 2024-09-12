@@ -16,6 +16,7 @@
  */
 
 import type { RegistryId } from "@/types/registryTypes";
+import { type paths } from "@/types/swagger";
 
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
@@ -33,6 +34,8 @@ export const API_PATHS = {
   DEPLOYMENTS: "/api/deployments/",
   DEPLOYMENT_ALERTS: (deploymentId: string) =>
     `/api/deployments/${deploymentId}/alerts/`,
+
+  USER_DEPLOYMENTS: "/api/me/deployments/" satisfies keyof paths,
 
   FEATURE_FLAGS: "/api/me/",
 

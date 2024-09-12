@@ -124,6 +124,10 @@ export type Deployment = components["schemas"]["DeploymentDetail"] & {
   };
 };
 
+export type DeploymentPayload = Partial<Deployment> & {
+  includeDependencies?: boolean;
+};
+
 /**
  * Metadata for an editable package in the registry. See PackageMetaSerializer.
  */

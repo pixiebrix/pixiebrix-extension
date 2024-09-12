@@ -26,11 +26,16 @@ import { deactivateMod } from "@/store/deactivateUtils";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
-import { useCreateDatabaseMutation } from "@/data/service/api";
+import {
+  useCreateDatabaseMutation,
+  useCreateUserDeploymentMutation,
+} from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
+import { type DeploymentPayload } from "@/types/contract";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 export type ActivateResult = {
   success: boolean;
@@ -78,6 +83,7 @@ function useActivateMod(
   const activatedModComponents = useSelector(selectActivatedModComponents);
 
   const [createDatabase] = useCreateDatabaseMutation();
+  const [createUserDeployment] = useCreateUserDeploymentMutation();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -162,6 +168,18 @@ function useActivateMod(
           }),
         );
 
+        const data: DeploymentPayload = {
+          package_version: modDefinition.metadata.version,
+          name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+          services: integrationDependencies.flatMap((integrationDependency) =>
+            integrationDependency.integrationId === PIXIEBRIX_INTEGRATION_ID ||
+            integrationDependency.configId == null
+              ? []
+              : [{ auth: integrationDependency.configId }],
+          ),
+          options_config: optionsArgs,
+        };
+        await createUserDeployment(data);
         reloadModsEveryTab();
       } catch (error) {
         const errorMessage = getErrorMessage(error);
@@ -170,12 +188,10 @@ function useActivateMod(
           error,
         });
 
-        if (typeof errorMessage === "string") {
-          return {
-            success: false,
-            error: errorMessage,
-          };
-        }
+        return {
+          success: false,
+          error: errorMessage,
+        };
       }
 
       return {
@@ -183,11 +199,12 @@ function useActivateMod(
       };
     },
     [
-      createDatabase,
-      dispatch,
       activatedModComponents,
       source,
       checkPermissions,
+      dispatch,
+      createUserDeployment,
+      createDatabase,
     ],
   );
 }
