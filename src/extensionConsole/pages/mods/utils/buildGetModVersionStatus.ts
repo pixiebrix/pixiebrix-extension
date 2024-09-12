@@ -41,7 +41,6 @@ function isLatestVersion(
   }
 
   if (semver.lt(current.version, activated.version)) {
-    // TODO: In what case would the current version be less than the activated version?
     return true;
   }
 
