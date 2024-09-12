@@ -15,50 +15,93 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JSONSchema7 } from "json-schema";
-import { Events } from "@/telemetry/events";
-import { type ValueOf } from "type-fest";
+import { Events } from "./events";
+import { type JsonObject, type ValueOf } from "type-fest";
 
-type LexiconEntry = {
-  entityType: "event" | "custom_event";
-  name: ValueOf<typeof Events>;
-  schemaJson: JSONSchema7 & {
-    metadata: {
-      "com.mixpanel": {
-        displayName: string;
-        dropped: boolean;
-        hidden: boolean;
-        tags: string[];
-        platforms: string[];
-      };
-    };
-  };
+// TODO: verify me
+type LexiconPropertyType =
+  | "string"
+  | "integer"
+  | "number"
+  | "boolean"
+  | "date-time";
+
+const LexiconTags = {
+  PAGE_EDITOR: "page editor",
+} as const;
+
+type LexiconTag = ValueOf<typeof LexiconTags>;
+
+interface LexiconProperty {
+  type: LexiconPropertyType;
+  description: string;
+  examples?: unknown[];
+  displayName?: string;
+}
+
+interface LexiconEventEntry {
+  description: string;
+  properties?: Record<string, LexiconProperty>;
+  tags?: LexiconTag[];
+  displayName?: string;
+}
+
+type LexiconMap = {
+  [K in keyof typeof Events]: LexiconEventEntry;
 };
 
-type CompleteLexiconMap = {
-  [K in ValueOf<typeof Events>]: LexiconEntry;
-};
-
-const LexiconMap: CompleteLexiconMap = {
-  [Events.MOD_ACTIVATE]: {
-    entityType: "event",
-    name: Events.MOD_ACTIVATE,
-    schemaJson: {
-      $schema: "http://json-schema.org/draft-07/schema",
-      description:
-        "Triggered when a mod is successfully activated via the Activate Wizard or via in-Marketplace Activation.\n\n`StarterBrickActivate` will often be reported along with this event (starter bricks are activated in the process of activating the mod).",
-      metadata: {
-        "com.mixpanel": {
-          displayName: "ModActivate",
-          dropped: false,
-          hidden: false,
-          platforms: [],
-          tags: ["mod activation"],
-        },
-      },
-      properties: {},
-      additionalProperties: true,
-      required: [],
-    },
+// @ts-expect-error -- TODO: Incrementally add more events to the Lexicon
+export const lexicon: LexiconMap = {
+  BRICK_ADD: {
+    description:
+      'Triggered when a user successfully adds a brick to a Mod in the Page Editor via clicking "Add" or "Add brick" in the Add Brick modal.',
+    tags: [LexiconTags.PAGE_EDITOR],
   },
 };
+
+// Function to transform LexiconMap to Mixpanel Lexicon format
+export function transformLexicon(lexiconMap: LexiconMap): JsonObject {
+  const entries = Object.entries(lexiconMap).map(
+    ([eventKey, entry]: [keyof typeof Events, LexiconEventEntry]) => ({
+      entityType: "event",
+      // eslint-disable-next-line security/detect-object-injection -- eventKey is a constant
+      name: Events[eventKey],
+      schemaJson: {
+        $schema: "http://json-schema.org/draft-07/schema",
+        description: entry.description,
+        additionalProperties: true,
+        metadata: {
+          "com.mixpanel": {
+            tags: entry.tags,
+            displayName:
+              entry.displayName || Events[eventKey as keyof typeof Events],
+            hidden: false,
+            dropped: false,
+          },
+        },
+        properties: entry.properties
+          ? Object.fromEntries(
+              Object.entries(entry.properties).map(([propName, prop]) => [
+                propName,
+                {
+                  type: prop.type,
+                  description: prop.description,
+                  examples: prop.examples,
+                  metadata: {
+                    "com.mixpanel": {
+                      displayName: prop.displayName || propName,
+                    },
+                  },
+                },
+              ]),
+            )
+          : undefined,
+      },
+    }),
+  );
+
+  return {
+    entries,
+    truncate: false,
+  };
+}
