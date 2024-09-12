@@ -35,6 +35,7 @@ import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
 import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
@@ -71,7 +72,8 @@ const Status: React.VoidFunctionComponent<{
 
   if (showActivate) {
     return (
-      <Button
+      <TrialAwareButton
+        modId={modId}
         size="sm"
         variant="outline-primary"
         onClick={() => {
@@ -84,13 +86,14 @@ const Status: React.VoidFunctionComponent<{
         }}
       >
         Activate
-      </Button>
+      </TrialAwareButton>
     );
   }
 
   if (hasUpdate && showReactivate) {
     return (
-      <Button
+      <TrialAwareButton
+        modId={modId}
         size="sm"
         variant="info"
         onClick={() => {
@@ -103,7 +106,7 @@ const Status: React.VoidFunctionComponent<{
         }}
       >
         <FontAwesomeIcon icon={faSync} /> Update
-      </Button>
+      </TrialAwareButton>
     );
   }
 

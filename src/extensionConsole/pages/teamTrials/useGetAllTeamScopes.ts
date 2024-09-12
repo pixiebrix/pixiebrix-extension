@@ -21,7 +21,10 @@ import { useMemo } from "react";
 function useGetAllTeamScopes() {
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
-  return useMemo(() => organizations.map((org) => org.scope), [organizations]);
+  return useMemo(
+    () => organizations.map((org) => org.scope).filter((x) => x != null),
+    [organizations],
+  );
 }
 
 export default useGetAllTeamScopes;

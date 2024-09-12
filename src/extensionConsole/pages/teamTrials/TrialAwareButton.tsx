@@ -16,9 +16,11 @@
  */
 
 import TrialCallToActionLink from "@/extensionConsole/pages/teamTrials/TrialCallToActionLink";
+import useGetAllTeamScopes from "@/extensionConsole/pages/teamTrials/useGetAllTeamScopes";
 import useTeamTrialStatus, {
   TeamTrialStatus,
 } from "@/extensionConsole/pages/teamTrials/useTeamTrialStatus";
+import { type RegistryId } from "@/types/registryTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { type MutableRefObject, useState } from "react";
@@ -41,18 +43,30 @@ export const TrialExpiredTooltip = (
   </Tooltip>
 );
 
-export const TrialAwareButton = (
-  {
-    icon,
-    disabled: propsDisabled,
-    children,
-    ...buttonProps
-  }: ButtonProps & { icon?: IconProp },
-  outerRef: MutableRefObject<HTMLButtonElement>,
-) => {
+function shouldDisableButton({
+  isExpired,
+  modId,
+  teamScopes,
+}: {
+  isExpired: boolean;
+  modId: RegistryId;
+  teamScopes: string[];
+}) {
+  return isExpired && teamScopes.some((scope) => modId.startsWith(scope));
+}
+
+export const TrialAwareButton = ({
+  modId,
+  icon,
+  disabled: propsDisabled,
+  children,
+  ...buttonProps
+}: ButtonProps & { icon?: IconProp; modId: RegistryId }) => {
   const [show, setShow] = useState(false);
   const isExpired = useTeamTrialStatus() === TeamTrialStatus.EXPIRED;
-  const disabled = isExpired || propsDisabled;
+  const teamScopes = useGetAllTeamScopes();
+  const disabled =
+    shouldDisableButton({ isExpired, modId, teamScopes }) || propsDisabled;
 
   return (
     <OverlayTrigger
@@ -69,12 +83,7 @@ export const TrialAwareButton = (
     >
       {({ ref: overlayRef, ...overlayProps }) => (
         <span ref={overlayRef} {...overlayProps}>
-          <Button
-            ref={outerRef}
-            variant="primary"
-            disabled={disabled}
-            {...buttonProps}
-          >
+          <Button variant="primary" disabled={disabled} {...buttonProps}>
             {icon && (
               <>
                 <FontAwesomeIcon icon={icon} />
