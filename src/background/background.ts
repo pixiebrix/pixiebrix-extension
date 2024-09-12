@@ -49,6 +49,7 @@ import backgroundPlatform from "@/background/backgroundPlatform";
 import { initFeatureFlagBackgroundListeners } from "@/auth/featureFlagStorage";
 import initTabListener from "./tabs";
 import { initApiClient } from "@/data/service/apiClient";
+import initTeamTrialUpdater from "@/background/teamTrialUpdater";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
@@ -69,6 +70,7 @@ initFeatureFlagBackgroundListeners();
 initContextMenus();
 initBrowserCommands();
 initDeploymentUpdater();
+initTeamTrialUpdater();
 initTheme();
 initWelcomeMods();
 initApiClient();

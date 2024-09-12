@@ -83,3 +83,13 @@ async function syncActivatedModComponents() {
     },
   );
 }
+
+// Update interval for the team trial updater: 5 minutes
+const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
+
+function initTeamTrialUpdater(): void {
+  setInterval(syncActivatedModComponents, UPDATE_INTERVAL_MS);
+  void syncActivatedModComponents();
+}
+
+export default initTeamTrialUpdater;
