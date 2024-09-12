@@ -25,12 +25,34 @@ const LexiconTags = {
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
 
+/**
+ * Entry for a single event in the Mixpanel Lexicon, used to communicate the intended use of the event to
+ * non-technical stakeholders.
+ * See https://docs.mixpanel.com/docs/data-governance/lexicon for more information on the Mixpanel Lexicon and it's
+ * intended use.
+ */
 interface LexiconEventEntry {
+  /**
+   * Description of the event that displays in the Mixpanel interface. Good descriptions describe what the event is,
+   * specifically when and/or where in the UI it's triggered, and what the implications of the event being triggered
+   * are (e.g. does clicking a button mean that something was successful? Or does it just represent the click itself?).
+   */
   description: string;
+  /**
+   * Tags to categorize the event in the Mixpanel interface. Typically used to group related events together.
+   */
   tags?: LexiconTag[];
+  /**
+   * Per Mixpanel docs, the name for the event that displays in the Mixpanel interface. If not provided, the event name is used.
+   * Typically used to provide a more human-readable name for the event, or to accommodate legacy event names. (For context,
+   * event names cannot be changed once they are reported to Mixpanel, but display names can be changed at any time.)
+   */
   displayName?: string;
 }
 
+/**
+ * Map of Mixpanel event names to Lexicon event entries.
+ */
 type LexiconMap = {
   [K in keyof typeof Events]: LexiconEventEntry;
 };
@@ -44,7 +66,9 @@ export const lexicon: LexiconMap = {
   },
 };
 
-// Function to transform LexiconMap to Json format for use with the Mixpanel Lexicon API
+/**
+ * Transforms a LexiconMap into a JSON schema that can be used in the request body to upload the Lexicon to Mixpanel.
+ */
 export function transformLexicon(lexiconMap: LexiconMap): JSONSchema {
   const entries = Object.entries(lexiconMap).map(
     ([eventKey, entry]: [keyof typeof Events, LexiconEventEntry]) => ({
