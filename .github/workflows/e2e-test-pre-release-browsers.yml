@@ -18,7 +18,7 @@ jobs:
   slack-notification:
     needs: end-to-end-tests
     runs-on: ubuntu-latest
-    if: ${{ job.status == 'failure' }}
+    if: ${{ always() && (needs.end-to-end-tests.result == 'failure') }}
     steps:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
