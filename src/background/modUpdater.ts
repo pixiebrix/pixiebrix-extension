@@ -150,10 +150,14 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
  * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod updated
  */
-function updateMod(
+export function updateMod(
   modDefinition: ModDefinition,
   { options: modComponentState, editor: editorState }: ActivatedModState,
 ): ActivatedModState {
+  console.log({
+    modComponentState: JSON.stringify(modComponentState, null, 2),
+  });
+
   const {
     modComponentState: nextModComponentState,
     editorState: nextEditorState,

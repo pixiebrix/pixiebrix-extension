@@ -58,9 +58,10 @@ function deactivateMod(
       modComponentState: nextModComponentState,
       editorState: nextEditorState,
     } = deactivateModComponent(activatedModComponent.id, {
-      modComponentState,
-      editorState,
+      modComponentState: _nextModComponentState,
+      editorState: _nextEditorState,
     });
+
     _nextModComponentState = nextModComponentState;
     _nextEditorState = nextEditorState;
 

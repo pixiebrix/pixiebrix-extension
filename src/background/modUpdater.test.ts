@@ -18,9 +18,9 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {
-  deactivateMod,
   fetchModUpdates,
   getActivatedMarketplaceModVersions,
+  updateMod,
   updateModsIfForceUpdatesAvailable,
 } from "@/background/modUpdater";
 import reportError from "@/telemetry/reportError";
@@ -32,10 +32,10 @@ import {
   modMetadataFactory,
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import type { RegistryId, SemVerString } from "@/types/registryTypes";
+import type { SemVerString } from "@/types/registryTypes";
 import {
-  starterBrickDefinitionFactory,
   modDefinitionWithVersionedStarterBrickFactory,
+  defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/editorStorage";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
@@ -230,21 +230,25 @@ describe("fetchModUpdates function", () => {
   });
 });
 
-describe("deactivateMod function", () => {
-  let modToDeactivate: ActivatedModComponent["_recipe"];
+describe("updateMod function", () => {
+  const modToUpdate = defaultModDefinitionFactory();
+  let modComponentToDeactivate1: ActivatedModComponent;
+  let modComponentToDeactivate2: ActivatedModComponent;
 
   beforeEach(async () => {
-    modToDeactivate = modMetadataFactory({});
+    const modToDeactivate = modMetadataFactory(modToUpdate.metadata);
+    modComponentToDeactivate1 = activatedModComponentFactory({
+      _recipe: modToDeactivate,
+    });
+    modComponentToDeactivate2 = activatedModComponentFactory({
+      _recipe: modToDeactivate,
+    });
     const anotherMod = modMetadataFactory({});
 
     await saveModComponentState({
       activatedModComponents: [
-        activatedModComponentFactory({
-          _recipe: modToDeactivate,
-        }),
-        activatedModComponentFactory({
-          _recipe: modToDeactivate,
-        }),
+        modComponentToDeactivate1,
+        modComponentToDeactivate2,
         activatedModComponentFactory({
           _recipe: anotherMod,
         }),
@@ -252,63 +256,23 @@ describe("deactivateMod function", () => {
     });
   });
 
-  it("should remove the mod components from the options state", async () => {
+  it("should uninstall the context menus", async () => {
     const priorOptionsState = await getModComponentState();
     const priorEditorState = await getEditorState();
 
-    const {
-      reduxState: { options: resultingState },
-      deactivatedModComponents,
-    } = deactivateMod(modToDeactivate!.id, {
+    updateMod(modToUpdate, {
       options: priorOptionsState,
       editor: priorEditorState,
     });
-
-    expect(deactivatedModComponents).toHaveLength(2);
-    expect(deactivatedModComponents[0]!._recipe!.id).toEqual(
-      modToDeactivate!.id,
-    );
-    expect(deactivatedModComponents[1]!._recipe!.id).toEqual(
-      modToDeactivate!.id,
-    );
-    expect(resultingState.activatedModComponents).toHaveLength(1);
 
     // Verify that deactivate removes the context menu UI globally. See call for explanation of why that's necessary.
     expect(uninstallContextMenuMock).toHaveBeenCalledTimes(2);
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      modComponentId: deactivatedModComponents[0]!.id,
+      modComponentId: modComponentToDeactivate1.id,
     });
     expect(uninstallContextMenuMock).toHaveBeenCalledWith({
-      modComponentId: deactivatedModComponents[1]!.id,
+      modComponentId: modComponentToDeactivate2.id,
     });
-  });
-
-  it("should do nothing if mod id does not have any activated mod components", async () => {
-    const starterBrick = starterBrickDefinitionFactory();
-    const modComponent = activatedModComponentFactory({
-      extensionPointId: starterBrick.metadata!.id,
-      _recipe: modMetadataFactory({}),
-    });
-
-    await saveModComponentState({
-      activatedModComponents: [modComponent],
-    });
-
-    const priorOptionsState = await getModComponentState();
-    const priorEditorState = await getEditorState();
-
-    const {
-      reduxState: { options: resultingState },
-      deactivatedModComponents,
-    } = deactivateMod("@test/id-doesnt-exist" as RegistryId, {
-      options: priorOptionsState,
-      editor: priorEditorState,
-    });
-
-    expect(deactivatedModComponents).toEqual([]);
-    expect(resultingState.activatedModComponents).toEqual(
-      priorOptionsState.activatedModComponents,
-    );
   });
 });
 
