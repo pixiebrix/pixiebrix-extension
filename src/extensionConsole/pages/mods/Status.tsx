@@ -95,6 +95,7 @@ const Status: React.VoidFunctionComponent<{
       <Button
         size="sm"
         variant="info"
+        className="text-nowrap"
         onClick={() => {
           reportEvent(Events.START_MOD_ACTIVATE, {
             modId,
