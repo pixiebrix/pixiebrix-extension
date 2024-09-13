@@ -28,6 +28,7 @@ import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
+import type { SetRequired } from "type-fest";
 
 export type ActivateModComponentParam = {
   /**
@@ -65,7 +66,10 @@ export function mapModComponentDefinitionToActivatedModComponent<
   deployment,
   optionsArgs,
   integrationDependencies,
-}: ActivateModComponentParam): ActivatedModComponent<Config> {
+}: ActivateModComponentParam): SetRequired<
+  ActivatedModComponent<Config>,
+  "variables"
+> {
   const timestamp = nowTimestamp();
 
   const activatedModComponent = {
@@ -85,7 +89,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
     active: true,
     createTimestamp: timestamp,
     updateTimestamp: timestamp,
-  } as ActivatedModComponent<Config>;
+  } as SetRequired<ActivatedModComponent<Config>, "variables">;
 
   // Set optional fields only if the source mod component has a value. Normalizing the values
   // here makes testing harder because we then have to account for the normalized value in assertions.

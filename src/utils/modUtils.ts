@@ -186,6 +186,7 @@ export function emptyModOptionsDefinitionFactory(): Required<ModOptionsDefinitio
  */
 export function emptyModVariablesDefinitionFactory(): Required<ModVariablesDefinition> {
   return {
+    // An object schema with no properties allows additionalProperties: true by default
     schema: minimalSchemaFactory(),
   };
 }
