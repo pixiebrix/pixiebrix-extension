@@ -44,13 +44,6 @@ export const DELETE_STARTER_BRICK_MODAL_PROPS: ConfirmationModalProps = {
   submitCaption: "Delete",
 };
 
-export const DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalProps =
-  {
-    title: "Delete mod?",
-    message: "This action cannot be undone.",
-    submitCaption: "Delete",
-  };
-
 export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
   title: "Deactivate Mod?",
   message: (

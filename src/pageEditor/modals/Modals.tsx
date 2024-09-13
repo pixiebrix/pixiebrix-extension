@@ -20,10 +20,12 @@ import React from "react";
 import CreateModModal from "@/pageEditor/modListingPanel/modals/CreateModModal";
 import MoveFromModModal from "@/pageEditor/modListingPanel/modals/MoveFromModModal";
 import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
+import SaveAsNewModModal from "@/pageEditor/modListingPanel/modals/SaveAsNewModModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
     <MoveFromModModal />
+    <SaveAsNewModModal />
     <CreateModModal />
     <AddBrickModal />
     <SaveDataIntegrityErrorModal />
