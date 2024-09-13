@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import TeamTrialBanner from "@/extensionConsole/pages/TeamTrialBanner";
+import TeamTrialBanner from "@/extensionConsole/pages/teamTrials/TeamTrialBanner";
 import { render, screen, waitFor } from "@/extensionConsole/testHelpers";
 import { organizationResponseFactory } from "@/testUtils/factories/organizationFactories";
 import { type Timestamp } from "@/types/stringTypes";

@@ -18,7 +18,6 @@
 import styles from "./Status.module.scss";
 
 import React from "react";
-import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -35,6 +34,7 @@ import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
 import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
@@ -73,7 +73,8 @@ const Status: React.VoidFunctionComponent<{
 
   if (showActivate) {
     return (
-      <Button
+      <TrialAwareButton
+        modId={modId}
         size="sm"
         variant="outline-primary"
         onClick={() => {
@@ -86,13 +87,15 @@ const Status: React.VoidFunctionComponent<{
         }}
       >
         Activate
-      </Button>
+      </TrialAwareButton>
     );
   }
 
   if (hasUpdate && showReactivate && !(sharingSource.type === "Deployment")) {
     return (
-      <Button
+      <TrialAwareButton
+        modId={modId}
+        icon={faSync}
         size="sm"
         variant="info"
         className="text-nowrap"
@@ -105,8 +108,8 @@ const Status: React.VoidFunctionComponent<{
           history.push(API_PATHS.MOD_ACTIVATE(modId, true));
         }}
       >
-        <FontAwesomeIcon icon={faSync} /> Update
-      </Button>
+        Update
+      </TrialAwareButton>
     );
   }
 
