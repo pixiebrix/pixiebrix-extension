@@ -29,16 +29,16 @@ import { type RegistryId } from "@/types/registryTypes";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { type StylesConfig } from "react-select";
-import { UserRole } from "@/data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 import { getScopeAndId } from "@/utils/registryUtils";
 import useAsyncEffect from "use-async-effect";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const editorRoles = new Set<number>([
-  UserRole.admin,
-  UserRole.developer,
-  UserRole.manager,
+  LegacyUserRole.admin,
+  LegacyUserRole.developer,
+  LegacyUserRole.manager,
 ]);
 
 const emptyObject = {} as const;

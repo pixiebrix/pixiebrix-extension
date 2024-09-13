@@ -24,7 +24,7 @@ import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
 import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
 import { type ControlRoom } from "@/data/model/ControlRoom";
 import { type UserMilestone } from "@/data/model/UserMilestone";
-import { type UserRole } from "@/data/model/UserRole";
+import { type LegacyUserRole } from "@/data/model/UserRole";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 
@@ -182,7 +182,7 @@ export type AuthUserOrganization = {
   /**
    * The user's role within the organization.
    */
-  role: UserRole;
+  role: LegacyUserRole;
   /**
    * The organization's brick scope, or null if not set.
    */

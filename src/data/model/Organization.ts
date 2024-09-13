@@ -24,8 +24,8 @@ import {
   type OrganizationTheme,
 } from "@/data/model/OrganizationTheme";
 import {
-  UserRole,
-  type UserRoleNameType,
+  LegacyUserRole,
+  type UserRoleType,
   transformUserRoleResponse,
 } from "@/data/model/UserRole";
 import { validateUUID } from "@/types/helpers";
@@ -41,7 +41,6 @@ export type Organization = {
    * The organization's name.
    */
   organizationName: string;
-
   /**
    * The organization's members.
    */
@@ -53,7 +52,7 @@ export type Organization = {
   /**
    * The organization's default role.
    */
-  defaultRole: UserRoleNameType | null;
+  defaultRole: UserRoleType | null;
   /**
    * The organization's partner.
    */
@@ -69,10 +68,8 @@ export type Organization = {
 
   trialEndTimestamp: Timestamp | null;
 
-  // The `role` property is added in the Redux RTK definition for getOrganizations (see api.ts)
-  // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if they have
-  // a Member or Developer role on the team
-  role: UserRole;
+  // The `isAdmin` property is added in the Redux RTK definition for getOrganizations (see api.ts)
+  isAdmin: boolean;
 };
 
 export function transformOrganizationResponse(
@@ -99,13 +96,10 @@ export function transformOrganizationResponse(
     // Currently API returns all members only for the organization where the user is an admin,
     // hence if the user is an admin, they will have role === UserRole.admin,
     // otherwise there will be no other members listed (no member with role === UserRole.admin).
-
-    // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if
-    // they have a Member or Developer role on the team
-    role: apiOrganization.members?.some(
-      (member: { role: UserRole }) => member.role === UserRole.admin,
-    )
-      ? UserRole.admin
-      : UserRole.restricted,
+    isAdmin:
+      apiOrganization.members?.some(
+        (member: { role: LegacyUserRole }) =>
+          member.role === LegacyUserRole.admin,
+      ) ?? false,
   }));
 }

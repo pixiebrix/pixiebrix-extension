@@ -18,7 +18,7 @@
 import { type UUID } from "@/types/stringTypes";
 import {
   transformUserRoleResponse,
-  type UserRoleNameType,
+  type UserRoleType,
 } from "@/data/model/UserRole";
 import {
   type ControlRoom,
@@ -33,7 +33,7 @@ export type MeOrganizationMembership = {
    */
   organizationId: UUID;
   organizationName: string;
-  userOrganizationRole: UserRoleNameType;
+  userOrganizationRole: UserRoleType;
   /**
    * Whether the (parent) user is a manager of one or more team deployments for the organization
    */

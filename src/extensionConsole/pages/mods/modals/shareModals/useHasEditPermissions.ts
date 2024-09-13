@@ -21,9 +21,12 @@ import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { useSelector } from "react-redux";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { UserRole } from "@/data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
-const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
+const editorRoles = new Set<number>([
+  LegacyUserRole.admin,
+  LegacyUserRole.developer,
+]);
 
 export default function useHasEditPermissions(
   modId: Nullishable<RegistryId>,

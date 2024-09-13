@@ -36,7 +36,7 @@ import {
 } from "@/data/service/responseTypeHelpers";
 import { type SetRequired } from "type-fest";
 import { padStart } from "lodash";
-import { UserRole } from "@/data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
@@ -50,7 +50,7 @@ export const organizationStateFactory = define<AuthUserOrganization>({
   name(n: number): string {
     return `Test Organization ${n}`;
   },
-  role: UserRole.developer,
+  role: LegacyUserRole.developer,
   scope(n: number): string {
     return `@organization-${n}`;
   },
@@ -72,31 +72,31 @@ export const authStateFactory = define<AuthState>({
   organizations() {
     return [
       organizationStateFactory({
-        role: UserRole.developer,
+        role: LegacyUserRole.developer,
       }),
       organizationStateFactory({
         name(n: number): string {
           return `Test Admin Organization ${n}`;
         },
-        role: UserRole.admin,
+        role: LegacyUserRole.admin,
       }),
       organizationStateFactory({
         name(n: number): string {
           return `Test Member Organization ${n}`;
         },
-        role: UserRole.member,
+        role: LegacyUserRole.member,
       }),
       organizationStateFactory({
         name(n: number): string {
           return `Test Restricted Organization ${n}`;
         },
-        role: UserRole.restricted,
+        role: LegacyUserRole.restricted,
       }),
       organizationStateFactory({
         name(n: number): string {
           return `Test Manager Organization ${n}`;
         },
-        role: UserRole.manager,
+        role: LegacyUserRole.manager,
       }),
     ];
   },

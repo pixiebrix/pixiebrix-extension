@@ -32,7 +32,6 @@ import notify from "@/utils/notify";
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
 import { type Organization } from "@/data/model/Organization";
-import { UserRole } from "@/data/model/UserRole";
 
 type DatabaseCreateModalProps = {
   show: boolean;
@@ -71,7 +70,7 @@ const initialValues: DatabaseConfig = {
 
 function getOrganizationOptions(organizations: Organization[]) {
   const organizationOptions = (organizations ?? [])
-    .filter((organization) => organization.role === UserRole.admin)
+    .filter((organization) => organization.isAdmin)
     .map((organization) => ({
       label: organization.organizationName,
       value: organization.organizationId,

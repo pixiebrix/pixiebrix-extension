@@ -18,7 +18,7 @@
 import { type RequiredOrganizationRoleResponse } from "@/data/service/responseTypeHelpers";
 import { type ValueOf } from "type-fest";
 
-export enum UserRole {
+export enum LegacyUserRole {
   member = 1,
   admin = 2,
   developer = 3,
@@ -26,7 +26,7 @@ export enum UserRole {
   manager = 5,
 }
 
-export const UserRoleName = {
+export const UserRole = {
   member: "member",
   admin: "admin",
   developer: "developer",
@@ -34,11 +34,11 @@ export const UserRoleName = {
   manager: "manager",
 } as const;
 
-export type UserRoleNameType = ValueOf<typeof UserRoleName>;
+export type UserRoleType = ValueOf<typeof UserRole>;
 
 export function transformUserRoleResponse(
   response: RequiredOrganizationRoleResponse,
-): UserRoleNameType {
+): UserRoleType {
   switch (response) {
     case 1: {
       return "member";
@@ -68,27 +68,27 @@ export function transformUserRoleResponse(
 }
 
 export function convertToUserRole(
-  userOrganizationMembershipRole: UserRoleNameType,
-): UserRole {
+  userOrganizationMembershipRole: UserRoleType,
+): LegacyUserRole {
   switch (userOrganizationMembershipRole) {
     case "member": {
-      return UserRole.member;
+      return LegacyUserRole.member;
     }
 
     case "admin": {
-      return UserRole.admin;
+      return LegacyUserRole.admin;
     }
 
     case "developer": {
-      return UserRole.developer;
+      return LegacyUserRole.developer;
     }
 
     case "restricted": {
-      return UserRole.restricted;
+      return LegacyUserRole.restricted;
     }
 
     case "manager": {
-      return UserRole.manager;
+      return LegacyUserRole.manager;
     }
 
     default: {

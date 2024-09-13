@@ -20,7 +20,7 @@ import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactori
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
-import { UserRole } from "@/data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 const userScope = "my-test-user";
 
@@ -48,7 +48,7 @@ describe("buildGetCanEditModScope", () => {
 
   it("returns false is user is not an editor role", () => {
     const organization = organizationStateFactory({
-      role: UserRole.member,
+      role: LegacyUserRole.member,
     });
     const canEditModScope = buildGetCanEditModScope(userScope, [organization]);
     const mod = modDefinitionFactory({

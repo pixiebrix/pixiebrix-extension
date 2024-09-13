@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UserRole } from "@/data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 import { uuidv4 } from "@/types/helpers";
 import { type components } from "@/types/swagger";
 import { define } from "cooky-cutter";
@@ -32,7 +32,7 @@ export const organizationResponseFactory = define<
         name: "Admin User",
         email: "admin@example.com",
       },
-      role: UserRole.admin,
+      role: LegacyUserRole.admin,
       groups: [],
     },
     {
@@ -40,7 +40,7 @@ export const organizationResponseFactory = define<
         name: "Manager User",
         email: "manager@example.com",
       },
-      role: UserRole.manager,
+      role: LegacyUserRole.manager,
       groups: [],
     },
     {
@@ -48,7 +48,7 @@ export const organizationResponseFactory = define<
         name: "Member User",
         email: "member@example.com",
       },
-      role: UserRole.member,
+      role: LegacyUserRole.member,
       groups: [],
     },
     {
@@ -56,7 +56,7 @@ export const organizationResponseFactory = define<
         name: "Developer User",
         email: "developer@example.com",
       },
-      role: UserRole.developer,
+      role: LegacyUserRole.developer,
       groups: [],
     },
     {
@@ -64,7 +64,7 @@ export const organizationResponseFactory = define<
         name: "Restricted User",
         email: "restricted@example.com",
       },
-      role: UserRole.developer,
+      role: LegacyUserRole.developer,
       groups: [],
     },
   ],

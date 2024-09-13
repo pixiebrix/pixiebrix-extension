@@ -24,7 +24,7 @@ import {
   type OrganizationMemberUser,
 } from "@/data/model/OrganizationMemberUser";
 import {
-  type UserRoleNameType,
+  type UserRoleType,
   transformUserRoleResponse,
 } from "@/data/model/UserRole";
 import { type components } from "@/types/swagger";
@@ -32,7 +32,7 @@ import { type components } from "@/types/swagger";
 export type OrganizationMember = {
   memberId?: number;
   user?: OrganizationMemberUser;
-  role: UserRoleNameType;
+  role: UserRoleType;
   groups?: OrganizationMemberGroup[];
 };
 
