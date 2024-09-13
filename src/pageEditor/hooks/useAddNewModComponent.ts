@@ -21,7 +21,6 @@ import notify from "@/utils/notify";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
@@ -35,18 +34,17 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
-import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import {
+  type StarterBrickType,
+  StarterBrickTypes,
+} from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
-import { nowTimestamp } from "@/utils/timeUtils";
-import { type UUID } from "@/types/stringTypes";
-import { normalizeSemVerString } from "@/types/helpers";
-import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { getUnsavedModMetadataForFormState } from "@/pageEditor/utils";
 
-export type AddNewModComponent = (
-  adapter: ModComponentFormStateAdapter,
-) => void;
+export type AddNewModComponent = (starterBrickType: StarterBrickType) => void;
 
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
@@ -61,45 +59,30 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
   const getInitialModComponentFormState = useCallback(
     async (
-      adapter: ModComponentFormStateAdapter,
+      starterBrickType: StarterBrickType,
     ): Promise<ModComponentFormState> => {
+      const { selectNativeElement, fromNativeElement } =
+        adapter(starterBrickType);
+
       let element = null;
-      if (adapter.selectNativeElement) {
-        setInsertingStarterBrickType(adapter.starterBrickType);
-        element = await adapter.selectNativeElement(
-          inspectedTab,
-          suggestElements,
-        );
+      if (selectNativeElement) {
+        setInsertingStarterBrickType(starterBrickType);
+        element = await selectNativeElement(inspectedTab, suggestElements);
         setInsertingStarterBrickType(null);
       }
 
       const url = await getCurrentInspectedURL();
       const metadata = internalStarterBrickMetaFactory();
-      const initialFormState = adapter.fromNativeElement(
-        url,
-        metadata,
-        element,
-      );
+      const initialFormState = fromNativeElement(url, metadata, element);
 
-      initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
-        adapter.starterBrickType,
-      );
+      initialFormState.modComponent.brickPipeline =
+        getExampleBrickPipeline(starterBrickType);
 
       if (modMetadata) {
         initialFormState.modMetadata = modMetadata;
       } else {
-        // Create new mod metadata for standalone components
-        initialFormState.modMetadata = {
-          id: getStandaloneModComponentRuntimeModId(initialFormState.uuid),
-          name: initialFormState.label, // Changed from modComponent.name to label
-          description: "Created with the PixieBrix Page Editor",
-          version: normalizeSemVerString("1.0.0"),
-          sharing: {
-            public: false,
-            organizations: [] as UUID[],
-          },
-          updated_at: nowTimestamp(),
-        };
+        initialFormState.modMetadata =
+          getUnsavedModMetadataForFormState(initialFormState);
       }
 
       return initialFormState as ModComponentFormState;
@@ -108,24 +91,27 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   );
 
   return useCallback(
-    async (adapter: ModComponentFormStateAdapter) => {
-      if (adapter.flag && flagOff(adapter.flag)) {
+    async (starterBrickType: StarterBrickType) => {
+      const { label, flag, asDraftModComponent } = adapter(starterBrickType);
+
+      if (flag && flagOff(flag)) {
         dispatch(actions.betaError());
         return;
       }
 
       try {
-        const initialFormState = await getInitialModComponentFormState(adapter);
+        const initialFormState =
+          await getInitialModComponentFormState(starterBrickType);
 
         dispatch(actions.addModComponentFormState(initialFormState));
         dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          adapter.asDraftModComponent(initialFormState),
+          asDraftModComponent(initialFormState),
         );
 
-        if (adapter.starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
+        if (starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {
           // For convenience, open the side panel if it's not already open so that the user doesn't
           // have to manually toggle it
           void openSidePanel(inspectedTab.tabId);
@@ -136,19 +122,19 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         }
 
         notify.error({
-          message: `Error adding ${adapter.label.toLowerCase()}`,
+          message: `Error adding ${label.toLowerCase()}`,
           error,
         });
       }
 
       if (modMetadata) {
         reportEvent(Events.MOD_ADD_STARTER_BRICK, {
-          starterBrickType: adapter.starterBrickType,
+          starterBrickType,
           modId: modMetadata.id,
         });
       } else {
         reportEvent(Events.MOD_CREATE_NEW, {
-          type: adapter.starterBrickType,
+          type: starterBrickType,
         });
       }
     },

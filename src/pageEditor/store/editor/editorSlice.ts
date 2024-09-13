@@ -58,7 +58,7 @@ import {
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
-import { type Draft, produce } from "immer";
+import { castDraft, type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import {
@@ -76,7 +76,10 @@ import { removeUnusedDependencies } from "@/components/fields/schemaFields/integ
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
@@ -117,11 +120,12 @@ export const initialState: EditorState = {
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
-const cloneActiveModComponent = createAsyncThunk<
+const duplicateActiveModComponent = createAsyncThunk<
   void,
-  void,
-  { state: EditorRootState }
->("editor/cloneActiveModComponent", async (arg, thunkAPI) => {
+  { modMetadata?: ModMetadata } | void,
+  { state: EditorRootState & ModComponentsRootState }
+>("editor/cloneActiveModComponent", async (args, thunkAPI) => {
+  const { modMetadata } = args ?? {};
   const state = thunkAPI.getState();
   const newActiveModComponentFormState = await produce(
     selectActiveModComponentFormState(state),
@@ -129,12 +133,26 @@ const cloneActiveModComponent = createAsyncThunk<
       assertNotNullish(draft, "Active mod component form state not found");
       draft.uuid = uuidv4();
       draft.label += " (Copy)";
-      // Remove from its mod, if any (the user can add it to any mod after creation)
-      delete draft.modMetadata;
       // Re-generate instance IDs for all the bricks in the mod component
       draft.modComponent.brickPipeline = await normalizePipelineForEditor(
         draft.modComponent.brickPipeline,
       );
+
+      if (modMetadata != null) {
+        draft.modMetadata = modMetadata;
+        const componentFormStateOfDestinationMod =
+          state.editor.modComponentFormStates.find(
+            (formState) => formState.modMetadata?.id === modMetadata.id,
+          );
+        if (componentFormStateOfDestinationMod == null) {
+          return;
+        }
+
+        draft.optionsDefinition = castDraft(
+          componentFormStateOfDestinationMod.optionsDefinition,
+        );
+        draft.optionsArgs = componentFormStateOfDestinationMod.optionsArgs;
+      }
     },
   );
   assertNotNullish(
@@ -598,106 +616,12 @@ export const editorSlice = createSlice({
         formState.modMetadata = modMetadata;
       }
     },
-    showAddToModModal(state) {
-      state.visibleModalKey = ModalKey.ADD_TO_MOD;
-    },
-    addModComponentFormStateToMod(
+    showMoveFromModModal(
       state,
-      action: PayloadAction<{
-        modComponentId: UUID;
-        modMetadata: ModComponentBase["_recipe"];
-        keepLocalCopy: boolean;
-      }>,
+      action: PayloadAction<{ keepLocalCopy: boolean }>,
     ) {
-      const {
-        payload: { modComponentId, modMetadata, keepLocalCopy },
-      } = action;
-      const modComponentFormStateIndex = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentId,
-      );
-      if (modComponentFormStateIndex < 0) {
-        throw new Error(
-          "Unable to add mod component to mod, mod component form state not found",
-        );
-      }
-
-      const modComponentFormState =
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
-        state.modComponentFormStates[modComponentFormStateIndex]!;
-
-      const newId = uuidv4();
-      state.modComponentFormStates.push({
-        ...modComponentFormState,
-        uuid: newId,
-        modMetadata,
-        installed: false, // Can't "reset" this, only remove or save
-      });
-      state.dirty[newId] = true;
-
-      state.expandedModId = modMetadata?.id ?? null;
-
-      if (!keepLocalCopy) {
-        ensureBrickPipelineUIState(state, newId);
-        state.activeModComponentId = newId;
-        state.modComponentFormStates.splice(modComponentFormStateIndex, 1);
-        if (modComponentFormState?.uuid) {
-          delete state.dirty[modComponentFormState.uuid];
-          delete state.brickPipelineUIStateById[modComponentFormState.uuid];
-        }
-      }
-    },
-    showRemoveFromModModal(state) {
-      state.visibleModalKey = ModalKey.REMOVE_FROM_MOD;
-    },
-    removeModComponentFormStateFromMod(
-      state,
-      action: PayloadAction<{
-        modComponentId: UUID;
-        keepLocalCopy: boolean;
-      }>,
-    ) {
-      const { modComponentId, keepLocalCopy } = action.payload;
-      const modComponentFormStateIndex = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentId,
-      );
-      if (modComponentFormStateIndex < 0) {
-        throw new Error(
-          "Unable to remove mod component from mod, mod component form state not found",
-        );
-      }
-
-      const modComponentFormState =
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
-        state.modComponentFormStates[modComponentFormStateIndex]!;
-      assertNotNullish(
-        modComponentFormState.modMetadata,
-        "Mod component form state has no mod definition",
-      );
-      const modId = modComponentFormState.modMetadata.id;
-      state.deletedModComponentFormStatesByModId[modId] ??= [];
-
-      state.deletedModComponentFormStatesByModId[modId].push(
-        modComponentFormState,
-      );
-      state.modComponentFormStates.splice(modComponentFormStateIndex, 1);
-      delete state.dirty[modComponentId];
-      delete state.brickPipelineUIStateById[modComponentId];
-      state.activeModComponentId = null;
-
-      if (keepLocalCopy) {
-        const newId = uuidv4();
-        state.modComponentFormStates.push({
-          ...modComponentFormState,
-          uuid: newId,
-          modMetadata: undefined,
-        });
-        state.dirty[newId] = true;
-        ensureBrickPipelineUIState(state, newId);
-        state.activeModComponentId = newId;
-      }
-    },
-    showSaveAsNewModModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
+      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
+      state.visibleModalKey = ModalKey.MOVE_FROM_MOD;
     },
     clearDeletedModComponentFormStatesForMod(
       state,
@@ -731,10 +655,12 @@ export const editorSlice = createSlice({
     },
     showCreateModModal(
       state,
-      action: PayloadAction<{ keepLocalCopy: boolean }>,
+      action: PayloadAction<{ keepLocalCopy?: boolean }>,
     ) {
       state.visibleModalKey = ModalKey.CREATE_MOD;
-      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
+      if (action.payload.keepLocalCopy != null) {
+        state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
+      }
     },
     addNode(
       state,
@@ -1028,7 +954,7 @@ export const editorSlice = createSlice({
 
 export const actions = {
   ...editorSlice.actions,
-  cloneActiveModComponent,
+  duplicateActiveModComponent,
   checkAvailableActivatedModComponents,
   checkAvailableDraftModComponents,
   checkActiveModComponentAvailability,

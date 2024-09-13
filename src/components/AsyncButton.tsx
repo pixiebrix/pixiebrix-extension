@@ -18,12 +18,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, type ButtonProps } from "react-bootstrap";
 
-export type AsyncButtonProps = ButtonProps & {
-  onClick: // Don't simplify to (event: React.MouseEvent) => Promise<void> | void. Union necessary to allow
-  // callsites to pass in a function that returns a Promise<T>. (Because Typescript does not consider Promise<T>
-  // compatible with void return type.
+// Don't simplify to (event: React.MouseEvent) => Promise<void> | void. Union necessary to allow
+// callsites to pass in a function that returns a Promise<T>. (Because Typescript does not consider Promise<T>
+// compatible with void return type.
+export type AsyncButtonOnClick =
   | ((event: React.MouseEvent) => Promise<void>)
-    | ((event: React.MouseEvent) => void);
+  | ((event: React.MouseEvent) => void);
+
+export type AsyncButtonProps = ButtonProps & {
+  onClick: AsyncButtonOnClick;
   autoFocus?: boolean;
   ariaLabel?: string;
 };

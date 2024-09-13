@@ -39,19 +39,11 @@ const ModComponentListItem: React.FunctionComponent<
   isModComponentBase(modComponentSidebarItem) ? (
     <ActivatedModComponentListItem
       modComponent={modComponentSidebarItem}
-      isAvailable={
-        !availableActivatedModComponentIds ||
-        availableActivatedModComponentIds.includes(modComponentSidebarItem.id)
-      }
       isNested={isNested}
     />
   ) : (
     <DraftModComponentListItem
       modComponentFormState={modComponentSidebarItem}
-      isAvailable={
-        !availableDraftModComponentIds ||
-        availableDraftModComponentIds.includes(modComponentSidebarItem.uuid)
-      }
       isNested={isNested}
     />
   );

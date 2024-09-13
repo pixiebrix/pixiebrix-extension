@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import AsyncButton from "@/components/AsyncButton";
+import AsyncButton, { type AsyncButtonOnClick } from "@/components/AsyncButton";
 import cx from "classnames";
 import rootStyles from "./ActionButtons.module.scss";
 import styles from "./SaveButton.module.scss";
@@ -25,7 +25,7 @@ import { faSave } from "@fortawesome/free-solid-svg-icons";
 
 const SaveButton: React.FC<{
   ariaLabel?: string;
-  onClick: () => void;
+  onClick: AsyncButtonOnClick;
   disabled?: boolean;
 }> = ({ ariaLabel, onClick, disabled }) => (
   <AsyncButton

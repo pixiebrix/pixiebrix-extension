@@ -15,113 +15,128 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
 import {
+  actions as editorActions,
+  actions,
+} from "@/pageEditor/store/editor/editorSlice";
+import {
+  selectActivatedModMetadatas,
   selectActiveModComponentFormState,
   selectEditorModalVisibilities,
+  selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import notify from "@/utils/notify";
-import { Alert, Button, Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExclamationTriangle,
-  faHistory,
-} from "@fortawesome/free-solid-svg-icons";
 import { object, string } from "yup";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
-import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import type { RegistryId } from "@/types/registryTypes";
+import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { getUnsavedModMetadataForFormState } from "@/pageEditor/utils";
 
 type FormState = {
-  moveOrRemove: "move" | "remove";
+  modId: RegistryId | null;
 };
 
 const initialFormState: FormState = {
-  moveOrRemove: "move",
+  modId: null,
 };
 
 const formStateSchema = object({
-  moveOrRemove: string().oneOf(["move", "remove"]).required(),
+  modId: string().required(),
 });
 
+const NEW_MOD_ID = "@new" as RegistryId;
+
 const MoveFromModModal: React.FC = () => {
-  const { isRemoveFromModModalVisible: show } = useSelector(
+  const dispatch = useDispatch();
+
+  const { isMoveFromModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
-  const modComponentFormState = useSelector(selectActiveModComponentFormState);
-
-  const dispatch = useDispatch();
   const hideModal = useCallback(() => {
     dispatch(actions.hideModal());
   }, [dispatch]);
 
-  const onSubmit = useCallback<OnSubmit<FormState>>(
-    async ({ moveOrRemove }, helpers) => {
-      const keepLocalCopy = moveOrRemove === "move";
+  const modComponentFormState = useSelector(selectActiveModComponentFormState);
+  const activatedModMetadatas = useSelector(selectActivatedModMetadatas);
+  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
+  const onSubmit = useCallback<OnSubmit<Required<FormState>>>(
+    async ({ modId }, helpers) => {
+      assertNotNullish(
+        modComponentFormState,
+        "active mod component form state not found",
+      );
+      const modMetadata =
+        modId === NEW_MOD_ID
+          ? getUnsavedModMetadataForFormState(modComponentFormState)
+          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Field options created from the same set
+            activatedModMetadatas.find((metadata) => metadata.id === modId)!;
       try {
         const modComponentId = modComponentFormState?.uuid;
         assertNotNullish(
           modComponentId,
           "mod component id not found for active mod component",
         );
-        dispatch(
-          actions.removeModComponentFormStateFromMod({
-            modComponentId,
-            keepLocalCopy,
-          }),
-        );
+
+        dispatch(editorActions.duplicateActiveModComponent({ modMetadata }));
+
+        if (!keepLocalCopy) {
+          await removeModComponentFromStorage({ modComponentId });
+        }
+
         hideModal();
       } catch (error) {
         notify.error({
-          message: "Problem removing from mod",
+          message: `Problem ${
+            keepLocalCopy ? "copying to" : "moving from"
+          } mod`,
           error,
         });
       } finally {
         helpers.setSubmitting(false);
       }
     },
-    [modComponentFormState?.uuid, dispatch, hideModal],
+    [
+      modComponentFormState,
+      activatedModMetadatas,
+      dispatch,
+      keepLocalCopy,
+      hideModal,
+      removeModComponentFromStorage,
+    ],
   );
 
-  const radioItems: RadioItem[] = [
-    {
-      label: "Move the starter brick to stand-alone",
-      value: "move",
-    },
-    {
-      label: "Delete starter brick",
-      value: "remove",
-    },
-  ];
+  const selectOptions = useMemo(
+    () => [
+      { label: "➕ Create new mod...", value: NEW_MOD_ID },
+      ...activatedModMetadatas.map((metadata) => ({
+        label: metadata.name,
+        value: metadata.id,
+      })),
+    ],
+    [activatedModMetadatas],
+  );
 
   const renderBody: RenderBody = ({ values }) => (
     <Modal.Body>
       <ConnectedFieldTemplate
-        name="moveOrRemove"
-        as={RadioItemListWidget}
-        items={radioItems}
-        header="Move or delete the starter brick from the mod?"
+        name="modId"
+        hideLabel
+        description="Choose a mod"
+        as={SelectWidget}
+        options={selectOptions}
       />
-      {values.moveOrRemove === "remove" && (
-        <Alert variant="warning">
-          <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;The{" "}
-          <strong>
-            <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset{" "}
-          </strong>
-          action located on the mod&apos;s three-dot menu can be used to restore
-          the starter brick <strong>before saving the mod</strong>.
-        </Alert>
-      )}
     </Modal.Body>
   );
 
@@ -131,11 +146,11 @@ const MoveFromModModal: React.FC = () => {
         Cancel
       </Button>
       <Button
-        variant="danger"
+        variant="primary"
         type="submit"
         disabled={!isValid || isSubmitting}
       >
-        {values.moveOrRemove === "move" ? "Move" : "Remove"}
+        {keepLocalCopy ? "Copy" : "Move"}
       </Button>
     </Modal.Footer>
   );
@@ -144,7 +159,7 @@ const MoveFromModModal: React.FC = () => {
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Remove <em>{modComponentFormState?.label}</em> from mod{" "}
+          Move <em>{modComponentFormState?.label}</em> from mod{" "}
           <em>{modComponentFormState?.modMetadata?.name}</em>?
         </Modal.Title>
       </Modal.Header>

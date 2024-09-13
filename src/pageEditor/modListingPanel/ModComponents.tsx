@@ -30,21 +30,15 @@ import {
   selectActiveModId,
   selectExpandedModId,
   selectModComponentAvailability,
-  selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { useDispatch, useSelector } from "react-redux";
-import useSaveMod from "@/pageEditor/hooks/useSaveMod";
-import useResetMod from "@/pageEditor/hooks/useResetMod";
-import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import { useSelector } from "react-redux";
 import ModComponentListItem from "./ModComponentListItem";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModComponents: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
@@ -88,40 +82,11 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
-  const resetMod = useResetMod();
-  const deactivateMod = useDeactivateMod();
-
   const listItems = filteredSidebarItems.map((sidebarItem) => {
     if (isModSidebarItem(sidebarItem)) {
       const { modMetadata, modComponents } = sidebarItem;
       return (
-        <ModListItem
-          key={modMetadata.id}
-          modMetadata={modMetadata}
-          onSave={async () => {
-            assertNotNullish(activeModId, "Expected active mod id to save mod");
-            await saveMod(activeModId);
-          }}
-          isSaving={isSavingMod}
-          onReset={async () => {
-            assertNotNullish(
-              activeModId,
-              "Expected active mod id to reset mod",
-            );
-            await resetMod(activeModId);
-          }}
-          onDeactivate={async () => {
-            assertNotNullish(
-              activeModId,
-              "Expected active mod id to deactivate mod",
-            );
-            await deactivateMod({ modId: activeModId });
-          }}
-          onClone={async () => {
-            dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
-          }}
-        >
+        <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
           {modComponents.map((modComponentSidebarItem) => (
             <ModComponentListItem
               key={getModComponentItemId(modComponentSidebarItem)}

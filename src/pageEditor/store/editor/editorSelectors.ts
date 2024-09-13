@@ -267,11 +267,7 @@ export const selectModIsDirty =
     Boolean(modId && modIsDirtySelector(state, modId));
 
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
-  isAddToModModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_MOD,
-  isRemoveFromModModalVisible:
-    editor.visibleModalKey === ModalKey.REMOVE_FROM_MOD,
-  isSaveAsNewModModalVisible:
-    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
+  isMoveFromModModalVisible: editor.visibleModalKey === ModalKey.MOVE_FROM_MOD,
   isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
   isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BRICK,
   isSaveDataIntegrityErrorModalVisible:
@@ -514,6 +510,28 @@ export const selectModComponentAvailability = ({
   availableDraftModComponentIds,
   isPendingDraftModComponents,
 });
+
+const activatedModComponentIsAvailableSelector = createSelector(
+  ({ editor }: EditorRootState) => editor.availableActivatedModComponentIds,
+  (_state: EditorRootState, modComponentId: UUID) => modComponentId,
+  (availableActivatedModComponentIds, modComponentId) =>
+    availableActivatedModComponentIds.includes(modComponentId),
+);
+
+export const selectActivatedModComponentIsAvailable =
+  (modComponentId: UUID) => (state: EditorRootState) =>
+    activatedModComponentIsAvailableSelector(state, modComponentId);
+
+const draftModComponentIsAvailableSelector = createSelector(
+  ({ editor }: EditorRootState) => editor.availableDraftModComponentIds,
+  (_state: EditorRootState, modComponentId: UUID) => modComponentId,
+  (availableDraftModComponentIds, modComponentId) =>
+    availableDraftModComponentIds.includes(modComponentId),
+);
+
+export const selectDraftModComponentIsAvailable =
+  (modComponentId: UUID) => (state: EditorRootState) =>
+    draftModComponentIsAvailableSelector(state, modComponentId);
 
 export const selectKnownEventNamesForActiveModComponent = createSelector(
   selectActiveModComponentId,

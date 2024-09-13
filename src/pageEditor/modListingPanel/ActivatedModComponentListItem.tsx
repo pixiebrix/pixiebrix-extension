@@ -41,6 +41,7 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
+  selectActivatedModComponentIsAvailable,
   selectActiveModComponentFormState,
   selectActiveModId,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -59,9 +60,8 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
   modComponent: ModComponentBase;
-  isAvailable: boolean;
   isNested?: boolean;
-}> = ({ modComponent, isAvailable, isNested = false }) => {
+}> = ({ modComponent, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const { data: type } = useAsyncState(
@@ -81,6 +81,10 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   // Set the alternate background if this item isn't active, but either its mod or another item in its mod is active
   const hasActiveModBackground =
     !isActive && modId && modComponent._recipe?.id === modId;
+
+  const isAvailable = useSelector(
+    selectActivatedModComponentIsAvailable(modComponent.id),
+  );
 
   const selectHandler = useCallback(
     async (modComponent: ModComponentBase) => {

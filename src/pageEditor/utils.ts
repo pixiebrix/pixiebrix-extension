@@ -30,7 +30,10 @@ import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -43,6 +46,10 @@ import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+import { normalizeSemVerString } from "@/types/helpers";
+import { nowTimestamp } from "@/utils/timeUtils";
+import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export function mapModDefinitionUpsertResponseToModMetadata(
   unsavedModDefinition: UnsavedModDefinition,
@@ -263,5 +270,21 @@ export function selectPageEditorDimensions() {
     pageEditorHeight: window.innerHeight,
     pageEditorOrientation:
       window.innerWidth > window.innerHeight ? "landscape" : "portrait",
+  };
+}
+
+export function getUnsavedModMetadataForFormState(
+  formState: BaseFormState,
+): ModMetadata {
+  return {
+    id: getStandaloneModComponentRuntimeModId(formState.uuid),
+    name: formState.label,
+    description: "Created with the PixieBrix Page Editor",
+    version: normalizeSemVerString("1.0.0"),
+    sharing: {
+      public: false,
+      organizations: [] as UUID[],
+    },
+    updated_at: nowTimestamp(),
   };
 }

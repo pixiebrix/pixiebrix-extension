@@ -39,36 +39,21 @@ import {
   selectModIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import * as semver from "semver";
-import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
-import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { type ModMetadata } from "@/types/modComponentTypes";
+import ModActionMenu from "@/pageEditor/modListingPanel/actionMenus/ModActionMenu";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
-  onSave: () => Promise<void>;
-  isSaving: boolean;
-  onReset: () => Promise<void>;
-  onDeactivate: () => Promise<void>;
-  onClone: () => Promise<void>;
 }>;
 
-const ModListItem: React.FC<ModListItemProps> = ({
-  modMetadata,
-  children,
-  onSave,
-  isSaving,
-  onReset,
-  onDeactivate,
-  onClone,
-}) => {
+const ModListItem: React.FC<ModListItemProps> = ({ modMetadata, children }) => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-  const addNewModComponent = useAddNewModComponent(modMetadata);
 
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
@@ -122,18 +107,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
             />
           </span>
         )}
-        {isActive && (
-          <ActionMenu
-            labelRoot={name}
-            onSave={onSave}
-            onReset={onReset}
-            onDeactivate={onDeactivate}
-            onAddStarterBrick={addNewModComponent}
-            onClone={onClone}
-            isDirty={isDirty}
-            disabled={isSaving}
-          />
-        )}
+        {isActive && <ModActionMenu modMetadata={modMetadata} />}
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={modId}>
         <>{children}</>

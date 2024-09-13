@@ -41,23 +41,15 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import {
   selectActiveModComponentFormState,
   selectActiveModId,
+  selectDraftModComponentIsAvailable,
   selectModComponentIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
-import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
-import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
-import {
-  useRemoveModComponentFromStorage,
-  DEACTIVATE_MOD_MODAL_PROPS,
-  DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
-  DELETE_STARTER_BRICK_MODAL_PROPS,
-} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
-import { selectIsModComponentSavedOnCloud } from "@/store/modComponents/modComponentSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import DraftModComponentActionMenu from "@/pageEditor/modListingPanel/actionMenus/DraftModComponentActionMenu";
 
 type DraftModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
-  isAvailable: boolean;
   isNested?: boolean;
 };
 
@@ -68,7 +60,7 @@ type DraftModComponentListItemProps = {
  */
 const DraftModComponentListItem: React.FunctionComponent<
   DraftModComponentListItemProps
-> = ({ modComponentFormState, isAvailable, isNested = false }) => {
+> = ({ modComponentFormState, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeModId = useSelector(selectActiveModId);
@@ -88,10 +80,10 @@ const DraftModComponentListItem: React.FunctionComponent<
   const isDirty = useSelector(
     selectModComponentIsDirty(modComponentFormState.uuid),
   );
-  const isSavedOnCloud = useSelector(
-    selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
+  const isAvailable = useSelector(
+    selectDraftModComponentIsAvailable(modComponentFormState.uuid),
   );
-  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+
   const isButton =
     modComponentFormState.starterBrick.definition.type ===
     StarterBrickTypes.BUTTON;
@@ -103,32 +95,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   const hideOverlay = useCallback(async () => {
     await disableOverlay(inspectedTab);
   }, []);
-
-  const resetModComponent = useResetModComponent();
-
-  const deleteModComponent = async () =>
-    removeModComponentFromStorage({
-      modComponentId: modComponentFormState.uuid,
-      showConfirmationModal: modId
-        ? DELETE_STARTER_BRICK_MODAL_PROPS
-        : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
-    });
-  const deactivateModComponent = async () =>
-    removeModComponentFromStorage({
-      modComponentId: modComponentFormState.uuid,
-      showConfirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
-    });
-
-  const onReset = async () =>
-    resetModComponent({ modComponentId: modComponentFormState.uuid });
-
-  const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
-
-  const onDeactivate = onDelete ? undefined : deactivateModComponent;
-
-  const onClone = async () => {
-    dispatch(actions.cloneActiveModComponent());
-  };
 
   return (
     <ListGroup.Item
@@ -188,27 +154,9 @@ const DraftModComponentListItem: React.FunctionComponent<
         </span>
       )}
       {isActive && (
-        <ActionMenu
-          labelRoot={`${getLabel(modComponentFormState)}`}
-          onDelete={onDelete}
-          onDeactivate={onDeactivate}
-          onClone={onClone}
-          onReset={modComponentFormState.installed ? onReset : undefined}
-          isDirty={isDirty}
-          onAddToMod={
-            modComponentFormState.modMetadata
-              ? undefined
-              : async () => {
-                  dispatch(actions.showAddToModModal());
-                }
-          }
-          onRemoveFromMod={
-            modComponentFormState.modMetadata
-              ? async () => {
-                  dispatch(actions.showRemoveFromModModal());
-                }
-              : undefined
-          }
+        <DraftModComponentActionMenu
+          modComponentFormState={modComponentFormState}
+          isNested={isNested}
         />
       )}
     </ListGroup.Item>
