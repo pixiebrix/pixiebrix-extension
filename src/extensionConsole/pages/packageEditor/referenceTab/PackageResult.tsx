@@ -62,7 +62,9 @@ const SharingTag = <T extends PackageInstance>({
 
     // If more than one sharing organization, use the first
     return organizations.find(
-      (org) => org.id && sharing.organizations.includes(org.id),
+      (org) =>
+        org.organizationId &&
+        sharing.organizations.includes(org.organizationId),
     );
   }, [organizations, sharing]);
 
@@ -72,7 +74,7 @@ const SharingTag = <T extends PackageInstance>({
     }
 
     if (organization) {
-      return { text: organization.name, icon: faUsers };
+      return { text: organization.organizationName, icon: faUsers };
     }
 
     if (!sharing.public) {

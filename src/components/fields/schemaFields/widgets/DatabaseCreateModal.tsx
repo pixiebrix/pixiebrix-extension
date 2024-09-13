@@ -31,7 +31,8 @@ import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupS
 import notify from "@/utils/notify";
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
-import { type Organization, UserRole } from "@/data/model/Organization";
+import { type Organization } from "@/data/model/Organization";
+import { UserRole } from "@/data/model/UserRole";
 
 type DatabaseCreateModalProps = {
   show: boolean;
@@ -72,8 +73,8 @@ function getOrganizationOptions(organizations: Organization[]) {
   const organizationOptions = (organizations ?? [])
     .filter((organization) => organization.role === UserRole.admin)
     .map((organization) => ({
-      label: organization.name,
-      value: organization.id,
+      label: organization.organizationName,
+      value: organization.organizationId,
     }));
 
   const personalDbOption = {

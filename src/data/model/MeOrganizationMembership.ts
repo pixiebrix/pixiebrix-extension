@@ -17,9 +17,9 @@
 
 import { type UUID } from "@/types/stringTypes";
 import {
-  transformUserOrganizationMembershipRoleResponse,
-  type UserOrganizationMembershipRole,
-} from "@/data/model/UserOrganizationMembershipRole";
+  transformUserRoleResponse,
+  type UserRoleNameType,
+} from "@/data/model/UserRole";
 import {
   type ControlRoom,
   transformControlRoomResponse,
@@ -33,7 +33,7 @@ export type MeOrganizationMembership = {
    */
   organizationId: UUID;
   organizationName: string;
-  userOrganizationRole: UserOrganizationMembershipRole;
+  userOrganizationRole: UserRoleNameType;
   /**
    * Whether the (parent) user is a manager of one or more team deployments for the organization
    */
@@ -48,9 +48,7 @@ export function transformMeOrganizationMembershipResponse(
   const membership: MeOrganizationMembership = {
     organizationId: validateUUID(response.organization),
     organizationName: response.organization_name,
-    userOrganizationRole: transformUserOrganizationMembershipRoleResponse(
-      response.role,
-    ),
+    userOrganizationRole: transformUserRoleResponse(response.role),
     meUserIsDeploymentManager: response.is_deployment_manager ?? false,
   };
 

@@ -15,19 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UserRole } from "@/data/model/Organization";
-import { type RequiredMeOrganizationMembershipRoleResponse } from "@/data/service/responseTypeHelpers";
+import { type RequiredOrganizationRoleResponse } from "@/data/service/responseTypeHelpers";
+import { type ValueOf } from "type-fest";
 
-export type UserOrganizationMembershipRole =
-  | "member"
-  | "admin"
-  | "developer"
-  | "restricted"
-  | "manager";
+export enum UserRole {
+  member = 1,
+  admin = 2,
+  developer = 3,
+  restricted = 4,
+  manager = 5,
+}
 
-export function transformUserOrganizationMembershipRoleResponse(
-  response: RequiredMeOrganizationMembershipRoleResponse,
-): UserOrganizationMembershipRole {
+export const UserRoleName = {
+  member: "member",
+  admin: "admin",
+  developer: "developer",
+  restricted: "restricted",
+  manager: "manager",
+} as const;
+
+export type UserRoleNameType = ValueOf<typeof UserRoleName>;
+
+export function transformUserRoleResponse(
+  response: RequiredOrganizationRoleResponse,
+): UserRoleNameType {
   switch (response) {
     case 1: {
       return "member";
@@ -51,15 +62,13 @@ export function transformUserOrganizationMembershipRoleResponse(
 
     default: {
       const exhaustiveCheck: never = response;
-      throw new Error(
-        `Invalid user organization membership role: ${exhaustiveCheck}`,
-      );
+      throw new Error(`Invalid legacy user role: ${exhaustiveCheck}`);
     }
   }
 }
 
-export function convertToLegacyUserRole(
-  userOrganizationMembershipRole: UserOrganizationMembershipRole,
+export function convertToUserRole(
+  userOrganizationMembershipRole: UserRoleNameType,
 ): UserRole {
   switch (userOrganizationMembershipRole) {
     case "member": {
@@ -84,9 +93,7 @@ export function convertToLegacyUserRole(
 
     default: {
       const exhaustiveCheck: never = userOrganizationMembershipRole;
-      throw new Error(
-        `Invalid user organization membership role: ${exhaustiveCheck}`,
-      );
+      throw new Error(`Invalid user role: ${exhaustiveCheck}`);
     }
   }
 }

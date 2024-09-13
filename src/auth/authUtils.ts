@@ -28,7 +28,7 @@ import {
 } from "@/utils/storageUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { anonAuth } from "@/auth/authConstants";
-import { UserRole } from "@/data/model/Organization";
+import { UserRole } from "@/data/model/UserRole";
 
 const AUTH_SLICE_STORAGE_KEY = validateReduxStorageKey("persist:authOptions");
 

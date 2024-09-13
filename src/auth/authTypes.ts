@@ -24,7 +24,7 @@ import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
 import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
 import { type ControlRoom } from "@/data/model/ControlRoom";
 import { type UserMilestone } from "@/data/model/UserMilestone";
-import { type UserRole } from "@/data/model/Organization";
+import { type UserRole } from "@/data/model/UserRole";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 

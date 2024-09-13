@@ -32,12 +32,14 @@ function databasesToOptions(
 ): Option[] {
   return databases.map((database) => {
     const organization = organizations.find(
-      (x) => x.id === database.organization_id,
+      (x) => x.organizationId === database.organization_id,
     );
 
     assertNotNullish(database.id, "Database must have a valid id");
     return {
-      label: `${database.name} - ${organization?.name ?? "Private"}`,
+      label: `${database.name} - ${
+        organization?.organizationName ?? "Private"
+      }`,
       value: database.id,
     };
   });

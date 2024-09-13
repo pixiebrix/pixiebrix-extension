@@ -36,7 +36,7 @@ import {
 } from "@/data/service/responseTypeHelpers";
 import { type SetRequired } from "type-fest";
 import { padStart } from "lodash";
-import { UserRole } from "@/data/model/Organization";
+import { UserRole } from "@/data/model/UserRole";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
