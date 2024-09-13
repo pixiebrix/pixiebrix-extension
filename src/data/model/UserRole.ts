@@ -26,7 +26,7 @@ export enum LegacyUserRole {
   manager = 5,
 }
 
-export const UserRole = {
+const UserRole = {
   member: "member",
   admin: "admin",
   developer: "developer",
@@ -41,23 +41,23 @@ export function transformUserRoleResponse(
 ): UserRoleType {
   switch (response) {
     case 1: {
-      return "member";
+      return UserRole.member;
     }
 
     case 2: {
-      return "admin";
+      return UserRole.admin;
     }
 
     case 3: {
-      return "developer";
+      return UserRole.developer;
     }
 
     case 4: {
-      return "restricted";
+      return UserRole.restricted;
     }
 
     case 5: {
-      return "manager";
+      return UserRole.manager;
     }
 
     default: {
@@ -71,23 +71,23 @@ export function convertToUserRole(
   userOrganizationMembershipRole: UserRoleType,
 ): LegacyUserRole {
   switch (userOrganizationMembershipRole) {
-    case "member": {
+    case UserRole.member: {
       return LegacyUserRole.member;
     }
 
-    case "admin": {
+    case UserRole.admin: {
       return LegacyUserRole.admin;
     }
 
-    case "developer": {
+    case UserRole.developer: {
       return LegacyUserRole.developer;
     }
 
-    case "restricted": {
+    case UserRole.restricted: {
       return LegacyUserRole.restricted;
     }
 
-    case "manager": {
+    case UserRole.manager: {
       return LegacyUserRole.manager;
     }
 
