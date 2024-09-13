@@ -46,6 +46,7 @@ import {
 } from "@/types/registryTypes";
 import {
   type ModOptionsDefinition,
+  type ModVariablesDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
@@ -67,6 +68,7 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import {
   emptyModOptionsDefinitionFactory,
+  emptyModVariablesDefinitionFactory,
   normalizeModDefinition,
 } from "@/utils/modUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
@@ -480,6 +482,132 @@ describe("replaceModComponent round trip", () => {
         modComponentFormState,
       ),
     ).toThrow();
+  });
+});
+
+describe("mod variables", () => {
+  async function runReplaceModComponent(
+    modVariablesDefinition: ModVariablesDefinition | undefined,
+    modComponentModVariables: ModVariablesDefinition,
+  ) {
+    const modDefinition = defaultModDefinitionFactory({
+      variables: modVariablesDefinition,
+    });
+
+    const modComponentState = modComponentSlice.reducer(
+      { activatedModComponents: [] },
+      modComponentSlice.actions.activateMod({
+        modDefinition,
+        screen: "pageEditor",
+        isReactivate: false,
+      }),
+    );
+
+    const modComponentFormState =
+      await brickModComponentAdapter.fromModComponent(
+        modComponentState.activatedModComponents[0]!,
+      );
+
+    modComponentFormState.variablesDefinition = modComponentModVariables;
+
+    return replaceModComponent(
+      modDefinition,
+      modDefinition.metadata,
+      modComponentState.activatedModComponents,
+      modComponentFormState,
+    );
+  }
+
+  test("adds empty schema when mod options is empty", async () => {
+    const emptyVariables = emptyModVariablesDefinitionFactory();
+
+    const updatedModDefinition = await runReplaceModComponent(
+      undefined,
+      emptyVariables,
+    );
+
+    expect(updatedModDefinition.variables).toStrictEqual(
+      emptyModVariablesDefinitionFactory(),
+    );
+  });
+
+  test("creates mod variables", async () => {
+    const modVariablesDefinition: ModVariablesDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          channels: {
+            type: "string",
+            title: "Channels",
+          },
+        },
+      },
+    };
+
+    const updatedModDefinition = await runReplaceModComponent(
+      undefined,
+      modVariablesDefinition,
+    );
+
+    expect(updatedModDefinition.variables).toBe(modVariablesDefinition);
+  });
+
+  test("updates mod variables", async () => {
+    const modVariablesDefinition: ModVariablesDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          channels: {
+            type: "string",
+            title: "Channels",
+          },
+        },
+      },
+    };
+
+    const modComponentModVariables: ModVariablesDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          credentials: {
+            type: "string",
+          },
+        },
+      },
+    };
+
+    const updatedModDefinition = await runReplaceModComponent(
+      modVariablesDefinition,
+      modComponentModVariables,
+    );
+
+    expect(updatedModDefinition.options).toBe(modComponentModVariables);
+  });
+
+  test("preserves mod options", async () => {
+    const modVariablesDefinition: ModVariablesDefinition = {
+      schema: {
+        type: "object",
+        properties: {
+          channels: {
+            type: "string",
+            title: "Channels",
+          },
+        },
+      },
+    };
+
+    const modComponentModOptions: ModOptionsDefinition =
+      emptyModOptionsDefinitionFactory();
+
+    const updatedMod = await runReplaceModComponent(
+      modVariablesDefinition,
+      modComponentModOptions,
+    );
+
+    expect(updatedMod.variables).toStrictEqual(
+      emptyModVariablesDefinitionFactory(),
+    );
   });
 });
 

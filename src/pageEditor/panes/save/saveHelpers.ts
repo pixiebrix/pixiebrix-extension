@@ -212,13 +212,13 @@ function deleteUnusedStarterBrickDefinitions(
 /**
  * Create a copy of `sourceMod` with `modMetadata` and `modComponent`.
  *
- * NOTE: the caller is responsible for updating an starter brick package (i.e., that has its own version). This method
+ * NOTE: the caller is responsible for updating a starter brick package (i.e., that has its own version). This method
  * only handles the starter brick if it's an inner definition
  *
  * @param sourceMod the original mod
  * @param modMetadata the metadata for the new mod
- * @param activatedModComponents the user's locally activated mod components (i.e., from optionsSlice). Used to locate the
- * mod component's position in sourceMod
+ * @param activatedModComponents the user's locally activated mod components (i.e., from modComponentsSlice). Used to
+ * locate the mod component's position in sourceMod
  * @param newModComponent the new mod component state (i.e., submitted via Formik)
  */
 export function replaceModComponent(
@@ -240,6 +240,7 @@ export function replaceModComponent(
   return produce(sourceMod, (draft: ModDefinition) => {
     draft.metadata = modMetadata;
     draft.options = newModComponent.optionsDefinition;
+    draft.variables = newModComponent.variablesDefinition;
 
     if (sourceMod.apiVersion !== newModComponent.apiVersion) {
       const canUpdateModApiVersion = sourceMod.extensionPoints.length <= 1;
@@ -250,7 +251,7 @@ export function replaceModComponent(
 
         assertNotNullish(
           starterBrickId,
-          "First mod compnent in mod definition has no starter brick",
+          "First mod component in mod definition has no starter brick",
         );
 
         // eslint-disable-next-line security/detect-object-injection -- getting a property by mod component id
