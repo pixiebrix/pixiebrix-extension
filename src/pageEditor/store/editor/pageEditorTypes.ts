@@ -61,6 +61,7 @@ export type AddBrickLocation = {
 
 export enum ModalKey {
   MOVE_FROM_MOD,
+  SAVE_AS_NEW_MOD,
   CREATE_MOD,
   ADD_BRICK,
   SAVE_DATA_INTEGRITY_ERROR,

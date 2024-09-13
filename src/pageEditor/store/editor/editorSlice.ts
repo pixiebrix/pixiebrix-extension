@@ -623,6 +623,9 @@ export const editorSlice = createSlice({
       state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
       state.visibleModalKey = ModalKey.MOVE_FROM_MOD;
     },
+    showSaveAsNewModModal(state) {
+      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
+    },
     clearDeletedModComponentFormStatesForMod(
       state,
       action: PayloadAction<RegistryId>,

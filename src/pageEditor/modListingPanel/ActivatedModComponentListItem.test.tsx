@@ -51,9 +51,7 @@ afterAll(() => {
 describe("ActivatedModComponentListItem", () => {
   it("renders not active element", async () => {
     const modComponent = modComponentFactory();
-    render(
-      <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
-    );
+    render(<ActivatedModComponentListItem modComponent={modComponent} />);
 
     const button = await screen.findByRole("button", {
       name: modComponent.label,
@@ -72,15 +70,12 @@ describe("ActivatedModComponentListItem", () => {
         uuid: modComponent.id,
       },
     });
-    render(
-      <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
-      {
-        setupRedux(dispatch) {
-          // The addElement also sets the active element
-          dispatch(editorActions.addModComponentFormState(formState));
-        },
+    render(<ActivatedModComponentListItem modComponent={modComponent} />, {
+      setupRedux(dispatch) {
+        // The addElement also sets the active element
+        dispatch(editorActions.addModComponentFormState(formState));
       },
-    );
+    });
 
     const button = await screen.findByRole("button", {
       name: modComponent.label,
@@ -94,12 +89,7 @@ describe("ActivatedModComponentListItem", () => {
 
   it("shows not-available icon properly", async () => {
     const modComponent = modComponentFactory();
-    render(
-      <ActivatedModComponentListItem
-        modComponent={modComponent}
-        isAvailable={false}
-      />,
-    );
+    render(<ActivatedModComponentListItem modComponent={modComponent} />);
 
     await expect(
       screen.findByRole("img", { name: "Not available on page" }),
@@ -108,9 +98,7 @@ describe("ActivatedModComponentListItem", () => {
 
   it("handles mouseover action properly for button mod components", async () => {
     const modComponent = modComponentFactory();
-    render(
-      <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
-    );
+    render(<ActivatedModComponentListItem modComponent={modComponent} />);
 
     const button = await screen.findByRole("button", {
       name: modComponent.label,

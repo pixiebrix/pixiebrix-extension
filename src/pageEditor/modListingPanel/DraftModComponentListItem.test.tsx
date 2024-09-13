@@ -47,47 +47,33 @@ describe("DraftModComponentListItem", () => {
   it("renders not active element", () => {
     const formState = formStateFactory();
     expect(
-      render(
-        <DraftModComponentListItem
-          modComponentFormState={formState}
-          isAvailable
-        />,
-        {
-          initialValues: formState,
-          setupRedux(dispatch) {
-            dispatch(authActions.setAuth(authStateFactory()));
-            // The addElement also sets the active element
-            dispatch(
-              editorActions.addModComponentFormState(formStateFactory()),
-            );
+      render(<DraftModComponentListItem modComponentFormState={formState} />, {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(authActions.setAuth(authStateFactory()));
+          // The addElement also sets the active element
+          dispatch(editorActions.addModComponentFormState(formStateFactory()));
 
-            // Add new element to deactivate the previous one
-            dispatch(editorActions.addModComponentFormState(formState));
-            // Remove the active element and stay with one inactive item
-            dispatch(editorActions.removeModComponentFormState(formState.uuid));
-          },
+          // Add new element to deactivate the previous one
+          dispatch(editorActions.addModComponentFormState(formState));
+          // Remove the active element and stay with one inactive item
+          dispatch(editorActions.removeModComponentFormState(formState.uuid));
         },
-      ).asFragment(),
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
   it("renders active element", () => {
     const formState = formStateFactory();
     expect(
-      render(
-        <DraftModComponentListItem
-          modComponentFormState={formState}
-          isAvailable
-        />,
-        {
-          initialValues: formState,
-          setupRedux(dispatch) {
-            dispatch(authActions.setAuth(authStateFactory()));
-            // The addElement also sets the active element
-            dispatch(editorActions.addModComponentFormState(formState));
-          },
+      render(<DraftModComponentListItem modComponentFormState={formState} />, {
+        initialValues: formState,
+        setupRedux(dispatch) {
+          dispatch(authActions.setAuth(authStateFactory()));
+          // The addElement also sets the active element
+          dispatch(editorActions.addModComponentFormState(formState));
         },
-      ).asFragment(),
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 });

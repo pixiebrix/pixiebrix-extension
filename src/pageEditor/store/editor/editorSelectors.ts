@@ -269,6 +269,8 @@ export const selectModIsDirty =
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
   isMoveFromModModalVisible: editor.visibleModalKey === ModalKey.MOVE_FROM_MOD,
   isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
+  isSaveAsNewModModalVisible:
+    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
   isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BRICK,
   isSaveDataIntegrityErrorModalVisible:
     editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
