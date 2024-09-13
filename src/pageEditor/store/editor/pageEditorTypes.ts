@@ -407,9 +407,6 @@ export type EditorStateV8 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV5[]>;
 };
 
-/**
- * The current Edis
- */
 export type EditorState = Except<
   // On migration, re-point this type to the most recent EditorStateV<N> type name
   EditorStateV8,

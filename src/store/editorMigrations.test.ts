@@ -65,6 +65,7 @@ import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
 } from "@/pageEditor/store/editor/uiState";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
   selectionSeq: 0,
@@ -659,8 +660,8 @@ describe("editor state migrations", () => {
       );
     });
 
-    it("resets data panel shape", () => {
-      expect.fail("Not implemented");
+    it("add variable definitions section", () => {
+      throw Error("Not implemented");
     });
   });
 });
