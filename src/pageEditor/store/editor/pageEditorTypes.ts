@@ -382,20 +382,44 @@ export type EditorStateV5 = Except<
  */
 export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
 
-// Instead of maintaining old enums, just clearing data panel state on migration, see migrateEditorStateV5
+/**
+ * Version bump to account for changes in DataPanelTabKeys.
+ *
+ * Same type as EditorStateV6, but bumped because there's an associated migration to clear out the Data Panel UI state.
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @see migrateEditorStateV6
+ * @see DataPanelTabKey
+ */
 export type EditorStateV7 = EditorStateV6;
 
+/**
+ * Version bump to account for variableDefinition property added in BaseFormState
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @see migrateEditorStateV7
+ */
 export type EditorStateV8 = Except<
   EditorStateV7,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: BaseFormStateV5[];
-  deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV5[]>;
 };
 
-export type EditorState = Except<EditorStateV8, "modComponentFormStates"> & {
-  // `variablesDefinition` added to BaseFormState on ModComponentFormState
+/**
+ * The current Edis
+ */
+export type EditorState = Except<
+  // On migration, re-point this type to the most recent EditorStateV<N> type name
+  EditorStateV8,
+  // Swap out any properties with versioned types for type references to the latest version.
+  // NOTE: this is not changing the type shape/structure. It's just cleaning up the type name/reference which makes
+  // types easier to work with for testing migrations.
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
   modComponentFormStates: ModComponentFormState[];
+  deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
 };
 
 export type EditorRootState = {

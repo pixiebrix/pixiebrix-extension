@@ -23,6 +23,7 @@ import {
   type EditorStateV5,
   type EditorStateV6,
   type EditorStateV7,
+  type EditorStateV8,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { cloneDeep, mapValues, omit } from "lodash";
 import {
@@ -56,6 +57,7 @@ import {
   migrateEditorStateV4,
   migrateEditorStateV5,
   migrateEditorStateV6,
+  migrateEditorStateV7,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -248,6 +250,40 @@ const initialStateV6: EditorStateV6 & PersistedState = {
 
 const initialStateV7: EditorStateV7 & PersistedState =
   cloneDeep(initialStateV6);
+
+const initialStateV8: EditorStateV8 & PersistedState = {
+  selectionSeq: 0,
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  error: null,
+  beta: false,
+  modComponentFormStates: [],
+  knownEditableBrickIds: [],
+  dirty: {},
+  isBetaUI: false,
+  copiedBrick: undefined,
+  brickPipelineUIStateById: {},
+  dirtyModOptionsById: {},
+  dirtyModMetadataById: {},
+  visibleModalKey: null,
+  addBrickLocation: undefined,
+  keepLocalCopyOnCreateMod: false,
+  deletedModComponentFormStatesByModId: {},
+  availableActivatedModComponentIds: [],
+  isPendingAvailableActivatedModComponents: false,
+  availableDraftModComponentIds: [],
+  isPendingDraftModComponents: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
+  isVariablePopoverVisible: false,
+  // Function under test does not handle updating the persistence, this is handled by redux-persist
+  _persist: {
+    version: 1,
+    rehydrated: false,
+  },
+};
 
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],
@@ -613,6 +649,18 @@ describe("editor state migrations", () => {
           input: expect.toBeObject(),
         }),
       );
+    });
+  });
+
+  describe("migrateEditorState V7 to V8", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV7(initialStateV7)).toStrictEqual(
+        initialStateV8,
+      );
+    });
+
+    it("resets data panel shape", () => {
+      expect.fail("Not implemented");
     });
   });
 });

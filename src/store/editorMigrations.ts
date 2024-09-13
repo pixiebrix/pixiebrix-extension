@@ -22,6 +22,7 @@ import {
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
+  type BaseFormStateV5,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -58,7 +59,7 @@ export const migrations: MigrationManifest = {
   5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
   6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
   7: (state: EditorStateV6 & PersistedState) => migrateEditorStateV6(state),
-  8: (state: EditorStateV8 & PersistedState) => migrateEditorStateV9(state),
+  9: (state: EditorStateV7 & PersistedState) => migrateEditorStateV7(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -228,14 +229,23 @@ export function migrateEditorStateV6(
   });
 }
 
-export function migrateEditorStateV9(
-  state: EditorStateV8 & PersistedState,
-): EditorState & PersistedState {
+export function migrateEditorStateV7(
+  state: EditorStateV7 & PersistedState,
+): EditorStateV8 & PersistedState {
   // Reset the Data Panel state using the current set of DataPanelTabKeys
   return produce(state, (draft) => {
     for (const formState of draft.modComponentFormStates) {
-      (formState as ModComponentFormState).variablesDefinition =
+      (formState as BaseFormStateV5).variablesDefinition =
         emptyModVariablesDefinitionFactory();
+    }
+
+    for (const formStates of Object.values(
+      draft.deletedModComponentFormStatesByModId,
+    )) {
+      for (const formState of formStates) {
+        (formState as BaseFormStateV5).variablesDefinition =
+          emptyModVariablesDefinitionFactory();
+      }
     }
   }) as EditorState & PersistedState;
 }

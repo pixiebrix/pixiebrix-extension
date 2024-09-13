@@ -50,6 +50,12 @@ export type ModOptionsDefinition = {
 export type ModVariablesDefinition = {
   // Nest schema to make evolution easier in the future. Mod Variables shouldn't ever need a uiSchema because the values
   // are not user-facing/configurable.
+  /**
+   * JSON Schema for the mod variables. The top-level schema must be an object schema.
+   *
+   * Note that object schemas allow additional properties by default, so an empty object schema is backward compatible
+   * with existing mod definitions.
+   */
   schema: Schema;
 };
 

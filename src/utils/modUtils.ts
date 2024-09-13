@@ -18,7 +18,7 @@
 import {
   type ModDefinition,
   type ModOptionsDefinition,
-  ModVariablesDefinition,
+  type ModVariablesDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
