@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Organization, UserRole } from "@/types/contract";
+import { type Organization, UserRole } from "@/data/model/Organization";
 import { uuidv4 } from "@/types/helpers";
 import { define } from "cooky-cutter";
 

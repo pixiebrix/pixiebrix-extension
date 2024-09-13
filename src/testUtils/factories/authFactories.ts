@@ -26,7 +26,6 @@ import {
   type UserData,
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import type { components } from "@/types/swagger";
@@ -37,6 +36,7 @@ import {
 } from "@/data/service/responseTypeHelpers";
 import { type SetRequired } from "type-fest";
 import { padStart } from "lodash";
+import { UserRole } from "@/data/model/Organization";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;

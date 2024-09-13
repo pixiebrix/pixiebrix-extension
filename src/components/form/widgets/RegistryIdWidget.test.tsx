@@ -21,7 +21,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
-import { UserRole } from "@/types/contract";
+import { UserRole } from "@/data/model/Organization";
 import { validateRegistryId } from "@/types/helpers";
 import {
   authStateFactory,

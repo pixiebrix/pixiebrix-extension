@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UserRole } from "@/types/contract";
+import { UserRole } from "@/data/model/Organization";
 import { type RequiredMeOrganizationMembershipRoleResponse } from "@/data/service/responseTypeHelpers";
 
 export type UserOrganizationMembershipRole =

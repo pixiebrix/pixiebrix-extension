@@ -29,9 +29,9 @@ import {
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupSelect";
 import notify from "@/utils/notify";
-import { type Organization, UserRole } from "@/types/contract";
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
+import { type Organization, UserRole } from "@/data/model/Organization";
 
 type DatabaseCreateModalProps = {
   show: boolean;

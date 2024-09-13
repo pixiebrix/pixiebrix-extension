@@ -23,8 +23,8 @@ import { Table } from "react-bootstrap";
 import React from "react";
 import { useField } from "formik";
 import { useGetOrganizationsQuery } from "@/data/service/api";
-import { type Organization } from "@/types/contract";
 import { type UUID } from "@/types/stringTypes";
+import { type Organization } from "@/data/model/Organization";
 
 const SharingTable: React.FunctionComponent = () => {
   const { data: organizations = [] } = useGetOrganizationsQuery();

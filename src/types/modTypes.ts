@@ -16,10 +16,10 @@
  */
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type Organization } from "@/types/contract";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type Organization } from "@/data/model/Organization";
 
 /**
  * @deprecated

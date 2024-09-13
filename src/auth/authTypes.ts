@@ -23,8 +23,8 @@ import { type UserPartner } from "@/data/model/UserPartner";
 import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
 import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
 import { type ControlRoom } from "@/data/model/ControlRoom";
-import { type UserRole } from "@/types/contract";
 import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type UserRole } from "@/data/model/Organization";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 

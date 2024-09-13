@@ -22,8 +22,9 @@ import {
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type Database, type Organization } from "@/types/contract";
+import { type Database } from "@/types/contract";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Organization } from "@/data/model/Organization";
 
 function databasesToOptions(
   databases: Database[],

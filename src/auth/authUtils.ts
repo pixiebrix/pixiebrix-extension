@@ -22,13 +22,13 @@ import {
 } from "@/auth/authTypes";
 import { type Me } from "@/data/model/Me";
 import selectAuthUserOrganizations from "@/auth/selectAuthUserOrganizations";
-import { UserRole } from "@/types/contract";
 import {
   readReduxStorage,
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { anonAuth } from "@/auth/authConstants";
+import { UserRole } from "@/data/model/Organization";
 
 const AUTH_SLICE_STORAGE_KEY = validateReduxStorageKey("persist:authOptions");
 

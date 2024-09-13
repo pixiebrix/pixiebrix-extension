@@ -17,7 +17,7 @@
 
 import { selectAuth } from "@/auth/authSelectors";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
-import { UserRole } from "@/types/contract";
+import { UserRole } from "@/data/model/Organization";
 import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { useSelector } from "react-redux";

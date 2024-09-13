@@ -29,7 +29,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { type StylesConfig } from "react-select";
-import { UserRole } from "@/types/contract";
+import { UserRole } from "@/data/model/Organization";
 
 import { getScopeAndId } from "@/utils/registryUtils";
 import useAsyncEffect from "use-async-effect";
