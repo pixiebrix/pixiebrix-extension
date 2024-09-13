@@ -15,70 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Organization } from "@/data/model/Organization";
-import { UserRole, UserRoleName } from "@/data/model/UserRole";
+import { UserRole } from "@/data/model/UserRole";
 import { uuidv4 } from "@/types/helpers";
 import { type components } from "@/types/swagger";
 import { define } from "cooky-cutter";
-
-export const organizationFactory = define<Organization>({
-  organizationId: () => uuidv4(),
-  organizationName: (n: number) => `Test Organization ${n}`,
-  scope: (n: number) => `@organization-${n}`,
-  members: [
-    {
-      user: {
-        userId: uuidv4(),
-        userName: "Admin User",
-        userEmail: "admin@example.com",
-      },
-      role: UserRoleName.admin,
-      groups: [],
-    },
-    {
-      user: {
-        userId: uuidv4(),
-        userName: "Manager User",
-        userEmail: "manager@example.com",
-      },
-      role: UserRoleName.manager,
-      groups: [],
-    },
-    {
-      user: {
-        userId: uuidv4(),
-        userName: "Member User",
-        userEmail: "member@example.com",
-      },
-      role: UserRoleName.member,
-      groups: [],
-    },
-    {
-      user: {
-        userId: uuidv4(),
-        userName: "Developer User",
-        userEmail: "developer@example.com",
-      },
-      role: UserRoleName.developer,
-      groups: [],
-    },
-    {
-      user: {
-        userId: uuidv4(),
-        userName: "Restricted User",
-        userEmail: "restricted@example.com",
-      },
-      role: UserRoleName.developer,
-      groups: [],
-    },
-  ],
-  role: UserRole.admin,
-  trialEndTimestamp: null,
-  enforceUpdateMillis: null,
-  defaultRole: null,
-  partner: null,
-  theme: null,
-});
 
 export const organizationResponseFactory = define<
   components["schemas"]["Organization"]
