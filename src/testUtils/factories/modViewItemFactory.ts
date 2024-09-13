@@ -30,6 +30,7 @@ export const modViewItemFactory = define<ModViewItem>({
     return `Mod view item ${n} created for testing`;
   },
   isUnavailable: false,
+  isDeployment: false,
   sharingSource: {
     type: "Personal",
     label: "Personal",

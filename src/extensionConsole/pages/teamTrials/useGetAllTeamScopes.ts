@@ -16,33 +16,20 @@
  */
 
 import { useGetOrganizationsQuery } from "@/data/service/api";
-import { type ValueOf } from "type-fest";
+import { useMemo } from "react";
 
-export const TeamTrialStatus = {
-  IN_PROGRESS: "IN_PROGRESS",
-  EXPIRED: "EXPIRED",
-} as const;
+function useGetAllTeamScopes() {
+  const { data: organizations = [], isLoading } = useGetOrganizationsQuery();
 
-function useTeamTrialStatus(): ValueOf<typeof TeamTrialStatus> | null {
-  const { data: organizations = [] } = useGetOrganizationsQuery();
-
-  const trialEndTimestamps = organizations
-    .map((org) => org.trial_end_timestamp)
-    .filter((x) => x != null);
-
-  if (trialEndTimestamps.length === 0) {
-    return null;
-  }
-
-  if (trialEndTimestamps.some((x) => new Date(x).getTime() <= Date.now())) {
-    return TeamTrialStatus.EXPIRED;
-  }
-
-  if (trialEndTimestamps.some((x) => new Date(x).getTime() > Date.now())) {
-    return TeamTrialStatus.IN_PROGRESS;
-  }
-
-  return null;
+  return useMemo(
+    () => ({
+      teamScopes: organizations
+        .map((org) => org.scope)
+        .filter((x) => x != null),
+      isLoading,
+    }),
+    [organizations, isLoading],
+  );
 }
 
-export default useTeamTrialStatus;
+export default useGetAllTeamScopes;

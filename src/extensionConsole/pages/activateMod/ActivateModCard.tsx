@@ -18,7 +18,7 @@
 import styles from "./ActivateModCard.module.scss";
 
 import React, { useState } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import useActivateModWizard from "@/activation/useActivateModWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch } from "react-redux";
@@ -44,6 +44,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { Milestones } from "@/data/model/UserMilestone";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import castError from "@/utils/castError";
+import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;
@@ -69,10 +70,15 @@ const WizardHeader: React.VoidFunctionComponent<{
       <div className={styles.wizardDescription}>{mod.metadata.description}</div>
     </div>
     <div className={styles.activateButtonContainer}>
-      <Button className="text-nowrap" type="submit" disabled={isSubmitting}>
+      <TrialAwareButton
+        className="text-nowrap"
+        type="submit"
+        disabled={isSubmitting}
+        modId={mod.metadata.id}
+      >
         <FontAwesomeIcon icon={faMagic} />{" "}
         {isReactivate ? "Reactivate" : "Activate"}
-      </Button>
+      </TrialAwareButton>
     </div>
   </>
 );
