@@ -74,7 +74,7 @@ function mapConfigurationsToOptions(
   const localOptions = sortBy(
     locationIntegrationConfigs.map((integrationConfig) => ({
       value: integrationConfig.id,
-      label: `${defaultLabel(integrationConfig.label)} — Private`,
+      label: `${defaultLabel(integrationConfig.label)} — Private Local`,
       local: true,
       serviceId: integrationConfig.integrationId,
       sharingType: "private" as AuthSharing,

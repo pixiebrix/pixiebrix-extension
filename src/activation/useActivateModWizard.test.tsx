@@ -15,29 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as redux from "react-redux";
-import useActivateModWizard from "@/activation/useActivateModWizard";
-import { renderHook } from "@testing-library/react-hooks";
+import useActivateModWizard, {
+  wizardStateFactory,
+} from "@/activation/useActivateModWizard";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import * as Yup from "yup";
 
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import {
+  autoUUIDSequence,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
-import { useGetFeatureFlagsQuery } from "@/data/service/api";
 import {
+  FeatureFlags,
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { BusinessError } from "@/errors/businessErrors";
+import { type RegistryId } from "@/types/registryTypes";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { renderHook } from "@/extensionConsole/testHelpers";
+import { waitFor } from "@testing-library/react";
+import { API_PATHS } from "@/data/service/urlPaths";
+import { type WizardStep } from "@/activation/wizardTypes";
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
-jest.mock("react-redux");
-jest.mock("@/data/service/api", () => ({
-  useGetFeatureFlagsQuery: jest.fn(() => valueToAsyncState([])),
-}));
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,
@@ -52,10 +58,12 @@ jest.mock("@/hooks/useAsyncModOptionsValidationSchema", () => ({
 }));
 
 describe("useActivateModWizard", () => {
-  test("show personalized tab", () => {
-    const spy = jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue([]);
+  beforeEach(() => {
+    appApiMock.reset();
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, []);
+  });
 
+  test("show personalized tab", async () => {
     const { result } = renderHook(() =>
       useActivateModWizard(
         defaultModDefinitionFactory({
@@ -72,32 +80,48 @@ describe("useActivateModWizard", () => {
       ),
     );
 
-    const { data: { wizardSteps } = {} } = result.current;
-    expect(wizardSteps).toHaveLength(2);
+    await waitFor(() => {
+      const { data: { wizardSteps } = {} } = result.current;
+      expect(wizardSteps).toHaveLength(2);
+    });
   });
 
-  test("hide personalized tab for empty schema", () => {
-    const spy = jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue([]);
-
+  test("hide personalized tab for empty schema", async () => {
     const { result } = renderHook(() =>
       useActivateModWizard(defaultModDefinitionFactory()),
     );
 
-    const { data: { wizardSteps } = {} } = result.current;
-    expect(wizardSteps).toHaveLength(1);
+    await waitFor(() => {
+      const { data: { wizardSteps } = {} } = result.current;
+      expect(wizardSteps).toHaveLength(1);
+    });
   });
 
-  test("hide personalized tab for empty shorthand schema", () => {
-    const spy = jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue([]);
-
+  test("hide personalized tab for empty shorthand schema", async () => {
     const { result } = renderHook(() =>
       useActivateModWizard(defaultModDefinitionFactory()),
     );
 
-    const { data: { wizardSteps } = {} } = result.current;
-    expect(wizardSteps).toHaveLength(1);
+    await waitFor(() => {
+      const { data: { wizardSteps } = {} } = result.current;
+      expect(wizardSteps).toHaveLength(1);
+    });
+  });
+
+  test("show synchronize tab when MOD_PERSONAL_SYNC flag is on", async () => {
+    appApiMock
+      .onGet(API_PATHS.FEATURE_FLAGS)
+      .reply(200, { flags: [FeatureFlags.MOD_PERSONAL_SYNC] });
+
+    const { result } = renderHook(() =>
+      useActivateModWizard(defaultModDefinitionFactory()),
+    );
+    let wizardSteps: WizardStep[] | undefined;
+    await waitFor(() => {
+      wizardSteps = result.current.data?.wizardSteps;
+      expect(wizardSteps).toHaveLength(2);
+    });
+    expect(wizardSteps?.[0]?.key).toBe("synchronize");
   });
 
   test("sets database preview initial value", async () => {
@@ -122,12 +146,14 @@ describe("useActivateModWizard", () => {
     );
     const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
-    expect(result.current.data!.initialValues.optionsArgs).toEqual({
-      [name]: makeDatabasePreviewName(modDefinition, optionSchema, name),
+    await waitFor(() => {
+      expect(result.current.data!.initialValues.optionsArgs).toEqual({
+        [name]: makeDatabasePreviewName(modDefinition, optionSchema, name),
+      });
     });
   });
 
-  test("selects existing preview database", () => {
+  test("selects existing preview database", async () => {
     const name = "Database";
     const optionSchema = propertiesToSchema(
       {
@@ -160,33 +186,76 @@ describe("useActivateModWizard", () => {
     );
     const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
-    expect(result.current.data!.initialValues.optionsArgs).toEqual({
-      [name]: databaseId,
+    await waitFor(() => {
+      expect(result.current.data!.initialValues.optionsArgs).toEqual({
+        [name]: databaseId,
+      });
     });
   });
 
-  test("reject public marketplace activations", () => {
+  test("reject public marketplace activations", async () => {
     const modDefinition = defaultModDefinitionFactory({
       sharing: sharingDefinitionFactory({
         public: true,
       }),
     });
 
-    jest
-      .mocked(useGetFeatureFlagsQuery)
-      .mockReturnValue(
-        valueToAsyncState([
-          mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
-        ]) as any,
-      );
+    appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
+      flags: [
+        mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.MARKETPLACE),
+      ],
+    });
 
     const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
-    const { isError, error } = result.current;
-    expect(isError).toBe(true);
-    expect(error).toBeInstanceOf(BusinessError);
-    expect((error as BusinessError).message).toBe(
+    let currentResult: ReturnType<typeof useActivateModWizard> | undefined;
+    await waitFor(() => {
+      currentResult = result.current;
+      expect(currentResult.isError).toBe(true);
+    });
+    expect(currentResult?.error).toBeInstanceOf(BusinessError);
+    expect((currentResult?.error as BusinessError).message).toBe(
       "Your team's policy does not permit you to activate this mod. Contact your team admin for assistance",
+    );
+  });
+
+  test("validation schema rejects personal deployment with local integrations", () => {
+    const testAuthConfigId = autoUUIDSequence();
+    const { validationSchema } = wizardStateFactory({
+      flagOn: () => true,
+      modDefinition: defaultModDefinitionFactory(),
+      authOptions: [
+        {
+          value: testAuthConfigId,
+          label: "Local Config",
+          local: true,
+          serviceId: "test-integration" as RegistryId,
+          sharingType: "private",
+        },
+      ],
+      defaultAuthOptions: {},
+      databaseOptions: [],
+      activatedModComponents: [],
+      optionsValidationSchema: Yup.object(),
+      initialModOptions: {},
+    });
+
+    const testValues = {
+      modComponents: {},
+      integrationDependencies: [
+        {
+          integrationId: "test-integration",
+          configId: testAuthConfigId,
+          serviceId: "test-integration" as RegistryId,
+          sharingType: "private",
+        },
+      ],
+      optionsArgs: {},
+      personalDeployment: true,
+    };
+
+    expect(() => validationSchema.validateSync(testValues)).toThrow(
+      'Local integrations are not supported for mods with "Sync across devices" enabled',
     );
   });
 });

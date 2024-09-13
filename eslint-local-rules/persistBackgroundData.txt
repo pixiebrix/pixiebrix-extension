@@ -135,7 +135,7 @@
 ./src/errors/networkErrorHelpers.ts
 ./src/errors/rejectOnCancelled.ts
 ./src/extensionContext.ts
-./src/hooks/auth.ts
+./src/hooks/useAuthOptions.ts
 ./src/hooks/common.ts
 ./src/hooks/useAsyncState.ts
 ./src/hooks/useDebouncedEffect.ts

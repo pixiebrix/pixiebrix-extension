@@ -21,7 +21,7 @@ import * as contentScriptApi from "@/contentScript/messenger/api";
 import RunLocalProcess from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import * as auth from "@/hooks/auth";
+import * as auth from "@/hooks/useAuthOptions";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
@@ -41,9 +41,9 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,
 );
 
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/contrib/uipath/uipathHooks");
-jest.mock("@/hooks/auth");
+jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/contrib/uipath/uipathHooks");
 const useSelectedReleaseMock = jest.mocked(useSelectedRelease);

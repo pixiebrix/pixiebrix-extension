@@ -88,6 +88,7 @@ export type ModViewItem = {
    * True if the source package is no longer available
    */
   isUnavailable: boolean;
+  isDeployment: boolean;
   modActions: ModActionsEnabled;
 };
 
