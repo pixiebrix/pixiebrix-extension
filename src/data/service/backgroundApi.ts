@@ -41,7 +41,7 @@ export const getMe = memoizeUntilSettled(
   },
 );
 
-export const getOrganizations = memoizeUntilSettled(
+export const getTeams = memoizeUntilSettled(
   async (): Promise<Organization[]> => {
     expectContext("background");
     const client = await getApiClient();

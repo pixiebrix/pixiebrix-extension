@@ -16,25 +16,23 @@
  */
 import deactivateModComponentsAndSaveState from "@/background/utils/deactivateModComponentsAndSaveState";
 import { type Organization } from "@/data/model/Organization";
-import { getOrganizations } from "@/data/service/backgroundApi";
+import { getTeams } from "@/data/service/backgroundApi";
 import { getEditorState } from "@/store/editorStorage";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 
-async function getOrganizationsWithTrials() {
-  const organizations = await getOrganizations();
-  return organizations.filter(
-    (organization) => organization.trialEndTimestamp != null,
-  );
+async function getTeamsWithTrials() {
+  const teams = await getTeams();
+  return teams.filter((x) => x.trialEndTimestamp != null);
 }
 
 function getManuallyActivatedTeamModComponents(
   activatedModComponents: ActivatedModComponent[],
-  organizationsWithTrials: Organization[],
+  teamsWithTrials: Organization[],
 ) {
-  const teamScopes = organizationsWithTrials.map((x) => x.scope);
+  const teamScopes = teamsWithTrials.map((x) => x.scope);
   return activatedModComponents.filter((x) => {
     if (x._deployment != null) {
       return false;
@@ -59,16 +57,16 @@ async function syncActivatedModComponents() {
     return;
   }
 
-  const organizationsWithTrials = await getOrganizationsWithTrials();
+  const teamsWithTrials = await getTeamsWithTrials();
 
-  if (organizationsWithTrials.length === 0) {
+  if (teamsWithTrials.length === 0) {
     return;
   }
 
   const manuallyActivatedTeamModComponents =
     getManuallyActivatedTeamModComponents(
       activatedModComponents,
-      organizationsWithTrials,
+      teamsWithTrials,
     );
 
   if (manuallyActivatedTeamModComponents.length === 0) {
