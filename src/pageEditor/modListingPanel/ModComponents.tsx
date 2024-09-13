@@ -29,7 +29,6 @@ import {
   selectActiveModComponentId,
   selectActiveModId,
   selectExpandedModId,
-  selectModComponentAvailability,
   selectNotDeletedActivatedModComponents,
   selectNotDeletedModComponentFormStates,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -48,8 +47,6 @@ const ModComponents: React.FunctionComponent = () => {
   const modComponentFormStates = useSelector(
     selectNotDeletedModComponentFormStates,
   );
-  const { availableActivatedModComponentIds, availableDraftModComponentIds } =
-    useSelector(selectModComponentAvailability);
 
   const [filterQuery, setFilterQuery] = useState("");
   const [debouncedFilterQuery] = useDebounce(filterQuery.toLowerCase(), 250, {
@@ -91,10 +88,6 @@ const ModComponents: React.FunctionComponent = () => {
             <ModComponentListItem
               key={getModComponentItemId(modComponentSidebarItem)}
               modComponentSidebarItem={modComponentSidebarItem}
-              availableActivatedModComponentIds={
-                availableActivatedModComponentIds
-              }
-              availableDraftModComponentIds={availableDraftModComponentIds}
               isNested
             />
           ))}
@@ -106,8 +99,6 @@ const ModComponents: React.FunctionComponent = () => {
       <ModComponentListItem
         key={getModComponentItemId(sidebarItem)}
         modComponentSidebarItem={sidebarItem}
-        availableActivatedModComponentIds={availableActivatedModComponentIds}
-        availableDraftModComponentIds={availableDraftModComponentIds}
       />
     );
   });

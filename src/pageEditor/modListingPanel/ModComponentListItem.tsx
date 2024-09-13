@@ -19,23 +19,15 @@ import React from "react";
 import { isModComponentBase, type ModComponentSidebarItem } from "./common";
 import DraftModComponentListItem from "./DraftModComponentListItem";
 import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
-import { type UUID } from "@/types/stringTypes";
 
 type ModComponentListItemProps = {
   modComponentSidebarItem: ModComponentSidebarItem;
-  availableActivatedModComponentIds: UUID[];
-  availableDraftModComponentIds: UUID[];
   isNested?: boolean;
 };
 
 const ModComponentListItem: React.FunctionComponent<
   ModComponentListItemProps
-> = ({
-  modComponentSidebarItem,
-  availableActivatedModComponentIds,
-  availableDraftModComponentIds,
-  isNested = false,
-}) =>
+> = ({ modComponentSidebarItem, isNested = false }) =>
   isModComponentBase(modComponentSidebarItem) ? (
     <ActivatedModComponentListItem
       modComponent={modComponentSidebarItem}

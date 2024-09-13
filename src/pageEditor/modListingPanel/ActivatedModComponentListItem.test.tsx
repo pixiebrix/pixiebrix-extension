@@ -25,6 +25,10 @@ import { screen, waitFor } from "@testing-library/react";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import userEvent from "@testing-library/user-event";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import {
+  selectActivatedModComponentIsAvailable,
+  selectDraftModComponentIsAvailable,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 jest.mock("@/pageEditor/starterBricks/adapter", () => {
   const actual = jest.requireActual("@/pageEditor/starterBricks/adapter");
@@ -39,9 +43,27 @@ jest.mock("@/contentScript/messenger/api");
 const enableOverlayMock = jest.mocked(enableOverlay);
 const disableOverlayMock = jest.mocked(disableOverlay);
 
+jest.mock("@/pageEditor/store/editor/editorSelectors", () => {
+  const actual = jest.requireActual(
+    "@/pageEditor/store/editor/editorSelectors",
+  );
+  return {
+    ...actual,
+    selectActivatedModComponentIsAvailable: jest.fn(),
+    selectDraftModComponentIsAvailable: jest.fn(),
+  };
+});
+
 beforeAll(() => {
   // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
   jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+
+beforeEach(() => {
+  jest
+    .mocked(selectActivatedModComponentIsAvailable)
+    .mockReturnValue(() => true);
+  jest.mocked(selectDraftModComponentIsAvailable).mockReturnValue(() => true);
 });
 
 afterAll(() => {
@@ -88,6 +110,10 @@ describe("ActivatedModComponentListItem", () => {
   });
 
   it("shows not-available icon properly", async () => {
+    jest
+      .mocked(selectActivatedModComponentIsAvailable)
+      .mockReturnValue(() => false);
+
     const modComponent = modComponentFactory();
     render(<ActivatedModComponentListItem modComponent={modComponent} />);
 

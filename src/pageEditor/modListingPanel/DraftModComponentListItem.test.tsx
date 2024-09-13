@@ -22,6 +22,10 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { authActions } from "@/auth/authSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
+import {
+  selectActivatedModComponentIsAvailable,
+  selectDraftModComponentIsAvailable,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
@@ -29,9 +33,27 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
     .mockReturnValue({ data: [], isLoading: false }),
 }));
 
+jest.mock("@/pageEditor/store/editor/editorSelectors", () => {
+  const actual = jest.requireActual(
+    "@/pageEditor/store/editor/editorSelectors",
+  );
+  return {
+    ...actual,
+    selectActivatedModComponentIsAvailable: jest.fn(),
+    selectDraftModComponentIsAvailable: jest.fn(),
+  };
+});
+
 beforeAll(() => {
   // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
   jest.spyOn(global.Math, "random").mockImplementation(() => 0);
+});
+
+beforeEach(() => {
+  jest
+    .mocked(selectActivatedModComponentIsAvailable)
+    .mockReturnValue(() => true);
+  jest.mocked(selectDraftModComponentIsAvailable).mockReturnValue(() => true);
 });
 
 afterAll(() => {

@@ -32,9 +32,7 @@ exports[`DraftModComponentListItem renders active element 1`] = `
       >
         Element 1
       </span>
-      <div
-        class="root"
-      >
+      <div>
         <button
           aria-expanded="false"
           aria-haspopup="true"
@@ -53,23 +51,12 @@ exports[`DraftModComponentListItem renders active element 1`] = `
             viewBox="0 0 192 512"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              aria-hidden="true"
-              class="svg-inline--fa fa-ellipsis-v fa-w-6 "
-              data-icon="ellipsis-v"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              viewBox="0 0 192 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-        </div>
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
       </div>
     </div>
     <button
