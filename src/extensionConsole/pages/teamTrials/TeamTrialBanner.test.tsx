@@ -18,7 +18,7 @@
 import React from "react";
 import TeamTrialBanner from "@/extensionConsole/pages/teamTrials/TeamTrialBanner";
 import { render, screen, waitFor } from "@/extensionConsole/testHelpers";
-import { organizationFactory } from "@/testUtils/factories/organizationFactories";
+import { organizationResponseFactory } from "@/testUtils/factories/organizationFactories";
 import { type Timestamp } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -40,7 +40,7 @@ describe("TeamTrialBanner", () => {
 
   describe("when the user is not on a team trial", () => {
     it("does not render the banner", async () => {
-      const mockOrganizations = [organizationFactory()];
+      const mockOrganizations = [organizationResponseFactory()];
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, mockOrganizations);
 
@@ -62,7 +62,7 @@ describe("TeamTrialBanner", () => {
   describe("when the user is on an in progress team trial", () => {
     it("renders the banner", async () => {
       const mockOrganizations = [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: tomorrow,
         }),
       ];
@@ -82,10 +82,10 @@ describe("TeamTrialBanner", () => {
 
     it("renders the in progress message when any team is in progress and none are expired", async () => {
       const mockOrganizations = [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: tomorrow,
         }),
-        organizationFactory(),
+        organizationResponseFactory(),
       ];
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, mockOrganizations);
@@ -103,7 +103,7 @@ describe("TeamTrialBanner", () => {
 
     it("renders the trial call to action link when the user is on an in progress team trial", async () => {
       const mockOrganizations = [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: tomorrow,
         }),
       ];
@@ -127,7 +127,7 @@ describe("TeamTrialBanner", () => {
   describe("when the user is on an expired team trial", () => {
     it("renders the banner", async () => {
       const mockOrganizations = [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: yesterday,
         }),
       ];
@@ -147,13 +147,13 @@ describe("TeamTrialBanner", () => {
 
     it("renders the expired message even if other teams are not expired", async () => {
       const mockOrganizations = [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: tomorrow,
         }),
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: yesterday,
         }),
-        organizationFactory(),
+        organizationResponseFactory(),
       ];
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, mockOrganizations);
@@ -171,10 +171,12 @@ describe("TeamTrialBanner", () => {
 
     it("renders the trial call to action link when the user is on an expired team trial", async () => {
       const mockOrganizations = [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: yesterday,
         }),
       ];
+
+      console.log(mockOrganizations);
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, mockOrganizations);
 

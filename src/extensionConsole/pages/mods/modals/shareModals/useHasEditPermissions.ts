@@ -17,13 +17,16 @@
 
 import { selectAuth } from "@/auth/authSelectors";
 import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
-import { UserRole } from "@/types/contract";
 import { type RegistryId } from "@/types/registryTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
 import { useSelector } from "react-redux";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
-const editorRoles = new Set<number>([UserRole.admin, UserRole.developer]);
+const editorRoles = new Set<number>([
+  LegacyUserRole.admin,
+  LegacyUserRole.developer,
+]);
 
 export default function useHasEditPermissions(
   modId: Nullishable<RegistryId>,
