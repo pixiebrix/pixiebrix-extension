@@ -67,9 +67,6 @@ export type Organization = {
   theme: OrganizationTheme | null;
 
   trialEndTimestamp: Timestamp | null;
-
-  // The `isAdmin` property is added in the Redux RTK definition for getOrganizations (see api.ts)
-  isAdmin: boolean;
 };
 
 export function transformOrganizationResponse(
@@ -89,17 +86,5 @@ export function transformOrganizationResponse(
       ? transformOrganizationThemeResponse(apiOrganization.theme)
       : null,
     trialEndTimestamp: apiOrganization.trial_end_timestamp ?? null,
-
-    // Mapping between the API response and the UI model because we need to know whether the user is an admin of
-    // the organization
-
-    // Currently API returns all members only for the organization where the user is an admin,
-    // hence if the user is an admin, they will have role === UserRole.admin,
-    // otherwise there will be no other members listed (no member with role === UserRole.admin).
-    isAdmin:
-      apiOrganization.members?.some(
-        (member: { role: LegacyUserRole }) =>
-          member.role === LegacyUserRole.admin,
-      ) ?? false,
   }));
 }

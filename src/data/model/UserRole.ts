@@ -26,7 +26,7 @@ export enum LegacyUserRole {
   manager = 5,
 }
 
-const UserRole = {
+export const UserRole = {
   member: "member",
   admin: "admin",
   developer: "developer",
