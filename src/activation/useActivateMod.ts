@@ -29,6 +29,8 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import {
   useCreateDatabaseMutation,
   useCreateUserDeploymentMutation,
+  useGetEditablePackagesQuery,
+  useLazyListPackageVersionsQuery,
 } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
@@ -84,6 +86,10 @@ function useActivateMod(
 
   const [createDatabase] = useCreateDatabaseMutation();
   const [createUserDeployment] = useCreateUserDeploymentMutation();
+
+  const { data: editablePackages, isFetching: isFetchingEditablePackages } =
+    useGetEditablePackagesQuery();
+  const [fetchPackageVersions] = useLazyListPackageVersionsQuery();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -168,18 +174,35 @@ function useActivateMod(
           }),
         );
 
-        const data: DeploymentPayload = {
-          package_version: modDefinition.metadata.version,
-          name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
-          services: integrationDependencies.flatMap((integrationDependency) =>
-            integrationDependency.integrationId === PIXIEBRIX_INTEGRATION_ID ||
-            integrationDependency.configId == null
-              ? []
-              : [{ auth: integrationDependency.configId }],
-          ),
-          options_config: optionsArgs,
-        };
-        await createUserDeployment(data);
+        if (formValues.personalDeployment) {
+          const packageId = editablePackages?.find(
+            (x) => x.name === modDefinition.metadata.id,
+          )?.id;
+          if (packageId) {
+            const packageVersions = await fetchPackageVersions({
+              id: packageId,
+            }).unwrap();
+            const packageVersion = packageVersions.find(
+              (modVersion) =>
+                modVersion.version === modDefinition.metadata.version,
+            );
+            const data: DeploymentPayload = {
+              package_version: packageVersion.id,
+              name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+              services: integrationDependencies.flatMap(
+                (integrationDependency) =>
+                  integrationDependency.integrationId ===
+                    PIXIEBRIX_INTEGRATION_ID ||
+                  integrationDependency.configId == null
+                    ? []
+                    : [{ auth: integrationDependency.configId }],
+              ),
+              options_config: optionsArgs,
+            };
+            await createUserDeployment(data);
+          }
+        }
+
         reloadModsEveryTab();
       } catch (error) {
         const errorMessage = getErrorMessage(error);
@@ -205,6 +228,7 @@ function useActivateMod(
       dispatch,
       createUserDeployment,
       createDatabase,
+      editablePackages,
     ],
   );
 }
