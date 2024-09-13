@@ -73,7 +73,7 @@ function getOrganizationOptions(organizations: Organization[]) {
   const organizationOptions = (organizations ?? [])
     .filter(
       (organization) =>
-        organization.members?.some(
+        organization.memberships?.some(
           (member) =>
             // If the current user is an admin of the organization, then all of the members are listed for the organization
             // Otherwise, only the current user is listed for the organization

@@ -30,21 +30,21 @@ import {
 import { type components } from "@/types/swagger";
 
 export type OrganizationMembership = {
-  memberId?: number;
+  membershipId?: number;
   user?: OrganizationMembershipUser;
   role: UserRoleType;
   groups?: OrganizationMembershipGroup[];
 };
 
 export function transformOrganizationMembershipResponse(
-  members: components["schemas"]["Organization"]["members"],
+  memberships: components["schemas"]["Organization"]["members"],
 ): OrganizationMembership[] {
   return (
-    members?.map((member) => ({
-      memberId: member.id,
-      user: transformOrganizationMemberUserResponse(member.user),
-      role: transformUserRoleResponse(member.role),
-      groups: transformOrganizationMemberGroupsResponse(member.groups),
+    memberships?.map((membership) => ({
+      membershipId: membership.id,
+      user: transformOrganizationMemberUserResponse(membership.user),
+      role: transformUserRoleResponse(membership.role),
+      groups: transformOrganizationMemberGroupsResponse(membership.groups),
     })) ?? []
   );
 }

@@ -41,9 +41,9 @@ export type Organization = {
    */
   organizationName: string;
   /**
-   * The organization's members.
+   * The organization's memberships.
    */
-  members: OrganizationMembership[] | null;
+  memberships: OrganizationMembership[] | null;
   /**
    * The organization's scope.
    */
@@ -74,7 +74,9 @@ export function transformOrganizationResponse(
   return baseQueryReturnValue.map((apiOrganization) => ({
     organizationId: validateUUID(apiOrganization.id),
     organizationName: apiOrganization.name,
-    members: transformOrganizationMembershipResponse(apiOrganization.members),
+    memberships: transformOrganizationMembershipResponse(
+      apiOrganization.members,
+    ),
     scope: apiOrganization.scope ?? null,
     defaultRole: apiOrganization.default_role
       ? transformUserRoleResponse(apiOrganization.default_role)
