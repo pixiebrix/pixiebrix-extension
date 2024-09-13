@@ -25,14 +25,12 @@ import {
   type Group,
   type MarketplaceListing,
   type MarketplaceTag,
-  type Organization,
   type Package,
   type PackageUpsertResponse,
   type PackageVersionDeprecated,
   type PendingInvitation,
   type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
-  UserRole,
   type DeploymentPayload,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
@@ -48,6 +46,10 @@ import { type InstalledDeployment } from "@/utils/deploymentUtils";
 import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
+import {
+  type Organization,
+  transformOrganizationResponse,
+} from "@/data/model/Organization";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -141,29 +143,7 @@ export const appApi = createApi({
     getOrganizations: builder.query<Organization[], void>({
       query: () => ({ url: API_PATHS.ORGANIZATIONS, method: "get" }),
       providesTags: ["Organizations"],
-      transformResponse: (
-        baseQueryReturnValue: Array<components["schemas"]["Organization"]>,
-      ): Organization[] =>
-        baseQueryReturnValue.map((apiOrganization) => ({
-          ...apiOrganization,
-
-          // Mapping between the API response and the UI model because we need to know whether the user is an admin of
-          // the organization
-
-          // Currently API returns all members only for the organization where the user is an admin,
-          // hence if the user is an admin, they will have role === UserRole.admin,
-          // otherwise there will be no other members listed (no member with role === UserRole.admin).
-
-          // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if
-          // they have a Member or Developer role on the team
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call -- `organization.members` is about to be removed
-          role: (apiOrganization as any).members?.some(
-            (member: { role: UserRole }) => member.role === UserRole.admin,
-          )
-            ? UserRole.admin
-            : UserRole.restricted,
-        })),
+      transformResponse: transformOrganizationResponse,
     }),
     getGroups: builder.query<Record<string, Group[]>, string>({
       query: (organizationId) => ({
