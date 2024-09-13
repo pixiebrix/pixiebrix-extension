@@ -45,10 +45,7 @@ import { type InstalledDeployment } from "@/utils/deploymentUtils";
 import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
-import {
-  type Organization,
-  transformOrganizationResponse,
-} from "@/data/model/Organization";
+import { type Team, transformTeamResponse } from "@/data/model/Team";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -139,10 +136,10 @@ export const appApi = createApi({
       }),
       providesTags: ["IntegrationAuths"],
     }),
-    getOrganizations: builder.query<Organization[], void>({
+    getOrganizations: builder.query<Team[], void>({
       query: () => ({ url: API_PATHS.ORGANIZATIONS, method: "get" }),
       providesTags: ["Organizations"],
-      transformResponse: transformOrganizationResponse,
+      transformResponse: transformTeamResponse,
     }),
     getGroups: builder.query<Record<string, Group[]>, string>({
       query: (organizationId) => ({

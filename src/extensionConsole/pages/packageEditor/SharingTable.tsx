@@ -24,13 +24,13 @@ import React from "react";
 import { useField } from "formik";
 import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type UUID } from "@/types/stringTypes";
-import { type Organization } from "@/data/model/Organization";
+import { type Team } from "@/data/model/Team";
 
 const SharingTable: React.FunctionComponent = () => {
   const { data: organizations = [] } = useGetOrganizationsQuery();
   const [publicField, , { setValue: setPublic }] = useField("public");
   const [organizationsField, , { setValue: setOrganizations }] =
-    useField<Array<Organization["organizationId"]>>("organizations");
+    useField<Array<Team["teamId"]>>("organizations");
 
   return (
     <Table>
@@ -59,33 +59,26 @@ const SharingTable: React.FunctionComponent = () => {
             )}
           </td>
         </tr>
-        {sortBy(organizations, (x) => x.organizationName).map(
-          (organization) => (
-            <tr key={organization.organizationId}>
-              <td width="100">
-                <BootstrapSwitchButton
-                  onlabel=" "
-                  offlabel=" "
-                  checked={organizationsField.value.includes(
-                    organization.organizationId,
-                  )}
-                  onChange={async (checked: boolean) => {
-                    const next = checked
-                      ? uniq([
-                          ...organizationsField.value,
-                          organization.organizationId,
-                        ])
-                      : organizationsField.value.filter(
-                          (x: UUID) => x !== organization.organizationId,
-                        );
-                    await setOrganizations(next);
-                  }}
-                />
-              </td>
-              <td>{organization.organizationName}</td>
-            </tr>
-          ),
-        )}
+        {sortBy(organizations, (x) => x.teamName).map((organization) => (
+          <tr key={organization.teamId}>
+            <td width="100">
+              <BootstrapSwitchButton
+                onlabel=" "
+                offlabel=" "
+                checked={organizationsField.value.includes(organization.teamId)}
+                onChange={async (checked: boolean) => {
+                  const next = checked
+                    ? uniq([...organizationsField.value, organization.teamId])
+                    : organizationsField.value.filter(
+                        (x: UUID) => x !== organization.teamId,
+                      );
+                  await setOrganizations(next);
+                }}
+              />
+            </td>
+            <td>{organization.teamName}</td>
+          </tr>
+        ))}
       </tbody>
     </Table>
   );

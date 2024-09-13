@@ -20,10 +20,7 @@ import { getApiClient } from "@/data/service/apiClient";
 import type { components } from "@/types/swagger";
 import { expectContext } from "@/utils/expectContext";
 import { API_PATHS } from "@/data/service/urlPaths";
-import {
-  transformOrganizationResponse,
-  type Organization,
-} from "@/data/model/Organization";
+import { transformTeamResponse, type Team } from "@/data/model/Team";
 
 // Safe to memoize in-memory because the background page/worker is reloaded when the authenticated user changes.
 // When the user changes, the background page/worker is reloaded, the memoizeUntilSettled cache is cleared so the
@@ -41,13 +38,11 @@ export const getMe = memoizeUntilSettled(
   },
 );
 
-export const getTeams = memoizeUntilSettled(
-  async (): Promise<Organization[]> => {
-    expectContext("background");
-    const client = await getApiClient();
-    const { data } = await client.get<
-      Array<components["schemas"]["Organization"]>
-    >(API_PATHS.ORGANIZATIONS);
-    return transformOrganizationResponse(data);
-  },
-);
+export const getTeams = memoizeUntilSettled(async (): Promise<Team[]> => {
+  expectContext("background");
+  const client = await getApiClient();
+  const { data } = await client.get<
+    Array<components["schemas"]["Organization"]>
+  >(API_PATHS.ORGANIZATIONS);
+  return transformTeamResponse(data);
+});

@@ -21,7 +21,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type UserPartner } from "@/data/model/UserPartner";
 import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
-import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
+import { type TeamTheme } from "@/data/model/TeamTheme";
 import { type ControlRoom } from "@/data/model/ControlRoom";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { type LegacyUserRole } from "@/data/model/UserRole";
@@ -163,7 +163,7 @@ export type OrganizationAuthState = {
   /**
    * The optional custom theme configured for this Organization
    */
-  readonly theme?: OrganizationTheme;
+  readonly theme?: TeamTheme;
   /**
    * The Automation Anywhere Control Room information
    */
