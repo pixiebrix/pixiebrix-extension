@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  useGetEditablePackagesQuery,
-  useLazyListPackageVersionsQuery,
-} from "@/data/service/api";
+import { appApi, useGetEditablePackagesQuery } from "@/data/service/api";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 
@@ -28,7 +25,8 @@ import { useCallback } from "react";
  */
 export function useGetModDefinitionPackageVersion() {
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [fetchPackageVersions] = useLazyListPackageVersionsQuery();
+  const [fetchPackageVersions] =
+    appApi.endpoints.listPackageVersions.useLazyQuery();
 
   return useCallback(
     async (modDefinition: ModDefinition): Promise<string | null> => {

@@ -429,6 +429,7 @@ export const appApi = createApi({
         method: "post",
         data,
       }),
+      invalidatesTags: ["Deployments"],
     }),
   }),
 });
@@ -456,7 +457,6 @@ export const {
   useUpdatePackageMutation,
   useDeletePackageMutation,
   useListPackageVersionsQuery,
-  useLazyListPackageVersionsQuery,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
   useGetDeploymentsQuery,
