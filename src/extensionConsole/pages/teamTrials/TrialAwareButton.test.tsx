@@ -22,7 +22,7 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import React from "react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { organizationFactory } from "@/testUtils/factories/organizationFactories";
+import { organizationResponseFactory } from "@/testUtils/factories/organizationFactories";
 import { type Timestamp } from "@/types/stringTypes";
 
 describe("TrialAwareButton", () => {
@@ -66,7 +66,9 @@ describe("TrialAwareButton", () => {
 
       appApiMock
         .onGet(API_PATHS.ORGANIZATIONS)
-        .reply(200, [organizationFactory({ scope: organizationScope })]);
+        .reply(200, [
+          organizationResponseFactory({ scope: organizationScope }),
+        ]);
 
       render(<TrialAwareButton modId={modId} />);
 
@@ -83,7 +85,9 @@ describe("TrialAwareButton", () => {
 
       appApiMock
         .onGet(API_PATHS.ORGANIZATIONS)
-        .reply(200, [organizationFactory({ scope: organizationScope })]);
+        .reply(200, [
+          organizationResponseFactory({ scope: organizationScope }),
+        ]);
 
       render(<TrialAwareButton modId={modId} />);
 
@@ -103,7 +107,7 @@ describe("TrialAwareButton", () => {
       expect(modId.startsWith(organizationScope)).toBeFalse();
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: "2023-01-02T00:00:00Z" as Timestamp,
           scope: organizationScope,
         }),
@@ -125,7 +129,7 @@ describe("TrialAwareButton", () => {
       expect(modId.startsWith(organizationScope)).toBeTrue();
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: "2023-01-02T00:00:00Z" as Timestamp,
           scope: organizationScope,
         }),
@@ -149,7 +153,7 @@ describe("TrialAwareButton", () => {
       expect(modId.startsWith(organizationScope)).toBeFalse();
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: "2023-01-01T00:00:00Z" as Timestamp,
         }),
       ]);
@@ -170,7 +174,7 @@ describe("TrialAwareButton", () => {
       expect(modId.startsWith(organizationScope)).toBeTrue();
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: "2023-01-01T00:00:00Z" as Timestamp,
           scope: organizationScope,
         }),
@@ -193,11 +197,11 @@ describe("TrialAwareButton", () => {
       expect(modId.startsWith(organization1Scope)).toBeTrue();
 
       appApiMock.onGet(API_PATHS.ORGANIZATIONS).reply(200, [
-        organizationFactory({
+        organizationResponseFactory({
           trial_end_timestamp: "2023-01-01T00:00:00Z" as Timestamp,
           scope: organization2Scope,
         }),
-        organizationFactory({
+        organizationResponseFactory({
           scope: organization1Scope,
         }),
       ]);
