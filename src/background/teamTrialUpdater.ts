@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import deactivateModComponentsAndSaveState from "@/background/utils/deactivateModComponentsAndSaveState";
+import { type Organization } from "@/data/model/Organization";
 import { getOrganizations } from "@/data/service/backgroundApi";
 import { getEditorState } from "@/store/editorStorage";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { type components } from "@/types/swagger";
 import { getScopeAndId } from "@/utils/registryUtils";
 
 async function getOrganizationsWithTrials() {
   const organizations = await getOrganizations();
   return organizations.filter(
-    (organization) => organization.trial_end_timestamp != null,
+    (organization) => organization.trialEndTimestamp != null,
   );
 }
 
 function getManuallyActivatedTeamModComponents(
   activatedModComponents: ActivatedModComponent[],
-  organizationsWithTrials: Array<components["schemas"]["Organization"]>,
+  organizationsWithTrials: Organization[],
 ) {
   const teamScopes = organizationsWithTrials.map((x) => x.scope);
   return activatedModComponents.filter((x) => {
@@ -41,7 +41,7 @@ function getManuallyActivatedTeamModComponents(
     }
 
     const { scope } = getScopeAndId(x._recipe?.id);
-    return teamScopes.includes(scope);
+    return Boolean(scope && teamScopes.includes(scope));
   });
 }
 
