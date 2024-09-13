@@ -46,6 +46,7 @@ import {
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
+  type BaseFormStateV5,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -65,7 +66,6 @@ import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
 } from "@/pageEditor/store/editor/uiState";
-import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
   selectionSeq: 0,
@@ -416,6 +416,10 @@ function unmigrateFormStateV4toV3(formState: BaseFormStateV4): BaseFormStateV3 {
   };
 }
 
+function unmigrateFormStateV5toV4(formState: BaseFormStateV5): BaseFormStateV4 {
+  return omit(formState, "variablesDefinition");
+}
+
 function unmigrateEditorStateV5toV4(
   state: EditorStateV5 & PersistedState,
 ): EditorStateV4 & PersistedState {
@@ -447,14 +451,39 @@ function unmigrateEditorStateV6toV5(
   };
 }
 
+function unmigrateEditorStateV8toV7(
+  state: EditorStateV8 & PersistedState,
+): EditorStateV7 & PersistedState {
+  return {
+    ...omit(
+      state,
+      "modComponentFormStates",
+      "deletedModComponentFormStatesByModId",
+    ),
+    modComponentFormStates: state.modComponentFormStates.map((formState) =>
+      unmigrateFormStateV5toV4(formState),
+    ),
+    deletedModComponentFormStatesByModId: mapValues(
+      state.deletedModComponentFormStatesByModId,
+      (formStates) =>
+        formStates.map((formState) => unmigrateFormStateV5toV4(formState)),
+    ),
+  };
+}
+
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
-const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
+const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = (override) =>
   formStateFactory({
     formStateConfig: override as FactoryConfig<InternalFormStateOverride>,
   });
+
+const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
+  unmigrateFormStateV5toV4(formStateFactoryV5());
+
 const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
   unmigrateFormStateV4toV3(formStateFactoryV4());
+
 const formStateFactoryV2: SimpleFactory<BaseFormStateV2> = () =>
   unmigrateFormStateV3toV2(formStateFactoryV3());
 
@@ -661,7 +690,14 @@ describe("editor state migrations", () => {
     });
 
     it("add variable definitions section", () => {
-      throw Error("Not implemented");
+      const expectedEditorStateV8: EditorStateV8 & PersistedState = {
+        ...initialStateV8,
+        modComponentFormStates: [formStateFactoryV5()],
+      };
+      const unmigrated = unmigrateEditorStateV8toV7(expectedEditorStateV8);
+      expect(migrateEditorStateV7(unmigrated)).toStrictEqual(
+        expectedEditorStateV8,
+      );
     });
   });
 });

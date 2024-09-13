@@ -378,12 +378,14 @@ export type EditorStateV5 = Except<
 };
 
 /**
+ * Version bump to account for removing insertingStarterBrickType.
+ *
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
 export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
 
 /**
- * Version bump to account for changes in DataPanelTabKeys.
+ * Version bump to account for changes to DataPanelTabKeys.
  *
  * Same type as EditorStateV6, but bumped because there's an associated migration to clear out the Data Panel UI state.
  *
@@ -394,7 +396,7 @@ export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
 export type EditorStateV7 = EditorStateV6;
 
 /**
- * Version bump to account for variableDefinition property added in BaseFormState
+ * Version bump to account for adding variableDefinition property in BaseFormState
  *
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @see migrateEditorStateV7
