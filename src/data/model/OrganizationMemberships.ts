@@ -16,31 +16,29 @@
  */
 
 import {
-  type OrganizationMemberGroup,
+  type OrganizationMembershipGroup,
   transformOrganizationMemberGroupsResponse,
-} from "@/data/model/OrganizationMemberGroups";
+} from "@/data/model/OrganizationMembershipGroups";
 import {
   transformOrganizationMemberUserResponse,
-  type OrganizationMemberUser,
-} from "@/data/model/OrganizationMemberUser";
+  type OrganizationMembershipUser,
+} from "@/data/model/OrganizationMembershipUser";
 import {
   type UserRoleType,
   transformUserRoleResponse,
 } from "@/data/model/UserRole";
 import { type components } from "@/types/swagger";
 
-export type OrganizationMember = {
+export type OrganizationMembership = {
   memberId?: number;
-  user?: OrganizationMemberUser;
+  user?: OrganizationMembershipUser;
   role: UserRoleType;
-  groups?: OrganizationMemberGroup[];
+  groups?: OrganizationMembershipGroup[];
 };
 
-export type OrganizationMembers = OrganizationMember[];
-
-export function transformOrganizationMembersResponse(
+export function transformOrganizationMembershipResponse(
   members: components["schemas"]["Organization"]["members"],
-): OrganizationMembers {
+): OrganizationMembership[] {
   return (
     members?.map((member) => ({
       memberId: member.id,

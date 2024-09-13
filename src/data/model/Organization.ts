@@ -16,15 +16,14 @@
  */
 
 import {
-  transformOrganizationMembersResponse,
-  type OrganizationMembers,
-} from "@/data/model/OrganizationMembers";
+  transformOrganizationMembershipResponse,
+  type OrganizationMembership,
+} from "@/data/model/OrganizationMemberships";
 import {
   transformOrganizationThemeResponse,
   type OrganizationTheme,
 } from "@/data/model/OrganizationTheme";
 import {
-  LegacyUserRole,
   type UserRoleType,
   transformUserRoleResponse,
 } from "@/data/model/UserRole";
@@ -44,7 +43,7 @@ export type Organization = {
   /**
    * The organization's members.
    */
-  members: OrganizationMembers | null;
+  members: OrganizationMembership[] | null;
   /**
    * The organization's scope.
    */
@@ -75,7 +74,7 @@ export function transformOrganizationResponse(
   return baseQueryReturnValue.map((apiOrganization) => ({
     organizationId: validateUUID(apiOrganization.id),
     organizationName: apiOrganization.name,
-    members: transformOrganizationMembersResponse(apiOrganization.members),
+    members: transformOrganizationMembershipResponse(apiOrganization.members),
     scope: apiOrganization.scope ?? null,
     defaultRole: apiOrganization.default_role
       ? transformUserRoleResponse(apiOrganization.default_role)

@@ -15,27 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "@/types/stringTypes";
+import { validateUUID } from "@/types/helpers";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { type components } from "@/types/swagger";
 import { type SetRequired } from "type-fest";
 
-export type OrganizationMemberGroup = {
-  groupId: UUID;
-  groupName: string;
+export type OrganizationMembershipUser = {
+  userId: UUID;
+  userName?: string;
+  userEmail?: string;
+  serviceAccount?: boolean;
+  deploymentKeyAccount?: boolean;
+  dateJoined?: Timestamp;
 };
 
-type Members = SetRequired<
+type Memberships = SetRequired<
   components["schemas"]["Organization"],
   "members"
 >["members"];
 
-export type OrganizationMemberGroups = OrganizationMemberGroup[];
-
-export function transformOrganizationMemberGroupsResponse(
-  groups: Members[number]["groups"],
-): OrganizationMemberGroups | undefined {
-  return groups?.map((group) => ({
-    groupId: group.id,
-    groupName: group.name,
-  }));
+export function transformOrganizationMemberUserResponse(
+  user: Memberships[number]["user"],
+): OrganizationMembershipUser {
+  return {
+    userId: validateUUID(user?.id),
+    userName: user?.name,
+    userEmail: user?.email,
+    serviceAccount: user?.service_account,
+    deploymentKeyAccount: user?.deployment_key_account,
+    dateJoined: user?.date_joined,
+  };
 }
