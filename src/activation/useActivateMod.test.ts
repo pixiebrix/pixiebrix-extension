@@ -41,6 +41,8 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -331,5 +333,69 @@ describe("useActivateMod", () => {
 
     expect(success).toBe(false);
     expect(error).toBe(errorMessage);
+  });
+
+  it("handles personal deployment creation successfully", async () => {
+    const { formValues, modDefinition } = setupInputs();
+
+    setModHasPermissions(true);
+    setUserAcceptedPermissions(true);
+
+    const packageVersionId = "package-version-id";
+    const deploymentId = "deployment-id";
+
+    const editablePackage = editablePackageMetadataFactory({
+      name: modDefinition.metadata.id,
+    });
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
+
+    appApiMock
+      .onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id))
+      .reply(200, [{ id: packageVersionId, version: "1.0.0" }]);
+    appApiMock
+      .onPost(API_PATHS.USER_DEPLOYMENTS)
+      .reply(201, { id: deploymentId });
+
+    const { result, getReduxStore } = renderHook(
+      () => useActivateMod("marketplace"),
+      {
+        setupRedux(dispatch, { store }) {
+          jest.spyOn(store, "dispatch");
+        },
+      },
+    );
+    await waitForEffect();
+
+    const { success, error } = await result.current(
+      { ...formValues, personalDeployment: true },
+      modDefinition,
+    );
+
+    expect(success).toBe(true);
+    expect(error).toBeUndefined();
+
+    const { dispatch } = getReduxStore();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      modComponentSlice.actions.activateMod({
+        modDefinition,
+        configuredDependencies: [],
+        optionsArgs: formValues.optionsArgs,
+        screen: "marketplace",
+        isReactivate: false,
+      }),
+    );
+
+    expect(appApiMock.history.post).toContainEqual(
+      expect.objectContaining({
+        url: API_PATHS.USER_DEPLOYMENTS,
+        data: JSON.stringify({
+          package_version: packageVersionId,
+          name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+          services: [],
+          options_config: formValues.optionsArgs,
+        }),
+      }),
+    );
   });
 });

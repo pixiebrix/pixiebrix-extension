@@ -29,8 +29,6 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import {
   useCreateDatabaseMutation,
   useCreateUserDeploymentMutation,
-  useGetEditablePackagesQuery,
-  useLazyListPackageVersionsQuery,
 } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
@@ -38,6 +36,7 @@ import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHel
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { type DeploymentPayload } from "@/types/contract";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { useGetModDefinitionPackageVersion } from "@/activation/useGetModDefinitionPackageVersion";
 
 export type ActivateResult = {
   success: boolean;
@@ -87,9 +86,7 @@ function useActivateMod(
   const [createDatabase] = useCreateDatabaseMutation();
   const [createUserDeployment] = useCreateUserDeploymentMutation();
 
-  const { data: editablePackages, isFetching: isFetchingEditablePackages } =
-    useGetEditablePackagesQuery();
-  const [fetchPackageVersions] = useLazyListPackageVersionsQuery();
+  const getPackageVersion = useGetModDefinitionPackageVersion();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -175,19 +172,10 @@ function useActivateMod(
         );
 
         if (formValues.personalDeployment) {
-          const packageId = editablePackages?.find(
-            (x) => x.name === modDefinition.metadata.id,
-          )?.id;
-          if (packageId) {
-            const packageVersions = await fetchPackageVersions({
-              id: packageId,
-            }).unwrap();
-            const packageVersion = packageVersions.find(
-              (modVersion) =>
-                modVersion.version === modDefinition.metadata.version,
-            );
+          const packageVersionId = await getPackageVersion(modDefinition);
+          if (packageVersionId) {
             const data: DeploymentPayload = {
-              package_version: packageVersion.id,
+              package_version: packageVersionId,
               name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
               services: integrationDependencies.flatMap(
                 (integrationDependency) =>
@@ -226,9 +214,9 @@ function useActivateMod(
       source,
       checkPermissions,
       dispatch,
-      createUserDeployment,
       createDatabase,
-      editablePackages,
+      getPackageVersion,
+      createUserDeployment,
     ],
   );
 }
