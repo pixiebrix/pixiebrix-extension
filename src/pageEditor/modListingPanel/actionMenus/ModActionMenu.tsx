@@ -70,9 +70,9 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
   const addStarterBrickSubMenu = useMemo(
     () =>
       modComponentFormStateAdapters.map((adapter) => ({
-        title: adapter.label,
+        title: adapter.flag ? `${adapter.label} (Beta)` : adapter.label,
         action() {
-          addNewModComponent(adapter.starterBrickType);
+          addNewModComponent(adapter);
         },
         icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
       })),

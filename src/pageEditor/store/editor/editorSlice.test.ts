@@ -16,8 +16,8 @@
  */
 
 import {
-  editorSlice,
   actions,
+  editorSlice,
   initialState,
   persistEditorConfig,
 } from "@/pageEditor/store/editor/editorSlice";
@@ -49,6 +49,7 @@ import { migrations } from "@/store/editorMigrations";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { setActiveModId } from "./editorSliceHelpers";
 import { castDraft } from "immer";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 
 function getTabState(
   state: EditorState,
@@ -222,11 +223,14 @@ describe("Add/Remove Bricks", () => {
     ).toBeArrayOfSize(initialIntegrationDependencies.length);
   });
 
-  test("Can clone a mod compoenent", async () => {
+  test("Can clone a mod component", async () => {
     const dispatch = jest.fn();
-    const getState: () => EditorRootState = () => ({ editor });
+    const getState: () => EditorRootState & ModComponentsRootState = () => ({
+      editor,
+      options: { activatedModComponents: [] },
+    });
 
-    await actions.cloneActiveModComponent()(dispatch, getState, undefined);
+    await actions.duplicateActiveModComponent()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:
     //  1. thunk pending

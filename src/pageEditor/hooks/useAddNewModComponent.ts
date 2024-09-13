@@ -34,17 +34,16 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
-import {
-  type StarterBrickType,
-  StarterBrickTypes,
-} from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
-import { adapter } from "@/pageEditor/starterBricks/adapter";
 import { getUnsavedModMetadataForFormState } from "@/pageEditor/utils";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 
-export type AddNewModComponent = (starterBrickType: StarterBrickType) => void;
+export type AddNewModComponent = (
+  adapter: ModComponentFormStateAdapter,
+) => void;
 
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
@@ -58,12 +57,11 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   );
 
   const getInitialModComponentFormState = useCallback(
-    async (
-      starterBrickType: StarterBrickType,
-    ): Promise<ModComponentFormState> => {
-      const { selectNativeElement, fromNativeElement } =
-        adapter(starterBrickType);
-
+    async ({
+      starterBrickType,
+      selectNativeElement,
+      fromNativeElement,
+    }: ModComponentFormStateAdapter): Promise<ModComponentFormState> => {
       let element = null;
       if (selectNativeElement) {
         setInsertingStarterBrickType(starterBrickType);
@@ -91,8 +89,8 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   );
 
   return useCallback(
-    async (starterBrickType: StarterBrickType) => {
-      const { label, flag, asDraftModComponent } = adapter(starterBrickType);
+    async (adapter: ModComponentFormStateAdapter) => {
+      const { starterBrickType, label, flag, asDraftModComponent } = adapter;
 
       if (flag && flagOff(flag)) {
         dispatch(actions.betaError());
@@ -100,8 +98,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
       }
 
       try {
-        const initialFormState =
-          await getInitialModComponentFormState(starterBrickType);
+        const initialFormState = await getInitialModComponentFormState(adapter);
 
         dispatch(actions.addModComponentFormState(initialFormState));
         dispatch(actions.checkActiveModComponentAvailability());
