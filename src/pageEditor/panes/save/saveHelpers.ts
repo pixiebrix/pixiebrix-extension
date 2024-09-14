@@ -53,7 +53,10 @@ import {
   type ModDependencyAPIVersion,
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { normalizeModOptionsDefinition } from "@/utils/modUtils";
+import {
+  emptyModVariablesDefinitionFactory,
+  normalizeModOptionsDefinition,
+} from "@/utils/modUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import {
   isStarterBrickDefinitionLike,
@@ -215,7 +218,7 @@ function deleteUnusedStarterBrickDefinitions(
  * NOTE: the caller is responsible for updating a starter brick package (i.e., that has its own version). This method
  * only handles the starter brick if it's an inner definition
  *
- * @param sourceMod the original mod
+ * @param sourceMod the original mod definition
  * @param modMetadata the metadata for the new mod
  * @param activatedModComponents the user's locally activated mod components (i.e., from modComponentsSlice). Used to
  * locate the mod component's position in sourceMod
@@ -390,6 +393,7 @@ const emptyModDefinition: UnsavedModDefinition = {
   extensionPoints: [],
   definitions: {},
   options: normalizeModOptionsDefinition(null),
+  variables: emptyModVariablesDefinitionFactory(),
 };
 
 /**

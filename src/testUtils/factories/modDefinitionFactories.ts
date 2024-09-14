@@ -125,6 +125,7 @@ export const modDefinitionWithVersionedStarterBrickFactory = ({
   extend<ModDefinition, ModDefinition>(modDefinitionFactory, {
     definitions: undefined,
     options: undefined,
+    variables: undefined,
     extensionPoints: (n: number) => [
       {
         id: extensionPointId ?? validateRegistryId("test/starter-brick"),

@@ -133,6 +133,9 @@ describe("replaceModComponent round trip", () => {
       produce(modDefinition, (draft) => {
         castDraft(draft.metadata).id = newId;
         draft.extensionPoints[0]!.label = "New Label";
+
+        // `variableDefinition` is required on mod component form state, so it gets populated on the mod definition
+        draft.variables = emptyModVariablesDefinitionFactory();
       }),
     );
   });
@@ -178,6 +181,9 @@ describe("replaceModComponent round trip", () => {
       produce(modDefinition, (draft) => {
         castDraft(draft.metadata).id = newId;
         draft.extensionPoints[0]!.label = "New Label";
+
+        // `variableDefinition` is required on mod component form state, so it gets populated on the mod definition
+        draft.variables = emptyModVariablesDefinitionFactory();
       }),
     );
   });
@@ -386,6 +392,9 @@ describe("replaceModComponent round trip", () => {
       produce(modDefinition, (draft) => {
         castDraft(draft.metadata).id = newId;
         draft.extensionPoints[0]!.label = "New Label";
+
+        // `variableDefinition` is required on mod component form state, so it gets populated on the mod definition
+        draft.variables = emptyModVariablesDefinitionFactory();
       }),
     );
   });
@@ -437,6 +446,9 @@ describe("replaceModComponent round trip", () => {
         castDraft(draft.metadata).id = newId;
         draft.definitions![starterBrick.metadata!.id!]!.apiVersion = "v3";
         draft.extensionPoints[0]!.label = "New Label";
+
+        // `variableDefinition` is required on mod component form state, so it gets populated on the mod definition
+        draft.variables = emptyModVariablesDefinitionFactory();
       }),
     );
   });
@@ -581,10 +593,10 @@ describe("mod variables", () => {
       modComponentModVariables,
     );
 
-    expect(updatedModDefinition.options).toBe(modComponentModVariables);
+    expect(updatedModDefinition.variables).toBe(modComponentModVariables);
   });
 
-  test("preserves mod options", async () => {
+  test("preserves mod variables", async () => {
     const modVariablesDefinition: ModVariablesDefinition = {
       schema: {
         type: "object",
@@ -597,12 +609,12 @@ describe("mod variables", () => {
       },
     };
 
-    const modComponentModOptions: ModOptionsDefinition =
-      emptyModOptionsDefinitionFactory();
+    const modComponentModVariables: ModVariablesDefinition =
+      emptyModVariablesDefinitionFactory();
 
     const updatedMod = await runReplaceModComponent(
       modVariablesDefinition,
-      modComponentModOptions,
+      modComponentModVariables,
     );
 
     expect(updatedMod.variables).toStrictEqual(
