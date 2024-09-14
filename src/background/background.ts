@@ -55,6 +55,14 @@ import initTeamTrialUpdater from "@/background/teamTrialUpdater";
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
 setPlatform(backgroundPlatform);
 
+// Allows the content script to directly access the session storage for mod variables. Without this, we'd need to
+// we'd need to use the messenger or localStorage to synchronize state across frames.
+// Does not trigger a permissions prompt, see:
+// https://developer.chrome.com/docs/extensions/reference/api/storage#type-AccessLevel
+void chrome.storage.session.setAccessLevel({
+  accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS",
+});
+
 void initLocator();
 void initMessengerLogging();
 void initRuntimeLogging();

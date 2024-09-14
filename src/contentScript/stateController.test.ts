@@ -15,13 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/contentScript/stateController";
+import {
+  setState,
+  registerModVariables,
+  getState,
+} from "@/contentScript/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
+import type { JSONSchema7Definition } from "json-schema";
 
 describe("pageState", () => {
   it("deep merge triggers event", async () => {
@@ -68,6 +73,57 @@ describe("pageState", () => {
 
     expect(updatedState).toEqual({
       asyncState: { isFetching: true, currentData: null, data: "foo" },
+    });
+  });
+
+  describe("mod variable policy", () => {
+    it("stores variable in session storage", async () => {
+      const listener = jest.fn();
+
+      document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
+
+      const modComponentRef = modComponentRefFactory();
+
+      await expect(browser.storage.session.get(null)).resolves.toStrictEqual(
+        {},
+      );
+
+      registerModVariables(modComponentRef.modId, {
+        schema: {
+          type: "object",
+          properties: {
+            foo: {
+              type: "object",
+              "x-sync-policy": "session",
+              // Cast required because types don't support custom `x-` variables yet
+            } as JSONSchema7Definition,
+          },
+          required: ["foo"],
+        },
+      });
+
+      await setState({
+        namespace: StateNamespaces.MOD,
+        data: { foo: { bar: "baz" }, quox: 42 },
+        mergeStrategy: MergeStrategies.REPLACE,
+        modComponentRef,
+      });
+
+      // The storage fake doesn't emit events
+      expect(listener).toHaveBeenCalledTimes(0);
+
+      const values = await browser.storage.session.get(null);
+
+      // Ensure values are segmented correctly in storage
+      expect(JSON.stringify(values)).not.toContain("quox");
+      expect(JSON.stringify(values)).toContain("bar");
+
+      const state = await getState({
+        namespace: StateNamespaces.MOD,
+        modComponentRef,
+      });
+
+      expect(state).toEqual({ foo: { bar: "baz" }, quox: 42 });
     });
   });
 });
