@@ -29,9 +29,10 @@ import {
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupSelect";
 import notify from "@/utils/notify";
-import { type Organization, UserRole } from "@/types/contract";
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
+import { type Organization } from "@/data/model/Organization";
+import { UserRole } from "@/data/model/UserRole";
 
 type DatabaseCreateModalProps = {
   show: boolean;
@@ -70,10 +71,19 @@ const initialValues: DatabaseConfig = {
 
 function getOrganizationOptions(organizations: Organization[]) {
   const organizationOptions = (organizations ?? [])
-    .filter((organization) => organization.role === UserRole.admin)
+    .filter(
+      (organization) =>
+        organization.memberships?.some(
+          (member) =>
+            // If the current user is an admin of the organization, then all of the members are listed for the organization
+            // Otherwise, only the current user is listed for the organization
+            // So if any listed member is an admin, the current user is an admin
+            member.role === UserRole.admin,
+        ),
+    )
     .map((organization) => ({
-      label: organization.name,
-      value: organization.id,
+      label: organization.organizationName,
+      value: organization.organizationId,
     }));
 
   const personalDbOption = {

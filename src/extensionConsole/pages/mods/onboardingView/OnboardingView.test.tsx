@@ -17,7 +17,7 @@
 
 import React from "react";
 import useFlags from "@/hooks/useFlags";
-import { type Organization } from "@/types/contract";
+import { type Organization } from "@/data/model/Organization";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import DeploymentsContext, {
