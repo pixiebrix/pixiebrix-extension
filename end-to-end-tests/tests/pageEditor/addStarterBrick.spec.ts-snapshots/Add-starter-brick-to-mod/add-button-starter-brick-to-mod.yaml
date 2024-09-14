@@ -6,16 +6,16 @@ options:
   uiSchema:
     ui:order:
       - '*'
-variables:
-  schema:
-    type: object
-    properties: {}
 metadata:
   id: >-
     @extension-e2e-test-unaffiliated/test-trigger-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
   name: Test Trigger 00000000-0000-0000-0000-000000000000
   version: 1.0.0
   description: Created with the PixieBrix Page Editor
+variables:
+  schema:
+    type: object
+    properties: {}
 apiVersion: v3
 definitions:
   extensionPoint:
