@@ -1,0 +1,87 @@
+Index: brick-configuration
+===================================================================
+--- brick-configuration
++++ brick-configuration
+@@ -1,71 +1,77 @@
+ apiVersion: v3
+ definitions:
+   extensionPoint:
+     definition:
+       contexts:
+         - all
++        - editable
+       documentUrlPatterns:
++        - https://pbx.vercel.app/*
++        - https://*.pbx.vercel.app/*
++        - https://*/*
+         - '*://*/*'
++        - https://somePattern.com
+       isAvailable:
+         allFrames: true
+         matchPatterns:
+           - '*://*/*'
+         selectors: []
+         urlPatterns: []
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+         - element: '@pixiebrix/html/element'
+-      targetMode: eventTarget
++      targetMode: document
+       type: contextMenu
+     kind: extensionPoint
+ extensionPoints:
+   - config:
+       action:
+         - config:
+             value: !nunjucks ''
+           id: '@pixiebrix/state/assign'
+           root: null
+           rootMode: document
+         - config:
+             property: !nunjucks ''
+           id: '@pixiebrix/identity'
+           outputKey: output
+           root: null
+           rootMode: document
+         - config:
+             arguments:
+               x: Hello from PixieBrix!
+             function: |-
+               function (args) {
+                 const { x } = args;
+                 return x;
+               }
+           id: '@pixiebrix/javascript'
+           outputKey: output2
+           root: null
+           rootMode: document
+-      onSuccess: true
+-      title: Context menu item
++      onSuccess: false
++      title: Do cool stuff with %s
+     id: extensionPoint
+-    label: Context menu item
++    label: A cool menu action
+     permissions:
+-      origins: []
++      origins:
++        - '*://*/*'
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+   description: >-
+     Created for the purpose of testing brick configuration in the PixieBrix Page
+     Editor
+   id: >-
+     @extension-e2e-test-unaffiliated/brick-configuration-00000000-0000-0000-0000-000000000000
+   name: Test mod - Brick Configuration
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'
