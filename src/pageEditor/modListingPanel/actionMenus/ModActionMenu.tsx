@@ -26,6 +26,7 @@ import {
   faHistory,
   faPlus,
   faTimes,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "@/pageEditor/modListingPanel/actionMenus/ActionMenu.module.scss";
 import React, { useCallback, useMemo } from "react";
@@ -37,6 +38,7 @@ import useResetMod from "@/pageEditor/hooks/useResetMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import SaveButton from "@/pageEditor/modListingPanel/SaveButton";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 /**
  * Action menu for a mod
@@ -56,6 +58,7 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
   const dispatch = useDispatch();
   const { id: modId, name } = modMetadata;
   const isDirty = useSelector(selectModIsDirty(modId));
+  const isUnsavedMod = isInnerDefinitionRegistryId(modId);
 
   const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
   const resetMod = useResetMod();
@@ -84,7 +87,7 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
       title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: async () => resetMod(modId),
-      disabled: !isDirty || isSavingMod,
+      disabled: !isDirty || isSavingMod || isUnsavedMod,
     },
     {
       title: "Add Starter Brick",
@@ -98,8 +101,10 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
       disabled: isSavingMod,
     },
     {
-      title: "Deactivate",
-      icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
+      title: isUnsavedMod ? "Delete new Mod" : "Deactivate",
+      icon: (
+        <FontAwesomeIcon icon={isUnsavedMod ? faTrash : faTimes} fixedWidth />
+      ),
       action: async () => deactivateMod({ modId }),
       disabled: isSavingMod,
     },

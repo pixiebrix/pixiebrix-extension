@@ -75,11 +75,11 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       dispatch(actions.removeModData(modId));
     },
     [
-      dispatch,
-      modComponentFormStates,
       activatedModComponents,
-      useRemoveModComponentFromStorage,
+      modComponentFormStates,
+      dispatch,
       showConfirmation,
+      removeModComponentFromStorage,
     ],
   );
 }

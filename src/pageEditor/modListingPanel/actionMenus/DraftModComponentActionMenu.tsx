@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import EllipsisMenu, {
   type EllipsisMenuItem,
@@ -23,7 +23,13 @@ import EllipsisMenu, {
 import styles from "./ActionMenu.module.scss";
 import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClone, faHistory } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClone,
+  faFileExport,
+  faHistory,
+  faPaste,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
@@ -31,6 +37,8 @@ import {
   DELETE_STARTER_BRICK_MODAL_PROPS,
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { selectIsModComponentSavedOnCloud } from "@/store/modComponents/modComponentSelectors";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 /**
  * Action menu for a (selected) draft mod component
@@ -52,6 +60,26 @@ const DraftModComponentActionMenu: React.FC<{
   const isDirty = useSelector(
     selectModComponentIsDirty(modComponentFormState.uuid),
   );
+  const isSaved = useSelector(
+    selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
+  );
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
+  const isOnlyComponentInMod = useMemo(() => {
+    if (modComponentFormState.modMetadata == null) {
+      return false;
+    }
+
+    const { cleanModComponents, dirtyModComponentFormStates } =
+      getCleanComponentsAndDirtyFormStatesForMod(
+        modComponentFormState.modMetadata.id,
+      );
+    return cleanModComponents.length + dirtyModComponentFormStates.length === 1;
+  }, [
+    getCleanComponentsAndDirtyFormStatesForMod,
+    modComponentFormState.modMetadata,
+  ]);
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
   const menuItems: EllipsisMenuItem[] = [
@@ -60,7 +88,7 @@ const DraftModComponentActionMenu: React.FC<{
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: async () =>
         resetModComponent({ modComponentId: modComponentFormState.uuid }),
-      disabled: !isDirty,
+      disabled: !isDirty || !isSaved,
     },
     {
       title: "Duplicate",
@@ -71,26 +99,28 @@ const DraftModComponentActionMenu: React.FC<{
     },
     {
       title: "Move from Mod",
-      icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
+      icon: <FontAwesomeIcon icon={faFileExport} fixedWidth />,
       action() {
         dispatch(actions.showMoveFromModModal({ keepLocalCopy: false }));
       },
+      disabled: isOnlyComponentInMod,
     },
     {
       title: "Copy to Mod",
-      icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
+      icon: <FontAwesomeIcon icon={faPaste} fixedWidth />,
       action() {
         dispatch(actions.showMoveFromModModal({ keepLocalCopy: true }));
       },
     },
     {
       title: "Delete component",
-      icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
+      icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
       action: async () =>
         removeModComponentFromStorage({
           modComponentId: modComponentFormState.uuid,
           showConfirmationModal: DELETE_STARTER_BRICK_MODAL_PROPS,
         }),
+      disabled: isOnlyComponentInMod,
     },
   ];
 
