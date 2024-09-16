@@ -352,14 +352,21 @@ export const appApi = createApi({
     }),
     listPackageVersions: builder.query<
       PackageVersionDeprecated[],
-      { id: UUID }
+      { packageId: UUID }
     >({
-      query: ({ id }) => ({
-        url: API_PATHS.BRICK_VERSIONS(id),
+      query: ({ packageId }) => ({
+        url: API_PATHS.BRICK_VERSIONS(packageId),
         method: "get",
       }),
-      providesTags: (result, error, { id }) => [
-        { type: "PackageVersion", id: `PACKAGE-${id}-LIST` },
+      providesTags: (result, error, { packageId }) => [
+        { type: "Package", id: packageId },
+        { type: "PackageVersion", id: `PACKAGE-${packageId}-LIST` },
+        ...(result
+          ? result.map((x) => ({
+              type: "PackageVersion" as const,
+              id: x.id,
+            }))
+          : []),
       ],
     }),
     updateScope: builder.mutation<
@@ -411,6 +418,60 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Deployments"],
     }),
+    getModDefinitionPackageVersionId: builder.query<UUID | null, ModDefinition>(
+      {
+        async queryFn(
+          modDefinition,
+          { dispatch },
+        ): Promise<
+          | {
+              data: UUID | null;
+            }
+          | { error: unknown }
+        > {
+          const {
+            data: editablePackages,
+            error: editablePackagesError,
+            isError: isEditablePackagesError,
+          } = await dispatch(appApi.endpoints.getEditablePackages.initiate());
+
+          if (isEditablePackagesError) {
+            return { error: editablePackagesError };
+          }
+
+          const packageId = editablePackages?.find(
+            (x) => x.name === modDefinition.metadata.id,
+          )?.id;
+
+          if (!packageId) {
+            return { data: null };
+          }
+
+          const {
+            data: packageVersions = [],
+            error: packageVersionsError,
+            isError: isPackageVersionsError,
+          } = await dispatch(
+            appApi.endpoints.listPackageVersions.initiate({
+              packageId,
+            }),
+          );
+
+          if (isPackageVersionsError) {
+            return { error: packageVersionsError };
+          }
+
+          const packageVersion = packageVersions.find(
+            (modVersion) =>
+              modVersion.version === modDefinition.metadata.version,
+          );
+
+          return {
+            data: packageVersion?.id ?? null,
+          };
+        },
+      },
+    ),
   }),
 });
 
@@ -441,5 +502,6 @@ export const {
   useCreateMilestoneMutation,
   useGetDeploymentsQuery,
   useCreateUserDeploymentMutation,
+  useGetModDefinitionPackageVersionIdQuery,
   util,
 } = appApi;

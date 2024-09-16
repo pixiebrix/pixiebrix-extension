@@ -27,6 +27,7 @@ import { selectActivatedModComponents } from "@/store/modComponents/modComponent
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import {
+  appApi,
   useCreateDatabaseMutation,
   useCreateUserDeploymentMutation,
 } from "@/data/service/api";
@@ -36,7 +37,6 @@ import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHel
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { type DeploymentPayload } from "@/types/contract";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { useGetModDefinitionPackageVersion } from "@/activation/useGetModDefinitionPackageVersion";
 
 export type ActivateResult = {
   success: boolean;
@@ -86,7 +86,8 @@ function useActivateMod(
   const [createDatabase] = useCreateDatabaseMutation();
   const [createUserDeployment] = useCreateUserDeploymentMutation();
 
-  const getPackageVersion = useGetModDefinitionPackageVersion();
+  const [getPackageVersion] =
+    appApi.endpoints.getModDefinitionPackageVersionId.useLazyQuery();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -172,7 +173,8 @@ function useActivateMod(
         );
 
         if (formValues.personalDeployment) {
-          const packageVersionId = await getPackageVersion(modDefinition);
+          const { data: packageVersionId } =
+            await getPackageVersion(modDefinition);
           if (packageVersionId) {
             const data: DeploymentPayload = {
               package_version: packageVersionId,

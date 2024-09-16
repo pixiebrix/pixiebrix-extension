@@ -69,7 +69,7 @@ const PackageHistory: React.FunctionComponent<{
 }> = ({ packageId }) => {
   const { data: editablePackage } = useGetPackageQuery({ id: packageId });
   const { data: packageVersions } = useListPackageVersionsQuery({
-    id: packageId,
+    packageId,
   });
 
   const versionOptions = useMemo<PackageVersionOption[]>(
