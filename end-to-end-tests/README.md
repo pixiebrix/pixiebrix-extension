@@ -119,6 +119,10 @@ view the report by running `./scripts/show-pr-e2e-report.sh -p <pull-request-num
 environment variable to the password used to encrypt the report.
 (For context on why password encryption is necessary, see [this PR](https://github.com/pixiebrix/pixiebrix-extension/pull/8545))
 
+```bash
+brew install sevenzip
+```
+
 To view the test report in the browser. Run: `npx playwright show-report <path-to-downloaded-report>` to
 open the report in the playwright report viewer.
 
