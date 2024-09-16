@@ -386,16 +386,17 @@ describe("useActivateMod", () => {
       }),
     );
 
-    expect(appApiMock.history.post).toContainEqual(
-      expect.objectContaining({
-        url: API_PATHS.USER_DEPLOYMENTS,
-        data: JSON.stringify({
-          package_version: packageVersionId,
-          name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
-          services: [],
-          options_config: formValues.optionsArgs,
-        }),
-      }),
-    );
+    expect(
+      JSON.parse(
+        appApiMock.history.post!.find(
+          (request) => request.url === API_PATHS.USER_DEPLOYMENTS,
+        )!.data,
+      ),
+    ).toEqual({
+      package_version: packageVersionId,
+      name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+      services: [],
+      options_config: formValues.optionsArgs,
+    });
   });
 });
