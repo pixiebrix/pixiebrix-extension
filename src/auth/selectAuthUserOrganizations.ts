@@ -18,7 +18,7 @@
 import { type AuthUserOrganization } from "@/auth/authTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type MeOrganizationMembership } from "@/data/model/MeOrganizationMembership";
-import { convertToLegacyUserRole } from "@/data/model/UserOrganizationMembershipRole";
+import { convertToUserRole } from "@/data/model/UserRole";
 
 // Export this function because it's used in both the Extension and the App
 export default function selectAuthUserOrganizations(
@@ -40,7 +40,7 @@ export default function selectAuthUserOrganizations(
       id: organizationId,
       name: organizationName,
       control_room: organizationControlRoom,
-      role: convertToLegacyUserRole(userOrganizationRole),
+      role: convertToUserRole(userOrganizationRole),
       scope: organizationScope,
       isDeploymentManager: meUserIsDeploymentManager,
     }),

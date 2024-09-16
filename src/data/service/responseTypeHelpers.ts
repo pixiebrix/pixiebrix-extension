@@ -58,7 +58,4 @@ export type RequiredMePartnerPrincipalResponse = SetRequired<
   "partner_principals"
 >["partner_principals"][number];
 
-export type RequiredMeOrganizationMembershipRoleResponse = SetRequired<
-  RequiredMeOrganizationMembershipResponse,
-  "role"
->["role"];
+export type RequiredOrganizationRoleResponse = 1 | 2 | 3 | 4 | 5;
