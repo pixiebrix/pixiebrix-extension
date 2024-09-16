@@ -2,7 +2,7 @@ Index: add-sidebar-panel-starter-brick-to-mod
 ===================================================================
 --- add-sidebar-panel-starter-brick-to-mod
 +++ add-sidebar-panel-starter-brick-to-mod
-@@ -39,85 +39,137 @@
+@@ -39,84 +39,136 @@
      kind: extensionPoint
    extensionPoint3:
      definition:
@@ -119,19 +119,18 @@ Index: add-sidebar-panel-starter-brick-to-mod
 +                type: container
 +          id: '@pixiebrix/document'
 +          rootMode: document
-+      heading: Sidebar Panel
++      heading: Sidebar Panel item
 +    id: extensionPoint5
-+    label: Sidebar Panel
++    label: Sidebar Panel item
      permissions:
        origins: []
        permissions: []
      services: {}
  kind: recipe
  metadata:
-   description: Created with the PixieBrix Page Editor
-   id: >-
-     @extension-e2e-test-unaffiliated/test-trigger-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
-   name: Test Trigger 00000000-0000-0000-0000-000000000000
+   description: Test description for Trigger Mod
+   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
+   name: Test Mod created with Trigger
    version: 1.0.0
  options:
    schema:

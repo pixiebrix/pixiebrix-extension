@@ -42,7 +42,9 @@ export class WorkshopPage extends BasePageObject {
 
   async findAndSelectMod(modId: string) {
     await this.getByPlaceholder("Start typing to find results").fill(modId);
-    await this.getByRole("cell", { name: modId }).click();
+    const cellLocator = this.getByRole("cell", { name: modId });
+    await cellLocator.waitFor({ state: "visible", timeout: 5000 });
+    await cellLocator.click();
 
     const editPage = new EditWorkshopModPage(this.page);
     await editPage.editor.waitForLoad();

@@ -1,0 +1,45 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-context-menu'
+  name: Test Mod created with Context Menu
+  version: 1.0.0
+  description: Test description for Context Menu Mod
+extensionPoints:
+  - label: Test Context Menu 00000000-0000-0000-0000-000000000000
+    config:
+      title: Context menu item
+      onSuccess: true
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: contextMenu
+      documentUrlPatterns:
+        - '*://*/*'
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'

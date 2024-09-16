@@ -2,7 +2,7 @@ Index: add-quick-bar-starter-brick-to-mod
 ===================================================================
 --- add-quick-bar-starter-brick-to-mod
 +++ add-quick-bar-starter-brick-to-mod
-@@ -19,79 +19,105 @@
+@@ -19,78 +19,104 @@
        type: trigger
      kind: extensionPoint
    extensionPoint2:
@@ -96,10 +96,9 @@ Index: add-quick-bar-starter-brick-to-mod
      services: {}
  kind: recipe
  metadata:
-   description: Created with the PixieBrix Page Editor
-   id: >-
-     @extension-e2e-test-unaffiliated/test-trigger-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
-   name: Test Trigger 00000000-0000-0000-0000-000000000000
+   description: Test description for Trigger Mod
+   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
+   name: Test Mod created with Trigger
    version: 1.0.0
  options:
    schema:

@@ -1,0 +1,45 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-quick-bar-action'
+  name: Test Mod created with Quick Bar Action
+  version: 1.0.0
+  description: Test description for Quick Bar Action Mod
+extensionPoints:
+  - label: Test Quick Bar Action 00000000-0000-0000-0000-000000000000
+    config:
+      title: Quick Bar item
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: quickBar
+      documentUrlPatterns:
+        - '*://*/*'
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+        - '@pixiebrix/selection'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'

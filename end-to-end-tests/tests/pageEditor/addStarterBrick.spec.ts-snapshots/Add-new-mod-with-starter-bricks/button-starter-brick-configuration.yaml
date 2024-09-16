@@ -1,0 +1,47 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-button'
+  name: Test Mod created with Button
+  version: 1.0.0
+  description: Test description for Button Mod
+extensionPoints:
+  - label: Test Button 00000000-0000-0000-0000-000000000000
+    config:
+      caption: Action
+      action: []
+      dynamicCaption: false
+      onSuccess: true
+      synchronous: false
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      containerSelector: ul:has(> * > a:contains('navigation'))
+      targetMode: document
+      attachMode: once
+      position: append
+      template: <li><a href="#">{{{ caption }}}</a></li>
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'

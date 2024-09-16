@@ -109,12 +109,7 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
     <div className={styles.root}>
       <SaveButton
         ariaLabel={`${name} - Save Mod`}
-        onClick={async () => {
-          console.log(
-            "-----------------------------------  In SaveButton click handler prop",
-          );
-          await saveMod(modId);
-        }}
+        onClick={async () => saveMod(modId)}
         disabled={!isDirty || isSavingMod}
       />
       <EllipsisMenu

@@ -1,0 +1,42 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
+  name: Test Mod created with Trigger
+  version: 1.0.0
+  description: Test description for Trigger Mod
+extensionPoints:
+  - label: Test Trigger 00000000-0000-0000-0000-000000000000
+    config:
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: trigger
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      background: true
+      reportMode: once
+      showErrors: true
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'

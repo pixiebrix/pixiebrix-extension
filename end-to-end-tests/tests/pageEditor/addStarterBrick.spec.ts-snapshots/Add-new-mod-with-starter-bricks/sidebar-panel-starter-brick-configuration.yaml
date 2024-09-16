@@ -1,0 +1,71 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-sidebar-panel'
+  name: Test Mod created with Sidebar Panel
+  version: 1.0.0
+  description: Test description for Sidebar Panel Mod
+extensionPoints:
+  - label: Test Sidebar Panel 00000000-0000-0000-0000-000000000000
+    config:
+      heading: Sidebar Panel item
+      body:
+        - id: '@pixiebrix/document'
+          rootMode: document
+          config:
+            body:
+              - type: container
+                config: {}
+                children:
+                  - type: row
+                    config: {}
+                    children:
+                      - type: column
+                        config: {}
+                        children:
+                          - type: header
+                            config:
+                              title: Example document
+                              heading: h1
+                  - type: row
+                    config: {}
+                    children:
+                      - type: column
+                        config: {}
+                        children:
+                          - type: text
+                            config:
+                              text: Example text element. **Markdown** is supported.
+                              enableMarkdown: true
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: actionPanel
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      debounce:
+        waitMillis: 250
+        leading: false
+        trailing: true
+      customEvent: null
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'

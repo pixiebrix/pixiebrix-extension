@@ -100,11 +100,11 @@ test("Add new mod with starter bricks", async ({
 
     const modId = await saveNewMod(modName, "Test description for Button Mod");
 
-    // TODO: Verify mod snapshot here?
-    // await verifyModDefinitionSnapshot({
-    //   modId,
-    //   snapshotName: "button-starter-brick-configuration",
-    // });
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "button-starter-brick-configuration",
+      mode: "current",
+    });
   });
 
   await test.step("Add new Context Menu starter brick", async () => {
@@ -124,11 +124,11 @@ test("Add new mod with starter bricks", async ({
       "Test description for Context Menu Mod",
     );
 
-    // TODO: Verify mod snapshot here?
-    // await verifyModDefinitionSnapshot({
-    //   modId,
-    //   snapshotName: "context-menu-starter-brick-configuration",
-    // });
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "context-menu-starter-brick-configuration",
+      mode: "current",
+    });
   });
 
   await test.step("Add new Quick Bar Action starter brick", async () => {
@@ -150,11 +150,11 @@ test("Add new mod with starter bricks", async ({
       "Test description for Quick Bar Action Mod",
     );
 
-    // TODO: Verify mod snapshot here?
-    // await verifyModDefinitionSnapshot({
-    //   modId,
-    //   snapshotName: "quick-bar-action-starter-brick-configuration",
-    // });
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "quick-bar-action-starter-brick-configuration",
+      mode: "current",
+    });
   });
 
   await test.step("Add new Sidebar Panel starter brick", async () => {
@@ -182,11 +182,11 @@ test("Add new mod with starter bricks", async ({
       "Test description for Sidebar Panel Mod",
     );
 
-    // TODO: Verify mod snapshot here?
-    // await verifyModDefinitionSnapshot({
-    //   modId,
-    //   snapshotName: "sidebar-panel-starter-brick-configuration",
-    // });
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "sidebar-panel-starter-brick-configuration",
+      mode: "current",
+    });
   });
 
   await test.step("Add new Trigger starter brick", async () => {
@@ -203,11 +203,11 @@ test("Add new mod with starter bricks", async ({
 
     const modId = await saveNewMod(modName, "Test description for Trigger Mod");
 
-    // TODO: Verify mod snapshot here?
-    // await verifyModDefinitionSnapshot({
-    //   modId,
-    //   snapshotName: "trigger-starter-brick-configuration",
-    // });
+    await verifyModDefinitionSnapshot({
+      modId,
+      snapshotName: "trigger-starter-brick-configuration",
+      mode: "current",
+    });
   });
 
   await test.step("Add new from Start with a Template", async () => {
@@ -241,14 +241,63 @@ test("Add starter brick to mod", async ({
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
-  // Create arbitrary mod to which to add starter bricks
+  async function saveNewMod(modName: string, description: string) {
+    const modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
+    await expect(
+      pageEditorPage.modEditorPane.editMetadataTabPanel.getByText(
+        "Save the mod to assign an id",
+      ),
+    ).toBeVisible();
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
+    await page.waitForTimeout(300);
+    await modListItem.saveButton.click();
+
+    // Handle the "Save new mod" modal
+    const saveNewModModal = pageEditorPage.page.getByRole("dialog");
+    await expect(saveNewModModal).toBeVisible();
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+
+    // Update the mod description
+    const descriptionInput = saveNewModModal.locator(
+      'input[name="description"]',
+    );
+    await descriptionInput.fill(description);
+
+    // Click the Save button in the modal
+    await saveNewModModal.getByRole("button", { name: "Save" }).click();
+
+    // Wait for the save confirmation
+    await expect(
+      pageEditorPage.page
+        .getByRole("status")
+        .filter({ hasText: "Mod created successfully" }),
+    ).toBeVisible();
+
+    // Mark the modId for cleanup after the test
+    const modId =
+      await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
+    pageEditorPage.savedPackageModIds.push(modId);
+
+    return modId;
+  }
+
+  // Create Trigger mod to which to add starter bricks
   const { modName, modComponentName } =
     await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
     modComponentName,
   );
-  await pageEditorPage.saveActiveMod();
+
+  const modId = await saveNewMod(modName, "Test description for Trigger Mod");
+
+  await verifyModDefinitionSnapshot({
+    modId,
+    snapshotName: "new-mod-with-trigger-starter-brick",
+    mode: "current",
+  });
 
   const modListItem =
     pageEditorPage.modListingPanel.getModListItemByName(modName);
@@ -280,9 +329,9 @@ test("Add starter brick to mod", async ({
     await modListItem.select();
     await modListItem.saveButton.click();
     await verifyModDefinitionSnapshot({
-      modId: modComponentName,
+      modId,
       snapshotName: "add-button-starter-brick-to-mod",
-      mode: "current",
+      mode: "diff",
     });
   });
 
@@ -301,7 +350,7 @@ test("Add starter brick to mod", async ({
     await modListItem.select();
     await modListItem.saveButton.click();
     await verifyModDefinitionSnapshot({
-      modId: modComponentName,
+      modId,
       snapshotName: "add-context-menu-starter-brick-to-mod",
       mode: "diff",
     });
@@ -322,7 +371,7 @@ test("Add starter brick to mod", async ({
     await modListItem.select();
     await modListItem.saveButton.click();
     await verifyModDefinitionSnapshot({
-      modId: modComponentName,
+      modId,
       snapshotName: "add-quick-bar-starter-brick-to-mod",
       mode: "diff",
     });
@@ -339,7 +388,7 @@ test("Add starter brick to mod", async ({
       pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
         name: "Name",
       }),
-    ).toHaveValue("Sidebar Panel");
+    ).toHaveValue("Sidebar Panel item");
 
     const sidebarPage = await getSidebarPage(page, extensionId);
     await expect(sidebarPage.getByText("Example Document")).toBeVisible();
@@ -347,7 +396,7 @@ test("Add starter brick to mod", async ({
     await modListItem.select();
     await modListItem.saveButton.click();
     await verifyModDefinitionSnapshot({
-      modId: modComponentName,
+      modId,
       snapshotName: "add-sidebar-panel-starter-brick-to-mod",
       mode: "diff",
     });
@@ -374,7 +423,7 @@ test("Add starter brick to mod", async ({
     await modListItem.select();
     await modListItem.saveButton.click();
     await verifyModDefinitionSnapshot({
-      modId: modComponentName,
+      modId,
       snapshotName: "add-trigger-starter-brick-to-mod",
       mode: "diff",
     });
