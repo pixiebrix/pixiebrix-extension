@@ -23,25 +23,33 @@ import {
   ModsPage,
 } from "../../pageObjects/extensionConsole/modsPage";
 
-test("can save a standalone trigger mod", async ({
+test("can save a new trigger mod", async ({
   page,
   extensionId,
   newPageEditorPage,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-  const { modComponentName } =
+  const { modName } =
     await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
+
+  const modComponentListItem =
+    pageEditorPage.modListingPanel.getModStarterBrick(modName, "Trigger");
+  await modComponentListItem.select();
+
+  // Update the trigger name
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
-    modComponentName,
+    "Test Trigger Updated",
   );
-  await pageEditorPage.saveActiveMod();
+
+  await pageEditorPage.saveNewMod(modName);
+
   const modsPage = new ModsPage(page, extensionId);
   await modsPage.goto();
 
   await expect(
-    modsPage.locator(".list-group-item", { hasText: modComponentName }),
+    modsPage.locator(".list-group-item", { hasText: modName }),
   ).toBeVisible();
 });
 

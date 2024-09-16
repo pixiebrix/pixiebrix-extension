@@ -336,7 +336,7 @@ export class PageEditorPage extends BasePageObject {
       ),
     ).toBeVisible();
     // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
-    await this.page.waitForTimeout(600);
+    await this.page.waitForTimeout(1000);
     await modListItem.saveButton.click();
 
     // Handle the "Save new mod" modal
