@@ -410,25 +410,25 @@ export const appApi = createApi({
       }),
       providesTags: ["Deployments"],
     }),
-    createUserDeployment: builder.mutation<Deployment, DeploymentPayload>({
-      query: (data) => ({
-        url: API_PATHS.USER_DEPLOYMENTS,
-        method: "post",
-        data,
-      }),
-      invalidatesTags: ["Deployments"],
-    }),
-    getModDefinitionPackageVersionId: builder.query<UUID | null, ModDefinition>(
+    createUserDeployment: builder.mutation<
+      Deployment,
       {
-        async queryFn(
-          modDefinition,
-          { dispatch },
-        ): Promise<
-          | {
-              data: UUID | null;
-            }
-          | { error: unknown }
-        > {
+        modDefinition: ModDefinition;
+        data: Exclude<DeploymentPayload, "pacage_version">;
+      }
+    >({
+      async queryFn(
+        { modDefinition, data },
+        { dispatch },
+        _,
+        baseQuery,
+      ): Promise<
+        | {
+            data: Deployment;
+          }
+        | { error: unknown }
+      > {
+        try {
           const {
             data: editablePackages,
             error: editablePackagesError,
@@ -444,7 +444,9 @@ export const appApi = createApi({
           )?.id;
 
           if (!packageId) {
-            return { data: null };
+            throw new Error(
+              `Failed to find editable package for mod: ${modDefinition.metadata.id}`,
+            );
           }
 
           const {
@@ -466,12 +468,26 @@ export const appApi = createApi({
               modVersion.version === modDefinition.metadata.version,
           );
 
-          return {
-            data: packageVersion?.id ?? null,
-          };
-        },
+          if (!packageVersion) {
+            throw new Error("Package version not found");
+          }
+
+          const createDeploymentResult = await baseQuery({
+            url: API_PATHS.USER_DEPLOYMENTS,
+            method: "post",
+            data: {
+              ...data,
+              package_version: packageVersion.id,
+            },
+          });
+
+          return { data: createDeploymentResult.data as Deployment };
+        } catch (error) {
+          return { error };
+        }
       },
-    ),
+      invalidatesTags: ["Deployments"],
+    }),
   }),
 });
 
@@ -502,6 +518,5 @@ export const {
   useCreateMilestoneMutation,
   useGetDeploymentsQuery,
   useCreateUserDeploymentMutation,
-  useGetModDefinitionPackageVersionIdQuery,
   util,
 } = appApi;

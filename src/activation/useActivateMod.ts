@@ -27,7 +27,6 @@ import { selectActivatedModComponents } from "@/store/modComponents/modComponent
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import {
-  appApi,
   useCreateDatabaseMutation,
   useCreateUserDeploymentMutation,
 } from "@/data/service/api";
@@ -85,9 +84,6 @@ function useActivateMod(
 
   const [createDatabase] = useCreateDatabaseMutation();
   const [createUserDeployment] = useCreateUserDeploymentMutation();
-
-  const [getPackageVersion] =
-    appApi.endpoints.getModDefinitionPackageVersionId.useLazyQuery();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -173,24 +169,19 @@ function useActivateMod(
         );
 
         if (formValues.personalDeployment) {
-          const { data: packageVersionId } =
-            await getPackageVersion(modDefinition);
-          if (packageVersionId) {
-            const data: DeploymentPayload = {
-              package_version: packageVersionId,
-              name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
-              services: integrationDependencies.flatMap(
-                (integrationDependency) =>
-                  integrationDependency.integrationId ===
-                    PIXIEBRIX_INTEGRATION_ID ||
-                  integrationDependency.configId == null
-                    ? []
-                    : [{ auth: integrationDependency.configId }],
-              ),
-              options_config: optionsArgs,
-            };
-            await createUserDeployment(data);
-          }
+          const data: DeploymentPayload = {
+            name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+            services: integrationDependencies.flatMap(
+              (integrationDependency) =>
+                integrationDependency.integrationId ===
+                  PIXIEBRIX_INTEGRATION_ID ||
+                integrationDependency.configId == null
+                  ? []
+                  : [{ auth: integrationDependency.configId }],
+            ),
+            options_config: optionsArgs,
+          };
+          await createUserDeployment({ modDefinition, data });
         }
 
         reloadModsEveryTab();
@@ -217,7 +208,6 @@ function useActivateMod(
       checkPermissions,
       dispatch,
       createDatabase,
-      getPackageVersion,
       createUserDeployment,
     ],
   );
