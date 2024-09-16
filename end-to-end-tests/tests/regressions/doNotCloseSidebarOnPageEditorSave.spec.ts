@@ -20,8 +20,7 @@ import { test, expect } from "../../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { getSidebarPage } from "../../utils";
 
-// eslint-disable-next-line playwright/no-skipped-test -- There is a race condition that makes this flaky, we will fix later
-test.skip("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
+test("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
   page,
   newPageEditorPage,
   extensionId,
@@ -29,7 +28,7 @@ test.skip("#8104: Do not automatically close the sidebar when saving in the Page
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName } =
+  const { modComponentName, modName } =
     await pageEditorPage.addNewModWithNonButtonStarterBrick("Sidebar Panel");
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
@@ -52,7 +51,10 @@ test.skip("#8104: Do not automatically close the sidebar when saving in the Page
     sidebar.getByRole("tab", { name: updatedTabTitle }),
   ).toBeVisible();
 
-  await pageEditorPage.saveActiveMod();
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName(modName);
+  await modListItem.select();
+  await pageEditorPage.saveNewMod(modName);
 
   await expect(
     sidebar.getByRole("tab", { name: updatedTabTitle }),
