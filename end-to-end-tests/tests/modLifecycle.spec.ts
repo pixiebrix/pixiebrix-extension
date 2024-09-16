@@ -139,7 +139,9 @@ test("create, run, package, and update mod", async ({
 
     // Wait for the save confirmation
     await expect(
-      pageEditorPage.page.getByRole("status").filter({ hasText: "Saved mod" }),
+      pageEditorPage.page
+        .getByRole("status")
+        .filter({ hasText: "Mod created successfully" }),
     ).toBeVisible();
   });
 

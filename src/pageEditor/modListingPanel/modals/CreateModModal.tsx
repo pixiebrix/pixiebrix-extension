@@ -200,6 +200,9 @@ const CreateModModalBody: React.FC = () => {
         throw new Error("Expected either active mod component or mod");
       }
 
+      notify.success({
+        message: "Mod created successfully",
+      });
       hideModal();
     } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
