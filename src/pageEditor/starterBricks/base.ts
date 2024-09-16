@@ -139,7 +139,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
     variablesDefinition:
-      config.variables ?? emptyModVariablesDefinitionFactory(),
+      config.variablesDefinition ?? emptyModVariablesDefinitionFactory(),
     type,
     modMetadata: config._recipe,
   };
@@ -183,7 +183,7 @@ export function baseSelectModComponent({
   integrationDependencies,
   permissions,
   starterBrick,
-  modMetadata: mod,
+  modMetadata,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -194,18 +194,18 @@ export function baseSelectModComponent({
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
-  | "variables"
+  | "variablesDefinition"
 > {
   return {
     id: uuid,
     apiVersion,
     extensionPointId: starterBrick.metadata.id,
-    _recipe: mod,
+    _recipe: modMetadata,
     label,
     integrationDependencies,
     permissions,
     optionsArgs,
-    variables: variablesDefinition,
+    variablesDefinition,
   };
 }
 

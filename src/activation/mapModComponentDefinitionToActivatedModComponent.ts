@@ -68,7 +68,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
   integrationDependencies,
 }: ActivateModComponentParam): SetRequired<
   ActivatedModComponent<Config>,
-  "variables"
+  "variablesDefinition"
 > {
   const timestamp = nowTimestamp();
 
@@ -81,7 +81,8 @@ export function mapModComponentDefinitionToActivatedModComponent<
     // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
     definitions: modDefinition.definitions ?? {},
     // Mod variable definitions/declarations are pushed down into the mod components.
-    variables: modDefinition.variables ?? emptyModVariablesDefinitionFactory(),
+    variablesDefinition:
+      modDefinition.variables ?? emptyModVariablesDefinitionFactory(),
     optionsArgs,
     label: modComponentDefinition.label,
     extensionPointId: modComponentDefinition.id,
@@ -89,7 +90,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
     active: true,
     createTimestamp: timestamp,
     updateTimestamp: timestamp,
-  } as SetRequired<ActivatedModComponent<Config>, "variables">;
+  } as SetRequired<ActivatedModComponent<Config>, "variablesDefinition">;
 
   // Set optional fields only if the source mod component has a value. Normalizing the values
   // here makes testing harder because we then have to account for the normalized value in assertions.

@@ -223,12 +223,12 @@ export type ModComponentBaseV3<Config extends UnknownObject = UnknownObject> =
     /**
      * Mod variables declared in the mod definition.
      *
-     * Like OptionsArgs, must be replicated on each mod component within the mod because mod components are stored
-     * independently.
+     * Like optionsArgs, must be replicated on each mod component within the mod because activated mod components
+     * are persisted without the mod definition.
      *
      * @since 2.1.2
      */
-    variables?: ModVariablesDefinition;
+    variablesDefinition?: ModVariablesDefinition;
   };
 
 // XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
@@ -311,14 +311,14 @@ export type ActivatedModComponent<
 > = ActivatedModComponentV3<Config>;
 
 /**
- * An `ModComponentBase` with all inner definitions hydrated.
+ * An `ModComponentBase` with all inner brick definitions hydrated.
  * @see SerializedModComponent
  * @see hydrateModComponentInnerDefinitions
  */
 export type HydratedModComponent<Config extends UnknownObject = UnknownObject> =
   Except<
     ModComponentBase<Config>,
-    // There's no definition section after hydration
+    // There's no definition section after hydration.
     "definitions"
   > & {
     /**
