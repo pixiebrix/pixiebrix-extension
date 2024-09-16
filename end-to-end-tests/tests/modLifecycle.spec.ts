@@ -34,8 +34,8 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName, modUuid } =
-    await pageEditorPage.modListingPanel.addStarterBrick("Button");
+  const { modComponentName } =
+    await pageEditorPage.modListingPanel.addNewModWithStarterBrick("Button");
 
   await test.step("Configure the Button brick", async () => {
     await pageEditorPage.selectConnectedPageElement(
@@ -93,11 +93,58 @@ test("create, run, package, and update mod", async ({
     );
   });
 
-  const { modId } = await pageEditorPage.createModFromModComponent({
-    modNameRoot: "Lifecycle Test",
-    modComponentName,
-    modUuid,
+  await test.step("Edit the mod metadata and save", async () => {
+    // Auto-created mod name will be "My <website url> button"
+    let modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("button");
+    await modListItem.select();
+
+    await expect(
+      pageEditorPage.modEditorPane.editMetadataTabPanel.getByText(
+        "Save the mod to assign an id",
+      ),
+    ).toBeVisible();
+
+    await pageEditorPage.modEditorPane.editMetadataTab.click();
+    await pageEditorPage.modEditorPane.editMetadataTabPanel.name.fill(
+      "Lifecycle Test Mod",
+    );
+    await pageEditorPage.modEditorPane.editMetadataTabPanel.description.fill(
+      "Created through Playwright Automation",
+    );
+
+    // Get the updated modListItem with the new name
+    modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("Lifecycle Test Mod");
+    await modListItem.saveButton.click();
+
+    // Handle the "Save new mod" modal
+    const saveNewModModal = pageEditorPage.page.getByRole("dialog");
+    await expect(saveNewModModal).toBeVisible();
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+
+    // Verify the updated title and description in the modal
+    const nameInput = saveNewModModal.locator('input[name="name"]');
+    const descriptionInput = saveNewModModal.locator(
+      'input[name="description"]',
+    );
+
+    await expect(nameInput).toHaveValue("Lifecycle Test Mod");
+    await expect(descriptionInput).toHaveValue(
+      "Created through Playwright Automation",
+    );
+
+    // Click the Save button in the modal
+    await saveNewModModal.getByRole("button", { name: "Save" }).click();
+
+    // Wait for the save confirmation
+    await expect(
+      pageEditorPage.page.getByRole("status").filter({ hasText: "Saved mod" }),
+    ).toBeVisible();
   });
+
+  const modId =
+    await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
 
   let newPage: Page | undefined;
   await test.step("Run the mod", async () => {

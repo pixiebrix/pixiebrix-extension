@@ -15,33 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ModDefinition,
-  type UnsavedModDefinition,
-} from "@/types/modDefinitionTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
-import { type InnerDefinitions, DefinitionKinds } from "@/types/registryTypes";
+import {
+  DefinitionKinds,
+  type InnerDefinitions,
+  type RegistryId,
+} from "@/types/registryTypes";
 import produce from "immer";
 import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 
-type SourceModParts = {
-  sourceModDefinition?: ModDefinition;
-  newModComponentFormState?: ModComponentFormState;
-};
-
 function useCheckModStarterBrickInvariants(): (
   unsavedModDefinition: UnsavedModDefinition,
-  { sourceModDefinition, newModComponentFormState }: SourceModParts,
+  sourceModId: RegistryId,
 ) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -60,23 +55,14 @@ function useCheckModStarterBrickInvariants(): (
   return useCallback(
     async (
       unsavedModDefinition: UnsavedModDefinition,
-      { sourceModDefinition, newModComponentFormState }: SourceModParts,
+      sourceModId: RegistryId,
     ) => {
-      // Always compare to the pre-existing mod if it exists
-      const modId = sourceModDefinition
-        ? sourceModDefinition.metadata.id
-        : // See useCreateModFromModComponent.ts for an example where there is no sourceModDefinition
-          unsavedModDefinition.metadata.id;
       const definitionsFromMod = Object.values(
         unsavedModDefinition.definitions ?? {},
       );
 
       const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(modId);
-
-      if (newModComponentFormState) {
-        dirtyModComponentFormStates.push(newModComponentFormState);
-      }
+        getCleanComponentsAndDirtyFormStatesForMod(sourceModId);
 
       for (const formState of dirtyModComponentFormStates) {
         if (!isInnerDefinitionRegistryId(formState.starterBrick.metadata.id)) {

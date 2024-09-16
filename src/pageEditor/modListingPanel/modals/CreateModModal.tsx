@@ -58,7 +58,6 @@ import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorT
 import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
-import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
@@ -159,15 +158,15 @@ const CreateModModalBody: React.FC = () => {
   );
 
   const { createModFromMod } = useCreateModFromMod();
-  const { createModFromComponent } = useCreateModFromModComponent(
-    activeModComponentFormState,
-  );
 
   // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id;
+    // Every form state has a mod now, so there's either an active mod or the
+    // current form state has a parent mod
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- See above
+    directlyActiveModId ?? activeModComponentFormState!.modMetadata!.id;
 
   const { data: activeMod = null, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
@@ -192,8 +191,6 @@ const CreateModModalBody: React.FC = () => {
       // activeMod will be the mod of the active mod component if in a "Save as New" workflow for an existing mod
       if (activeMod) {
         await createModFromMod(activeMod, values);
-      } else if (activeModComponentFormState) {
-        await createModFromComponent(activeModComponentFormState, values);
       } else if (activeModId) {
         // New local mod, definition couldn't be fetched from the server
         await createModFromUnsavedMod(values);

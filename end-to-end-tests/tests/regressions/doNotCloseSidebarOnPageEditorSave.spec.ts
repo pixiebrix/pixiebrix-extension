@@ -29,8 +29,10 @@ test.skip("#8104: Do not automatically close the sidebar when saving in the Page
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName, modUuid } =
-    await pageEditorPage.modListingPanel.addStarterBrick("Sidebar Panel");
+  const { modComponentName } =
+    await pageEditorPage.modListingPanel.addNewModWithStarterBrick(
+      "Sidebar Panel",
+    );
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
     modComponentName,
@@ -52,7 +54,7 @@ test.skip("#8104: Do not automatically close the sidebar when saving in the Page
     sidebar.getByRole("tab", { name: updatedTabTitle }),
   ).toBeVisible();
 
-  await pageEditorPage.saveStandaloneMod(modComponentName, modUuid);
+  await pageEditorPage.saveActiveMod();
 
   await expect(
     sidebar.getByRole("tab", { name: updatedTabTitle }),

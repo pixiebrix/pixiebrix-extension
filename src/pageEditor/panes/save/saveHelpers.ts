@@ -379,7 +379,7 @@ export type ModParts = {
   dirtyModMetadata?: ModMetadataFormState;
 };
 
-const emptyModDefinition: UnsavedModDefinition = {
+export const emptyModDefinition: UnsavedModDefinition = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   kind: DefinitionKinds.MOD,
   metadata: {

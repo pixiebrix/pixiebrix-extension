@@ -29,16 +29,11 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isEmpty } from "lodash";
-
-type BuildAndValidateModParts = Partial<ModParts> & {
-  newModComponentFormState?: ModComponentFormState;
-};
 
 type UseBuildAndValidateModReturn = {
   buildAndValidateMod: (
-    modParts: BuildAndValidateModParts,
+    modParts: Partial<ModParts>,
   ) => Promise<UnsavedModDefinition>;
 };
 
@@ -51,14 +46,12 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
   const buildAndValidateMod = useCallback(
     async ({
       sourceMod,
-      newModComponentFormState,
       cleanModComponents = [],
       dirtyModComponentFormStates: existingDirtyModComponentFormStates = [],
       dirtyModOptionsDefinition,
       dirtyModMetadata,
-    }: BuildAndValidateModParts) => {
+    }: Partial<ModParts>) => {
       if (
-        !newModComponentFormState &&
         isEmpty(cleanModComponents) &&
         isEmpty(existingDirtyModComponentFormStates)
       ) {
@@ -68,9 +61,6 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
       const dirtyModComponentFormStates = [
         ...existingDirtyModComponentFormStates,
       ];
-      if (newModComponentFormState) {
-        dirtyModComponentFormStates.push(newModComponentFormState);
-      }
 
       const newMod = buildNewMod({
         sourceMod,
@@ -80,33 +70,34 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         dirtyModMetadata,
       });
 
-      const modComponentDefinitionCountsMatch =
-        compareModComponentCountsToModDefinition(newMod, {
-          sourceModDefinition: sourceMod,
-          newModComponentFormState,
-        });
+      if (sourceMod) {
+        const modComponentDefinitionCountsMatch =
+          compareModComponentCountsToModDefinition(
+            newMod,
+            sourceMod.metadata.id,
+          );
 
-      const modComponentStarterBricksMatch =
-        await checkModStarterBrickInvariants(newMod, {
-          sourceModDefinition: sourceMod,
-          newModComponentFormState,
-        });
+        const modComponentStarterBricksMatch =
+          await checkModStarterBrickInvariants(newMod, sourceMod.metadata.id);
 
-      if (
-        !modComponentDefinitionCountsMatch ||
-        !modComponentStarterBricksMatch
-      ) {
-        // Not including modDefinition because it can be 1.5MB+ in some rare cases
-        // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
-        reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
-          // Metadata is an object, but doesn't extend JsonObject so typescript doesn't like it
-          modMetadata: newMod.metadata as unknown as JsonObject,
-          modComponentDefinitionCountsMatch,
-          modComponentStarterBricksMatch,
-        });
-        dispatch(editorActions.showSaveDataIntegrityErrorModal());
+        if (
+          !modComponentDefinitionCountsMatch ||
+          !modComponentStarterBricksMatch
+        ) {
+          // Not including modDefinition because it can be 1.5MB+ in some rare cases
+          // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
+          reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
+            // Metadata is an object, but doesn't extend JsonObject so typescript doesn't like it
+            modMetadata: newMod.metadata as unknown as JsonObject,
+            modComponentDefinitionCountsMatch,
+            modComponentStarterBricksMatch,
+          });
+          dispatch(editorActions.showSaveDataIntegrityErrorModal());
 
-        throw new BusinessError("Mod save failed due to data integrity error");
+          throw new BusinessError(
+            "Mod save failed due to data integrity error",
+          );
+        }
       }
 
       return newMod;

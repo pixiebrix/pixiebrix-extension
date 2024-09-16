@@ -135,18 +135,6 @@ export class PageEditorPage extends BasePageObject {
   }
 
   @ModifiesModFormState
-  async saveStandaloneMod(modName: string, modUuid: UUID) {
-    const modListItem = this.modListingPanel.getModListItemByName(modName);
-    await modListItem.select();
-    await modListItem.saveButton.click();
-
-    const createModModal = new CreateModModal(this.getByRole("dialog"));
-    const modId = await createModModal.createMod(modName, modUuid);
-
-    this.savedPackageModIds.push(modId);
-  }
-
-  @ModifiesModFormState
   async copyMod(modName: string, modUuid: UUID) {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
@@ -171,36 +159,6 @@ export class PageEditorPage extends BasePageObject {
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
     await deactivateModModal.deactivateButton.click();
-  }
-
-  @ModifiesModFormState
-  async createModFromModComponent({
-    modNameRoot,
-    modComponentName,
-    modUuid,
-  }: {
-    modNameRoot: string;
-    modComponentName: string;
-    modUuid: UUID;
-  }) {
-    const modName = `${modNameRoot} ${modUuid}`;
-
-    const modListItem =
-      this.modListingPanel.getModListItemByName(modComponentName);
-    await modListItem.menuButton.click();
-    await this.getByRole("menuitem", { name: "Add to mod" }).click();
-
-    await this.getByText("Select...Choose a mod").click();
-    await this.getByRole("option", { name: /Create new mod.../ }).click();
-    await this.getByRole("button", { name: "Move" }).click();
-
-    // Create mod modal is shown
-    const createModModal = new CreateModModal(this.getByRole("dialog"));
-    const modId = await createModModal.createMod(modName, modUuid);
-
-    this.savedPackageModIds.push(modId);
-
-    return { modName, modId };
   }
 
   /**

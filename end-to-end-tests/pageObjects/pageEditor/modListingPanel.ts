@@ -65,7 +65,7 @@ export class ModListItem extends BasePageObject {
 }
 
 export class ModListingPanel extends BasePageObject {
-  addButton = this.getByRole("button", { name: "Add", exact: true });
+  newModButton = this.getByRole("button", { name: "New Mod", exact: true });
   quickFilterInput = this.getByPlaceholder("Quick filter");
   get activeModListItem() {
     return new ModListItem(this.locator(".list-group-item.active"));
@@ -80,10 +80,10 @@ export class ModListingPanel extends BasePageObject {
    * @returns modName the generated mod name
    */
   @ModifiesModFormState
-  async addStarterBrick(starterBrickName: StarterBrickUIName) {
+  async addNewModWithStarterBrick(starterBrickName: StarterBrickUIName) {
     const modUuid = uuidv4();
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;
-    await this.addButton.click();
+    await this.newModButton.click();
     await this.locator("[role=button].dropdown-item", {
       hasText: starterBrickName,
     }).click();
