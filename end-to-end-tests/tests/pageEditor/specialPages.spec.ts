@@ -65,9 +65,7 @@ test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {
   await newPage.goto("/bootstrap-5");
   const secondPageEditorPage = await newPageEditorPage(page.url());
 
-  await secondPageEditorPage.modListingPanel.addNewModWithStarterBrick(
-    "Trigger",
-  );
+  await secondPageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
 
   await expect(
     firstPageEditorPage.getByText(

@@ -34,14 +34,14 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName } =
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick("Button");
+  const { modName, modComponentName } =
+    await pageEditorPage.addNewModWithButtonStarterBrick(async () => {
+      await pageEditorPage.selectConnectedPageElement(
+        page.getByRole("button", { name: "Action #3" }),
+      );
+    });
 
   await test.step("Configure the Button brick", async () => {
-    await pageEditorPage.selectConnectedPageElement(
-      page.getByRole("button", { name: "Action #3" }),
-    );
-
     await pageEditorPage.brickConfigurationPanel.fillField(
       "Button text",
       "Search Youtube",
@@ -94,9 +94,8 @@ test("create, run, package, and update mod", async ({
   });
 
   await test.step("Edit the mod metadata and save", async () => {
-    // Auto-created mod name will be "My <website url> button"
     let modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName("button");
+      pageEditorPage.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
 
     await expect(
@@ -106,8 +105,9 @@ test("create, run, package, and update mod", async ({
     ).toBeVisible();
 
     await pageEditorPage.modEditorPane.editMetadataTab.click();
+    const newModName = "Lifecycle Test Mod";
     await pageEditorPage.modEditorPane.editMetadataTabPanel.name.fill(
-      "Lifecycle Test Mod",
+      newModName,
     );
     await pageEditorPage.modEditorPane.editMetadataTabPanel.description.fill(
       "Created through Playwright Automation",
@@ -115,7 +115,7 @@ test("create, run, package, and update mod", async ({
 
     // Get the updated modListItem with the new name
     modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName("Lifecycle Test Mod");
+      pageEditorPage.modListingPanel.getModListItemByName(newModName);
     await modListItem.saveButton.click();
 
     // Handle the "Save new mod" modal
@@ -145,8 +145,10 @@ test("create, run, package, and update mod", async ({
     ).toBeVisible();
   });
 
+  // Mark the modId for cleanup after the test
   const modId =
     await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
+  pageEditorPage.savedPackageModIds.push(modId);
 
   let newPage: Page | undefined;
   await test.step("Run the mod", async () => {

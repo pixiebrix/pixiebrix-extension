@@ -16,82 +16,151 @@
  */
 
 import { test, expect } from "../../fixtures/testBase";
-
-// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { type Page, test as base } from "@playwright/test";
 import {
   getSidebarPage,
   isMsEdge,
   PRE_RELEASE_BROWSER_WORKFLOW_NAME,
 } from "../../utils";
 
-test("Add new starter brick", async ({
+test("Add new mod with starter bricks", async ({
   page,
   newPageEditorPage,
   extensionId,
   chromiumChannel,
+  verifyModDefinitionSnapshot,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
-  await test.step("Add new Button starter brick", async () => {
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick("Button");
-    await pageEditorPage.selectConnectedPageElement(
-      page.getByRole("link", { name: "navigation" }),
-    );
-
+  async function saveNewMod(modName: string, description: string) {
+    const modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
     await expect(
-      pageEditorPage.getByText("My pbx.vercel.app button"),
+      pageEditorPage.modEditorPane.editMetadataTabPanel.getByText(
+        "Save the mod to assign an id",
+      ),
     ).toBeVisible();
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
+    await page.waitForTimeout(300);
+    await modListItem.saveButton.click();
+
+    // Handle the "Save new mod" modal
+    const saveNewModModal = pageEditorPage.page.getByRole("dialog");
+    await expect(saveNewModModal).toBeVisible();
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+
+    // Update the mod description
+    const descriptionInput = saveNewModModal.locator(
+      'input[name="description"]',
+    );
+    await descriptionInput.fill(description);
+
+    // Click the Save button in the modal
+    await saveNewModModal.getByRole("button", { name: "Save" }).click();
+
+    // Wait for the save confirmation
+    await expect(
+      pageEditorPage.page
+        .getByRole("status")
+        .filter({ hasText: "Mod created successfully" }),
+    ).toBeVisible();
+
+    // Mark the modId for cleanup after the test
+    const modId =
+      await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
+    pageEditorPage.savedPackageModIds.push(modId);
+
+    return modId;
+  }
+
+  await test.step("Add new Button starter brick", async () => {
+    const { modName, modComponentName } =
+      await pageEditorPage.addNewModWithButtonStarterBrick(async () => {
+        await pageEditorPage.selectConnectedPageElement(
+          page.getByRole("link", { name: "navigation" }),
+        );
+      });
+
+    await expect(pageEditorPage.getByText(modName)).toBeVisible();
+    await expect(pageEditorPage.getByText(modComponentName)).toBeVisible();
     await expect(brickPipeline).toHaveCount(1);
     await expect(brickPipeline.first()).toContainText("Button");
     await expect(
       pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
         name: "Name",
       }),
-    ).toHaveValue("My pbx.vercel.app button");
+    ).toHaveValue(modComponentName);
 
     // Ensure the new, unsaved mod component remains after reloading the page editor
-    // See: https://github.com/pixiebrix/pixiebrix-extension/pull/9002
     await pageEditorPage.reload();
-    await expect(
-      pageEditorPage.getByText("My pbx.vercel.app button"),
-    ).toBeVisible();
+    await expect(pageEditorPage.getByText(modName)).toBeVisible();
+    await expect(pageEditorPage.getByText(modComponentName)).toBeVisible();
 
-    // TODO: save the mod and verify the snapshot of the mod definition with `verifyModDefinitionSnapshot` fixture
+    const modId = await saveNewMod(modName, "Test description for Button Mod");
+
+    // TODO: Verify mod snapshot here?
+    // await verifyModDefinitionSnapshot({
+    //   modId,
+    //   snapshotName: "button-starter-brick-configuration",
+    // });
   });
 
   await test.step("Add new Context Menu starter brick", async () => {
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick(
-      "Context Menu",
-    );
+    const { modName, modComponentName } =
+      await pageEditorPage.addNewModWithNonButtonStarterBrick("Context Menu");
+
     await expect(brickPipeline).toHaveCount(1);
     await expect(brickPipeline.first()).toContainText("Context Menu");
     await expect(
       pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
         name: "Name",
       }),
-    ).toHaveValue("Context menu item");
+    ).toHaveValue(modComponentName);
+
+    const modId = await saveNewMod(
+      modName,
+      "Test description for Context Menu Mod",
+    );
+
+    // TODO: Verify mod snapshot here?
+    // await verifyModDefinitionSnapshot({
+    //   modId,
+    //   snapshotName: "context-menu-starter-brick-configuration",
+    // });
   });
 
   await test.step("Add new Quick Bar Action starter brick", async () => {
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick(
-      "Quick Bar Action",
-    );
+    const { modName, modComponentName } =
+      await pageEditorPage.addNewModWithNonButtonStarterBrick(
+        "Quick Bar Action",
+      );
+
     await expect(brickPipeline).toHaveCount(1);
     await expect(brickPipeline.first()).toContainText("Quick Bar Action");
     await expect(
       pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
         name: "Name",
       }),
-    ).toHaveValue("Quick Bar item");
+    ).toHaveValue(modComponentName);
+
+    const modId = await saveNewMod(
+      modName,
+      "Test description for Quick Bar Action Mod",
+    );
+
+    // TODO: Verify mod snapshot here?
+    // await verifyModDefinitionSnapshot({
+    //   modId,
+    //   snapshotName: "quick-bar-action-starter-brick-configuration",
+    // });
   });
 
   await test.step("Add new Sidebar Panel starter brick", async () => {
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick(
-      "Sidebar Panel",
-    );
+    const { modName, modComponentName } =
+      await pageEditorPage.addNewModWithNonButtonStarterBrick("Sidebar Panel");
+
     await expect(brickPipeline).toHaveCount(2);
     await expect(brickPipeline.first()).toContainText("Sidebar Panel");
     await expect(brickPipeline.nth(1)).toContainText("Render Document");
@@ -99,7 +168,7 @@ test("Add new starter brick", async ({
       pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
         name: "Name",
       }),
-    ).toHaveValue("Sidebar Panel");
+    ).toHaveValue(modComponentName);
 
     /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
     if (!isMsEdge(chromiumChannel)) {
@@ -107,17 +176,38 @@ test("Add new starter brick", async ({
       await expect(sidebarPage.getByText("Example Document")).toBeVisible();
     }
     /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
+
+    const modId = await saveNewMod(
+      modName,
+      "Test description for Sidebar Panel Mod",
+    );
+
+    // TODO: Verify mod snapshot here?
+    // await verifyModDefinitionSnapshot({
+    //   modId,
+    //   snapshotName: "sidebar-panel-starter-brick-configuration",
+    // });
   });
 
   await test.step("Add new Trigger starter brick", async () => {
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick("Trigger");
+    const { modName, modComponentName } =
+      await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
+
     await expect(brickPipeline).toHaveCount(1);
     await expect(brickPipeline.first()).toContainText("Trigger");
     await expect(
       pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
         name: "Name",
       }),
-    ).toHaveValue("My pbx.vercel.app trigger");
+    ).toHaveValue(modComponentName);
+
+    const modId = await saveNewMod(modName, "Test description for Trigger Mod");
+
+    // TODO: Verify mod snapshot here?
+    // await verifyModDefinitionSnapshot({
+    //   modId,
+    //   snapshotName: "trigger-starter-brick-configuration",
+    // });
   });
 
   await test.step("Add new from Start with a Template", async () => {
@@ -152,8 +242,8 @@ test("Add starter brick to mod", async ({
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
   // Create arbitrary mod to which to add starter bricks
-  const { modComponentName } =
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick("Trigger");
+  const { modName, modComponentName } =
+    await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
     modComponentName,
@@ -161,7 +251,7 @@ test("Add starter brick to mod", async ({
   await pageEditorPage.saveActiveMod();
 
   const modListItem =
-    pageEditorPage.modListingPanel.getModListItemByName(modComponentName);
+    pageEditorPage.modListingPanel.getModListItemByName(modName);
 
   const openModActionMenu = async () => {
     await modListItem.select();

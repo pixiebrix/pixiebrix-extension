@@ -21,7 +21,7 @@ import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
-import { ModListingPanel } from "./modListingPanel";
+import { ModListingPanel, type StarterBrickUIName } from "./modListingPanel";
 import { BrickActionsPanel } from "./brickActionsPanel";
 import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
@@ -29,6 +29,7 @@ import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
+import { uuidv4 } from "@/types/helpers";
 
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });
@@ -59,7 +60,8 @@ class EditorPane extends BasePageObject {
  */
 export class PageEditorPage extends BasePageObject {
   private readonly pageEditorUrl: string;
-  private readonly savedPackageModIds: string[] = [];
+
+  readonly savedPackageModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
 
@@ -176,5 +178,144 @@ export class PageEditorPage extends BasePageObject {
     for (const packagedModId of this.savedPackageModIds) {
       await workshopPage.deletePackagedModByModId(packagedModId);
     }
+  }
+
+  @ModifiesModFormState
+  async addNewModWithButtonStarterBrick(
+    selectButtonCallback: () => Promise<void>,
+  ): Promise<{
+    modName: string;
+    modComponentName: string;
+  }> {
+    const modUuid = uuidv4();
+    const initialModName = "My pbx.vercel.app button";
+    const modName = "Test Mod created with Button";
+    const modComponentName = `Test Button ${modUuid}`;
+
+    await this.modListingPanel.newModButton.click();
+    await this.modListingPanel
+      .locator("[role=button].dropdown-item", {
+        hasText: "Button",
+      })
+      .click();
+
+    // Call the callback to select the button in the page
+    await selectButtonCallback();
+
+    // Wait for the mod to be created and its name to be visible
+    // Allow for two instances of the text (mod name and component name)
+    const buttonText = this.page.getByText(initialModName);
+    await expect(buttonText).toHaveCount(2);
+    await expect(buttonText.first()).toBeVisible();
+    await expect(buttonText.nth(1)).toBeVisible();
+
+    // Update the component name first
+    await this.brickConfigurationPanel.fillField("Name", modComponentName);
+
+    // Select the mod list item by the initial name
+    const modListItem =
+      this.modListingPanel.getModListItemByName(initialModName);
+    await modListItem.select();
+
+    // Update the mod name
+    await this.modEditorPane.editMetadataTabPanel.name.fill(modName);
+
+    // Expect both the mod name and component name to be visible
+    await expect(this.page.getByText(modName)).toBeVisible();
+    await expect(this.page.getByText(modComponentName)).toBeVisible();
+
+    // Select the component list item again
+    const componentListItem = this.modListingPanel.getModStarterBrick(
+      modName,
+      "Button",
+    );
+    await componentListItem.select();
+
+    return { modName, modComponentName };
+  }
+
+  @ModifiesModFormState
+  async addNewModWithNonButtonStarterBrick(
+    starterBrickName: Exclude<StarterBrickUIName, "Button">,
+  ): Promise<{
+    modName: string;
+    modComponentName: string;
+  }> {
+    const modUuid = uuidv4();
+    let initialModName: RegExp;
+    switch (starterBrickName) {
+      case "Context Menu": {
+        initialModName = /Context menu item/;
+        break;
+      }
+
+      case "Trigger": {
+        initialModName = /My .* trigger/;
+        break;
+      }
+
+      case "Quick Bar Action": {
+        initialModName = /Quick Bar item/;
+        break;
+      }
+
+      case "Dynamic Quick Bar": {
+        initialModName = /Dynamic Quick Bar item/;
+        break;
+      }
+
+      case "Sidebar Panel": {
+        initialModName = /Sidebar Panel item/;
+        break;
+      }
+
+      default: {
+        // eslint-disable-next-line security/detect-non-literal-regexp -- Constructed from constant strings, not user input
+        initialModName = new RegExp(`My .* ${starterBrickName}`);
+        break;
+      }
+    }
+
+    const modName = `Test Mod created with ${starterBrickName}`;
+    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
+
+    await this.modListingPanel.newModButton.click();
+    await this.modListingPanel
+      .locator("[role=button].dropdown-item", {
+        hasText: starterBrickName,
+      })
+      .click();
+
+    // Wait for the mod to be created and its name to be visible
+    const initialModNameText = this.page.getByText(initialModName);
+    // At least two instances for the component and the mod, but there
+    // may be many more instances of the text on screen for generic names
+    // like "Sidebar Panel"
+    await expect(initialModNameText.first()).toBeVisible();
+    await expect(initialModNameText.nth(1)).toBeVisible();
+
+    // Update the component name first
+    await this.brickConfigurationPanel.fillField("Name", modComponentName);
+
+    // Select the mod list item by the initial name
+    const modListItem =
+      this.modListingPanel.getModListItemByName(initialModName);
+    await modListItem.select();
+
+    // Update the mod name
+    await this.modEditorPane.editMetadataTabPanel.name.fill(modName);
+
+    // Expect both the mod name and component name to be visible
+    await expect(this.page.getByText(modName)).toBeVisible();
+    await expect(this.page.getByText(modComponentName)).toBeVisible();
+
+    // Select the component list item again
+    const componentListItem = this.modListingPanel.getModStarterBrick(
+      modName,
+      starterBrickName,
+    );
+    await componentListItem.select();
+
+    return { modName, modComponentName };
   }
 }

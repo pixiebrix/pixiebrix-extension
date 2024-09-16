@@ -55,7 +55,7 @@ function fromNativeElement(
 
   const isAvailable = ALL_SITES_AVAILABILITY;
 
-  const title = "Dynamic Quick Bar";
+  const title = "Dynamic Quick Bar item";
 
   return {
     // To simplify the interface, this is kept in sync with the caption

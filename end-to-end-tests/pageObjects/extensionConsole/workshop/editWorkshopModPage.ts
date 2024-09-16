@@ -35,5 +35,6 @@ export class EditWorkshopModPage extends BasePageObject {
     await expect(
       this.page.getByRole("status").filter({ hasText: "Deleted " }),
     ).toBeVisible();
+    await expect(this.page.getByRole("status")).toBeHidden();
   }
 }

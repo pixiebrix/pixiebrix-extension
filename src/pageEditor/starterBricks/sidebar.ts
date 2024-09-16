@@ -48,7 +48,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
   const base = makeInitialBaseState();
 
-  const heading = "Sidebar Panel";
+  const heading = "Sidebar Panel item";
 
   return {
     label: heading,

@@ -16,7 +16,6 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { uuidv4 } from "@/types/helpers";
 import { ModifiesModFormState } from "./utils";
 
 export type StarterBrickUIName =
@@ -44,7 +43,10 @@ export class ModActionMenu extends BasePageObject {
 }
 
 export class ModListItem extends BasePageObject {
-  saveButton = this.locator("[data-icon=save]");
+  get saveButton() {
+    return this.locator("[data-icon=save]");
+  }
+
   get menuButton() {
     return this.getByLabel(" - Ellipsis");
   }
@@ -71,27 +73,7 @@ export class ModListingPanel extends BasePageObject {
     return new ModListItem(this.locator(".list-group-item.active"));
   }
 
-  /**
-   * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
-   * test collision.
-   *
-   * @param starterBrickName the starter brick name to add, corresponding to the name shown in the Page Editor UI,
-   * not the underlying type
-   * @returns modName the generated mod name
-   */
-  @ModifiesModFormState
-  async addNewModWithStarterBrick(starterBrickName: StarterBrickUIName) {
-    const modUuid = uuidv4();
-    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
-    await this.newModButton.click();
-    await this.locator("[role=button].dropdown-item", {
-      hasText: starterBrickName,
-    }).click();
-
-    return { modComponentName, modUuid };
-  }
-
-  getModListItemByName(modName: string) {
+  getModListItemByName(modName: string | RegExp) {
     return new ModListItem(
       this.locator(".list-group-item", { hasText: modName }).first(),
     );

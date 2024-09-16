@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectDirtyModMetadata,
@@ -102,147 +102,166 @@ function useSaveMod(): ModSaver {
   const [isSaving, setIsSaving] = useState(false);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
-  /**
-   * Save a mod's components, options, and metadata
-   * Throws errors for various bad states
-   * @returns boolean indicating successful save
-   */
-  async function save(modId: RegistryId): Promise<boolean | undefined> {
-    if (isInnerDefinitionRegistryId(modId)) {
-      dispatch(editorActions.showCreateModModal({ keepLocalCopy: false }));
-      return;
-    }
-
-    if (!editablePackages) {
-      return;
-    }
-
-    const modDefinition = modDefinitions?.find(
-      (mod) => mod.metadata.id === modId,
-    );
-    if (modDefinition == null) {
-      throw new Error(
-        "You no longer have edit permissions for the mod. Please reload the Page Editor.",
-      );
-    }
-
-    if (!isModEditable(editablePackages, modDefinition)) {
-      dispatch(editorActions.showSaveAsNewModModal());
-      return false;
-    }
-
-    const { cleanModComponents, dirtyModComponentFormStates } =
-      getCleanComponentsAndDirtyFormStatesForMod(modId);
-
-    // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
-    // long to confirm?
-    // Check permissions as early as possible
-    void ensureModComponentFormStatePermissionsFromUserGesture(
-      dirtyModComponentFormStates,
-    );
-
-    // Dirty options/metadata or null if there are no staged changes.
-    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-    const dirtyModOptions = allDirtyModOptions[modId];
-    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-    const dirtyModMetadata = allDirtyModMetadatas[modId];
-
-    const newMod = await buildAndValidateMod({
-      sourceMod: modDefinition,
-      cleanModComponents,
-      dirtyModComponentFormStates,
-      dirtyModOptionsDefinition: dirtyModOptions,
-      dirtyModMetadata,
-    });
-
-    const packageId = editablePackages.find(
-      // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newMod.metadata.id,
-    )?.id;
-
-    assertNotNullish(packageId, "Package ID is required to upsert a mod");
-
-    const upsertResponse = await updateMod({
-      packageId,
-      modDefinition: newMod,
-    }).unwrap();
-
-    const newModMetadata = selectModMetadata(newMod, upsertResponse);
-
-    assertNotNullish(newModMetadata, "New mod metadata is required");
-
-    // Don't push to cloud since we're saving it with the mod
-    await Promise.all(
-      dirtyModComponentFormStates.map(async (modComponentFormState) =>
-        upsertModComponentFormState({
-          modComponentFormState,
-          options: {
-            // Permissions were already checked earlier in the save function here
-            checkPermissions: false,
-            // Notified and reactivated once in safeSave below
-            notifySuccess: false,
-            reactivateEveryTab: false,
-          },
-          modId: newModMetadata.id,
-        }),
-      ),
-    );
-
-    // Update the mod metadata on mod components in the options slice
-    dispatch(modComponentActions.updateModMetadata(newModMetadata));
-
-    dispatch(
-      editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
-    );
-
-    // Remove any deleted mod component form states from the mod components slice
-    for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
-      dispatch(modComponentActions.removeModComponent({ modComponentId }));
-    }
-
-    // Clear the dirty states
-    dispatch(editorActions.resetMetadataAndOptionsForMod(newModMetadata.id));
-    dispatch(
-      editorActions.clearDeletedModComponentFormStatesForMod(newModMetadata.id),
-    );
-
-    reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-      modId: newMod.metadata.id,
-    });
-
-    return true;
-  }
-
-  async function safeSave(modId: RegistryId) {
-    if (modDefinitionsError) {
-      notify.error({
-        message: "Error fetching mod definitions",
-        error: modDefinitionsError,
-      });
-
-      return;
-    }
-
-    if (isModDefinitionsLoading || isEditablePackagesLoading) {
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      const success = await save(modId);
-      if (success) {
-        notify.success("Saved mod");
-        reloadModsEveryTab();
+  const save = useCallback(
+    async (modId: RegistryId): Promise<boolean | undefined> => {
+      if (isInnerDefinitionRegistryId(modId)) {
+        dispatch(editorActions.showCreateModModal({ keepLocalCopy: false }));
+        return;
       }
-    } catch (error) {
-      notify.error({
-        message: "Failed saving mod",
-        error,
+
+      if (!editablePackages) {
+        return;
+      }
+
+      const modDefinition = modDefinitions?.find(
+        (mod) => mod.metadata.id === modId,
+      );
+      if (modDefinition == null) {
+        throw new Error(
+          "You no longer have edit permissions for the mod. Please reload the Page Editor.",
+        );
+      }
+
+      if (!isModEditable(editablePackages, modDefinition)) {
+        dispatch(editorActions.showSaveAsNewModModal());
+        return false;
+      }
+
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
+
+      // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
+      // long to confirm?
+      // Check permissions as early as possible
+      void ensureModComponentFormStatePermissionsFromUserGesture(
+        dirtyModComponentFormStates,
+      );
+
+      // Dirty options/metadata or null if there are no staged changes.
+      // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
+      const dirtyModOptions = allDirtyModOptions[modId];
+      // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
+      const dirtyModMetadata = allDirtyModMetadatas[modId];
+
+      const newMod = await buildAndValidateMod({
+        sourceMod: modDefinition,
+        cleanModComponents,
+        dirtyModComponentFormStates,
+        dirtyModOptionsDefinition: dirtyModOptions,
+        dirtyModMetadata,
       });
-    } finally {
-      setIsSaving(false);
-    }
-  }
+
+      const packageId = editablePackages.find(
+        // Bricks endpoint uses "name" instead of id
+        (x) => x.name === newMod.metadata.id,
+      )?.id;
+
+      assertNotNullish(packageId, "Package ID is required to upsert a mod");
+
+      const upsertResponse = await updateMod({
+        packageId,
+        modDefinition: newMod,
+      }).unwrap();
+
+      const newModMetadata = selectModMetadata(newMod, upsertResponse);
+
+      assertNotNullish(newModMetadata, "New mod metadata is required");
+
+      // Don't push to cloud since we're saving it with the mod
+      await Promise.all(
+        dirtyModComponentFormStates.map(async (modComponentFormState) =>
+          upsertModComponentFormState({
+            modComponentFormState,
+            options: {
+              // Permissions were already checked earlier in the save function here
+              checkPermissions: false,
+              // Notified and reactivated once in safeSave below
+              notifySuccess: false,
+              reactivateEveryTab: false,
+            },
+            modId: newModMetadata.id,
+          }),
+        ),
+      );
+
+      // Update the mod metadata on mod components in the options slice
+      dispatch(modComponentActions.updateModMetadata(newModMetadata));
+
+      dispatch(
+        editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
+      );
+
+      // Remove any deleted mod component form states from the mod components slice
+      for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
+        dispatch(modComponentActions.removeModComponent({ modComponentId }));
+      }
+
+      // Clear the dirty states
+      dispatch(editorActions.resetMetadataAndOptionsForMod(newModMetadata.id));
+      dispatch(
+        editorActions.clearDeletedModComponentFormStatesForMod(
+          newModMetadata.id,
+        ),
+      );
+
+      reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
+        modId: newMod.metadata.id,
+      });
+
+      return true;
+    },
+    [
+      editablePackages,
+      modDefinitions,
+      dispatch,
+      getCleanComponentsAndDirtyFormStatesForMod,
+      allDirtyModOptions,
+      allDirtyModMetadatas,
+      buildAndValidateMod,
+      updateMod,
+      upsertModComponentFormState,
+      getDeletedComponentIdsForMod,
+    ],
+  );
+
+  const safeSave = useCallback(
+    async (modId: RegistryId) => {
+      if (modDefinitionsError) {
+        notify.error({
+          message: "Error fetching mod definitions",
+          error: modDefinitionsError,
+        });
+
+        return;
+      }
+
+      if (isModDefinitionsLoading || isEditablePackagesLoading) {
+        return;
+      }
+
+      setIsSaving(true);
+      try {
+        const success = await save(modId);
+        if (success) {
+          notify.success("Saved mod");
+          reloadModsEveryTab();
+        }
+      } catch (error) {
+        notify.error({
+          message: "Failed saving mod",
+          error,
+        });
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [
+      modDefinitionsError,
+      isModDefinitionsLoading,
+      isEditablePackagesLoading,
+      save,
+    ],
+  );
 
   return {
     save: safeSave,

@@ -31,7 +31,7 @@ test("can save a standalone trigger mod", async ({
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
   const { modComponentName } =
-    await pageEditorPage.modListingPanel.addNewModWithStarterBrick("Trigger");
+    await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
   await pageEditorPage.brickConfigurationPanel.fillField(
     "name",
     modComponentName,
