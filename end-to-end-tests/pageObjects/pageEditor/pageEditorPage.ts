@@ -327,7 +327,7 @@ export class PageEditorPage extends BasePageObject {
   }
 
   @ModifiesModFormState
-  async saveNewMod(modName: string, description: string): Promise<string> {
+  async saveNewMod(modName: string, description?: string): Promise<string> {
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await expect(
@@ -336,7 +336,7 @@ export class PageEditorPage extends BasePageObject {
       ),
     ).toBeVisible();
     // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
-    await this.page.waitForTimeout(300);
+    await this.page.waitForTimeout(600);
     await modListItem.saveButton.click();
 
     // Handle the "Save new mod" modal
@@ -344,11 +344,13 @@ export class PageEditorPage extends BasePageObject {
     await expect(saveNewModModal).toBeVisible();
     await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
 
-    // Update the mod description
-    const descriptionInput = saveNewModModal.locator(
-      'input[name="description"]',
-    );
-    await descriptionInput.fill(description);
+    if (description) {
+      // Update the mod description
+      const descriptionInput = saveNewModModal.locator(
+        'input[name="description"]',
+      );
+      await descriptionInput.fill(description);
+    }
 
     // Click the Save button in the modal
     await saveNewModModal.getByRole("button", { name: "Save" }).click();
