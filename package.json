@@ -35,7 +35,7 @@
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^10.1.0",
-    "@atlaskit/tree": "^8.9.0",
+    "@atlaskit/tree": "^8.10.0",
     "@cfworker/json-schema": "^2.0.1",
     "@datadog/browser-logs": "^5.26.0",
     "@datadog/browser-rum": "^5.26.0",
