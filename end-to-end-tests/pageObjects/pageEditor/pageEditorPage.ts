@@ -120,10 +120,17 @@ export class PageEditorPage extends BasePageObject {
     // TODO: this method is currently meant for mods that aren't meant to be
     //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
     //  mods, with an option to avoid cleanup for certain mods.
-    await this.modListingPanel.activeModListItem.saveButton.click();
-    await expect(
-      this.page.getByRole("status").filter({ hasText: "Saved mod" }),
-    ).toBeVisible();
+    const { saveButton } = this.modListingPanel.activeModListItem;
+    // If you encounter this timeout, make sure you are selecting a Mod list
+    // item in the mod listing panel (not a mod component) before calling this function
+    await saveButton.waitFor({ state: "visible", timeout: 1000 });
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
+    await this.page.waitForTimeout(300);
+    await saveButton.click();
+    await this.page
+      .getByRole("status")
+      .filter({ hasText: "Saved mod" })
+      .waitFor({ state: "visible", timeout: 5000 });
   }
 
   getRenderPanelButton() {
@@ -317,5 +324,47 @@ export class PageEditorPage extends BasePageObject {
     await componentListItem.select();
 
     return { modName, modComponentName };
+  }
+
+  @ModifiesModFormState
+  async saveNewMod(modName: string, description: string): Promise<string> {
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
+    await expect(
+      this.modEditorPane.editMetadataTabPanel.getByText(
+        "Save the mod to assign an id",
+      ),
+    ).toBeVisible();
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
+    await this.page.waitForTimeout(300);
+    await modListItem.saveButton.click();
+
+    // Handle the "Save new mod" modal
+    const saveNewModModal = this.page.getByRole("dialog");
+    await expect(saveNewModModal).toBeVisible();
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+
+    // Update the mod description
+    const descriptionInput = saveNewModModal.locator(
+      'input[name="description"]',
+    );
+    await descriptionInput.fill(description);
+
+    // Click the Save button in the modal
+    await saveNewModModal.getByRole("button", { name: "Save" }).click();
+
+    // Wait for the save confirmation
+    await expect(
+      this.page
+        .getByRole("status")
+        .filter({ hasText: "Mod created successfully" }),
+    ).toBeVisible();
+
+    // Mark the modId for cleanup after the test
+    const modId =
+      await this.modEditorPane.editMetadataTabPanel.modId.inputValue();
+    this.savedPackageModIds.push(modId);
+
+    return modId;
   }
 }

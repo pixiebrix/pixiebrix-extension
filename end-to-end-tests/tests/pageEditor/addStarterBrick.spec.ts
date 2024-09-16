@@ -33,48 +33,6 @@ test("Add new mod with starter bricks", async ({
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
-  async function saveNewMod(modName: string, description: string) {
-    const modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName(modName);
-    await modListItem.select();
-    await expect(
-      pageEditorPage.modEditorPane.editMetadataTabPanel.getByText(
-        "Save the mod to assign an id",
-      ),
-    ).toBeVisible();
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
-    await page.waitForTimeout(300);
-    await modListItem.saveButton.click();
-
-    // Handle the "Save new mod" modal
-    const saveNewModModal = pageEditorPage.page.getByRole("dialog");
-    await expect(saveNewModModal).toBeVisible();
-    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
-
-    // Update the mod description
-    const descriptionInput = saveNewModModal.locator(
-      'input[name="description"]',
-    );
-    await descriptionInput.fill(description);
-
-    // Click the Save button in the modal
-    await saveNewModModal.getByRole("button", { name: "Save" }).click();
-
-    // Wait for the save confirmation
-    await expect(
-      pageEditorPage.page
-        .getByRole("status")
-        .filter({ hasText: "Mod created successfully" }),
-    ).toBeVisible();
-
-    // Mark the modId for cleanup after the test
-    const modId =
-      await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
-    pageEditorPage.savedPackageModIds.push(modId);
-
-    return modId;
-  }
-
   await test.step("Add new Button starter brick", async () => {
     const { modName, modComponentName } =
       await pageEditorPage.addNewModWithButtonStarterBrick(async () => {
@@ -98,7 +56,10 @@ test("Add new mod with starter bricks", async ({
     await expect(pageEditorPage.getByText(modName)).toBeVisible();
     await expect(pageEditorPage.getByText(modComponentName)).toBeVisible();
 
-    const modId = await saveNewMod(modName, "Test description for Button Mod");
+    const modId = await pageEditorPage.saveNewMod(
+      modName,
+      "Test description for Button Mod",
+    );
 
     await verifyModDefinitionSnapshot({
       modId,
@@ -119,7 +80,7 @@ test("Add new mod with starter bricks", async ({
       }),
     ).toHaveValue(modComponentName);
 
-    const modId = await saveNewMod(
+    const modId = await pageEditorPage.saveNewMod(
       modName,
       "Test description for Context Menu Mod",
     );
@@ -145,7 +106,7 @@ test("Add new mod with starter bricks", async ({
       }),
     ).toHaveValue(modComponentName);
 
-    const modId = await saveNewMod(
+    const modId = await pageEditorPage.saveNewMod(
       modName,
       "Test description for Quick Bar Action Mod",
     );
@@ -177,7 +138,7 @@ test("Add new mod with starter bricks", async ({
     }
     /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
 
-    const modId = await saveNewMod(
+    const modId = await pageEditorPage.saveNewMod(
       modName,
       "Test description for Sidebar Panel Mod",
     );
@@ -201,7 +162,10 @@ test("Add new mod with starter bricks", async ({
       }),
     ).toHaveValue(modComponentName);
 
-    const modId = await saveNewMod(modName, "Test description for Trigger Mod");
+    const modId = await pageEditorPage.saveNewMod(
+      modName,
+      "Test description for Trigger Mod",
+    );
 
     await verifyModDefinitionSnapshot({
       modId,
@@ -241,48 +205,6 @@ test("Add starter brick to mod", async ({
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
-  async function saveNewMod(modName: string, description: string) {
-    const modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName(modName);
-    await modListItem.select();
-    await expect(
-      pageEditorPage.modEditorPane.editMetadataTabPanel.getByText(
-        "Save the mod to assign an id",
-      ),
-    ).toBeVisible();
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
-    await page.waitForTimeout(300);
-    await modListItem.saveButton.click();
-
-    // Handle the "Save new mod" modal
-    const saveNewModModal = pageEditorPage.page.getByRole("dialog");
-    await expect(saveNewModModal).toBeVisible();
-    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
-
-    // Update the mod description
-    const descriptionInput = saveNewModModal.locator(
-      'input[name="description"]',
-    );
-    await descriptionInput.fill(description);
-
-    // Click the Save button in the modal
-    await saveNewModModal.getByRole("button", { name: "Save" }).click();
-
-    // Wait for the save confirmation
-    await expect(
-      pageEditorPage.page
-        .getByRole("status")
-        .filter({ hasText: "Mod created successfully" }),
-    ).toBeVisible();
-
-    // Mark the modId for cleanup after the test
-    const modId =
-      await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
-    pageEditorPage.savedPackageModIds.push(modId);
-
-    return modId;
-  }
-
   // Create Trigger mod to which to add starter bricks
   const { modName, modComponentName } =
     await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
@@ -291,7 +213,10 @@ test("Add starter brick to mod", async ({
     modComponentName,
   );
 
-  const modId = await saveNewMod(modName, "Test description for Trigger Mod");
+  const modId = await pageEditorPage.saveNewMod(
+    modName,
+    "Test description for Trigger Mod",
+  );
 
   await verifyModDefinitionSnapshot({
     modId,
