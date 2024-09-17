@@ -66,6 +66,7 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
   const deactivateMod = useDeactivateMod();
 
   const onCopyMod = useCallback(() => {
+    // TODO: This could just create a new, unsaved mod automatically
     dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
   }, [dispatch]);
 

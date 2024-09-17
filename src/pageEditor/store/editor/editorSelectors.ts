@@ -314,9 +314,6 @@ export function selectActiveBrickPipelineUIState({
   editor,
 }: EditorRootState): Nullishable<BrickPipelineUIState> {
   if (editor.activeModComponentId == null) {
-    console.warn(
-      "selectActiveBrickPipelineUIState called without activeModComponentId",
-    );
     return null;
   }
 

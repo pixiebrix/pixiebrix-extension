@@ -74,7 +74,7 @@ function useInitialFormState({
 }: {
   activeModDefinition?: ModDefinition;
   activeModId?: RegistryId;
-}): ModMetadataFormState {
+}): ModMetadataFormState | UnknownObject {
   const userScope = useSelector(selectScope);
   assertNotNullish(userScope, "Expected userScope to create new mod");
 
@@ -92,10 +92,9 @@ function useInitialFormState({
     // If the mod definition has not been created on the server yet, use the metadata from the first component form state
     firstComponentFormStateForActiveMod?.modMetadata;
 
-  assertNotNullish(
-    modMetadata,
-    "Cannot find mod metadata in inputs to create new mod",
-  );
+  if (!modMetadata) {
+    return {};
+  }
 
   const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
   let newModId = isUnsavedMod

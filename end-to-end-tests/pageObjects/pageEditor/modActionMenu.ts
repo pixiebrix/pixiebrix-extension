@@ -28,7 +28,7 @@ class BaseActionMenu extends BasePageObject {
 export class ModActionMenu extends BaseActionMenu {
   @ModifiesModFormState
   async addStarterBrick(starterBrickName: StarterBrickUIName) {
-    await this.getByRole("menuitem", { name: "Add starter brick" }).hover();
+    await this.getByRole("menuitem", { name: /Add Starter Brick$/ }).hover();
     await this.getByRole("menuitem", { name: starterBrickName }).click();
   }
 

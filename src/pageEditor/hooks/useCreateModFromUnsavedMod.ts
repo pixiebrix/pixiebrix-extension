@@ -104,7 +104,7 @@ function useCreateModFromUnsavedMod(
             dirtyModOptionsDefinition,
           });
 
-          const upsertResponse = await createMod({
+          const createResponse = await createMod({
             modDefinition: newModDefinition,
             organizations: [],
             public: false,
@@ -115,7 +115,7 @@ function useCreateModFromUnsavedMod(
               produce(dirtyModComponentFormState, (draft) => {
                 draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
                   newModDefinition,
-                  upsertResponse,
+                  createResponse,
                 );
               }),
           );
@@ -162,7 +162,7 @@ function useCreateModFromUnsavedMod(
               modComponentActions.saveModComponent({
                 modComponent: {
                   ...newModComponent,
-                  updateTimestamp: upsertResponse.updated_at,
+                  updateTimestamp: createResponse.updated_at,
                 },
               }),
             );

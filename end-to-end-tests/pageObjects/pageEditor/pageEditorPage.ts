@@ -125,9 +125,8 @@ export class PageEditorPage extends BasePageObject {
     //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
     //  mods, with an option to avoid cleanup for certain mods.
     const modListItem = this.modListingPanel.getModListItemByName(modName);
+    await modListItem.select();
     const { saveButton } = modListItem;
-    // If you encounter this timeout, make sure you are selecting a Mod list
-    // item in the mod listing panel (not a mod component) before calling this function
     await saveButton.waitFor({ state: "visible", timeout: 1000 });
     // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
     await this.page.waitForTimeout(300);

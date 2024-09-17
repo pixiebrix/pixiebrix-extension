@@ -126,12 +126,16 @@ const MoveFromModModal: React.FC = () => {
   const selectOptions = useMemo(
     () => [
       { label: "➕ Create new mod...", value: NEW_MOD_ID },
-      ...activatedModMetadatas.map((metadata) => ({
-        label: metadata.name,
-        value: metadata.id,
-      })),
+      ...activatedModMetadatas
+        .filter(
+          (metadata) => metadata.id !== modComponentFormState?.modMetadata?.id,
+        )
+        .map((metadata) => ({
+          label: metadata.name,
+          value: metadata.id,
+        })),
     ],
-    [activatedModMetadatas],
+    [activatedModMetadatas, modComponentFormState?.modMetadata?.id],
   );
 
   const renderBody: RenderBody = ({ values }) => (

@@ -137,7 +137,15 @@ export function removeModComponentFormState(
   // by the user in the UI. In this case, the mod component form state will not be in redux.
   const index = state.modComponentFormStates.findIndex((x) => x.uuid === uuid);
   if (index > -1) {
-    state.modComponentFormStates.splice(index, 1);
+    const spliced = state.modComponentFormStates.splice(index, 1);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Index was found already above
+    const removed = spliced[0]!;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All form states have metadata, the type has not been migrated yet
+    state.deletedModComponentFormStatesByModId[removed.modMetadata!.id] ??= [];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All form states have metadata, the type has not been migrated yet, array initialized above
+    state.deletedModComponentFormStatesByModId[removed.modMetadata!.id]!.push(
+      removed,
+    );
   }
 
   delete state.dirty[uuid];

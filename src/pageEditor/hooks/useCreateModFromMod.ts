@@ -112,6 +112,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           }),
         );
         dispatch(editorActions.setActiveModId(savedModDefinition.metadata.id));
+        dispatch(editorActions.checkAvailableActivatedModComponents());
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
           copiedFrom: modId,

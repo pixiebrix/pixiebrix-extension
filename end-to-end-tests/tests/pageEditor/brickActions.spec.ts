@@ -73,7 +73,6 @@ test("brick actions panel behavior", async ({
 
   await test.step("Add a new brick", async () => {
     await brickActionsPanel.addBrick("Set Mod Variable", { index: 1 });
-    await modListItem.select();
     await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
       .getModStarterBrick(modName, "Button")
@@ -84,7 +83,6 @@ test("brick actions panel behavior", async ({
   await test.step("Remove a brick", async () => {
     await brickActionsPanel.getBrickByName("Set Mod Variable").select();
     await brickActionsPanel.removeBrickButton.click();
-    await modListItem.select();
     await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
       .getModStarterBrick(modName, "Button")
@@ -98,7 +96,6 @@ test("brick actions panel behavior", async ({
     await brickActionsPanel.copyActiveBrick();
     await brickActionsPanel.pasteBrick(1);
     await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
-    await modListItem.select();
     await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
       .getModStarterBrick(modName, "Button")
@@ -136,7 +133,6 @@ test("brick actions panel behavior", async ({
       .select();
 
     await brickActionsPanel.pasteBrick(1);
-    await otherModListItem.select();
     await pageEditorPage.saveExistingMod(otherModName);
 
     await verifyModDefinitionSnapshot({

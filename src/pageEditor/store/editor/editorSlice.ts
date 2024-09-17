@@ -90,6 +90,7 @@ import {
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "./selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -276,6 +277,18 @@ const checkActiveModComponentAvailability = createAsyncThunk<
   };
 });
 
+/**
+ * Duplicates the active mod component.
+ *
+ * This thunk creates a copy of the currently active mod component, generating a new UUID and
+ * updating the label to indicate it's a copy. If a new mod metadata is provided, it will reassign
+ * the duplicated component to that mod, potentially adjusting the label to avoid conflicts.
+ *
+ * @param args Optional object containing modMetadata to reassign the duplicated component to a different mod.
+ * @param args.modMetadata The metadata of the mod to assign the duplicated component to. If not provided or same as current, it stays in the current mod.
+ * @returns A promise that resolves to the new ModComponentFormState of the duplicated component.
+ * @throws {Error} If no active mod component is found to duplicate.
+ */
 const duplicateActiveModComponent = createAsyncThunk<
   ModComponentFormState,
   { modMetadata?: ModMetadata } | void,
@@ -283,12 +296,45 @@ const duplicateActiveModComponent = createAsyncThunk<
 >("editor/cloneActiveModComponent", async (args, thunkAPI) => {
   const { modMetadata: modMetadataToUseForDuplicate } = args ?? {};
   const state = thunkAPI.getState();
+  const activeModComponentFormState = selectActiveModComponentFormState(state);
+  assertNotNullish(
+    activeModComponentFormState,
+    "Active mod component form state not found",
+  );
+
+  let newLabel = activeModComponentFormState.label;
+
+  const getCleanComponentsAndDirtyFormStatesForMod =
+    selectGetCleanComponentsAndDirtyFormStatesForMod(state);
+
+  if (
+    !modMetadataToUseForDuplicate ||
+    modMetadataToUseForDuplicate.id ===
+      activeModComponentFormState.modMetadata?.id
+  ) {
+    newLabel += " (Copy)";
+  } else {
+    const { cleanModComponents, dirtyModComponentFormStates } =
+      getCleanComponentsAndDirtyFormStatesForMod(
+        modMetadataToUseForDuplicate.id,
+      );
+    const allComponents = [
+      ...cleanModComponents,
+      ...dirtyModComponentFormStates,
+    ];
+    const labelExists = allComponents.some(
+      (component) => component.label === newLabel,
+    );
+    if (labelExists) {
+      newLabel += " (Copy)";
+    }
+  }
+
   const newActiveModComponentFormState = await produce(
-    selectActiveModComponentFormState(state),
+    activeModComponentFormState,
     async (draft) => {
-      assertNotNullish(draft, "Active mod component form state not found");
       draft.uuid = uuidv4();
-      draft.label += " (Copy)";
+      draft.label = newLabel;
       // Re-generate instance IDs for all the bricks in the mod component
       draft.modComponent.brickPipeline = await normalizePipelineForEditor(
         draft.modComponent.brickPipeline,

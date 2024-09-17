@@ -158,12 +158,12 @@ function useSaveMod(): ModSaver {
 
       assertNotNullish(packageId, "Package ID is required to upsert a mod");
 
-      const upsertResponse = await updateMod({
+      const updateResponse = await updateMod({
         packageId,
         modDefinition: newMod,
       }).unwrap();
 
-      const newModMetadata = selectModMetadata(newMod, upsertResponse);
+      const newModMetadata = selectModMetadata(newMod, updateResponse);
 
       assertNotNullish(newModMetadata, "New mod metadata is required");
 
