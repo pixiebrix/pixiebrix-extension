@@ -42,6 +42,10 @@ type UseCreateModFromModReturn = {
   ) => Promise<void>;
 };
 
+/**
+ * This hook provides a callback function to create a mod copy from the
+ * existing, active mod that HAS been saved on the server before.
+ */
 function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const [createMod] = useCreateModDefinitionMutation();

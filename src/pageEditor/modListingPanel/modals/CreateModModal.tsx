@@ -72,8 +72,8 @@ function useInitialFormState({
   activeMod: ModDefinition | null;
   activeModId?: RegistryId;
 }): ModMetadataFormState | UnknownObject {
-  const scope = useSelector(selectScope);
-  assertNotNullish(scope, "Expected scope to create new mod");
+  const userScope = useSelector(selectScope);
+  assertNotNullish(userScope, "Expected userScope to create new mod");
 
   // For unsaved mods, if the mod metadata has not been modified, it will only exist on the components
   const firstComponentFormStateForActiveMod = useSelector(
@@ -93,8 +93,10 @@ function useInitialFormState({
   if (modMetadata) {
     const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
     let newModId = isUnsavedMod
-      ? generatePackageId(scope, modMetadata.name)
-      : generateScopeBrickId(scope, modMetadata.id);
+      ? // If the mod is a brand new, unsaved mod, generate a new package id
+        generatePackageId(userScope, modMetadata.name)
+      : // If the mod is an existing mod, generate a new package id with the existing mod id and the user's scope
+        generateScopeBrickId(userScope, modMetadata.id);
     if (newModId === modMetadata.id) {
       newModId = validateRegistryId(newModId + "-copy");
     }
@@ -112,7 +114,7 @@ function useInitialFormState({
   // Handle creating a new mod from a selected mod component
   if (activeModComponentFormState) {
     return {
-      id: generatePackageId(scope, activeModComponentFormState.label),
+      id: generatePackageId(userScope, activeModComponentFormState.label),
       name: activeModComponentFormState.label,
       version: normalizeSemVerString("1.0.0"),
       description: "Created with the PixieBrix Page Editor",

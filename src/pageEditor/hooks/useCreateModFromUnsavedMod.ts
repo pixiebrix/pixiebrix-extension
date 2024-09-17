@@ -30,7 +30,6 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
-import { type Nullishable } from "@/utils/nullishUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
@@ -57,8 +56,14 @@ type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (modMetadata: ModMetadataFormState) => Promise<void>;
 };
 
+/**
+ * This hook provides a callback function to create a mod from an unsaved mod
+ * that has never been saved to the server.
+ *
+ * @param unsavedModId The (local only) registry ID of the unsaved mod
+ */
 function useCreateModFromUnsavedMod(
-  unsavedModId: Nullishable<RegistryId>,
+  unsavedModId: RegistryId,
 ): UseCreateModFromUnsavedModReturn {
   const dispatch = useDispatch();
   const [createMod] = useCreateModDefinitionMutation();
@@ -74,7 +79,7 @@ function useCreateModFromUnsavedMod(
   const dirtyModOptionsById = useSelector(selectDirtyModOptionsDefinitions);
   const dirtyModOptionsDefinition = useMemo(
     // eslint-disable-next-line security/detect-object-injection -- Registry id
-    () => (unsavedModId ? dirtyModOptionsById[unsavedModId] : undefined),
+    () => dirtyModOptionsById[unsavedModId],
     [dirtyModOptionsById, unsavedModId],
   );
 
@@ -87,7 +92,7 @@ function useCreateModFromUnsavedMod(
         dirtyModComponentFormStates,
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
-        if (!hasPermissions || !unsavedModId || !editablePackages) {
+        if (!hasPermissions || !editablePackages) {
           return;
         }
 
@@ -124,8 +129,8 @@ function useCreateModFromUnsavedMod(
               isInnerDefinitionRegistryId(starterBrickId);
             let newModComponent = selectModComponent(newComponentFormState);
 
-            // Starter brick exists as a registry item
             if (hasInnerStarterBrick) {
+              // Starter brick has an inner definition and doesn't exist as a registry item
               const { definition } = selectStarterBrickDefinition(
                 newComponentFormState,
               );
@@ -134,6 +139,7 @@ function useCreateModFromUnsavedMod(
                 definition,
               );
             } else {
+              // Handle case where starter brick is a registry item
               const editablePackage = editablePackages.find(
                 ({ name }) => name === starterBrickId,
               );
@@ -183,9 +189,10 @@ function useCreateModFromUnsavedMod(
       }),
     [
       dirtyModComponentFormStates,
-      unsavedModId,
+      editablePackages,
       buildAndValidateMod,
       cleanModComponents,
+      dirtyModOptionsDefinition,
       createMod,
       dispatch,
     ],
