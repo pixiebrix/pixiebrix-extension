@@ -17,14 +17,13 @@
 
 import {
   getModComponentItemId,
-  isModSidebarItem,
-  type SidebarItem,
+  type ModSidebarItem,
 } from "@/pageEditor/modListingPanel/common";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type FilterSidebarItemsArgs = {
-  sidebarItems: SidebarItem[];
+  sidebarItems: ModSidebarItem[];
   filterText: string;
   activeModId: RegistryId | null;
   activeModComponentId: UUID | null;
@@ -38,38 +37,40 @@ export default function filterSidebarItems({
   filterText,
   activeModId,
   activeModComponentId,
-}: FilterSidebarItemsArgs): SidebarItem[] {
+}: FilterSidebarItemsArgs): ModSidebarItem[] {
   if (filterText.length === 0) {
     return sidebarItems;
   }
 
-  return sidebarItems.filter((sidebarItem) => {
-    if (isModSidebarItem(sidebarItem)) {
-      // Don't filter out mod item if the mod is active, or the name matches the query
-      if (
+  return sidebarItems
+    .map((sidebarItem) => {
+      // Check if the mod itself matches the filter
+      const modMatches =
         sidebarItem.modMetadata.id === activeModId ||
-        caseInsensitiveIncludes(sidebarItem.modMetadata.name, filterText)
-      ) {
-        return true;
+        caseInsensitiveIncludes(sidebarItem.modMetadata.name, filterText);
+
+      // If the mod matches, return the item with all its components
+      if (modMatches) {
+        return sidebarItem;
       }
 
-      // Don't filter out mod item if any mod component is active, or any mod component label matches the query
-      for (const modComponentItem of sidebarItem.modComponents) {
-        if (
+      // Filter modComponents only if the mod itself doesn't match
+      const filteredComponents = sidebarItem.modComponents.filter(
+        (modComponentItem) =>
           getModComponentItemId(modComponentItem) === activeModComponentId ||
-          caseInsensitiveIncludes(modComponentItem.label, filterText)
-        ) {
-          return true;
-        }
+          caseInsensitiveIncludes(modComponentItem.label, filterText),
+      );
+
+      // If there are matching components, return the modified item
+      if (filteredComponents.length > 0) {
+        return {
+          ...sidebarItem,
+          modComponents: filteredComponents,
+        };
       }
 
-      return false;
-    }
-
-    // Don't filter out mod component item if the mod component is active, or the label matches the query
-    return (
-      getModComponentItemId(sidebarItem) === activeModComponentId ||
-      caseInsensitiveIncludes(sidebarItem.label, filterText)
-    );
-  });
+      // If neither the mod nor any components match, return null
+      return null;
+    })
+    .filter((item): item is ModSidebarItem => item != null);
 }

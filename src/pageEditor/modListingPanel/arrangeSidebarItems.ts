@@ -21,10 +21,8 @@ import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  isModSidebarItem,
   type ModComponentSidebarItem,
   type ModSidebarItem,
-  type SidebarItem,
 } from "@/pageEditor/modListingPanel/common";
 
 type ArrangeSidebarItemsArgs = {
@@ -35,25 +33,23 @@ type ArrangeSidebarItemsArgs = {
 function arrangeSidebarItems({
   modComponentFormStates,
   cleanModComponents,
-}: ArrangeSidebarItemsArgs): SidebarItem[] {
+}: ArrangeSidebarItemsArgs): ModSidebarItem[] {
   const modSidebarItems: Record<RegistryId, ModSidebarItem> = {};
-  const orphanSidebarItems: ModComponentSidebarItem[] = [];
 
   const formStateModComponentIds = new Set<UUID>();
 
   for (const formState of modComponentFormStates) {
     formStateModComponentIds.add(formState.uuid);
 
-    if (formState.modMetadata == null) {
-      orphanSidebarItems.push(formState);
-    } else {
-      const modSidebarItem = modSidebarItems[formState.modMetadata.id] ?? {
-        modMetadata: formState.modMetadata,
-        modComponents: [],
-      };
-      modSidebarItem.modComponents.push(formState);
-      modSidebarItems[formState.modMetadata.id] = modSidebarItem;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All form states have metadata, the type has not been migrated yet
+    const modSidebarItem = modSidebarItems[formState.modMetadata!.id] ?? {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All form states have metadata, the type has not been migrated yet
+      modMetadata: formState.modMetadata!,
+      modComponents: [] as ModComponentSidebarItem[],
+    };
+    modSidebarItem.modComponents.push(formState);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All form states have metadata, the type has not been migrated yet
+    modSidebarItems[formState.modMetadata!.id] = modSidebarItem;
   }
 
   const cleanModComponentsWithoutFormStates = cleanModComponents.filter(
@@ -61,16 +57,15 @@ function arrangeSidebarItems({
   );
 
   for (const cleanModComponent of cleanModComponentsWithoutFormStates) {
-    if (cleanModComponent._recipe == null) {
-      orphanSidebarItems.push(cleanModComponent);
-    } else {
-      const modSidebarItem = modSidebarItems[cleanModComponent._recipe.id] ?? {
-        modMetadata: cleanModComponent._recipe,
-        modComponents: [],
-      };
-      modSidebarItem.modComponents.push(cleanModComponent);
-      modSidebarItems[cleanModComponent._recipe.id] = modSidebarItem;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All clean mod components have metadata, the type has not been migrated yet
+    const modSidebarItem = modSidebarItems[cleanModComponent._recipe!.id] ?? {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All clean mod components have metadata, the type has not been migrated yet
+      modMetadata: cleanModComponent._recipe!,
+      modComponents: [] as ModComponentSidebarItem[],
+    };
+    modSidebarItem.modComponents.push(cleanModComponent);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- All clean mod components have metadata, the type has not been migrated yet
+    modSidebarItems[cleanModComponent._recipe!.id] = modSidebarItem;
   }
 
   for (const modSidebarItem of Object.values(modSidebarItems)) {
@@ -79,12 +74,8 @@ function arrangeSidebarItems({
     );
   }
 
-  return sortBy(
-    [...Object.values(modSidebarItems), ...orphanSidebarItems],
-    (item) =>
-      isModSidebarItem(item)
-        ? item.modMetadata.name.toLowerCase()
-        : item.label.toLowerCase(),
+  return sortBy(Object.values(modSidebarItems), (item) =>
+    item.modMetadata.name.toLowerCase(),
   );
 }
 

@@ -60,8 +60,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
   modComponent: ModComponentBase;
-  isNested?: boolean;
-}> = ({ modComponent, isNested = false }) => {
+}> = ({ modComponent }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const { data: type } = useAsyncState(
@@ -166,11 +165,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={async () => selectHandler(modComponent)}
     >
-      <span
-        className={cx(styles.icon, {
-          [styles.nested ?? ""]: isNested,
-        })}
-      >
+      <span className={cx(styles.icon, styles.nested)}>
         {type ? <ModComponentIcon type={type} /> : null}
       </span>
       <span className={styles.name}>

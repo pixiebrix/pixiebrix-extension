@@ -20,8 +20,7 @@ import React, { useMemo, useState } from "react";
 import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
   getModComponentItemId,
-  isModSidebarItem,
-  type SidebarItem,
+  type ModSidebarItem,
 } from "@/pageEditor/modListingPanel/common";
 import ModListItem from "@/pageEditor/modListingPanel/ModListItem";
 import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
@@ -54,7 +53,7 @@ const ModComponents: React.FunctionComponent = () => {
     leading: false,
   });
 
-  const sortedSidebarItems = useMemo<SidebarItem[]>(
+  const sortedSidebarItems = useMemo<ModSidebarItem[]>(
     () =>
       arrangeSidebarItems({
         modComponentFormStates,
@@ -63,7 +62,7 @@ const ModComponents: React.FunctionComponent = () => {
     [modComponentFormStates, cleanModComponents],
   );
 
-  const filteredSidebarItems = useMemo<SidebarItem[]>(
+  const filteredSidebarItems = useMemo<ModSidebarItem[]>(
     () =>
       filterSidebarItems({
         sidebarItems: sortedSidebarItems,
@@ -79,29 +78,18 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const listItems = filteredSidebarItems.map((sidebarItem) => {
-    if (isModSidebarItem(sidebarItem)) {
-      const { modMetadata, modComponents } = sidebarItem;
-      return (
-        <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
-          {modComponents.map((modComponentSidebarItem) => (
-            <ModComponentListItem
-              key={getModComponentItemId(modComponentSidebarItem)}
-              modComponentSidebarItem={modComponentSidebarItem}
-              isNested
-            />
-          ))}
-        </ModListItem>
-      );
-    }
-
-    return (
-      <ModComponentListItem
-        key={getModComponentItemId(sidebarItem)}
-        modComponentSidebarItem={sidebarItem}
-      />
-    );
-  });
+  const listItems = filteredSidebarItems.map(
+    ({ modMetadata, modComponents }) => (
+      <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
+        {modComponents.map((modComponentSidebarItem) => (
+          <ModComponentListItem
+            key={getModComponentItemId(modComponentSidebarItem)}
+            modComponentSidebarItem={modComponentSidebarItem}
+          />
+        ))}
+      </ModListItem>
+    ),
+  );
 
   return (
     <>

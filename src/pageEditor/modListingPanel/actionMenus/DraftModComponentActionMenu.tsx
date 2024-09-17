@@ -53,8 +53,7 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
  */
 const DraftModComponentActionMenu: React.FC<{
   modComponentFormState: ModComponentFormState;
-  isNested?: boolean;
-}> = ({ modComponentFormState, isNested }) => {
+}> = ({ modComponentFormState }) => {
   const dispatch = useDispatch();
   const resetModComponent = useResetModComponent();
   const isDirty = useSelector(

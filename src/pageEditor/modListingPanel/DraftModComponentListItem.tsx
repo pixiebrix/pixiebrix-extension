@@ -48,19 +48,14 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import DraftModComponentActionMenu from "@/pageEditor/modListingPanel/actionMenus/DraftModComponentActionMenu";
 
-type DraftModComponentListItemProps = {
-  modComponentFormState: ModComponentFormState;
-  isNested?: boolean;
-};
-
 /**
  * A page editor sidebar menu entry corresponding to a touched mod component
  * @see ActivatedModComponentListItem
  * @see ModComponentListItem
  */
-const DraftModComponentListItem: React.FunctionComponent<
-  DraftModComponentListItemProps
-> = ({ modComponentFormState, isNested = false }) => {
+const DraftModComponentListItem: React.FunctionComponent<{
+  modComponentFormState: ModComponentFormState;
+}> = ({ modComponentFormState }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeModId = useSelector(selectActiveModId);
@@ -133,11 +128,7 @@ const DraftModComponentListItem: React.FunctionComponent<
         }
       }}
     >
-      <span
-        className={cx(styles.icon, {
-          [styles.nested ?? ""]: isNested,
-        })}
-      >
+      <span className={cx(styles.icon, styles.nested)}>
         <ModComponentIcon
           type={modComponentFormState.starterBrick.definition.type}
         />
@@ -156,7 +147,6 @@ const DraftModComponentListItem: React.FunctionComponent<
       {isActive && (
         <DraftModComponentActionMenu
           modComponentFormState={modComponentFormState}
-          isNested={isNested}
         />
       )}
     </ListGroup.Item>

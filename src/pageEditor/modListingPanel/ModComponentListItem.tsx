@@ -20,23 +20,14 @@ import { isModComponentBase, type ModComponentSidebarItem } from "./common";
 import DraftModComponentListItem from "./DraftModComponentListItem";
 import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 
-type ModComponentListItemProps = {
+const ModComponentListItem: React.FunctionComponent<{
   modComponentSidebarItem: ModComponentSidebarItem;
-  isNested?: boolean;
-};
-
-const ModComponentListItem: React.FunctionComponent<
-  ModComponentListItemProps
-> = ({ modComponentSidebarItem, isNested = false }) =>
+}> = ({ modComponentSidebarItem }) =>
   isModComponentBase(modComponentSidebarItem) ? (
-    <ActivatedModComponentListItem
-      modComponent={modComponentSidebarItem}
-      isNested={isNested}
-    />
+    <ActivatedModComponentListItem modComponent={modComponentSidebarItem} />
   ) : (
     <DraftModComponentListItem
       modComponentFormState={modComponentSidebarItem}
-      isNested={isNested}
     />
   );
 
