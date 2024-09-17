@@ -119,9 +119,7 @@ export function wizardStateFactory({
     ),
   );
   const hasPersonalDeployment = activatedModComponentsForMod?.some(
-    (x) =>
-      x._recipe?.id === modDefinition.metadata.id &&
-      x._deployment?.isPersonalDeployment,
+    (x) => x._deployment?.isPersonalDeployment,
   );
 
   const unconfiguredIntegrationDependencies =
