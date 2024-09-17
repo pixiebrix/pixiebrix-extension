@@ -18,7 +18,7 @@
 import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateMod from "./useActivateMod";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { deactivateMod } from "@/store/deactivateUtils";
@@ -41,8 +41,17 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
+import notify from "@/utils/notify";
+import {
+  type Deployment,
+  type EditablePackageMetadata,
+} from "@/types/contract";
 
 jest.mock("@/contentScript/messenger/api");
+jest.mock("@/utils/notify");
+const mockedNotifyError = jest.mocked(notify.error);
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const deactivateModMock = jest.mocked(deactivateMod);
@@ -109,6 +118,7 @@ function setUserAcceptedPermissions(accepted: boolean) {
 describe("useActivateMod", () => {
   beforeEach(() => {
     reactivateEveryTabMock.mockClear();
+    appApiMock.reset();
   });
 
   it("returns error if permissions are not granted", async () => {
@@ -331,5 +341,194 @@ describe("useActivateMod", () => {
 
     expect(success).toBe(false);
     expect(error).toBe(errorMessage);
+  });
+
+  describe("personal deployment functionality", () => {
+    const packageVersionId = "package-version-id";
+    const testDeployment = {
+      id: uuidv4(),
+      name: "test-user-deployment",
+    } as Deployment;
+    let formValues: WizardValues;
+    let editablePackage: EditablePackageMetadata;
+    let modDefinition: ModDefinition;
+
+    beforeEach(() => {
+      ({ formValues, modDefinition } = setupInputs());
+
+      setModHasPermissions(true);
+      setUserAcceptedPermissions(true);
+
+      editablePackage = editablePackageMetadataFactory({
+        name: modDefinition.metadata.id,
+      });
+    });
+
+    it("handles personal deployment creation successfully", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
+      appApiMock
+        .onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id))
+        .reply(200, [
+          { id: packageVersionId, version: modDefinition.metadata.version },
+        ]);
+      appApiMock.onPost(API_PATHS.USER_DEPLOYMENTS).reply(201, testDeployment);
+
+      const { result, getReduxStore } = renderHook(
+        () => useActivateMod("marketplace"),
+        {
+          setupRedux(_dispatch, { store }) {
+            jest.spyOn(store, "dispatch");
+          },
+        },
+      );
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      const { dispatch } = getReduxStore();
+
+      expect(dispatch).toHaveBeenCalledWith(
+        modComponentSlice.actions.activateMod({
+          modDefinition,
+          configuredDependencies: [],
+          optionsArgs: formValues.optionsArgs,
+          screen: "marketplace",
+          isReactivate: false,
+          deployment: testDeployment,
+        }),
+      );
+
+      expect(
+        JSON.parse(
+          appApiMock.history.post!.find(
+            (request) => request.url === API_PATHS.USER_DEPLOYMENTS,
+          )!.data,
+        ),
+      ).toEqual({
+        package_version: packageVersionId,
+        name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+        services: [],
+        options_config: formValues.optionsArgs,
+      });
+    });
+
+    it("notifies error when personal deployment was not created due to missing package", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
+
+      const { result } = renderHook(() => useActivateMod("marketplace"));
+      await waitForEffect();
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      expect(mockedNotifyError).toHaveBeenCalledWith({
+        message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+        error: new Error(
+          `Failed to find editable package for mod: ${modDefinition.metadata.id}`,
+        ),
+      });
+    });
+
+    it("notifies error when personal deployment was not created due to failed package call", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(500);
+
+      const { result } = renderHook(() => useActivateMod("marketplace"));
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      expect(mockedNotifyError).toHaveBeenCalledWith({
+        message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+        error: expect.objectContaining({
+          message: "Request failed with status code 500",
+        }),
+      });
+    });
+
+    it("notifies error when personal deployment was not created due to missing package version", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
+      appApiMock
+        .onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id))
+        .reply(200, []);
+
+      const { result } = renderHook(() => useActivateMod("marketplace"));
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      expect(mockedNotifyError).toHaveBeenCalledWith({
+        message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+        error: new Error("Failed to find package version: 1.0.0"),
+      });
+    });
+
+    it("notifies error when personal deployment was not created due to failed package versions call", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
+      appApiMock.onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id)).reply(500);
+
+      const { result } = renderHook(() => useActivateMod("marketplace"));
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      expect(mockedNotifyError).toHaveBeenCalledWith({
+        message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+        error: expect.objectContaining({
+          message: "Request failed with status code 500",
+        }),
+      });
+    });
+
+    it("notifies error when personal deployment was not created due to failed deployment call", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
+      appApiMock
+        .onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id))
+        .reply(200, [
+          { id: packageVersionId, version: modDefinition.metadata.version },
+        ]);
+      appApiMock.onPost(API_PATHS.USER_DEPLOYMENTS).reply(500);
+
+      const { result } = renderHook(() => useActivateMod("marketplace"));
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      expect(mockedNotifyError).toHaveBeenCalledWith({
+        message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+        error: expect.objectContaining({
+          message: "Request failed with status code 500",
+        }),
+      });
+    });
   });
 });
