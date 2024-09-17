@@ -30,6 +30,7 @@ import { TimeoutError } from "p-timeout";
 import { isSpecificError } from "@/errors/errorHelpers";
 
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
+const MAX_RETRIES = 3;
 
 const loadSandbox = pMemoize(async () =>
   injectIframe(
@@ -75,7 +76,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
           type,
         }),
       {
-        retries: 3,
+        retries: MAX_RETRIES,
         shouldRetry: (error) =>
           isSpecificError(error, TimeoutError) ||
           isSpecificError(error, SandboxInjectionError),
@@ -87,7 +88,10 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
       },
     );
   } catch (error) {
-    if (isSpecificError(error, TimeoutError)) {
+    if (
+      isSpecificError(error, TimeoutError) ||
+      isSpecificError(error, SandboxInjectionError)
+    ) {
       throw new Error(
         `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
         {
