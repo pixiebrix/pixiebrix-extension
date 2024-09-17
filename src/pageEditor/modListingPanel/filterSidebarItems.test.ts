@@ -16,7 +16,7 @@
  */
 
 import { define } from "cooky-cutter";
-import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
+import { type ModSidebarItem } from "@/pageEditor/modListingPanel/common";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -25,8 +25,9 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { castDraft, produce } from "immer";
 
-const modSidebarItemFactory = define<SidebarItem>({
+const modSidebarItemFactory = define<ModSidebarItem>({
   modMetadata: modMetadataFactory,
   modComponents() {
     return [modComponentFactory(), formStateFactory()];
@@ -49,8 +50,7 @@ describe("filterSidebarItems", () => {
     const sidebarItems = [
       modSidebarItemFactory(),
       modSidebarItemFactory(),
-      formStateFactory(),
-      modComponentFactory(),
+      modSidebarItemFactory(),
     ];
     expect(
       filterSidebarItems({
@@ -81,43 +81,32 @@ describe("filterSidebarItems", () => {
     ).toEqual([sidebarItems[0]]);
   });
 
-  it("returns sidebar items when filter text matches mod label", () => {
-    const sidebarItems = [
-      modComponentFactory({ label: "fOo" }),
-      modSidebarItemFactory({
-        modMetadata: modMetadataFactory({ name: "Bar" }),
-      }),
-    ];
-    expect(
-      filterSidebarItems({
-        sidebarItems,
-        filterText: "fOo",
-        activeModId: null,
-        activeModComponentId: null,
-      }),
-    ).toEqual([sidebarItems[0]]);
-  });
-
   it("returns sidebar items when filter text matches mod component label", () => {
     const sidebarItems = [
       modSidebarItemFactory({
+        modMetadata: modMetadataFactory({ name: "Foo" }),
+      }),
+      modSidebarItemFactory({
+        modMetadata: modMetadataFactory({ name: "Bar" }),
         modComponents: [
-          modComponentFactory({ label: "Foo" }),
-          modComponentFactory({ label: "Bar" }),
-          formStateFactory({
-            formStateConfig: { label: "foo" },
-          }),
+          modComponentFactory({ label: "Baz" }),
+          modComponentFactory({ label: "Quux" }),
         ],
       }),
     ];
+
+    const expected = produce(sidebarItems[1], (draft) => {
+      draft!.modComponents = [castDraft(sidebarItems[1]!.modComponents[1]!)];
+    });
+
     expect(
       filterSidebarItems({
         sidebarItems,
-        filterText: "fOo",
+        filterText: "Quux",
         activeModId: null,
         activeModComponentId: null,
       }),
-    ).toEqual([sidebarItems[0], sidebarItems[2]]);
+    ).toEqual([expected]);
   });
 
   it("does not filter out active mod", () => {

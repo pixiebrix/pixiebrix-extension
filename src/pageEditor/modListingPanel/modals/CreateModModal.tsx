@@ -17,11 +17,11 @@
 
 import React, { useCallback } from "react";
 import {
+  isInnerDefinitionRegistryId,
+  normalizeSemVerString,
   PACKAGE_REGEX,
   testIsSemVerString,
   validateRegistryId,
-  normalizeSemVerString,
-  isInnerDefinitionRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -44,7 +44,6 @@ import Form, {
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { object, string } from "yup";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import {
@@ -59,69 +58,63 @@ import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
 import useIsMounted from "@/hooks/useIsMounted";
 
+/**
+ * Hook to get the initial form state for the Create Mod modal.
+ *
+ * @param activeMod The mod definition fetched from the server for the active mod, if it could be found on the server
+ * @param activeModId The mod id for the active mod, if a mod is selected
+ */
 function useInitialFormState({
-  activeMod,
-  activeModComponentFormState,
+  activeModDefinition,
   activeModId,
 }: {
-  activeModComponentFormState: Nullishable<ModComponentFormState>;
-  activeMod: ModDefinition | null;
+  activeModDefinition?: ModDefinition;
   activeModId?: RegistryId;
-}): ModMetadataFormState | UnknownObject {
+}): ModMetadataFormState {
   const userScope = useSelector(selectScope);
   assertNotNullish(userScope, "Expected userScope to create new mod");
 
-  // For unsaved mods, if the mod metadata has not been modified, it will only exist on the components
   const firstComponentFormStateForActiveMod = useSelector(
     selectFirstModComponentFormStateForActiveMod,
   );
-
   const dirtyModMetadata = useSelector(
     selectDirtyMetadataForModId(activeModId),
   );
   const modMetadata =
+    // If the mod metadata has been edited, it can be found in the dirty metadata state
     dirtyModMetadata ??
-    activeMod?.metadata ??
+    // If an active mod that has been saved to the server already is selected, use its metadata
+    activeModDefinition?.metadata ??
+    // If the mod definition has not been created on the server yet, use the metadata from the first component form state
     firstComponentFormStateForActiveMod?.modMetadata;
 
-  // Handle the "Save As New" case, where an existing mod, or a
-  // mod component within an existing mod, is selected
-  if (modMetadata) {
-    const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
-    let newModId = isUnsavedMod
-      ? // If the mod is a brand new, unsaved mod, generate a new package id
-        generatePackageId(userScope, modMetadata.name)
-      : // If the mod is an existing mod, generate a new package id with the existing mod id and the user's scope
-        generateScopeBrickId(userScope, modMetadata.id);
-    if (newModId === modMetadata.id) {
-      newModId = validateRegistryId(newModId + "-copy");
-    }
+  assertNotNullish(
+    modMetadata,
+    "Cannot find mod metadata in inputs to create new mod",
+  );
 
-    return {
-      id: newModId,
-      name: isUnsavedMod ? modMetadata.name : `${modMetadata.name} (Copy)`,
-      version: isUnsavedMod
-        ? modMetadata.version
-        : normalizeSemVerString("1.0.0"),
-      description: modMetadata.description,
-    };
+  const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
+  let newModId = isUnsavedMod
+    ? // If the mod is a brand new, unsaved mod, generate a new package id
+      generatePackageId(userScope, modMetadata.name)
+    : // If the mod is an existing mod, generate a new package id with the existing mod id and the user's scope
+      generateScopeBrickId(userScope, modMetadata.id);
+  if (newModId === modMetadata.id) {
+    newModId = validateRegistryId(newModId + "-copy");
   }
 
-  // Handle creating a new mod from a selected mod component
-  if (activeModComponentFormState) {
-    return {
-      id: generatePackageId(userScope, activeModComponentFormState.label),
-      name: activeModComponentFormState.label,
-      version: normalizeSemVerString("1.0.0"),
-      description: "Created with the PixieBrix Page Editor",
-    };
-  }
-
-  return {};
+  return {
+    id: newModId,
+    name: isUnsavedMod ? modMetadata.name : `${modMetadata.name} (Copy)`,
+    version: isUnsavedMod
+      ? modMetadata.version
+      : normalizeSemVerString("1.0.0"),
+    description: modMetadata.description,
+  };
 }
 
 function useFormSchema() {
@@ -170,7 +163,7 @@ const CreateModModalBody: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- See above
     directlyActiveModId ?? activeModComponentFormState!.modMetadata!.id;
 
-  const { data: activeMod = null, isFetching: isModFetching } =
+  const { data: activeModDefinition, isFetching: isModFetching } =
     useOptionalModDefinition(activeModId);
 
   const { createModFromUnsavedMod } = useCreateModFromUnsavedMod(activeModId);
@@ -182,19 +175,22 @@ const CreateModModalBody: React.FC = () => {
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
-    activeModComponentFormState,
-    activeMod,
+    activeModDefinition,
     activeModId,
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
+    if (isModFetching) {
+      helpers.setSubmitting(false);
+      return;
+    }
+
     try {
-      // `activeMod` must come first. It's possible that both activeModComponentFormState and activeMod are set because
-      // activeMod will be the mod of the active mod component if in a "Save as New" workflow for an existing mod
-      if (activeMod) {
-        await createModFromMod(activeMod, values);
+      // If the active mod's saved definition could be loaded from the server, we need to use createModFromMod
+      if (activeModDefinition) {
+        await createModFromMod(activeModDefinition, values);
       } else if (activeModId) {
-        // New local mod, definition couldn't be fetched from the server
+        // New local mod, definition couldn't be fetched from the server, so we use createModFromUnsavedMod
         await createModFromUnsavedMod(values);
       } else {
         // Should not happen in practice
