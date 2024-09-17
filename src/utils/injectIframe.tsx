@@ -23,10 +23,7 @@ import { waitForDocumentRoot } from "@/utils/domUtils";
 const TIMEOUT_MS = 5000;
 
 export class SandboxInjectionError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "SandboxInjectionError";
-  }
+  override name = "SandboxInjectionError";
 }
 
 export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
