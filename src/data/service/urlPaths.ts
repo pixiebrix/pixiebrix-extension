@@ -20,20 +20,20 @@ import { type paths } from "@/types/swagger";
 
 // These paths are not included in the swagger definition
 type WebhookPaths = "/api/webhooks/hooks/" | "/api/webhooks/key/";
-type pathsWithQueryParams = `${keyof paths}?${string}`;
+type PathsWithQueryParams = `${keyof paths}?${string}`;
 
 type TemplateStringFromPath<T extends string> = string extends T
   ? string
-  : T extends `${infer Start}{${infer Param}}/${infer Rest}`
+  : T extends `${infer Start}{${string}}/${infer Rest}`
     ? `${Start}${string}/${TemplateStringFromPath<Rest>}`
-    : T extends `${infer Start}{${infer Param}}`
+    : T extends `${infer Start}{${string}}`
       ? `${Start}${string}`
       : T;
 
 type PathsValues = Record<
   string,
   | keyof paths
-  | pathsWithQueryParams
+  | PathsWithQueryParams
   | WebhookPaths
   | ((...args: any[]) => TemplateStringFromPath<keyof paths>)
 >;
