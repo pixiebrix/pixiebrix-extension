@@ -160,8 +160,9 @@ function useActivateMod(
           dispatch,
         );
 
-        // TODO: handle updating a deployment from a previous version to the new version
-        // TODO: handle deleting a deployment if the user turns off personal deployment
+        // TODO: handle updating a deployment from a previous version to the new version and 
+        //  handle deleting a deployment if the user turns off personal deployment
+        //  https://github.com/pixiebrix/pixiebrix-extension/issues/9092
         let createdUserDeployment: Deployment | undefined;
         if (
           formValues.personalDeployment &&
