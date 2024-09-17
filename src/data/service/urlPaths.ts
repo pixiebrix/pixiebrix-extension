@@ -107,4 +107,4 @@ export const UI_PATHS = {
       encodeURIComponent(modId) + (isReactivate ? "?reinstall=1" : "")
     }`,
   WORKSHOP_BRICK: (id: string) => `/workshop/bricks/${id}`,
-};
+} as const;
