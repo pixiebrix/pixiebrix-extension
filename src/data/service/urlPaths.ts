@@ -17,64 +17,47 @@
 
 import type { RegistryId } from "@/types/registryTypes";
 import { type paths } from "@/types/swagger";
-import { type Tagged } from "type-fest";
 
 // These paths are not included in the swagger definition
 type WebhookPaths = "/api/webhooks/hooks/" | "/api/webhooks/key/";
 type pathsWithQueryParams = `${keyof paths}?${string}`;
-type ResolvedUrlPath<P extends keyof paths> = Tagged<string, "resolvedPath", P>;
+
+type TemplateStringFromPath<T extends string> = string extends T
+  ? string
+  : T extends `${infer Start}{${infer Param}}/${infer Rest}`
+    ? `${Start}${string}/${TemplateStringFromPath<Rest>}`
+    : T extends `${infer Start}{${infer Param}}`
+      ? `${Start}${string}`
+      : T;
 
 type PathsValues = Record<
   string,
   | keyof paths
   | pathsWithQueryParams
   | WebhookPaths
-  | ((...args: any[]) => ResolvedUrlPath<keyof paths>)
+  | ((...args: any[]) => TemplateStringFromPath<keyof paths>)
 >;
-
-const fillPathTemplate = <P extends keyof paths>(
-  path: P,
-  values: Record<string, string>,
-): ResolvedUrlPath<P> => {
-  let filledPath: string = path;
-  for (const [key, value] of Object.entries(values)) {
-    filledPath = filledPath.replace(`{${key}}`, value);
-  }
-
-  return filledPath as ResolvedUrlPath<P>;
-};
 
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
-  BRICK: (id: string) => fillPathTemplate("/api/bricks/{id}/", { id }),
-  BRICK_VERSIONS: (id: string) =>
-    fillPathTemplate("/api/bricks/{id}/versions/", { id }),
+  BRICK: (id: string) => `/api/bricks/${id}/`,
+  BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,
 
   DATABASES: "/api/databases/",
   DATABASE_RECORDS: (databaseId: string) =>
-    fillPathTemplate("/api/databases/{database_pk}/records/", {
-      database_pk: databaseId,
-    }),
+    `/api/databases/${databaseId}/records/`,
   DATABASE_RECORD_BY_ID: (databaseId: string, recordId: string) =>
-    fillPathTemplate("/api/databases/{database_pk}/records/{key}/", {
-      database_pk: databaseId,
-      key: recordId,
-    }),
+    `/api/databases/${databaseId}/records/${recordId}/`,
 
   DEPLOYMENTS: "/api/deployments/",
   DEPLOYMENT_ALERTS: (deploymentId: string) =>
-    fillPathTemplate("/api/deployments/{deployment_pk}/alerts/", {
-      deployment_pk: deploymentId,
-    }),
+    `/api/deployments/${deploymentId}/alerts/`,
 
   USER_DEPLOYMENTS: "/api/me/deployments/",
 
   FEATURE_FLAGS: "/api/me/",
 
-  GROUP_DATABASES: (groupId: string) =>
-    fillPathTemplate("/api/groups/{group_pk}/databases/", {
-      group_pk: groupId,
-    }),
+  GROUP_DATABASES: (groupId: string) => `/api/groups/${groupId}/databases/`,
 
   INTEGRATIONS: "/api/services/",
   INTEGRATIONS_SHARED: "/api/services/shared/",
@@ -88,40 +71,26 @@ export const API_PATHS = {
   ME_MILESTONES: "/api/me/milestones/",
   ME_SETTINGS: "/api/settings/",
 
-  MOD: (modId: RegistryId) =>
-    fillPathTemplate("/api/recipes/{name}/", {
-      name: encodeURIComponent(modId),
-    }),
+  MOD: (modId: RegistryId) => `/api/recipes/${encodeURIComponent(modId)}/`,
   MOD_COMPONENTS_ALL: "/api/extensions/",
 
   ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",
 
   ORGANIZATIONS: "/api/organizations/",
   ORGANIZATION_AUTH_URL_PATTERNS: (organizationId: string) =>
-    fillPathTemplate(
-      "/api/organizations/{organization_pk}/auth-url-patterns/",
-      { organization_pk: organizationId },
-    ),
+    `/api/organizations/${organizationId}/auth-url-patterns/`,
   ORGANIZATION_DATABASES: (organizationId: string) =>
-    fillPathTemplate("/api/organizations/{organization_pk}/databases/", {
-      organization_pk: organizationId,
-    }),
+    `/api/organizations/${organizationId}/databases/`,
   ORGANIZATION_GROUPS: (organizationId: string) =>
-    fillPathTemplate("/api/organizations/{organization_pk}/groups/", {
-      organization_pk: organizationId,
-    }),
+    `/api/organizations/${organizationId}/groups/`,
   ORGANIZATION_THEME: (organizationId: string) =>
-    fillPathTemplate("/api/organizations/{organization_id}/theme/", {
-      organization_id: organizationId,
-    }),
+    `/api/organizations/${organizationId}/theme/`,
 
   PROXY: "/api/proxy/",
 
   REGISTRY_BRICKS: "/api/registry/bricks/",
   REGISTRY_BRICK: (id: RegistryId) =>
-    fillPathTemplate("/api/registry/bricks/{name}/", {
-      name: encodeURIComponent(id),
-    }),
+    `/api/registry/bricks/${encodeURIComponent(id)}/`,
   REGISTRY_UPDATES: "/api/registry/updates/",
 
   TELEMETRY_ERRORS: "/api/telemetry/errors/",
