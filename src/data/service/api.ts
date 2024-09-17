@@ -414,7 +414,7 @@ export const appApi = createApi({
       Deployment,
       {
         modDefinition: ModDefinition;
-        data: Exclude<DeploymentPayload, "pacage_version">;
+        data: Exclude<DeploymentPayload, "package_version">;
       }
     >({
       async queryFn(
@@ -428,63 +428,67 @@ export const appApi = createApi({
           }
         | { error: unknown }
       > {
-        try {
-          const {
-            data: editablePackages,
-            error: editablePackagesError,
-            isError: isEditablePackagesError,
-          } = await dispatch(appApi.endpoints.getEditablePackages.initiate());
+        const {
+          data: editablePackages,
+          error: editablePackagesError,
+          isError: isEditablePackagesError,
+        } = await dispatch(appApi.endpoints.getEditablePackages.initiate());
 
-          if (isEditablePackagesError) {
-            return { error: editablePackagesError };
-          }
-
-          const packageId = editablePackages?.find(
-            (x) => x.name === modDefinition.metadata.id,
-          )?.id;
-
-          if (!packageId) {
-            throw new Error(
-              `Failed to find editable package for mod: ${modDefinition.metadata.id}`,
-            );
-          }
-
-          const {
-            data: packageVersions = [],
-            error: packageVersionsError,
-            isError: isPackageVersionsError,
-          } = await dispatch(
-            appApi.endpoints.listPackageVersions.initiate({
-              packageId,
-            }),
-          );
-
-          if (isPackageVersionsError) {
-            return { error: packageVersionsError };
-          }
-
-          const packageVersion = packageVersions.find(
-            (modVersion) =>
-              modVersion.version === modDefinition.metadata.version,
-          );
-
-          if (!packageVersion) {
-            throw new Error("Package version not found");
-          }
-
-          const createDeploymentResult = await baseQuery({
-            url: API_PATHS.USER_DEPLOYMENTS,
-            method: "post",
-            data: {
-              ...data,
-              package_version: packageVersion.id,
-            },
-          });
-
-          return { data: createDeploymentResult.data as Deployment };
-        } catch (error) {
-          return { error };
+        if (isEditablePackagesError) {
+          return { error: editablePackagesError };
         }
+
+        const packageId = editablePackages?.find(
+          (x) => x.name === modDefinition.metadata.id,
+        )?.id;
+
+        if (!packageId) {
+          return {
+            error: new Error(
+              `Failed to find editable package for mod: ${modDefinition.metadata.id}`,
+            ),
+          };
+        }
+
+        const {
+          data: packageVersions = [],
+          error: packageVersionsError,
+          isError: isPackageVersionsError,
+        } = await dispatch(
+          appApi.endpoints.listPackageVersions.initiate({
+            packageId,
+          }),
+        );
+
+        if (isPackageVersionsError) {
+          return { error: packageVersionsError };
+        }
+
+        const packageVersion = packageVersions.find(
+          (modVersion) => modVersion.version === modDefinition.metadata.version,
+        );
+
+        if (!packageVersion) {
+          return {
+            error: new Error(
+              `Failed to find package version: ${modDefinition.metadata.version}`,
+            ),
+          };
+        }
+
+        const createDeploymentResult = await baseQuery({
+          url: API_PATHS.USER_DEPLOYMENTS,
+          method: "post",
+          data: {
+            ...data,
+            package_version: packageVersion.id,
+          },
+        });
+
+        return {
+          ...createDeploymentResult,
+          data: createDeploymentResult.data as Deployment,
+        };
       },
       invalidatesTags: ["Deployments"],
     }),

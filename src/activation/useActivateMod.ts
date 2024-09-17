@@ -36,6 +36,7 @@ import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHel
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { type DeploymentPayload } from "@/types/contract";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import notify from "@/utils/notify";
 
 export type ActivateResult = {
   success: boolean;
@@ -181,7 +182,16 @@ function useActivateMod(
             ),
             options_config: optionsArgs,
           };
-          await createUserDeployment({ modDefinition, data });
+          const result = await createUserDeployment({
+            modDefinition,
+            data,
+          });
+          if ("error" in result && result.error) {
+            notify.error({
+              message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+              error: result.error,
+            });
+          }
         }
 
         reloadModsEveryTab();
