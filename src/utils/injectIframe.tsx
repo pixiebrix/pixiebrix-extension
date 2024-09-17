@@ -20,7 +20,7 @@ import pTimeout from "p-timeout";
 import shadowWrap from "@/utils/shadowWrap";
 import { waitForDocumentRoot } from "@/utils/domUtils";
 
-const TIMEOUT_MS = 3000;
+const TIMEOUT_MS = 5000;
 
 export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
   position: "absolute",
