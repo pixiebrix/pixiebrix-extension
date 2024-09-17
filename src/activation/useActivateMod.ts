@@ -34,7 +34,7 @@ import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
-import { type DeploymentPayload } from "@/types/contract";
+import { type Deployment, type DeploymentPayload } from "@/types/contract";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import notify from "@/utils/notify";
 
@@ -88,9 +88,10 @@ function useActivateMod(
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
-      const isReactivate = activatedModComponents.some(
+      const activeModComponent = activatedModComponents.find(
         (x) => x._recipe?.id === modDefinition.metadata.id,
       );
+      const isReactivate = Boolean(activeModComponent);
 
       if (source === "extensionConsole") {
         // Note: The prefix "Marketplace" on the telemetry event name
@@ -159,17 +160,14 @@ function useActivateMod(
           dispatch,
         );
 
-        dispatch(
-          modComponentSlice.actions.activateMod({
-            modDefinition,
-            configuredDependencies: integrationDependencies,
-            optionsArgs,
-            screen: source,
-            isReactivate: existingModComponents.length > 0,
-          }),
-        );
-
-        if (formValues.personalDeployment) {
+        // TODO: handle updating a deployment from a previous version to the new version
+        // TODO: handle deleting a deployment if the user turns off personal deployment
+        let createdUserDeployment: Deployment | undefined;
+        if (
+          formValues.personalDeployment &&
+          // Avoid creating a personal deployment if the mod already has one
+          !activeModComponent?._deployment?.isPersonalDeployment
+        ) {
           const data: DeploymentPayload = {
             name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
             services: integrationDependencies.flatMap(
@@ -186,13 +184,27 @@ function useActivateMod(
             modDefinition,
             data,
           });
-          if ("error" in result && result.error) {
+
+          if ("error" in result) {
             notify.error({
               message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
               error: result.error,
             });
+          } else {
+            createdUserDeployment = result.data;
           }
         }
+
+        dispatch(
+          modComponentSlice.actions.activateMod({
+            modDefinition,
+            configuredDependencies: integrationDependencies,
+            optionsArgs,
+            screen: source,
+            isReactivate: existingModComponents.length > 0,
+            deployment: createdUserDeployment,
+          }),
+        );
 
         reloadModsEveryTab();
       } catch (error) {

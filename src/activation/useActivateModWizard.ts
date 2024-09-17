@@ -118,6 +118,12 @@ export function wizardStateFactory({
       ({ integrationId, configId }) => [integrationId, configId],
     ),
   );
+  const hasPersonalDeployment = activatedModComponentsForMod?.some(
+    (x) =>
+      x._recipe?.id === modDefinition.metadata.id &&
+      x._deployment?.isPersonalDeployment,
+  );
+
   const unconfiguredIntegrationDependencies =
     getUnconfiguredComponentIntegrations(modDefinition);
   const integrationDependencies = unconfiguredIntegrationDependencies.map(
@@ -188,7 +194,7 @@ export function wizardStateFactory({
         return forcePrimitive(optionSchema.default);
       },
     ),
-    personalDeployment: false,
+    personalDeployment: hasPersonalDeployment,
   };
 
   const validationSchema = Yup.object().shape({

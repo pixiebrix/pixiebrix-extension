@@ -18,7 +18,7 @@
 import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateMod from "./useActivateMod";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { deactivateMod } from "@/store/deactivateUtils";
@@ -44,7 +44,10 @@ import { API_PATHS } from "@/data/service/urlPaths";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 import notify from "@/utils/notify";
-import { type EditablePackageMetadata } from "@/types/contract";
+import {
+  type Deployment,
+  type EditablePackageMetadata,
+} from "@/types/contract";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/utils/notify");
@@ -342,7 +345,10 @@ describe("useActivateMod", () => {
 
   describe("personal deployment functionality", () => {
     const packageVersionId = "package-version-id";
-    const deploymentId = "deployment-id";
+    const testDeployment = {
+      id: uuidv4(),
+      name: "test-user-deployment",
+    } as Deployment;
     let formValues: WizardValues;
     let editablePackage: EditablePackageMetadata;
     let modDefinition: ModDefinition;
@@ -365,9 +371,7 @@ describe("useActivateMod", () => {
         .reply(200, [
           { id: packageVersionId, version: modDefinition.metadata.version },
         ]);
-      appApiMock
-        .onPost(API_PATHS.USER_DEPLOYMENTS)
-        .reply(201, { id: deploymentId });
+      appApiMock.onPost(API_PATHS.USER_DEPLOYMENTS).reply(201, testDeployment);
 
       const { result, getReduxStore } = renderHook(
         () => useActivateMod("marketplace"),
@@ -377,7 +381,6 @@ describe("useActivateMod", () => {
           },
         },
       );
-      await waitForEffect();
 
       const { success, error } = await result.current(
         { ...formValues, personalDeployment: true },
@@ -396,6 +399,7 @@ describe("useActivateMod", () => {
           optionsArgs: formValues.optionsArgs,
           screen: "marketplace",
           isReactivate: false,
+          deployment: testDeployment,
         }),
       );
 
@@ -439,7 +443,6 @@ describe("useActivateMod", () => {
       appApiMock.onGet(API_PATHS.BRICKS).reply(500);
 
       const { result } = renderHook(() => useActivateMod("marketplace"));
-      await waitForEffect();
 
       const { success, error } = await result.current(
         { ...formValues, personalDeployment: true },
@@ -464,7 +467,6 @@ describe("useActivateMod", () => {
         .reply(200, []);
 
       const { result } = renderHook(() => useActivateMod("marketplace"));
-      await waitForEffect();
 
       const { success, error } = await result.current(
         { ...formValues, personalDeployment: true },
@@ -485,7 +487,6 @@ describe("useActivateMod", () => {
       appApiMock.onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id)).reply(500);
 
       const { result } = renderHook(() => useActivateMod("marketplace"));
-      await waitForEffect();
 
       const { success, error } = await result.current(
         { ...formValues, personalDeployment: true },
@@ -513,7 +514,6 @@ describe("useActivateMod", () => {
       appApiMock.onPost(API_PATHS.USER_DEPLOYMENTS).reply(500);
 
       const { result } = renderHook(() => useActivateMod("marketplace"));
-      await waitForEffect();
 
       const { success, error } = await result.current(
         { ...formValues, personalDeployment: true },
