@@ -40,7 +40,10 @@ export class Brick extends BasePageObject {
 export class BrickActionsPanel extends BasePageObject {
   removeBrickButton = this.getByTestId("icon-button-removeNode");
   copyBrickButton = this.getByTestId("icon-button-copyNode");
-  bricks = this.getByTestId("editor-node");
+
+  get bricks() {
+    return this.getByTestId("editor-node");
+  }
 
   getAddBrickButton(n: number) {
     return this.getByTestId(/icon-button-.*-add-brick/).nth(n);

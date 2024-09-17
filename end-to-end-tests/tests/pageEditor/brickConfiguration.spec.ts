@@ -21,7 +21,8 @@ import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
 import { type ConfigurationForm } from "../../pageObjects/pageEditor/configurationForm";
-import { type ModListItem } from "../../pageObjects/pageEditor/modListingPanel";
+
+import { type ModListItem } from "../../pageObjects/pageEditor/modListItem";
 
 const testModDefinitionName = "brick-configuration";
 test.use({ modDefinitionNames: [testModDefinitionName] });
@@ -130,7 +131,7 @@ test("brick configuration", async ({
 
   await test.step("Save the mod and verify the mod definition snapshot", async () => {
     await modListItem.select();
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
 
     await verifyModDefinitionSnapshot({
       modId,

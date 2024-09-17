@@ -19,6 +19,7 @@ import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   DEACTIVATE_MOD_MODAL_PROPS,
+  DELETE_NEW_UNSAVED_MOD_MODAL_PROPS,
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,6 +34,7 @@ import { clearLog } from "@/background/messenger/api";
 type Config = {
   modId: RegistryId;
   shouldShowConfirmation?: boolean;
+  isDelete?: boolean;
 };
 
 /**
@@ -46,9 +48,13 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ modId, shouldShowConfirmation = true }) => {
+    async ({ modId, shouldShowConfirmation = true, isDelete = false }) => {
       if (shouldShowConfirmation) {
-        const confirmed = await showConfirmation(DEACTIVATE_MOD_MODAL_PROPS);
+        const confirmed = await showConfirmation(
+          isDelete
+            ? DELETE_NEW_UNSAVED_MOD_MODAL_PROPS
+            : DEACTIVATE_MOD_MODAL_PROPS,
+        );
 
         if (!confirmed) {
           return;

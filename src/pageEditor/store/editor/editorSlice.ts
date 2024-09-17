@@ -120,51 +120,6 @@ export const initialState: EditorState = {
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
-const duplicateActiveModComponent = createAsyncThunk<
-  void,
-  { modMetadata?: ModMetadata } | void,
-  { state: EditorRootState & ModComponentsRootState }
->("editor/cloneActiveModComponent", async (args, thunkAPI) => {
-  const { modMetadata } = args ?? {};
-  const state = thunkAPI.getState();
-  const newActiveModComponentFormState = await produce(
-    selectActiveModComponentFormState(state),
-    async (draft) => {
-      assertNotNullish(draft, "Active mod component form state not found");
-      draft.uuid = uuidv4();
-      draft.label += " (Copy)";
-      // Re-generate instance IDs for all the bricks in the mod component
-      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
-        draft.modComponent.brickPipeline,
-      );
-
-      if (modMetadata != null) {
-        draft.modMetadata = modMetadata;
-        const componentFormStateOfDestinationMod =
-          state.editor.modComponentFormStates.find(
-            (formState) => formState.modMetadata?.id === modMetadata.id,
-          );
-        if (componentFormStateOfDestinationMod == null) {
-          return;
-        }
-
-        draft.optionsDefinition = castDraft(
-          componentFormStateOfDestinationMod.optionsDefinition,
-        );
-        draft.optionsArgs = componentFormStateOfDestinationMod.optionsArgs;
-      }
-    },
-  );
-  assertNotNullish(
-    newActiveModComponentFormState,
-    "New active mod component form state not found",
-  );
-  thunkAPI.dispatch(
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
-    actions.addModComponentFormState(newActiveModComponentFormState),
-  );
-});
-
 type AvailableActivatedModComponents = {
   availableActivatedModComponentIds: UUID[];
 };
@@ -319,6 +274,49 @@ const checkActiveModComponentAvailability = createAsyncThunk<
   return {
     availableDraftModComponentIds,
   };
+});
+
+const duplicateActiveModComponent = createAsyncThunk<
+  ModComponentFormState,
+  { modMetadata?: ModMetadata } | void,
+  { state: EditorRootState & ModComponentsRootState }
+>("editor/cloneActiveModComponent", async (args, thunkAPI) => {
+  const { modMetadata } = args ?? {};
+  const state = thunkAPI.getState();
+  const newActiveModComponentFormState = await produce(
+    selectActiveModComponentFormState(state),
+    async (draft) => {
+      assertNotNullish(draft, "Active mod component form state not found");
+      draft.uuid = uuidv4();
+      draft.label += " (Copy)";
+      // Re-generate instance IDs for all the bricks in the mod component
+      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+        draft.modComponent.brickPipeline,
+      );
+
+      if (modMetadata != null) {
+        draft.modMetadata = modMetadata;
+        const componentFormStateOfDestinationMod =
+          state.editor.modComponentFormStates.find(
+            (formState) => formState.modMetadata?.id === modMetadata.id,
+          );
+        if (componentFormStateOfDestinationMod == null) {
+          return;
+        }
+
+        draft.optionsDefinition = castDraft(
+          componentFormStateOfDestinationMod.optionsDefinition,
+        );
+        draft.optionsArgs = componentFormStateOfDestinationMod.optionsArgs;
+      }
+    },
+  );
+  assertNotNullish(
+    newActiveModComponentFormState,
+    "New active mod component form state not found",
+  );
+  void thunkAPI.dispatch(checkActiveModComponentAvailability());
+  return newActiveModComponentFormState;
 });
 
 export const editorSlice = createSlice({
@@ -950,7 +948,16 @@ export const editorSlice = createSlice({
           ...state,
           availableDraftModComponentIds,
         }),
-      );
+      )
+      .addCase(duplicateActiveModComponent.fulfilled, (state, { payload }) => {
+        state.modComponentFormStates.push(castDraft(payload));
+        state.dirty[payload.uuid] = true;
+        setActiveModComponentId(state, payload);
+      })
+      .addCase(duplicateActiveModComponent.rejected, (state, { error }) => {
+        state.error = serializeError(error);
+        reportError(error);
+      });
   },
 });
 /* eslint-enable security/detect-object-injection  */

@@ -16,6 +16,7 @@
  */
 
 import { type BasePageObject } from "../basePageObject";
+import { type StarterBrickUIName } from "./types";
 
 type AsyncFunction<T> = (...args: any[]) => Promise<T>;
 
@@ -32,4 +33,35 @@ export function ModifiesModFormState<T>(
     await this.page.waitForTimeout(615);
     return result;
   };
+}
+
+export function getInitialModNameForStarterBrick(
+  starterBrickName: StarterBrickUIName,
+): RegExp {
+  switch (starterBrickName) {
+    case "Context Menu": {
+      return /Context menu item/;
+    }
+
+    case "Trigger": {
+      return /My .* trigger/;
+    }
+
+    case "Quick Bar Action": {
+      return /Quick Bar item/;
+    }
+
+    case "Dynamic Quick Bar": {
+      return /Dynamic Quick Bar item/;
+    }
+
+    case "Sidebar Panel": {
+      return /Sidebar Panel item/;
+    }
+
+    default: {
+      // eslint-disable-next-line security/detect-non-literal-regexp -- Constructed from constant strings, not user input
+      return new RegExp(`My .* ${starterBrickName}`);
+    }
+  }
 }

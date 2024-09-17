@@ -54,7 +54,7 @@ type DraftModComponentListItemProps = {
 };
 
 /**
- * A sidebar menu entry corresponding to a touched mod component
+ * A page editor sidebar menu entry corresponding to a touched mod component
  * @see ActivatedModComponentListItem
  * @see ModComponentListItem
  */
@@ -148,7 +148,7 @@ const DraftModComponentListItem: React.FunctionComponent<
           <NotAvailableIcon />
         </span>
       )}
-      {isDirty && !isActive && (
+      {isDirty && (
         <span className={cx(styles.icon, styles.unsaved, "text-danger")}>
           <UnsavedChangesIcon />
         </span>

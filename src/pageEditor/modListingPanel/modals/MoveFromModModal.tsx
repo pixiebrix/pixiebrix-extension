@@ -158,10 +158,16 @@ const MoveFromModModal: React.FC = () => {
   return (
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
-        <Modal.Title>
-          Move <em>{modComponentFormState?.label}</em> from mod{" "}
-          <em>{modComponentFormState?.modMetadata?.name}</em>?
-        </Modal.Title>
+        {keepLocalCopy ? (
+          <Modal.Title>
+            Copy <em>{modComponentFormState?.label}</em> to another Mod?
+          </Modal.Title>
+        ) : (
+          <Modal.Title>
+            Move <em>{modComponentFormState?.label}</em> from mod{" "}
+            <em>{modComponentFormState?.modMetadata?.name}</em>?
+          </Modal.Title>
+        )}
       </Modal.Header>
       <Form
         initialValues={initialFormState}

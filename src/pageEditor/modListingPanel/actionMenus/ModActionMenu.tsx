@@ -105,7 +105,7 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
       icon: (
         <FontAwesomeIcon icon={isUnsavedMod ? faTrash : faTimes} fixedWidth />
       ),
-      action: async () => deactivateMod({ modId }),
+      action: async () => deactivateMod({ modId, isDelete: isUnsavedMod }),
       disabled: isSavingMod,
     },
   ];

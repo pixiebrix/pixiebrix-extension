@@ -53,8 +53,9 @@ test("brick actions panel behavior", async ({
   });
 
   const { brickActionsPanel } = pageEditorPage!;
+  const modName = "Mod Actions Test";
   const modListItem =
-    pageEditorPage!.modListingPanel.getModListItemByName("Mod Actions Test");
+    pageEditorPage!.modListingPanel.getModListItemByName(modName);
 
   await test.step("Select the mod in the page editor and verify brick actions panel is hidden", async () => {
     await modListItem.select();
@@ -63,7 +64,7 @@ test("brick actions panel behavior", async ({
 
   await test.step("Select the starter brick and verify brick actions panel is visible", async () => {
     const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
-      "Mod Actions Test",
+      modName,
       "Button",
     );
     await testStarterBrick.select();
@@ -73,9 +74,9 @@ test("brick actions panel behavior", async ({
   await test.step("Add a new brick", async () => {
     await brickActionsPanel.addBrick("Set Mod Variable", { index: 1 });
     await modListItem.select();
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
-      .getModStarterBrick("Mod Actions Test", "Button")
+      .getModStarterBrick(modName, "Button")
       .select();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-added" });
   });
@@ -84,9 +85,9 @@ test("brick actions panel behavior", async ({
     await brickActionsPanel.getBrickByName("Set Mod Variable").select();
     await brickActionsPanel.removeBrickButton.click();
     await modListItem.select();
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
-      .getModStarterBrick("Mod Actions Test", "Button")
+      .getModStarterBrick(modName, "Button")
       .select();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-removed" });
   });
@@ -98,9 +99,9 @@ test("brick actions panel behavior", async ({
     await brickActionsPanel.pasteBrick(1);
     await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
     await modListItem.select();
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
-      .getModStarterBrick("Mod Actions Test", "Button")
+      .getModStarterBrick(modName, "Button")
       .select();
     await verifyModDefinitionSnapshot({
       modId,
@@ -112,37 +113,34 @@ test("brick actions panel behavior", async ({
     await brickActionsPanel.getBrickByName("Custom Modal").moveDown();
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").moveUp();
     await modListItem.select();
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
-      .getModStarterBrick("Mod Actions Test", "Button")
+      .getModStarterBrick(modName, "Button")
       .select();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "bricks-moved" });
   });
 
   await test.step("Copy a brick from one mod to another", async () => {
-    const targetModId = modDefinitionsMap[otherTestMod]!.id;
+    const otherModId = modDefinitionsMap[otherTestMod]!.id;
 
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").select();
     await brickActionsPanel.copyActiveBrick();
 
     // Switch to the other mod, and select its starter brick
+    const otherModName = "Simple Sidebar Panel";
     const otherModListItem =
-      pageEditorPage.modListingPanel.getModListItemByName(
-        "Simple Sidebar Panel",
-      );
+      pageEditorPage.modListingPanel.getModListItemByName(otherModName);
     await otherModListItem.select();
     await pageEditorPage.modListingPanel
-      .getModStarterBrick("Simple Sidebar Panel", "Simple Sidebar Panel")
+      .getModStarterBrick(otherModName, otherModName) // Starter brick has the same name as the mod
       .select();
 
     await brickActionsPanel.pasteBrick(1);
     await otherModListItem.select();
-    await pageEditorPage.saveActiveMod();
-    await pageEditorPage.modListingPanel
-      .getModStarterBrick("Simple Sidebar Panel", "Simple Sidebar Panel")
-      .select();
+    await pageEditorPage.saveExistingMod(otherModName);
+
     await verifyModDefinitionSnapshot({
-      modId: targetModId,
+      modId: otherModId,
       snapshotName: "brick-copied-to-another-mod",
       mode: "current",
     });

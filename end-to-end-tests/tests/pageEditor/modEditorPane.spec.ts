@@ -32,6 +32,7 @@ test("mod editor pane behavior", async ({
 }) => {
   const { id: modId } = modDefinitionsMap[testModDefinitionName]!;
   let pageEditorPage: PageEditorPage;
+  const modName = "Simple Sidebar Panel";
 
   await test.step("Activate mod, and initialize page editor", async () => {
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -47,9 +48,8 @@ test("mod editor pane behavior", async ({
     // The mod editor pane should be hidden initially
     await expect(modEditorPane.root).toBeHidden();
 
-    const modListItem = pageEditorPage.modListingPanel.getModListItemByName(
-      "Simple Sidebar Panel",
-    );
+    const modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await expect(modEditorPane.editMetadataTabPanel.modId).toHaveValue(modId);
   });
@@ -64,7 +64,7 @@ test("mod editor pane behavior", async ({
       "description",
       "Created with the PixieBrix Page Editor (updated)",
     );
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "updated-metadata",
@@ -97,7 +97,7 @@ test("mod editor pane behavior", async ({
       "test label",
       "some real value",
     );
-    await pageEditorPage.saveActiveMod();
+    await pageEditorPage.saveExistingMod(modName);
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "updated-inputs",

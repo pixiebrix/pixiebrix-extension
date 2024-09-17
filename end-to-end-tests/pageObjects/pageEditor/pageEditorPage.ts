@@ -21,15 +21,19 @@ import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
-import { ModListingPanel, type StarterBrickUIName } from "./modListingPanel";
+import { ModListingPanel } from "./modListingPanel";
 import { BrickActionsPanel } from "./brickActionsPanel";
 import { ConfigurationForm } from "./configurationForm";
 import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
-import { ModifiesModFormState } from "./utils";
+import {
+  getInitialModNameForStarterBrick,
+  ModifiesModFormState,
+} from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 import { uuidv4 } from "@/types/helpers";
+import { type StarterBrickUIName } from "./types";
 
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });
@@ -116,11 +120,12 @@ export class PageEditorPage extends BasePageObject {
   /**
    * Save the current active mod. Prefer saveStandaloneMod for standalone mods.
    */
-  async saveActiveMod() {
+  async saveExistingMod(modName: string) {
     // TODO: this method is currently meant for mods that aren't meant to be
     //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
     //  mods, with an option to avoid cleanup for certain mods.
-    const { saveButton } = this.modListingPanel.activeModListItem;
+    const modListItem = this.modListingPanel.getModListItemByName(modName);
+    const { saveButton } = modListItem;
     // If you encounter this timeout, make sure you are selecting a Mod list
     // item in the mod listing panel (not a mod component) before calling this function
     await saveButton.waitFor({ state: "visible", timeout: 1000 });
@@ -150,7 +155,7 @@ export class PageEditorPage extends BasePageObject {
 
     await modListItem.menuButton.click();
     const actionMenu = modListItem.modActionMenu;
-    await actionMenu.copyButton.click();
+    await actionMenu.copyOption.click();
 
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.copyMod(modName, modUuid);
@@ -164,7 +169,7 @@ export class PageEditorPage extends BasePageObject {
 
     await modListItem.menuButton.click();
     const actionMenu = modListItem.modActionMenu;
-    await actionMenu.deactivateButton.click();
+    await actionMenu.deactivateOption.click();
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
     await deactivateModModal.deactivateButton.click();
@@ -249,39 +254,7 @@ export class PageEditorPage extends BasePageObject {
     modComponentName: string;
   }> {
     const modUuid = uuidv4();
-    let initialModName: RegExp;
-    switch (starterBrickName) {
-      case "Context Menu": {
-        initialModName = /Context menu item/;
-        break;
-      }
-
-      case "Trigger": {
-        initialModName = /My .* trigger/;
-        break;
-      }
-
-      case "Quick Bar Action": {
-        initialModName = /Quick Bar item/;
-        break;
-      }
-
-      case "Dynamic Quick Bar": {
-        initialModName = /Dynamic Quick Bar item/;
-        break;
-      }
-
-      case "Sidebar Panel": {
-        initialModName = /Sidebar Panel item/;
-        break;
-      }
-
-      default: {
-        // eslint-disable-next-line security/detect-non-literal-regexp -- Constructed from constant strings, not user input
-        initialModName = new RegExp(`My .* ${starterBrickName}`);
-        break;
-      }
-    }
+    const initialModName = getInitialModNameForStarterBrick(starterBrickName);
 
     const modName = `Test Mod created with ${starterBrickName}`;
     const modComponentName = `Test ${starterBrickName} ${modUuid}`;
