@@ -31,7 +31,7 @@ import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { type ActivateModsResult } from "@/background/welcomeMods";
-import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
+import { UI_PATHS } from "@/data/service/urlPaths";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
