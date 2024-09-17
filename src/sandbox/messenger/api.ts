@@ -40,7 +40,7 @@ const loadSandbox = pMemoize(async () =>
 );
 
 const getSandbox = memoizeUntilSettled(async () => {
-  let sandbox = await loadSandbox();
+  const sandbox = await loadSandbox();
   const isSandboxWrapperInDom = document.querySelector(
     `#${SANDBOX_SHADOW_ROOT_ID}`,
   );
@@ -52,9 +52,8 @@ const getSandbox = memoizeUntilSettled(async () => {
       type: "SANDBOX_PING",
     });
   } else {
-    console.warn("Sandbox iframe was removed from the DOM. Reinjecting...");
     pMemoizeClear(loadSandbox);
-    sandbox = await loadSandbox();
+    throw new SandboxInjectionError("Sandbox iframe was removed from the DOM.");
   }
 
   return sandbox.contentWindow;
