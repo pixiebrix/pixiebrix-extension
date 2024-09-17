@@ -16,27 +16,65 @@
  */
 
 import type { RegistryId } from "@/types/registryTypes";
+import { type paths } from "@/types/swagger";
+import { type Tagged } from "type-fest";
+
+// These paths are not included in the swagger definition
+type WebhookPaths = "/api/webhooks/hooks/" | "/api/webhooks/key/";
+type pathsWithQueryParams = `${keyof paths}?${string}`;
+type ResolvedUrlPath<P extends keyof paths> = Tagged<string, "resolvedPath", P>;
+
+type PathsValues = Record<
+  string,
+  | keyof paths
+  | pathsWithQueryParams
+  | WebhookPaths
+  | ((...args: any[]) => ResolvedUrlPath<keyof paths>)
+>;
+
+const fillPathTemplate = <P extends keyof paths>(
+  path: P,
+  values: Record<string, string>,
+): ResolvedUrlPath<P> => {
+  let filledPath: string = path;
+  for (const [key, value] of Object.entries(values)) {
+    filledPath = filledPath.replace(`{${key}}`, value);
+  }
+
+  return filledPath as ResolvedUrlPath<P>;
+};
 
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
-  BRICK: (id: string) => `/api/bricks/${id}/`,
-  BRICK_MATCH_ANY: /api\/bricks\/[\w-]*\/$/,
-  BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,
-  BRICK_VERSION_MATCH_ANY: /api\/bricks\/[\w-]*\/versions\/$/,
+  BRICK: (id: string) => fillPathTemplate("/api/bricks/{id}/", { id }),
+  BRICK_VERSIONS: (id: string) =>
+    fillPathTemplate("/api/bricks/{id}/versions/", { id }),
 
   DATABASES: "/api/databases/",
   DATABASE_RECORDS: (databaseId: string) =>
-    `/api/databases/${databaseId}/records/`,
+    fillPathTemplate("/api/databases/{database_pk}/records/", {
+      database_pk: databaseId,
+    }),
   DATABASE_RECORD_BY_ID: (databaseId: string, recordId: string) =>
-    `/api/databases/${databaseId}/records/${recordId}/`,
+    fillPathTemplate("/api/databases/{database_pk}/records/{key}/", {
+      database_pk: databaseId,
+      key: recordId,
+    }),
 
   DEPLOYMENTS: "/api/deployments/",
   DEPLOYMENT_ALERTS: (deploymentId: string) =>
-    `/api/deployments/${deploymentId}/alerts/`,
+    fillPathTemplate("/api/deployments/{deployment_pk}/alerts/", {
+      deployment_pk: deploymentId,
+    }),
+
+  USER_DEPLOYMENTS: "/api/me/deployments/",
 
   FEATURE_FLAGS: "/api/me/",
 
-  GROUP_DATABASES: (groupId: string) => `/api/groups/${groupId}/databases/`,
+  GROUP_DATABASES: (groupId: string) =>
+    fillPathTemplate("/api/groups/{group_pk}/databases/", {
+      group_pk: groupId,
+    }),
 
   INTEGRATIONS: "/api/services/",
   INTEGRATIONS_SHARED: "/api/services/shared/",
@@ -50,30 +88,40 @@ export const API_PATHS = {
   ME_MILESTONES: "/api/me/milestones/",
   ME_SETTINGS: "/api/settings/",
 
-  MOD: (modId: RegistryId) => `/api/recipes/${encodeURIComponent(modId)}/`,
-  MOD_ACTIVATE: (modId: RegistryId, isReactivate?: boolean) =>
-    `marketplace/activate/${
-      encodeURIComponent(modId) + (isReactivate ? "?reinstall=1" : "")
-    }`,
+  MOD: (modId: RegistryId) =>
+    fillPathTemplate("/api/recipes/{name}/", {
+      name: encodeURIComponent(modId),
+    }),
   MOD_COMPONENTS_ALL: "/api/extensions/",
 
   ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",
 
   ORGANIZATIONS: "/api/organizations/",
   ORGANIZATION_AUTH_URL_PATTERNS: (organizationId: string) =>
-    `/api/organizations/${organizationId}/auth-url-patterns/`,
+    fillPathTemplate(
+      "/api/organizations/{organization_pk}/auth-url-patterns/",
+      { organization_pk: organizationId },
+    ),
   ORGANIZATION_DATABASES: (organizationId: string) =>
-    `/api/organizations/${organizationId}/databases/`,
+    fillPathTemplate("/api/organizations/{organization_pk}/databases/", {
+      organization_pk: organizationId,
+    }),
   ORGANIZATION_GROUPS: (organizationId: string) =>
-    `/api/organizations/${organizationId}/groups/`,
+    fillPathTemplate("/api/organizations/{organization_pk}/groups/", {
+      organization_pk: organizationId,
+    }),
   ORGANIZATION_THEME: (organizationId: string) =>
-    `/api/organizations/${organizationId}/theme/`,
+    fillPathTemplate("/api/organizations/{organization_id}/theme/", {
+      organization_id: organizationId,
+    }),
 
   PROXY: "/api/proxy/",
 
   REGISTRY_BRICKS: "/api/registry/bricks/",
   REGISTRY_BRICK: (id: RegistryId) =>
-    `/api/registry/bricks/${encodeURIComponent(id)}/`,
+    fillPathTemplate("/api/registry/bricks/{name}/", {
+      name: encodeURIComponent(id),
+    }),
   REGISTRY_UPDATES: "/api/registry/updates/",
 
   TELEMETRY_ERRORS: "/api/telemetry/errors/",
@@ -82,6 +130,12 @@ export const API_PATHS = {
 
   WEBHOOKS: "/api/webhooks/hooks/",
   WEBHOOKS_KEY: "/api/webhooks/key/",
+} as const satisfies PathsValues;
 
+export const UI_PATHS = {
+  MOD_ACTIVATE: (modId: RegistryId, isReactivate?: boolean) =>
+    `marketplace/activate/${
+      encodeURIComponent(modId) + (isReactivate ? "?reinstall=1" : "")
+    }`,
   WORKSHOP_BRICK: (id: string) => `/workshop/bricks/${id}`,
 };

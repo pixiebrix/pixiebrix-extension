@@ -31,7 +31,7 @@ import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { type ActivateModsResult } from "@/background/welcomeMods";
-import { API_PATHS } from "@/data/service/urlPaths";
+import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
@@ -193,7 +193,7 @@ export async function openActivateModPage({
     redirectUrl ??
     // For extension console activation, only support a single mod id
     // TODO: support passing options to the Extension Console activation page
-    getExtensionConsoleUrl(API_PATHS.MOD_ACTIVATE(firstMod.modId));
+    getExtensionConsoleUrl(UI_PATHS.MOD_ACTIVATE(firstMod.modId));
 
   if (newTab) {
     await browser.tabs.create({ url });

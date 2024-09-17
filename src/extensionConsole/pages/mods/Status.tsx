@@ -33,7 +33,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
 import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
-import { API_PATHS } from "@/data/service/urlPaths";
+import { UI_PATHS } from "@/data/service/urlPaths";
 import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
 
 const Status: React.VoidFunctionComponent<{
@@ -83,7 +83,7 @@ const Status: React.VoidFunctionComponent<{
             screen: "extensionConsole",
             reinstall: false,
           });
-          history.push(API_PATHS.MOD_ACTIVATE(modId));
+          history.push(UI_PATHS.MOD_ACTIVATE(modId));
         }}
       >
         Activate
@@ -105,7 +105,7 @@ const Status: React.VoidFunctionComponent<{
             screen: "extensionConsole",
             reinstall: true,
           });
-          history.push(API_PATHS.MOD_ACTIVATE(modId, true));
+          history.push(UI_PATHS.MOD_ACTIVATE(modId, true));
         }}
       >
         Update
