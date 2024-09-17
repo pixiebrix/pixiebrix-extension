@@ -19,7 +19,7 @@
 
 import injectIframe, {
   hiddenIframeStyle,
-  SandboxInjectionError,
+  IframeInjectionError,
 } from "@/utils/injectIframe";
 import postMessage, { type Payload } from "@/utils/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
@@ -54,7 +54,7 @@ const getSandbox = memoizeUntilSettled(async () => {
     });
   } else {
     pMemoizeClear(loadSandbox);
-    throw new SandboxInjectionError("Sandbox iframe was removed from the DOM.");
+    throw new IframeInjectionError("Sandbox iframe was removed from the DOM.");
   }
 
   return sandbox.contentWindow;
@@ -79,7 +79,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         retries: MAX_RETRIES,
         shouldRetry: (error) =>
           isSpecificError(error, TimeoutError) ||
-          isSpecificError(error, SandboxInjectionError),
+          isSpecificError(error, IframeInjectionError),
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
@@ -90,7 +90,7 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
   } catch (error) {
     if (
       isSpecificError(error, TimeoutError) ||
-      isSpecificError(error, SandboxInjectionError)
+      isSpecificError(error, IframeInjectionError)
     ) {
       throw new Error(
         `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
