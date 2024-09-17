@@ -71,6 +71,12 @@ const MoveFromModModal: React.FC = () => {
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
+  /**
+   * The modId input here will always either be the NEW_MOD_ID placeholder,
+   * or the ID of an existing mod in the mod metadatas in the activated mod
+   * components, because that is what is used to create the form field dropdown,
+   * which is where the submit value comes from.
+   */
   const onSubmit = useCallback<OnSubmit<Required<FormState>>>(
     async ({ modId }, helpers) => {
       assertNotNullish(
@@ -80,7 +86,7 @@ const MoveFromModModal: React.FC = () => {
       const modMetadata =
         modId === NEW_MOD_ID
           ? getUnsavedModMetadataForFormState(modComponentFormState)
-          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Field options created from the same set
+          : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Mod metadata must either be new or found in the activated mod metadatas
             activatedModMetadatas.find((metadata) => metadata.id === modId)!;
       try {
         const modComponentId = modComponentFormState?.uuid;

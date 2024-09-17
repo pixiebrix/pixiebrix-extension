@@ -281,7 +281,7 @@ const duplicateActiveModComponent = createAsyncThunk<
   { modMetadata?: ModMetadata } | void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/cloneActiveModComponent", async (args, thunkAPI) => {
-  const { modMetadata } = args ?? {};
+  const { modMetadata: modMetadataToUseForDuplicate } = args ?? {};
   const state = thunkAPI.getState();
   const newActiveModComponentFormState = await produce(
     selectActiveModComponentFormState(state),
@@ -294,11 +294,12 @@ const duplicateActiveModComponent = createAsyncThunk<
         draft.modComponent.brickPipeline,
       );
 
-      if (modMetadata != null) {
-        draft.modMetadata = modMetadata;
+      if (modMetadataToUseForDuplicate != null) {
+        draft.modMetadata = modMetadataToUseForDuplicate;
         const componentFormStateOfDestinationMod =
           state.editor.modComponentFormStates.find(
-            (formState) => formState.modMetadata?.id === modMetadata.id,
+            (formState) =>
+              formState.modMetadata?.id === modMetadataToUseForDuplicate.id,
           );
         if (componentFormStateOfDestinationMod == null) {
           return;
