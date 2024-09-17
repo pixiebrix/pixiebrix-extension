@@ -24,18 +24,11 @@ import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import {
-  queueReloadModEveryTab,
-  reloadModsEveryTab,
-} from "@/contentScript/messenger/api";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
 import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import {
-  getModComponentState,
-  saveModComponentState,
-} from "@/store/modComponents/modComponentStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { expectContext } from "@/utils/expectContext";
 import {
   getSettingsState,
@@ -53,19 +46,13 @@ import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
-import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
 import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
-import { type UUID } from "@/types/stringTypes";
-import { type SerializedModComponent } from "@/types/modComponentTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
-import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { integrationConfigLocator } from "@/background/messenger/api";
@@ -77,15 +64,16 @@ import { getMe } from "@/data/service/backgroundApi";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "@/mv3/SessionStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
-import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 import { API_PATHS } from "@/data/service/urlPaths";
+import deactivateMod from "@/background/utils/deactivateMod";
+import deactivateModComponentsAndSaveState from "@/background/utils/deactivateModComponentsAndSaveState";
+import saveModComponentStateAndReloadTabs, {
+  type ReloadOptions,
+} from "@/background/utils/saveModComponentStateAndReloadTabs";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =
   modComponentSlice;
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const { reducer: editorReducer, actions: editorActions } = editorSlice;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const findAllSanitizedIntegrationConfigs =
@@ -111,87 +99,16 @@ export const startupDeploymentUpdateLoaded = new SessionValue<boolean | null>(
   import.meta.url,
 );
 
-type ReloadOptions = {
-  /**
-   * When to reload mods on existing tabs/frames
-   * @since 2.0.5
-   */
-  reloadMode: "queue" | "immediate";
-};
-
-async function saveModComponentStateAndReloadTabs(
-  state: ModComponentState,
-  { reloadMode }: ReloadOptions,
-): Promise<void> {
-  await saveModComponentState(state);
-
-  if (reloadMode === "immediate") {
-    reloadModsEveryTab();
-  } else {
-    queueReloadModEveryTab();
-  }
-}
-
-function deactivateModComponentFromStates(
-  modComponentId: UUID,
-  optionsState: ModComponentState,
-  editorState: EditorState | undefined,
-): { options: ModComponentState; editor: EditorState | undefined } {
-  const options = modComponentReducer(
-    optionsState,
-    modComponentActions.removeModComponent({ modComponentId }),
-  );
-  const editor = editorState
-    ? editorReducer(
-        editorState,
-        editorActions.removeModComponentFormState(modComponentId),
-      )
-    : undefined;
-  return { options, editor };
-}
-
-async function deactivateModComponentsAndSaveState(
-  modComponentsToDeactivate: SerializedModComponent[],
-  {
-    editorState,
-    optionsState,
-  }: { editorState: EditorState | undefined; optionsState: ModComponentState },
-): Promise<void> {
-  // Deactivate existing mod components
-  for (const modComponent of modComponentsToDeactivate) {
-    const result = deactivateModComponentFromStates(
-      modComponent.id,
-      optionsState,
-      editorState,
-    );
-    optionsState = result.options;
-    editorState = result.editor;
-  }
-
-  await allSettled(
-    modComponentsToDeactivate.map(async ({ id }) =>
-      removeModComponentForEveryTab(id),
-    ),
-    { catch: "ignore" },
-  );
-
-  await saveModComponentStateAndReloadTabs(optionsState, {
-    // Always queue deactivation to not interfere with running mods
-    reloadMode: "queue",
-  });
-  await saveEditorState(editorState);
-}
-
 /**
  * Deactivate all deployed mods by deactivating all mod components associated with a deployment
  */
 export async function deactivateAllDeployedMods(): Promise<void> {
-  const [optionsState, editorState] = await Promise.all([
+  const [modComponentState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
   const activatedModComponents = selectActivatedModComponents({
-    options: optionsState,
+    options: modComponentState,
   });
 
   const modComponentsToDeactivate = activatedModComponents.filter(
@@ -205,7 +122,7 @@ export async function deactivateAllDeployedMods(): Promise<void> {
 
   await deactivateModComponentsAndSaveState(modComponentsToDeactivate, {
     editorState,
-    optionsState,
+    modComponentState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_ALL, {
@@ -219,12 +136,12 @@ export async function deactivateAllDeployedMods(): Promise<void> {
 async function deactivateUnassignedDeployments(
   assignedDeployments: Deployment[],
 ): Promise<void> {
-  const [optionsState, editorState] = await Promise.all([
+  const [modComponentState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
   const activatedModComponents = selectActivatedModComponents({
-    options: optionsState,
+    options: modComponentState,
   });
 
   const deployedModIds = new Set(
@@ -245,7 +162,7 @@ async function deactivateUnassignedDeployments(
 
   await deactivateModComponentsAndSaveState(unassignedModComponents, {
     editorState,
-    optionsState,
+    modComponentState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
@@ -254,35 +171,6 @@ async function deactivateUnassignedDeployments(
       .map((x) => x._deployment?.id)
       .filter((x) => x != null),
   });
-}
-
-async function deactivateMod(
-  modId: RegistryId,
-  optionsState: ModComponentState,
-  editorState: EditorState | undefined,
-): Promise<{
-  options: ModComponentState;
-  editor: EditorState | undefined;
-}> {
-  const activatedModComponentsForMod = getModComponentsForMod(
-    modId,
-    optionsState,
-  );
-
-  let _optionsState = optionsState;
-  let _editorState = editorState;
-
-  for (const activatedModComponent of activatedModComponentsForMod) {
-    const result = deactivateModComponentFromStates(
-      activatedModComponent.id,
-      _optionsState,
-      _editorState,
-    );
-    _optionsState = result.options;
-    _editorState = result.editor;
-  }
-
-  return { options: _optionsState, editor: _editorState };
 }
 
 async function activateDeployment({
@@ -307,14 +195,13 @@ async function activateDeployment({
   );
 
   // Deactivate existing mod component versions
-  const result = await deactivateMod(
-    deployment.package.package_id,
-    _optionsState,
-    _editorState,
-  );
+  const result = deactivateMod(deployment.package.package_id, {
+    modComponentState: _optionsState,
+    editorState: _editorState,
+  });
 
-  _optionsState = result.options;
-  _editorState = result.editor;
+  _optionsState = result.modComponentState;
+  _editorState = result.editorState;
 
   // Activate the deployed mod with the service definition
   _optionsState = modComponentReducer(
