@@ -22,6 +22,13 @@ import { waitForDocumentRoot } from "@/utils/domUtils";
 
 const TIMEOUT_MS = 5000;
 
+export class SandboxInjectionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SandboxInjectionError";
+  }
+}
+
 export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
   position: "absolute",
   bottom: "105%",
@@ -78,10 +85,9 @@ async function _injectIframe(
   ]);
 
   if (result === "removed") {
-    console.warn(
-      `The host page removed the iframe for ${url} before it could be loaded. Retrying...`,
+    throw new SandboxInjectionError(
+      `The host page removed the iframe for ${url} before it could be loaded.`,
     );
-    return _injectIframe(url, style, shadowRootId);
   }
 
   return iframe as LoadedFrame;

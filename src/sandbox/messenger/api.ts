@@ -17,7 +17,10 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
-import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
+import injectIframe, {
+  hiddenIframeStyle,
+  SandboxInjectionError,
+} from "@/utils/injectIframe";
 import postMessage, { type Payload } from "@/utils/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -74,7 +77,9 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         }),
       {
         retries: 3,
-        shouldRetry: (error) => isSpecificError(error, TimeoutError),
+        shouldRetry: (error) =>
+          isSpecificError(error, TimeoutError) ||
+          isSpecificError(error, SandboxInjectionError),
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
