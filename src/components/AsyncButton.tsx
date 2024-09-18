@@ -28,51 +28,59 @@ export type AsyncButtonProps = ButtonProps & {
   ariaLabel?: string;
 };
 
-const AsyncButton: React.FunctionComponent<AsyncButtonProps> = ({
-  ariaLabel,
-  onClick,
-  children,
-  disabled: manualDisabled = false,
-  ...buttonProps
-}) => {
-  const mounted = useRef(false);
-  const [pending, setPending] = useState(false);
-
-  useEffect(() => {
-    // https://stackoverflow.com/a/66555159/402560
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  const handleClick = useCallback(
-    async (event: React.MouseEvent) => {
-      setPending(true);
-      try {
-        await onClick(event);
-      } finally {
-        if (mounted.current) {
-          setPending(false);
-        }
-      }
+const AsyncButton = React.forwardRef<HTMLButtonElement, AsyncButtonProps>(
+  (
+    {
+      ariaLabel,
+      onClick,
+      children,
+      disabled: manualDisabled = false,
+      ...buttonProps
     },
-    [onClick],
-  );
+    ref,
+  ) => {
+    const mounted = useRef(false);
+    const [pending, setPending] = useState(false);
 
-  return (
-    <Button
-      aria-label={ariaLabel}
-      disabled={manualDisabled || pending}
-      {...buttonProps}
-      onClick={(event) => {
-        event.stopPropagation();
-        void handleClick(event);
-      }}
-    >
-      {children}
-    </Button>
-  );
-};
+    useEffect(() => {
+      // https://stackoverflow.com/a/66555159/402560
+      mounted.current = true;
+      return () => {
+        mounted.current = false;
+      };
+    }, []);
+
+    const handleClick = useCallback(
+      async (event: React.MouseEvent) => {
+        setPending(true);
+        try {
+          await onClick(event);
+        } finally {
+          if (mounted.current) {
+            setPending(false);
+          }
+        }
+      },
+      [onClick],
+    );
+
+    return (
+      <Button
+        ref={ref}
+        aria-label={ariaLabel}
+        disabled={manualDisabled || pending}
+        {...buttonProps}
+        onClick={(event) => {
+          event.stopPropagation();
+          void handleClick(event);
+        }}
+      >
+        {children}
+      </Button>
+    );
+  },
+);
+
+AsyncButton.displayName = "AsyncButton";
 
 export default AsyncButton;
