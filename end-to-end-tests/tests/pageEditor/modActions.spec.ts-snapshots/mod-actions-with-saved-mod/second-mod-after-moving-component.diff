@@ -1,0 +1,91 @@
+Index: second-mod-after-moving-component
+===================================================================
+--- second-mod-after-moving-component
++++ second-mod-after-moving-component
+@@ -1,51 +1,86 @@
+ apiVersion: v3
+ definitions:
+   extensionPoint:
+     definition:
+       background: true
+       isAvailable:
+         allFrames: true
+         matchPatterns:
+           - https://pbx.vercel.app/*
+         selectors: []
+         urlPatterns: []
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+         - element: '@pixiebrix/html/element'
+       reportMode: once
+       showErrors: true
+       trigger: load
+       type: trigger
+     kind: extensionPoint
++  extensionPoint2:
++    definition:
++      contexts:
++        - all
++      documentUrlPatterns:
++        - '*://*/*'
++      isAvailable:
++        allFrames: true
++        matchPatterns:
++          - '*://*/*'
++        selectors: []
++        urlPatterns: []
++      reader:
++        - '@pixiebrix/document-metadata'
++        - '@pixiebrix/document-context'
++        - element: '@pixiebrix/html/element'
++        - '@pixiebrix/selection'
++      targetMode: eventTarget
++      type: quickBar
++    kind: extensionPoint
+ extensionPoints:
+   - config:
+       action:
+         - config:
+             selectors:
+               property:
+                 isMulti: false
+                 multi: false
+           id: '@pixiebrix/jquery-reader'
+           outputKey: data
+           root: null
+           rootMode: document
+     id: extensionPoint
+     label: Test Trigger
++    services: {}
++  - config:
++      action:
++        - config:
++            selectors:
++              property:
++                isMulti: false
++                multi: false
++          id: '@pixiebrix/jquery-reader'
++          outputKey: data
++          root: null
++          rootMode: document
++      title: Quick Bar item
++    id: extensionPoint2
++    label: Test Quick Bar Action
+     permissions:
+       origins: []
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+   description: Second test mod with trigger
+   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
+   name: Test Mod created with Trigger
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

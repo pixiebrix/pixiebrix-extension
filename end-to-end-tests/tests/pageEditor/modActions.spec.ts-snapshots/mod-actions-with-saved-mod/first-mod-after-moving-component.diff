@@ -1,0 +1,94 @@
+Index: first-mod-after-moving-component
+===================================================================
+--- first-mod-after-moving-component
++++ first-mod-after-moving-component
+@@ -1,89 +1,48 @@
+ apiVersion: v3
+ definitions:
+   extensionPoint:
+     definition:
+       attachMode: once
+       containerSelector: ul:has(> * > a:contains('navigation'))
+       isAvailable:
+         allFrames: true
+         matchPatterns:
+           - https://pbx.vercel.app/*
+         selectors: []
+         urlPatterns: []
+       position: append
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+         - element: '@pixiebrix/html/element'
+       targetMode: document
+       template: <li><a href="#">{{{ caption }}}</a></li>
+       type: menuItem
+     kind: extensionPoint
+-  extensionPoint2:
+-    definition:
+-      contexts:
+-        - all
+-      documentUrlPatterns:
+-        - '*://*/*'
+-      isAvailable:
+-        allFrames: true
+-        matchPatterns:
+-          - '*://*/*'
+-        selectors: []
+-        urlPatterns: []
+-      reader:
+-        - '@pixiebrix/document-metadata'
+-        - '@pixiebrix/document-context'
+-        - element: '@pixiebrix/html/element'
+-        - '@pixiebrix/selection'
+-      targetMode: eventTarget
+-      type: quickBar
+-    kind: extensionPoint
+ extensionPoints:
+   - config:
+       action:
+         - config: {}
+           id: '@pixiebrix/confetti'
+           root: null
+           rootMode: document
+       caption: Action
+       dynamicCaption: false
+       onSuccess: true
+       synchronous: false
+     id: extensionPoint
+     label: Test Button Component
+-    permissions:
+-      origins: []
+-      permissions: []
+     services: {}
+-  - config:
+-      action:
+-        - config:
+-            selectors:
+-              property:
+-                isMulti: false
+-                multi: false
+-          id: '@pixiebrix/jquery-reader'
+-          outputKey: data
+-          root: null
+-          rootMode: document
+-      title: Quick Bar item
+-    id: extensionPoint2
+-    label: Test Quick Bar Action
+-    permissions:
+-      origins: []
+-      permissions: []
+-    services: {}
+ kind: recipe
+ metadata:
+   description: First test mod with multiple components
+   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-button'
+   name: Test Mod created with Button
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

@@ -1,0 +1,89 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-button'
+  name: Test Mod created with Button
+  version: 1.0.0
+  description: First test mod with multiple components
+extensionPoints:
+  - label: Test Button Component
+    config:
+      caption: Action
+      action:
+        - id: '@pixiebrix/confetti'
+          rootMode: document
+          config: {}
+          root: null
+      dynamicCaption: false
+      onSuccess: true
+      synchronous: false
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+  - label: Test Quick Bar Action
+    config:
+      title: Quick Bar item
+      action:
+        - id: '@pixiebrix/jquery-reader'
+          rootMode: document
+          config:
+            selectors:
+              property:
+                isMulti: false
+                multi: false
+          outputKey: data
+          root: null
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint2
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      containerSelector: ul:has(> * > a:contains('navigation'))
+      targetMode: document
+      attachMode: once
+      position: append
+      template: <li><a href="#">{{{ caption }}}</a></li>
+  extensionPoint2:
+    kind: extensionPoint
+    definition:
+      type: quickBar
+      documentUrlPatterns:
+        - '*://*/*'
+      contexts:
+        - all
+      targetMode: eventTarget
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+        - '@pixiebrix/selection'
+      isAvailable:
+        matchPatterns:
+          - '*://*/*'
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'

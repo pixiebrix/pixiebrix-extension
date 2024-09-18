@@ -425,6 +425,9 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Move quick bar component from first mod to second mod", async () => {
+    const firstMod =
+      pageEditorPage.modListingPanel.getModListItemByName(firstModName);
+    await firstMod.select();
     const quickBarComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       firstModName,
       quickBarComponentName,
@@ -436,6 +439,7 @@ test("mod actions with saved mod", async ({
     const moveModModal = pageEditorPage.getByRole("dialog");
     await moveModModal.getByRole("combobox").click();
     await moveModModal.getByRole("option", { name: secondModName }).click();
+    await moveModModal.getByRole("button", { name: "Move" }).click();
 
     // Verify the component has been moved
     const secondMod =
@@ -479,7 +483,7 @@ test("mod actions with saved mod", async ({
     const copyModModal = pageEditorPage.getByRole("dialog");
     await copyModModal.getByRole("combobox").click();
     await copyModModal.getByRole("option", { name: secondModName }).click();
-
+    await copyModModal.getByRole("button", { name: "Copy" }).click();
     // Verify the component has been copied
     const secondMod =
       pageEditorPage.modListingPanel.getModListItemByName(secondModName);
@@ -539,7 +543,8 @@ test("mod actions with saved mod", async ({
     // Verify that both the original and duplicated components exist
     const allComponents =
       pageEditorPage.modListingPanel.getAllModStarterBricks(secondModName);
-    await expect(allComponents).toHaveCount(3); // Original trigger, quick bar, and the new duplicate
+    // Original trigger, copied button, quick bar item, and the new duplicate quick bar item
+    await expect(allComponents).toHaveCount(4);
 
     // Save and verify snapshot
     await pageEditorPage.saveExistingMod(secondModName);
@@ -552,10 +557,6 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Delete the duplicated component in the second mod", async () => {
-    const secondMod =
-      pageEditorPage.modListingPanel.getModListItemByName(secondModName);
-    await secondMod.select();
-
     const duplicatedComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         secondModName,
@@ -568,9 +569,7 @@ test("mod actions with saved mod", async ({
     // Confirm deletion in the modal
     const deleteModal = pageEditorPage.getByRole("dialog");
     await expect(deleteModal).toBeVisible();
-    await expect(deleteModal).toContainText(
-      `Delete ${duplicatedComponentName}?`,
-    );
+    await expect(deleteModal).toContainText("Delete starter brick?");
     await deleteModal.getByRole("button", { name: "Delete" }).click();
 
     // Verify that the duplicated component is no longer visible
@@ -579,7 +578,7 @@ test("mod actions with saved mod", async ({
     // Verify that the original components still exist
     const allComponents =
       pageEditorPage.modListingPanel.getAllModStarterBricks(secondModName);
-    await expect(allComponents).toHaveCount(2); // Original trigger and quick bar
+    await expect(allComponents).toHaveCount(3); // Original trigger, copied button, and quick bar item
 
     // Save and verify snapshot
     await pageEditorPage.saveExistingMod(secondModName);
@@ -621,10 +620,38 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Move button component from first mod to a new mod", async () => {
+    let firstMod =
+      pageEditorPage.modListingPanel.getModListItemByName(firstModName);
+    await firstMod.select();
     const buttonComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       firstModName,
       buttonComponentName,
     );
+    await buttonComponent.select();
+    await buttonComponent.modComponentActionMenu.click();
+
+    // Assert that the move option is disabled because the button is the only component in the mod
+    await expect(
+      buttonComponent.modComponentActionMenu.moveFromModOption,
+    ).toBeDisabled();
+
+    // Close the menu
+    await buttonComponent.modComponentActionMenu.click();
+
+    // Add a new Context Menu item to the mod
+    await firstMod.select();
+    await firstMod.modActionMenu.click();
+    await firstMod.modActionMenu.addStarterBrick("Context Menu");
+    const contextMenuComponentName = "New Context Menu Item";
+    await pageEditorPage.brickConfigurationPanel.fillField(
+      "name",
+      contextMenuComponentName,
+    );
+
+    // Save the mod with the new component
+    await pageEditorPage.saveExistingMod(firstModName);
+
+    // Now select the button component again and proceed with the move operation
     await buttonComponent.select();
     await buttonComponent.modComponentActionMenu.click();
     await buttonComponent.modComponentActionMenu.moveFromModOption.click();
@@ -657,7 +684,7 @@ test("mod actions with saved mod", async ({
     await expect(movedButtonComponent.root).toBeVisible();
 
     // Verify the component is no longer in the first mod
-    const firstMod =
+    firstMod =
       pageEditorPage.modListingPanel.getModListItemByName(firstModName);
     await firstMod.select();
     const oldButtonComponent =
@@ -666,6 +693,14 @@ test("mod actions with saved mod", async ({
         buttonComponentName,
       );
     await expect(oldButtonComponent.root).toBeHidden();
+
+    // Verify the new Context Menu item is still in the first mod
+    const contextMenuComponent =
+      pageEditorPage.modListingPanel.getModStarterBrick(
+        firstModName,
+        contextMenuComponentName,
+      );
+    await expect(contextMenuComponent.root).toBeVisible();
 
     // Save and verify snapshots
     await pageEditorPage.saveExistingMod(newModForButtonName);

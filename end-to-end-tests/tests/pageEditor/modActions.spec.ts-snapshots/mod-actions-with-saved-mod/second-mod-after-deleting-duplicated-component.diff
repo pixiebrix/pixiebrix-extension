@@ -1,0 +1,87 @@
+Index: second-mod-after-deleting-duplicated-component
+===================================================================
+--- second-mod-after-deleting-duplicated-component
++++ second-mod-after-deleting-duplicated-component
+@@ -52,82 +52,64 @@
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+         - element: '@pixiebrix/html/element'
+       targetMode: document
+       template: <li><a href="#">{{{ caption }}}</a></li>
+       type: menuItem
+     kind: extensionPoint
+ extensionPoints:
+   - config:
+       action:
+         - config:
+             selectors:
+               property:
+                 isMulti: false
+                 multi: false
+           id: '@pixiebrix/jquery-reader'
+           outputKey: data
+           root: null
+           rootMode: document
+     id: extensionPoint
+     label: Test Trigger
+     services: {}
+   - config:
+       action:
+         - config:
+             selectors:
+               property:
+                 isMulti: false
+                 multi: false
+           id: '@pixiebrix/jquery-reader'
+           outputKey: data
+           root: null
+           rootMode: document
+       title: Quick Bar item
+     id: extensionPoint2
+     label: Test Quick Bar Action
+     services: {}
+   - config:
+       action:
+-        - config:
+-            selectors:
+-              property:
+-                isMulti: false
+-                multi: false
+-          id: '@pixiebrix/jquery-reader'
+-          outputKey: data
+-          root: null
+-          rootMode: document
+-      title: Quick Bar item
+-    id: extensionPoint2
+-    label: Test Quick Bar Action (Copy)
+-    permissions:
+-      origins: []
+-      permissions: []
+-    services: {}
+-  - config:
+-      action:
+         - config: {}
+           id: '@pixiebrix/confetti'
+           root: null
+           rootMode: document
+       caption: Action
+       dynamicCaption: false
+       onSuccess: true
+       synchronous: false
+     id: extensionPoint3
+     label: Test Button Component
+     services: {}
+ kind: recipe
+ metadata:
+   description: Second test mod with trigger
+   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
+   name: Test Mod created with Trigger
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'
