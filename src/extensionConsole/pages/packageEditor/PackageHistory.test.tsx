@@ -27,7 +27,6 @@ import { render } from "@/extensionConsole/testHelpers";
 import { type Package, type PackageVersionDeprecated } from "@/types/contract";
 import { type Timestamp } from "@/types/stringTypes";
 import { DefinitionKinds } from "@/types/registryTypes";
-import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -77,8 +76,10 @@ describe("PackageHistory", () => {
       verbose_name: "AI Copilot",
       share_dependencies: false,
     };
-    axiosMock.onGet(API_PATHS.BRICK_VERSION_MATCH_ANY).reply(200, testVersions);
-    axiosMock.onGet(API_PATHS.BRICK_MATCH_ANY).reply(200, testPackage);
+    axiosMock
+      .onGet(/api\/bricks\/[\w-]*\/versions\/$/)
+      .reply(200, testVersions);
+    axiosMock.onGet(/api\/bricks\/[\w-]*\/$/).reply(200, testPackage);
 
     const { container } = await renderPackageHistory();
 
