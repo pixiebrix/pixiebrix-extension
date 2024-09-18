@@ -21,44 +21,46 @@ import type { StarterBrickUIName } from "./types";
 
 class BaseActionMenu extends BasePageObject {
   get clearOption() {
-    return this.getByRole("menuitem", { name: "Clear Changes" });
+    return this.page.getByRole("menuitem", { name: "Clear Changes" });
   }
 }
 
 export class ModActionMenu extends BaseActionMenu {
   @ModifiesModFormState
   async addStarterBrick(starterBrickName: StarterBrickUIName) {
-    await this.getByRole("menuitem", { name: /Add Starter Brick$/ }).hover();
-    await this.getByRole("menuitem", { name: starterBrickName }).click();
+    await this.page
+      .getByRole("menuitem", { name: /Add Starter Brick/ })
+      .hover();
+    await this.page.getByRole("menuitem", { name: starterBrickName }).click();
   }
 
   get copyOption() {
-    return this.getByRole("menuitem", { name: "Make a copy" });
+    return this.page.getByRole("menuitem", { name: "Make a copy" });
   }
 
   get deactivateOption() {
-    return this.getByRole("menuitem", { name: "Deactivate" });
+    return this.page.getByRole("menuitem", { name: "Deactivate" });
   }
 
   get deleteNewModOption() {
-    return this.getByRole("menuitem", { name: "Delete new Mod" });
+    return this.page.getByRole("menuitem", { name: "Delete new Mod" });
   }
 }
 
 export class ModComponentActionMenu extends BaseActionMenu {
   get duplicateOption() {
-    return this.getByRole("menuitem", { name: "Duplicate" });
+    return this.page.getByRole("menuitem", { name: "Duplicate" });
   }
 
   get moveFromModOption() {
-    return this.getByRole("menuitem", { name: "Move from Mod" });
+    return this.page.getByRole("menuitem", { name: "Move from Mod" });
   }
 
   get copyToModOption() {
-    return this.getByRole("menuitem", { name: "Copy to Mod" });
+    return this.page.getByRole("menuitem", { name: "Copy to Mod" });
   }
 
   get deleteOption() {
-    return this.getByRole("menuitem", { name: "Delete component" });
+    return this.page.getByRole("menuitem", { name: "Delete component" });
   }
 }

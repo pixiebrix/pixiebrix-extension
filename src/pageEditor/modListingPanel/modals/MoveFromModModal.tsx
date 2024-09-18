@@ -77,7 +77,7 @@ const MoveFromModModal: React.FC = () => {
    * components, because that is what is used to create the form field dropdown,
    * which is where the submit value comes from.
    */
-  const onSubmit = useCallback<OnSubmit<Required<FormState>>>(
+  const onSubmit = useCallback<OnSubmit<{ modId: RegistryId }>>(
     async ({ modId }, helpers) => {
       assertNotNullish(
         modComponentFormState,
@@ -174,8 +174,7 @@ const MoveFromModModal: React.FC = () => {
           </Modal.Title>
         ) : (
           <Modal.Title>
-            Move <em>{modComponentFormState?.label}</em> from mod{" "}
-            <em>{modComponentFormState?.modMetadata?.name}</em>?
+            Move <em>{modComponentFormState?.label}</em> to another Mod?
           </Modal.Title>
         )}
       </Modal.Header>

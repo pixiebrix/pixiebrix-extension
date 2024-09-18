@@ -20,7 +20,7 @@ import { ModActionMenu, ModComponentActionMenu } from "./modActionMenu";
 
 class BaseListItem extends BasePageObject {
   get dirtyIcon() {
-    return this.locator("span.text-danger > span[title='Unsaved changes']");
+    return this.locator("span[title='Unsaved changes']");
   }
 
   get menuButton() {
@@ -28,7 +28,7 @@ class BaseListItem extends BasePageObject {
   }
 
   async select() {
-    return this.click();
+    return this.click({ timeout: 5000 });
   }
 }
 
@@ -52,6 +52,8 @@ export class ModComponentListItem extends BaseListItem {
   }
 
   get modComponentActionMenu() {
-    return new ModComponentActionMenu(this.page.getByLabel("Menu"));
+    return new ModComponentActionMenu(
+      this.locator("[data-testid='ellipsis-menu-button']"),
+    );
   }
 }

@@ -35,19 +35,24 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
   await modListItem.select();
   await expect(modListItem.dirtyIcon).toBeHidden();
 
+  const triggerComponentName = "Test Trigger component";
+  const triggerCopyComponentName = `${triggerComponentName} (Copy)`;
+
   await test.step("Add trigger starter brick to mod and add bricks", async () => {
     await modListItem.modActionMenu.click();
     await modListItem.modActionMenu.addStarterBrick("Trigger");
     await pageEditorPage.brickConfigurationPanel.fillField(
       "name",
-      "Test Trigger component",
+      triggerComponentName,
     );
     await pageEditorPage.brickActionsPanel.addBrick("extract from page");
-    await pageEditorPage.brickActionsPanel.addBrick("Show Confetti");
+    await pageEditorPage.brickActionsPanel.addBrick("Show Confetti", {
+      index: 1,
+    });
     await expect(brickPipeline).toHaveCount(3);
-    await expect(brickPipeline.first()).toHaveText("Trigger");
-    await expect(brickPipeline.nth(1)).toHaveText("Extract from page");
-    await expect(brickPipeline.last()).toHaveText("Show Confetti");
+    await expect(brickPipeline.first()).toContainText("Trigger");
+    await expect(brickPipeline.nth(1)).toContainText("Extract from Page");
+    await expect(brickPipeline.last()).toContainText("Show Confetti");
   });
 
   await test.step("Duplicate trigger component within the mod", async () => {
@@ -56,6 +61,7 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
       "Trigger",
     );
     await triggerComponent.select();
+    await triggerComponent.modComponentActionMenu.click();
     await triggerComponent.modComponentActionMenu.duplicateOption.click();
 
     const allStarterBricks =
@@ -69,7 +75,7 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
     await expect(buttonListItem.dirtyIcon).toBeVisible();
 
     const firstTriggerComponent = allStarterBricks.nth(1);
-    await expect(firstTriggerComponent).toHaveText("Test Trigger component");
+    await expect(firstTriggerComponent).toHaveText(triggerComponentName);
     const firstTriggerListItem = new ModComponentListItem(
       firstTriggerComponent,
     );
@@ -77,9 +83,7 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
     await expect(firstTriggerListItem.dirtyIcon).toBeVisible();
 
     const secondTriggerComponent = allStarterBricks.last();
-    await expect(secondTriggerComponent).toHaveText(
-      "Test Trigger component (Copy)",
-    );
+    await expect(secondTriggerComponent).toHaveText(triggerCopyComponentName);
     const secondTriggerListItem = new ModComponentListItem(
       secondTriggerComponent,
     );
@@ -91,10 +95,9 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
   const movedComponentModName = "Moved Component Test Mod";
 
   await test.step("Move trigger copy to a new mod", async () => {
-    const triggerComponentName = "Test Trigger component (Copy)";
     const triggerComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       modName,
-      triggerComponentName,
+      triggerCopyComponentName,
     );
     await triggerComponent.select();
     await triggerComponent.modComponentActionMenu.click();
@@ -102,26 +105,30 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
 
     const moveModModal = pageEditorPage.getByRole("dialog");
     await expect(moveModModal).toBeVisible();
-    await expect(moveModModal).toHaveText(
-      `Move ${triggerComponentName} from mod ${modName}?`,
+    await expect(moveModModal).toContainText(
+      `Move ${triggerCopyComponentName} to another Mod?`,
     );
+    await moveModModal.getByRole("combobox").click();
     await moveModModal
-      .getByRole("combobox")
-      .selectOption("➕ Create new mod...");
+      .getByRole("option", { name: "➕ Create new mod..." })
+      .click();
     await moveModModal.getByRole("button", { name: "Move" }).click();
 
     await pageEditorPage.brickConfigurationPanel.fillField(
       "name",
-      movedComponentModName,
+      movedComponentName,
     );
 
-    const modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName(triggerComponentName);
+    const modListItem = pageEditorPage.modListingPanel.getModListItemByName(
+      triggerCopyComponentName,
+    );
+    await expect(modListItem.dirtyIcon).toBeVisible();
+    await modListItem.select();
     await expect(modListItem.dirtyIcon).toBeHidden();
     await expect(modListItem.saveButton).toBeEnabled();
     await pageEditorPage.modEditorPane.editMetadataTabPanel.fillField(
       "name",
-      movedComponentName,
+      movedComponentModName,
     );
   });
 
@@ -140,26 +147,29 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
 
     const copyModModal = pageEditorPage.getByRole("dialog");
     await expect(copyModModal).toBeVisible();
-    await expect(copyModModal).toHaveText(
-      `Copy ${movedComponentName} to another mod?`,
+    await expect(copyModModal).toContainText(
+      `Copy ${movedComponentName} to another Mod?`,
     );
+    await copyModModal.getByRole("combobox").click();
     await copyModModal
-      .getByRole("combobox")
-      .selectOption("➕ Create new mod...");
+      .getByRole("option", { name: "➕ Create new mod..." })
+      .click();
     await copyModModal.getByRole("button", { name: "Copy" }).click();
 
     await pageEditorPage.brickConfigurationPanel.fillField(
       "name",
-      copiedComponentModName,
+      copiedComponentName,
     );
 
     const modListItem =
-      pageEditorPage.modListingPanel.getModListItemByName(copiedComponentName);
+      pageEditorPage.modListingPanel.getModListItemByName(movedComponentName);
+    await expect(modListItem.dirtyIcon).toBeVisible();
+    await modListItem.select();
     await expect(modListItem.dirtyIcon).toBeHidden();
     await expect(modListItem.saveButton).toBeEnabled();
     await pageEditorPage.modEditorPane.editMetadataTabPanel.fillField(
       "name",
-      copiedComponentName,
+      copiedComponentModName,
     );
   });
 
@@ -170,6 +180,9 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
     await thirdMod.select();
     await thirdMod.modActionMenu.click();
     await thirdMod.modActionMenu.addStarterBrick("Button");
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("link", { name: "navigation" }),
+    );
 
     const newButtonName = "New Button Component";
     await pageEditorPage.brickConfigurationPanel.fillField(
@@ -188,12 +201,13 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
 
     const moveModModal = pageEditorPage.getByRole("dialog");
     await expect(moveModModal).toBeVisible();
-    await expect(moveModModal).toHaveText(
-      `Move ${newButtonName} from mod ${copiedComponentModName}?`,
+    await expect(moveModModal).toContainText(
+      `Move ${newButtonName} to another Mod?`,
     );
+    await moveModModal.getByRole("combobox").click();
     await moveModModal
-      .getByRole("combobox")
-      .selectOption(movedComponentModName);
+      .getByRole("option", { name: movedComponentModName })
+      .click();
     await moveModModal.getByRole("button", { name: "Move" }).click();
 
     // Verify the component has been moved
@@ -243,12 +257,13 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
 
     const copyModModal = pageEditorPage.getByRole("dialog");
     await expect(copyModModal).toBeVisible();
-    await expect(copyModModal).toHaveText(
-      `Copy ${newQuickBarActionName} to another mod?`,
+    await expect(copyModModal).toContainText(
+      `Copy ${newQuickBarActionName} to another Mod?`,
     );
+    await copyModModal.getByRole("combobox").click();
     await copyModModal
-      .getByRole("combobox")
-      .selectOption(copiedComponentModName);
+      .getByRole("option", { name: copiedComponentModName })
+      .click();
     await copyModModal.getByRole("button", { name: "Copy" }).click();
 
     const thirdMod = pageEditorPage.modListingPanel.getModListItemByName(
@@ -279,6 +294,10 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
     await secondMod.select();
     await secondMod.modActionMenu.click();
     await secondMod.modActionMenu.deleteNewModOption.click();
+    await pageEditorPage
+      .getByRole("dialog")
+      .getByRole("button", { name: "Delete" })
+      .click();
 
     const thirdMod = pageEditorPage.modListingPanel.getModListItemByName(
       copiedComponentModName,
@@ -286,6 +305,10 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
     await thirdMod.select();
     await thirdMod.modActionMenu.click();
     await thirdMod.modActionMenu.deleteNewModOption.click();
+    await pageEditorPage
+      .getByRole("dialog")
+      .getByRole("button", { name: "Delete" })
+      .click();
 
     await expect(secondMod.root).toBeHidden();
     await expect(thirdMod.root).toBeHidden();
@@ -306,13 +329,19 @@ test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
     await expect(
       pageEditorPage.modListingPanel.getModStarterBrick(
         modName,
-        movedComponentName,
+        newQuickBarActionName,
       ).root,
     ).toBeVisible();
     await expect(
       pageEditorPage.modListingPanel.getModStarterBrick(
         modName,
-        newQuickBarActionName,
+        modComponentName,
+      ).root,
+    ).toBeVisible();
+    await expect(
+      pageEditorPage.modListingPanel.getModStarterBrick(
+        modName,
+        triggerComponentName,
       ).root,
     ).toBeVisible();
   });
@@ -332,6 +361,7 @@ test("mod actions with saved mod", async ({
   const buttonComponentName = "Test Button Component";
   const quickBarComponentName = "Test Quick Bar Action";
   const triggerComponentName = "Test Trigger";
+  const duplicatedComponentName = `${quickBarComponentName} (Copy)`;
 
   // New mod names
   const newModForButtonName = "New Mod for Button";
@@ -404,8 +434,8 @@ test("mod actions with saved mod", async ({
     await quickBarComponent.modComponentActionMenu.moveFromModOption.click();
 
     const moveModModal = pageEditorPage.getByRole("dialog");
-    await moveModModal.getByRole("combobox").selectOption(secondModName);
-    await moveModModal.getByRole("button", { name: "Move" }).click();
+    await moveModModal.getByRole("combobox").click();
+    await moveModModal.getByRole("option", { name: secondModName }).click();
 
     // Verify the component has been moved
     const secondMod =
@@ -447,8 +477,8 @@ test("mod actions with saved mod", async ({
     await buttonComponent.modComponentActionMenu.copyToModOption.click();
 
     const copyModModal = pageEditorPage.getByRole("dialog");
-    await copyModModal.getByRole("combobox").selectOption(secondModName);
-    await copyModModal.getByRole("button", { name: "Copy" }).click();
+    await copyModModal.getByRole("combobox").click();
+    await copyModModal.getByRole("option", { name: secondModName }).click();
 
     // Verify the component has been copied
     const secondMod =
@@ -498,7 +528,7 @@ test("mod actions with saved mod", async ({
     await componentToDuplicate.modComponentActionMenu.click();
     await componentToDuplicate.modComponentActionMenu.duplicateOption.click();
 
-    const expectedDuplicateName = `${quickBarComponentName} (Copy)`;
+    const expectedDuplicateName = duplicatedComponentName;
     const duplicatedComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         secondModName,
@@ -517,6 +547,46 @@ test("mod actions with saved mod", async ({
       modId:
         await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
       snapshotName: "second-mod-after-duplicating-component",
+      mode: "diff",
+    });
+  });
+
+  await test.step("Delete the duplicated component in the second mod", async () => {
+    const secondMod =
+      pageEditorPage.modListingPanel.getModListItemByName(secondModName);
+    await secondMod.select();
+
+    const duplicatedComponent =
+      pageEditorPage.modListingPanel.getModStarterBrick(
+        secondModName,
+        duplicatedComponentName,
+      );
+    await duplicatedComponent.select();
+    await duplicatedComponent.modComponentActionMenu.click();
+    await duplicatedComponent.modComponentActionMenu.deleteOption.click();
+
+    // Confirm deletion in the modal
+    const deleteModal = pageEditorPage.getByRole("dialog");
+    await expect(deleteModal).toBeVisible();
+    await expect(deleteModal).toContainText(
+      `Delete ${duplicatedComponentName}?`,
+    );
+    await deleteModal.getByRole("button", { name: "Delete" }).click();
+
+    // Verify that the duplicated component is no longer visible
+    await expect(duplicatedComponent.root).toBeHidden();
+
+    // Verify that the original components still exist
+    const allComponents =
+      pageEditorPage.modListingPanel.getAllModStarterBricks(secondModName);
+    await expect(allComponents).toHaveCount(2); // Original trigger and quick bar
+
+    // Save and verify snapshot
+    await pageEditorPage.saveExistingMod(secondModName);
+    await verifyModDefinitionSnapshot({
+      modId:
+        await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
+      snapshotName: "second-mod-after-deleting-duplicated-component",
       mode: "diff",
     });
   });
@@ -561,12 +631,13 @@ test("mod actions with saved mod", async ({
 
     const moveModModal = pageEditorPage.getByRole("dialog");
     await expect(moveModModal).toBeVisible();
-    await expect(moveModModal).toHaveText(
-      `Move ${buttonComponentName} from mod ${firstModName}?`,
+    await expect(moveModModal).toContainText(
+      `Move ${buttonComponentName} to another Mod?`,
     );
+    await moveModModal.getByRole("combobox").click();
     await moveModModal
-      .getByRole("combobox")
-      .selectOption("➕ Create new mod...");
+      .getByRole("option", { name: "➕ Create new mod..." })
+      .click();
     await moveModModal.getByRole("button", { name: "Move" }).click();
 
     await pageEditorPage.brickConfigurationPanel.fillField(
@@ -625,12 +696,13 @@ test("mod actions with saved mod", async ({
 
     const copyModModal = pageEditorPage.getByRole("dialog");
     await expect(copyModModal).toBeVisible();
-    await expect(copyModModal).toHaveText(
-      `Copy ${triggerComponentName} to another mod?`,
+    await expect(copyModModal).toContainText(
+      `Copy ${triggerComponentName} to another Mod?`,
     );
+    await copyModModal.getByRole("combobox").click();
     await copyModModal
-      .getByRole("combobox")
-      .selectOption("➕ Create new mod...");
+      .getByRole("option", { name: "➕ Create new mod..." })
+      .click();
     await copyModModal.getByRole("button", { name: "Copy" }).click();
 
     await pageEditorPage.brickConfigurationPanel.fillField(
@@ -686,7 +758,10 @@ test("mod actions with saved mod", async ({
     await quickBarComponent.modComponentActionMenu.moveFromModOption.click();
 
     const moveModModal = pageEditorPage.getByRole("dialog");
-    await moveModModal.getByRole("combobox").selectOption(newModForButtonName);
+    await moveModModal.getByRole("combobox").click();
+    await moveModModal
+      .getByRole("option", { name: newModForButtonName })
+      .click();
     await moveModModal.getByRole("button", { name: "Move" }).click();
 
     // Verify the component has been moved
@@ -757,9 +832,10 @@ test("mod actions with saved mod", async ({
     await triggerComponent.modComponentActionMenu.copyToModOption.click();
 
     const copyModModal = pageEditorPage.getByRole("dialog");
+    await copyModModal.getByRole("combobox").click();
     await copyModModal
-      .getByRole("combobox")
-      .selectOption(newModForTriggerCopyName);
+      .getByRole("option", { name: newModForTriggerCopyName })
+      .click();
     await copyModModal.getByRole("button", { name: "Copy" }).click();
 
     // Verify the component has been copied
