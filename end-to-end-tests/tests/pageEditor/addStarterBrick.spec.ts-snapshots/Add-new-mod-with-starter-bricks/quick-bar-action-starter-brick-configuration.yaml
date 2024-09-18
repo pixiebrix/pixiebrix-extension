@@ -1,7 +1,7 @@
 apiVersion: v3
 kind: recipe
 metadata:
-  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-quick-bar-action'
+  id: '@extension-e2e-test-unaffiliated/00000000-0000-0000-0000-000000000000'
   name: Test Mod created with Quick Bar Action
   version: 1.0.0
   description: Test description for Quick Bar Action Mod
