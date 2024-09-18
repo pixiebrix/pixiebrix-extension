@@ -553,7 +553,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
             trigger: this.trigger,
           });
 
-          componentLogger.info("Successfully ran trigger");
+          componentLogger.debug("Successfully ran trigger");
         }
       }),
     );
