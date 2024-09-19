@@ -198,7 +198,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const userMilestones: UserMilestone[] = [];
 
   if (me) {
-    const organization = me.primaryOrganization ?? null;
+    const organization = me.primaryTeam ?? null;
     partner = me.partner;
     controlRoom = organization?.controlRoom ?? null;
     userMilestones.push(...me.userMilestones);

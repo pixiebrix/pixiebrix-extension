@@ -31,7 +31,7 @@ import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupS
 import notify from "@/utils/notify";
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
-import { type Organization } from "@/data/model/Organization";
+import { type Team } from "@/data/model/Team";
 import { UserRole } from "@/data/model/UserRole";
 
 type DatabaseCreateModalProps = {
@@ -69,7 +69,7 @@ const initialValues: DatabaseConfig = {
   groupId: "",
 };
 
-function getOrganizationOptions(organizations: Organization[]) {
+function getOrganizationOptions(organizations: Team[]) {
   const organizationOptions = (organizations ?? [])
     .filter(
       (organization) =>
@@ -82,8 +82,8 @@ function getOrganizationOptions(organizations: Organization[]) {
         ),
     )
     .map((organization) => ({
-      label: organization.organizationName,
-      value: organization.organizationId,
+      label: organization.teamName,
+      value: organization.teamId,
     }));
 
   const personalDbOption = {

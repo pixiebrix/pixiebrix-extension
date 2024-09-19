@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import deactivateModComponentsAndSaveState from "@/background/utils/deactivateModComponentsAndSaveState";
-import { type Organization } from "@/data/model/Organization";
+import { type Team } from "@/data/model/Team";
 import { getTeams } from "@/data/service/backgroundApi";
 import { getEditorState } from "@/store/editorStorage";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
@@ -30,7 +30,7 @@ async function getTeamsWithTrials() {
 
 function getManuallyActivatedTeamModComponents(
   activatedModComponents: ActivatedModComponent[],
-  teamsWithTrials: Organization[],
+  teamsWithTrials: Team[],
 ) {
   const teamScopes = teamsWithTrials.map((x) => x.scope);
   return activatedModComponents.filter((x) => {
