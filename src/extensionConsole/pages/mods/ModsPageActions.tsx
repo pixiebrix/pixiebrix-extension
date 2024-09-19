@@ -43,7 +43,7 @@ import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
-import { API_PATHS } from "@/data/service/urlPaths";
+import { UI_PATHS } from "@/data/service/urlPaths";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
@@ -159,7 +159,7 @@ const ModsPageActions: React.FunctionComponent<{
         icon: <FontAwesomeIcon fixedWidth icon={faHammer} />,
         action() {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Checked in the 'hide' input below
-          history.push(API_PATHS.WORKSHOP_BRICK(editablePackageId!));
+          history.push(UI_PATHS.WORKSHOP_BRICK(editablePackageId!));
         },
         hide: !showEditInWorkshop || !editablePackageId,
       },
@@ -173,7 +173,7 @@ const ModsPageActions: React.FunctionComponent<{
             screen: "extensionConsole",
             reinstall: true,
           });
-          history.push(API_PATHS.MOD_ACTIVATE(modId, true));
+          history.push(UI_PATHS.MOD_ACTIVATE(modId, true));
         },
         hide: !showReactivate,
       },
