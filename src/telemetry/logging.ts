@@ -154,6 +154,10 @@ async function openLoggingDB() {
     },
     blocked(currentVersion: number, blockedVersion: number) {
       console.debug("Database blocked.", { currentVersion, blockedVersion });
+      // This should never happen, since we immediately close connections if blocking below,
+      // but just in case, close the connection here so it doesn't block openLoggingDB from
+      // resolving
+      database?.close();
     },
     blocking(currentVersion: number, blockedVersion: number) {
       // Don't block closing/upgrading the database
@@ -249,7 +253,9 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
   const db = await openLoggingDB();
 
   try {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+      durability: "relaxed",
+    });
 
     if (isEmpty(context)) {
       await tx.store.clear();
@@ -278,7 +284,9 @@ export async function getLogEntries(
 
   try {
     const objectStore = db
-      .transaction(ENTRY_OBJECT_STORE, "readonly")
+      .transaction(ENTRY_OBJECT_STORE, "readonly", {
+        durability: "relaxed",
+      })
       .objectStore(ENTRY_OBJECT_STORE);
 
     let indexKey: IndexKey | undefined;
@@ -515,7 +523,9 @@ export async function clearModComponentDebugLogs(
   const db = await openLoggingDB();
 
   try {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+      durability: "relaxed",
+    });
     const index = tx.store.index("modComponentId");
     for await (const cursor of index.iterate(modComponentId)) {
       if (cursor.value.level === "debug" || cursor.value.level === "trace") {
@@ -546,15 +556,26 @@ async function _sweepLogs(): Promise<void> {
     });
 
     const db = await openLoggingDB();
+    const abortController = new AbortController();
+    // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+    // of blocking other db transactions.
+    const timeoutId = setTimeout(abortController.abort, 30_000);
 
     try {
-      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+        durability: "relaxed",
+      });
 
       let deletedCount = 0;
 
       // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
       // This might mostly "just work" if the cursor happens to iterate in insertion order
       for await (const cursor of tx.store) {
+        if (abortController.signal.aborted) {
+          console.warn("Log sweep aborted due to timeout");
+          break;
+        }
+
         await cursor.delete();
         deletedCount++;
 
@@ -563,6 +584,7 @@ async function _sweepLogs(): Promise<void> {
         }
       }
     } finally {
+      clearTimeout(timeoutId);
       db.close();
     }
   }
