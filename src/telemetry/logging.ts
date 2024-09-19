@@ -127,7 +127,7 @@ async function openLoggingDB() {
   let database: IDBPDatabase<LogDB> | null = null;
 
   database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
-    upgrade(db) {
+    upgrade(db, oldVersion, newVersion) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
         // cases for looking at historic local logs
@@ -135,6 +135,7 @@ async function openLoggingDB() {
         console.warn(
           "Deleting object store %s for upgrade",
           ENTRY_OBJECT_STORE,
+          { oldVersion, newVersion },
         );
       } catch {
         // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it
@@ -151,9 +152,15 @@ async function openLoggingDB() {
         });
       }
     },
-    blocking() {
+    blocked(currentVersion: number, blockedVersion: number) {
+      console.debug("Database blocked.", { currentVersion, blockedVersion });
+    },
+    blocking(currentVersion: number, blockedVersion: number) {
       // Don't block closing/upgrading the database
-      console.debug("Closing log database due to upgrade/delete");
+      console.debug("Closing log database due to upgrade/delete.", {
+        currentVersion,
+        blockedVersion,
+      });
       database?.close();
       database = null;
     },

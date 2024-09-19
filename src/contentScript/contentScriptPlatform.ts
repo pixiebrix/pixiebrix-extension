@@ -18,7 +18,7 @@
 import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import {
-  clearExtensionDebugLogs,
+  clearModComponentDebugLogs,
   ensureContextMenu,
   openTab,
   performConfiguredRequestInBackground,
@@ -268,7 +268,7 @@ class ContentScriptPlatform extends PlatformBase {
       async clear(componentId: UUID): Promise<void> {
         await Promise.all([
           traces.clear(componentId),
-          clearExtensionDebugLogs(componentId),
+          clearModComponentDebugLogs(componentId),
         ]);
       },
       traces: {
