@@ -115,6 +115,15 @@ export const FeatureFlags = {
     "application-error-telemetry-disable-report",
 
   /**
+   * IndexDB logging kill switch. This disables writing to the LOG database, along with
+   * the clear debug logging and sweep logs functionality.
+   *
+   * Introduced to mitigate issues around idb logging causing runtime performance issues. See:
+   * https://github.com/pixiebrix/pixiebrix-extension/issues/9169
+   */
+  DISABLE_IDB_LOGGING: "disable-idb-logging",
+
+  /**
    * Experimental support for audio capture bricks.
    */
   FEATURE_FLAG_AUDIO_CAPTURE: "capture-audio",

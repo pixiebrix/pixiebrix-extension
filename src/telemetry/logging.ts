@@ -182,6 +182,10 @@ async function openLoggingDB() {
  * @param entry the log entry to add
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
+
   const db = await openLoggingDB();
   try {
     await db.add(ENTRY_OBJECT_STORE, entry);
@@ -504,6 +508,10 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 export async function clearModComponentDebugLogs(
   modComponentId: UUID,
 ): Promise<void> {
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
+
   const db = await openLoggingDB();
 
   try {
@@ -523,6 +531,10 @@ export async function clearModComponentDebugLogs(
  * Free up space in the log database.
  */
 async function _sweepLogs(): Promise<void> {
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
+
   const numRecords = await count();
 
   if (numRecords > MAX_LOG_RECORDS) {
