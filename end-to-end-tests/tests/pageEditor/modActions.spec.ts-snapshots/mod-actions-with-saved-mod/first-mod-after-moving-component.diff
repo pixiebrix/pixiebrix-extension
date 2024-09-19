@@ -56,7 +56,7 @@ Index: first-mod-after-moving-component
        onSuccess: true
        synchronous: false
      id: extensionPoint
-     label: Test Button Component
+     label: Test Button 00000000-0000-0000-0000-000000000000
 -    permissions:
 -      origins: []
 -      permissions: []
@@ -74,7 +74,7 @@ Index: first-mod-after-moving-component
 -          rootMode: document
 -      title: Quick Bar item
 -    id: extensionPoint2
--    label: Test Quick Bar Action
+-    label: Quick Bar Action 00000000-0000-0000-0000-000000000000
 -    permissions:
 -      origins: []
 -      permissions: []
@@ -82,8 +82,8 @@ Index: first-mod-after-moving-component
  kind: recipe
  metadata:
    description: First test mod with multiple components
-   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-button'
-   name: Test Mod created with Button
+   id: '@extension-e2e-test-unaffiliated/00000000-0000-0000-0000-000000000000'
+   name: Test Button Mod 00000000-0000-0000-0000-000000000000
    version: 1.0.0
  options:
    schema:

@@ -83,11 +83,13 @@ const MoveFromModModal: React.FC = () => {
         modComponentFormState,
         "active mod component form state not found",
       );
-      const modMetadata =
-        modId === NEW_MOD_ID
+      const modMetadata = {
+        ...(modId === NEW_MOD_ID
           ? getUnsavedModMetadataForFormState(modComponentFormState)
           : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Mod metadata must either be new or found in the activated mod metadatas
-            activatedModMetadatas.find((metadata) => metadata.id === modId)!;
+            activatedModMetadatas.find((metadata) => metadata.id === modId)!),
+        name: `New mod for ${modComponentFormState.label}`,
+      };
       try {
         const modComponentId = modComponentFormState?.uuid;
         assertNotNullish(

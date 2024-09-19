@@ -118,23 +118,19 @@ export class PageEditorPage extends BasePageObject {
   }
 
   /**
-   * Save the current active mod. Prefer saveStandaloneMod for standalone mods.
+   * Save an existing mod (as opposed to a new mod) per mod name.
    */
   async saveExistingMod(modName: string) {
-    // TODO: this method is currently meant for mods that aren't meant to be
-    //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
-    //  mods, with an option to avoid cleanup for certain mods.
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     const { saveButton } = modListItem;
-    await saveButton.waitFor({ state: "visible", timeout: 1000 });
+    await expect(saveButton).toBeVisible();
     // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
-    await this.page.waitForTimeout(300);
+    await this.page.waitForTimeout(500);
     await saveButton.click();
-    await this.page
-      .getByRole("status")
-      .filter({ hasText: "Saved mod" })
-      .waitFor({ state: "visible", timeout: 5000 });
+    await expect(
+      this.page.getByRole("status").filter({ hasText: "Saved mod" }),
+    ).toBeVisible();
   }
 
   getRenderPanelButton() {
@@ -198,10 +194,11 @@ export class PageEditorPage extends BasePageObject {
     modName: string;
     modComponentName: string;
   }> {
-    const modUuid = uuidv4();
     const initialModName = "My pbx.vercel.app button";
-    const modName = "Test Mod created with Button";
-    const modComponentName = `Test Button ${modUuid}`;
+    // Use different uuids for the mod and component names to avoid naming conflicts when
+    // creating new mods from various mod actions
+    const modName = `Test Button Mod ${uuidv4()}`;
+    const modComponentName = `Test Button ${uuidv4()}`;
 
     await this.modListingPanel.newModButton.click();
     await this.modListingPanel
@@ -252,11 +249,12 @@ export class PageEditorPage extends BasePageObject {
     modName: string;
     modComponentName: string;
   }> {
-    const modUuid = uuidv4();
     const initialModName = getInitialModNameForStarterBrick(starterBrickName);
 
-    const modName = `Test Mod created with ${starterBrickName}`;
-    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
+    // Use different uuids for the mod and component names to avoid naming conflicts when
+    // creating new mods from various mod actions
+    const modName = `Test ${starterBrickName} Mod ${uuidv4()}`;
+    const modComponentName = `Test ${starterBrickName} ${uuidv4()}`;
 
     await this.modListingPanel.newModButton.click();
     await this.modListingPanel

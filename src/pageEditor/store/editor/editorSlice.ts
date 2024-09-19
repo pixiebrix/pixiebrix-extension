@@ -307,16 +307,15 @@ const duplicateActiveModComponent = createAsyncThunk<
   const getCleanComponentsAndDirtyFormStatesForMod =
     selectGetCleanComponentsAndDirtyFormStatesForMod(state);
 
-  if (
-    !modMetadataToUseForDuplicate ||
-    modMetadataToUseForDuplicate.id ===
-      activeModComponentFormState.modMetadata?.id
-  ) {
-    newLabel += " (Copy)";
-  } else {
+  const isCopyingToDifferentMod =
+    modMetadataToUseForDuplicate &&
+    modMetadataToUseForDuplicate.id !==
+      activeModComponentFormState.modMetadata?.id;
+
+  if (isCopyingToDifferentMod) {
     const { cleanModComponents, dirtyModComponentFormStates } =
       getCleanComponentsAndDirtyFormStatesForMod(
-        modMetadataToUseForDuplicate.id,
+        modMetadataToUseForDuplicate?.id ?? null,
       );
     const allComponents = [
       ...cleanModComponents,
@@ -328,6 +327,8 @@ const duplicateActiveModComponent = createAsyncThunk<
     if (labelExists) {
       newLabel += " (Copy)";
     }
+  } else {
+    newLabel += " (Copy)";
   }
 
   const newActiveModComponentFormState = await produce(

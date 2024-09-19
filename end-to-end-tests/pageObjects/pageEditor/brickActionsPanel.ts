@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { ModifiesModFormState } from "./utils";
+import { expect } from "@playwright/test";
 
 export class Brick extends BasePageObject {
   moveBrickUpButton = this.getByRole("button", { name: "Move brick higher" });
@@ -89,7 +90,11 @@ export class BrickActionsPanel extends BasePageObject {
 
     // Add brick modal
     await this.page.getByTestId("tag-search-input").fill(brickName);
-    await this.page.getByRole("button", { name: brickName }).first().click();
+    const brickResult = this.page
+      .getByRole("button", { name: brickName })
+      .first();
+    await expect(brickResult).toBeVisible();
+    await brickResult.click();
 
     await this.page.getByRole("button", { name: "Add brick" }).click();
   }

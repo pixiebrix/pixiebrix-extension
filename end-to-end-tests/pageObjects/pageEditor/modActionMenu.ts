@@ -18,6 +18,8 @@
 import { BasePageObject } from "../basePageObject";
 import { ModifiesModFormState } from "./utils";
 import type { StarterBrickUIName } from "./types";
+import { uuidv4 } from "@/types/helpers";
+import { ConfigurationForm } from "./configurationForm";
 
 class BaseActionMenu extends BasePageObject {
   get clearOption() {
@@ -27,11 +29,19 @@ class BaseActionMenu extends BasePageObject {
 
 export class ModActionMenu extends BaseActionMenu {
   @ModifiesModFormState
-  async addStarterBrick(starterBrickName: StarterBrickUIName) {
+  async addStarterBrick(starterBrickName: StarterBrickUIName): Promise<string> {
+    const uniqueBrickName = `${starterBrickName} ${uuidv4()}`;
     await this.page
       .getByRole("menuitem", { name: /Add Starter Brick/ })
       .hover();
     await this.page.getByRole("menuitem", { name: starterBrickName }).click();
+
+    const brickConfigurationPanel = new ConfigurationForm(
+      this.page.getByTestId("brickConfigurationPanel"),
+    );
+    await brickConfigurationPanel.fillField("name", uniqueBrickName);
+    await brickConfigurationPanel.waitForModFormStateToUpdate();
+    return uniqueBrickName;
   }
 
   get copyOption() {

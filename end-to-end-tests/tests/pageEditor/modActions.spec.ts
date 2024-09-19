@@ -17,6 +17,8 @@
 
 import { expect, test } from "../../fixtures/testBase";
 import { ModComponentListItem } from "../../pageObjects/pageEditor/modListItem";
+// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
+import { test as base } from "@playwright/test";
 
 test("mod actions with unsaved mod", async ({ page, newPageEditorPage }) => {
   await page.goto("/");
@@ -352,15 +354,20 @@ test("mod actions with saved mod", async ({
   newPageEditorPage,
   verifyModDefinitionSnapshot,
 }) => {
+  test.slow(
+    true,
+    "Longer test due to verifying mod definitions after each mod action",
+  );
+
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
-  const firstModName = "Test Mod created with Button";
-  const secondModName = "Test Mod created with Trigger";
-  const buttonComponentName = "Test Button Component";
-  const quickBarComponentName = "Test Quick Bar Action";
-  const triggerComponentName = "Test Trigger";
+  let firstModName = "";
+  let buttonComponentName = "";
+  let secondModName = "";
+  let quickBarComponentName = "";
+  let triggerComponentName = "";
   const duplicatedComponentName = `${quickBarComponentName} (Copy)`;
 
   // New mod names
@@ -368,11 +375,15 @@ test("mod actions with saved mod", async ({
   const newModForTriggerCopyName = "New Mod for Trigger Copy";
 
   await test.step("Create and save first mod with multiple components", async () => {
-    await pageEditorPage.addNewModWithButtonStarterBrick(async () => {
-      await pageEditorPage.selectConnectedPageElement(
-        page.getByRole("link", { name: "navigation" }),
-      );
-    });
+    const { modName: _modName, modComponentName: _modComponentName } =
+      await pageEditorPage.addNewModWithButtonStarterBrick(async () => {
+        await pageEditorPage.selectConnectedPageElement(
+          page.getByRole("link", { name: "navigation" }),
+        );
+      });
+
+    firstModName = _modName;
+    buttonComponentName = _modComponentName;
 
     await pageEditorPage.brickConfigurationPanel.fillField(
       "name",
@@ -385,11 +396,8 @@ test("mod actions with saved mod", async ({
       pageEditorPage.modListingPanel.getModListItemByName(firstModName);
     await modListItem.select();
     await modListItem.modActionMenu.click();
-    await modListItem.modActionMenu.addStarterBrick("Quick Bar Action");
-    await pageEditorPage.brickConfigurationPanel.fillField(
-      "name",
-      quickBarComponentName,
-    );
+    quickBarComponentName =
+      await modListItem.modActionMenu.addStarterBrick("Quick Bar Action");
     await pageEditorPage.brickActionsPanel.addBrick("extract from page");
 
     const modId = await pageEditorPage.saveNewMod(
@@ -405,11 +413,12 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Create and save second mod", async () => {
-    await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
-    await pageEditorPage.brickConfigurationPanel.fillField(
-      "name",
-      triggerComponentName,
-    );
+    const { modName: _modName, modComponentName: _modComponentName } =
+      await pageEditorPage.addNewModWithNonButtonStarterBrick("Trigger");
+
+    secondModName = _modName;
+    triggerComponentName = _modComponentName;
+
     await pageEditorPage.brickActionsPanel.addBrick("Extract from Page");
 
     const modId = await pageEditorPage.saveNewMod(
@@ -582,9 +591,11 @@ test("mod actions with saved mod", async ({
 
     // Save and verify snapshot
     await pageEditorPage.saveExistingMod(secondModName);
+    const modId =
+      await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue();
+
     await verifyModDefinitionSnapshot({
-      modId:
-        await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
+      modId,
       snapshotName: "second-mod-after-deleting-duplicated-component",
       mode: "diff",
     });
@@ -641,12 +652,8 @@ test("mod actions with saved mod", async ({
     // Add a new Context Menu item to the mod
     await firstMod.select();
     await firstMod.modActionMenu.click();
-    await firstMod.modActionMenu.addStarterBrick("Context Menu");
-    const contextMenuComponentName = "New Context Menu Item";
-    await pageEditorPage.brickConfigurationPanel.fillField(
-      "name",
-      contextMenuComponentName,
-    );
+    const contextMenuComponentName =
+      await firstMod.modActionMenu.addStarterBrick("Context Menu");
 
     // Save the mod with the new component
     await pageEditorPage.saveExistingMod(firstModName);
@@ -661,21 +668,18 @@ test("mod actions with saved mod", async ({
     await expect(moveModModal).toContainText(
       `Move ${buttonComponentName} to another Mod?`,
     );
+
     await moveModModal.getByRole("combobox").click();
     await moveModModal
       .getByRole("option", { name: "➕ Create new mod..." })
       .click();
     await moveModModal.getByRole("button", { name: "Move" }).click();
 
-    await pageEditorPage.brickConfigurationPanel.fillField(
-      "name",
-      newModForButtonName,
-    );
+    // TODO: why does the newly created mod have the same name as the source mod?
+    await pageEditorPage.modListingPanel
+      .getModListItemByName(firstModName)
+      .select();
 
-    // Verify the component has been moved
-    const newMod =
-      pageEditorPage.modListingPanel.getModListItemByName(newModForButtonName);
-    await newMod.select();
     const movedButtonComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         newModForButtonName,

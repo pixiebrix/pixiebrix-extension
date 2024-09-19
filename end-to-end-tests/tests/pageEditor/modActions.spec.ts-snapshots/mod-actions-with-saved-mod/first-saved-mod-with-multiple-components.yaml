@@ -1,12 +1,12 @@
 apiVersion: v3
 kind: recipe
 metadata:
-  id: '@extension-e2e-test-unaffiliated/test-mod-created-with-button'
-  name: Test Mod created with Button
+  id: '@extension-e2e-test-unaffiliated/00000000-0000-0000-0000-000000000000'
+  name: Test Button Mod 00000000-0000-0000-0000-000000000000
   version: 1.0.0
   description: First test mod with multiple components
 extensionPoints:
-  - label: Test Button Component
+  - label: Test Button 00000000-0000-0000-0000-000000000000
     config:
       caption: Action
       action:
@@ -22,7 +22,7 @@ extensionPoints:
       permissions: []
     id: extensionPoint
     services: {}
-  - label: Test Quick Bar Action
+  - label: Quick Bar Action 00000000-0000-0000-0000-000000000000
     config:
       title: Quick Bar item
       action:

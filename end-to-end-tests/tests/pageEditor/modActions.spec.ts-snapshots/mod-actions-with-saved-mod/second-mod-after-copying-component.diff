@@ -75,7 +75,7 @@ Index: second-mod-after-copying-component
            root: null
            rootMode: document
      id: extensionPoint
-     label: Test Trigger
+     label: Test Trigger 00000000-0000-0000-0000-000000000000
      services: {}
    - config:
        action:
@@ -90,7 +90,7 @@ Index: second-mod-after-copying-component
            rootMode: document
        title: Quick Bar item
      id: extensionPoint2
-     label: Test Quick Bar Action
+     label: Quick Bar Action 00000000-0000-0000-0000-000000000000
 +    services: {}
 +  - config:
 +      action:
@@ -103,7 +103,7 @@ Index: second-mod-after-copying-component
 +      onSuccess: true
 +      synchronous: false
 +    id: extensionPoint3
-+    label: Test Button Component
++    label: Test Button 00000000-0000-0000-0000-000000000000
      permissions:
        origins: []
        permissions: []
@@ -111,8 +111,8 @@ Index: second-mod-after-copying-component
  kind: recipe
  metadata:
    description: Second test mod with trigger
-   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
-   name: Test Mod created with Trigger
+   id: '@extension-e2e-test-unaffiliated/00000000-0000-0000-0000-000000000000'
+   name: Test Trigger Mod 00000000-0000-0000-0000-000000000000
    version: 1.0.0
  options:
    schema:
