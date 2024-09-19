@@ -132,8 +132,8 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   portal,
   classNames,
 }) => (
-  // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions,no-restricted-syntax -- Just stopping propagation, don't need accessibility
-  <div
+  // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions -- Just stopping propagation, don't need accessibility
+  <span
     onClick={(event) => {
       event.stopPropagation();
     }}
@@ -160,7 +160,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
     >
       {items.filter((x) => !x.hide).map((item) => getMenuItemComponent(item))}
     </Menu>
-  </div>
+  </span>
 );
 
 export default EllipsisMenu;
