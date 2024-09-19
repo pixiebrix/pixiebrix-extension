@@ -22,7 +22,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import type { UUID } from "@/types/stringTypes";
 import {
   traces,
-  clearExtensionDebugLogs,
+  clearModComponentDebugLogs,
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
 import { PlatformBase } from "@/platform/platformBase";
@@ -72,7 +72,7 @@ class ExtensionPagePlatform extends PlatformBase {
       async clear(componentId: UUID): Promise<void> {
         await Promise.all([
           traces.clear(componentId),
-          clearExtensionDebugLogs(componentId),
+          clearModComponentDebugLogs(componentId),
         ]);
       },
       traces: {
