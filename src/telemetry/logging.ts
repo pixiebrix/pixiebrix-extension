@@ -127,7 +127,7 @@ async function openLoggingDB() {
   let database: IDBPDatabase<LogDB> | null = null;
 
   database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
-    upgrade(db) {
+    upgrade(db, oldVersion, newVersion) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
         // cases for looking at historic local logs
@@ -135,6 +135,7 @@ async function openLoggingDB() {
         console.warn(
           "Deleting object store %s for upgrade",
           ENTRY_OBJECT_STORE,
+          { oldVersion, newVersion },
         );
       } catch {
         // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it
@@ -151,9 +152,15 @@ async function openLoggingDB() {
         });
       }
     },
-    blocking() {
+    blocked(currentVersion: number, blockedVersion: number) {
+      console.debug("Database blocked.", { currentVersion, blockedVersion });
+    },
+    blocking(currentVersion: number, blockedVersion: number) {
       // Don't block closing/upgrading the database
-      console.debug("Closing log database due to upgrade/delete");
+      console.debug("Closing log database due to upgrade/delete.", {
+        currentVersion,
+        blockedVersion,
+      });
       database?.close();
       database = null;
     },
@@ -175,6 +182,10 @@ async function openLoggingDB() {
  * @param entry the log entry to add
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
+
   const db = await openLoggingDB();
   try {
     await db.add(ENTRY_OBJECT_STORE, entry);
@@ -335,7 +346,7 @@ let lastAxiosServerErrorTimestamp: number | null = null;
  */
 export async function reportToApplicationErrorTelemetry(
   // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
-  // treats it as the error. Note, Rollbar, treats POJO as the custom data.
+  // treats it as the error.
   error: Error,
   flatContext: MessageContext,
   errorMessage: string,
@@ -497,6 +508,10 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 export async function clearModComponentDebugLogs(
   modComponentId: UUID,
 ): Promise<void> {
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
+
   const db = await openLoggingDB();
 
   try {
@@ -516,6 +531,10 @@ export async function clearModComponentDebugLogs(
  * Free up space in the log database.
  */
 async function _sweepLogs(): Promise<void> {
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
+
   const numRecords = await count();
 
   if (numRecords > MAX_LOG_RECORDS) {
