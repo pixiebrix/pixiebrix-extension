@@ -335,7 +335,7 @@ let lastAxiosServerErrorTimestamp: number | null = null;
  */
 export async function reportToApplicationErrorTelemetry(
   // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
-  // treats it as the error. Note, Rollbar, treats POJO as the custom data.
+  // treats it as the error.
   error: Error,
   flatContext: MessageContext,
   errorMessage: string,
