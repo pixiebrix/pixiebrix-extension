@@ -17,9 +17,9 @@
 
 import { type UUID } from "@/types/stringTypes";
 import {
-  type MeOrganizationMembership,
-  transformMeOrganizationMembershipResponse,
-} from "@/data/model/MeOrganizationMembership";
+  type MeTeamMembership,
+  transformMeTeamMembershipResponse,
+} from "@/data/model/MeTeamMembership";
 import {
   type MeUserGroupMembership,
   transformMeUserGroupMembershipResponse,
@@ -38,10 +38,7 @@ import {
 } from "@/data/model/UserPartner";
 import { validateUUID } from "@/types/helpers";
 import type { components } from "@/types/swagger";
-import {
-  type MeOrganization,
-  transformMeOrganizationResponse,
-} from "@/data/model/MeOrganization";
+import { type MeTeam, transformMeTeamResponse } from "@/data/model/MeTeam";
 
 export type Me = {
   /**
@@ -49,9 +46,9 @@ export type Me = {
    */
   readonly userId: UUID;
   /**
-   * The me-user's organization memberships
+   * The me-user's team memberships
    */
-  organizationMemberships: MeOrganizationMembership[];
+  teamMemberships: MeTeamMembership[];
   /**
    * The me-user's group memberships
    */
@@ -63,7 +60,7 @@ export type Me = {
    */
   isOnboarded: boolean;
   /**
-   * Whether the account is an organization API service account
+   * Whether the account is a team API service account
    */
   isServiceAccount: boolean;
   /**
@@ -90,9 +87,9 @@ export type Me = {
    */
   fullName?: string;
   /**
-   * The user's primary organization, if they belong to one
+   * The user's primary team, if they belong to one
    */
-  primaryOrganization?: MeOrganization;
+  primaryTeam?: MeTeam;
   /**
    * The partner, controlling theme, documentation links, etc.
    */
@@ -102,9 +99,9 @@ export type Me = {
 export function transformMeResponse(response: components["schemas"]["Me"]): Me {
   const me: Me = {
     userId: validateUUID(response.id),
-    organizationMemberships:
+    teamMemberships:
       response.organization_memberships?.map((membership) =>
-        transformMeOrganizationMembershipResponse(membership),
+        transformMeTeamMembershipResponse(membership),
       ) ?? [],
     groupMemberships:
       response.group_memberships?.map((membership) =>
@@ -141,9 +138,7 @@ export function transformMeResponse(response: components["schemas"]["Me"]): Me {
   }
 
   if (response.organization) {
-    me.primaryOrganization = transformMeOrganizationResponse(
-      response.organization,
-    );
+    me.primaryTeam = transformMeTeamResponse(response.organization);
   }
 
   if (response.partner) {

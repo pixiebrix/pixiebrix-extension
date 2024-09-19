@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RequiredOrganizationRoleResponse } from "@/data/service/responseTypeHelpers";
+import { type RequiredTeamRoleResponse } from "@/data/service/responseTypeHelpers";
 import { type ValueOf } from "type-fest";
 
 export enum LegacyUserRole {
@@ -37,7 +37,7 @@ export const UserRole = {
 export type UserRoleType = ValueOf<typeof UserRole>;
 
 export function transformUserRoleResponse(
-  response: RequiredOrganizationRoleResponse,
+  response: RequiredTeamRoleResponse,
 ): UserRoleType {
   switch (response) {
     case 1: {
@@ -67,10 +67,8 @@ export function transformUserRoleResponse(
   }
 }
 
-export function convertToUserRole(
-  userOrganizationMembershipRole: UserRoleType,
-): LegacyUserRole {
-  switch (userOrganizationMembershipRole) {
+export function convertToUserRole(userRole: UserRoleType): LegacyUserRole {
+  switch (userRole) {
     case UserRole.member: {
       return LegacyUserRole.member;
     }
@@ -92,7 +90,7 @@ export function convertToUserRole(
     }
 
     default: {
-      const exhaustiveCheck: never = userOrganizationMembershipRole;
+      const exhaustiveCheck: never = userRole;
       throw new Error(`Invalid user role: ${exhaustiveCheck}`);
     }
   }

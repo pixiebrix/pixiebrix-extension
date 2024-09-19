@@ -17,7 +17,7 @@
 
 import React from "react";
 import useFlags from "@/hooks/useFlags";
-import { type Organization } from "@/data/model/Organization";
+import { type Team } from "@/data/model/Team";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import DeploymentsContext, {
@@ -54,7 +54,7 @@ const mockOnboarding = ({
           ? [
               {
                 sharing: {
-                  organizations: [{} as Organization],
+                  organizations: [{} as Team],
                 },
               },
             ]
