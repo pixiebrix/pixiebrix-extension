@@ -63,7 +63,7 @@ Index: add-button-starter-brick-to-mod
  kind: recipe
  metadata:
    description: Test description for Trigger Mod
-   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-trigger'
+   id: '@extension-e2e-test-unaffiliated/00000000-0000-0000-0000-000000000000'
    name: Test Mod created with Trigger
    version: 1.0.0
  options:

@@ -109,7 +109,6 @@ test("brick actions panel behavior", async ({
   await test.step("Move bricks", async () => {
     await brickActionsPanel.getBrickByName("Custom Modal").moveDown();
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").moveUp();
-    await modListItem.select();
     await pageEditorPage.saveExistingMod(modName);
     await pageEditorPage.modListingPanel
       .getModStarterBrick(modName, "Button")
