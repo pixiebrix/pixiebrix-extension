@@ -143,7 +143,7 @@ export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
   _deployment?: DeploymentMetadata;
 
   /**
-   * Metadata about the recipe used to install the ModComponent, or `undefined` if the user created this ModComponent
+   * Metadata about the mod used to install the modComponent, or `undefined` if the user created this ModComponent
    * directly
    */
   _recipe: ModMetadata | undefined;

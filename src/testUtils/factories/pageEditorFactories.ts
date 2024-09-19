@@ -102,8 +102,10 @@ export const formStateFactory = ({
   brickPipeline,
   starterBrick,
 }: FormStateFactoryOptions = {}): ModComponentFormState => {
-  const factoryConfig: FactoryConfig<InternalFormStateOverride> =
-    formStateConfig || { modMetadata: modMetadataFactory() };
+  const factoryConfig: FactoryConfig<InternalFormStateOverride> = {
+    modMetadata: modMetadataFactory(),
+    ...formStateConfig,
+  };
 
   if (brickPipeline) {
     factoryConfig.modComponent = baseModComponentStateFactory({

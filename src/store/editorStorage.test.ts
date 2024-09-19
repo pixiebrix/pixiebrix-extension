@@ -34,7 +34,6 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import { migrations } from "@/store/editorMigrations";
-import { clearModComponentTraces } from "@/telemetry/trace";
 
 jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");

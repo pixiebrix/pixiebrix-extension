@@ -27,6 +27,11 @@ import { activatedModComponentFactory } from "@/testUtils/factories/modComponent
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { uuidv4 } from "@/types/helpers";
 
+jest.mock("@/telemetry/trace", () => ({
+  ...jest.requireActual("@/telemetry/trace"),
+  clearModComponentTraces: jest.fn(),
+}));
+
 describe("deactivateModComponent", () => {
   const modComponentId = uuidv4();
 
@@ -54,6 +59,7 @@ describe("deactivateModComponent", () => {
         [modComponentId]: makeInitialBrickPipelineUIState(),
       },
       availableDraftModComponentIds: [modComponentId],
+      deletedModComponentFormStatesByModId: {},
     } as EditorState);
   });
 
