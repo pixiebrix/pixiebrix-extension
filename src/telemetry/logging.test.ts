@@ -125,26 +125,16 @@ describe("logging", () => {
       }),
     );
 
-    await sweepLogs();
-
-    await expect(count()).resolves.toBe(937);
-    // Increase timeout so test isn't flakey on CI due to slow append operation
-  }, 20_000);
-
-  test("sweep with DISABLE_IDB_LOGGING flag on", async () => {
-    flagOnMock.mockResolvedValue(false);
-    await Promise.all(
-      array(logEntryFactory, 1500)().map(async (x) => {
-        await appendEntry(x);
-      }),
-    );
-
+    // Verify that when the DISABLE_IDB_LOGGING flag is on, the logs are not swept
     mockFlag(FeatureFlags.DISABLE_IDB_LOGGING);
     await sweepLogs();
-
     await expect(count()).resolves.toBe(1500);
+
+    flagOnMock.mockResolvedValue(false);
+    await sweepLogs();
+    await expect(count()).resolves.toBe(937);
     // Increase timeout so test isn't flakey on CI due to slow append operation
-  }, 20_000);
+  }, 25_000);
 
   test("getLogEntries by modId", async () => {
     const modId = registryIdFactory();
