@@ -27,9 +27,9 @@ import { type UUID } from "@/types/stringTypes";
 import { type Team } from "@/data/model/Team";
 
 const SharingTable: React.FunctionComponent = () => {
-  const { data: organizations = [] } = useGetOrganizationsQuery();
+  const { data: teams = [] } = useGetOrganizationsQuery();
   const [publicField, , { setValue: setPublic }] = useField("public");
-  const [organizationsField, , { setValue: setOrganizations }] =
+  const [teamsField, , { setValue: setTeams }] =
     useField<Array<Team["teamId"]>>("organizations");
 
   return (
@@ -59,24 +59,22 @@ const SharingTable: React.FunctionComponent = () => {
             )}
           </td>
         </tr>
-        {sortBy(organizations, (x) => x.teamName).map((organization) => (
-          <tr key={organization.teamId}>
+        {sortBy(teams, (x) => x.teamName).map((team) => (
+          <tr key={team.teamId}>
             <td width="100">
               <BootstrapSwitchButton
                 onlabel=" "
                 offlabel=" "
-                checked={organizationsField.value.includes(organization.teamId)}
+                checked={teamsField.value.includes(team.teamId)}
                 onChange={async (checked: boolean) => {
                   const next = checked
-                    ? uniq([...organizationsField.value, organization.teamId])
-                    : organizationsField.value.filter(
-                        (x: UUID) => x !== organization.teamId,
-                      );
-                  await setOrganizations(next);
+                    ? uniq([...teamsField.value, team.teamId])
+                    : teamsField.value.filter((x: UUID) => x !== team.teamId);
+                  await setTeams(next);
                 }}
               />
             </td>
-            <td>{organization.teamName}</td>
+            <td>{team.teamName}</td>
           </tr>
         ))}
       </tbody>
