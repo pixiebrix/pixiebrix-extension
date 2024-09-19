@@ -34,6 +34,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import { migrations } from "@/store/editorMigrations";
+import { clearModComponentTraces } from "@/telemetry/trace";
 
 jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
@@ -44,6 +45,11 @@ jest.mock("@/utils/storageUtils", () => {
     setReduxStorage: jest.fn(),
   };
 });
+
+jest.mock("@/telemetry/trace", () => ({
+  ...jest.requireActual("@/telemetry/trace"),
+  clearModComponentTraces: jest.fn(),
+}));
 
 const readReduxStorageMock = jest.mocked(readReduxStorage);
 const setReduxStorageMock = jest.mocked(setReduxStorage);
@@ -57,6 +63,7 @@ describe("draftModComponentStorage", () => {
 
   test("removes one active form state", async () => {
     const formState = formStateFactory();
+
     const brickConfigurationUIStates: Record<UUID, BrickConfigurationUIState> =
       {
         [formState.uuid]: {
@@ -66,6 +73,7 @@ describe("draftModComponentStorage", () => {
           },
         } as BrickConfigurationUIState,
       };
+
     const state: EditorState = {
       ...initialState,
       activeModComponentId: formState.uuid,
@@ -82,19 +90,26 @@ describe("draftModComponentStorage", () => {
       },
       availableDraftModComponentIds: [formState.uuid],
     };
+
     readReduxStorageMock.mockResolvedValue(state);
 
     await removeDraftModComponents([formState.uuid]);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      initialState,
+      {
+        ...initialState,
+        deletedModComponentFormStatesByModId: {
+          [formState.modMetadata!.id]: [formState],
+        },
+      },
       currentPersistenceVersion,
     );
   });
 
   test("removes inactive formState", async () => {
     const inactiveFormState = formStateFactory();
+
     const inactiveBrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -106,7 +121,9 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const activeFormState = formStateFactory();
+
     const activeBrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -118,6 +135,7 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const baseState: EditorState = {
       ...initialState,
       activeModComponentId: activeFormState.uuid,
@@ -137,6 +155,7 @@ describe("draftModComponentStorage", () => {
       },
       availableDraftModComponentIds: [activeFormState.uuid],
     };
+
     const stateWithInactive: EditorState = {
       ...baseState,
       modComponentFormStates: [
@@ -159,24 +178,32 @@ describe("draftModComponentStorage", () => {
         inactiveFormState.uuid,
       ],
     };
+
     readReduxStorageMock.mockResolvedValue(stateWithInactive);
 
     await removeDraftModComponents([inactiveFormState.uuid]);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      baseState,
+      {
+        ...baseState,
+        deletedModComponentFormStatesByModId: {
+          [inactiveFormState.modMetadata!.id]: [inactiveFormState],
+        },
+      },
       currentPersistenceVersion,
     );
   });
 
   test("removes active recipe", async () => {
     const mod = modMetadataFactory();
+
     const formState1 = formStateFactory({
       formStateConfig: {
         modMetadata: mod,
       },
     });
+
     const formState1BrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -188,11 +215,13 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const formState2 = formStateFactory({
       formStateConfig: {
         modMetadata: mod,
       },
     });
+
     const formState2BrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -204,7 +233,9 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const formState3 = formStateFactory();
+
     const formState3BrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -216,6 +247,7 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const baseState: EditorState = {
       ...initialState,
       modComponentFormStates: [formState3],
@@ -228,6 +260,7 @@ describe("draftModComponentStorage", () => {
       },
       availableDraftModComponentIds: [formState3.uuid],
     };
+
     const stateWithRecipe: EditorState = {
       ...baseState,
       activeModId: mod.id,
@@ -270,18 +303,25 @@ describe("draftModComponentStorage", () => {
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      baseState,
+      {
+        ...baseState,
+        deletedModComponentFormStatesByModId: {
+          [mod.id]: [formState1, formState2],
+        },
+      },
       currentPersistenceVersion,
     );
   });
 
-  test("removes inactive recipe", async () => {
+  test("removes inactive mod", async () => {
     const mod = modMetadataFactory();
+
     const formState1 = formStateFactory({
       formStateConfig: {
         modMetadata: mod,
       },
     });
+
     const formState1BrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -293,11 +333,13 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const formState2 = formStateFactory({
       formStateConfig: {
         modMetadata: mod,
       },
     });
+
     const formState2BrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -309,7 +351,9 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const formState3 = formStateFactory();
+
     const formState3BrickConfigurationUIStates: Record<
       UUID,
       BrickConfigurationUIState
@@ -321,6 +365,7 @@ describe("draftModComponentStorage", () => {
         },
       } as BrickConfigurationUIState,
     };
+
     const baseState: EditorState = {
       ...initialState,
       activeModComponentId: formState3.uuid,
@@ -334,7 +379,8 @@ describe("draftModComponentStorage", () => {
       },
       availableDraftModComponentIds: [formState3.uuid],
     };
-    const stateWithRecipe: EditorState = {
+
+    const stateWithMod: EditorState = {
       ...baseState,
       modComponentFormStates: [
         ...baseState.modComponentFormStates,
@@ -369,13 +415,19 @@ describe("draftModComponentStorage", () => {
         formState2.uuid,
       ],
     };
-    readReduxStorageMock.mockResolvedValue(stateWithRecipe);
+
+    readReduxStorageMock.mockResolvedValue(stateWithMod);
 
     await removeDraftModComponentsForMod(mod.id);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      baseState,
+      {
+        ...baseState,
+        deletedModComponentFormStatesByModId: {
+          [mod.id]: [formState1, formState2],
+        },
+      },
       currentPersistenceVersion,
     );
   });

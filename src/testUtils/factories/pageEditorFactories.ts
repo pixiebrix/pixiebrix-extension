@@ -56,6 +56,7 @@ import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormSt
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type Permissions } from "webextension-polyfill";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
@@ -102,7 +103,7 @@ export const formStateFactory = ({
   starterBrick,
 }: FormStateFactoryOptions = {}): ModComponentFormState => {
   const factoryConfig: FactoryConfig<InternalFormStateOverride> =
-    formStateConfig || {};
+    formStateConfig || { modMetadata: modMetadataFactory() };
 
   if (brickPipeline) {
     factoryConfig.modComponent = baseModComponentStateFactory({
