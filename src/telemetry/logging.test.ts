@@ -33,6 +33,7 @@ import { flagOn } from "@/auth/featureFlagStorage";
 import Reason = chrome.offscreen.Reason;
 import ManifestV3 = chrome.runtime.ManifestV3;
 import { serializeError } from "serialize-error";
+import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
@@ -68,6 +69,9 @@ global.chrome = {
 };
 
 const flagOnMock = jest.mocked(flagOn);
+const mockFlag = (flag: FeatureFlag) => {
+  flagOnMock.mockImplementation(async (testFlag) => flag === testFlag);
+};
 
 const sendMessageSpy = jest.spyOn(global.chrome.runtime, "sendMessage");
 
@@ -79,8 +83,15 @@ afterEach(async () => {
 
 describe("logging", () => {
   test("appendEntry", async () => {
+    flagOnMock.mockResolvedValue(false);
     await appendEntry(logEntryFactory());
     await expect(count()).resolves.toBe(1);
+  });
+
+  test("appendEntry with DISABLE_IDB_LOGGING flag on", async () => {
+    mockFlag(FeatureFlags.DISABLE_IDB_LOGGING);
+    await appendEntry(logEntryFactory());
+    await expect(count()).resolves.toBe(0);
   });
 
   test("clearLog as logs", async () => {
@@ -107,6 +118,7 @@ describe("logging", () => {
   });
 
   test("sweep", async () => {
+    flagOnMock.mockResolvedValue(false);
     await Promise.all(
       array(logEntryFactory, 1500)().map(async (x) => {
         await appendEntry(x);
@@ -116,6 +128,21 @@ describe("logging", () => {
     await sweepLogs();
 
     await expect(count()).resolves.toBe(937);
+    // Increase timeout so test isn't flakey on CI due to slow append operation
+  }, 20_000);
+
+  test("sweep with DISABLE_IDB_LOGGING flag on", async () => {
+    flagOnMock.mockResolvedValue(false);
+    await Promise.all(
+      array(logEntryFactory, 1500)().map(async (x) => {
+        await appendEntry(x);
+      }),
+    );
+
+    mockFlag(FeatureFlags.DISABLE_IDB_LOGGING);
+    await sweepLogs();
+
+    await expect(count()).resolves.toBe(1500);
     // Increase timeout so test isn't flakey on CI due to slow append operation
   }, 20_000);
 
@@ -167,13 +194,10 @@ describe("logging", () => {
   });
 
   test("disable Application error telemetry reporting", async () => {
-    flagOnMock.mockResolvedValue(true);
+    mockFlag(FeatureFlags.APPLICATION_ERROR_TELEMETRY_DISABLE_REPORT);
 
     await reportToApplicationErrorTelemetry(new Error("test"), {}, "");
 
-    expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
-      "application-error-telemetry-disable-report",
-    );
     expect(sendMessageSpy).not.toHaveBeenCalled();
   });
 });
