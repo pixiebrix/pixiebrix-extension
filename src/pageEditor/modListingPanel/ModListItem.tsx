@@ -107,7 +107,7 @@ const ModListItem: React.FC<ModListItemProps> = ({ modMetadata, children }) => {
             />
           </span>
         )}
-        {isActive && <ModActionMenu modMetadata={modMetadata} />}
+        <ModActionMenu modMetadata={modMetadata} isActive={isActive} />
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={modId}>
         <>{children}</>

@@ -52,9 +52,10 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
  *
  * @param modMetadata the metadata of the mod
  */
-const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
-  modMetadata,
-}) => {
+const ModActionMenu: React.FC<{
+  modMetadata: ModMetadata;
+  isActive: boolean;
+}> = ({ modMetadata, isActive }) => {
   const dispatch = useDispatch();
   const { id: modId, name } = modMetadata;
   const isDirty = useSelector(selectModIsDirty(modId));
@@ -118,12 +119,14 @@ const ModActionMenu: React.FC<{ modMetadata: ModMetadata }> = ({
         onClick={async () => saveMod(modId)}
         disabled={!isDirty || isSavingMod}
       />
-      <EllipsisMenu
-        ariaLabel={`${name} - Ellipsis`}
-        items={menuItems}
-        classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
-        portal={true}
-      />
+      {isActive && (
+        <EllipsisMenu
+          ariaLabel={`${name} - Ellipsis`}
+          items={menuItems}
+          classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
+          portal={true}
+        />
+      )}
     </div>
   );
 };
