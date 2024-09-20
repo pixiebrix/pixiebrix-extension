@@ -47,6 +47,8 @@ import { readAuthData } from "@/auth/authStorage";
 import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
 import { type RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 import { FeatureFlags } from "@/auth/featureFlags";
+import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
+import castError from "@/utils/castError";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -121,6 +123,23 @@ const INDEX_KEYS = [
   "authId",
 ] as const satisfies IndexKey[];
 
+// Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
+// to application error telemetry to avoid attempting to record the error in the idb log database.
+function handleIdbError(error: unknown, operationName: string): void {
+  const errorMessage = getErrorMessage(error);
+  const context = getReportErrorAdditionalContext();
+  console.error("Error during IDB operation", {
+    operationName,
+    error,
+    context,
+  });
+  void reportToApplicationErrorTelemetry(
+    castError(error, `Error during ${operationName}`),
+    context,
+    errorMessage,
+  );
+}
+
 async function openLoggingDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
@@ -177,6 +196,21 @@ async function openLoggingDB() {
   return database;
 }
 
+async function withLoggingDB<T>(
+  dbOperation: (db: IDBPDatabase<LogDB>) => Promise<T>,
+): Promise<T> {
+  let db: IDBPDatabase<LogDB> | null = null;
+  try {
+    db = await openLoggingDB();
+    return await dbOperation(db);
+  } catch (error) {
+    handleIdbError(error, "Error appending log entry");
+    throw error;
+  } finally {
+    db?.close();
+  }
+}
+
 /**
  * Add a log entry to the database.
  * @param entry the log entry to add
@@ -186,12 +220,9 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
     return;
   }
 
-  const db = await openLoggingDB();
-  try {
+  await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-  } finally {
-    db.close();
-  }
+  });
 }
 
 function makeMatchEntry(
@@ -210,12 +241,7 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  const db = await openLoggingDB();
-  try {
-    return await db.count(ENTRY_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE));
 }
 
 /**
@@ -223,22 +249,17 @@ export async function count(): Promise<number> {
  */
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
-
   // Open the database to recreate it
-  const db = await openLoggingDB();
-  db.close();
+  await withLoggingDB(async (_db) => {});
 }
 
 /**
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  const db = await openLoggingDB();
-  try {
+  await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  });
 }
 
 /**
@@ -246,9 +267,7 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const db = await openLoggingDB();
-
-  try {
+  await withLoggingDB(async (db) => {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
     if (isEmpty(context)) {
@@ -262,9 +281,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  } finally {
-    db.close();
-  }
+  });
 }
 
 /**
@@ -274,9 +291,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {},
 ): Promise<LogEntry[]> {
-  const db = await openLoggingDB();
-
-  try {
+  return withLoggingDB(async (db) => {
     const objectStore = db
       .transaction(ENTRY_OBJECT_STORE, "readonly")
       .objectStore(ENTRY_OBJECT_STORE);
@@ -305,9 +320,7 @@ export async function getLogEntries(
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  } finally {
-    db.close();
-  }
+  });
 }
 
 /**
@@ -512,19 +525,22 @@ export async function clearModComponentDebugLogs(
     return;
   }
 
-  const db = await openLoggingDB();
-
-  try {
+  await withLoggingDB(async (db) => {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    // TODO: figure out if we should/need to handle these events
+    // tx.addEventListener("clearMod abort", (error) => {
+    //   console.log("**** abort transaction", error);
+    // });
+    // tx.addEventListener("clearMod error", (error) => {
+    //   console.log("**** error transaction", error);
+    // });
     const index = tx.store.index("modComponentId");
     for await (const cursor of index.iterate(modComponentId)) {
       if (cursor.value.level === "debug" || cursor.value.level === "trace") {
         await cursor.delete();
       }
     }
-  } finally {
-    db.close();
-  }
+  });
 }
 
 /**
@@ -535,19 +551,17 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  const numRecords = await count();
+  await withLoggingDB(async (db) => {
+    const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
-  if (numRecords > MAX_LOG_RECORDS) {
-    const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+    if (numRecords > MAX_LOG_RECORDS) {
+      const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
-    console.debug("Sweeping logs", {
-      numRecords,
-      numToDelete,
-    });
+      console.debug("Sweeping logs", {
+        numRecords,
+        numToDelete,
+      });
 
-    const db = await openLoggingDB();
-
-    try {
       const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
       let deletedCount = 0;
@@ -562,10 +576,8 @@ async function _sweepLogs(): Promise<void> {
           return;
         }
       }
-    } finally {
-      db.close();
     }
-  }
+  });
 }
 
 /**

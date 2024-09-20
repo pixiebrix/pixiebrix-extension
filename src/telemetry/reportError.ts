@@ -38,6 +38,39 @@ interface ErrorReportOptions {
   logToConsole?: boolean;
 }
 
+export const getReportErrorAdditionalContext = () => {
+  // In case of service worker.
+  const documentContext =
+    typeof window === "undefined"
+      ? { url: "", referrer: "" }
+      : {
+          // Record original current url and referrer here before it is lost in the service worker.
+          url: window.location.href,
+          referrer: document.referrer,
+        };
+
+  // Casting navigator since it is missing typings
+  // TODO: remove this cast when the TS lib type for navigator is updated
+  //  https://github.com/microsoft/TypeScript/issues/56962
+  const navigatorCast = navigator as unknown as
+    | { deviceMemory?: number; connection?: { effectiveType?: string } }
+    | undefined;
+
+  const navigatorContext = {
+    // Network speed. "4g", "3g", "2g", "slow-2g" https://developer.mozilla.org/en-US/docs/Glossary/Effective_connection_type
+    connectionType: navigatorCast?.connection?.effectiveType || "unknown",
+    // Approximate value in gigabytes. https://developer.mozilla.org/en-US/docs/Web/API/Navigator/deviceMemory
+    deviceMemory: navigatorCast?.deviceMemory,
+  };
+
+  return {
+    // Add on the reporter side of the message. On the receiving side it would always be `background`
+    pageName: getContextName(),
+    ...documentContext,
+    ...navigatorContext,
+  };
+};
+
 /**
  * Report an error for local logs, remote telemetry, etc.
  * @param errorLike the error object, error event, or string to report. Callers should provide Error objects when
@@ -63,26 +96,11 @@ export default function reportError(
   try {
     _record(serializeError(selectError(errorLike)), {
       ...context,
-      // Add on the reporter side of the message. On the receiving side it would always be `background`
-      pageName: getContextName(),
-      ...(typeof window === "undefined"
-        ? { url: "", referrer: "" } // In case of service worker.
-        : {
-            // Record original current url and referrer here before it is lost in the service worker.
-            url: window.location.href,
-            referrer: document.referrer,
-          }),
-      // Network speed. "4g", "3g", "2g", "slow-2g" https://developer.mozilla.org/en-US/docs/Glossary/Effective_connection_type
-      connectionType:
-        // Casting effectiveType since isn't currently on the navigator type
-        // TODO: remove this cast when the TS lib type for navigator is updated
-        //  https://github.com/microsoft/TypeScript/issues/56962
-        (navigator as unknown as { connection?: { effectiveType?: string } })
-          ?.connection?.effectiveType || "unknown",
+      ...getReportErrorAdditionalContext(),
     });
   } catch (reportingError) {
     // The messenger does not throw async errors on "notifiers" but if this is
-    // called in the background the call will be executed directly and it could
+    // called in the background the call will be executed directly, and it could
     // theoretically throw a synchronous error
     console.error("An error occurred when reporting an error", {
       originalError: errorLike,
