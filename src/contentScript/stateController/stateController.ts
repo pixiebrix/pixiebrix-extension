@@ -21,80 +21,60 @@ import { cloneDeep, isEmpty, isEqual, merge, omit, pick } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Except, type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import {
   MergeStrategies,
   type MergeStrategy,
-  STATE_CHANGE_JS_EVENT_TYPE,
-  type StateChangeEventDetail,
   type StateNamespace,
   StateNamespaces,
-  SyncPolicies,
-  type SyncPolicy,
 } from "@/platform/state/stateTypes";
-import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
-import { validateRegistryId } from "@/types/helpers";
-import { Storage } from "webextension-polyfill";
-import StorageChange = Storage.StorageChange;
-import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
-
-// The exact prefix is not important. Pick one that is unlikely to collide with other keys.
-const keyPrefix = "#modVariables/";
-
-const SCHEMA_POLICY_PROP = "x-sync-policy";
-
-/**
- * Map from mod variable name to its synchronization policy.
- * Excludes variables with SyncPolicies.NONE.
- */
-type VariableSyncPolicyMapping = Record<string, typeof SyncPolicies.SESSION>;
+import { getThisFrame } from "webext-messenger";
+import { getSessionStorageKey } from "@/platform/state/stateHelpers";
+import {
+  getSyncedVariableNames,
+  modSyncPolicies,
+} from "@/contentScript/stateController/modVariablePolicyController";
+import { dispatchStateChangeEvent } from "@/contentScript/stateController/stateEventHelpers";
 
 /**
  * Map from mod component id to its private state.
  */
-// eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const framePrivateState = new Map<UUID, JsonObject>();
 
 /**
  * Map from mod id to its mod state. Or null key for public page state.
  */
-// eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const frameModState = new Map<RegistryId | null, JsonObject>();
-
-/**
- * Map from mod id to its variable synchronization policy.
- * @since 2.1.3
- */
-// eslint-disable-next-line local-rules/persistBackgroundData -- content script state
-const modSyncPolicies = new Map<RegistryId, VariableSyncPolicyMapping>();
-
-function getSessionStorageKey(modId: RegistryId): string {
-  return `${keyPrefix}${modId}`;
-}
 
 /**
  * Returns the current state of the mod variables according to the mod's variable synchronization policy.
  */
 async function getModVariableState(modId: RegistryId): Promise<JsonObject> {
-  const modPolicy = modSyncPolicies.get(modId);
-  const syncedVariableNames = Object.keys(modPolicy ?? {});
+  const variableNames = getSyncedVariableNames(modId);
 
-  let synced = {};
+  let tabState = {};
+  let sessionState = {};
 
-  if (!isEmpty(modPolicy)) {
-    const key = getSessionStorageKey(modId);
-    // Skip call if there are no synchronized variables
-    const value = await browser.storage.session.get(key);
+  if (!isEmpty(variableNames.synced)) {
+    const { tabId } = await getThisFrame();
+    const sessionKey = getSessionStorageKey({ modId });
+    const tabKey = getSessionStorageKey({ modId, tabId });
+
+    const values = await browser.storage.session.get([tabKey, sessionKey]);
+
     // eslint-disable-next-line security/detect-object-injection -- key passed to .get
-    synced = value[key] ?? {};
+    tabState = pick(values[tabKey] ?? {}, variableNames.tab);
+    // eslint-disable-next-line security/detect-object-injection -- key passed to .get
+    sessionState = pick(values[sessionKey] ?? {}, variableNames.session);
   }
 
   const local = frameModState.get(modId) ?? {};
 
   return {
-    ...omit(local, syncedVariableNames),
-    ...pick(synced, syncedVariableNames),
+    ...omit(local, variableNames.synced),
+    ...tabState,
+    ...sessionState,
   };
 }
 
@@ -102,15 +82,19 @@ async function updateModVariableState(
   modId: RegistryId,
   nextState: JsonObject,
 ): Promise<void> {
-  const modPolicy = modSyncPolicies.get(modId);
-  const syncedVariableNames = Object.keys(modPolicy ?? {});
+  const variableNames = getSyncedVariableNames(modId);
 
-  frameModState.set(modId, omit(nextState, syncedVariableNames));
+  frameModState.set(modId, omit(nextState, variableNames.synced));
 
-  if (!isEmpty(modPolicy)) {
-    const key = getSessionStorageKey(modId);
-    const synced = pick(nextState, syncedVariableNames);
-    await browser.storage.session.set({ [key]: synced });
+  if (!isEmpty(variableNames.synced)) {
+    const { tabId } = await getThisFrame();
+    const sessionKey = getSessionStorageKey({ modId });
+    const tabKey = getSessionStorageKey({ modId, tabId });
+
+    await browser.storage.session.set({
+      [tabKey]: pick(nextState, variableNames.tab),
+      [sessionKey]: pick(nextState, variableNames.session),
+    });
   }
 }
 
@@ -140,25 +124,6 @@ function mergeState(
       throw new BusinessError(`Unknown merge strategy: ${exhaustiveCheck}`);
     }
   }
-}
-
-/**
- * Dispatch a state change event to the document.
- * @see STATE_CHANGE_JS_EVENT_TYPE
- */
-function dispatchStateChangeEvent(
-  // For now, leave off the state data because state controller in the content script uses JavaScript/DOM
-  // events, which is a public channel (the host site/other extensions can see the event).
-  detail: StateChangeEventDetail,
-) {
-  console.debug("Dispatching statechange", detail);
-
-  document.dispatchEvent(
-    new CustomEvent(STATE_CHANGE_JS_EVENT_TYPE, {
-      detail,
-      bubbles: true,
-    }),
-  );
 }
 
 function dispatchStateChangeEventOnChange({
@@ -287,74 +252,9 @@ export async function getState({
   }
 }
 
-function mapModVariablesToModSyncPolicy(
-  variables: ModVariablesDefinition,
-): VariableSyncPolicyMapping {
-  return Object.fromEntries(
-    Object.entries(variables.schema.properties ?? {})
-      .map(([key, definition]) => {
-        // eslint-disable-next-line security/detect-object-injection -- constant
-        const variablePolicy = (definition as UnknownObject)[
-          SCHEMA_POLICY_PROP
-        ] as SyncPolicy | undefined;
-
-        if (variablePolicy && variablePolicy !== SyncPolicies.NONE) {
-          if (variablePolicy !== SyncPolicies.SESSION) {
-            throw new BusinessError(
-              `Unsupported sync policy: ${variablePolicy}`,
-            );
-          }
-
-          return [key, variablePolicy] satisfies [string, SyncPolicy];
-        }
-
-        return null;
-      })
-      .filter((x) => x != null),
-  );
-}
-
-// Keep as separate method so it's safe to call addListener multiple times with the listener
-function onSessionStorageChange(
-  change: Record<string, StorageChange>,
-  areaName: string,
-): void {
-  if (areaName === "session") {
-    for (const key of Object.keys(change)) {
-      if (key.startsWith(keyPrefix)) {
-        dispatchStateChangeEvent({
-          namespace: StateNamespaces.MOD,
-          blueprintId: validateRegistryId(key.slice(keyPrefix.length)),
-        });
-      }
-    }
-  }
-}
-
-/**
- * Register variables and their synchronization policy for a mod.
- * @param modId the mod registry id
- * @param variables the mod variables definition containing their synchronization policy. If nullish, a blank policy
- * is registered.
- * @see emptyModVariablesDefinitionFactory
- */
-export function registerModVariables(
-  modId: RegistryId,
-  variables: Nullishable<ModVariablesDefinition>,
-): void {
-  const modSyncPolicy = mapModVariablesToModSyncPolicy(
-    variables ?? emptyModVariablesDefinitionFactory(),
-  );
-  modSyncPolicies.set(modId, modSyncPolicy);
-
-  // If any variables are set to sync, listen for changes to session storage to notify the mods running on this page
-  if (!isEmpty(modSyncPolicy)) {
-    browser.storage.onChanged.addListener(onSessionStorageChange);
-  }
-}
-
-export function TEST_resetState(): void {
+export async function TEST_resetStateController(): Promise<void> {
   framePrivateState.clear();
   frameModState.clear();
   modSyncPolicies.clear();
+  await browser.storage.session.clear();
 }

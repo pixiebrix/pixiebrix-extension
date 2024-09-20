@@ -17,9 +17,9 @@
 
 import {
   setState,
-  registerModVariables,
   getState,
-} from "@/contentScript/stateController";
+  TEST_resetStateController,
+} from "@/contentScript/stateController/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
@@ -27,6 +27,11 @@ import {
   StateNamespaces,
 } from "@/platform/state/stateTypes";
 import type { JSONSchema7Definition } from "json-schema";
+import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
+
+beforeEach(async () => {
+  await TEST_resetStateController();
+});
 
 describe("pageState", () => {
   it("deep merge triggers event", async () => {
@@ -124,6 +129,66 @@ describe("pageState", () => {
       });
 
       expect(state).toEqual({ foo: { bar: "baz" }, quox: 42 });
+    });
+
+    it("segregates tab/session storage", async () => {
+      const listener = jest.fn();
+
+      document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
+
+      const modComponentRef = modComponentRefFactory();
+
+      await expect(browser.storage.session.get(null)).resolves.toStrictEqual(
+        {},
+      );
+
+      registerModVariables(modComponentRef.modId, {
+        schema: {
+          type: "object",
+          properties: {
+            sessionVariable: {
+              type: "string",
+              "x-sync-policy": "session",
+              // Cast required because types don't support custom `x-` variables yet
+            } as JSONSchema7Definition,
+            tabVariable: {
+              type: "string",
+              "x-sync-policy": "tab",
+              // Cast required because types don't support custom `x-` variables yet
+            } as JSONSchema7Definition,
+          },
+        },
+      });
+
+      await setState({
+        namespace: StateNamespaces.MOD,
+        data: { sessionVariable: "sessionValue", quox: 42 },
+        mergeStrategy: MergeStrategies.REPLACE,
+        modComponentRef,
+      });
+
+      // The storage fake doesn't emit events
+      expect(listener).toHaveBeenCalledTimes(0);
+
+      let values = await browser.storage.session.get(null);
+
+      // Ensure values are segmented correctly in storage
+      expect(JSON.stringify(values)).not.toContain("quox");
+      expect(JSON.stringify(values)).not.toContain("tabValue");
+      expect(JSON.stringify(values)).toContain("sessionValue");
+
+      await setState({
+        namespace: StateNamespaces.MOD,
+        data: { tabVariable: "tabValue" },
+        mergeStrategy: MergeStrategies.SHALLOW,
+        modComponentRef,
+      });
+
+      values = await browser.storage.session.get(null);
+      expect(JSON.stringify(values)).toContain("sessionValue");
+      expect(JSON.stringify(values)).toContain("tabValue");
+
+      expect(Object.keys(values)).toHaveLength(2);
     });
   });
 });
