@@ -217,6 +217,7 @@ const initialStateV4: ModComponentStateV4 & PersistedState = {
 };
 const initialStateV5: ModComponentStateV5 & PersistedState = {
   activatedModComponents: [],
+  deletedModComponentsByModId: {},
   // Functions under test do not handle updating the persistence object, this
   // is handled by redux-persist. We are only including this to make TS happy.
   _persist: {
@@ -444,6 +445,7 @@ describe("inferModComponentStateVersion", () => {
           _recipe: sharedModMetadata,
         }),
       ],
+      deletedModComponentsByModId: {},
     };
 
     expect(inferModComponentStateVersion(state)).toBe(5);

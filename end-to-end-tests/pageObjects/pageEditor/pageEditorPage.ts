@@ -300,7 +300,7 @@ export class PageEditorPage extends BasePageObject {
 
   @ModifiesModFormState
   async saveNewMod(modName: string, description?: string): Promise<string> {
-    const modUuid = uuidv4();
+    // Const modUuid = uuidv4();
     const modListItem = this.modListingPanel.getModListItemByName(modName);
     await modListItem.select();
     await expect(
@@ -317,8 +317,8 @@ export class PageEditorPage extends BasePageObject {
     await expect(saveNewModModal).toBeVisible();
     await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
 
-    const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
-    await registryIdInput.fill(modUuid);
+    // Const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
+    // await registryIdInput.fill(modUuid);
 
     if (description) {
       // Update the mod description

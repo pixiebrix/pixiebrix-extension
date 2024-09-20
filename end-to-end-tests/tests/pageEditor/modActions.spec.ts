@@ -667,15 +667,15 @@ test("mod actions with saved mod", async ({
       .click();
     await moveModModal.getByRole("button", { name: "Move" }).click();
 
-    await pageEditorPage.brickConfigurationPanel.fillField(
+    const newMod =
+      pageEditorPage.modListingPanel.getModListItemByName(buttonComponentName);
+    await newMod.select();
+    await pageEditorPage.modEditorPane.editMetadataTabPanel.fillField(
       "name",
       newModForButtonName,
     );
 
     // Verify the component has been moved
-    const newMod =
-      pageEditorPage.modListingPanel.getModListItemByName(newModForButtonName);
-    await newMod.select();
     const movedButtonComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         newModForButtonName,

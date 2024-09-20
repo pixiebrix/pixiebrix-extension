@@ -91,6 +91,7 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "./selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -364,6 +365,23 @@ const duplicateActiveModComponent = createAsyncThunk<
   );
   void thunkAPI.dispatch(checkActiveModComponentAvailability());
   return newActiveModComponentFormState;
+});
+
+/**
+ * Restore deleted mod components and mod component form states for a given modId.
+ * Wrapped in a thunk because the activated components must be restored before the form states.
+ */
+const restoreDeletedModComponentsForMod = createAsyncThunk<
+  void,
+  { modId: RegistryId },
+  { state: EditorRootState & ModComponentsRootState }
+>("editor/restoreDeletedModComponentsForMod", async (args, thunkAPI) => {
+  const { modId } = args;
+  thunkAPI.dispatch(
+    modComponentActions.restoreDeletedModComponentsForMod({ modId }),
+  );
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- circular
+  thunkAPI.dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
 });
 
 export const editorSlice = createSlice({
@@ -1015,6 +1033,7 @@ export const actions = {
   checkAvailableActivatedModComponents,
   checkAvailableDraftModComponents,
   checkActiveModComponentAvailability,
+  restoreDeletedModComponentsForMod,
 };
 
 export const persistEditorConfig = {

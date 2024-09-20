@@ -72,6 +72,28 @@ type ActivateModPayload = {
   isReactivate: boolean;
 };
 
+/* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
+
+function removeModComponentsFromState(
+  state: typeof initialState,
+  modComponentIds: UUID[],
+) {
+  const [removed, extensions] = partition(state.activatedModComponents, (x) =>
+    modComponentIds.includes(x.id),
+  );
+
+  state.activatedModComponents = extensions;
+  for (const modComponent of removed) {
+    state.deletedModComponentsByModId ??= {};
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- RegistryId not user input
+    state.deletedModComponentsByModId[modComponent._recipe!.id] ??= [];
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- RegistryId not user input, array initialized above
+    state.deletedModComponentsByModId[modComponent._recipe!.id]!.push(
+      modComponent,
+    );
+  }
+}
+
 const modComponentSlice = createSlice({
   name: "extensions",
   initialState,
@@ -234,7 +256,6 @@ const modComponentSlice = createSlice({
       const index = state.activatedModComponents.findIndex((x) => x.id === id);
 
       if (index >= 0) {
-        // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
         state.activatedModComponents[index] = modComponent;
       } else {
         state.activatedModComponents.push(modComponent);
@@ -260,7 +281,6 @@ const modComponentSlice = createSlice({
         return;
       }
 
-      // eslint-disable-next-line security/detect-object-injection -- index is number
       state.activatedModComponents[index] = {
         ...state.activatedModComponents.at(index),
         ...modComponentUpdate,
@@ -287,16 +307,18 @@ const modComponentSlice = createSlice({
      * Deactivate mod components associated with the given mod id
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
-      const [, extensions] = partition(
+      const [removed, extensions] = partition(
         state.activatedModComponents,
         (x) => x._recipe?.id === modId,
       );
 
+      state.deletedModComponentsByModId ??= {};
+      state.deletedModComponentsByModId[modId] = removed;
       state.activatedModComponents = extensions;
     },
 
     /**
-     * Deactivate the given mod components by id.
+     * Remove the given mod components by id.
      */
     removeModComponents(
       state,
@@ -304,26 +326,33 @@ const modComponentSlice = createSlice({
         payload: { modComponentIds },
       }: PayloadAction<{ modComponentIds: UUID[] }>,
     ) {
-      // NOTE: We aren't deleting the mod components on the server.
-      // The user must do that separately from the mods screen
-      state.activatedModComponents = state.activatedModComponents.filter(
-        (x) => !modComponentIds.includes(x.id),
-      );
+      removeModComponentsFromState(state, modComponentIds);
     },
 
     /**
-     * Deactivate a single mod component by id.
+     * Remove a single mod component by id.
      * @see removeModComponents
      */
     removeModComponent(
       state,
       { payload: { modComponentId } }: PayloadAction<{ modComponentId: UUID }>,
     ) {
-      // NOTE: We aren't deleting the mod component/definition on the server.
-      // The user must do that separately from the dashboard
-      state.activatedModComponents = state.activatedModComponents.filter(
-        (x) => x.id !== modComponentId,
-      );
+      removeModComponentsFromState(state, [modComponentId]);
+    },
+
+    /**
+     * Restore deleted mod components by mod id.
+     */
+    restoreDeletedModComponentsForMod(
+      state,
+      { payload: { modId } }: PayloadAction<{ modId: RegistryId }>,
+    ) {
+      const restored = state.deletedModComponentsByModId?.[modId] ?? [];
+      state.activatedModComponents.push(...restored);
+
+      if (state.deletedModComponentsByModId) {
+        delete state.deletedModComponentsByModId[modId];
+      }
     },
   },
   extraReducers(builder) {
@@ -334,3 +363,5 @@ const modComponentSlice = createSlice({
 export const { actions } = modComponentSlice;
 
 export default modComponentSlice;
+
+/* eslint-enable security/detect-object-injection */

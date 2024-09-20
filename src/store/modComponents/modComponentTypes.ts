@@ -16,10 +16,12 @@
  */
 
 import {
+  type ActivatedModComponent,
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
   type SerializedModComponentV1,
 } from "@/types/modComponentTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * @deprecated - Do not use versioned state types directly
@@ -68,6 +70,7 @@ export type ModComponentStateV4 = ModComponentStateV3;
  */
 export type ModComponentStateV5 = {
   activatedModComponents: ActivatedModComponentV2[];
+  deletedModComponentsByModId?: Record<RegistryId, ActivatedModComponent[]>;
 };
 
 export type ModComponentStateVersions =

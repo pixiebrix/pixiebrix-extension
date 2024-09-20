@@ -75,10 +75,7 @@ const DraftModComponentActionMenu: React.FC<{
         modComponentFormState.modMetadata.id,
       );
     return cleanModComponents.length + dirtyModComponentFormStates.length === 1;
-  }, [
-    getCleanComponentsAndDirtyFormStatesForMod,
-    modComponentFormState.modMetadata,
-  ]);
+  }, [getCleanComponentsAndDirtyFormStatesForMod, modComponentFormState]);
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
   const menuItems: EllipsisMenuItem[] = [

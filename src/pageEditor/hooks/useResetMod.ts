@@ -56,8 +56,9 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
       );
 
       dispatch(actions.resetMetadataAndOptionsForMod(modId));
-      dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
+      dispatch(actions.restoreDeletedModComponentsForMod({ modId }));
       dispatch(actions.setActiveModId(modId));
+      dispatch(actions.checkAvailableDraftModComponents());
     },
     [dispatch, modComponentFormStates, resetModComponent, showConfirmation],
   );
