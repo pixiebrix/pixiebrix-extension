@@ -527,13 +527,6 @@ export async function clearModComponentDebugLogs(
 
   await withLoggingDB(async (db) => {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-    // TODO: figure out if we should/need to handle these events
-    // tx.addEventListener("clearMod abort", (error) => {
-    //   console.log("**** abort transaction", error);
-    // });
-    // tx.addEventListener("clearMod error", (error) => {
-    //   console.log("**** error transaction", error);
-    // });
     const index = tx.store.index("modComponentId");
     for await (const cursor of index.iterate(modComponentId)) {
       if (cursor.value.level === "debug" || cursor.value.level === "trace") {
