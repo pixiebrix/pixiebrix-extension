@@ -230,7 +230,10 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 
   await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-  }, appendEntry.name);
+    await db.add(ENTRY_OBJECT_STORE, entry);
+  }, appendEntry.name).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 function makeMatchEntry(
@@ -267,7 +270,9 @@ export async function recreateDB(): Promise<void> {
 export async function clearLogs(): Promise<void> {
   await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  }, clearLogs.name);
+  }, clearLogs.name).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 /**
@@ -291,7 +296,9 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  }, clearLog.name);
+  }, clearLog.name).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 /**
@@ -547,7 +554,10 @@ export async function clearModComponentDebugLogs(
         await cursor.delete();
       }
     }
-  }, clearModComponentDebugLogs.name);
+  }, clearModComponentDebugLogs.name).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry and
+    // we don't want to interrupt the execution of mod pipeline
+  });
 }
 
 /**
@@ -561,46 +571,44 @@ async function _sweepLogs(): Promise<void> {
   const abortController = new AbortController();
   // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
   // of blocking other db transactions.
-  const timeoutId = setTimeout(abortController.abort, 30_000);
+  setTimeout(abortController.abort, 30_000);
 
-  try {
-    await withLoggingDB(async (db) => {
-      const numRecords = await db.count(ENTRY_OBJECT_STORE);
+  await withLoggingDB(async (db) => {
+    const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
-      if (numRecords > MAX_LOG_RECORDS) {
-        const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+    if (numRecords > MAX_LOG_RECORDS) {
+      const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
-        console.debug("Sweeping logs", {
-          numRecords,
-          numToDelete,
-        });
+      console.debug("Sweeping logs", {
+        numRecords,
+        numToDelete,
+      });
 
-        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-          durability: "relaxed",
-        });
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+        durability: "relaxed",
+      });
 
-        let deletedCount = 0;
+      let deletedCount = 0;
 
-        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-        // This might mostly "just work" if the cursor happens to iterate in insertion order
-        for await (const cursor of tx.store) {
-          if (abortController.signal.aborted) {
-            console.warn("Log sweep aborted due to timeout");
-            break;
-          }
+      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+      // This might mostly "just work" if the cursor happens to iterate in insertion order
+      for await (const cursor of tx.store) {
+        if (abortController.signal.aborted) {
+          console.warn("Log sweep aborted due to timeout");
+          break;
+        }
 
-          await cursor.delete();
-          deletedCount++;
+        await cursor.delete();
+        deletedCount++;
 
-          if (deletedCount > numToDelete) {
-            return;
-          }
+        if (deletedCount > numToDelete) {
+          return;
         }
       }
-    }, _sweepLogs.name);
-  } finally {
-    clearTimeout(timeoutId);
-  }
+    }
+  }, _sweepLogs.name).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 /**

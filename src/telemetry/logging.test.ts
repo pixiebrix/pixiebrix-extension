@@ -102,7 +102,7 @@ describe("logging", () => {
     const idbSpy = jest.spyOn(require("idb"), "openDB");
     idbSpy.mockRejectedValue(error);
 
-    await expect(appendEntry(logEntryFactory())).rejects.toThrow(error);
+    await expect(appendEntry(logEntryFactory())).toResolve();
 
     await waitFor(() => {
       expect(sendMessageSpy).toHaveBeenCalledOnce();
