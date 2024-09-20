@@ -9,7 +9,7 @@ exports[`DraftModComponentListItem renders active element 1`] = `
       class="root list-group-item active"
     >
       <span
-        class="icon"
+        class="icon nested"
       >
         <svg
           aria-hidden="true"
@@ -32,7 +32,19 @@ exports[`DraftModComponentListItem renders active element 1`] = `
       >
         Element 1
       </span>
+<<<<<<< HEAD
       <div>
+=======
+      <span
+        class="icon unsaved text-danger"
+      >
+        <span
+          class="root"
+          title="Unsaved changes"
+        />
+      </span>
+      <span>
+>>>>>>> a7908684c (fix snapshots)
         <button
           aria-expanded="false"
           aria-haspopup="true"
@@ -57,7 +69,11 @@ exports[`DraftModComponentListItem renders active element 1`] = `
             />
           </svg>
         </button>
+<<<<<<< HEAD
       </div>
+=======
+      </span>
+>>>>>>> a7908684c (fix snapshots)
     </div>
     <button
       type="submit"
@@ -77,7 +93,7 @@ exports[`DraftModComponentListItem renders not active element 1`] = `
       class="root list-group-item"
     >
       <span
-        class="icon"
+        class="icon nested"
       >
         <svg
           aria-hidden="true"
