@@ -194,9 +194,6 @@ test("can report an indexdb error to telemetry service", async ({
   context,
   extensionId,
 }) => {
-  const endpointCalledFromServiceWorker =
-    "https://app.pixiebrix.com/api/events/";
-
   const modId = "@pixies/highlight-keywords";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
