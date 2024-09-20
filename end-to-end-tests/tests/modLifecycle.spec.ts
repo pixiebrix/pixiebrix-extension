@@ -153,5 +153,11 @@ test("create, run, package, and update mod", async ({
     const modTableItem = modsPage.modTableItemById(modId);
     await expect(modTableItem.getByText("Active")).toBeVisible();
     await expect(modTableItem.getByText("No longer Available")).toBeVisible();
+
+    await modTableItem.clickAction("Deactivate");
+    await expect(modTableItem.root).toBeHidden();
+    await expect(
+      page.getByRole("button", { name: "Search Youtube" }),
+    ).toBeHidden();
   });
 });
