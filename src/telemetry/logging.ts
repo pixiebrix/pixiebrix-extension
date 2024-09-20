@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { type Except, type JsonObject } from "type-fest";
+import { type Except, type JsonObject, type ValueOf } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { isEmpty, once, sortBy } from "lodash";
@@ -123,9 +123,23 @@ const INDEX_KEYS = [
   "authId",
 ] as const satisfies IndexKey[];
 
+const IDB_OPERATION = {
+  APPEND_ENTRY: "appendEntry",
+  COUNT: "count",
+  RECREATE_DB: "recreateDB",
+  CLEAR_LOGS: "clearLogs",
+  CLEAR_LOG: "clearLog",
+  GET_LOG_ENTRIES: "getLogEntries",
+  SWEEP_LOGS: "sweepLogs",
+  CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
+} as const;
+
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
 // to application error telemetry to avoid attempting to record the error in the idb log database.
-function handleIdbError(error: unknown, operationName: string): void {
+function handleIdbError(
+  error: unknown,
+  operationName: ValueOf<typeof IDB_OPERATION>,
+): void {
   const errorMessage = getErrorMessage(error);
   const context = {
     idbOperationName: operationName,
@@ -205,14 +219,14 @@ async function openLoggingDB() {
 
 async function withLoggingDB<T>(
   dbOperation: (db: IDBPDatabase<LogDB>) => Promise<T>,
-  operationName: string,
+  operationName: ValueOf<typeof IDB_OPERATION>,
 ): Promise<T> {
   let db: IDBPDatabase<LogDB> | null = null;
   try {
     db = await openLoggingDB();
     return await dbOperation(db);
   } catch (error) {
-    handleIdbError(error, `Error during idbOperation, ${operationName}`);
+    handleIdbError(error, operationName);
     throw error;
   } finally {
     db?.close();
@@ -230,7 +244,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 
   await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-  }, appendEntry.name).catch((_error) => {
+  }, IDB_OPERATION.APPEND_ENTRY).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -251,7 +265,10 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE), count.name);
+  return withLoggingDB(
+    async (db) => db.count(ENTRY_OBJECT_STORE),
+    IDB_OPERATION.COUNT,
+  );
 }
 
 /**
@@ -260,7 +277,7 @@ export async function count(): Promise<number> {
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
   // Open the database to recreate it
-  await withLoggingDB(async (_db) => {}, recreateDB.name);
+  await withLoggingDB(async (_db) => {}, IDB_OPERATION.RECREATE_DB);
 }
 
 /**
@@ -269,7 +286,7 @@ export async function recreateDB(): Promise<void> {
 export async function clearLogs(): Promise<void> {
   await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  }, clearLogs.name).catch((_error) => {
+  }, IDB_OPERATION.CLEAR_LOGS).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -295,7 +312,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  }, clearLog.name).catch((_error) => {
+  }, IDB_OPERATION.CLEAR_LOG).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -338,7 +355,7 @@ export async function getLogEntries(
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  }, getLogEntries.name);
+  }, IDB_OPERATION.GET_LOG_ENTRIES);
 }
 
 /**
@@ -553,7 +570,7 @@ export async function clearModComponentDebugLogs(
         await cursor.delete();
       }
     }
-  }, clearModComponentDebugLogs.name).catch((_error) => {
+  }, IDB_OPERATION.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry and
     // we don't want to interrupt the execution of mod pipeline
   });
@@ -605,7 +622,7 @@ async function _sweepLogs(): Promise<void> {
         }
       }
     }
-  }, _sweepLogs.name).catch((_error) => {
+  }, IDB_OPERATION.SWEEP_LOGS).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }

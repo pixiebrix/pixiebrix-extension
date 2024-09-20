@@ -114,7 +114,7 @@ describe("logging", () => {
           error: serializeError(error),
           errorMessage: "Test db.add error",
           messageContext: expect.objectContaining({
-            idbOperationName: "Error during idbOperation, appendEntry",
+            idbOperationName: "appendEntry",
             someMockReportErrorContext: 123,
             name: "Error",
           }),
