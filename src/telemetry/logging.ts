@@ -245,7 +245,7 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE), "count");
+  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE), count.name);
 }
 
 /**
