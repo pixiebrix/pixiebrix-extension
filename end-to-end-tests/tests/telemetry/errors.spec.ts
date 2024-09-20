@@ -227,7 +227,7 @@ test("can report an indexdb error to telemetry service", async ({
         stack: expect.any(String),
       },
       extensionVersion: expect.any(String),
-      idbOperationName: "Error during idbOperation, appendEntry",
+      idbOperationName: "appendEntry",
       manifestVersion: 3,
       message:
         "The requested version (4) is less than the existing version (20).",
