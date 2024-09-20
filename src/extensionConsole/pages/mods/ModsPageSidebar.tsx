@@ -291,7 +291,7 @@ const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
               setActiveTab({
                 key: filter,
                 tabTitle: `${filter} Mods`,
-                filters: [{ id: "sharing.source.label", value: filter }],
+                filters: [{ id: "sharingSource.label", value: filter }],
               });
             }}
           />
