@@ -65,9 +65,8 @@ async function clickLinkInSidebarAndWaitForPage(
     //  Error: locator.click: Target page, context or browser has been closed.
     // Even though it errors, the link is still opened in a new tab.
     // See https://github.com/w3c/webextensions/issues/588.
-    await expect(async () => locator.click()).not.toPass({
-      timeout: 3000,
-    });
+    // eslint-disable-next-line playwright/no-force-option -- see above
+    await locator.click({ force: true });
   } else {
     await locator.click();
   }

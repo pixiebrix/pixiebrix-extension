@@ -328,6 +328,10 @@ export async function clearModComponentTraces(
   const db = await openTraceDB();
 
   try {
+    if ((await db.count(ENTRY_OBJECT_STORE)) === 0) {
+      return;
+    }
+
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
     const index = tx.store.index("modComponentId");
     for await (const cursor of index.iterate(modComponentId)) {
