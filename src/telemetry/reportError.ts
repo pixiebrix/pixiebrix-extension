@@ -42,7 +42,7 @@ export const getReportErrorAdditionalContext = () => {
   // In case of service worker.
   const documentContext =
     typeof window === "undefined"
-      ? { url: "", referrer: "" }
+      ? { url: "service worker", referrer: "service worker" }
       : {
           // Record original current url and referrer here before it is lost in the service worker.
           url: window.location.href,
