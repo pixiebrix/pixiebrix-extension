@@ -176,6 +176,10 @@ async function openLoggingDB() {
     },
     blocked(currentVersion: number, blockedVersion: number) {
       console.debug("Database blocked.", { currentVersion, blockedVersion });
+      // This should never happen, since we immediately close connections if blocking below,
+      // but just in case, close the connection here so it doesn't block openLoggingDB from
+      // resolving
+      database?.close();
     },
     blocking(currentVersion: number, blockedVersion: number) {
       // Don't block closing/upgrading the database
@@ -272,7 +276,9 @@ export async function clearLogs(): Promise<void> {
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
   await withLoggingDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+      durability: "relaxed",
+    });
 
     if (isEmpty(context)) {
       await tx.store.clear();
@@ -297,7 +303,9 @@ export async function getLogEntries(
 ): Promise<LogEntry[]> {
   return withLoggingDB(async (db) => {
     const objectStore = db
-      .transaction(ENTRY_OBJECT_STORE, "readonly")
+      .transaction(ENTRY_OBJECT_STORE, "readonly", {
+        durability: "relaxed",
+      })
       .objectStore(ENTRY_OBJECT_STORE);
 
     let indexKey: IndexKey | undefined;
@@ -530,7 +538,9 @@ export async function clearModComponentDebugLogs(
   }
 
   await withLoggingDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+      durability: "relaxed",
+    });
     const index = tx.store.index("modComponentId");
     for await (const cursor of index.iterate(modComponentId)) {
       if (cursor.value.level === "debug" || cursor.value.level === "trace") {
@@ -548,33 +558,49 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    const numRecords = await db.count(ENTRY_OBJECT_STORE);
+  const abortController = new AbortController();
+  // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+  // of blocking other db transactions.
+  const timeoutId = setTimeout(abortController.abort, 30_000);
 
-    if (numRecords > MAX_LOG_RECORDS) {
-      const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+  try {
+    await withLoggingDB(async (db) => {
+      const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
-      console.debug("Sweeping logs", {
-        numRecords,
-        numToDelete,
-      });
+      if (numRecords > MAX_LOG_RECORDS) {
+        const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
-      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+        console.debug("Sweeping logs", {
+          numRecords,
+          numToDelete,
+        });
 
-      let deletedCount = 0;
+        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+          durability: "relaxed",
+        });
 
-      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-      // This might mostly "just work" if the cursor happens to iterate in insertion order
-      for await (const cursor of tx.store) {
-        await cursor.delete();
-        deletedCount++;
+        let deletedCount = 0;
 
-        if (deletedCount > numToDelete) {
-          return;
+        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+        // This might mostly "just work" if the cursor happens to iterate in insertion order
+        for await (const cursor of tx.store) {
+          if (abortController.signal.aborted) {
+            console.warn("Log sweep aborted due to timeout");
+            break;
+          }
+
+          await cursor.delete();
+          deletedCount++;
+
+          if (deletedCount > numToDelete) {
+            return;
+          }
         }
       }
-    }
-  }, _sweepLogs.name);
+    }, _sweepLogs.name);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /**
