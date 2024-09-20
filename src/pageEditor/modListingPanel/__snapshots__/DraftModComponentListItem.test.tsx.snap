@@ -32,9 +32,6 @@ exports[`DraftModComponentListItem renders active element 1`] = `
       >
         Element 1
       </span>
-<<<<<<< HEAD
-      <div>
-=======
       <span
         class="icon unsaved text-danger"
       >
@@ -44,7 +41,6 @@ exports[`DraftModComponentListItem renders active element 1`] = `
         />
       </span>
       <span>
->>>>>>> a7908684c (fix snapshots)
         <button
           aria-expanded="false"
           aria-haspopup="true"
@@ -69,11 +65,7 @@ exports[`DraftModComponentListItem renders active element 1`] = `
             />
           </svg>
         </button>
-<<<<<<< HEAD
-      </div>
-=======
       </span>
->>>>>>> a7908684c (fix snapshots)
     </div>
     <button
       type="submit"
