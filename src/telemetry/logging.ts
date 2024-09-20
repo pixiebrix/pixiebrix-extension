@@ -127,7 +127,10 @@ const INDEX_KEYS = [
 // to application error telemetry to avoid attempting to record the error in the idb log database.
 function handleIdbError(error: unknown, operationName: string): void {
   const errorMessage = getErrorMessage(error);
-  const context = getReportErrorAdditionalContext();
+  const context = {
+    idbOperationName: operationName,
+    ...getReportErrorAdditionalContext(),
+  };
   console.error("Error during IDB operation", {
     operationName,
     error,
@@ -198,13 +201,14 @@ async function openLoggingDB() {
 
 async function withLoggingDB<T>(
   dbOperation: (db: IDBPDatabase<LogDB>) => Promise<T>,
+  operationName: string,
 ): Promise<T> {
   let db: IDBPDatabase<LogDB> | null = null;
   try {
     db = await openLoggingDB();
     return await dbOperation(db);
   } catch (error) {
-    handleIdbError(error, "Error appending log entry");
+    handleIdbError(error, `Error during idbOperation, ${operationName}`);
     throw error;
   } finally {
     db?.close();
@@ -222,7 +226,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 
   await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-  });
+  }, "appendEntry");
 }
 
 function makeMatchEntry(
@@ -241,7 +245,7 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE));
+  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE), "count");
 }
 
 /**
@@ -250,7 +254,7 @@ export async function count(): Promise<number> {
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
   // Open the database to recreate it
-  await withLoggingDB(async (_db) => {});
+  await withLoggingDB(async (_db) => {}, "recreateDB");
 }
 
 /**
@@ -259,7 +263,7 @@ export async function recreateDB(): Promise<void> {
 export async function clearLogs(): Promise<void> {
   await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  });
+  }, "clearLogs");
 }
 
 /**
@@ -281,7 +285,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  });
+  }, "clearLog");
 }
 
 /**
@@ -320,7 +324,7 @@ export async function getLogEntries(
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  });
+  }, "getLogEntries");
 }
 
 /**
@@ -533,7 +537,7 @@ export async function clearModComponentDebugLogs(
         await cursor.delete();
       }
     }
-  });
+  }, "clearModComponentDebugLogs");
 }
 
 /**
@@ -570,7 +574,7 @@ async function _sweepLogs(): Promise<void> {
         }
       }
     }
-  });
+  }, "sweepLogs");
 }
 
 /**
