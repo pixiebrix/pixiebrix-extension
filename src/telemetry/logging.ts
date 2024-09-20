@@ -226,7 +226,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 
   await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-  }, "appendEntry");
+  }, appendEntry.name);
 }
 
 function makeMatchEntry(
@@ -254,7 +254,7 @@ export async function count(): Promise<number> {
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
   // Open the database to recreate it
-  await withLoggingDB(async (_db) => {}, "recreateDB");
+  await withLoggingDB(async (_db) => {}, recreateDB.name);
 }
 
 /**
@@ -263,7 +263,7 @@ export async function recreateDB(): Promise<void> {
 export async function clearLogs(): Promise<void> {
   await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  }, "clearLogs");
+  }, clearLogs.name);
 }
 
 /**
@@ -285,7 +285,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  }, "clearLog");
+  }, clearLog.name);
 }
 
 /**
@@ -324,7 +324,7 @@ export async function getLogEntries(
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  }, "getLogEntries");
+  }, getLogEntries.name);
 }
 
 /**
@@ -537,7 +537,7 @@ export async function clearModComponentDebugLogs(
         await cursor.delete();
       }
     }
-  }, "clearModComponentDebugLogs");
+  }, clearModComponentDebugLogs.name);
 }
 
 /**
@@ -574,7 +574,7 @@ async function _sweepLogs(): Promise<void> {
         }
       }
     }
-  }, "sweepLogs");
+  }, _sweepLogs.name);
 }
 
 /**
