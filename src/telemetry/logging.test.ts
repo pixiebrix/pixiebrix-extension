@@ -34,6 +34,7 @@ import Reason = chrome.offscreen.Reason;
 import ManifestV3 = chrome.runtime.ManifestV3;
 import { serializeError } from "serialize-error";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
+import { waitFor } from "@testing-library/react";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
@@ -92,6 +93,35 @@ describe("logging", () => {
     mockFlag(FeatureFlags.DISABLE_IDB_LOGGING);
     await appendEntry(logEntryFactory());
     await expect(count()).resolves.toBe(0);
+  });
+
+  test("appendEntry db.add error handling", async () => {
+    flagOnMock.mockResolvedValue(false);
+    const error = new Error("Test db.add error");
+
+    const idbSpy = jest.spyOn(require("idb"), "openDB");
+    idbSpy.mockRejectedValue(error);
+
+    await expect(appendEntry(logEntryFactory())).rejects.toThrow(error);
+
+    await waitFor(() => {
+      expect(sendMessageSpy).toHaveBeenCalledOnce();
+    });
+    expect(sendMessageSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: "offscreen-doc",
+        data: expect.objectContaining({
+          error: serializeError(error),
+          errorMessage: "Test db.add error",
+          messageContext: expect.objectContaining({
+            idbOperationName: "Error during idbOperation, appendEntry",
+            someMockReportErrorContext: 123,
+            name: "Error",
+          }),
+        }),
+      }),
+    );
+    idbSpy.mockRestore();
   });
 
   test("clearLog as logs", async () => {
