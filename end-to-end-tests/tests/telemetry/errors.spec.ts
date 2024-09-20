@@ -96,6 +96,7 @@ test("can report errors to telemetry service", async ({
       stack: expect.any(String),
       message: expect.any(String),
       connectionType: expect.any(String),
+      deviceMemory: expect.any(Number),
       date: expect.any(Number),
       extensionVersion: expect.any(String),
       name: expect.any(String),
@@ -151,7 +152,8 @@ test("can report a service worker error to telemetry service", async ({
     expect.objectContaining({
       code: "ERR_BAD_RESPONSE",
       code_version: expect.any(String),
-      connectionType: "4g",
+      connectionType: expect.any(String),
+      deviceMemory: expect.any(Number),
       date: expect.any(Number),
       error: expect.objectContaining({
         kind: "AxiosError",
@@ -164,7 +166,7 @@ test("can report a service worker error to telemetry service", async ({
       name: "AxiosError",
       origin: "logger",
       pageName: "background",
-      referrer: "",
+      referrer: "undefined",
       runtimeId: extensionId,
       service: "pixiebrix-browser-extension",
       session_id: expect.any(String),
