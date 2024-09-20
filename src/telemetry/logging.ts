@@ -230,7 +230,6 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 
   await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-    await db.add(ENTRY_OBJECT_STORE, entry);
   }, appendEntry.name).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
