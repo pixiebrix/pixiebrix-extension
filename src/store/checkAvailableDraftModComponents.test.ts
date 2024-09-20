@@ -30,7 +30,7 @@ import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -53,7 +53,7 @@ describe("checkAvailableDraftModComponents", () => {
       },
     });
 
-    const availableDraftModComponent = menuItemFormStateFactory({
+    const availableDraftModComponent = buttonFormStateFactory({
       starterBrick: {
         metadata: {
           id: validateRegistryId("test/available-button"),
@@ -71,7 +71,7 @@ describe("checkAvailableDraftModComponents", () => {
       },
     });
 
-    const unavailableDraftModComponent = menuItemFormStateFactory({
+    const unavailableDraftModComponent = buttonFormStateFactory({
       starterBrick: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),

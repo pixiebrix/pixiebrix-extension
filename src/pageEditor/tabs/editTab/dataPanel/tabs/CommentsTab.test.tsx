@@ -19,7 +19,7 @@ import React from "react";
 import { Tab } from "react-bootstrap";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import { render, screen } from "@/pageEditor/testHelpers";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import userEvent from "@testing-library/user-event";
 import reportEvent from "@/telemetry/reportEvent";
@@ -32,7 +32,7 @@ const reportEventMock = jest.mocked(reportEvent);
 
 const initialComments = "Hello world!";
 
-const formStateWithComments = menuItemFormStateFactory(
+const formStateWithComments = buttonFormStateFactory(
   {
     modMetadata: modMetadataFactory(),
   },
@@ -43,7 +43,7 @@ const formStateWithComments = menuItemFormStateFactory(
   ],
 );
 
-const formStateWithNoComments = menuItemFormStateFactory({}, [
+const formStateWithNoComments = buttonFormStateFactory({}, [
   brickConfigFactory(),
 ]);
 

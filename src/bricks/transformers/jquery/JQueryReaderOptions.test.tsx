@@ -24,7 +24,7 @@ import JQueryReaderOptions, {
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 // eslint-disable-next-line no-restricted-imports -- using to simplify Formik state for test
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -40,7 +40,7 @@ jest.mock("@/contentScript/messenger/api");
 const getAttributeExamplesMock = jest.mocked(getAttributeExamples);
 
 function baseStateFactory() {
-  const baseFormState = menuItemFormStateFactory();
+  const baseFormState = buttonFormStateFactory();
   baseFormState.modComponent.brickPipeline = [
     {
       id: JQueryReader.BRICK_ID,

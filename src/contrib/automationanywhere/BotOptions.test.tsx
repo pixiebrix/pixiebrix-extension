@@ -26,7 +26,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type SanitizedConfig } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -45,7 +45,7 @@ jest.mock("@/hooks/useAuthOptions");
 jest.mock("@/contentScript/messenger/api");
 
 function makeBaseState() {
-  return menuItemFormStateFactory(
+  return buttonFormStateFactory(
     {
       integrationDependencies: [
         integrationDependencyFactory({

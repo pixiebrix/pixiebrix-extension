@@ -26,7 +26,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { TEST_setContext } from "webext-detect";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
@@ -62,7 +62,7 @@ jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
 const integrationId = validateRegistryId("@uipath/cloud");
 
 function makeBaseState() {
-  return menuItemFormStateFactory(
+  return buttonFormStateFactory(
     {
       integrationDependencies: [
         integrationDependencyFactory({

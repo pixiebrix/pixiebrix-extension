@@ -23,7 +23,7 @@ import {
   modComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Mods
 const ID_FOO = validateRegistryId("test/mod-foo");
@@ -47,14 +47,14 @@ const cleanModComponentFooA: ModComponentBase = modComponentFactory({
 });
 
 const ID_FOO_B = uuidv4();
-const formStateModComponentFooB: ButtonFormState = menuItemFormStateFactory({
+const formStateModComponentFooB: ButtonFormState = buttonFormStateFactory({
   uuid: ID_FOO_B,
   label: "B",
   modMetadata: modMetadataFoo,
 });
 
 const ID_ORPHAN_C = uuidv4();
-const formStateModComponentOrphanC: ButtonFormState = menuItemFormStateFactory({
+const formStateModComponentOrphanC: ButtonFormState = buttonFormStateFactory({
   uuid: ID_ORPHAN_C,
   label: "C",
 });
@@ -67,7 +67,7 @@ const cleanModComponentBarD: ModComponentBase = modComponentFactory({
 });
 
 const ID_BAR_E = uuidv4();
-const formStateModComponentBarE: ButtonFormState = menuItemFormStateFactory({
+const formStateModComponentBarE: ButtonFormState = buttonFormStateFactory({
   uuid: ID_BAR_E,
   label: "E",
   modMetadata: modMetadataBar,
@@ -92,7 +92,7 @@ const cleanModComponentOrphanH: ModComponentBase = modComponentFactory({
   label: "H",
 });
 
-const formStateModComponentOrphanH: ButtonFormState = menuItemFormStateFactory({
+const formStateModComponentOrphanH: ButtonFormState = buttonFormStateFactory({
   uuid: ID_ORPHAN_H,
   label: "H",
 });

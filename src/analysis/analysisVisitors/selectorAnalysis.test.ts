@@ -19,7 +19,7 @@ import SelectorAnalysis, {
   findJQueryExtensions,
 } from "@/analysis/analysisVisitors/selectorAnalysis";
 import {
-  menuItemFormStateFactory,
+  buttonFormStateFactory,
   triggerFormStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import type { AttachMode } from "@/starterBricks/button/buttonStarterBrickTypes";
@@ -119,7 +119,7 @@ describe("SelectorAnalysis", () => {
     async (attachMode: AttachMode) => {
       const analysis = new SelectorAnalysis();
 
-      const formState = menuItemFormStateFactory();
+      const formState = buttonFormStateFactory();
 
       formState.starterBrick.definition.containerSelector =
         'div:contains("foo")';
@@ -143,7 +143,7 @@ describe("SelectorAnalysis", () => {
   it("detects invalid action location selector", async () => {
     const analysis = new SelectorAnalysis();
 
-    const formState = menuItemFormStateFactory();
+    const formState = buttonFormStateFactory();
 
     formState.starterBrick.definition.containerSelector = "!div";
 

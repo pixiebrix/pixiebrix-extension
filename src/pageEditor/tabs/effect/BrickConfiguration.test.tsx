@@ -28,7 +28,7 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 import {
   contextMenuFormStateFactory,
   formStateFactory,
-  menuItemFormStateFactory,
+  buttonFormStateFactory,
   quickbarFormStateFactory,
   sidebarPanelFormStateFactory,
   triggerFormStateFactory,
@@ -96,7 +96,7 @@ describe("shows root mode", () => {
     [StarterBrickTypes.QUICK_BAR_ACTION, quickbarFormStateFactory],
     [StarterBrickTypes.CONTEXT_MENU, contextMenuFormStateFactory],
     // Buttons must show root mode because root mode is used if the location matches multiple elements on the page
-    [StarterBrickTypes.BUTTON, menuItemFormStateFactory],
+    [StarterBrickTypes.BUTTON, buttonFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
     const brick = echoBrick;
     brickRegistry.register([brick]);

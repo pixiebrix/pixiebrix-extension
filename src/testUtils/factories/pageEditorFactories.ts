@@ -40,7 +40,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
-import menuItem from "@/pageEditor/starterBricks/button";
+import button from "@/pageEditor/starterBricks/button";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import quickBar from "@/pageEditor/starterBricks/quickBar";
 import trigger from "@/pageEditor/starterBricks/trigger";
@@ -219,11 +219,11 @@ export const quickbarFormStateFactory = (
   }) as QuickBarFormState;
 };
 
-export const menuItemFormStateFactory = (
+export const buttonFormStateFactory = (
   override?: FactoryConfig<ButtonFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultTriggerProps = menuItem.fromNativeElement(
+  const defaultTriggerProps = button.fromNativeElement(
     "https://test.com",
     metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),

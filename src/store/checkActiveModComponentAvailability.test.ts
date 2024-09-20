@@ -31,7 +31,7 @@ import {
 } from "@/bricks/available";
 import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { produce } from "immer";
-import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { buttonFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -53,7 +53,7 @@ describe("checkActiveModComponentAvailability", () => {
       },
     });
 
-    const availableDraftModComponent = menuItemFormStateFactory({
+    const availableDraftModComponent = buttonFormStateFactory({
       starterBrick: {
         metadata: {
           id: validateRegistryId("test/available-button"),
@@ -71,7 +71,7 @@ describe("checkActiveModComponentAvailability", () => {
       },
     });
 
-    const unavailableDraftModComponent = menuItemFormStateFactory({
+    const unavailableDraftModComponent = buttonFormStateFactory({
       starterBrick: {
         metadata: {
           id: validateRegistryId("test/unavailable-button"),
