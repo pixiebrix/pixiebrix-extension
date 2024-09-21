@@ -37,7 +37,7 @@ export type StateNamespace = ValueOf<typeof StateNamespaces>;
 
 /**
  * [Experimental] policy to sync state changes across frames/tabs.
- * @since 2.1.2
+ * @since 2.1.3
  */
 export const SyncPolicies = {
   NONE: "none",

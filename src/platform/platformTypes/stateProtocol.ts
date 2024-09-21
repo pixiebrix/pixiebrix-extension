@@ -63,7 +63,7 @@ export type StateProtocol = {
    *
    * @param modId the mod id
    * @param variables mod variables definition, or nullishable to allow any mod variable
-   * @since 2.1.2
+   * @since 2.1.3
    */
   registerModVariables(
     modId: RegistryId,

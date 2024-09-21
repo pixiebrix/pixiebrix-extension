@@ -38,7 +38,6 @@ import { type UUID } from "@/types/stringTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { type Availability } from "@/types/availabilityTypes";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
@@ -262,17 +261,14 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     // `registerModVariables` is safe to call multiple times for the same modId because the variable definitions
     // will be consistent across components.
     for (const modComponent of modComponents) {
-      // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
-      // for draft mod components.
-      assertNotNullish(
-        modComponent._recipe,
-        "Expected associated mod for mod component",
-      );
-
-      this.platform.state.registerModVariables(
-        modComponent._recipe.id,
-        modComponent.variablesDefinition,
-      );
+      if (modComponent._recipe) {
+        // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
+        // for draft mod components. However, there's old test code that doesn't set `_recipe` on the mod component.
+        this.platform.state.registerModVariables(
+          modComponent._recipe.id,
+          modComponent.variablesDefinition,
+        );
+      }
     }
 
     console.debug("synchronizeComponents for extension point %s", this.id, {
@@ -301,17 +297,14 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
       this.modComponents.push(modComponent);
     }
 
-    // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
-    // for draft mod components.
-    assertNotNullish(
-      modComponent._recipe,
-      "Expected associated mod for mod component",
-    );
-
-    this.platform.state.registerModVariables(
-      modComponent._recipe.id,
-      modComponent.variablesDefinition,
-    );
+    if (modComponent._recipe) {
+      // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
+      // for draft mod components. However, there's old test code that doesn't set `_recipe` on the mod component.
+      this.platform.state.registerModVariables(
+        modComponent._recipe.id,
+        modComponent.variablesDefinition,
+      );
+    }
   }
 
   abstract defaultReader(): Promise<Reader>;

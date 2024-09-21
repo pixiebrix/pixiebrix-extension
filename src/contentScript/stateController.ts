@@ -64,7 +64,7 @@ const frameModState = new Map<RegistryId | null, JsonObject>();
 
 /**
  * Map from mod id to its variable synchronization policy.
- * @since 2.12
+ * @since 2.1.3
  */
 // eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const modSyncPolicies = new Map<RegistryId, VariableSyncPolicyMapping>();
