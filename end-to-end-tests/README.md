@@ -59,6 +59,10 @@ as the base url for e2e tests. Ex. `await page.goto("/bootstrap-5");` will bring
 playground.
 The source for this website is: https://github.com/pixiebrix/playground
 
+We use snapshots in our end-to-end tests, in particular to verify the yaml state of mods when using the
+page editor. To update playwright snapshots, run `npm run test:e2e -- --update-snapshots <name-of-test-file>`
+in the cli.
+
 Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
 test should represent one full feature flow, which may include multiple steps and assertions. Avoid splitting
 a single feature flow across multiple tests, preferring longer tests if necessary.

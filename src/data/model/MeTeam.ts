@@ -21,67 +21,63 @@ import {
   transformControlRoomResponse,
 } from "@/data/model/ControlRoom";
 import {
-  type OrganizationTheme,
-  transformOrganizationThemeResponse,
-} from "@/data/model/OrganizationTheme";
+  type TeamTheme,
+  transformTeamThemeResponse,
+} from "@/data/model/TeamTheme";
 import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
 import { type SetRequired } from "type-fest";
 
-export type MeOrganization = {
+export type MeTeam = {
   /**
-   * The organization's ID.
+   * The team's ID.
    */
-  organizationId: UUID;
+  teamId: UUID;
   /**
-   * The organization's name.
+   * The team's name.
    */
-  organizationName: string;
+  teamName: string;
   /**
-   * Whether the organization is an enterprise organization.
+   * Whether the team is an enterprise team.
    */
   isEnterprise: boolean;
   /**
-   * The organization's scope for saving modsmods, if set. A string beginning with "@".
+   * The team's scope for saving modsmods, if set. A string beginning with "@".
    */
   scope?: string;
   /**
-   * The organization's control room, for AA orgs.
+   * The team's control room, for AA orgs.
    */
   controlRoom?: ControlRoom;
   /**
-   * The organization's UI theme.
+   * The team's UI theme.
    */
-  organizationTheme?: OrganizationTheme;
+  teamTheme?: TeamTheme;
 };
 
-export function transformMeOrganizationResponse(
+export function transformMeTeamResponse(
   response: SetRequired<
     components["schemas"]["Me"],
     "organization"
   >["organization"],
-): MeOrganization {
-  const organization: MeOrganization = {
-    organizationId: validateUUID(response.id),
-    organizationName: response.name,
+): MeTeam {
+  const team: MeTeam = {
+    teamId: validateUUID(response.id),
+    teamName: response.name,
     isEnterprise: response.is_enterprise ?? false,
   };
 
   if (response.scope) {
-    organization.scope = response.scope;
+    team.scope = response.scope;
   }
 
   if (response.control_room) {
-    organization.controlRoom = transformControlRoomResponse(
-      response.control_room,
-    );
+    team.controlRoom = transformControlRoomResponse(response.control_room);
   }
 
   if (response.theme) {
-    organization.organizationTheme = transformOrganizationThemeResponse(
-      response.theme,
-    );
+    team.teamTheme = transformTeamThemeResponse(response.theme);
   }
 
-  return organization;
+  return team;
 }

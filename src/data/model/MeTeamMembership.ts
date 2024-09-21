@@ -25,39 +25,39 @@ import {
   transformControlRoomResponse,
 } from "@/data/model/ControlRoom";
 import { validateUUID } from "@/types/helpers";
-import { type RequiredMeOrganizationMembershipResponse } from "@/data/service/responseTypeHelpers";
+import { type RequiredMeTeamMembershipResponse } from "@/data/service/responseTypeHelpers";
 
-export type MeOrganizationMembership = {
+export type MeTeamMembership = {
   /**
-   * The member organization id
+   * The member team id
    */
-  organizationId: UUID;
-  organizationName: string;
-  userOrganizationRole: UserRoleType;
+  teamId: UUID;
+  teamName: string;
+  userTeamRole: UserRoleType;
   /**
-   * Whether the (parent) user is a manager of one or more team deployments for the organization
+   * Whether the (parent) user is a manager of one or more team deployments for the team
    */
   meUserIsDeploymentManager: boolean;
-  organizationScope?: string;
-  organizationControlRoom?: ControlRoom;
+  teamScope?: string;
+  teamControlRoom?: ControlRoom;
 };
 
-export function transformMeOrganizationMembershipResponse(
-  response: RequiredMeOrganizationMembershipResponse,
-): MeOrganizationMembership {
-  const membership: MeOrganizationMembership = {
-    organizationId: validateUUID(response.organization),
-    organizationName: response.organization_name,
-    userOrganizationRole: transformUserRoleResponse(response.role),
+export function transformMeTeamMembershipResponse(
+  response: RequiredMeTeamMembershipResponse,
+): MeTeamMembership {
+  const membership: MeTeamMembership = {
+    teamId: validateUUID(response.organization),
+    teamName: response.organization_name,
+    userTeamRole: transformUserRoleResponse(response.role),
     meUserIsDeploymentManager: response.is_deployment_manager ?? false,
   };
 
   if (response.scope) {
-    membership.organizationScope = response.scope;
+    membership.teamScope = response.scope;
   }
 
   if (response.control_room) {
-    membership.organizationControlRoom = transformControlRoomResponse(
+    membership.teamControlRoom = transformControlRoomResponse(
       response.control_room,
     );
   }
