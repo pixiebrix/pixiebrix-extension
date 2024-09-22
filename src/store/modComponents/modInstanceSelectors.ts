@@ -16,32 +16,10 @@
  */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { groupBy, memoize } from "lodash";
-import type { RegistryId } from "@/types/registryTypes";
+import { groupBy } from "lodash";
 import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import type { ModInstance } from "@/types/modInstanceTypes";
-
-/**
- * Returns the mod instance for a given mod, or undefined if the mod is not activated on the device.
- * @throws {TypeError} if required state migrations have not been applied yet
- * @see useFindModInstance
- * @see selectGetModComponentsForMod
- */
-export const selectGetModInstanceForMod = createSelector(
-  selectActivatedModComponents,
-  (activatedModComponents) =>
-    memoize((modId: RegistryId) => {
-      const modComponents = activatedModComponents.filter(
-        (activatedModComponent) => activatedModComponent._recipe?.id === modId,
-      );
-
-      if (modComponents.length > 0) {
-        return mapActivatedModComponentsToModInstance(modComponents);
-      }
-    }),
-);
 
 /**
  * Returns all activated mod instances.
@@ -63,3 +41,18 @@ export function selectModInstances({
     mapActivatedModComponentsToModInstance(modComponents),
   );
 }
+
+/**
+ * Returns a Map of activated mod instances keyed by mod id.
+ * @see useFindModInstance
+ */
+export const selectModInstanceMap = createSelector(
+  selectModInstances,
+  (modInstances) =>
+    new Map(
+      modInstances.map((modInstance) => [
+        modInstance.definition.metadata.id,
+        modInstance,
+      ]),
+    ),
+);

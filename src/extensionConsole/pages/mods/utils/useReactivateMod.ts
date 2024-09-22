@@ -17,51 +17,38 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { useCallback } from "react";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import { deactivateMod } from "@/store/deactivateUtils";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ReactivateMod = (modDefinition: ModDefinition) => Promise<void>;
 
 function useReactivateMod(): ReactivateMod {
   const dispatch = useDispatch();
-  const allComponents = useSelector(selectActivatedModComponents);
+  const modInstanceMap = useSelector(selectModInstanceMap);
 
   return useCallback(
     async (modDefinition: ModDefinition) => {
       const modId = modDefinition.metadata.id;
-      const activatedModComponents = allComponents.filter(
-        (x) => x._recipe?.id === modId,
-      );
+      const modInstance = modInstanceMap.get(modId);
 
-      if (activatedModComponents.length === 0) {
-        throw new Error(`No mod components to re-activate for ${modId}`);
-      }
+      assertNotNullish(modInstance, `Mod is not active: ${modId}`);
 
-      const currentOptions = collectModOptions(activatedModComponents);
-
-      const configuredDependencies =
-        collectExistingConfiguredDependenciesForMod(
-          modDefinition,
-          activatedModComponents,
-        );
-
-      await deactivateMod(modId, activatedModComponents, dispatch);
+      await deactivateMod(modId, modInstance.modComponentIds, dispatch);
 
       dispatch(
         modComponentActions.activateMod({
           modDefinition,
-          configuredDependencies,
-          optionsArgs: currentOptions,
+          configuredDependencies: modInstance.integrationsArgs,
+          optionsArgs: modInstance.optionsArgs,
           screen: "extensionConsole",
           isReactivate: true,
         }),
       );
     },
-    [allComponents, dispatch],
+    [modInstanceMap, dispatch],
   );
 }
 

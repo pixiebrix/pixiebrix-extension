@@ -23,7 +23,6 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { deactivateMod } from "@/store/deactivateUtils";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import {
@@ -37,6 +36,7 @@ import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { type Deployment, type DeploymentPayload } from "@/types/contract";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import notify from "@/utils/notify";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 export type ActivateResult = {
   success: boolean;
@@ -81,17 +81,15 @@ function useActivateMod(
   { checkPermissions = true }: { checkPermissions?: boolean } = {},
 ): ActivateModFormCallback {
   const dispatch = useDispatch();
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstanceMap = useSelector(selectModInstanceMap);
 
   const [createDatabase] = useCreateDatabaseMutation();
   const [createUserDeployment] = useCreateUserDeploymentMutation();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
-      const activeModComponent = activatedModComponents.find(
-        (x) => x._recipe?.id === modDefinition.metadata.id,
-      );
-      const isReactivate = Boolean(activeModComponent);
+      const modInstance = modInstanceMap.get(modDefinition.metadata.id);
+      const isReactivate = Boolean(modInstance);
 
       if (source === "extensionConsole") {
         // Note: The prefix "Marketplace" on the telemetry event name
@@ -150,13 +148,9 @@ function useActivateMod(
           },
         );
 
-        const existingModComponents = activatedModComponents.filter(
-          (x) => x._recipe?.id === modDefinition.metadata.id,
-        );
-
         await deactivateMod(
           modDefinition.metadata.id,
-          existingModComponents,
+          modInstance?.modComponentIds ?? [],
           dispatch,
         );
 
@@ -167,7 +161,7 @@ function useActivateMod(
         if (
           formValues.personalDeployment &&
           // Avoid creating a personal deployment if the mod already has one
-          !activeModComponent?._deployment?.isPersonalDeployment
+          !modInstance?.deploymentMetadata?.isPersonalDeployment
         ) {
           const data: DeploymentPayload = {
             name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
@@ -202,7 +196,7 @@ function useActivateMod(
             configuredDependencies: integrationDependencies,
             optionsArgs,
             screen: source,
-            isReactivate: existingModComponents.length > 0,
+            isReactivate,
             deployment: createdUserDeployment,
           }),
         );
@@ -226,7 +220,7 @@ function useActivateMod(
       };
     },
     [
-      activatedModComponents,
+      modInstanceMap,
       source,
       checkPermissions,
       dispatch,

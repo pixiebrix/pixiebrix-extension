@@ -42,8 +42,8 @@ import { useDeletePackageMutation } from "@/data/service/api";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 import { UI_PATHS } from "@/data/service/urlPaths";
+import useFindModInstance from "@/mods/hooks/useFindModInstance";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
@@ -71,12 +71,14 @@ const ModsPageActions: React.FunctionComponent<{
     },
   } = modViewItem;
 
-  const modComponents = useActivatedModComponents(modId);
+  const modInstance = useFindModInstance(modId);
 
   const deactivateModAction = useUserAction(
     async () => {
+      assertNotNullish(modInstance, "Expected mod instance");
+
       reportEvent(Events.MOD_REMOVE, { modId });
-      await deactivateMod(modId, modComponents, dispatch);
+      await deactivateMod(modId, modInstance.modComponentIds, dispatch);
     },
     {
       successMessage: `Deactivated mod: ${name}`,

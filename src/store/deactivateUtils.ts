@@ -20,7 +20,6 @@ import { removeDraftModComponentsForMod } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { removeModComponentForEveryTab } from "@/background/messenger/api";
 import { uniq } from "lodash";
-import { type SerializedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -40,7 +39,7 @@ import { type UUID } from "@/types/stringTypes";
  */
 export async function deactivateMod(
   modId: RegistryId,
-  modComponents: SerializedModComponent[],
+  modComponentIds: UUID[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
   const removedDraftModComponentIds =
@@ -49,10 +48,7 @@ export async function deactivateMod(
   dispatch(modComponentActions.removeModById(modId));
 
   removeModComponentsFromAllTabs(
-    uniq([
-      ...modComponents.map(({ id }) => id),
-      ...removedDraftModComponentIds,
-    ]),
+    uniq([...modComponentIds, ...removedDraftModComponentIds]),
   );
 }
 

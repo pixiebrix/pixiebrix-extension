@@ -53,7 +53,7 @@ test("deactivates mod components", async () => {
 
   expect(deactivateMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
-    [expectedExtension],
+    [expectedExtension!.id],
     expect.any(Function),
   );
 });
