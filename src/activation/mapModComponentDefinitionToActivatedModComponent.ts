@@ -51,20 +51,6 @@ export type ActivateModComponentParam = {
   integrationDependencies: IntegrationDependency[];
 };
 
-function mapDeploymentToDeploymentMetadata(
-  deployment: Deployment,
-): NonNullable<ActivatedModComponent["_deployment"]> {
-  return {
-    id: deployment.id,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This should be defined in practice
-    timestamp: deployment.updated_at!,
-    active: deployment.active,
-    ...(deployment.organization
-      ? { organization: deployment.organization }
-      : { isPersonalDeployment: true }),
-  };
-}
-
 /**
  * Transform a given ModComponentDefinition into an ActivatedModComponent.
  *
@@ -105,8 +91,15 @@ export function mapModComponentDefinitionToActivatedModComponent<
   // here makes testing harder because we then have to account for the normalized value in assertions.
 
   if (deployment) {
-    activatedModComponent._deployment =
-      mapDeploymentToDeploymentMetadata(deployment);
+    activatedModComponent._deployment = {
+      id: deployment.id,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This should be defined in practice
+      timestamp: deployment.updated_at!,
+      active: deployment.active,
+      ...(deployment.organization
+        ? { organization: deployment.organization }
+        : { isPersonalDeployment: true }),
+    };
   }
 
   if (modComponentDefinition.services) {

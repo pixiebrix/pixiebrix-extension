@@ -28,7 +28,7 @@ export type WizardStep = {
   }>;
 };
 
-export type ActivationWizardValues = {
+export type WizardValues = {
   /**
    * Integration dependencies for the mod
    */

@@ -20,7 +20,6 @@ import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen, waitFor } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -28,8 +27,8 @@ import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
 import { validateRegistryId } from "@/types/helpers";
 import { type RetrieveRecipeResponse } from "@/types/contract";
 import {
-  modComponentDefinitionFactory,
   defaultModDefinitionFactory,
+  modComponentDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import useActivateMod, {
