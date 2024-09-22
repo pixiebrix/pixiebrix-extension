@@ -69,7 +69,10 @@ import deactivateModInstancesAndSaveState from "@/background/utils/deactivateMod
 import saveModComponentStateAndReloadTabs, {
   type ReloadOptions,
 } from "@/background/utils/saveModComponentStateAndReloadTabs";
-import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
+import {
+  selectModInstanceMap,
+  selectModInstances,
+} from "@/store/modComponents/modInstanceSelectors";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -192,22 +195,26 @@ async function activateDeployment({
   let _editorState = editorState;
   const { deployment, modDefinition } = activatableDeployment;
 
-  const modInstances = selectModInstances({
+  const modInstanceMap = selectModInstanceMap({
     options: _optionsState,
   });
 
-  const isAlreadyActivated = modInstances.some(
+  // Check if the deployment is already activated, regardless of the package id
+  const isAlreadyActivated = [...modInstanceMap.values()].some(
     (modInstance) => modInstance.deploymentMetadata?.id === deployment.id,
   );
 
-  // Deactivate any existing mod instance corresponding to the deployed package
-  const result = deactivateMod(deployment.package.package_id, {
-    modComponentState: _optionsState,
-    editorState: _editorState,
-  });
+  // Deactivate any existing mod instance corresponding to the deployed package, regardless of deployment
+  const packageModInstance = modInstanceMap.get(deployment.package.package_id);
+  if (packageModInstance) {
+    const result = deactivateMod(packageModInstance, {
+      modComponentState: _optionsState,
+      editorState: _editorState,
+    });
 
-  _optionsState = result.modComponentState;
-  _editorState = result.editorState;
+    _optionsState = result.modComponentState;
+    _editorState = result.editorState;
+  }
 
   // Activate the deployed mod with the service definition
   _optionsState = modComponentReducer(
