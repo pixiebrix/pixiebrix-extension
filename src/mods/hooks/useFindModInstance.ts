@@ -15,23 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { useFormikContext } from "formik";
-import { type ActivationWizardValues } from "@/activation/wizardTypes";
-import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
+import { useSelector } from "react-redux";
+import { useMemo } from "react";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { selectGetModInstanceForMod } from "@/store/modComponents/modInstanceSelectors";
 
-const WizardValuesModIntegrationsContextAdapter: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
-  const {
-    values: { integrationDependencies },
-  } = useFormikContext<ActivationWizardValues>();
-
-  return (
-    <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
-      {children}
-    </ModIntegrationsContext.Provider>
+/**
+ * Returns the activated mod instances for a given mod, or undefined if the mod is not activated on the device.
+ * @param modId the mod id to search for
+ */
+export default function useFindModInstance(
+  modId: RegistryId,
+): ModInstance | undefined {
+  const getModInstanceForMod = useSelector(selectGetModInstanceForMod);
+  return useMemo(
+    () => getModInstanceForMod(modId),
+    [modId, getModInstanceForMod],
   );
-};
-
-export default WizardValuesModIntegrationsContextAdapter;
+}

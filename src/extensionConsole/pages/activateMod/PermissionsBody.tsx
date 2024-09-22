@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert } from "react-bootstrap";
 import UrlPermissionsList from "@/extensionConsole/pages/activateMod/UrlPermissionsList";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { type WizardValues } from "@/activation/wizardTypes";
+import { type ActivationWizardValues } from "@/activation/wizardTypes";
 import { useFormikContext } from "formik";
 import useModPermissions from "./useModPermissions";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -30,12 +30,14 @@ import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 
-function selectedAuths(values: WizardValues): IntegrationDependency[] {
+function selectedAuths(
+  values: ActivationWizardValues,
+): IntegrationDependency[] {
   return values.integrationDependencies.filter(({ configId }) => configId);
 }
 
 function useSelectedAuths(): IntegrationDependency[] {
-  const { values } = useFormikContext<WizardValues>();
+  const { values } = useFormikContext<ActivationWizardValues>();
   return useMemo(() => selectedAuths(values), [values]);
 }
 

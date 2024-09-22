@@ -17,6 +17,7 @@
 
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { Deployment } from "@/types/contract";
+import type { UUID } from "@/types/stringTypes";
 
 /**
  * A deployment and its associated mod definition (for exact package and version).
@@ -30,3 +31,59 @@ export type ActivatableDeployment = {
   deployment: Deployment;
   modDefinition: ModDefinition;
 };
+
+type BaseDeploymentMetadata = {
+  /**
+   * Unique id of the deployment
+   */
+  id: UUID;
+
+  /**
+   * `updated_at` timestamp of the deployment object from the server (in ISO format). Used to determine whether the
+   * client has the latest deployment setting applied
+   */
+  timestamp: string;
+
+  /**
+   * True iff the deployment is temporarily disabled.
+   *
+   * If undefined, is considered active for backward compatability
+   *
+   * @since 1.4.0
+   */
+  active?: boolean;
+};
+
+/**
+ * Metadata about an automatically activated deployment.
+ *
+ * Where possible, reference as ModComponent["_deployment"] or ModInstance["deploymentMetadata"] for clarity.
+ */
+export type DeploymentMetadata =
+  | (BaseDeploymentMetadata & {
+      /**
+       * Indicates if the deployment is a personal deployment.
+       * If true, the organization property should be undefined.
+       * @since 2.1.2
+       */
+      isPersonalDeployment: true;
+      organization?: undefined;
+    })
+  | (BaseDeploymentMetadata & {
+      isPersonalDeployment?: false;
+      /**
+       * Context about the organization that the deployment is associated with.
+       * @since 2.1.2
+       */
+      organization?: {
+        /**
+         * UUID of the organization
+         */
+        id: UUID;
+
+        /**
+         * Name of the organization
+         */
+        name: string;
+      };
+    });

@@ -20,7 +20,7 @@ import { type BrickOptionProps } from "@/components/fields/schemaFields/genericO
 import { type RegistryId } from "@/types/registryTypes";
 
 /**
- * Mapping from block id to block editor.
+ * Mapping from brick id to brick editor.
  * @see genericOptionsFactory
  */
 const optionsRegistry = new Map<

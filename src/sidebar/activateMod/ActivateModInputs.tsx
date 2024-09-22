@@ -24,7 +24,10 @@ import Form, {
 import styles from "./ActivateModPanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
-import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
+import {
+  type WizardStep,
+  type ActivationWizardValues,
+} from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
 import Alert from "@/components/Alert";
 import cx from "classnames";
@@ -43,13 +46,13 @@ import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 type ActivateModInputsProps = {
   mod: ModDefinition;
   optionsWizardStep: WizardStep | undefined;
-  initialValues: WizardValues;
-  onChange: (values: WizardValues) => void;
+  initialValues: ActivationWizardValues;
+  onChange: (values: ActivationWizardValues) => void;
   validationSchema: AnyObjectSchema;
   onClickCancel: () => void;
   needsPermissions?: boolean;
   header?: React.ReactNode;
-  formValuesRef?: React.MutableRefObject<WizardValues>;
+  formValuesRef?: React.MutableRefObject<ActivationWizardValues>;
   onClickSubmit: () => void;
   activationError: Nullishable<string>;
 };

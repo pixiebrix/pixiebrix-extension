@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WizardValues } from "@/activation/wizardTypes";
+import { type ActivationWizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,7 +52,7 @@ export type ActivateModFormCallback =
    * @returns a promise that resolves to an ActivateResult
    */
   (
-    formValues: WizardValues,
+    formValues: ActivationWizardValues,
     modDefinition: ModDefinition,
   ) => Promise<ActivateResult>;
 
@@ -87,7 +87,10 @@ function useActivateMod(
   const [createUserDeployment] = useCreateUserDeploymentMutation();
 
   return useCallback(
-    async (formValues: WizardValues, modDefinition: ModDefinition) => {
+    async (
+      formValues: ActivationWizardValues,
+      modDefinition: ModDefinition,
+    ) => {
       const activeModComponent = activatedModComponents.find(
         (x) => x._recipe?.id === modDefinition.metadata.id,
       );
@@ -160,7 +163,7 @@ function useActivateMod(
           dispatch,
         );
 
-        // TODO: handle updating a deployment from a previous version to the new version and 
+        // TODO: handle updating a deployment from a previous version to the new version and
         //  handle deleting a deployment if the user turns off personal deployment
         //  https://github.com/pixiebrix/pixiebrix-extension/issues/9092
         let createdUserDeployment: Deployment | undefined;

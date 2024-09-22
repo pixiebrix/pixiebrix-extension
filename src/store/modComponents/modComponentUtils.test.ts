@@ -18,12 +18,19 @@
 import {
   collectConfiguredIntegrationDependencies,
   collectModOptions,
+  findMaxIntegrationDependencyApiVersion,
+  selectModComponentIntegrations,
 } from "@/store/modComponents/modComponentUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  INTEGRATIONS_BASE_SCHEMA_URL,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
+import type { ModComponentBase } from "@/types/modComponentTypes";
 
 describe("collectModOptions", () => {
   it("returns first option", () => {
@@ -102,5 +109,117 @@ describe("collectConfiguredIntegrationDependencies", () => {
         { integrationDependencies: [configured, optional] },
       ]),
     ).toStrictEqual([pixiebrix, configured]);
+  });
+});
+
+describe("findMaxIntegrationDependencyApiVersion", () => {
+  it("returns v1 for v1 dependencies", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {
+        apiVersion: "v1",
+      },
+      {
+        apiVersion: "v1",
+      },
+    ];
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v1");
+  });
+
+  it("returns v2 for v2 dependencies", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {
+        apiVersion: "v2",
+      },
+      {
+        apiVersion: "v2",
+      },
+      {
+        apiVersion: "v2",
+      },
+    ];
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v2");
+  });
+
+  it("works with undefined version", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {},
+      {},
+    ];
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v1");
+  });
+
+  it("works with mixed dependencies", () => {
+    const dependencies: Array<Pick<IntegrationDependency, "apiVersion">> = [
+      {
+        apiVersion: "v1",
+      },
+      {
+        apiVersion: "v2",
+      },
+      {
+        apiVersion: "v1",
+      },
+      {},
+    ];
+    expect(findMaxIntegrationDependencyApiVersion(dependencies)).toBe("v2");
+  });
+});
+
+describe("selectModComponentIntegrations", () => {
+  it("works for v1 integrations", () => {
+    const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
+      integrationDependencies: [
+        integrationDependencyFactory(),
+        integrationDependencyFactory({
+          isOptional: undefined,
+          apiVersion: undefined,
+        }),
+      ],
+    };
+    expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
+      [modComponent.integrationDependencies![0]!.outputKey]:
+        modComponent.integrationDependencies![0]!.integrationId,
+      [modComponent.integrationDependencies![1]!.outputKey]:
+        modComponent.integrationDependencies![1]!.integrationId,
+    });
+  });
+
+  it("works for v2 integrations", () => {
+    const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
+      integrationDependencies: [
+        integrationDependencyFactory({
+          apiVersion: "v2",
+          isOptional: true,
+        }),
+        integrationDependencyFactory({
+          apiVersion: "v2",
+          isOptional: false,
+        }),
+        integrationDependencyFactory({
+          apiVersion: "v2",
+          isOptional: true,
+        }),
+      ],
+    };
+    expect(selectModComponentIntegrations(modComponent)).toStrictEqual({
+      properties: {
+        [modComponent.integrationDependencies![0]!.outputKey]: {
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${
+            modComponent.integrationDependencies![0]!.integrationId
+          }`,
+        },
+        [modComponent.integrationDependencies![1]!.outputKey]: {
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${
+            modComponent.integrationDependencies![1]!.integrationId
+          }`,
+        },
+        [modComponent.integrationDependencies![2]!.outputKey]: {
+          $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${
+            modComponent.integrationDependencies![2]!.integrationId
+          }`,
+        },
+      },
+      required: [modComponent.integrationDependencies![1]!.outputKey],
+    });
   });
 });

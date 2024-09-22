@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
-import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import {
+  type WizardStep,
+  type ActivationWizardValues,
+} from "@/activation/wizardTypes";
 import type React from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
@@ -30,17 +31,12 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
-import {
-  collectConfiguredIntegrationDependencies,
-  collectModOptions,
-} from "@/store/modComponents/modComponentUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Primitive } from "type-fest";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
@@ -57,6 +53,8 @@ import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { freeze } from "@/utils/objectUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import useFindModInstance from "@/mods/hooks/useFindModInstance";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -83,53 +81,50 @@ function forcePrimitive(value: unknown): Primitive | undefined {
 
 export type UseActivateModWizardResult = {
   wizardSteps: WizardStep[];
-  initialValues: WizardValues;
+  initialValues: ActivationWizardValues;
   validationSchema: Yup.AnyObjectSchema;
 };
 
 export function wizardStateFactory({
   flagOn,
+  modInstance,
   modDefinition,
   authOptions = [],
   defaultAuthOptions = {},
   databaseOptions,
-  activatedModComponents,
   optionsValidationSchema,
   initialModOptions,
 }: {
   flagOn: (flag: FeatureFlag) => boolean;
   modDefinition: ModDefinition;
+  modInstance: ModInstance | undefined;
   authOptions?: AuthOption[];
   defaultAuthOptions: Record<RegistryId, AuthOption | null>;
   databaseOptions: Option[];
-  activatedModComponents: ActivatedModComponent[];
   optionsValidationSchema: AnyObjectSchema;
   initialModOptions: UnknownObject;
 }): UseActivateModWizardResult {
   const modComponentDefinitions = modDefinition.extensionPoints ?? [];
 
-  const activatedModComponentsForMod = activatedModComponents?.filter(
-    (x) => x._recipe?.id === modDefinition.metadata.id,
-  );
-
-  const activatedOptions = collectModOptions(activatedModComponentsForMod);
-  const activatedIntegrationConfigs = Object.fromEntries(
-    collectConfiguredIntegrationDependencies(activatedModComponentsForMod).map(
-      ({ integrationId, configId }) => [integrationId, configId],
-    ),
-  );
-  const hasPersonalDeployment = activatedModComponentsForMod?.some(
-    (x) => x._deployment?.isPersonalDeployment,
-  );
+  const hasPersonalDeployment =
+    modInstance?.deploymentMetadata?.isPersonalDeployment;
 
   const unconfiguredIntegrationDependencies =
     getUnconfiguredComponentIntegrations(modDefinition);
+
+  const activatedDependencies = Object.fromEntries(
+    modInstance?.integrationsArgs?.map((dependency) => [
+      dependency.integrationId,
+      dependency.configId,
+    ]) ?? [],
+  );
+
   const integrationDependencies = unconfiguredIntegrationDependencies.map(
     (unconfiguredDependency) => ({
       ...unconfiguredDependency,
-      // Prefer the activated dependency for reactivate cases, otherwise use the default
       configId:
-        activatedIntegrationConfigs[unconfiguredDependency.integrationId] ??
+        // Prefer the activated dependency for reactivate cases, otherwise use the default
+        activatedDependencies[unconfiguredDependency.integrationId] ??
         defaultAuthOptions[unconfiguredDependency.integrationId]?.value,
     }),
   );
@@ -156,16 +151,12 @@ export function wizardStateFactory({
     }
   });
 
-  const initialValues: WizardValues = {
-    modComponents: Object.fromEntries(
-      // By default, all mod components in the mod should be toggled on
-      modComponentDefinitions.map((_, index) => [index, true]),
-    ),
+  const initialValues: ActivationWizardValues = {
     integrationDependencies,
     optionsArgs: mapValues(
       modDefinition.options?.schema?.properties ?? {},
       (optionSchema: Schema, name: string) => {
-        const activatedValue = activatedOptions[name];
+        const activatedValue = modInstance?.optionsArgs?.[name];
         if (activatedValue) {
           return forcePrimitive(activatedValue);
         }
@@ -248,7 +239,8 @@ function useActivateModWizard(
   defaultAuthOptions: Record<RegistryId, AuthOption | null> = {},
   initialOptions: UnknownObject = {},
 ): FetchableAsyncState<UseActivateModWizardResult> {
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstance = useFindModInstance(modDefinition.metadata.id);
+
   const optionsValidationSchemaState = useAsyncModOptionsValidationSchema(
     modDefinition.options?.schema,
   );
@@ -286,7 +278,7 @@ function useActivateModWizard(
         authOptions,
         defaultAuthOptions,
         databaseOptions,
-        activatedModComponents,
+        modInstance,
         optionsValidationSchema,
         initialModOptions: initialOptions,
       });

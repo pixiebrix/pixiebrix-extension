@@ -144,7 +144,7 @@ describe("ActivateModDefinitionPage", () => {
   test("activate mod definition permissions", async () => {
     const modDefinition = defaultModDefinitionFactory({
       metadata: metadataFactory({
-        id: "test/blueprint-with-required-options" as RegistryId,
+        id: validateRegistryId("test/blueprint-with-required-options"),
         name: "A Mod",
       }),
       extensionPoints: [
@@ -163,7 +163,6 @@ describe("ActivateModDefinitionPage", () => {
     await waitFor(() => {
       expect(activateModCallbackMock).toHaveBeenCalledWith(
         {
-          modComponents: { "0": true },
           optionsArgs: {},
           integrationDependencies: [],
           personalDeployment: false,
@@ -206,7 +205,6 @@ describe("ActivateModDefinitionPage", () => {
     await waitFor(() => {
       expect(activateModCallbackMock).toHaveBeenCalledWith(
         {
-          modComponents: { "0": true },
           optionsArgs: {},
           integrationDependencies: [],
           personalDeployment: true,

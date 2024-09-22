@@ -51,8 +51,25 @@ export type ActivateModComponentParam = {
   integrationDependencies: IntegrationDependency[];
 };
 
+function mapDeploymentToDeploymentMetadata(
+  deployment: Deployment,
+): NonNullable<ActivatedModComponent["_deployment"]> {
+  return {
+    id: deployment.id,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This should be defined in practice
+    timestamp: deployment.updated_at!,
+    active: deployment.active,
+    ...(deployment.organization
+      ? { organization: deployment.organization }
+      : { isPersonalDeployment: true }),
+  };
+}
+
 /**
  * Transform a given ModComponentDefinition into an ActivatedModComponent.
+ *
+ * Assigns a fresh UUID to the mod component.
+ *
  * Note: This function has no side effects, it's just a type-transformer. It does
  * NOT save the activated mod component anywhere.
  */
@@ -88,15 +105,8 @@ export function mapModComponentDefinitionToActivatedModComponent<
   // here makes testing harder because we then have to account for the normalized value in assertions.
 
   if (deployment) {
-    activatedModComponent._deployment = {
-      id: deployment.id,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This should be defined in practice
-      timestamp: deployment.updated_at!,
-      active: deployment.active,
-      ...(deployment.organization
-        ? { organization: deployment.organization }
-        : { isPersonalDeployment: true }),
-    };
+    activatedModComponent._deployment =
+      mapDeploymentToDeploymentMetadata(deployment);
   }
 
   if (modComponentDefinition.services) {

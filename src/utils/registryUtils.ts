@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { INNER_SCOPE, type RegistryId } from "@/types/registryTypes";
+import {
+  INNER_SCOPE,
+  type RegistryId,
+  type Sharing,
+} from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import { split } from "lodash";
@@ -71,4 +75,14 @@ export function getScopeAndId(value: Nullishable<RegistryId>): {
 
   const [scope, ...idParts] = split(value, "/");
   return { scope, id: idParts.join("/") };
+}
+
+/**
+ * Returns a sharing object private package defined in the user's scope.
+ */
+export function createPrivateSharing(): Sharing {
+  return {
+    public: false,
+    organizations: [],
+  };
 }

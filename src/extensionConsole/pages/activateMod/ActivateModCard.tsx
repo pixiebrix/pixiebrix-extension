@@ -28,7 +28,7 @@ import { faCubes, faMagic } from "@fortawesome/free-solid-svg-icons";
 import useActivateMod from "@/activation/useActivateMod";
 import useMilestones from "@/hooks/useMilestones";
 import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
-import { type WizardValues } from "@/activation/wizardTypes";
+import { type ActivationWizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
 import notify from "@/utils/notify";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
@@ -149,7 +149,7 @@ const ActivateModCard: React.FC<{
     </WizardValuesModIntegrationsContextAdapter>
   );
 
-  const onSubmit: OnSubmit<WizardValues> = async (values) => {
+  const onSubmit: OnSubmit<ActivationWizardValues> = async (values) => {
     const { success, error } = await activateMod(values, modDefinition);
 
     if (success) {

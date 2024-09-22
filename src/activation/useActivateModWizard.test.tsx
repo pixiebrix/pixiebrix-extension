@@ -235,7 +235,7 @@ describe("useActivateModWizard", () => {
       ],
       defaultAuthOptions: {},
       databaseOptions: [],
-      activatedModComponents: [],
+      modInstance: undefined,
       optionsValidationSchema: Yup.object(),
       initialModOptions: {},
     });
