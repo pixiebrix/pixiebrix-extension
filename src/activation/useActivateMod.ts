@@ -37,6 +37,7 @@ import { type Deployment, type DeploymentPayload } from "@/types/contract";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import notify from "@/utils/notify";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
 
 export type ActivateResult = {
   success: boolean;
@@ -160,8 +161,8 @@ function useActivateMod(
         let createdUserDeployment: Deployment | undefined;
         if (
           formValues.personalDeployment &&
-          // Avoid creating a personal deployment if the mod already has one
-          !modInstance?.deploymentMetadata?.isPersonalDeployment
+          // Avoid creating a personal deployment if the mod is already associated with one
+          !getIsPersonalDeployment(modInstance)
         ) {
           const data: DeploymentPayload = {
             name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,

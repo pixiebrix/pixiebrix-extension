@@ -46,6 +46,15 @@ type ModInstanceActivatedModComponent = SetRequired<
 >;
 
 /**
+ * Returns true if mod instance is defined and is associated with a personal deployment.
+ */
+export function getIsPersonalDeployment(
+  modInstance: ModInstance | undefined,
+): boolean {
+  return Boolean(modInstance?.deploymentMetadata?.isPersonalDeployment);
+}
+
+/**
  * Returns the activated mod component for a given mod instance. Is side effect free -- only maps the shape, does
  * not persist the mod components or modify the UI.
  *

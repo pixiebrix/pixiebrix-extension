@@ -17,7 +17,7 @@
 
 import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import type React from "react";
-import { isEmpty, mapValues } from "lodash";
+import { mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
 import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
 import PermissionsBody from "@/extensionConsole/pages/activateMod/PermissionsBody";
@@ -35,7 +35,6 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { isPrimitive } from "@/utils/typeUtils";
-import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
@@ -52,6 +51,11 @@ import { freeze } from "@/utils/objectUtils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import type { ModInstance } from "@/types/modInstanceTypes";
 import useFindModInstance from "@/mods/hooks/useFindModInstance";
+import {
+  hasDefinedModOptions,
+  normalizeModOptionsDefinition,
+} from "@/utils/modUtils";
+import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -72,15 +76,84 @@ const STEPS: WizardStep[] = [
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },
 ];
 
-function forcePrimitive(value: unknown): Primitive | undefined {
-  return isPrimitive(value) ? value : undefined;
-}
-
 export type UseActivateModWizardResult = {
   wizardSteps: WizardStep[];
   initialValues: WizardValues;
   validationSchema: Yup.AnyObjectSchema;
 };
+
+function getInitialIntegrationDependencies(
+  modDefinition: ModDefinition,
+  modInstance: ModInstance | undefined,
+  defaultAuthOptions: Record<RegistryId, AuthOption | null>,
+) {
+  const definedIntegrationDependencies =
+    getUnconfiguredComponentIntegrations(modDefinition);
+
+  const currentIntegrationConfigurationLookup = Object.fromEntries(
+    // Exclude PixieBrix integration - will be returned as an unconfigured dependency
+    modInstance?.integrationsArgs
+      ?.filter((x) => x.integrationId !== PIXIEBRIX_INTEGRATION_ID)
+      .map((dependency) => [dependency.integrationId, dependency.configId]) ??
+      [],
+  );
+
+  return definedIntegrationDependencies.map((unconfiguredDependency) => ({
+    ...unconfiguredDependency,
+    configId:
+      // Prefer the activated dependency for reactivate cases, otherwise use the default
+      currentIntegrationConfigurationLookup[
+        unconfiguredDependency.integrationId
+      ] ?? defaultAuthOptions[unconfiguredDependency.integrationId]?.value,
+  }));
+}
+
+function forcePrimitive(value: unknown): Primitive | undefined {
+  return isPrimitive(value) ? value : undefined;
+}
+
+function getInitialOptionsArgs(
+  modDefinition: ModDefinition,
+  modInstance: ModInstance | undefined,
+  databaseOptions: Option[],
+  initialModOptions: UnknownObject,
+) {
+  const optionsDefinition = normalizeModOptionsDefinition(
+    modDefinition.options ?? null,
+  );
+
+  return mapValues(
+    optionsDefinition.schema.properties,
+    (optionSchema: Schema, name: string) => {
+      // eslint-disable-next-line security/detect-object-injection -- name from schema
+      const activatedValue = modInstance?.optionsArgs?.[name];
+      if (activatedValue) {
+        return forcePrimitive(activatedValue);
+      }
+
+      if (isDatabaseField(optionSchema) && optionSchema.format === "preview") {
+        const databaseName = makeDatabasePreviewName(
+          modDefinition,
+          optionSchema,
+          name,
+        );
+        const existingDatabaseOption = databaseOptions.find(
+          (option) => option.label === `${databaseName} - Private`,
+        );
+        return existingDatabaseOption?.value ?? databaseName;
+      }
+
+      // eslint-disable-next-line security/detect-object-injection -- name from schema
+      const initialValue = initialModOptions[name];
+
+      if (initialValue !== undefined) {
+        return forcePrimitive(initialValue);
+      }
+
+      return forcePrimitive(optionSchema.default);
+    },
+  );
+}
 
 export function wizardStateFactory({
   flagOn,
@@ -101,41 +174,24 @@ export function wizardStateFactory({
   optionsValidationSchema: AnyObjectSchema;
   initialModOptions: UnknownObject;
 }): UseActivateModWizardResult {
-  const modComponentDefinitions = modDefinition.extensionPoints ?? [];
+  const hasPersonalDeployment = getIsPersonalDeployment(modInstance);
 
-  const hasPersonalDeployment =
-    modInstance?.deploymentMetadata?.isPersonalDeployment;
-
-  const unconfiguredIntegrationDependencies =
-    getUnconfiguredComponentIntegrations(modDefinition);
-
-  const activatedDependencies = Object.fromEntries(
-    modInstance?.integrationsArgs?.map((dependency) => [
-      dependency.integrationId,
-      dependency.configId,
-    ]) ?? [],
-  );
-
-  const integrationDependencies = unconfiguredIntegrationDependencies.map(
-    (unconfiguredDependency) => ({
-      ...unconfiguredDependency,
-      configId:
-        // Prefer the activated dependency for reactivate cases, otherwise use the default
-        activatedDependencies[unconfiguredDependency.integrationId] ??
-        defaultAuthOptions[unconfiguredDependency.integrationId]?.value,
-    }),
+  const initialIntegrationDependencies = getInitialIntegrationDependencies(
+    modDefinition,
+    modInstance,
+    defaultAuthOptions,
   );
 
   const wizardSteps = STEPS.filter((step) => {
     switch (step.key) {
       case "services": {
-        return integrationDependencies.some(
+        return initialIntegrationDependencies.some(
           ({ integrationId }) => integrationId !== PIXIEBRIX_INTEGRATION_ID,
         );
       }
 
       case "options": {
-        return !isEmpty(inputProperties(modDefinition.options?.schema ?? {}));
+        return hasDefinedModOptions(modDefinition);
       }
 
       case "synchronize": {
@@ -149,49 +205,17 @@ export function wizardStateFactory({
   });
 
   const initialValues: WizardValues = {
-    integrationDependencies,
-    optionsArgs: mapValues(
-      modDefinition.options?.schema?.properties ?? {},
-      (optionSchema: Schema, name: string) => {
-        const activatedValue = modInstance?.optionsArgs?.[name];
-        if (activatedValue) {
-          return forcePrimitive(activatedValue);
-        }
-
-        if (
-          isDatabaseField(optionSchema) &&
-          optionSchema.format === "preview"
-        ) {
-          const databaseName = makeDatabasePreviewName(
-            modDefinition,
-            optionSchema,
-            name,
-          );
-          const existingDatabaseOption = databaseOptions.find(
-            (option) => option.label === `${databaseName} - Private`,
-          );
-          return existingDatabaseOption?.value ?? databaseName;
-        }
-
-        if (initialModOptions[name] !== undefined) {
-          return forcePrimitive(initialModOptions[name]);
-        }
-
-        return forcePrimitive(optionSchema.default);
-      },
+    integrationDependencies: initialIntegrationDependencies,
+    optionsArgs: getInitialOptionsArgs(
+      modDefinition,
+      modInstance,
+      databaseOptions,
+      initialModOptions,
     ),
     personalDeployment: hasPersonalDeployment,
   };
 
   const validationSchema = Yup.object().shape({
-    modComponents: Yup.object().shape(
-      Object.fromEntries(
-        modComponentDefinitions.map((_, index) => [
-          index,
-          Yup.boolean().required(),
-        ]),
-      ),
-    ),
     integrationDependencies: Yup.array().of(
       Yup.object().test(
         "integrationConfigsRequired",
