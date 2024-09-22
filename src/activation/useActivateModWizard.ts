@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type WizardStep,
-  type ActivationWizardValues,
-} from "@/activation/wizardTypes";
+import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import type React from "react";
 import { isEmpty, mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
@@ -81,7 +78,7 @@ function forcePrimitive(value: unknown): Primitive | undefined {
 
 export type UseActivateModWizardResult = {
   wizardSteps: WizardStep[];
-  initialValues: ActivationWizardValues;
+  initialValues: WizardValues;
   validationSchema: Yup.AnyObjectSchema;
 };
 
@@ -151,7 +148,7 @@ export function wizardStateFactory({
     }
   });
 
-  const initialValues: ActivationWizardValues = {
+  const initialValues: WizardValues = {
     integrationDependencies,
     optionsArgs: mapValues(
       modDefinition.options?.schema?.properties ?? {},

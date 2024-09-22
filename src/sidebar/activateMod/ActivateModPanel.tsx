@@ -36,7 +36,7 @@ import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Button } from "react-bootstrap";
 import useActivateMod from "@/activation/useActivateMod";
-import { type ActivationWizardValues } from "@/activation/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useActivateModWizard, {
   type UseActivateModWizardResult,
@@ -242,7 +242,7 @@ const ActivateModPanelContent: React.FC<
     reduxDispatch(actions.hideModActivationPanel());
   }
 
-  const formValuesRef = useRef<ActivationWizardValues>(initialValues);
+  const formValuesRef = useRef<WizardValues>(initialValues);
 
   async function checkPermissions() {
     const configuredDependencies =
@@ -258,7 +258,7 @@ const ActivateModPanelContent: React.FC<
     stateDispatch(setNeedsPermissions(!hasPermissions));
   }
 
-  const onChange = (values: ActivationWizardValues) => {
+  const onChange = (values: WizardValues) => {
     formValuesRef.current = values;
     void checkPermissions();
   };

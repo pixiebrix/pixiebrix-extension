@@ -45,7 +45,7 @@ import { integrationConfigLocator, registry } from "@/background/messenger/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
-import { type ActivationWizardValues } from "@/activation/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import useActivateMod, {
   type ActivateResult,
 } from "@/activation/useActivateMod";
@@ -89,10 +89,7 @@ jest.mock("@/activation/useActivateMod", () => ({
 
 const useActivateModMock = jest.mocked(useActivateMod);
 let activateModSpy: jest.MockedFunction<
-  (
-    formValues: ActivationWizardValues,
-    mod: ModDefinition,
-  ) => Promise<ActivateResult>
+  (formValues: WizardValues, mod: ModDefinition) => Promise<ActivateResult>
 >;
 
 beforeAll(() => {

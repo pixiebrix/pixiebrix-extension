@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ActivationWizardValues } from "@/activation/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,7 +52,7 @@ export type ActivateModFormCallback =
    * @returns a promise that resolves to an ActivateResult
    */
   (
-    formValues: ActivationWizardValues,
+    formValues: WizardValues,
     modDefinition: ModDefinition,
   ) => Promise<ActivateResult>;
 
@@ -87,10 +87,7 @@ function useActivateMod(
   const [createUserDeployment] = useCreateUserDeploymentMutation();
 
   return useCallback(
-    async (
-      formValues: ActivationWizardValues,
-      modDefinition: ModDefinition,
-    ) => {
+    async (formValues: WizardValues, modDefinition: ModDefinition) => {
       const activeModComponent = activatedModComponents.find(
         (x) => x._recipe?.id === modDefinition.metadata.id,
       );

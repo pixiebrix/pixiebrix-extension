@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ActivationWizardValues } from "@/activation/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateMod from "./useActivateMod";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -58,10 +58,10 @@ const deactivateModMock = jest.mocked(deactivateMod);
 const reactivateEveryTabMock = jest.mocked(reloadModsEveryTab);
 
 function setupInputs(): {
-  formValues: ActivationWizardValues;
+  formValues: WizardValues;
   modDefinition: ModDefinition;
 } {
-  const formValues: ActivationWizardValues = {
+  const formValues: WizardValues = {
     integrationDependencies: [],
     optionsArgs: {},
   };
@@ -348,7 +348,7 @@ describe("useActivateMod", () => {
       id: uuidv4(),
       name: "test-user-deployment",
     } as Deployment;
-    let formValues: ActivationWizardValues;
+    let formValues: WizardValues;
     let editablePackage: EditablePackageMetadata;
     let modDefinition: ModDefinition;
 

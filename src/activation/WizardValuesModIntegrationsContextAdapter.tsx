@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useFormikContext } from "formik";
-import { type ActivationWizardValues } from "@/activation/wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 const WizardValuesModIntegrationsContextAdapter: React.FC<{
@@ -25,7 +25,7 @@ const WizardValuesModIntegrationsContextAdapter: React.FC<{
 }> = ({ children }) => {
   const {
     values: { integrationDependencies },
-  } = useFormikContext<ActivationWizardValues>();
+  } = useFormikContext<WizardValues>();
 
   return (
     <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
