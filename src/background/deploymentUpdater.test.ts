@@ -52,7 +52,7 @@ import {
   modComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   modComponentDefinitionFactory,
   starterBrickDefinitionFactory,
@@ -440,7 +440,7 @@ describe("syncDeployments", () => {
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
         updated_at: deployment.updated_at!,
-        sharing: sharingDefinitionFactory(),
+        sharing: personalSharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
     delete modComponent._deployment;
@@ -492,7 +492,7 @@ describe("syncDeployments", () => {
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
         updated_at: deployment.updated_at!,
-        sharing: sharingDefinitionFactory(),
+        sharing: personalSharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
     delete modComponent._deployment;

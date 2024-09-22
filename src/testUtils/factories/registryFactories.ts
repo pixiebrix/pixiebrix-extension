@@ -25,9 +25,19 @@ import {
   timestampFactory,
 } from "@/testUtils/factories/stringFactories";
 
-export const sharingDefinitionFactory = define<Sharing>({
+export const personalSharingDefinitionFactory = define<Sharing>({
   public: false,
   organizations: () => [] as UUID[],
+});
+
+export const publicSharingDefinitionFactory = define<Sharing>({
+  public: true,
+  organizations: () => [] as UUID[],
+});
+
+export const teamSharingDefinitionFactory = define<Sharing>({
+  public: false,
+  organizations: () => [autoUUIDSequence()],
 });
 
 export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
@@ -37,6 +47,6 @@ export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
   version: "1.0.0",
   kind: "Blueprint",
   updated_at: timestampFactory(),
-  sharing: sharingDefinitionFactory,
+  sharing: personalSharingDefinitionFactory,
   _editableBrickBrand: undefined as never,
 });

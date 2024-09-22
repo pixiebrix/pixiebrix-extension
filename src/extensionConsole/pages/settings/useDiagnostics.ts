@@ -64,7 +64,7 @@ async function collectDiagnostics({
 }
 
 function useDiagnostics() {
-  const extensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const permissionsState = useExtensionPermissions();
 
   const exportDiagnostics = useUserAction(
@@ -75,7 +75,7 @@ function useDiagnostics() {
 
       const data = await collectDiagnostics({
         permissions: permissionsState.data,
-        modComponents: extensions,
+        modComponents: activatedModComponents,
       });
 
       download(
@@ -88,7 +88,7 @@ function useDiagnostics() {
       successMessage: "Exported diagnostics",
       errorMessage: "Error exporting diagnostics",
     },
-    [permissionsState, extensions],
+    [permissionsState, activatedModComponents],
   );
 
   return {

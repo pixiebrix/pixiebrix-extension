@@ -36,6 +36,7 @@ import type { SetRequired } from "type-fest";
 import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { type DeploymentMetadata } from "@/types/deploymentTypes";
 
 /**
  * A version of ActivatedModComponent with stronger nullness guarantees to support type evolution in the future.
@@ -137,6 +138,15 @@ export function mapModInstanceToActivatedModComponents(
   );
 }
 
+function migrateDeploymentMetadata(
+  deploymentMetadata: DeploymentMetadata,
+): SetRequired<DeploymentMetadata, "active"> {
+  return {
+    ...deploymentMetadata,
+    active: deploymentMetadata.active ?? true,
+  };
+}
+
 /**
  * Maps activated mod components to a mod instance.
  * @param modComponents mod components from the mod
@@ -154,7 +164,9 @@ export function mapActivatedModComponentsToModInstance(
   return {
     id: generateModInstanceId(),
     modComponentIds: modComponents.map(({ id }) => id),
-    deploymentMetadata: firstComponent._deployment,
+    deploymentMetadata: firstComponent._deployment
+      ? migrateDeploymentMetadata(firstComponent._deployment)
+      : undefined,
     optionsArgs: collectModOptions(modComponents),
     integrationsArgs: collectIntegrationDependencies(modComponents),
     updatedAt: firstComponent.updateTimestamp,

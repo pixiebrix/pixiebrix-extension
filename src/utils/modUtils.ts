@@ -58,6 +58,8 @@ import {
   validateRegistryId,
 } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 /**
  * Returns a synthetic mod id for a standalone mod component for use in the runtime
@@ -287,22 +289,15 @@ export function normalizeModDefinition<
   });
 }
 
-export function mapModComponentToUnavailableMod(
-  modComponent: ModComponentBase,
+export function mapModInstanceToUnavailableMod(
+  modInstance: ModInstance,
 ): UnavailableMod {
-  assertNotNullish(
-    modComponent._recipe,
-    "modComponent._recipe is nullish, can't map to unavailable mod, something went wrong, this shouldn't happen",
-  );
   return {
-    metadata: modComponent._recipe,
+    metadata: modInstance.definition.metadata,
     kind: DefinitionKinds.MOD,
     isStub: true,
-    updated_at: modComponent._recipe.updated_at ?? nowTimestamp(),
-    sharing: modComponent._recipe.sharing ?? {
-      public: false,
-      organizations: [],
-    },
+    updated_at: modInstance.definition.updated_at ?? nowTimestamp(),
+    sharing: modInstance.definition.sharing ?? createPrivateSharing(),
   };
 }
 

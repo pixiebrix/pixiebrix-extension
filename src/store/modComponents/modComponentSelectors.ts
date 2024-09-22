@@ -49,6 +49,8 @@ export const selectIsModComponentSavedOnCloud =
 export const selectGetModComponentsForMod = createSelector(
   selectActivatedModComponents,
   (activatedModComponents) =>
+    // When activatedModComponents changes, the createSelector call will return a new function with the memoized
+    // method referencing the new activatedModComponents
     memoize((modId: RegistryId) =>
       activatedModComponents.filter(
         (activatedModComponent) => activatedModComponent._recipe?.id === modId,

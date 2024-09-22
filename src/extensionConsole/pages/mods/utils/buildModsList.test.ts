@@ -17,136 +17,106 @@
 
 import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import {
   activatedModComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
+import { array } from "cooky-cutter";
+import { omit } from "lodash";
+import {
+  teamSharingDefinitionFactory,
+  publicSharingDefinitionFactory,
+} from "@/testUtils/factories/registryFactories";
 
 const userScope = "my-test-user";
 
 describe("buildModsList", () => {
   it("returns an empty array when inputs are empty", () => {
-    expect(buildModsList(userScope, [], [], new Set())).toEqual([]);
+    expect(buildModsList(userScope, new Map(), [])).toEqual([]);
   });
 
   it("filters known personal and team mod definitions correctly", () => {
-    const allModDefinitions: ModDefinition[] = [];
-    const activatedModComponents: ActivatedModComponent[] = [];
-
-    // Personal, inactive
-    const inactivePersonalModMetadata = modMetadataFactory({
-      id: validateRegistryId(`${userScope}/my-inactive-test-mod`),
-    });
-    allModDefinitions.push(
-      modDefinitionFactory({
-        metadata: inactivePersonalModMetadata,
+    // Personal, inactive (i.e., no mod instance)
+    const inactivePersonalModDefinition = modDefinitionFactory({
+      metadata: modMetadataFactory({
+        id: validateRegistryId(`${userScope}/personal-inactive`),
       }),
-    );
+    });
 
     // Personal, active
-    const activePersonalModMetadata = modMetadataFactory({
-      id: validateRegistryId(`${userScope}/my-inactive-test-mod`),
+    const personalModInstance = modInstanceFactory({
+      definition: modDefinitionFactory({
+        metadata: modMetadataFactory({
+          id: validateRegistryId(`${userScope}/personal-active`),
+        }),
+      }),
     });
-    allModDefinitions.push(
-      modDefinitionFactory({
-        metadata: activePersonalModMetadata,
-      }),
-    );
-    activatedModComponents.push(
-      activatedModComponentFactory({
-        _recipe: activePersonalModMetadata,
-      }),
-    );
 
     // Team shared, inactive
-    const inactiveSharedModMetadata = modMetadataFactory();
-    allModDefinitions.push(
-      modDefinitionFactory({
-        metadata: inactiveSharedModMetadata,
-        sharing: {
-          public: true,
-          organizations: [autoUUIDSequence()],
-        },
-      }),
-    );
+    const inactiveSharedModDefinition = modDefinitionFactory({
+      sharing: teamSharingDefinitionFactory(),
+    });
 
     // Team shared, active
-    const activeSharedModMetadata = modMetadataFactory();
-    allModDefinitions.push(
-      modDefinitionFactory({
-        metadata: activeSharedModMetadata,
-        sharing: {
-          public: true,
-          organizations: [autoUUIDSequence()],
-        },
+    const sharedModInstance = modInstanceFactory({
+      definition: modDefinitionFactory({
+        sharing: teamSharingDefinitionFactory(),
       }),
-    );
-    activatedModComponents.push(
-      activatedModComponentFactory({
-        _recipe: activeSharedModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activeSharedModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activeSharedModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activeSharedModMetadata,
-      }),
-    );
+    });
 
     // Public mod, inactive -- should be filtered out
-    const inactivePublicModMetadata = modMetadataFactory();
-    allModDefinitions.push(
-      modDefinitionFactory({
-        metadata: inactivePublicModMetadata,
-        sharing: {
-          public: true,
-          organizations: [],
-        },
-      }),
-    );
+    const inactivePublicModDefinition = modDefinitionFactory({
+      sharing: publicSharingDefinitionFactory(),
+    });
 
     // Public mod, active
-    const activePublicModMetadata = modMetadataFactory();
-    allModDefinitions.push(
-      modDefinitionFactory({
-        metadata: activePublicModMetadata,
-        sharing: {
-          public: true,
-          organizations: [],
-        },
+    const publicModInstance = modInstanceFactory({
+      definition: modDefinitionFactory({
+        sharing: publicSharingDefinitionFactory(),
       }),
-    );
-    activatedModComponents.push(
-      activatedModComponentFactory({
-        _recipe: activePublicModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activePublicModMetadata,
-      }),
-    );
+    });
+
+    const modInstances: ModInstance[] = [
+      personalModInstance,
+      sharedModInstance,
+      publicModInstance,
+    ];
+
+    const allModDefinitions: ModDefinition[] = [
+      inactivePersonalModDefinition,
+      inactiveSharedModDefinition,
+      inactivePublicModDefinition,
+      ...modInstances.map((modInstance) => modInstance.definition),
+    ];
 
     const result = buildModsList(
       userScope,
-      activatedModComponents,
+      new Map(modInstances.map((x) => [x.definition.metadata.id, x])),
       allModDefinitions,
-      new Set(activatedModComponents.map(({ _recipe }) => _recipe!.id)),
     );
 
     expect(result).toStrictEqual([
-      expect.objectContaining({ metadata: inactivePersonalModMetadata }),
-      expect.objectContaining({ metadata: activePersonalModMetadata }),
-      expect.objectContaining({ metadata: inactiveSharedModMetadata }),
-      expect.objectContaining({ metadata: activeSharedModMetadata }),
-      // Public mods that are not activated should be filtered out
-      // expect.objectContaining({ metadata: inactivePublicModMetadata }),
-      expect.objectContaining({ metadata: activePublicModMetadata }),
+      // Public mods that are not activated should be filtered out. So inactivePublicModDefinition won't be present
+      expect.objectContaining({
+        metadata: inactivePersonalModDefinition.metadata,
+      }),
+      expect.objectContaining({
+        metadata: inactiveSharedModDefinition.metadata,
+      }),
+      expect.objectContaining({
+        metadata: personalModInstance.definition.metadata,
+      }),
+      expect.objectContaining({
+        metadata: sharedModInstance.definition.metadata,
+      }),
+      expect.objectContaining({
+        metadata: publicModInstance.definition.metadata,
+      }),
     ]);
   });
 
@@ -169,64 +139,51 @@ describe("buildModsList", () => {
     // Has activated mod components, but no available mod definition
     const unavailableModMetadata = modMetadataFactory();
 
-    const activatedModComponents = [
-      activatedModComponentFactory({
-        _recipe: personalModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activatedModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activatedModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: activatedModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: unavailableModMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: unavailableModMetadata,
-      }),
-    ];
+    const modInstances = (
+      [
+        [personalModMetadata, 1],
+        [activatedModMetadata, 3],
+        [unavailableModMetadata, 2],
+      ] as const
+    ).map(([metadata, count]) =>
+      mapActivatedModComponentsToModInstance(
+        array(
+          activatedModComponentFactory,
+          count,
+        )({
+          _recipe: metadata,
+        }),
+      ),
+    );
 
     const result = buildModsList(
       userScope,
-      activatedModComponents,
+      new Map(modInstances.map((x) => [x.definition.metadata.id, x])),
       allModDefinitions,
-      new Set(activatedModComponents.map(({ _recipe }) => _recipe!.id)),
     );
 
     expect(result).toStrictEqual([
       expect.objectContaining({ metadata: personalModMetadata }),
       expect.objectContaining({ metadata: activatedModMetadata }),
       expect.objectContaining({
-        metadata: unavailableModMetadata,
+        metadata: omit(unavailableModMetadata, ["updated_at", "sharing"]),
         isStub: true,
       }),
     ]);
   });
 
   it("shows one unavailable mod correctly", () => {
-    // Has activated mod components, but no available mod definition
-    const unavailableModMetadata = modMetadataFactory();
-
-    const activatedModComponents = [
-      activatedModComponentFactory({
-        _recipe: unavailableModMetadata,
-      }),
-    ];
+    const modInstance = modInstanceFactory();
 
     const result = buildModsList(
       userScope,
-      activatedModComponents,
+      new Map([modInstance].map((x) => [x.definition.metadata.id, x])),
       [],
-      new Set(activatedModComponents.map(({ _recipe }) => _recipe!.id)),
     );
 
     expect(result).toStrictEqual([
       expect.objectContaining({
-        metadata: unavailableModMetadata,
+        metadata: modInstance.definition.metadata,
         isStub: true,
       }),
     ]);

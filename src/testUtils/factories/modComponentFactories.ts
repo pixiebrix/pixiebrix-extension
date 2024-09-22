@@ -31,7 +31,7 @@ import {
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import {
   DefinitionKinds,
@@ -71,7 +71,7 @@ export const modMetadataFactory = extend<Metadata, ModMetadata>(
   metadataFactory,
   {
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-    sharing: sharingDefinitionFactory,
+    sharing: personalSharingDefinitionFactory,
   },
 );
 

@@ -17,20 +17,26 @@
 
 import buildGetModSharingSource from "@/extensionConsole/pages/mods/utils/buildGetModSharingSource";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import {
-  activatedModComponentFactory,
-  modMetadataFactory,
-} from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import { nowTimestamp } from "@/utils/timeUtils";
+import {
+  modInstanceFactory,
+  personalDeploymentMetadataFactory,
+  teamDeploymentMetadataFactory,
+} from "@/testUtils/factories/modInstanceFactories";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import {
+  personalSharingDefinitionFactory,
+  publicSharingDefinitionFactory,
+  teamSharingDefinitionFactory,
+} from "@/testUtils/factories/registryFactories";
 
 const userScope = "my-test-user";
 
 describe("buildGetModSharingSource", () => {
   it("handles personal mod", () => {
-    const getSharingSource = buildGetModSharingSource(userScope, [], []);
+    const getSharingSource = buildGetModSharingSource(userScope, [], new Map());
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory({
         id: validateRegistryId(`${userScope}/my-test-mod`),
@@ -44,30 +50,23 @@ describe("buildGetModSharingSource", () => {
   });
 
   it("handles deployment mod", () => {
-    const modMetadata = modMetadataFactory();
     const organization = organizationStateFactory();
+
+    const modInstance = modInstanceFactory({
+      deploymentMetadata: teamDeploymentMetadataFactory({ organization }),
+    });
+
     const getSharingSource = buildGetModSharingSource(
       userScope,
       [organization],
-      [
-        activatedModComponentFactory({
-          _recipe: modMetadata,
-          _deployment: {
-            id: autoUUIDSequence(),
-            timestamp: nowTimestamp(),
-            active: true,
-            organization,
-          },
-        }),
-      ],
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
     );
 
     const mod = modDefinitionFactory({
-      metadata: modMetadata,
-      sharing: {
-        public: false,
+      metadata: modInstance.definition.metadata,
+      sharing: teamSharingDefinitionFactory({
         organizations: [organization.id],
-      },
+      }),
     });
 
     expect(getSharingSource(mod)).toStrictEqual({
@@ -78,30 +77,25 @@ describe("buildGetModSharingSource", () => {
   });
 
   it("handles deployment mod (old deployment metadata)", () => {
-    const modMetadata = modMetadataFactory();
+    const modInstance = modInstanceFactory({
+      // Old deployment metadata doesn't include the organization directly
+      deploymentMetadata: teamDeploymentMetadataFactory({
+        organization: undefined,
+      }),
+    });
+
     const organization = organizationStateFactory();
     const getSharingSource = buildGetModSharingSource(
       userScope,
       [organization],
-      [
-        activatedModComponentFactory({
-          _recipe: modMetadata,
-          _deployment: {
-            id: autoUUIDSequence(),
-            timestamp: nowTimestamp(),
-            active: true,
-            // Old deployment metadata doesn't include the organization directly
-          },
-        }),
-      ],
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
     );
 
     const mod = modDefinitionFactory({
-      metadata: modMetadata,
-      sharing: {
-        public: false,
+      metadata: modInstance.definition.metadata,
+      sharing: teamSharingDefinitionFactory({
         organizations: [organization.id],
-      },
+      }),
     });
 
     expect(getSharingSource(mod)).toStrictEqual({
@@ -111,19 +105,19 @@ describe("buildGetModSharingSource", () => {
     });
   });
 
-  it("handles team mod", () => {
+  it("handles public team mod", () => {
     const organization = organizationStateFactory();
     const getSharingSource = buildGetModSharingSource(
       userScope,
       [organization],
-      [],
+      new Map(),
     );
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory(),
-      sharing: {
+      sharing: teamSharingDefinitionFactory({
         public: true,
         organizations: [organization.id],
-      },
+      }),
     });
 
     expect(getSharingSource(mod)).toStrictEqual({
@@ -134,13 +128,10 @@ describe("buildGetModSharingSource", () => {
   });
 
   it("handles public mod", () => {
-    const getSharingSource = buildGetModSharingSource(userScope, [], []);
+    const getSharingSource = buildGetModSharingSource(userScope, [], new Map());
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory(),
-      sharing: {
-        public: true,
-        organizations: [],
-      },
+      sharing: publicSharingDefinitionFactory(),
     });
 
     expect(getSharingSource(mod)).toStrictEqual({
@@ -151,30 +142,19 @@ describe("buildGetModSharingSource", () => {
   });
 
   it("handles personal deployment mod", () => {
-    const modMetadata = modMetadataFactory();
+    const modInstance = modInstanceFactory({
+      deploymentMetadata: personalDeploymentMetadataFactory(),
+    });
+
     const getSharingSource = buildGetModSharingSource(
       userScope,
       [],
-      [
-        activatedModComponentFactory({
-          _recipe: modMetadata,
-          _deployment: {
-            id: autoUUIDSequence(),
-            timestamp: nowTimestamp(),
-            active: true,
-            organization: undefined,
-            isPersonalDeployment: true,
-          },
-        }),
-      ],
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
     );
 
     const mod = modDefinitionFactory({
-      metadata: modMetadata,
-      sharing: {
-        public: false,
-        organizations: [],
-      },
+      metadata: modInstance.definition.metadata,
+      sharing: createPrivateSharing(),
     });
 
     expect(getSharingSource(mod)).toStrictEqual({
@@ -185,13 +165,10 @@ describe("buildGetModSharingSource", () => {
   });
 
   it("handles unknown sharing type", () => {
-    const getSharingSource = buildGetModSharingSource(userScope, [], []);
+    const getSharingSource = buildGetModSharingSource(userScope, [], new Map());
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory(),
-      sharing: {
-        public: false,
-        organizations: [],
-      },
+      sharing: personalSharingDefinitionFactory(),
     });
     expect(getSharingSource(mod)).toStrictEqual({
       type: "Unknown",
@@ -206,14 +183,13 @@ describe("buildGetModSharingSource", () => {
     const getSharingSource = buildGetModSharingSource(
       userScope,
       [organization1, organization2],
-      [],
+      new Map(),
     );
     const mod = modDefinitionFactory({
       metadata: modMetadataFactory(),
-      sharing: {
-        public: false,
+      sharing: teamSharingDefinitionFactory({
         organizations: [organization1.id, organization2.id],
-      },
+      }),
     });
 
     expect(getSharingSource(mod)).toStrictEqual({

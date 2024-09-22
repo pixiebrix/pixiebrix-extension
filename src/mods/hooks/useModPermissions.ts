@@ -26,8 +26,8 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import type { ModInstance } from "@/types/modInstanceTypes";
 import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
-// By default, assume the extensions have permissions.
-const fallback: PermissionsStatus = {
+// By default, assume the extension has required permissions.
+const noRequiredPermissionsStatus: PermissionsStatus = {
   hasPermissions: true,
   permissions: emptyPermissionsFactory(),
 };
@@ -45,16 +45,16 @@ function useModPermissions(modInstances: ModInstance[]): {
 
   const { data } = fallbackValue(
     useAsyncState(async () => {
-      if (isSuccess) {
+      if (isSuccess && modInstances.length > 0) {
         const modComponents = modInstances.flatMap((x) =>
           mapModInstanceToActivatedModComponents(x),
         );
         return checkExtensionPermissions(modComponents);
       }
 
-      return fallback;
+      return noRequiredPermissionsStatus;
     }, [modInstances, browserPermissions, isSuccess]),
-    fallback,
+    noRequiredPermissionsStatus,
   );
 
   assertNotNullish(data, "Permissions data is null");
