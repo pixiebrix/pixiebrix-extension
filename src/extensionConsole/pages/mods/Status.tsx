@@ -32,9 +32,10 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
-import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
+import useFindModInstance from "@/mods/hooks/useFindModInstance";
+import { compact } from "lodash";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
@@ -51,10 +52,10 @@ const Status: React.VoidFunctionComponent<{
     modActions: { showActivate, showReactivate },
   } = modViewItem;
 
-  const activatedModComponents = useActivatedModComponents(modId);
+  const modInstance = useFindModInstance(modId);
 
   const { hasPermissions, requestPermissions } = useModPermissions(
-    activatedModComponents,
+    compact([modInstance]),
   );
 
   if (isUnavailable) {

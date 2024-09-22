@@ -19,22 +19,22 @@ import { deactivateUnassignedModComponents } from "@/extensionConsole/pages/depl
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import type { Dispatch } from "@reduxjs/toolkit";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
-const useDeactivateUnassignedDeploymentsEffect = (
-  unassignedModComponents: ModComponentBase[],
-) => {
+function useDeactivateUnassignedDeploymentsEffect(
+  unassignedModInstances: ModInstance[],
+): void {
   const dispatch = useDispatch<Dispatch>();
   useEffect(() => {
-    if (unassignedModComponents.length === 0) {
+    if (unassignedModInstances.length === 0) {
       return;
     }
 
     deactivateUnassignedModComponents({
       dispatch,
-      unassignedModComponents,
+      unassignedModInstances,
     });
-  }, [dispatch, unassignedModComponents]);
-};
+  }, [dispatch, unassignedModInstances]);
+}
 
 export default useDeactivateUnassignedDeploymentsEffect;

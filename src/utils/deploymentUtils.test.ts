@@ -29,7 +29,10 @@ import {
 } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  activatedModComponentFactory,
+  modComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
@@ -43,14 +46,16 @@ import {
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { validateTimestamp } from "@/utils/timeUtils";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
     "unassigned deployment",
     ({ restricted }) => {
-      const modComponents = [modComponentFactory()];
+      const modInstances = [modInstanceFactory()];
 
-      const filter = makeUpdatedFilter(modComponents, { restricted });
+      const filter = makeUpdatedFilter(modInstances, { restricted });
       expect(filter(deploymentFactory())).toBeTrue();
     },
   );
@@ -60,17 +65,15 @@ describe("makeUpdatedFilter", () => {
     ({ restricted }) => {
       const deployment = deploymentFactory();
 
-      const extensions = [
-        modComponentFactory({
-          _deployment: {
-            id: deployment.id,
-            timestamp: deployment.updated_at!,
-            active: true,
-          },
-        }),
-      ];
+      const modInstance = modInstanceFactory({
+        deploymentMetadata: {
+          id: deployment.id,
+          timestamp: deployment.updated_at!,
+          active: true,
+        },
+      });
 
-      const filter = makeUpdatedFilter(extensions, { restricted });
+      const filter = makeUpdatedFilter([modInstance], { restricted });
       expect(filter(deployment)).toBeFalse();
     },
   );
@@ -80,26 +83,24 @@ describe("makeUpdatedFilter", () => {
     ({ restricted }) => {
       const deployment = deploymentFactory();
 
-      const extensions = [
-        modComponentFactory({
-          _deployment: {
-            id: deployment.id,
-            timestamp: "2020-10-07T12:52:16.189Z",
-            active: true,
-          },
-        }),
-      ];
+      const modInstance = modInstanceFactory({
+        deploymentMetadata: {
+          id: deployment.id,
+          timestamp: "2020-10-07T12:52:16.189Z",
+          active: true,
+        },
+      });
 
-      const filter = makeUpdatedFilter(extensions, { restricted });
+      const filter = makeUpdatedFilter([modInstance], { restricted });
       expect(filter(deployment)).toBeTrue();
     },
   );
 
-  test("matched blueprint for restricted user", () => {
+  test("matched mod for restricted user", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
 
-    const extensions = [
-      modComponentFactory({
+    const modInstance = mapActivatedModComponentsToModInstance([
+      activatedModComponentFactory({
         _deployment: undefined,
         _recipe: {
           ...modDefinition.metadata,
@@ -108,17 +109,17 @@ describe("makeUpdatedFilter", () => {
           sharing: null,
         },
       }),
-    ];
+    ]);
 
-    const filter = makeUpdatedFilter(extensions, { restricted: true });
+    const filter = makeUpdatedFilter([modInstance], { restricted: true });
     expect(filter(deployment)).toBeTrue();
   });
 
   test("matched blueprint for unrestricted user / developer", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
 
-    const extensions = [
-      modComponentFactory({
+    const modInstance = mapActivatedModComponentsToModInstance([
+      activatedModComponentFactory({
         _deployment: undefined,
         _recipe: {
           ...modDefinition.metadata,
@@ -129,9 +130,9 @@ describe("makeUpdatedFilter", () => {
           sharing: null,
         },
       }),
-    ];
+    ]);
 
-    const filter = makeUpdatedFilter(extensions, { restricted: false });
+    const filter = makeUpdatedFilter([modInstance], { restricted: false });
     expect(filter(deployment)).toBeFalse();
   });
 });
