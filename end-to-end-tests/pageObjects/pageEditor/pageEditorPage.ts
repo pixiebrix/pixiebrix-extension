@@ -198,8 +198,6 @@ export class PageEditorPage extends BasePageObject {
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.createMod(modName, modUuid);
 
-    this.savedPackageModIds.push(modId);
-
     return { modName, modId };
   }
 
