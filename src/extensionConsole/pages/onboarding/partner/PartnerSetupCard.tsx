@@ -136,7 +136,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const controlRoomUrl =
     managedStorage.data?.controlRoomUrl ??
     hostnameToUrl(hostname) ??
-    me?.primaryOrganization?.controlRoom?.controlRoomUrl?.href ??
+    me?.primaryTeam?.controlRoom?.controlRoomUrl?.href ??
     "";
 
   const { data: installUrl } = usePartnerAppStartUrl(controlRoomUrl);

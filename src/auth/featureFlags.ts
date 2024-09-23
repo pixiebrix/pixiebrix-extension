@@ -101,18 +101,27 @@ export const FeatureFlags = {
   SETTINGS_EXPERIMENTAL: "settings-experimental",
 
   /**
-   * PixieBrix error service kill switch/
+   * PixieBrix error service off switch/
    */
   ERROR_SERVICE_DISABLE_REPORT: "error-service-disable-report",
 
   /**
-   * Datadog error telemetry kill switch.
+   * Datadog error telemetry off switch.
    *
    * Originally introduced when moving Datadog to the offscreen document in order to turn off error telemetry if
    * the offscreen document implementation was buggy.
    */
   APPLICATION_ERROR_TELEMETRY_DISABLE_REPORT:
     "application-error-telemetry-disable-report",
+
+  /**
+   * IndexDB logging off switch. This disables writing to the LOG database, along with
+   * the clear debug logging and sweep logs functionality.
+   *
+   * Introduced to mitigate issues around idb logging causing runtime performance issues. See:
+   * https://github.com/pixiebrix/pixiebrix-extension/issues/9169
+   */
+  DISABLE_IDB_LOGGING: "disable-idb-logging",
 
   /**
    * Experimental support for audio capture bricks.

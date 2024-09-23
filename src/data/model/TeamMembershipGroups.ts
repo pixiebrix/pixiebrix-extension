@@ -15,18 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateUUID } from "@/types/helpers";
-import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { type components } from "@/types/swagger";
 import { type SetRequired } from "type-fest";
 
-export type OrganizationMembershipUser = {
-  userId: UUID;
-  userName?: string;
-  userEmail?: string;
-  serviceAccount?: boolean;
-  deploymentKeyAccount?: boolean;
-  dateJoined?: Timestamp;
+export type TeamMembershipGroup = {
+  groupId: UUID;
+  groupName: string;
 };
 
 type Memberships = SetRequired<
@@ -34,15 +29,11 @@ type Memberships = SetRequired<
   "members"
 >["members"];
 
-export function transformOrganizationMemberUserResponse(
-  user: Memberships[number]["user"],
-): OrganizationMembershipUser {
-  return {
-    userId: validateUUID(user?.id),
-    userName: user?.name,
-    userEmail: user?.email,
-    serviceAccount: user?.service_account,
-    deploymentKeyAccount: user?.deployment_key_account,
-    dateJoined: user?.date_joined,
-  };
+export function transformTeamMemberGroupsResponse(
+  groups: Memberships[number]["groups"],
+): TeamMembershipGroup[] | undefined {
+  return groups?.map((group) => ({
+    groupId: group.id,
+    groupName: group.name,
+  }));
 }

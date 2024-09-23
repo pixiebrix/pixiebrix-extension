@@ -17,7 +17,10 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
-import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
+import injectIframe, {
+  hiddenIframeStyle,
+  IframeInjectionError,
+} from "@/utils/injectIframe";
 import postMessage, { type Payload } from "@/utils/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -27,6 +30,7 @@ import { TimeoutError } from "p-timeout";
 import { isSpecificError } from "@/errors/errorHelpers";
 
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
+const MAX_RETRIES = 3;
 
 const loadSandbox = pMemoize(async () =>
   injectIframe(
@@ -37,7 +41,7 @@ const loadSandbox = pMemoize(async () =>
 );
 
 const getSandbox = memoizeUntilSettled(async () => {
-  let sandbox = await loadSandbox();
+  const sandbox = await loadSandbox();
   const isSandboxWrapperInDom = document.querySelector(
     `#${SANDBOX_SHADOW_ROOT_ID}`,
   );
@@ -49,9 +53,8 @@ const getSandbox = memoizeUntilSettled(async () => {
       type: "SANDBOX_PING",
     });
   } else {
-    console.warn("Sandbox iframe was removed from the DOM. Reinjecting...");
     pMemoizeClear(loadSandbox);
-    sandbox = await loadSandbox();
+    throw new IframeInjectionError("Sandbox iframe was removed from the DOM.");
   }
 
   return sandbox.contentWindow;
@@ -73,8 +76,10 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
           type,
         }),
       {
-        retries: 3,
-        shouldRetry: (error) => isSpecificError(error, TimeoutError),
+        retries: MAX_RETRIES,
+        shouldRetry: (error) =>
+          isSpecificError(error, TimeoutError) ||
+          isSpecificError(error, IframeInjectionError),
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
@@ -83,7 +88,10 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
       },
     );
   } catch (error) {
-    if (isSpecificError(error, TimeoutError)) {
+    if (
+      isSpecificError(error, TimeoutError) ||
+      isSpecificError(error, IframeInjectionError)
+    ) {
       throw new Error(
         `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
         {

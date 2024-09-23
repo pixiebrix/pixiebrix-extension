@@ -31,7 +31,7 @@ import { type UserMilestone } from "@/data/model/UserMilestone";
 import type { components } from "@/types/swagger";
 import { type UserPartner } from "@/data/model/UserPartner";
 import {
-  type RequiredMeOrganizationResponse,
+  type RequiredMeTeamResponse,
   type RequiredMePartnerResponse,
 } from "@/data/service/responseTypeHelpers";
 import { type SetRequired } from "type-fest";
@@ -113,18 +113,17 @@ export const authStateFactory = define<AuthState>({
   },
 });
 
-export const meOrganizationApiResponseFactory =
-  define<RequiredMeOrganizationResponse>({
-    id: uuidSequence,
-    name(n: number): string {
-      return `Test Organization ${n}`;
-    },
-    scope(n: number): string {
-      return `@organization-${n}`;
-    },
-    control_room: undefined,
-    theme: undefined,
-  });
+export const meOrganizationApiResponseFactory = define<RequiredMeTeamResponse>({
+  id: uuidSequence,
+  name(n: number): string {
+    return `Test Organization ${n}`;
+  },
+  scope(n: number): string {
+    return `@organization-${n}`;
+  },
+  control_room: undefined,
+  theme: undefined,
+});
 
 export const meApiResponseFactory = define<components["schemas"]["Me"]>({
   id: uuidSequence,

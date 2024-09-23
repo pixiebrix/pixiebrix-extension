@@ -45,8 +45,7 @@ export default async function initFloatingActions(): Promise<void> {
   // Just get the theme from the store instead of using getActive theme to avoid extra Chrome storage reads
   // In practice, the Chrome policy should not change between useGetTheme and a call to initFloatingActions on a page
   const isEnterpriseOrPartnerUser =
-    meData?.primaryOrganization?.isEnterprise ||
-    settings.theme !== DEFAULT_THEME;
+    meData?.primaryTeam?.isEnterprise || settings.theme !== DEFAULT_THEME;
 
   const hasFeatureFlag = await flagOn(
     FeatureFlags.FLOATING_ACTION_BUTTON_FREEMIUM,

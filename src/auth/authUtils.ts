@@ -43,8 +43,8 @@ export async function getUserScope(): Promise<Nullishable<string>> {
 
 export function selectUserDataUpdate({
   email,
-  primaryOrganization,
-  organizationMemberships,
+  primaryTeam: primaryOrganization,
+  teamMemberships: organizationMemberships,
   groupMemberships,
   partner,
   enforceUpdateMillis,
@@ -62,7 +62,7 @@ export function selectUserDataUpdate({
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     -- email is always present, pending above type refactoring */
     email: email!,
-    organizationId: primaryOrganization?.organizationId ?? null,
+    organizationId: primaryOrganization?.teamId ?? null,
     organizations,
     groups,
     partner: partner ?? null,
@@ -75,11 +75,11 @@ export function selectExtensionAuthState({
   userId,
   email,
   scope,
-  primaryOrganization,
+  primaryTeam: primaryOrganization,
   isOnboarded,
   isTestAccount,
   userMilestones: milestones,
-  organizationMemberships,
+  teamMemberships: organizationMemberships,
   groupMemberships,
   partner,
   enforceUpdateMillis,
@@ -93,11 +93,11 @@ export function selectExtensionAuthState({
     primaryOrganization == null
       ? null
       : {
-          id: primaryOrganization.organizationId,
-          name: primaryOrganization.organizationName,
+          id: primaryOrganization.teamId,
+          name: primaryOrganization.teamName,
           isEnterprise: primaryOrganization.isEnterprise,
           scope: primaryOrganization.scope,
-          theme: primaryOrganization.organizationTheme,
+          theme: primaryOrganization.teamTheme,
           control_room: primaryOrganization.controlRoom,
         };
 
