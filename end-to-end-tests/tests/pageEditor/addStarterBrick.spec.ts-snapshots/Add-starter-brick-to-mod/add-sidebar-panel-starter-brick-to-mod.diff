@@ -2,7 +2,7 @@ Index: add-sidebar-panel-starter-brick-to-mod
 ===================================================================
 --- add-sidebar-panel-starter-brick-to-mod
 +++ add-sidebar-panel-starter-brick-to-mod
-@@ -39,85 +39,137 @@
+@@ -39,89 +39,141 @@
      kind: extensionPoint
    extensionPoint3:
      definition:
@@ -140,3 +140,7 @@ Index: add-sidebar-panel-starter-brick-to-mod
    uiSchema:
      ui:order:
        - '*'
+ variables:
+   schema:
+     properties: {}
+     type: object

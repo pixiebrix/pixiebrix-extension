@@ -2,7 +2,7 @@ Index: add-quick-bar-starter-brick-to-mod
 ===================================================================
 --- add-quick-bar-starter-brick-to-mod
 +++ add-quick-bar-starter-brick-to-mod
-@@ -19,79 +19,105 @@
+@@ -19,83 +19,109 @@
        type: trigger
      kind: extensionPoint
    extensionPoint2:
@@ -108,3 +108,7 @@ Index: add-quick-bar-starter-brick-to-mod
    uiSchema:
      ui:order:
        - '*'
+ variables:
+   schema:
+     properties: {}
+     type: object

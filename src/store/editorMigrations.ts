@@ -22,6 +22,7 @@ import {
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
+  type BaseFormStateV5,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -30,6 +31,7 @@ import {
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import {
+  type EditorState,
   type EditorStateV1,
   type EditorStateV2,
   type EditorStateV3,
@@ -37,12 +39,14 @@ import {
   type EditorStateV5,
   type EditorStateV6,
   type EditorStateV7,
+  type EditorStateV8,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { makeInitialDataTabState } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -55,6 +59,7 @@ export const migrations: MigrationManifest = {
   5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
   6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
   7: (state: EditorStateV6 & PersistedState) => migrateEditorStateV6(state),
+  8: (state: EditorStateV7 & PersistedState) => migrateEditorStateV7(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -222,4 +227,25 @@ export function migrateEditorStateV6(
       }
     }
   });
+}
+
+export function migrateEditorStateV7(
+  state: EditorStateV7 & PersistedState,
+): EditorStateV8 & PersistedState {
+  // Reset the Data Panel state using the current set of DataPanelTabKeys
+  return produce(state, (draft) => {
+    for (const formState of draft.modComponentFormStates) {
+      (formState as BaseFormStateV5).variablesDefinition =
+        emptyModVariablesDefinitionFactory();
+    }
+
+    for (const formStates of Object.values(
+      draft.deletedModComponentFormStatesByModId,
+    )) {
+      for (const formState of formStates) {
+        (formState as BaseFormStateV5).variablesDefinition =
+          emptyModVariablesDefinitionFactory();
+      }
+    }
+  }) as EditorState & PersistedState;
 }

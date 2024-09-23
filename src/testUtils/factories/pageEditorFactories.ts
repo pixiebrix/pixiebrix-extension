@@ -56,6 +56,7 @@ import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormSt
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type Permissions } from "webextension-polyfill";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
@@ -75,6 +76,7 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   uuid: uuidSequence,
   installed: true,
   optionsArgs: () => ({}) as OptionsArgs,
+  variablesDefinition: () => emptyModVariablesDefinitionFactory(),
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
