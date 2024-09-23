@@ -28,6 +28,8 @@ import {
 } from "@/platform/state/stateTypes";
 import type { JSONSchema7Definition } from "json-schema";
 import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
+import { getSessionStorageKey } from "@/platform/state/stateHelpers";
+import { getThisFrame } from "webext-messenger";
 
 beforeEach(async () => {
   await TEST_resetStateController();
@@ -132,6 +134,7 @@ describe("pageState", () => {
     });
 
     it("segregates tab/session storage", async () => {
+      const { tabId } = await getThisFrame();
       const listener = jest.fn();
 
       document.addEventListener(STATE_CHANGE_JS_EVENT_TYPE, listener);
@@ -173,9 +176,12 @@ describe("pageState", () => {
       let values = await browser.storage.session.get(null);
 
       // Ensure values are segmented correctly in storage
-      expect(JSON.stringify(values)).not.toContain("quox");
-      expect(JSON.stringify(values)).not.toContain("tabValue");
-      expect(JSON.stringify(values)).toContain("sessionValue");
+      expect(values).toStrictEqual({
+        [getSessionStorageKey({ modId: modComponentRef.modId, tabId })]: {},
+        [getSessionStorageKey({ modId: modComponentRef.modId })]: {
+          sessionVariable: "sessionValue",
+        },
+      });
 
       await setState({
         namespace: StateNamespaces.MOD,
@@ -185,10 +191,15 @@ describe("pageState", () => {
       });
 
       values = await browser.storage.session.get(null);
-      expect(JSON.stringify(values)).toContain("sessionValue");
-      expect(JSON.stringify(values)).toContain("tabValue");
 
-      expect(Object.keys(values)).toHaveLength(2);
+      expect(values).toStrictEqual({
+        [getSessionStorageKey({ modId: modComponentRef.modId })]: {
+          sessionVariable: "sessionValue",
+        },
+        [getSessionStorageKey({ modId: modComponentRef.modId, tabId })]: {
+          tabVariable: "tabValue",
+        },
+      });
     });
   });
 });

@@ -65,7 +65,7 @@ export function getSyncedVariableNames(modId: RegistryId) {
   };
 }
 
-export function mapModVariablesToModSyncPolicy(
+function mapModVariablesToModSyncPolicy(
   variables: ModVariablesDefinition,
 ): VariableSyncPolicyMapping {
   return Object.fromEntries(
