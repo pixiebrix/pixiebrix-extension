@@ -28,7 +28,7 @@ import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 import { noop, uniq } from "lodash";
 import { freeze } from "@/utils/objectUtils";
 
-interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
+export interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
   // Only used in the FormPreview
   setActiveField: SetActiveField;
 }
