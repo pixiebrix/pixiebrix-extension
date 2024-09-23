@@ -32,10 +32,10 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
   return useCallback(
     async (modId: RegistryId) => {
       const confirmed = await showConfirmation({
-        title: "Reset Mod?",
+        title: "Clear unsaved changes in Mod?",
         message:
           "Unsaved changes to this mod, or to mod options and metadata, will be lost.",
-        submitCaption: "Reset",
+        submitCaption: "Clear Changes",
       });
       if (!confirmed) {
         return;

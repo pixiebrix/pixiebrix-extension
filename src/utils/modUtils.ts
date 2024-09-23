@@ -50,7 +50,7 @@ import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
 
 /**
@@ -64,6 +64,16 @@ export function getStandaloneModComponentRuntimeModId(
   return validateRegistryId(
     `${INNER_SCOPE}/mod/${modComponentId.toLowerCase()}`,
   );
+}
+
+/**
+ * Returns an auto-generated mod id for use with a new, unsaved mod component mod metadata
+ *
+ * @see INNER_SCOPE
+ */
+export function getNewUnsavedModId(): RegistryId {
+  const randomId = uuidv4();
+  return validateRegistryId(`${INNER_SCOPE}/mod/${randomId.toLowerCase()}`);
 }
 
 /**

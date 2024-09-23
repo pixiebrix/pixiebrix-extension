@@ -95,6 +95,10 @@ const MoveFromModModal: React.FC = () => {
           "mod component id not found for active mod component",
         );
 
+        console.log(
+          "------------------------------ mod metadata for duplicate",
+          modMetadata,
+        );
         dispatch(editorActions.duplicateActiveModComponent({ modMetadata }));
 
         if (!keepLocalCopy) {

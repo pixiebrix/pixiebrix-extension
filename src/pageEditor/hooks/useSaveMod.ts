@@ -203,6 +203,11 @@ function useSaveMod(): ModSaver {
           newModMetadata.id,
         ),
       );
+      dispatch(
+        modComponentActions.clearDeletedModComponentsForMod({
+          modId: newModMetadata.id,
+        }),
+      );
 
       reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
         modId: newMod.metadata.id,

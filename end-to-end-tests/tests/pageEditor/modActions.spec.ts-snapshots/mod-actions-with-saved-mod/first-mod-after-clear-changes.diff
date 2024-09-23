@@ -1,0 +1,76 @@
+Index: first-mod-after-clear-changes
+===================================================================
+--- first-mod-after-clear-changes
++++ first-mod-after-clear-changes
+@@ -1,42 +1,71 @@
+ apiVersion: v3
+ definitions:
+   extensionPoint:
+     definition:
+       contexts:
+         - all
+       documentUrlPatterns:
+         - '*://*/*'
+       isAvailable:
+         allFrames: true
+         matchPatterns:
+           - '*://*/*'
+         selectors: []
+         urlPatterns: []
+       reader:
+         - '@pixiebrix/document-metadata'
+         - '@pixiebrix/document-context'
+         - element: '@pixiebrix/html/element'
+       targetMode: eventTarget
+       type: contextMenu
+     kind: extensionPoint
++  extensionPoint2:
++    definition:
++      contexts:
++        - all
++      documentUrlPatterns:
++        - '*://*/*'
++      isAvailable:
++        allFrames: true
++        matchPatterns:
++          - '*://*/*'
++        selectors: []
++        urlPatterns: []
++      reader:
++        - '@pixiebrix/document-metadata'
++        - '@pixiebrix/document-context'
++        - element: '@pixiebrix/html/element'
++        - '@pixiebrix/selection'
++      targetMode: eventTarget
++      type: quickBar
++    kind: extensionPoint
+ extensionPoints:
+   - config:
+       action: []
+       onSuccess: true
+       title: Context menu item
+     id: extensionPoint
+     label: New Context Menu Item
+     services: {}
++  - config:
++      action: []
++      title: Quick Bar item
++    id: extensionPoint2
++    label: Test Quick Bar Action
++    permissions:
++      origins: []
++      permissions: []
++    services: {}
+ kind: recipe
+ metadata:
+   description: First test mod with multiple components
+   id: '@extension-e2e-test-unaffiliated/test-mod-created-with-button'
+   name: Test Mod created with Button
+   version: 1.0.0
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'

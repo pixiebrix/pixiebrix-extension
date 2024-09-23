@@ -362,10 +362,11 @@ test("mod actions with saved mod", async ({
   const quickBarComponentName = "Test Quick Bar Action";
   const triggerComponentName = "Test Trigger";
   const duplicatedComponentName = `${quickBarComponentName} (Copy)`;
+  const contextMenuItemComponentName = "New Context Menu Item";
+  const copiedContextMenuItemComponentName = `${contextMenuItemComponentName} (Copy)`;
 
-  // New mod names
   const newModForButtonName = "New Mod for Button";
-  const newModForTriggerCopyName = "New Mod for Trigger Copy";
+  const newModForContextMenuItemCopyName = "New Mod for Context Menu Item Copy";
 
   await test.step("Create and save first mod with multiple components", async () => {
     await pageEditorPage.addNewModWithButtonStarterBrick(async () => {
@@ -532,11 +533,10 @@ test("mod actions with saved mod", async ({
     await componentToDuplicate.modComponentActionMenu.click();
     await componentToDuplicate.modComponentActionMenu.duplicateOption.click();
 
-    const expectedDuplicateName = duplicatedComponentName;
     const duplicatedComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         secondModName,
-        expectedDuplicateName,
+        duplicatedComponentName,
       );
     await expect(duplicatedComponent.root).toBeVisible();
 
@@ -642,10 +642,9 @@ test("mod actions with saved mod", async ({
     await firstMod.select();
     await firstMod.modActionMenu.click();
     await firstMod.modActionMenu.addStarterBrick("Context Menu");
-    const contextMenuComponentName = "New Context Menu Item";
     await pageEditorPage.brickConfigurationPanel.fillField(
       "name",
-      contextMenuComponentName,
+      contextMenuItemComponentName,
     );
 
     // Save the mod with the new component
@@ -698,12 +697,12 @@ test("mod actions with saved mod", async ({
     const contextMenuComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         firstModName,
-        contextMenuComponentName,
+        contextMenuItemComponentName,
       );
     await expect(contextMenuComponent.root).toBeVisible();
 
     // Save and verify snapshots
-    await pageEditorPage.saveExistingMod(newModForButtonName);
+    await pageEditorPage.saveNewMod(newModForButtonName);
     await verifyModDefinitionSnapshot({
       modId:
         await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
@@ -720,19 +719,20 @@ test("mod actions with saved mod", async ({
     });
   });
 
-  await test.step("Copy trigger component to another new mod", async () => {
-    const triggerComponent = pageEditorPage.modListingPanel.getModStarterBrick(
-      firstModName,
-      triggerComponentName,
-    );
-    await triggerComponent.select();
-    await triggerComponent.modComponentActionMenu.click();
-    await triggerComponent.modComponentActionMenu.copyToModOption.click();
+  await test.step("Copy context menu item component from first mod to another new mod", async () => {
+    const contextMenuItemComponent =
+      pageEditorPage.modListingPanel.getModStarterBrick(
+        firstModName,
+        contextMenuItemComponentName,
+      );
+    await contextMenuItemComponent.select();
+    await contextMenuItemComponent.modComponentActionMenu.click();
+    await contextMenuItemComponent.modComponentActionMenu.copyToModOption.click();
 
     const copyModModal = pageEditorPage.getByRole("dialog");
     await expect(copyModModal).toBeVisible();
     await expect(copyModModal).toContainText(
-      `Copy ${triggerComponentName} to another Mod?`,
+      `Copy ${contextMenuItemComponentName} to another Mod?`,
     );
     await copyModModal.getByRole("combobox").click();
     await copyModModal
@@ -742,38 +742,42 @@ test("mod actions with saved mod", async ({
 
     await pageEditorPage.brickConfigurationPanel.fillField(
       "name",
-      newModForTriggerCopyName,
+      copiedContextMenuItemComponentName,
     );
 
-    // Verify the component has been copied
+    // Verify the component has been copied -- Will be named same as source component by default
     const newMod = pageEditorPage.modListingPanel.getModListItemByName(
-      newModForTriggerCopyName,
+      contextMenuItemComponentName,
     );
     await newMod.select();
-    const copiedTriggerComponent =
+    await pageEditorPage.modEditorPane.editMetadataTabPanel.fillField(
+      "name",
+      newModForContextMenuItemCopyName,
+    );
+    const copiedContextMenuItemComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
-        newModForTriggerCopyName,
-        triggerComponentName,
+        newModForContextMenuItemCopyName,
+        copiedContextMenuItemComponentName,
       );
-    await expect(copiedTriggerComponent.root).toBeVisible();
+    await expect(copiedContextMenuItemComponent.root).toBeVisible();
 
     // Verify the component is still in the first mod
     const firstMod =
       pageEditorPage.modListingPanel.getModListItemByName(firstModName);
     await firstMod.select();
-    const originalTriggerComponent =
+    const originalContextMenuItemComponent =
       pageEditorPage.modListingPanel.getModStarterBrick(
         firstModName,
-        triggerComponentName,
+        contextMenuItemComponentName,
       );
-    await expect(originalTriggerComponent.root).toBeVisible();
+    await expect(originalContextMenuItemComponent.root).toBeVisible();
 
     // Save and verify snapshots
-    await pageEditorPage.saveExistingMod(newModForTriggerCopyName);
+    await pageEditorPage.saveNewMod(newModForContextMenuItemCopyName);
     await verifyModDefinitionSnapshot({
       modId:
         await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
-      snapshotName: "new-mod-after-copying-trigger-component",
+      snapshotName: "new-mod-after-copying-context-menu-item-component",
       mode: "current",
     });
 
@@ -783,7 +787,19 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Test clear changes functionality after moving a component", async () => {
-    // Move a component from the first mod to the new mod for button
+    // Re-create the quick bar component in the first mod before attempting to move it
+    const firstMod =
+      pageEditorPage.modListingPanel.getModListItemByName(firstModName);
+    await firstMod.select();
+    await firstMod.modActionMenu.click();
+    await firstMod.modActionMenu.addStarterBrick("Quick Bar Action");
+    await pageEditorPage.brickConfigurationPanel.fillField(
+      "name",
+      quickBarComponentName,
+    );
+    await pageEditorPage.saveExistingMod(firstModName);
+
+    // Move the quick bar component from the first mod to the new mod for button
     const quickBarComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       firstModName,
       quickBarComponentName,
@@ -815,8 +831,10 @@ test("mod actions with saved mod", async ({
     await sourceMod.select();
     await sourceMod.modActionMenu.click();
     await sourceMod.modActionMenu.clearOption.click();
+    await pageEditorPage.getByRole("button", { name: "Clear Changes" }).click();
 
     // Assert that the moved component has been restored on the source mod
+    await sourceMod.select();
     const restoredComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       firstModName,
       quickBarComponentName,
@@ -839,6 +857,7 @@ test("mod actions with saved mod", async ({
     await destinationMod.select();
     await destinationMod.modActionMenu.click();
     await destinationMod.modActionMenu.clearOption.click();
+    await pageEditorPage.getByRole("button", { name: "Clear Changes" }).click();
 
     // Verify that the moved component has been removed from the destination mod
     await expect(movedComponent.root).toBeHidden();
@@ -857,30 +876,33 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Test clear changes functionality after copying a component", async () => {
-    // Copy a component from the first mod to the new mod for trigger copy
-    const triggerComponent = pageEditorPage.modListingPanel.getModStarterBrick(
+    // Copy the quick bar component from the first mod to the new mod for context menu item copy
+    const firstMod =
+      pageEditorPage.modListingPanel.getModListItemByName(firstModName);
+    await firstMod.select();
+    const quickBarComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       firstModName,
-      triggerComponentName,
+      quickBarComponentName,
     );
-    await triggerComponent.select();
-    await triggerComponent.modComponentActionMenu.click();
-    await triggerComponent.modComponentActionMenu.copyToModOption.click();
+    await quickBarComponent.select();
+    await quickBarComponent.modComponentActionMenu.click();
+    await quickBarComponent.modComponentActionMenu.copyToModOption.click();
 
     const copyModModal = pageEditorPage.getByRole("dialog");
     await copyModModal.getByRole("combobox").click();
     await copyModModal
-      .getByRole("option", { name: newModForTriggerCopyName })
+      .getByRole("option", { name: newModForContextMenuItemCopyName })
       .click();
     await copyModModal.getByRole("button", { name: "Copy" }).click();
 
     // Verify the component has been copied
     const destinationMod = pageEditorPage.modListingPanel.getModListItemByName(
-      newModForTriggerCopyName,
+      newModForContextMenuItemCopyName,
     );
     await destinationMod.select();
     const copiedComponent = pageEditorPage.modListingPanel.getModStarterBrick(
-      newModForTriggerCopyName,
-      triggerComponentName,
+      newModForContextMenuItemCopyName,
+      quickBarComponentName,
     );
     await expect(copiedComponent.root).toBeVisible();
 
@@ -890,7 +912,7 @@ test("mod actions with saved mod", async ({
     await sourceMod.select();
     const originalComponent = pageEditorPage.modListingPanel.getModStarterBrick(
       firstModName,
-      triggerComponentName,
+      quickBarComponentName,
     );
     await expect(originalComponent.root).toBeVisible();
 
@@ -898,6 +920,7 @@ test("mod actions with saved mod", async ({
     await destinationMod.select();
     await destinationMod.modActionMenu.click();
     await destinationMod.modActionMenu.clearOption.click();
+    await pageEditorPage.getByRole("button", { name: "Clear Changes" }).click();
 
     // Verify that the copied component has been removed from the destination mod
     await expect(copiedComponent.root).toBeHidden();
@@ -930,44 +953,72 @@ test("mod actions with saved mod", async ({
   });
 
   await test.step("Deactivate all mods and verify removal", async () => {
-    const modNames = [
-      firstModName,
+    // Deactivate the first mod and verify its removal
+    await pageEditorPage.deactivateMod(firstModName);
+    let deactivatedMod =
+      pageEditorPage.modListingPanel.getModListItemByName(firstModName);
+    await expect(deactivatedMod.root).toBeHidden();
+
+    // Verify snapshots of the remaining mods
+    for (const remainingModName of [
       newModForButtonName,
-      newModForTriggerCopyName,
-    ];
+      newModForContextMenuItemCopyName,
+    ]) {
+      const remainingMod =
+        pageEditorPage.modListingPanel.getModListItemByName(remainingModName);
+      await remainingMod.select();
 
-    for (const modToDeactivate of modNames) {
-      await pageEditorPage.deactivateMod(modToDeactivate);
+      await verifyModDefinitionSnapshot({
+        modId:
+          await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
+        snapshotName: `remaining-mod-${remainingModName}-after-deactivating-${firstModName}`,
+        mode: "diff",
+      });
 
-      // Verify the deactivated mod and its components are no longer visible
-      const deactivatedMod =
-        pageEditorPage.modListingPanel.getModListItemByName(modToDeactivate);
-      await expect(deactivatedMod.root).toBeHidden();
-
-      // Verify snapshots of remaining mods
-      for (const remainingModName of modNames.filter(
-        (name) => name !== modToDeactivate,
-      )) {
-        const remainingMod =
-          pageEditorPage.modListingPanel.getModListItemByName(remainingModName);
-        await remainingMod.select();
-
-        await verifyModDefinitionSnapshot({
-          modId:
-            await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
-          snapshotName: `remaining-mod-${remainingModName}-after-deactivating-${modToDeactivate}`,
-          mode: "diff",
-        });
-
-        // Verify that the remaining mod is not affected
-        await expect(remainingMod.root).toBeVisible();
-        await expect(remainingMod.dirtyIcon).toBeHidden();
-        await expect(remainingMod.saveButton).toBeDisabled();
-      }
+      // Verify that the remaining mod is not affected
+      await expect(remainingMod.root).toBeVisible();
+      await expect(remainingMod.dirtyIcon).toBeHidden();
+      await expect(remainingMod.saveButton).toBeDisabled();
     }
 
+    // Deactivate the second mod and verify its removal
+    await pageEditorPage.deactivateMod(newModForButtonName);
+    deactivatedMod =
+      pageEditorPage.modListingPanel.getModListItemByName(newModForButtonName);
+    await expect(deactivatedMod.root).toBeHidden();
+
+    // Verify snapshot of the last remaining mod
+    const lastRemainingMod =
+      pageEditorPage.modListingPanel.getModListItemByName(
+        newModForContextMenuItemCopyName,
+      );
+    await lastRemainingMod.select();
+
+    await verifyModDefinitionSnapshot({
+      modId:
+        await pageEditorPage.modEditorPane.editMetadataTabPanel.modId.inputValue(),
+      snapshotName: `remaining-mod-${newModForContextMenuItemCopyName}-after-deactivating-${newModForButtonName}`,
+      mode: "diff",
+    });
+
+    // Verify that the last remaining mod is not affected
+    await expect(lastRemainingMod.root).toBeVisible();
+    await expect(lastRemainingMod.dirtyIcon).toBeHidden();
+    await expect(lastRemainingMod.saveButton).toBeDisabled();
+
+    // Deactivate the last remaining mod and verify its removal
+    await pageEditorPage.deactivateMod(newModForContextMenuItemCopyName);
+    deactivatedMod = pageEditorPage.modListingPanel.getModListItemByName(
+      newModForContextMenuItemCopyName,
+    );
+    await expect(deactivatedMod.root).toBeHidden();
+
     // Verify that all mods have been removed
-    for (const modName of modNames) {
+    for (const modName of [
+      firstModName,
+      newModForButtonName,
+      newModForContextMenuItemCopyName,
+    ]) {
       const mod = pageEditorPage.modListingPanel.getModListItemByName(modName);
       await expect(mod.root).toBeHidden();
     }

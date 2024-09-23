@@ -46,7 +46,7 @@ import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
-import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
+import { getNewUnsavedModId } from "@/utils/modUtils";
 import { normalizeSemVerString } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -277,7 +277,7 @@ export function getUnsavedModMetadataForFormState(
   formState: BaseFormState,
 ): ModMetadata {
   return {
-    id: getStandaloneModComponentRuntimeModId(formState.uuid),
+    id: getNewUnsavedModId(),
     name: formState.label,
     description: "Created with the PixieBrix Page Editor",
     version: normalizeSemVerString("1.0.0"),

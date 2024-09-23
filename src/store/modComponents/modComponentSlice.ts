@@ -354,6 +354,18 @@ const modComponentSlice = createSlice({
         delete state.deletedModComponentsByModId[modId];
       }
     },
+
+    /**
+     * Clear deleted mod components by mod id.
+     */
+    clearDeletedModComponentsForMod(
+      state,
+      { payload: { modId } }: PayloadAction<{ modId: RegistryId }>,
+    ) {
+      if (state.deletedModComponentsByModId) {
+        delete state.deletedModComponentsByModId[modId];
+      }
+    },
   },
   extraReducers(builder) {
     builder.addCase(revertAll, () => initialState);
