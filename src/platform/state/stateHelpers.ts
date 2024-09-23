@@ -27,6 +27,7 @@ const keyPrefix = "#modVariables/";
 type StorageSlot = { modId: RegistryId; tabId?: number };
 
 /**
+ * Returns the session storage key for a mod's variables.
  * @see tryParseSessionStorageKey
  */
 export function getSessionStorageKey({ modId, tabId }: StorageSlot): string {

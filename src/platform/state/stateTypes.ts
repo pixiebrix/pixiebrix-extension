@@ -43,7 +43,7 @@ export const SyncPolicies = {
   NONE: "none",
   TAB: "tab",
   SESSION: "session",
-};
+} as const;
 
 export type SyncPolicy = ValueOf<typeof SyncPolicies>;
 
