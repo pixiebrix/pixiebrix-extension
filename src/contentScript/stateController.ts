@@ -69,7 +69,13 @@ const frameModState = new Map<RegistryId | null, JsonObject>();
 // eslint-disable-next-line local-rules/persistBackgroundData -- content script state
 const modSyncPolicies = new Map<RegistryId, VariableSyncPolicyMapping>();
 
-function getSessionStorageKey(modId: RegistryId): string {
+/**
+ * Returns the session storage key for a mod's variables.
+ *
+ * Exported for use in test assertions. The key structure is meant to be opaque. Do not call from outside
+ * this module in production code.
+ */
+export function getSessionStorageKey(modId: RegistryId): string {
   return `${keyPrefix}${modId}`;
 }
 

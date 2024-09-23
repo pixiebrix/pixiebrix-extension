@@ -19,6 +19,7 @@ import {
   setState,
   registerModVariables,
   getState,
+  getSessionStorageKey,
 } from "@/contentScript/stateController";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
@@ -84,6 +85,7 @@ describe("pageState", () => {
 
       const modComponentRef = modComponentRefFactory();
 
+      // Ensure storage is empty (smoke test assertion for test isolation)
       await expect(browser.storage.session.get(null)).resolves.toStrictEqual(
         {},
       );
@@ -115,8 +117,9 @@ describe("pageState", () => {
       const values = await browser.storage.session.get(null);
 
       // Ensure values are segmented correctly in storage
-      expect(JSON.stringify(values)).not.toContain("quox");
-      expect(JSON.stringify(values)).toContain("bar");
+      expect(values).toEqual({
+        [getSessionStorageKey(modComponentRef.modId)]: { foo: { bar: "baz" } },
+      });
 
       const state = await getState({
         namespace: StateNamespaces.MOD,

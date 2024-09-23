@@ -42,7 +42,7 @@ export type StateNamespace = ValueOf<typeof StateNamespaces>;
 export const SyncPolicies = {
   NONE: "none",
   SESSION: "session",
-};
+} as const;
 
 export type SyncPolicy = ValueOf<typeof SyncPolicies>;
 
