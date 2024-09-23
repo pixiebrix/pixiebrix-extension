@@ -584,11 +584,6 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  const abortController = new AbortController();
-  // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
-  // of blocking other db transactions.
-  setTimeout(abortController.abort, 30_000);
-
   await withLoggingDB(async (db) => {
     const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
@@ -599,6 +594,13 @@ async function _sweepLogs(): Promise<void> {
         numRecords,
         numToDelete,
       });
+
+      // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+      // of blocking other db transactions.
+      const abortController = new AbortController();
+      setTimeout(() => {
+        abortController.abort();
+      }, 10_000);
 
       const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
         durability: "relaxed",
