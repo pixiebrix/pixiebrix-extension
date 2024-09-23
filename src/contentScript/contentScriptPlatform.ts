@@ -27,7 +27,11 @@ import {
   traces,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { getState, setState } from "@/contentScript/stateController";
+import {
+  getState,
+  registerModVariables,
+  setState,
+} from "@/contentScript/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -242,6 +246,7 @@ class ContentScriptPlatform extends PlatformBase {
     return {
       getState,
       setState,
+      registerModVariables,
     };
   }
 

@@ -90,12 +90,18 @@ export async function runModViaQuickBar(page: Page, modName: string) {
 }
 
 function findSidebarPage(page: Page, extensionId: string): Page | undefined {
-  return page
+  const matches = page
     .context()
     .pages()
-    .find((value) =>
+    .filter((value) =>
       value.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
     );
+
+  if (matches.length > 1) {
+    throw new Error("Multiple sidebar pages found");
+  }
+
+  return matches[0];
 }
 
 /**
@@ -111,10 +117,12 @@ export function isSidebarOpen(page: Page, extensionId: string): boolean {
 /**
  * Finds the Pixiebrix sidebar page/frame.
  *
+ * NOTE: returns the sidebar found, not necessarily the one for the provided page.
+ *
  * Automatically clicks "OK" on the dialog that appears if the sidebar requires a user gesture to open
  * This is a Page contained in the browser sidepanel window.
  *
- * @throws {Error} if the sidebar is not available
+ * @throws {Error} if the sidebar is not available or multiple pages have the sidebar open
  */
 export async function getSidebarPage(
   page: Page,
