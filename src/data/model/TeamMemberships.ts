@@ -16,35 +16,35 @@
  */
 
 import {
-  type OrganizationMembershipGroup,
-  transformOrganizationMemberGroupsResponse,
-} from "@/data/model/OrganizationMembershipGroups";
+  type TeamMembershipGroup,
+  transformTeamMemberGroupsResponse,
+} from "@/data/model/TeamMembershipGroups";
 import {
-  transformOrganizationMemberUserResponse,
-  type OrganizationMembershipUser,
-} from "@/data/model/OrganizationMembershipUser";
+  transformTeamMemberUserResponse,
+  type TeamMembershipUser,
+} from "@/data/model/TeamMembershipUser";
 import {
   type UserRoleType,
   transformUserRoleResponse,
 } from "@/data/model/UserRole";
 import { type components } from "@/types/swagger";
 
-export type OrganizationMembership = {
+export type TeamMembership = {
   membershipId?: number;
-  user?: OrganizationMembershipUser;
+  user?: TeamMembershipUser;
   role: UserRoleType;
-  groups?: OrganizationMembershipGroup[];
+  groups?: TeamMembershipGroup[];
 };
 
-export function transformOrganizationMembershipResponse(
+export function transformTeamMembershipResponse(
   memberships: components["schemas"]["Organization"]["members"],
-): OrganizationMembership[] {
+): TeamMembership[] {
   return (
     memberships?.map((membership) => ({
       membershipId: membership.id,
-      user: transformOrganizationMemberUserResponse(membership.user),
+      user: transformTeamMemberUserResponse(membership.user),
       role: transformUserRoleResponse(membership.role),
-      groups: transformOrganizationMemberGroupsResponse(membership.groups),
+      groups: transformTeamMemberGroupsResponse(membership.groups),
     })) ?? []
   );
 }

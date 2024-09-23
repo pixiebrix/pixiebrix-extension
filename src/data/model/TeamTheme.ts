@@ -16,11 +16,11 @@
  */
 
 import { canParseUrl } from "@/utils/urlUtils";
-import { type RequiredMeOrganizationThemeResponse } from "@/data/service/responseTypeHelpers";
+import { type RequiredMeTeamThemeResponse } from "@/data/service/responseTypeHelpers";
 
-export type OrganizationTheme = {
+export type TeamTheme = {
   /**
-   * Whether to show the organization logo in the sidebar header.
+   * Whether to show the team logo in the sidebar header.
    */
   showSidebarHeaderLogo: boolean;
   /**
@@ -33,10 +33,10 @@ export type OrganizationTheme = {
   toolbarIconUrl?: URL;
 };
 
-export function transformOrganizationThemeResponse(
-  response: RequiredMeOrganizationThemeResponse,
-): OrganizationTheme {
-  const theme: OrganizationTheme = {
+export function transformTeamThemeResponse(
+  response: RequiredMeTeamThemeResponse,
+): TeamTheme {
+  const theme: TeamTheme = {
     showSidebarHeaderLogo: response.show_sidebar_logo ?? true,
   };
 

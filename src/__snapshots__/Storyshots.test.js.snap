@@ -443,7 +443,7 @@ exports[`Storyshots Components/EllipsisMenu Multiple Menu 1`] = `
     <div
       className="p-3"
     >
-      <div
+      <span
         onClick={[Function]}
       >
         <button
@@ -474,12 +474,12 @@ exports[`Storyshots Components/EllipsisMenu Multiple Menu 1`] = `
             />
           </svg>
         </button>
-      </div>
+      </span>
     </div>
     <div
       className="p-3"
     >
-      <div
+      <span
         onClick={[Function]}
       >
         <button
@@ -510,14 +510,14 @@ exports[`Storyshots Components/EllipsisMenu Multiple Menu 1`] = `
             />
           </svg>
         </button>
-      </div>
+      </span>
     </div>
   </div>
 </div>
 `;
 
 exports[`Storyshots Components/EllipsisMenu Single Menu 1`] = `
-<div
+<span
   onClick={[Function]}
 >
   <button
@@ -548,7 +548,7 @@ exports[`Storyshots Components/EllipsisMenu Single Menu 1`] = `
       />
     </svg>
   </button>
-</div>
+</span>
 `;
 
 exports[`Storyshots Components/ImagePlaceholder Square Image 1`] = `

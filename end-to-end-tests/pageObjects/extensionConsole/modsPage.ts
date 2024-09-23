@@ -20,7 +20,7 @@ import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
 import { validateRegistryId } from "@/types/helpers";
-import { API_PATHS } from "@/data/service/urlPaths";
+import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.getByTestId("ellipsis-menu-button");
@@ -153,7 +153,7 @@ export class ActivateModPage extends BasePageObject {
   ) {
     super(page);
     this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
-    this.activateModUrl = `${this.baseConsoleUrl}#${API_PATHS.MOD_ACTIVATE(
+    this.activateModUrl = `${this.baseConsoleUrl}#${UI_PATHS.MOD_ACTIVATE(
       validateRegistryId(modId),
     )}`;
   }

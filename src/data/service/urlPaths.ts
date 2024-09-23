@@ -18,12 +18,30 @@
 import type { RegistryId } from "@/types/registryTypes";
 import { type paths } from "@/types/swagger";
 
+// These paths are not included in the swagger definition
+type WebhookPaths = "/api/webhooks/hooks/" | "/api/webhooks/key/";
+type PathsWithQueryParams = `${keyof paths}?${string}`;
+
+type TemplateStringFromPath<T extends string> = string extends T
+  ? string
+  : T extends `${infer Start}{${string}}/${infer Rest}`
+    ? `${Start}${string}/${TemplateStringFromPath<Rest>}`
+    : T extends `${infer Start}{${string}}`
+      ? `${Start}${string}`
+      : T;
+
+type PathsValues = Record<
+  string,
+  | keyof paths
+  | PathsWithQueryParams
+  | WebhookPaths
+  | ((...args: any[]) => TemplateStringFromPath<keyof paths>)
+>;
+
 export const API_PATHS = {
   BRICKS: "/api/bricks/",
   BRICK: (id: string) => `/api/bricks/${id}/`,
-  BRICK_MATCH_ANY: /api\/bricks\/[\w-]*\/$/,
   BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,
-  BRICK_VERSION_MATCH_ANY: /api\/bricks\/[\w-]*\/versions\/$/,
 
   DATABASES: "/api/databases/",
   DATABASE_RECORDS: (databaseId: string) =>
@@ -35,7 +53,7 @@ export const API_PATHS = {
   DEPLOYMENT_ALERTS: (deploymentId: string) =>
     `/api/deployments/${deploymentId}/alerts/`,
 
-  USER_DEPLOYMENTS: "/api/me/deployments/" satisfies keyof paths,
+  USER_DEPLOYMENTS: "/api/me/deployments/",
 
   FEATURE_FLAGS: "/api/me/",
 
@@ -54,10 +72,6 @@ export const API_PATHS = {
   ME_SETTINGS: "/api/settings/",
 
   MOD: (modId: RegistryId) => `/api/recipes/${encodeURIComponent(modId)}/`,
-  MOD_ACTIVATE: (modId: RegistryId, isReactivate?: boolean) =>
-    `marketplace/activate/${
-      encodeURIComponent(modId) + (isReactivate ? "?reinstall=1" : "")
-    }`,
   MOD_COMPONENTS_ALL: "/api/extensions/",
 
   ONBOARDING_STARTER_BLUEPRINTS: "/api/onboarding/starter-blueprints/",
@@ -85,6 +99,12 @@ export const API_PATHS = {
 
   WEBHOOKS: "/api/webhooks/hooks/",
   WEBHOOKS_KEY: "/api/webhooks/key/",
+} as const satisfies PathsValues;
 
+export const UI_PATHS = {
+  MOD_ACTIVATE: (modId: RegistryId, isReactivate?: boolean) =>
+    `marketplace/activate/${
+      encodeURIComponent(modId) + (isReactivate ? "?reinstall=1" : "")
+    }`,
   WORKSHOP_BRICK: (id: string) => `/workshop/bricks/${id}`,
-};
+} as const;
