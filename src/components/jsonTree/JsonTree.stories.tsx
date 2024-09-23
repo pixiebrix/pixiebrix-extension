@@ -39,18 +39,20 @@ const exampleValues = {
   numberField: 42,
 };
 
-export const EmptyTree = Template.bind({});
+export const EmptyTree: ComponentStory<typeof JsonTree> = Template.bind({});
 EmptyTree.args = {
   data: {},
 };
 
-export const SearchableTree = Template.bind({});
+export const SearchableTree: ComponentStory<typeof JsonTree> = Template.bind(
+  {},
+);
 SearchableTree.args = {
   searchable: true,
   data: exampleValues,
 };
 
-export const KitchenSink = Template.bind({});
+export const KitchenSink: ComponentStory<typeof JsonTree> = Template.bind({});
 KitchenSink.args = {
   searchable: true,
   copyable: true,
