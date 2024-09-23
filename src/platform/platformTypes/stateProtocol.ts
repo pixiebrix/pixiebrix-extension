@@ -36,7 +36,7 @@ export type StateProtocol = {
   /**
    * Get the current state.
    *
-   * @since 2.1.2 asynchronous
+   * @since 2.1.3 asynchronous
    */
   getState(args: {
     namespace: StateNamespace;
@@ -46,7 +46,7 @@ export type StateProtocol = {
   /**
    * Set the state for a given namespace.
    *
-   * @since 2.1.2 asynchronous
+   * @since 2.1.3 asynchronous
    */
   setState(args: {
     namespace: StateNamespace;

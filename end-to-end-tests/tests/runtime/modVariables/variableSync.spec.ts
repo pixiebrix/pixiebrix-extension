@@ -92,4 +92,58 @@ test.describe("Mod Variable Sync", () => {
       await expect(frameLocator.getByText("Local: 0")).toBeVisible();
     });
   });
+
+  test("tab variable sync", async ({ page, extensionId }) => {
+    await test.step("activate mod", async () => {
+      const modId = "@e2e-testing/tab-state-sync";
+      const modActivationPage = new ActivateModPage(page, extensionId, modId);
+      await modActivationPage.goto();
+      await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+
+      await page.goto("/frames-builder.html");
+    });
+
+    // Waiting for the mod to be ready before opening sidebar
+    await expect(page.getByText("Local: 0")).toBeVisible();
+
+    // The mod contains a trigger to open the sidebar on h1
+    await page.click("h1");
+    const sideBarPage = await getSidebarPage(page, extensionId);
+    await expect(
+      sideBarPage.getByRole("heading", { name: "State Sync Demo" }),
+    ).toBeVisible();
+
+    await test.step("verify same tab increment", async () => {
+      await sideBarPage.getByRole("button", { name: "Increment" }).click();
+
+      await expect(sideBarPage.getByText("Sync: 1")).toBeVisible();
+      await expect(sideBarPage.getByText("Local: 1")).toBeVisible();
+
+      await expect(page.getByText("Sync: 1")).toBeVisible();
+      await expect(page.getByText("Local: 1")).toBeVisible();
+
+      const frameLocator = page.frameLocator("iframe");
+      await expect(frameLocator.getByText("Sync: 1")).toBeVisible();
+      await expect(frameLocator.getByText("Local: 0")).toBeVisible();
+    });
+
+    await test.step("persist on navigation", async () => {
+      await page.goto("/frames-builder.html");
+
+      await expect(page.getByText("Local: 0")).toBeVisible();
+      await expect(sideBarPage.getByText("Sync: 1")).toBeVisible();
+
+      // Tab variables sync within the same tab
+      const frameLocator = page.frameLocator("iframe");
+      await expect(frameLocator.getByText("Local: 0")).toBeVisible();
+      await expect(frameLocator.getByText("Sync: 1")).toBeVisible();
+    });
+
+    const otherPage = await page.context().newPage();
+    await otherPage.goto(page.url());
+
+    await expect(otherPage.getByText("Local: 0")).toBeVisible();
+    // Tab variables should not sync
+    await expect(otherPage.getByText("Sync: 1")).toBeHidden();
+  });
 });

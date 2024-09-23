@@ -19,11 +19,11 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import { TEST_resetState } from "@/contentScript/stateController";
+import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
-beforeEach(() => {
-  TEST_resetState();
+beforeEach(async () => {
+  await TEST_resetStateController();
 });
 
 describe("@pixiebrix/state/get", () => {

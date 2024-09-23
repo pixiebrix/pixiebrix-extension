@@ -29,9 +29,8 @@ import {
 } from "@/background/messenger/api";
 import {
   getState,
-  registerModVariables,
   setState,
-} from "@/contentScript/stateController";
+} from "@/contentScript/stateController/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -62,6 +61,7 @@ import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
 
 /**
  * @file Platform definition for mods running in a content script

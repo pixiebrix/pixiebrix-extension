@@ -50,6 +50,7 @@ import { initFeatureFlagBackgroundListeners } from "@/auth/featureFlagStorage";
 import initTabListener from "./tabs";
 import { initApiClient } from "@/data/service/apiClient";
 import initTeamTrialUpdater from "@/background/teamTrialUpdater";
+import { initStateControllerListeners } from "@/background/stateControllerListeners";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
@@ -86,3 +87,4 @@ initLogSweep();
 initModUpdater();
 initWalkthroughModalTrigger();
 void initRestrictUnauthenticatedUrlAccess();
+initStateControllerListeners();

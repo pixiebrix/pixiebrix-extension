@@ -126,10 +126,16 @@ export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
 export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
 
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
+
 /**
  * Uninstall context menu and return whether the context menu was uninstalled.
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
+
+export const deleteSynchronizedModVariables = getMethod(
+  "DELETE_SYNCHRONIZED_MOD_VARIABLES",
+  bg,
+);
 
 export const setPartnerCopilotData = getNotifier(
   "SET_PARTNER_COPILOT_DATA",
