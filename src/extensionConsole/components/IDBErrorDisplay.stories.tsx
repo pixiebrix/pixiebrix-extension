@@ -39,7 +39,8 @@ const connectionError = new Error("Error Opening IndexedDB");
 const stack =
   "ContextError: Encountered full disk while opening backing store for indexedDB.open.\nat k (chrome-extension://my-chrome-extension-id/bundles/85282.bundle.js:2:35318)\n at $ (chrome-extension://my-chrome-extension-id/bundles/85282.bundle.js:2:36577)\n at async L.runExtension (chrome-extension://my-chrome-extension-id/bundles/contentScriptCore.bundle.js:1:220194)";
 
-export const NormalError = Template.bind({});
+export const NormalError: ComponentStory<typeof IDBErrorDisplay> =
+  Template.bind({});
 NormalError.args = {
   error: normalError,
   errorMessage: getErrorMessage(normalError),
@@ -47,7 +48,9 @@ NormalError.args = {
   hasError: true,
 };
 
-export const QuotaError = Template.bind({});
+export const QuotaError: ComponentStory<typeof IDBErrorDisplay> = Template.bind(
+  {},
+);
 QuotaError.args = {
   error: quotaError,
   errorMessage: getErrorMessage(quotaError),
@@ -55,7 +58,8 @@ QuotaError.args = {
   hasError: true,
 };
 
-export const ConnectionError = Template.bind({});
+export const ConnectionError: ComponentStory<typeof IDBErrorDisplay> =
+  Template.bind({});
 ConnectionError.args = {
   error: connectionError,
   errorMessage: getErrorMessage(connectionError),
