@@ -21,6 +21,8 @@ import { type ValueOf } from "type-fest";
 
 const LexiconTags = {
   PAGE_EDITOR: "page editor",
+  MOD_ACTIVATION: "mod activation",
+  EXTENSION_CONSOLE: "extension console",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -59,6 +61,12 @@ type LexiconMap = {
 
 // @ts-expect-error -- TODO: Remove this when the Lexicon is fully implemented https://github.com/pixiebrix/pixiebrix-extension/issues/9151
 export const lexicon: LexiconMap = {
+  AUTH_WIDGET_SELECT: {
+    description:
+      "Reported on the mod activation page in the Extenion Console when a user configures and integration by selecting an option from the" +
+      "dropdown menu. This includes when a new integration is auto-selected after creating the integration via the '+ Add new' option.",
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
   BRICK_ADD: {
     description:
       'Triggered when a user successfully adds a brick to a Mod in the Page Editor via clicking "Add" or "Add brick" in the Add Brick modal.',
