@@ -165,7 +165,7 @@ test("can report a service worker error to telemetry service", async ({
       }),
       extensionVersion: expect.any(String),
       manifestVersion: 3,
-      message: "Request failed with status code 500",
+      message: "Internal Server Error",
       name: "AxiosError",
       origin: "logger",
       pageName: "background",
