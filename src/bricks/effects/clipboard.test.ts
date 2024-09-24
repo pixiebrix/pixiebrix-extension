@@ -38,12 +38,18 @@ const SMALL_RED_DOT_URI =
 };
 
 class ClipboardItemFake implements ClipboardItem {
+  presentationStyle: PresentationStyle = "unspecified";
+
   constructor(
     private readonly items: Record<
       string,
       string | Blob | PromiseLike<string | Blob>
     >,
   ) {}
+
+  static supports(type: string): boolean {
+    return true;
+  }
 
   async getType(type: string): Promise<Blob> {
     return this.items[type] as Blob;
