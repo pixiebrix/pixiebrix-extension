@@ -29,11 +29,7 @@ import { groupBy, isEmpty, uniq } from "lodash";
 import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
-import type {
-  ActivatedModComponent,
-  SerializedModComponent,
-} from "@/types/modComponentTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
@@ -41,8 +37,8 @@ import collectExistingConfiguredDependenciesForMod from "@/integrations/util/col
 import { flagOn } from "@/auth/featureFlagStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { FeatureFlags } from "@/auth/featureFlags";
-import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 import { API_PATHS } from "@/data/service/urlPaths";
+import deactivateMod from "@/background/utils/deactivateMod";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -144,82 +140,6 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
 }
 
 /**
- * Deactivates the mod component from the modComponent and editor redux stores. Note that while the mod component
- * is removed from redux, it is not removed from existing tabs until a navigation is triggered/store is refreshed in the respective tab.
- * This is to prevent interrupting the user's workflow when performing updates in the background.
- * @param modComponent the mod component to deactivate
- * @param reduxState the current state of the modComponent and editor redux stores
- * @returns the new redux state with the mod component deactivated
- */
-function deactivateModComponent(
-  modComponent: SerializedModComponent,
-  reduxState: ActivatedModState,
-): ActivatedModState {
-  let { options: newOptionsState, editor: newEditorState } = reduxState;
-
-  newOptionsState = modComponentSlice.reducer(
-    newOptionsState,
-    modComponentSlice.actions.removeModComponent({
-      modComponentId: modComponent.id,
-    }),
-  );
-
-  newEditorState = editorSlice.reducer(
-    newEditorState,
-    editorSlice.actions.removeModComponentFormState(modComponent.id),
-  );
-
-  return {
-    options: newOptionsState,
-    editor: newEditorState,
-  };
-}
-
-/**
- * Deactivates all mod components with the given mod id. Does not remove the mod UI from existing tabs.
- *
- * @param modId the mod registry id
- * @param reduxState the current state of the modComponent and editor redux stores
- * @returns new redux state with the mod components deactivated
- * and the mod components that were deactivated
- */
-export function deactivateMod(
-  modId: RegistryId,
-  reduxState: ActivatedModState,
-): {
-  reduxState: ActivatedModState;
-  deactivatedModComponents: ActivatedModComponent[];
-} {
-  let { options: newOptionsState, editor: newEditorState } = reduxState;
-
-  const activatedModComponents = getModComponentsForMod(modId, newOptionsState);
-  const deactivatedModComponents: ActivatedModComponent[] = [];
-
-  for (const activatedModComponent of activatedModComponents) {
-    const { options: nextOptionsState, editor: nextEditorState } =
-      deactivateModComponent(activatedModComponent, {
-        options: newOptionsState,
-        editor: newEditorState,
-      });
-    newOptionsState = nextOptionsState;
-    newEditorState = nextEditorState;
-
-    deactivatedModComponents.push(activatedModComponent);
-
-    // Remove the menu item UI from all mods. We must explicitly remove context menu items because otherwise the user
-    // will see duplicate menu items because the old/new mod components have different UUIDs.
-    // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
-    // mod component is not loaded yet, they'll get a notification to reload the page.
-    void uninstallContextMenu({ modComponentId: activatedModComponent.id });
-  }
-
-  return {
-    reduxState: { options: newOptionsState, editor: newEditorState },
-    deactivatedModComponents,
-  };
-}
-
-/**
  * Update the mod by deactivating and reactivating the mod with all the same configurations.
  *
  * We currently don't have a way to "update" activated mods directly in the extension and editor redux stores.
@@ -230,14 +150,17 @@ export function deactivateMod(
  * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod updated
  */
-function updateMod(
+export function updateMod(
   modDefinition: ModDefinition,
-  reduxState: ActivatedModState,
+  { options: modComponentState, editor: editorState }: ActivatedModState,
 ): ActivatedModState {
-  let { options: newOptionsState, editor: newEditorState } = reduxState;
+  console.log({
+    modComponentState: JSON.stringify(modComponentState, null, 2),
+  });
 
   const {
-    reduxState: { options: nextOptionsState, editor: nextEditorState },
+    modComponentState: nextModComponentState,
+    editorState: nextEditorState,
     // This type is weird, please ignore it for now, we need to clean up a lot of stuff with these
     // mod component types. These "deactivated" components are not passed anywhere else, or put into
     // redux, or anything like that. They are only used to collect the configured dependencies and the
@@ -245,11 +168,17 @@ function updateMod(
     // and collectRecipeOptions immediately following this code).
     deactivatedModComponents,
   } = deactivateMod(modDefinition.metadata.id, {
-    options: newOptionsState,
-    editor: newEditorState,
+    modComponentState,
+    editorState,
   });
-  newOptionsState = nextOptionsState;
-  newEditorState = nextEditorState;
+
+  for (const deactivatedModComponent of deactivatedModComponents) {
+    // Remove the menu item UI from all mods. We must explicitly remove context menu items because otherwise the user
+    // will see duplicate menu items because the old/new mod components have different UUIDs.
+    // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
+    // mod component is not loaded yet, they'll get a notification to reload the page.
+    void uninstallContextMenu({ modComponentId: deactivatedModComponent.id });
+  }
 
   const configuredDependencies = collectExistingConfiguredDependenciesForMod(
     modDefinition,
@@ -260,8 +189,8 @@ function updateMod(
     deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 
-  newOptionsState = modComponentSlice.reducer(
-    newOptionsState,
+  const finalModComponentState = modComponentSlice.reducer(
+    nextModComponentState,
     modComponentSlice.actions.activateMod({
       modDefinition,
       configuredDependencies,
@@ -272,8 +201,8 @@ function updateMod(
   );
 
   return {
-    options: newOptionsState,
-    editor: newEditorState,
+    options: finalModComponentState,
+    editor: nextEditorState,
   };
 }
 

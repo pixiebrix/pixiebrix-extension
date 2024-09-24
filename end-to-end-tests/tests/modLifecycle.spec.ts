@@ -140,4 +140,24 @@ test("create, run, package, and update mod", async ({
       "Created through Playwright Automation",
     );
   });
+
+  await test.step("Delete the mod in the Workshop", async () => {
+    const workshopPage = new WorkshopPage(newPage!, extensionId);
+    await workshopPage.goto();
+    await workshopPage.deletePackagedModByModId(modId);
+
+    const modsPage = new ModsPage(newPage!, extensionId);
+    await modsPage.goto();
+
+    await modsPage.viewActiveMods();
+    const modTableItem = modsPage.modTableItemById(modId);
+    await expect(modTableItem.getByText("Active")).toBeVisible();
+    await expect(modTableItem.getByText("No longer Available")).toBeVisible();
+
+    await modTableItem.clickAction("Deactivate");
+    await expect(modTableItem.root).toBeHidden();
+    await expect(
+      page.getByRole("button", { name: "Search Youtube" }),
+    ).toBeHidden();
+  });
 });

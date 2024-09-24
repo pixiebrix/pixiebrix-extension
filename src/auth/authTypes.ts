@@ -21,10 +21,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type UserPartner } from "@/data/model/UserPartner";
 import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
-import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
+import { type TeamTheme } from "@/data/model/TeamTheme";
 import { type ControlRoom } from "@/data/model/ControlRoom";
-import { type UserRole } from "@/types/contract";
 import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type LegacyUserRole } from "@/data/model/UserRole";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 
@@ -163,7 +163,7 @@ export type OrganizationAuthState = {
   /**
    * The optional custom theme configured for this Organization
    */
-  readonly theme?: OrganizationTheme;
+  readonly theme?: TeamTheme;
   /**
    * The Automation Anywhere Control Room information
    */
@@ -182,7 +182,7 @@ export type AuthUserOrganization = {
   /**
    * The user's role within the organization.
    */
-  role: UserRole;
+  role: LegacyUserRole;
   /**
    * The organization's brick scope, or null if not set.
    */

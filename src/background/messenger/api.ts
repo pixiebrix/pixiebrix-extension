@@ -68,7 +68,7 @@ export const queryTabs = getMethod("QUERY_TABS", bg);
 export const recordLog = getNotifier("RECORD_LOG", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
-export const clearExtensionDebugLogs = getMethod(
+export const clearModComponentDebugLogs = getMethod(
   "CLEAR_MOD_COMPONENT_DEBUG_LOGS",
   bg,
 );
@@ -126,10 +126,16 @@ export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
 export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
 
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
+
 /**
  * Uninstall context menu and return whether the context menu was uninstalled.
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
+
+export const deleteSynchronizedModVariables = getMethod(
+  "DELETE_SYNCHRONIZED_MOD_VARIABLES",
+  bg,
+);
 
 export const setPartnerCopilotData = getNotifier(
   "SET_PARTNER_COPILOT_DATA",

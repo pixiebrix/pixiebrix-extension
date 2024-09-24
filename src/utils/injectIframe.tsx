@@ -20,7 +20,11 @@ import pTimeout from "p-timeout";
 import shadowWrap from "@/utils/shadowWrap";
 import { waitForDocumentRoot } from "@/utils/domUtils";
 
-const TIMEOUT_MS = 3000;
+const TIMEOUT_MS = 5000;
+
+export class IframeInjectionError extends Error {
+  override name = "IframeInjectionError";
+}
 
 export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
   position: "absolute",
@@ -78,10 +82,9 @@ async function _injectIframe(
   ]);
 
   if (result === "removed") {
-    console.warn(
-      `The host page removed the iframe for ${url} before it could be loaded. Retrying...`,
+    throw new IframeInjectionError(
+      `The host page removed the iframe for ${url} before it could be loaded.`,
     );
-    return _injectIframe(url, style, shadowRootId);
   }
 
   return iframe as LoadedFrame;

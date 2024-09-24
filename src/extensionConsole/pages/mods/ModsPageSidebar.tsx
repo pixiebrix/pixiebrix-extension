@@ -115,7 +115,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   const onboardingModId = getMilestone("first_time_public_blueprint_install")
     ?.metadata?.blueprintId as RegistryId;
 
-  const isFreemiumUser = !me?.primaryOrganization;
+  const isFreemiumUser = !me?.primaryTeam;
 
   const hasSomeModEngagement = modViewItems?.some((modViewItem) => {
     if (modViewItem.sharingSource.type === "Personal") {
@@ -291,7 +291,7 @@ const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
               setActiveTab({
                 key: filter,
                 tabTitle: `${filter} Mods`,
-                filters: [{ id: "sharing.source.label", value: filter }],
+                filters: [{ id: "sharingSource.label", value: filter }],
               });
             }}
           />

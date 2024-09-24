@@ -23,14 +23,14 @@ import { Table } from "react-bootstrap";
 import React from "react";
 import { useField } from "formik";
 import { useGetOrganizationsQuery } from "@/data/service/api";
-import { type Organization } from "@/types/contract";
 import { type UUID } from "@/types/stringTypes";
+import { type Team } from "@/data/model/Team";
 
 const SharingTable: React.FunctionComponent = () => {
-  const { data: organizations = [] } = useGetOrganizationsQuery();
+  const { data: teams = [] } = useGetOrganizationsQuery();
   const [publicField, , { setValue: setPublic }] = useField("public");
-  const [organizationsField, , { setValue: setOrganizations }] =
-    useField<Array<Organization["id"]>>("organizations");
+  const [teamsField, , { setValue: setTeams }] =
+    useField<Array<Team["teamId"]>>("organizations");
 
   return (
     <Table>
@@ -59,24 +59,22 @@ const SharingTable: React.FunctionComponent = () => {
             )}
           </td>
         </tr>
-        {sortBy(organizations, (x) => x.name).map((organization) => (
-          <tr key={organization.id}>
+        {sortBy(teams, (x) => x.teamName).map((team) => (
+          <tr key={team.teamId}>
             <td width="100">
               <BootstrapSwitchButton
                 onlabel=" "
                 offlabel=" "
-                checked={organizationsField.value.includes(organization.id)}
+                checked={teamsField.value.includes(team.teamId)}
                 onChange={async (checked: boolean) => {
                   const next = checked
-                    ? uniq([...organizationsField.value, organization.id])
-                    : organizationsField.value.filter(
-                        (x: UUID) => x !== organization.id,
-                      );
-                  await setOrganizations(next);
+                    ? uniq([...teamsField.value, team.teamId])
+                    : teamsField.value.filter((x: UUID) => x !== team.teamId);
+                  await setTeams(next);
                 }}
               />
             </td>
-            <td>{organization.name}</td>
+            <td>{team.teamName}</td>
           </tr>
         ))}
       </tbody>

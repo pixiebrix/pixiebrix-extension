@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { type Except, type JsonObject } from "type-fest";
+import { type Except, type JsonObject, type ValueOf } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { isEmpty, once, sortBy } from "lodash";
@@ -47,6 +47,8 @@ import { readAuthData } from "@/auth/authStorage";
 import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
 import { type RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 import { FeatureFlags } from "@/auth/featureFlags";
+import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
+import castError from "@/utils/castError";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -56,6 +58,8 @@ const DB_VERSION_NUMBER = 4;
  * impacted due to the number of entries.
  */
 const MAX_LOG_RECORDS = 1250;
+// How many log entries to delete at a time with each transaction.
+const SWEEP_LOGS_BATCH_SIZE = 10;
 
 /**
  * Amount to clear old logs, as a ratio of the maximum number of logs.
@@ -121,13 +125,47 @@ const INDEX_KEYS = [
   "authId",
 ] as const satisfies IndexKey[];
 
+const IDB_OPERATION = {
+  APPEND_ENTRY: "appendEntry",
+  COUNT: "count",
+  RECREATE_DB: "recreateDB",
+  CLEAR_LOGS: "clearLogs",
+  CLEAR_LOG: "clearLog",
+  GET_LOG_ENTRIES: "getLogEntries",
+  SWEEP_LOGS: "sweepLogs",
+  CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
+} as const;
+
+// Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
+// to application error telemetry to avoid attempting to record the error in the idb log database.
+function handleIdbError(
+  error: unknown,
+  operationName: ValueOf<typeof IDB_OPERATION>,
+): void {
+  const errorMessage = getErrorMessage(error);
+  const context = {
+    idbOperationName: operationName,
+    ...getReportErrorAdditionalContext(),
+  };
+  console.error("Error during IDB operation", {
+    operationName,
+    error,
+    context,
+  });
+  void reportToApplicationErrorTelemetry(
+    castError(error, `Error during ${operationName}`),
+    context,
+    errorMessage,
+  );
+}
+
 async function openLoggingDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<LogDB> | null = null;
 
   database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
-    upgrade(db) {
+    upgrade(db, oldVersion, newVersion) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
         // cases for looking at historic local logs
@@ -135,6 +173,7 @@ async function openLoggingDB() {
         console.warn(
           "Deleting object store %s for upgrade",
           ENTRY_OBJECT_STORE,
+          { oldVersion, newVersion },
         );
       } catch {
         // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it
@@ -151,9 +190,19 @@ async function openLoggingDB() {
         });
       }
     },
-    blocking() {
+    blocked(currentVersion: number, blockedVersion: number) {
+      console.debug("Database blocked.", { currentVersion, blockedVersion });
+      // This should never happen, since we immediately close connections if blocking below,
+      // but just in case, close the connection here so it doesn't block openLoggingDB from
+      // resolving
+      database?.close();
+    },
+    blocking(currentVersion: number, blockedVersion: number) {
       // Don't block closing/upgrading the database
-      console.debug("Closing log database due to upgrade/delete");
+      console.debug("Closing log database due to upgrade/delete.", {
+        currentVersion,
+        blockedVersion,
+      });
       database?.close();
       database = null;
     },
@@ -170,17 +219,36 @@ async function openLoggingDB() {
   return database;
 }
 
+async function withLoggingDB<T>(
+  dbOperation: (db: IDBPDatabase<LogDB>) => Promise<T>,
+  operationName: ValueOf<typeof IDB_OPERATION>,
+): Promise<T> {
+  let db: IDBPDatabase<LogDB> | null = null;
+  try {
+    db = await openLoggingDB();
+    return await dbOperation(db);
+  } catch (error) {
+    handleIdbError(error, operationName);
+    throw error;
+  } finally {
+    db?.close();
+  }
+}
+
 /**
  * Add a log entry to the database.
  * @param entry the log entry to add
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  const db = await openLoggingDB();
-  try {
-    await db.add(ENTRY_OBJECT_STORE, entry);
-  } finally {
-    db.close();
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
   }
+
+  await withLoggingDB(async (db) => {
+    await db.add(ENTRY_OBJECT_STORE, entry);
+  }, IDB_OPERATION.APPEND_ENTRY).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 function makeMatchEntry(
@@ -199,12 +267,10 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  const db = await openLoggingDB();
-  try {
-    return await db.count(ENTRY_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  return withLoggingDB(
+    async (db) => db.count(ENTRY_OBJECT_STORE),
+    IDB_OPERATION.COUNT,
+  );
 }
 
 /**
@@ -212,22 +278,19 @@ export async function count(): Promise<number> {
  */
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME);
-
   // Open the database to recreate it
-  const db = await openLoggingDB();
-  db.close();
+  await withLoggingDB(async (_db) => {}, IDB_OPERATION.RECREATE_DB);
 }
 
 /**
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  const db = await openLoggingDB();
-  try {
+  await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.CLEAR_LOGS).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 /**
@@ -235,10 +298,10 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const db = await openLoggingDB();
-
-  try {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  await withLoggingDB(async (db) => {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+      durability: "relaxed",
+    });
 
     if (isEmpty(context)) {
       await tx.store.clear();
@@ -251,9 +314,9 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.CLEAR_LOG).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 /**
@@ -263,11 +326,11 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {},
 ): Promise<LogEntry[]> {
-  const db = await openLoggingDB();
-
-  try {
+  return withLoggingDB(async (db) => {
     const objectStore = db
-      .transaction(ENTRY_OBJECT_STORE, "readonly")
+      .transaction(ENTRY_OBJECT_STORE, "readonly", {
+        durability: "relaxed",
+      })
       .objectStore(ENTRY_OBJECT_STORE);
 
     let indexKey: IndexKey | undefined;
@@ -294,9 +357,7 @@ export async function getLogEntries(
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.GET_LOG_ENTRIES);
 }
 
 /**
@@ -335,7 +396,7 @@ let lastAxiosServerErrorTimestamp: number | null = null;
  */
 export async function reportToApplicationErrorTelemetry(
   // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
-  // treats it as the error. Note, Rollbar, treats POJO as the custom data.
+  // treats it as the error.
   error: Error,
   flatContext: MessageContext,
   errorMessage: string,
@@ -497,56 +558,82 @@ export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
 export async function clearModComponentDebugLogs(
   modComponentId: UUID,
 ): Promise<void> {
-  const db = await openLoggingDB();
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
 
-  try {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  await withLoggingDB(async (db) => {
+    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+      durability: "relaxed",
+    });
     const index = tx.store.index("modComponentId");
     for await (const cursor of index.iterate(modComponentId)) {
       if (cursor.value.level === "debug" || cursor.value.level === "trace") {
         await cursor.delete();
       }
     }
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry and
+    // we don't want to interrupt the execution of mod pipeline
+  });
 }
 
 /**
  * Free up space in the log database.
  */
 async function _sweepLogs(): Promise<void> {
-  const numRecords = await count();
+  if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
+    return;
+  }
 
-  if (numRecords > MAX_LOG_RECORDS) {
-    const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+  await withLoggingDB(async (db) => {
+    const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
-    console.debug("Sweeping logs", {
-      numRecords,
-      numToDelete,
-    });
+    if (numRecords > MAX_LOG_RECORDS) {
+      const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
-    const db = await openLoggingDB();
+      console.debug("Sweeping logs", {
+        numRecords,
+        numToDelete,
+      });
 
-    try {
-      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+      // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+      // of blocking other db transactions.
+      const abortController = new AbortController();
+      setTimeout(() => {
+        abortController.abort();
+      }, 10_000);
 
       let deletedCount = 0;
 
-      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-      // This might mostly "just work" if the cursor happens to iterate in insertion order
-      for await (const cursor of tx.store) {
-        await cursor.delete();
-        deletedCount++;
+      while (deletedCount < numToDelete) {
+        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+          durability: "relaxed",
+        });
 
-        if (deletedCount > numToDelete) {
-          return;
+        let processedBatchCount = 0;
+        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+        // This might mostly "just work" if the cursor happens to iterate in insertion order
+        // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
+        for await (const cursor of tx.store) {
+          if (abortController.signal.aborted) {
+            console.warn("Log sweep aborted due to timeout");
+            return;
+          }
+
+          await cursor.delete();
+          deletedCount++;
+          processedBatchCount++;
+
+          if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
+            break;
+          }
         }
       }
-    } finally {
-      db.close();
     }
-  }
+  }, IDB_OPERATION.SWEEP_LOGS).catch((_error) => {
+    // Swallow error because we've reported it to application error telemetry
+  });
 }
 
 /**

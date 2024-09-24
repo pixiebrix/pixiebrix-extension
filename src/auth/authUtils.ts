@@ -22,13 +22,13 @@ import {
 } from "@/auth/authTypes";
 import { type Me } from "@/data/model/Me";
 import selectAuthUserOrganizations from "@/auth/selectAuthUserOrganizations";
-import { UserRole } from "@/types/contract";
 import {
   readReduxStorage,
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { anonAuth } from "@/auth/authConstants";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 const AUTH_SLICE_STORAGE_KEY = validateReduxStorageKey("persist:authOptions");
 
@@ -43,8 +43,8 @@ export async function getUserScope(): Promise<Nullishable<string>> {
 
 export function selectUserDataUpdate({
   email,
-  primaryOrganization,
-  organizationMemberships,
+  primaryTeam: primaryOrganization,
+  teamMemberships: organizationMemberships,
   groupMemberships,
   partner,
   enforceUpdateMillis,
@@ -62,7 +62,7 @@ export function selectUserDataUpdate({
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     -- email is always present, pending above type refactoring */
     email: email!,
-    organizationId: primaryOrganization?.organizationId ?? null,
+    organizationId: primaryOrganization?.teamId ?? null,
     organizations,
     groups,
     partner: partner ?? null,
@@ -75,11 +75,11 @@ export function selectExtensionAuthState({
   userId,
   email,
   scope,
-  primaryOrganization,
+  primaryTeam: primaryOrganization,
   isOnboarded,
   isTestAccount,
   userMilestones: milestones,
-  organizationMemberships,
+  teamMemberships: organizationMemberships,
   groupMemberships,
   partner,
   enforceUpdateMillis,
@@ -93,11 +93,11 @@ export function selectExtensionAuthState({
     primaryOrganization == null
       ? null
       : {
-          id: primaryOrganization.organizationId,
-          name: primaryOrganization.organizationName,
+          id: primaryOrganization.teamId,
+          name: primaryOrganization.teamName,
           isEnterprise: primaryOrganization.isEnterprise,
           scope: primaryOrganization.scope,
-          theme: primaryOrganization.organizationTheme,
+          theme: primaryOrganization.teamTheme,
           control_room: primaryOrganization.controlRoom,
         };
 
@@ -122,6 +122,10 @@ export function selectExtensionAuthState({
  * Returns true if the role corresponds to permission to edit a package.
  * See https://docs.pixiebrix.com/managing-teams/access-control/roles
  */
-export function isPackageEditorRole(role: UserRole): boolean {
-  return [UserRole.admin, UserRole.manager, UserRole.developer].includes(role);
+export function isPackageEditorRole(role: LegacyUserRole): boolean {
+  return [
+    LegacyUserRole.admin,
+    LegacyUserRole.manager,
+    LegacyUserRole.developer,
+  ].includes(role);
 }

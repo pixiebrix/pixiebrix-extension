@@ -141,7 +141,7 @@ export const test = pageContextFixture.extend<{
           throw new Error(
             `Mod definition for ${
               prevModId ?? modId
-            } not found in modDefinitions. Cannot verify a diff.`,
+            } not found in modDefinitions. Cannot verify a diff. Use mode 'current' to get the baseline snapshot.`,
           );
         }
 

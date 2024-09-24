@@ -59,6 +59,10 @@ as the base url for e2e tests. Ex. `await page.goto("/bootstrap-5");` will bring
 playground.
 The source for this website is: https://github.com/pixiebrix/playground
 
+We use snapshots in our end-to-end tests, in particular to verify the yaml state of mods when using the
+page editor. To update playwright snapshots, run `npm run test:e2e -- --update-snapshots <name-of-test-file>`
+in the cli.
+
 Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
 test should represent one full feature flow, which may include multiple steps and assertions. Avoid splitting
 a single feature flow across multiple tests, preferring longer tests if necessary.
@@ -114,10 +118,21 @@ End-to-end tests are integrated into the GitHub CI workflow, triggering on pull 
 detailed in `.github/workflows/ci.yml`.
 
 If a test fails in CI, the test report is available in the GitHub Actions tab of the pull request. You can
-view the report by running `./scripts/show-pr-e2e-report.sh -p <pull-request-number>`. You will need to have
-`7zz` and `gh` installed to run this script (install using brew). In addition, you will need to set the `REPORT_ZIP_PASSWORD`
-environment variable to the password used to encrypt the report.
-(For context on why password encryption is necessary, see [this PR](https://github.com/pixiebrix/pixiebrix-extension/pull/8545))
+view the report by running
+
+```bash
+./scripts/show-pr-e2e-report.sh -p <pull-request-number>
+```
+
+You will need to have `7zz` and `gh` installed to run this script (install using brew).
+
+```bash
+brew install sevenzip
+brew install gh
+```
+
+In addition, you will need to set the `REPORT_ZIP_PASSWORD` environment variable in `.env.development` to the password
+used to encrypt the report. (For context on why password encryption is necessary, see [this PR](https://github.com/pixiebrix/pixiebrix-extension/pull/8545))
 
 To view the test report in the browser. Run: `npx playwright show-report <path-to-downloaded-report>` to
 open the report in the playwright report viewer.

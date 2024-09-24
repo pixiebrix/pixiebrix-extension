@@ -23,17 +23,17 @@ export type RequiredMePartnerResponse = SetRequired<
   "partner"
 >["partner"];
 
-export type RequiredMeOrganizationResponse = SetRequired<
+export type RequiredMeTeamResponse = SetRequired<
   components["schemas"]["Me"],
   "organization"
 >["organization"];
 
 export type RequiredControlRoomResponse = SetRequired<
-  RequiredMeOrganizationResponse,
+  RequiredMeTeamResponse,
   "control_room"
 >["control_room"];
 
-export type RequiredMeOrganizationMembershipResponse = SetRequired<
+export type RequiredMeTeamMembershipResponse = SetRequired<
   components["schemas"]["Me"],
   "organization_memberships"
 >["organization_memberships"][number];
@@ -43,8 +43,8 @@ export type RequiredMeGroupMembershipResponse = SetRequired<
   "group_memberships"
 >["group_memberships"][number];
 
-export type RequiredMeOrganizationThemeResponse = SetRequired<
-  RequiredMeOrganizationResponse,
+export type RequiredMeTeamThemeResponse = SetRequired<
+  RequiredMeTeamResponse,
   "theme"
 >["theme"];
 
@@ -58,7 +58,4 @@ export type RequiredMePartnerPrincipalResponse = SetRequired<
   "partner_principals"
 >["partner_principals"][number];
 
-export type RequiredMeOrganizationMembershipRoleResponse = SetRequired<
-  RequiredMeOrganizationMembershipResponse,
-  "role"
->["role"];
+export type RequiredTeamRoleResponse = 1 | 2 | 3 | 4 | 5;

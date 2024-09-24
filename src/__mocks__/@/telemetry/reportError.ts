@@ -18,3 +18,7 @@
 export default jest.fn((...args) =>
   console.error("reportError() was called", ...args),
 );
+
+export const getReportErrorAdditionalContext = () => ({
+  someMockReportErrorContext: 123,
+});

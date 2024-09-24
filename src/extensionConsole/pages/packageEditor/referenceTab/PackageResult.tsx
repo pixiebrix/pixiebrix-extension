@@ -29,13 +29,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find as findPackage } from "@/registry/packageRegistry";
-import { type Organization } from "@/types/contract";
+import { type Team } from "@/data/model/Team";
 import { type PackageInstance, type Sharing } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type SharingTagProps<T extends PackageInstance> = {
   packageInstance: T;
-  organizations: Organization[];
+  organizations: Team[];
 };
 
 const SharingTag = <T extends PackageInstance>({
@@ -62,7 +62,7 @@ const SharingTag = <T extends PackageInstance>({
 
     // If more than one sharing organization, use the first
     return organizations.find(
-      (org) => org.id && sharing.organizations.includes(org.id),
+      (org) => org.teamId && sharing.organizations.includes(org.teamId),
     );
   }, [organizations, sharing]);
 
@@ -72,7 +72,7 @@ const SharingTag = <T extends PackageInstance>({
     }
 
     if (organization) {
-      return { text: organization.name, icon: faUsers };
+      return { text: organization.teamName, icon: faUsers };
     }
 
     if (!sharing.public) {
@@ -98,7 +98,7 @@ type OwnProps<T extends PackageInstance> = {
   packageInstance: T;
   active?: boolean;
   onSelect: () => void;
-  organizations: Organization[];
+  organizations: Team[];
 };
 
 const PackageResult = <T extends PackageInstance>({

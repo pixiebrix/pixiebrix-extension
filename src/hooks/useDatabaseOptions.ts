@@ -22,21 +22,22 @@ import {
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type Database, type Organization } from "@/types/contract";
+import { type Database } from "@/types/contract";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Team } from "@/data/model/Team";
 
 function databasesToOptions(
   databases: Database[],
-  organizations: Organization[],
+  organizations: Team[],
 ): Option[] {
   return databases.map((database) => {
     const organization = organizations.find(
-      (x) => x.id === database.organization_id,
+      (x) => x.teamId === database.organization_id,
     );
 
     assertNotNullish(database.id, "Database must have a valid id");
     return {
-      label: `${database.name} - ${organization?.name ?? "Private"}`,
+      label: `${database.name} - ${organization?.teamName ?? "Private"}`,
       value: database.id,
     };
   });

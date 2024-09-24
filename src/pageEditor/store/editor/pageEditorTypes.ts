@@ -39,6 +39,7 @@ import {
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
+  type BaseFormStateV5,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export type AddBrickLocation = {
@@ -377,15 +378,43 @@ export type EditorStateV5 = Except<
 };
 
 /**
+ * Version bump to account for removing insertingStarterBrickType.
+ *
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
 export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
 
-// Instead of maintaining old enums, just clearing data panel state on migration, see migrateEditorStateV5
+/**
+ * Version bump to account for changes to DataPanelTabKeys.
+ *
+ * Same type as EditorStateV6, but bumped because there's an associated migration to clear out the Data Panel UI state.
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @see migrateEditorStateV6
+ * @see DataPanelTabKey
+ */
 export type EditorStateV7 = EditorStateV6;
 
-export type EditorState = Except<
+/**
+ * Version bump to account for adding variableDefinition property in BaseFormState
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @see migrateEditorStateV7
+ */
+export type EditorStateV8 = Except<
   EditorStateV7,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: BaseFormStateV5[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV5[]>;
+};
+
+export type EditorState = Except<
+  // On migration, re-point this type to the most recent EditorStateV<N> type name
+  EditorStateV8,
+  // Swap out any properties with versioned types for type references to the latest version.
+  // NOTE: this is not changing the type shape/structure. It's just cleaning up the type name/reference which makes
+  // types easier to work with for testing migrations.
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];

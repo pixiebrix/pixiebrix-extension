@@ -85,6 +85,7 @@ import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/lau
 import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
 import { getMe } from "@/data/service/backgroundApi";
+import { deleteSynchronizedModVariablesForMod } from "@/background/stateControllerListeners";
 
 expectContext("background");
 
@@ -151,6 +152,9 @@ declare global {
 
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
+
+    DELETE_SYNCHRONIZED_MOD_VARIABLES: typeof deleteSynchronizedModVariablesForMod;
+
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
@@ -239,6 +243,9 @@ export default function registerMessenger(): void {
 
     ENSURE_CONTEXT_MENU: ensureContextMenu,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
+
+    DELETE_SYNCHRONIZED_MOD_VARIABLES: deleteSynchronizedModVariablesForMod,
+
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
 
     REQUEST_RUN_IN_OPENER: requestRunInOpener,

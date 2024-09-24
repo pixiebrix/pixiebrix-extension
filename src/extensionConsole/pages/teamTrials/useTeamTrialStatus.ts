@@ -23,11 +23,13 @@ export const TeamTrialStatus = {
   EXPIRED: "EXPIRED",
 } as const;
 
-function useTeamTrialStatus(): ValueOf<typeof TeamTrialStatus> | null {
+export type TeamTrialStatusType = ValueOf<typeof TeamTrialStatus>;
+
+function useTeamTrialStatus(): TeamTrialStatusType | null {
   const { data: organizations = [] } = useGetOrganizationsQuery();
 
   const trialEndTimestamps = organizations
-    .map((org) => org.trial_end_timestamp)
+    .map((org) => org.trialEndTimestamp)
     .filter((x) => x != null);
 
   if (trialEndTimestamps.length === 0) {

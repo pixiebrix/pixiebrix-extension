@@ -22,8 +22,7 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
- * Infer options from existing mod-component-like instances for reinstalling a mod
- * @see installRecipe
+ * Infer options args from existing mod-component-like instances for reinstalling a mod
  */
 export function collectModOptions(
   modComponents: Array<Pick<ModComponentBase, "optionsArgs">>,
@@ -40,7 +39,6 @@ export function collectModOptions(
  * don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies
  * @returns IntegrationDependency[] the configured integration dependencies for the mod components
- * @see installMod
  */
 export function collectConfiguredIntegrationDependencies(
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
