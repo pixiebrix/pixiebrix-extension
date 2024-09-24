@@ -143,7 +143,7 @@ describe("ModsPageActions", () => {
     // Expect to find a link on the page with text "View Mod Details", an anchor element with role="menuitem"
     const viewDetailsLink = screen.getByRole("menuitem", {
       name: "View Mod Details",
-    }) as HTMLAnchorElement;
+    });
     expect(viewDetailsLink).toBeInTheDocument();
   });
 

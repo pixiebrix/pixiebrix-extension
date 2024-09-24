@@ -777,7 +777,7 @@ describe("Collecting available vars", () => {
           analysis
             .getKnownVars()
             .get(blockPath)!
-            .isVariableDefined("@ifOutput")!,
+            .isVariableDefined("@ifOutput"),
         ).toBeFalse();
       },
     );
@@ -1114,7 +1114,7 @@ describe("Collecting available vars", () => {
       "modComponent.brickPipeline.0.config.body.__value__.0",
       "modComponent.brickPipeline.0.config.body.__value__.1",
     ])("source of the @element key if the For-Each block (%s)", (blockPath) => {
-      const blockVars = analysis.getKnownVars()!.get(blockPath)!.getMap();
+      const blockVars = analysis.getKnownVars().get(blockPath)!.getMap();
 
       const expectedForEachBlockPath = "modComponent.brickPipeline.0";
 

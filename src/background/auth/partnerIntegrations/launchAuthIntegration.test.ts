@@ -33,7 +33,7 @@ import { API_PATHS } from "@/data/service/urlPaths";
 jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 
-const integrationMetaData = oauth2IntegrationDefinition!.metadata as Metadata;
+const integrationMetaData = oauth2IntegrationDefinition.metadata as Metadata;
 const integrationId = validateRegistryId(integrationMetaData.id);
 
 jest.mocked(registry.find).mockResolvedValue({
