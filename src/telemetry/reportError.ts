@@ -21,6 +21,7 @@ import { serializeError } from "serialize-error";
 import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { getContextName } from "webext-detect";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 
 expectContext(
   "extension",
@@ -94,10 +95,15 @@ export default function reportError(
   }
 
   try {
-    _record(serializeError(selectError(errorLike)), {
-      ...context,
-      ...getReportErrorAdditionalContext(),
-    });
+    _record(
+      serializeError(selectError(errorLike), {
+        useToJSON: !isAxiosError(errorLike),
+      }),
+      {
+        ...context,
+        ...getReportErrorAdditionalContext(),
+      },
+    );
   } catch (reportingError) {
     // The messenger does not throw async errors on "notifiers" but if this is
     // called in the background the call will be executed directly, and it could
