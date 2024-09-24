@@ -437,8 +437,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
     // Be defensive if getOutputSchema errors due to nested variables, etc.
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- wrapped in try/catch
-      return block!.getOutputSchema!(blockConfig) ?? {};
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- wrapped in try/catch
+      return block.getOutputSchema!(blockConfig) ?? {};
     } catch {
       // NOP
     }

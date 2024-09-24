@@ -179,14 +179,13 @@ async function codeGrantFlow(
     }
 
     const json = Object.fromEntries(parsed.entries());
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
-    await setCachedAuthData(integrationConfig.id!, json);
+
+    await setCachedAuthData(integrationConfig.id, json);
     return json as AuthData;
   }
 
   if (typeof data === "object") {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
-    await setCachedAuthData(integrationConfig.id!, data);
+    await setCachedAuthData(integrationConfig.id, data);
     return data as AuthData;
   }
 
