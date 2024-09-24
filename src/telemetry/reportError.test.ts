@@ -16,6 +16,7 @@
  */
 
 import { getNotifier } from "webext-messenger";
+import { AxiosError } from "axios";
 
 jest.mock("webext-messenger");
 
@@ -70,6 +71,28 @@ describe("reportError", () => {
         message: "Test error",
         name: "Error",
         stack: expect.stringMatching(/^Error: Test error\n {4}at Object/),
+      },
+      {
+        connectionType: "unknown",
+        pageName: "extension",
+        referrer: "",
+        url: "http://localhost/",
+      },
+    );
+  });
+
+  it("should serialize AxiosErrors correctly", () => {
+    const error = new AxiosError("Test error", "code", {
+      validateStatus: () => true,
+    });
+    reportError(error);
+    expect(_recordMock).toHaveBeenCalledWith(
+      {
+        message: "Test error",
+        code: "code",
+        name: "AxiosError",
+        config: {}, // Expect any functions to be stripped
+        stack: expect.any(String),
       },
       {
         connectionType: "unknown",
