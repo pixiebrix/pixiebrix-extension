@@ -16,10 +16,13 @@
  */
 
 import axios from "axios";
-import { lexicon, transformLexicon } from "../src/telemetry/lexicon";
+import {
+  lexicon,
+  transformLexiconMapToRequestSchema,
+} from "../src/telemetry/lexicon";
 
 async function uploadMixpanelLexicon() {
-  const transformedLexicon = transformLexicon(lexicon);
+  const transformedLexicon = transformLexiconMapToRequestSchema(lexicon);
 
   const {
     MIXPANEL_PROJECT_ID,

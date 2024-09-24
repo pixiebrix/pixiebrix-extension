@@ -70,7 +70,9 @@ export const lexicon: LexiconMap = {
  * Transforms a LexiconMap into a JSON schema that can be used in the request body to upload the Lexicon to Mixpanel.
  * See expected shape here https://developer.mixpanel.com/reference/upload-schemas-for-project
  */
-export function transformLexicon(lexiconMap: LexiconMap): JSONSchema {
+export function transformLexiconMapToRequestSchema(
+  lexiconMap: LexiconMap,
+): JSONSchema {
   const entries = Object.entries(lexiconMap).map(
     ([eventKey, entry]: [keyof typeof Events, LexiconEventEntry]) => ({
       entityType: "event",
