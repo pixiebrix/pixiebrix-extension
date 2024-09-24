@@ -58,6 +58,8 @@ const DB_VERSION_NUMBER = 4;
  * impacted due to the number of entries.
  */
 const MAX_LOG_RECORDS = 1250;
+// How many log entries to delete at a time with each transaction.
+const SWEEP_LOGS_BATCH_SIZE = 10;
 
 /**
  * Amount to clear old logs, as a ratio of the maximum number of logs.
@@ -597,11 +599,6 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  const abortController = new AbortController();
-  // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
-  // of blocking other db transactions.
-  setTimeout(abortController.abort, 30_000);
-
   await withLoggingDB(async (db) => {
     const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
@@ -613,25 +610,37 @@ async function _sweepLogs(): Promise<void> {
         numToDelete,
       });
 
-      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-        durability: "relaxed",
-      });
+      // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+      // of blocking other db transactions.
+      const abortController = new AbortController();
+      setTimeout(() => {
+        abortController.abort();
+      }, 10_000);
 
       let deletedCount = 0;
 
-      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-      // This might mostly "just work" if the cursor happens to iterate in insertion order
-      for await (const cursor of tx.store) {
-        if (abortController.signal.aborted) {
-          console.warn("Log sweep aborted due to timeout");
-          break;
-        }
+      while (deletedCount < numToDelete) {
+        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+          durability: "relaxed",
+        });
 
-        await cursor.delete();
-        deletedCount++;
+        let processedBatchCount = 0;
+        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+        // This might mostly "just work" if the cursor happens to iterate in insertion order
+        // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
+        for await (const cursor of tx.store) {
+          if (abortController.signal.aborted) {
+            console.warn("Log sweep aborted due to timeout");
+            return;
+          }
 
-        if (deletedCount > numToDelete) {
-          return;
+          await cursor.delete();
+          deletedCount++;
+          processedBatchCount++;
+
+          if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
+            break;
+          }
         }
       }
     }
