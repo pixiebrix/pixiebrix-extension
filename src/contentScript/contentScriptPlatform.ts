@@ -27,7 +27,10 @@ import {
   traces,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { getState, setState } from "@/contentScript/stateController";
+import {
+  getState,
+  setState,
+} from "@/contentScript/stateController/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
@@ -58,6 +61,7 @@ import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -242,6 +246,7 @@ class ContentScriptPlatform extends PlatformBase {
     return {
       getState,
       setState,
+      registerModVariables,
     };
   }
 

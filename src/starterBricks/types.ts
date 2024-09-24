@@ -244,23 +244,36 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   ): void;
 
   synchronizeModComponents(
-    components: Array<HydratedModComponent<TConfig>>,
+    modComponents: Array<HydratedModComponent<TConfig>>,
   ): void {
     const before = this.modComponents.map((x) => x.id);
 
-    const updatedIds = new Set(components.map((x) => x.id));
+    const updatedIds = new Set(modComponents.map((x) => x.id));
     const removed = this.modComponents.filter(
       (currentComponent) => !updatedIds.has(currentComponent.id),
     );
     this.clearModComponentInterfaceAndEvents(removed.map((x) => x.id));
 
-    // Clear extensions and re-populate with updated components
+    // Clear this.modComponents and re-populate with updated components
     this.modComponents.length = 0;
-    this.modComponents.push(...components);
+    this.modComponents.push(...modComponents);
+
+    // `registerModVariables` is safe to call multiple times for the same modId because the variable definitions
+    // will be consistent across components.
+    for (const modComponent of modComponents) {
+      if (modComponent._recipe) {
+        // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
+        // for draft mod components. However, there's old test code that doesn't set `_recipe` on the mod component.
+        this.platform.state.registerModVariables(
+          modComponent._recipe.id,
+          modComponent.variablesDefinition,
+        );
+      }
+    }
 
     console.debug("synchronizeComponents for extension point %s", this.id, {
       before,
-      after: components.map((x) => x.id),
+      after: modComponents.map((x) => x.id),
       removed: removed.map((x) => x.id),
     });
   }
@@ -271,17 +284,26 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     );
   }
 
-  registerModComponent(component: HydratedModComponent<TConfig>): void {
-    const index = this.modComponents.findIndex((x) => x.id === component.id);
+  registerModComponent(modComponent: HydratedModComponent<TConfig>): void {
+    const index = this.modComponents.findIndex((x) => x.id === modComponent.id);
     if (index >= 0) {
       console.warn(
-        `Component ${component.id} already registered for the starter brick ${this.id}`,
+        `Component ${modComponent.id} already registered for the starter brick ${this.id}`,
       );
       /* eslint-disable-next-line security/detect-object-injection --
       -- Index is guaranteed to be a number, and this.modComponents is an array */
-      this.modComponents[index] = component;
+      this.modComponents[index] = modComponent;
     } else {
-      this.modComponents.push(component);
+      this.modComponents.push(modComponent);
+    }
+
+    if (modComponent._recipe) {
+      // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
+      // for draft mod components. However, there's old test code that doesn't set `_recipe` on the mod component.
+      this.platform.state.registerModVariables(
+        modComponent._recipe.id,
+        modComponent.variablesDefinition,
+      );
     }
   }
 

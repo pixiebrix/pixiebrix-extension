@@ -40,7 +40,7 @@ type BaseDeploymentMetadata = {
 
   /**
    * `updated_at` timestamp of the deployment object from the server (in ISO format). Used to determine whether the
-   * client has the latest deployment setting applied
+   * client has the latest deployment configuration activated.
    */
   timestamp: string;
 
@@ -55,9 +55,8 @@ type BaseDeploymentMetadata = {
 };
 
 /**
- * Metadata about an automatically activated deployment.
- *
- * Where possible, reference as ModComponent["_deployment"] or ModInstance["deploymentMetadata"] for clarity.
+ * Context about an automatically activated organization Deployment.
+ * Don't export -- context is clearer if it's always written as ModComponentBase[_deployment] property
  */
 export type DeploymentMetadata =
   | (BaseDeploymentMetadata & {

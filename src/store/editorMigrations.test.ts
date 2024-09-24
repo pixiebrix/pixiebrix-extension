@@ -23,6 +23,7 @@ import {
   type EditorStateV5,
   type EditorStateV6,
   type EditorStateV7,
+  type EditorStateV8,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { cloneDeep, mapValues, omit } from "lodash";
 import {
@@ -45,6 +46,7 @@ import {
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
+  type BaseFormStateV5,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -56,6 +58,7 @@ import {
   migrateEditorStateV4,
   migrateEditorStateV5,
   migrateEditorStateV6,
+  migrateEditorStateV7,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -249,6 +252,40 @@ const initialStateV6: EditorStateV6 & PersistedState = {
 const initialStateV7: EditorStateV7 & PersistedState =
   cloneDeep(initialStateV6);
 
+const initialStateV8: EditorStateV8 & PersistedState = {
+  selectionSeq: 0,
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  error: null,
+  beta: false,
+  modComponentFormStates: [],
+  knownEditableBrickIds: [],
+  dirty: {},
+  isBetaUI: false,
+  copiedBrick: undefined,
+  brickPipelineUIStateById: {},
+  dirtyModOptionsById: {},
+  dirtyModMetadataById: {},
+  visibleModalKey: null,
+  addBrickLocation: undefined,
+  keepLocalCopyOnCreateMod: false,
+  deletedModComponentFormStatesByModId: {},
+  availableActivatedModComponentIds: [],
+  isPendingAvailableActivatedModComponents: false,
+  availableDraftModComponentIds: [],
+  isPendingDraftModComponents: false,
+  isModListExpanded: true,
+  isDataPanelExpanded: true,
+  isDimensionsWarningDismissed: false,
+  isVariablePopoverVisible: false,
+  // Function under test does not handle updating the persistence, this is handled by redux-persist
+  _persist: {
+    version: 1,
+    rehydrated: false,
+  },
+};
+
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],
 ): IntegrationDependencyV1[] {
@@ -379,6 +416,10 @@ function unmigrateFormStateV4toV3(formState: BaseFormStateV4): BaseFormStateV3 {
   };
 }
 
+function unmigrateFormStateV5toV4(formState: BaseFormStateV5): BaseFormStateV4 {
+  return omit(formState, "variablesDefinition");
+}
+
 function unmigrateEditorStateV5toV4(
   state: EditorStateV5 & PersistedState,
 ): EditorStateV4 & PersistedState {
@@ -410,14 +451,39 @@ function unmigrateEditorStateV6toV5(
   };
 }
 
+function unmigrateEditorStateV8toV7(
+  state: EditorStateV8 & PersistedState,
+): EditorStateV7 & PersistedState {
+  return {
+    ...omit(
+      state,
+      "modComponentFormStates",
+      "deletedModComponentFormStatesByModId",
+    ),
+    modComponentFormStates: state.modComponentFormStates.map((formState) =>
+      unmigrateFormStateV5toV4(formState),
+    ),
+    deletedModComponentFormStatesByModId: mapValues(
+      state.deletedModComponentFormStatesByModId,
+      (formStates) =>
+        formStates.map((formState) => unmigrateFormStateV5toV4(formState)),
+    ),
+  };
+}
+
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
-const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
+const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = (override) =>
   formStateFactory({
     formStateConfig: override as FactoryConfig<InternalFormStateOverride>,
   });
+
+const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
+  unmigrateFormStateV5toV4(formStateFactoryV5());
+
 const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
   unmigrateFormStateV4toV3(formStateFactoryV4());
+
 const formStateFactoryV2: SimpleFactory<BaseFormStateV2> = () =>
   unmigrateFormStateV3toV2(formStateFactoryV3());
 
@@ -612,6 +678,25 @@ describe("editor state migrations", () => {
           activeTabKey: null,
           input: expect.toBeObject(),
         }),
+      );
+    });
+  });
+
+  describe("migrateEditorState V7 to V8", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV7(initialStateV7)).toStrictEqual(
+        initialStateV8,
+      );
+    });
+
+    it("add variable definitions section", () => {
+      const expectedEditorStateV8: EditorStateV8 & PersistedState = {
+        ...initialStateV8,
+        modComponentFormStates: [formStateFactoryV5()],
+      };
+      const unmigrated = unmigrateEditorStateV8toV7(expectedEditorStateV8);
+      expect(migrateEditorStateV7(unmigrated)).toStrictEqual(
+        expectedEditorStateV8,
       );
     });
   });

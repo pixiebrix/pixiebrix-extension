@@ -18,7 +18,10 @@
 import { type Dispatch } from "react";
 import { removeDraftModComponentsForMod } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
-import { removeModComponentForEveryTab } from "@/background/messenger/api";
+import {
+  deleteSynchronizedModVariables,
+  removeModComponentForEveryTab,
+} from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -36,6 +39,7 @@ import { type UUID } from "@/types/stringTypes";
  * - Extension Options slice
  * - Draft mod components slice (i.e., Page Editor state)
  * - Notifies all tabs to remove the mod components
+ * - browser.storage.session synchronized mod variables
  */
 export async function deactivateMod(
   modId: RegistryId,
@@ -50,6 +54,8 @@ export async function deactivateMod(
   removeModComponentsFromAllTabs(
     uniq([...modComponentIds, ...removedDraftModComponentIds]),
   );
+
+  await deleteSynchronizedModVariables(modId);
 }
 
 export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {

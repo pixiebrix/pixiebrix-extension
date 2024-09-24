@@ -2,7 +2,7 @@ Index: add-trigger-starter-brick-to-mod
 ===================================================================
 --- add-trigger-starter-brick-to-mod
 +++ add-trigger-starter-brick-to-mod
-@@ -66,110 +66,115 @@
+@@ -66,114 +66,119 @@
          allFrames: true
          matchPatterns:
            - '*://*/*'
@@ -121,3 +121,7 @@ Index: add-trigger-starter-brick-to-mod
    uiSchema:
      ui:order:
        - '*'
+ variables:
+   schema:
+     properties: {}
+     type: object
