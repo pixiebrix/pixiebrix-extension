@@ -21,7 +21,7 @@ import { isEmpty } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
 import { isObject } from "@/utils/objectUtils";
 
-// Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
+// Copy of axios.isAxiosError, without risking importing the whole untreeshakeable axios library
 export function isAxiosError(error: unknown): error is AxiosError {
   return (
     isObject(error) &&

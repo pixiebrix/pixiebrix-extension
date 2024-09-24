@@ -97,6 +97,9 @@ export default function reportError(
   try {
     _record(
       serializeError(selectError(errorLike), {
+        // AxiosError toJSON leaves functions intact which are not serializable, so we specifically
+        // disable useToJSON for AxiosErrors. See: https://github.com/pixiebrix/pixiebrix-extension/issues/9198
+        // We cannot just delete toJSON from the error since it is a prototype method and would be inherited
         useToJSON: !isAxiosError(errorLike),
       }),
       {
