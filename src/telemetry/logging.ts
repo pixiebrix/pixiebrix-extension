@@ -467,6 +467,11 @@ export async function reportToApplicationErrorTelemetry(
   } satisfies RecordErrorMessage);
 }
 
+export type ContextWithMod = MessageContext &
+  Required<Pick<MessageContext, "modComponentId">>;
+const isContextWithMod = (context: MessageContext): context is ContextWithMod =>
+  context.modComponentId != null;
+
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
 export async function recordError(
   this: MessengerMeta, // Enforce usage via Messenger only
@@ -487,19 +492,27 @@ export async function recordError(
     const errorMessage = getErrorMessage(error);
     const flatContext = flattenContext(error, context);
 
+    // Only record entries that occurred within a user-defined extension/blueprint.
+    // Other errors only go to Application error telemetry. (They're problems with our software.)
+    const reportModErrorPromises = isContextWithMod(flatContext)
+      ? [
+          reportToErrorService(error, flatContext, errorMessage),
+          appendEntry({
+            uuid: uuidv4(),
+            timestamp: Date.now().toString(),
+            level: "error",
+            context: flatContext,
+            message: errorMessage,
+            data,
+            // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
+            error: serializedError,
+          }),
+        ]
+      : [];
+
     await Promise.all([
       reportToApplicationErrorTelemetry(error, flatContext, errorMessage),
-      reportToErrorService(error, flatContext, errorMessage),
-      appendEntry({
-        uuid: uuidv4(),
-        timestamp: Date.now().toString(),
-        level: "error",
-        context: flatContext,
-        message: errorMessage,
-        data,
-        // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
-        error: serializedError,
-      }),
+      ...reportModErrorPromises,
     ]);
   } catch (recordErrorError) {
     console.error("An error occurred while recording another error", {
@@ -573,7 +586,7 @@ export async function clearModComponentDebugLogs(
       }
     }
   }, IDB_OPERATION.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
-    // Swallow error because we've reported it to application error telemetry and
+    // Swallow error because we've reported it to application error telemetry, and
     // we don't want to interrupt the execution of mod pipeline
   });
 }

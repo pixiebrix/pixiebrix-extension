@@ -23,13 +23,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { selectAbsoluteUrl } from "@/utils/urlUtils";
-import {
-  safeGuessStatusText,
-  type SerializableAxiosError,
-} from "@/errors/networkErrorHelpers";
+import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
 import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import { type AxiosError } from "axios";
 
 function tryParse(value: unknown): unknown {
   if (typeof value === "string") {
@@ -45,7 +43,7 @@ function tryParse(value: unknown): unknown {
 }
 
 const NetworkErrorDetail: React.FunctionComponent<{
-  error: SerializableAxiosError;
+  error: AxiosError;
 }> = ({ error }) => {
   const absoluteUrl = selectAbsoluteUrl(error.config);
 

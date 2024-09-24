@@ -15,20 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SetRequired, type Except } from "type-fest";
+import { type SetRequired } from "type-fest";
 import { type AxiosError, type AxiosResponse } from "axios";
 import { isEmpty } from "lodash";
 import { getReasonPhrase } from "http-status-codes";
 import { isObject } from "@/utils/objectUtils";
 
-/**
- * Axios offers its own serialization method, but it doesn't include the response.
- * By deleting toJSON, the serialize-error library will use its default serialization
- */
-export type SerializableAxiosError = Except<AxiosError, "toJSON">;
-
-// Copy of axios.isAxiosError, without risking to import the whole untreeshakeable axios library
-export function isAxiosError(error: unknown): error is SerializableAxiosError {
+// Copy of axios.isAxiosError, without risking importing the whole untreeshakeable axios library
+export function isAxiosError(error: unknown): error is AxiosError {
   return (
     isObject(error) &&
     // To deal with original AxiosError as well as a serialized error

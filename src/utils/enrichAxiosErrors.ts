@@ -63,7 +63,6 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
       !url.pathname.startsWith(API_PATHS.PROXY)
     ) {
       // TODO: Maybe handle app errors here too, like we do in `selectServerErrorMessage`
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal -- Duck-typed Error, still works
       throw error;
     }
 

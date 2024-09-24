@@ -18,19 +18,15 @@
 import { isErrorObject } from "@/errors/errorHelpers";
 import { testMatchPatterns } from "@/bricks/available";
 import { getBaseURL } from "@/data/service/baseService";
-import {
-  isAxiosError,
-  type SerializableAxiosError,
-} from "@/errors/networkErrorHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { selectAbsoluteUrl, withoutTrailingSlash } from "@/utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { type AxiosError } from "axios";
 
 /**
  * Return true iff the error corresponds to a request to PixieBrix API.
  */
-export async function isAppRequestError(
-  error: SerializableAxiosError,
-): Promise<boolean> {
+export async function isAppRequestError(error: AxiosError): Promise<boolean> {
   const baseURL = await getBaseURL();
   const requestUrl = selectAbsoluteUrl(error.config);
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
@@ -42,9 +38,7 @@ export async function isAppRequestError(
 /**
  * Return the AxiosError associated with an error, or null if error is not associated with an AxiosError
  */
-export function selectAxiosError(
-  error: unknown,
-): SerializableAxiosError | null {
+export function selectAxiosError(error: unknown): AxiosError | null {
   if (isAxiosError(error)) {
     return error;
   }
