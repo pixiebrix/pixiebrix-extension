@@ -618,7 +618,7 @@ async function _sweepLogs(): Promise<void> {
         for await (const cursor of tx.store) {
           if (abortController.signal.aborted) {
             console.warn("Log sweep aborted due to timeout");
-            break;
+            return;
           }
 
           await cursor.delete();
