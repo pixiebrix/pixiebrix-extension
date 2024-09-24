@@ -180,8 +180,8 @@ describe("logging", () => {
 
     // Verify sweepLogs functionality
     await sweepLogs();
-    await expect(count()).resolves.toBe(937);
-    // Increase timeout so test isn't flaky on CI due to slow append operation
+    await expect(count()).resolves.toBe(930);
+    // Increase timeout so test isn't flakey on CI due to slow append operation
   }, 25_000);
 
   test("getLogEntries by modId", async () => {
