@@ -41,6 +41,7 @@ export type StateNamespace = ValueOf<typeof StateNamespaces>;
  */
 export const SyncPolicies = {
   NONE: "none",
+  TAB: "tab",
   SESSION: "session",
 } as const;
 

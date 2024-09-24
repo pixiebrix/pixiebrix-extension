@@ -34,10 +34,10 @@ import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { toExpression } from "@/utils/expressionUtils";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import {
-  TEST_resetState,
+  TEST_resetStateController,
   getState,
   setState,
-} from "@/contentScript/stateController";
+} from "@/contentScript/stateController/stateController";
 import type { Target } from "@/types/messengerTypes";
 import { StateNamespaces } from "@/platform/state/stateTypes";
 
@@ -224,8 +224,8 @@ describe("form data normalization", () => {
 });
 
 describe("CustomFormRenderer", () => {
-  beforeEach(() => {
-    TEST_resetState();
+  beforeEach(async () => {
+    await TEST_resetStateController();
     jest.clearAllMocks();
   });
 
