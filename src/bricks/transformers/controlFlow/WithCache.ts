@@ -27,7 +27,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isEmpty } from "lodash";
-import { BusinessError, PropError } from "@/errors/businessErrors";
+import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -38,12 +38,21 @@ import {
 } from "@/platform/state/stateTypes";
 import { ContextError } from "@/errors/genericErrors";
 import pDefer from "p-defer";
+import type { UUID } from "@/types/stringTypes";
+
+type Args = {
+  body: PipelineExpression;
+  stateKey: string;
+  ttl?: number;
+  forceFetch?: boolean;
+};
 
 type CacheVariableState = {
+  requestId: UUID;
   isFetching: boolean;
   isError: boolean;
   isSuccess: boolean;
-  error: unknown;
+  error: JsonObject | null;
   data: unknown;
   expiresAt: number | null;
 };
@@ -53,13 +62,21 @@ function isCacheVariableState(value: unknown): value is CacheVariableState {
     return false;
   }
 
-  const { isFetching, isError } = value as UnknownObject;
+  const { requestId, isFetching, isError, expiresAt } = value as UnknownObject;
 
   if (typeof isFetching !== "boolean") {
     return false;
   }
 
   if (typeof isError !== "boolean") {
+    return false;
+  }
+
+  if (typeof requestId !== "string") {
+    return false;
+  }
+
+  if (expiresAt != null && typeof expiresAt !== "number") {
     return false;
   }
 
@@ -190,33 +207,84 @@ export class WithCache extends TransformerABC {
     };
   }
 
-  async transform(
-    {
-      body,
-      stateKey,
-      ttl,
-      forceFetch,
-    }: BrickArgs<{
-      body: PipelineExpression;
-      stateKey: string;
-      ttl?: number;
-      forceFetch?: boolean;
-    }>,
-    {
+  private async waitForSettledRequest({
+    requestId,
+    args: { stateKey },
+    options,
+  }: {
+    requestId: string;
+    args: BrickArgs<Args>;
+    options: BrickOptions;
+  }): Promise<unknown> {
+    // Coalesce multiple requests into a single request
+    const {
+      meta: { modComponentRef },
+      platform,
+      abortSignal,
+    } = options;
+
+    const deferredValuePromise = pDefer<unknown>();
+
+    document.addEventListener(
+      STATE_CHANGE_JS_EVENT_TYPE,
+      async () => {
+        const stateUpdate = await platform.state.getState({
+          namespace: StateNamespaces.MOD,
+          modComponentRef,
+        });
+
+        // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
+        const variableUpdate = (stateUpdate[stateKey] ?? {}) as JsonObject;
+
+        if (!isCacheVariableState(variableUpdate)) {
+          deferredValuePromise.reject(
+            new BusinessError(
+              "Invalid cache shape. Cache value was overwritten.",
+            ),
+          );
+        }
+
+        if (variableUpdate.requestId !== requestId) {
+          // XXX: should this be a CancelError?
+          deferredValuePromise.reject(
+            new CancelError("Value generation was superseded"),
+          );
+        }
+
+        if (!variableUpdate.isFetching) {
+          if (variableUpdate.isError) {
+            deferredValuePromise.reject(deserializeError(variableUpdate.error));
+          }
+
+          deferredValuePromise.resolve(variableUpdate.data);
+        }
+
+        // Ignore state change if still fetching
+      },
+      { signal: abortSignal },
+    );
+
+    return deferredValuePromise.promise;
+  }
+
+  private async generateValue({
+    currentVariable,
+    args: { stateKey, ttl, body },
+    options,
+  }: {
+    currentVariable: CacheVariableState | null;
+    args: BrickArgs<Args>;
+    options: BrickOptions;
+  }): Promise<unknown> {
+    // Perform a new request
+    const requestId = uuidv4();
+    const expiresAt = ttl == null ? null : Date.now() + ttl * 1000;
+
+    const {
       meta: { modComponentRef },
       runPipeline,
       platform,
-      abortSignal,
-    }: BrickOptions,
-  ) {
-    if (isNullOrBlank(stateKey)) {
-      throw new PropError(
-        "Mod Variable Name is required",
-        this.id,
-        "stateKey",
-        stateKey,
-      );
-    }
+    } = options;
 
     const isCurrentNonce = async (query: string) => {
       const currentState = await platform.state.getState({
@@ -246,83 +314,7 @@ export class WithCache extends TransformerABC {
       });
     };
 
-    // `getState/setState` are async. So calls need to account for interlacing state modifications (including deletes).
-    // The main concern is ensuring the shape of the async state is always valid.
-    // We don't need to have strong consistency guarantees on which calls "win" if the state is updated concurrently.
-    const currentState = await platform.state.getState({
-      namespace: StateNamespaces.MOD,
-      modComponentRef,
-    });
-
-    // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
-    const currentVariable = (currentState[stateKey] ?? {}) as JsonObject;
-
-    if (isCacheVariableState(currentVariable) && currentVariable.isFetching) {
-      // Coalesce multiple requests into a single request
-      const fetchingRequestId = currentVariable.requestId;
-
-      const deferredValuePromise = pDefer<unknown>();
-
-      document.addEventListener(
-        STATE_CHANGE_JS_EVENT_TYPE,
-        async () => {
-          const stateUpdate = await platform.state.getState({
-            namespace: StateNamespaces.MOD,
-            modComponentRef,
-          });
-
-          // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
-          const variableUpdate = (stateUpdate[stateKey] ?? {}) as JsonObject;
-
-          if (!isCacheVariableState(variableUpdate)) {
-            deferredValuePromise.reject(
-              new BusinessError(
-                "Invalid cache shape. Cache value was overwritten.",
-              ),
-            );
-          }
-
-          if (variableUpdate.requestId !== fetchingRequestId) {
-            // XXX: should this be a CancelError?
-            deferredValuePromise.reject(
-              new BusinessError("Value generation was superseded"),
-            );
-          }
-
-          if (!variableUpdate.isFetching) {
-            if (variableUpdate.isError) {
-              deferredValuePromise.reject(
-                deserializeError(variableUpdate.error),
-              );
-            }
-
-            deferredValuePromise.resolve(variableUpdate.data);
-          }
-
-          // Ignore if still fetching
-        },
-        { signal: abortSignal },
-      );
-
-      return deferredValuePromise.promise;
-    }
-
-    if (
-      !forceFetch &&
-      isCacheVariableState(currentVariable) &&
-      currentVariable.isSuccess &&
-      (currentVariable.expiresAt == null ||
-        Date.now() < currentVariable.expiresAt)
-    ) {
-      // Cache hit. Don't return settled exceptions
-      return currentVariable.data;
-    }
-
-    // Perform a new request
-    const requestId = uuidv4();
-    const expiresAt = ttl == null ? null : Date.now() + ttl * 1000;
-
-    if (isEmpty(currentVariable)) {
+    if (currentVariable == null) {
       // Initialize the mod variable.
       await setModVariable({
         requestId,
@@ -356,8 +348,7 @@ export class WithCache extends TransformerABC {
       })) as JsonObject;
     } catch (_error) {
       if (!(await isCurrentNonce(requestId))) {
-        // XXX: should this be a CancelError?
-        throw new BusinessError("Value generation was superseded");
+        throw new CancelError("Value generation was superseded");
       }
 
       await setModVariable({
@@ -377,8 +368,7 @@ export class WithCache extends TransformerABC {
     }
 
     if (!(await isCurrentNonce(requestId))) {
-      // XXX: should this be a CancelError?
-      throw new BusinessError("Value generation was superseded");
+      throw new CancelError("Value generation was superseded");
     }
 
     await setModVariable({
@@ -394,5 +384,65 @@ export class WithCache extends TransformerABC {
     });
 
     return data;
+  }
+
+  async transform(args: BrickArgs<Args>, options: BrickOptions) {
+    const { stateKey, forceFetch = false } = args;
+
+    const {
+      meta: { modComponentRef },
+      platform,
+    } = options;
+
+    if (isNullOrBlank(stateKey)) {
+      throw new PropError(
+        "Mod Variable Name is required",
+        this.id,
+        "stateKey",
+        stateKey,
+      );
+    }
+
+    // `getState/setState` are async. So calls need to account for interlacing state modifications (including deletes).
+    // The main concern is ensuring the shape of the async state is always valid.
+    // We don't need to have strong consistency guarantees on which calls "win" if the state is updated concurrently.
+    const currentState = await platform.state.getState({
+      namespace: StateNamespaces.MOD,
+      modComponentRef,
+    });
+
+    // eslint-disable-next-line security/detect-object-injection -- user provided value that's readonly
+    const currentVariable = (currentState[stateKey] ?? {}) as JsonObject;
+
+    if (!isEmpty(currentVariable) && !isCacheVariableState(currentVariable)) {
+      throw new BusinessError("Invalid cache shape");
+    }
+
+    if (isCacheVariableState(currentVariable) && currentVariable.isFetching) {
+      return this.waitForSettledRequest({
+        requestId: currentVariable.requestId,
+        args,
+        options,
+      });
+    }
+
+    if (
+      !forceFetch &&
+      isCacheVariableState(currentVariable) &&
+      currentVariable.isSuccess &&
+      (currentVariable.expiresAt == null ||
+        Date.now() < currentVariable.expiresAt)
+    ) {
+      // Cache hit. Don't return settled exceptions
+      return currentVariable.data;
+    }
+
+    return this.generateValue({
+      currentVariable: isCacheVariableState(currentVariable)
+        ? currentVariable
+        : null,
+      args,
+      options,
+    });
   }
 }
