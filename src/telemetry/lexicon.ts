@@ -63,8 +63,9 @@ type LexiconMap = {
 export const lexicon: LexiconMap = {
   AUTH_WIDGET_SELECT: {
     description:
-      "Reported on the mod activation page in the Extenion Console when a user configures and integration by selecting an option from the" +
-      "dropdown menu. This includes when a new integration is auto-selected after creating the integration via the '+ Add new' option.",
+      "Reported on the mod activation page in the Extension Console when a user selects an option in the dropdown menu" +
+      "to configure an integration for the mod. This includes when a new integration is auto-filled after creating " +
+      "the integration via the '+ Add new' option.",
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   BRICK_ADD: {
