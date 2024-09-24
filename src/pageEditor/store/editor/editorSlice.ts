@@ -329,7 +329,9 @@ export const editorSlice = createSlice({
           (formState) => formState.modMetadata?.id === modId,
         );
 
-        // If there are existing components, collect their options, and assign
+        // If there are existing components, collect their option arguments, and assign.
+        // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
+        // are stored/owned at the mod-level in the Page Editor
         if (existingModComponents.length > 0) {
           const collectedOptions = collectModOptions(existingModComponents);
           modComponentFormState.optionsArgs = collectedOptions;
@@ -1039,7 +1041,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 7,
+  version: 8,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: [
     "inserting",

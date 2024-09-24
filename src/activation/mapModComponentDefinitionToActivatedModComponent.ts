@@ -27,6 +27,8 @@ import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
+import type { SetRequired } from "type-fest";
 
 export type ActivateModComponentParam = {
   /**
@@ -64,7 +66,10 @@ export function mapModComponentDefinitionToActivatedModComponent<
   deployment,
   optionsArgs,
   integrationDependencies,
-}: ActivateModComponentParam): ActivatedModComponent<Config> {
+}: ActivateModComponentParam): SetRequired<
+  ActivatedModComponent<Config>,
+  "variablesDefinition"
+> {
   const timestamp = nowTimestamp();
 
   const activatedModComponent = {
@@ -75,6 +80,9 @@ export function mapModComponentDefinitionToActivatedModComponent<
     // Definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
     // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
     definitions: modDefinition.definitions ?? {},
+    // Mod variable definitions/declarations are pushed down into the mod components.
+    variablesDefinition:
+      modDefinition.variables ?? emptyModVariablesDefinitionFactory(),
     optionsArgs,
     label: modComponentDefinition.label,
     extensionPointId: modComponentDefinition.id,
@@ -82,7 +90,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
     active: true,
     createTimestamp: timestamp,
     updateTimestamp: timestamp,
-  } as ActivatedModComponent<Config>;
+  } as SetRequired<ActivatedModComponent<Config>, "variablesDefinition">;
 
   // Set optional fields only if the source mod component has a value. Normalizing the values
   // here makes testing harder because we then have to account for the normalized value in assertions.

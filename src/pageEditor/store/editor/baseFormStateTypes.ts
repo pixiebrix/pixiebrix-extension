@@ -26,7 +26,10 @@ import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModOptionsDefinition,
+  type ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type NormalizedAvailability } from "@/types/availabilityTypes";
@@ -71,6 +74,7 @@ export type BaseModComponentState = BaseModComponentStateV2;
 
 /**
  * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
  */
 export interface BaseFormStateV1<
   TModComponent extends BaseModComponentStateV1 = BaseModComponentStateV1,
@@ -143,6 +147,7 @@ export interface BaseFormStateV1<
 
 /**
  * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
  */
 export type BaseFormStateV2<
   TModComponent extends BaseModComponentStateV1 = BaseModComponentStateV1,
@@ -159,6 +164,7 @@ export type BaseFormStateV2<
 
 /**
  * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
  */
 export type BaseFormStateV3<
   TModComponent extends BaseModComponentStateV2 = BaseModComponentStateV2,
@@ -194,6 +200,7 @@ export type BaseFormStateV3<
 
 /**
  * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
  */
 export type BaseFormStateV4<
   TModComponent extends BaseModComponentStateV2 = BaseModComponentStateV2,
@@ -207,15 +214,33 @@ export type BaseFormStateV4<
   "type"
 >;
 
+/**
+ * Base form state version that introduces a variablesDefinition section for declaring mod variables.
+ * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
+ * @since 2.1.2
+ */
+export type BaseFormStateV5<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = BaseFormStateV4<TModComponent, TStarterBrick> & {
+  /**
+   * The mod variable definitions/declarations
+   * @see ModDefinition.variables
+   * @since 2.1.2
+   */
+  variablesDefinition: ModVariablesDefinition;
+};
+
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
-  BaseFormStateV4<TModComponent, TStarterBrick>,
+  // On migration, re-point this type to the most recent BaseFormStateV<N> type name
+  BaseFormStateV5<TModComponent, TStarterBrick>,
+  // NOTE: this is not changing the type shape/structure. It's just cleaning up the type name/reference which makes
+  // types easier to work with for testing migrations.
   "integrationDependencies"
 > & {
-  /**
-   * Using the un-versioned type
-   */
   integrationDependencies: IntegrationDependency[];
 };

@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { cloneDeep, isEqual, merge } from "lodash";
+import { cloneDeep, isEmpty, isEqual, merge, omit, pick } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Except, type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "@/platform/platformContext";
@@ -26,20 +26,77 @@ import { type ModComponentRef } from "@/types/modComponentTypes";
 import {
   MergeStrategies,
   type MergeStrategy,
-  STATE_CHANGE_JS_EVENT_TYPE,
-  type StateChangeEventDetail,
   type StateNamespace,
   StateNamespaces,
 } from "@/platform/state/stateTypes";
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- content script
-const privateState = new Map<UUID, JsonObject>();
+import { getThisFrame } from "webext-messenger";
+import { getSessionStorageKey } from "@/platform/state/stateHelpers";
+import {
+  getSyncedVariableNames,
+  modSyncPolicies,
+} from "@/contentScript/stateController/modVariablePolicyController";
+import { dispatchStateChangeEvent } from "@/contentScript/stateController/stateEventHelpers";
 
 /**
- * The mod page state or null for shared page state.
+ * Map from mod component id to its private state.
  */
-// eslint-disable-next-line local-rules/persistBackgroundData -- content script
-const modState = new Map<RegistryId | null, JsonObject>();
+const framePrivateState = new Map<UUID, JsonObject>();
+
+/**
+ * Map from mod id to its mod state. Or null key for public page state.
+ */
+const frameModState = new Map<RegistryId | null, JsonObject>();
+
+/**
+ * Returns the current state of the mod variables according to the mod's variable synchronization policy.
+ */
+async function getModVariableState(modId: RegistryId): Promise<JsonObject> {
+  const variableNames = getSyncedVariableNames(modId);
+
+  let tabState = {};
+  let sessionState = {};
+
+  if (!isEmpty(variableNames.synced)) {
+    const { tabId } = await getThisFrame();
+    const sessionKey = getSessionStorageKey({ modId });
+    const tabKey = getSessionStorageKey({ modId, tabId });
+
+    const values = await browser.storage.session.get([tabKey, sessionKey]);
+
+    // eslint-disable-next-line security/detect-object-injection -- key passed to .get
+    tabState = pick(values[tabKey] ?? {}, variableNames.tab);
+    // eslint-disable-next-line security/detect-object-injection -- key passed to .get
+    sessionState = pick(values[sessionKey] ?? {}, variableNames.session);
+  }
+
+  const local = frameModState.get(modId) ?? {};
+
+  return {
+    ...omit(local, variableNames.synced),
+    ...tabState,
+    ...sessionState,
+  };
+}
+
+async function updateModVariableState(
+  modId: RegistryId,
+  nextState: JsonObject,
+): Promise<void> {
+  const variableNames = getSyncedVariableNames(modId);
+
+  frameModState.set(modId, omit(nextState, variableNames.synced));
+
+  if (!isEmpty(variableNames.synced)) {
+    const { tabId } = await getThisFrame();
+    const sessionKey = getSessionStorageKey({ modId });
+    const tabKey = getSessionStorageKey({ modId, tabId });
+
+    await browser.storage.session.set({
+      [tabKey]: pick(nextState, variableNames.tab),
+      [sessionKey]: pick(nextState, variableNames.session),
+    });
+  }
+}
 
 function mergeState(
   previous: JsonObject,
@@ -75,27 +132,30 @@ function dispatchStateChangeEventOnChange({
   namespace,
   modComponentRef: { modComponentId, modId },
 }: {
-  previous: unknown;
-  next: unknown;
+  previous: JsonObject;
+  next: JsonObject;
   namespace: StateNamespace;
   modComponentRef: Except<ModComponentRef, "starterBrickId">;
 }) {
+  const modPolicy = modSyncPolicies.get(modId);
+  const syncedVariableNames = Object.keys(modPolicy ?? {});
+
+  if (
+    !isEqual(
+      pick(previous, syncedVariableNames),
+      pick(next, syncedVariableNames),
+    )
+  ) {
+    // Skip firing because it will be fired by the session storage listener
+    return;
+  }
+
   if (!isEqual(previous, next)) {
-    // For now, leave off the event data because state controller in the content script uses JavaScript/DOM
-    // events, which is a public channel (the host site/other extensions can see the event).
-    const detail = {
+    dispatchStateChangeEvent({
       namespace,
       extensionId: modComponentId,
       blueprintId: modId,
-    } satisfies StateChangeEventDetail;
-
-    console.debug("Dispatching statechange", detail);
-
-    const event = new CustomEvent(STATE_CHANGE_JS_EVENT_TYPE, {
-      detail,
-      bubbles: true,
     });
-    document.dispatchEvent(event);
   }
 }
 
@@ -125,17 +185,17 @@ export async function setState({
 
   switch (namespace) {
     case StateNamespaces.PUBLIC: {
-      const previous = modState.get(null) ?? {};
+      const previous = frameModState.get(null) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(null, next);
+      frameModState.set(null, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case StateNamespaces.MOD: {
-      const previous = modState.get(modId) ?? {};
+      const previous = await getModVariableState(modId);
       const next = mergeState(previous, data, mergeStrategy);
-      modState.set(modId, next);
+      await updateModVariableState(modId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -145,9 +205,9 @@ export async function setState({
         modComponentId,
         "Invalid context: mod component id not found",
       );
-      const previous = privateState.get(modComponentId) ?? {};
+      const previous = framePrivateState.get(modComponentId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      privateState.set(modComponentId, next);
+      framePrivateState.set(modComponentId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -170,11 +230,11 @@ export async function getState({
 
   switch (namespace) {
     case StateNamespaces.PUBLIC: {
-      return modState.get(null) ?? {};
+      return frameModState.get(null) ?? {};
     }
 
     case StateNamespaces.MOD: {
-      return modState.get(modId) ?? {};
+      return getModVariableState(modId);
     }
 
     case StateNamespaces.PRIVATE: {
@@ -182,7 +242,7 @@ export async function getState({
         modComponentId,
         "Invalid context: mod component id not found",
       );
-      return privateState.get(modComponentId) ?? {};
+      return framePrivateState.get(modComponentId) ?? {};
     }
 
     default: {
@@ -192,7 +252,9 @@ export async function getState({
   }
 }
 
-export function TEST_resetState(): void {
-  privateState.clear();
-  modState.clear();
+export async function TEST_resetStateController(): Promise<void> {
+  framePrivateState.clear();
+  frameModState.clear();
+  modSyncPolicies.clear();
+  await browser.storage.session.clear();
 }

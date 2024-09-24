@@ -58,7 +58,10 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 import {
   type Availability,
   type NormalizedAvailability,
@@ -123,6 +126,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
+  | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
   return {
@@ -134,6 +138,8 @@ export function baseFromModComponent<T extends StarterBrickType>(
     integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
     optionsArgs: config.optionsArgs ?? {},
+    variablesDefinition:
+      config.variablesDefinition ?? emptyModVariablesDefinitionFactory(),
     type,
     modMetadata: config._recipe,
   };
@@ -173,10 +179,11 @@ export function baseSelectModComponent({
   uuid,
   label,
   optionsArgs,
+  variablesDefinition,
   integrationDependencies,
   permissions,
   starterBrick,
-  modMetadata: mod,
+  modMetadata,
 }: BaseFormState): Pick<
   ModComponentBase,
   | "id"
@@ -187,16 +194,18 @@ export function baseSelectModComponent({
   | "integrationDependencies"
   | "permissions"
   | "optionsArgs"
+  | "variablesDefinition"
 > {
   return {
     id: uuid,
     apiVersion,
     extensionPointId: starterBrick.metadata.id,
-    _recipe: mod,
+    _recipe: modMetadata,
     label,
     integrationDependencies,
     permissions,
     optionsArgs,
+    variablesDefinition,
   };
 }
 
@@ -209,6 +218,7 @@ export function makeInitialBaseState(
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
+    variablesDefinition: emptyModVariablesDefinitionFactory(),
     modComponent: {
       brickPipeline: [],
     },

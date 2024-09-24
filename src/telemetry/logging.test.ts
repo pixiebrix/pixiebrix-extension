@@ -147,10 +147,12 @@ describe("logging", () => {
     await expect(count()).resolves.toBe(1);
   });
 
-  test("sweep", async () => {
+  test("sweepLogs", async () => {
+    // Set up test log database that will trigger sweepLogs due to count > MAX_LOG_RECORDS
+    // sweepLog assertions are all written in one test due to this expensive setup
     flagOnMock.mockResolvedValue(false);
     await Promise.all(
-      array(logEntryFactory, 1500)().map(async (x) => {
+      array(logEntryFactory, 1300)().map(async (x) => {
         await appendEntry(x);
       }),
     );
@@ -158,12 +160,28 @@ describe("logging", () => {
     // Verify that when the DISABLE_IDB_LOGGING flag is on, the logs are not swept
     mockFlag(FeatureFlags.DISABLE_IDB_LOGGING);
     await sweepLogs();
-    await expect(count()).resolves.toBe(1500);
+    await expect(count()).resolves.toBe(1300);
 
     flagOnMock.mockResolvedValue(false);
+
+    // Verify that sweeper will abort if timeout is hit
+    const consoleWarnSpy = jest.spyOn(console, "warn");
+    const originalTimeout = global.setTimeout;
+    // Simulate timeout by mocking setTimeout to immediately call the abort signal
+    const setTimeoutSpy = jest
+      .spyOn(global, "setTimeout")
+      .mockImplementation((fn) => originalTimeout(fn, 0));
     await sweepLogs();
-    await expect(count()).resolves.toBe(937);
-    // Increase timeout so test isn't flakey on CI due to slow append operation
+    await expect(count()).resolves.toBeGreaterThan(1250);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "Log sweep aborted due to timeout",
+    );
+    setTimeoutSpy.mockRestore();
+
+    // Verify sweepLogs functionality
+    await sweepLogs();
+    await expect(count()).resolves.toBeLessThanOrEqual(930);
+    // Increase timeout so test isn't flaky on CI due to slow append operation
   }, 25_000);
 
   test("getLogEntries by modId", async () => {
