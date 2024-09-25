@@ -67,7 +67,6 @@ type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
  * See https://github.com/pixiebrix/pixiebrix-extension/issues/9150
  */
 type PendingMessageMetadata = {
-  id: string;
   type: string;
   payloadSize: number;
   timestamp: number;
@@ -78,25 +77,15 @@ const pendingMessageMetadataMap = new Map<string, PendingMessageMetadata>();
 function addPendingMessageMetadata(type: string, payload: Payload): UUID {
   const id = uuidv4();
   const payloadSize = JSON.stringify(payload).length;
-  const metadata = { id, type, payloadSize, timestamp: Date.now() };
+  const metadata = { type, payloadSize, timestamp: Date.now() };
   pendingMessageMetadataMap.set(id, metadata);
   return id;
 }
 
-function removePendingMessageMetadata(id: UUID): void {
+function removePendingMessageMetadata(id: UUID) {
+  const removedMessage = pendingMessageMetadataMap.get(id);
   pendingMessageMetadataMap.delete(id);
-}
-
-function getPendingMessageMetadata(): Array<{
-  type: string;
-  payloadSize: number;
-  elapsedTime: number;
-}> {
-  return [...pendingMessageMetadataMap.values()].map((message) => ({
-    type: message.type,
-    payloadSize: message.payloadSize,
-    elapsedTime: Date.now() - message.timestamp,
-  }));
+  return removedMessage;
 }
 
 export class SandboxTimeoutError extends Error {
@@ -104,11 +93,8 @@ export class SandboxTimeoutError extends Error {
 
   constructor(
     message: string,
-    public readonly pendingMessages: Array<{
-      type: string;
-      payloadSize: number;
-      elapsedTime: number;
-    }>,
+    public readonly sandboxMessage: PendingMessageMetadata | undefined,
+    public readonly pendingSandboxMessages: PendingMessageMetadata[],
     options?: ErrorOptions,
   ) {
     super(message, options);
@@ -158,17 +144,18 @@ export default async function postMessage<TReturn extends Payload = Payload>({
     removePendingMessageMetadata(messageKey);
     return result;
   } catch (error) {
+    const messageMetadata = removePendingMessageMetadata(messageKey);
     if (isSpecificError(error, TimeoutError)) {
       throw new SandboxTimeoutError(
         error.message,
-        getPendingMessageMetadata(),
+        messageMetadata,
+        [...pendingMessageMetadataMap.values()],
         {
           cause: error,
         },
       );
     }
 
-    removePendingMessageMetadata(messageKey);
     throw error;
   }
 }
