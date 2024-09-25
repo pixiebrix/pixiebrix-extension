@@ -20,6 +20,7 @@ import { expect, test } from "../../fixtures/testBase";
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
+import { type ModListItem } from "../../pageObjects/pageEditor/modListingPanel";
 
 const testModDefinitionName = "brick-actions";
 const otherTestMod = "simple-sidebar-panel";
@@ -39,6 +40,8 @@ test("brick actions panel behavior", async ({
   const { id: modId } = modDefinitionsMap[testModDefinitionName]!;
   const { id: otherModId } = modDefinitionsMap[otherTestMod]!;
   let pageEditorPage: PageEditorPage;
+  let modListItem: ModListItem;
+  let testStarterBrick: ModListItem;
 
   await test.step("Activate mods, and initialize page editor", async () => {
     let modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -54,14 +57,14 @@ test("brick actions panel behavior", async ({
 
   const { brickActionsPanel } = pageEditorPage!;
   await test.step("Select the mod in the page editor and verify brick actions panel is hidden", async () => {
-    const modListItem =
+    modListItem =
       pageEditorPage.modListingPanel.getModListItemByName("Mod Actions Test");
     await modListItem.select();
     await expect(brickActionsPanel.root).toBeHidden();
   });
 
   await test.step("Select the starter brick and verify brick actions panel is visible", async () => {
-    const testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
+    testStarterBrick = pageEditorPage.modListingPanel.getModStarterBrick(
       "Mod Actions Test",
       "Button",
     );
@@ -71,23 +74,28 @@ test("brick actions panel behavior", async ({
 
   await test.step("Add a new brick", async () => {
     await brickActionsPanel.addBrick("Set Mod Variable", { index: 1 });
+    await modListItem.select();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-added" });
   });
 
   await test.step("Remove a brick", async () => {
+    await testStarterBrick.select();
     await brickActionsPanel.getBrickByName("Set Mod Variable").select();
-    await brickActionsPanel.removeBrickButton.click();
+    await brickActionsPanel.removeActiveBrick();
+    await modListItem.select();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "brick-removed" });
   });
 
   await test.step("Copy and paste a brick", async () => {
+    await testStarterBrick.select();
     await brickActionsPanel.getBrickByName("Alert Brick").select();
     await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
     await brickActionsPanel.copyActiveBrick();
     await brickActionsPanel.pasteBrick(1);
     await expect(brickActionsPanel.getPasteBrickButton(0)).toBeHidden();
+    await modListItem.select();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
@@ -96,8 +104,10 @@ test("brick actions panel behavior", async ({
   });
 
   await test.step("Move bricks", async () => {
+    await testStarterBrick.select();
     await brickActionsPanel.getBrickByName("Custom Modal").moveDown();
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").moveUp();
+    await modListItem.select();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({ modId, snapshotName: "bricks-moved" });
   });
@@ -105,6 +115,7 @@ test("brick actions panel behavior", async ({
   await test.step("Copy a brick from one mod to another", async () => {
     const targetModId = modDefinitionsMap[otherTestMod]!.id;
 
+    await testStarterBrick.select();
     await brickActionsPanel.getBrickByName("Assign Mod Var Brick").select();
     await brickActionsPanel.copyActiveBrick();
 
@@ -117,6 +128,7 @@ test("brick actions panel behavior", async ({
       .select();
 
     await brickActionsPanel.pasteBrick(1);
+    await modListItem.select();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId: targetModId,
