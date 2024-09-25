@@ -98,6 +98,8 @@ export class SandboxTimeoutError extends Error {
     options?: ErrorOptions,
   ) {
     super(message, options);
+    this.pendingSandboxMessages = pendingSandboxMessages;
+    this.sandboxMessage = sandboxMessage;
   }
 }
 
