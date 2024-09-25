@@ -33,16 +33,23 @@ import brickRegistry from "@/bricks/registry";
 import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { tick } from "@/starterBricks/starterBrickTestUtils";
+import { CancelError } from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 
 const withCacheBrick = new WithCache();
+
+const STATE_KEY = "testVariable";
 
 function makeCachePipeline(
   brick: Brick,
   {
     message,
     stateKey,
+    forceFetch = false,
   }: {
     message: string;
+    forceFetch?: boolean;
     stateKey: string | Expression;
   },
 ) {
@@ -58,6 +65,7 @@ function makeCachePipeline(
         },
       ]),
       stateKey,
+      forceFetch,
     },
   };
 }
@@ -95,7 +103,7 @@ describe("WithAsyncModVariable", () => {
 
   it("returns value if pipeline succeeds", async () => {
     const pipeline = makeCachePipeline(echoBrick, {
-      stateKey: "foo",
+      stateKey: STATE_KEY,
       message: "bar",
     });
 
@@ -110,7 +118,7 @@ describe("WithAsyncModVariable", () => {
     expect(brickOutput).toStrictEqual(expectedData);
 
     await expectPageState({
-      foo: {
+      [STATE_KEY]: {
         isLoading: false,
         isFetching: false,
         isSuccess: true,
@@ -126,7 +134,7 @@ describe("WithAsyncModVariable", () => {
 
   it("throws exception if pipeline throws", async () => {
     const pipeline = makeCachePipeline(throwBrick, {
-      stateKey: "foo",
+      stateKey: STATE_KEY,
       message: "bar",
     });
 
@@ -137,5 +145,110 @@ describe("WithAsyncModVariable", () => {
     );
 
     await expect(brickPromise).rejects.toThrow("bar");
+  });
+
+  it("memoizes value", async () => {
+    const firstCallPipeline = makeCachePipeline(asyncEchoBrick, {
+      stateKey: STATE_KEY,
+      message: "first",
+    });
+
+    const firstCallPromise = reducePipeline(
+      firstCallPipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    // Wait for the initial fetching state to be set
+    await tick();
+
+    const secondCallPipeline = makeCachePipeline(asyncEchoBrick, {
+      stateKey: STATE_KEY,
+      message: "second",
+    });
+
+    const secondCallPromise = reducePipeline(
+      secondCallPipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    deferred.resolve();
+
+    const target = { message: "first" };
+
+    await expect(firstCallPromise).resolves.toStrictEqual(target);
+    await expect(secondCallPromise).resolves.toStrictEqual(target);
+  });
+
+  it("memoizes error", async () => {
+    const pipeline = makeCachePipeline(asyncEchoBrick, {
+      stateKey: STATE_KEY,
+      message: "bar",
+    });
+
+    const requesterPromise = reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    // Let the initial isFetching state be set
+    await tick();
+
+    const memoizedPromise = reducePipeline(
+      pipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    deferred.reject(new Error("Test Error"));
+
+    await expect(requesterPromise).rejects.toThrow("Test Error");
+    await expect(memoizedPromise).rejects.toThrow("Test Error");
+  });
+
+  it("forces fetch", async () => {
+    const firstCallPipeline = makeCachePipeline(asyncEchoBrick, {
+      stateKey: STATE_KEY,
+      message: "first",
+    });
+
+    const firstCallPromise = reducePipeline(
+      firstCallPipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    // Wait for the initial fetching state to be set
+    await tick();
+
+    const secondCallPipeline = makeCachePipeline(asyncEchoBrick, {
+      stateKey: STATE_KEY,
+      message: "second",
+      forceFetch: true,
+    });
+
+    const secondCallPromise = reducePipeline(
+      secondCallPipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    // Wait for 2nd call to override the request id
+    await tick();
+
+    deferred.resolve();
+
+    try {
+      await firstCallPromise;
+    } catch (error) {
+      expect(error).toBeInstanceOf(ContextError);
+      expect((error as Error).cause).toBeInstanceOf(CancelError);
+    }
+
+    await expect(secondCallPromise).resolves.toStrictEqual({
+      message: "second",
+    });
   });
 });

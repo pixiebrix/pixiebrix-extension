@@ -420,24 +420,24 @@ export class WithCache extends TransformerABC {
       );
     }
 
-    if (isCacheVariableState(currentVariable) && currentVariable.isFetching) {
-      return this.waitForSettledRequest({
-        requestId: currentVariable.requestId,
-        args,
-        options,
-      });
-    }
+    if (!forceFetch && isCacheVariableState(currentVariable)) {
+      if (currentVariable.isFetching) {
+        return this.waitForSettledRequest({
+          requestId: currentVariable.requestId,
+          args,
+          options,
+        });
+      }
 
-    if (
-      !forceFetch &&
-      isCacheVariableState(currentVariable) &&
-      // Don't throw settled exceptions/rejections
-      currentVariable.isSuccess &&
-      // Only refetch if the cached value is still valid w.r.t. the TTL
-      (currentVariable.expiresAt == null ||
-        Date.now() < currentVariable.expiresAt)
-    ) {
-      return currentVariable.data;
+      if (
+        // Don't throw settled exceptions/rejections
+        currentVariable.isSuccess &&
+        // Only refetch if the cached value is still valid w.r.t. the TTL
+        (currentVariable.expiresAt == null ||
+          Date.now() < currentVariable.expiresAt)
+      ) {
+        return currentVariable.data;
+      }
     }
 
     return this.generateValue({
