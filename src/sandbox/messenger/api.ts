@@ -45,11 +45,9 @@ const loadSandbox = pMemoize(async () =>
 
 const getSandbox = memoizeUntilSettled(async () => {
   const sandbox = await loadSandbox();
-  const isSandboxWrapperInDom = document.querySelector(
-    `#${SANDBOX_SHADOW_ROOT_ID}`,
-  );
+  const sandboxWrapper = document.querySelector(`#${SANDBOX_SHADOW_ROOT_ID}`);
 
-  if (!isSandboxWrapperInDom) {
+  if (!sandboxWrapper) {
     pMemoizeClear(loadSandbox);
     throw new IframeInjectionError("Sandbox wrapper was removed from the DOM.");
   }
@@ -66,6 +64,7 @@ const getSandbox = memoizeUntilSettled(async () => {
       isSpecificError(error, SandboxTimeoutError)
     ) {
       pMemoizeClear(loadSandbox);
+      sandboxWrapper.remove();
       throw error;
     }
 
