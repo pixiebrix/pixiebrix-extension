@@ -36,6 +36,7 @@ import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { CancelError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
+import { sleep } from "@/utils/timeUtils";
 
 const withCacheBrick = new WithCache();
 
@@ -47,10 +48,12 @@ function makeCachePipeline(
     message,
     stateKey,
     forceFetch = false,
+    ttl = null,
   }: {
     message: string;
     forceFetch?: boolean;
     stateKey: string | Expression;
+    ttl?: number | null;
   },
 ) {
   return {
@@ -66,6 +69,7 @@ function makeCachePipeline(
       ]),
       stateKey,
       forceFetch,
+      ttl,
     },
   };
 }
@@ -179,6 +183,53 @@ describe("WithAsyncModVariable", () => {
 
     await expect(firstCallPromise).resolves.toStrictEqual(target);
     await expect(secondCallPromise).resolves.toStrictEqual(target);
+  });
+
+  it("respects TTL", async () => {
+    const firstCallPipeline = makeCachePipeline(echoBrick, {
+      stateKey: STATE_KEY,
+      message: "first",
+      // Zero seconds to avoid needing to mock timers
+      ttl: 0,
+    });
+
+    const firstCallPromise = reducePipeline(
+      firstCallPipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    // Wait for the initial fetching state to be set
+    await tick();
+
+    await sleep(1);
+
+    const secondCallPipeline = makeCachePipeline(asyncEchoBrick, {
+      stateKey: STATE_KEY,
+      message: "second",
+    });
+
+    const secondCallPromise = reducePipeline(
+      secondCallPipeline,
+      simpleInput({}),
+      reduceOptionsFactory("v3", { modComponentRef }),
+    );
+
+    // Wait for 2nd promise to replace the request id
+    await tick();
+
+    deferred.resolve();
+
+    try {
+      await firstCallPromise;
+    } catch (error) {
+      expect(error).toBeInstanceOf(ContextError);
+      expect((error as Error).cause).toBeInstanceOf(CancelError);
+    }
+
+    await expect(secondCallPromise).resolves.toStrictEqual({
+      message: "second",
+    });
   });
 
   it("memoizes error", async () => {
