@@ -16,7 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
@@ -51,7 +51,6 @@ import {
   DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
   DELETE_STARTER_BRICK_MODAL_PROPS,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
-import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { selectIsModComponentSavedOnCloud } from "@/store/modComponents/modComponentSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -106,7 +105,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   }, []);
 
   const resetModComponent = useResetModComponent();
-  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
 
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
@@ -121,15 +119,16 @@ const DraftModComponentListItem: React.FunctionComponent<
       showConfirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
     });
 
-  const onSave = async () => {
-    if (modComponentFormState.modMetadata) {
-      await saveMod(modComponentFormState.modMetadata?.id);
-    } else {
-      dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
+  const onSave = useMemo(() => {
+    if (modComponentFormState.modMetadata == null) {
+      return async () => {
+        dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
+      };
     }
-  };
 
-  const isSaving = modComponentFormState.modMetadata ? isSavingMod : false;
+    // eslint-disable-next-line unicorn/no-useless-undefined -- Code clarity, implicit returns are bad
+    return undefined;
+  }, [dispatch, modComponentFormState.modMetadata]);
 
   const onReset = async () =>
     resetModComponent({ modComponentId: modComponentFormState.uuid });
@@ -199,32 +198,30 @@ const DraftModComponentListItem: React.FunctionComponent<
           <UnsavedChangesIcon />
         </span>
       )}
-      {isActive && (
-        <ActionMenu
-          labelRoot={`${getLabel(modComponentFormState)}`}
-          onSave={onSave}
-          onDelete={onDelete}
-          onDeactivate={onDeactivate}
-          onClone={onClone}
-          onReset={modComponentFormState.installed ? onReset : undefined}
-          isDirty={isDirty}
-          onAddToMod={
-            modComponentFormState.modMetadata
-              ? undefined
-              : async () => {
-                  dispatch(actions.showAddToModModal());
-                }
-          }
-          onRemoveFromMod={
-            modComponentFormState.modMetadata
-              ? async () => {
-                  dispatch(actions.showRemoveFromModModal());
-                }
-              : undefined
-          }
-          disabled={isSaving}
-        />
-      )}
+      <ActionMenu
+        isActive={isActive}
+        labelRoot={`${getLabel(modComponentFormState)}`}
+        onSave={onSave}
+        onDelete={onDelete}
+        onDeactivate={onDeactivate}
+        onClone={onClone}
+        onReset={modComponentFormState.installed ? onReset : undefined}
+        isDirty={isDirty}
+        onAddToMod={
+          modComponentFormState.modMetadata
+            ? undefined
+            : async () => {
+                dispatch(actions.showAddToModModal());
+              }
+        }
+        onRemoveFromMod={
+          modComponentFormState.modMetadata
+            ? async () => {
+                dispatch(actions.showRemoveFromModModal());
+              }
+            : undefined
+        }
+      />
     </ListGroup.Item>
   );
 };
