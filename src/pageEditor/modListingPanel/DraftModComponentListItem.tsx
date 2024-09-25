@@ -122,13 +122,14 @@ const DraftModComponentListItem: React.FunctionComponent<
   const onSave = useMemo(() => {
     if (modComponentFormState.modMetadata == null) {
       return async () => {
+        dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));
         dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
       };
     }
 
     // eslint-disable-next-line unicorn/no-useless-undefined -- Code clarity, implicit returns are bad
     return undefined;
-  }, [dispatch, modComponentFormState.modMetadata]);
+  }, [dispatch, modComponentFormState.modMetadata, modComponentFormState.uuid]);
 
   const onReset = async () =>
     resetModComponent({ modComponentId: modComponentFormState.uuid });
@@ -193,11 +194,13 @@ const DraftModComponentListItem: React.FunctionComponent<
           <NotAvailableIcon />
         </span>
       )}
-      {isDirty && !isActive && (
-        <span className={cx(styles.icon, styles.unsaved, "text-danger")}>
-          <UnsavedChangesIcon />
-        </span>
-      )}
+      {isDirty &&
+        // Don't show the dirty icon and save button at the same time
+        !onSave && (
+          <span className={cx(styles.icon, styles.unsaved, "text-danger")}>
+            <UnsavedChangesIcon />
+          </span>
+        )}
       <ActionMenu
         isActive={isActive}
         labelRoot={`${getLabel(modComponentFormState)}`}
