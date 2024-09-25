@@ -317,7 +317,8 @@ export class WithCache extends TransformerABC {
       // Initialize the mod variable.
       await setModVariable({
         requestId,
-        expiresAt,
+        // Don't set expiresAt until the value is set
+        expiresAt: null,
         isLoading: true,
         isFetching: true,
         isSuccess: false,
@@ -332,7 +333,6 @@ export class WithCache extends TransformerABC {
         // the state could have been deleted since the getState call. Therefore, pass a full state object
         ...currentVariable,
         requestId,
-        expiresAt,
         isFetching: true,
         currentData: null,
       });
@@ -379,6 +379,7 @@ export class WithCache extends TransformerABC {
       data,
       requestId,
       error: null,
+      // Record expiresAt (if provided) when the value is set
       expiresAt,
     });
 
