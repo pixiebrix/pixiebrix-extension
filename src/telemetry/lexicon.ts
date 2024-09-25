@@ -68,6 +68,12 @@ export const lexicon: LexiconMap = {
       "the integration via the '+ Add new' option.",
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
+  AUTH_WIDGET_REFRESH: {
+    description:
+      "Reported on the mod activation page in the Extension Console when a user clicks the 'Refresh' button to " +
+      "refresh the list of available integrations.",
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
   BRICK_ADD: {
     description:
       'Triggered when a user successfully adds a brick to a Mod in the Page Editor via clicking "Add" or "Add brick" in the Add Brick modal.',
