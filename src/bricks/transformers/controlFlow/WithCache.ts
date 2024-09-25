@@ -53,7 +53,7 @@ type CacheVariableState = {
   isError: boolean;
   isSuccess: boolean;
   error: JsonObject | null;
-  data: unknown;
+  data: JsonObject;
   expiresAt: number | null;
 };
 
@@ -415,7 +415,9 @@ export class WithCache extends TransformerABC {
     const currentVariable = (currentState[stateKey] ?? {}) as JsonObject;
 
     if (!isEmpty(currentVariable) && !isCacheVariableState(currentVariable)) {
-      throw new BusinessError("Invalid cache shape");
+      throw new BusinessError(
+        "Invalid cache shape. Cache value was overwritten.",
+      );
     }
 
     if (isCacheVariableState(currentVariable) && currentVariable.isFetching) {
@@ -429,11 +431,12 @@ export class WithCache extends TransformerABC {
     if (
       !forceFetch &&
       isCacheVariableState(currentVariable) &&
+      // Don't throw settled exceptions/rejections
       currentVariable.isSuccess &&
+      // Only refetch if the cached value is still valid w.r.t. the TTL
       (currentVariable.expiresAt == null ||
         Date.now() < currentVariable.expiresAt)
     ) {
-      // Cache hit. Don't return settled exceptions
       return currentVariable.data;
     }
 
