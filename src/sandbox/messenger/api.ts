@@ -61,7 +61,10 @@ const getSandbox = memoizeUntilSettled(async () => {
       type: "SANDBOX_PING",
     });
   } catch (error) {
-    if (isSpecificError(error, TimeoutError)) {
+    if (
+      isSpecificError(error, TimeoutError) ||
+      isSpecificError(error, SandboxTimeoutError)
+    ) {
       pMemoizeClear(loadSandbox);
       throw error;
     }
