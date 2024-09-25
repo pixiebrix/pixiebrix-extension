@@ -70,8 +70,21 @@ export const lexicon: LexiconMap = {
   },
   AUTH_WIDGET_REFRESH: {
     description:
-      "Reported on the mod activation page in the Extension Console when a user clicks the 'Refresh' button to " +
+      "Reported on the mod activation page in the Extension Console when a user clicks the integration 'Refresh' button to " +
       "refresh the list of available integrations.",
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
+  AUTH_WIDGET_SHOW_ADD_NEW: {
+    description:
+      "Reported on the mod activation page in the Extension Console when a user selects the '+ Add new' option to " +
+      "create a new integration configuration for the mod. A modal should appear for the user to create the configuration," +
+      "but this event is triggered specifically when '+ Add new' option is clicked.",
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
+  AUTH_WIDGET_HIDE_ADD_NEW: {
+    description:
+      "Reported on the mod activation page in the Extension Console when a user closes the modal for creating a new " +
+      "integration configuration for the mod (either by clicking 'Cancel' or 'X' in the modal).",
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   BRICK_ADD: {
