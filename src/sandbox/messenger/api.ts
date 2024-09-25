@@ -63,8 +63,11 @@ const getSandbox = memoizeUntilSettled(async () => {
       isSpecificError(error, TimeoutError) ||
       isSpecificError(error, SandboxTimeoutError)
     ) {
-      pMemoizeClear(loadSandbox);
+      // It's possible that the sandbox has errored and is no longer responding to messages.
+      // In this case, we should remove the sandbox to retry injecting a new one for future
+      // messages.
       sandboxWrapper.remove();
+      pMemoizeClear(loadSandbox);
       throw error;
     }
 
