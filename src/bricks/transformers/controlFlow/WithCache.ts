@@ -125,13 +125,13 @@ export class WithCache extends TransformerABC {
         title: "Time-to-Live (s)",
         type: "integer",
         description:
-          "The time-to-live for the cached value in seconds. Expiry is calculated from the start of the run.",
+          "The time-to-live for the cached value in seconds. If not provided, the value will not expire. Expiry is calculated from the start of the run.",
       },
       forceFetch: {
         title: "Force Fetch",
         type: "boolean",
         description:
-          "If true, the cache will be ignored and the body always be run.",
+          "If toggled on, the cache will be ignored and the body always be run.",
       },
     },
     ["body", "stateKey"],
@@ -245,7 +245,6 @@ export class WithCache extends TransformerABC {
         }
 
         if (variableUpdate.requestId !== requestId) {
-          // XXX: should this be a CancelError?
           deferredValuePromise.reject(
             new CancelError("Value generation was superseded"),
           );
