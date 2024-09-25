@@ -120,15 +120,18 @@ test("brick actions panel behavior", async ({
     await brickActionsPanel.copyActiveBrick();
 
     // Switch to the other mod, and select its starter brick
-    await pageEditorPage.modListingPanel
-      .getModListItemByName("Simple Sidebar Panel")
-      .select();
+    const otherModListItem =
+      pageEditorPage.modListingPanel.getModListItemByName(
+        "Simple Sidebar Panel",
+      );
+    await otherModListItem.select();
+
     await pageEditorPage.modListingPanel
       .getModStarterBrick("Simple Sidebar Panel", "Simple Sidebar Panel")
       .select();
-
     await brickActionsPanel.pasteBrick(1);
-    await modListItem.select();
+
+    await otherModListItem.select();
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId: targetModId,

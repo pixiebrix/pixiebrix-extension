@@ -59,7 +59,7 @@ Index: brick-copied-to-another-mod
            rootMode: document
 +        - config:
 +            value: !nunjucks ''
-+            variableName: !nunjucks ''
++            variableName: null
 +          id: '@pixiebrix/state/assign'
 +          label: Assign Mod Var Brick 123
 +          root: null
