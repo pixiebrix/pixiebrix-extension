@@ -30,13 +30,14 @@
  * Relevant discussion: https://github.com/w3c/webextensions/issues/78
  */
 
-import pTimeout from "p-timeout";
+import pTimeout, { TimeoutError } from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type JsonValue } from "type-fest";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type AbortSignalAsOptions } from "@/utils/promiseUtils";
 import { uuidv4 } from "@/types/helpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 import { type UUID } from "@/types/stringTypes";
 
 const TIMEOUT_MS = 5000;
@@ -98,6 +99,22 @@ function getPendingMessageMetadata(): Array<{
   }));
 }
 
+export class SandboxTimeoutError extends Error {
+  override name = "SandboxTimeoutError";
+
+  constructor(
+    message: string,
+    public readonly pendingMessages: Array<{
+      type: string;
+      payloadSize: number;
+      elapsedTime: number;
+    }>,
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+  }
+}
+
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage<TReturn extends Payload = Payload>({
   type,
@@ -141,6 +158,16 @@ export default async function postMessage<TReturn extends Payload = Payload>({
     removePendingMessageMetadata(messageKey);
     return result;
   } catch (error) {
+    if (isSpecificError(error, TimeoutError)) {
+      throw new SandboxTimeoutError(
+        error.message,
+        getPendingMessageMetadata(),
+        {
+          cause: error,
+        },
+      );
+    }
+
     removePendingMessageMetadata(messageKey);
     throw error;
   }

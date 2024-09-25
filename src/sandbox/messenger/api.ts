@@ -21,7 +21,10 @@ import injectIframe, {
   hiddenIframeStyle,
   IframeInjectionError,
 } from "@/utils/injectIframe";
-import postMessage, { type Payload } from "@/sandbox/postMessage";
+import postMessage, {
+  type Payload,
+  SandboxTimeoutError,
+} from "@/sandbox/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import pRetry from "p-retry";
@@ -79,7 +82,8 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         retries: MAX_RETRIES,
         shouldRetry: (error) =>
           isSpecificError(error, TimeoutError) ||
-          isSpecificError(error, IframeInjectionError),
+          isSpecificError(error, IframeInjectionError) ||
+          isSpecificError(error, SandboxTimeoutError),
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
@@ -90,7 +94,8 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
   } catch (error) {
     if (
       isSpecificError(error, TimeoutError) ||
-      isSpecificError(error, IframeInjectionError)
+      isSpecificError(error, IframeInjectionError) ||
+      isSpecificError(error, SandboxTimeoutError)
     ) {
       throw new Error(
         `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
