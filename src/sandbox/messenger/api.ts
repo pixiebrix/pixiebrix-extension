@@ -49,15 +49,24 @@ const getSandbox = memoizeUntilSettled(async () => {
     `#${SANDBOX_SHADOW_ROOT_ID}`,
   );
 
-  if (isSandboxWrapperInDom) {
+  if (!isSandboxWrapperInDom) {
+    pMemoizeClear(loadSandbox);
+    throw new IframeInjectionError("Sandbox wrapper was removed from the DOM.");
+  }
+
+  try {
     await postMessage({
       recipient: sandbox.contentWindow,
       payload: "ping",
       type: "SANDBOX_PING",
     });
-  } else {
-    pMemoizeClear(loadSandbox);
-    throw new IframeInjectionError("Sandbox iframe was removed from the DOM.");
+  } catch (error) {
+    if (isSpecificError(error, TimeoutError)) {
+      pMemoizeClear(loadSandbox);
+      throw error;
+    }
+
+    throw error;
   }
 
   return sandbox.contentWindow;
