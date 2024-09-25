@@ -36,6 +36,8 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type JsonValue } from "type-fest";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type AbortSignalAsOptions } from "@/utils/promiseUtils";
+import { uuidv4 } from "@/types/helpers";
+import { type UUID } from "@/types/stringTypes";
 
 const TIMEOUT_MS = 5000;
 
@@ -56,6 +58,8 @@ export interface PostMessageInfo {
   recipient: Window;
 }
 
+type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
+
 /**
  * Metadata about a pending message that is waiting for a response from the sandbox. Introduced to assist in
  * debugging issues with sandbox messaging, for use with error telemetry.
@@ -70,7 +74,29 @@ type PendingMessageMetadata = {
 
 const pendingMessageMetadataMap = new Map<string, PendingMessageMetadata>();
 
-type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
+function addPendingMessageMetadata(type: string, payload: Payload): UUID {
+  const id = uuidv4();
+  const payloadSize = JSON.stringify(payload).length;
+  const metadata = { id, type, payloadSize, timestamp: Date.now() };
+  pendingMessageMetadataMap.set(id, metadata);
+  return id;
+}
+
+function removePendingMessageMetadata(id: UUID): void {
+  pendingMessageMetadataMap.delete(id);
+}
+
+function getPendingMessageMetadata(): Array<{
+  type: string;
+  payloadSize: number;
+  elapsedTime: number;
+}> {
+  return [...pendingMessageMetadataMap.values()].map((message) => ({
+    type: message.type,
+    payloadSize: message.payloadSize,
+    elapsedTime: Date.now() - message.timestamp,
+  }));
+}
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage<TReturn extends Payload = Payload>({
@@ -104,12 +130,20 @@ export default async function postMessage<TReturn extends Payload = Payload>({
     recipient.postMessage(packet, "*", [privateChannel.port2]);
   });
 
-  return pTimeout(promise, {
-    milliseconds: TIMEOUT_MS,
-    message: `Message ${type} did not receive a response within ${
-      TIMEOUT_MS / 1000
-    } seconds`,
-  });
+  const messageKey = addPendingMessageMetadata(type, payload);
+  try {
+    const result = await pTimeout(promise, {
+      milliseconds: TIMEOUT_MS,
+      message: `Message ${type} did not receive a response within ${
+        TIMEOUT_MS / 1000
+      } seconds`,
+    });
+    removePendingMessageMetadata(messageKey);
+    return result;
+  } catch (error) {
+    removePendingMessageMetadata(messageKey);
+    throw error;
+  }
 }
 
 export function addPostMessageListener(
