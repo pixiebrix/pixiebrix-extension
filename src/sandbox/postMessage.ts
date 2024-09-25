@@ -33,15 +33,14 @@
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
-import { assertNotNullish } from "./nullishUtils";
 import { type JsonValue } from "type-fest";
-import { type AbortSignalAsOptions } from "./promiseUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type AbortSignalAsOptions } from "@/utils/promiseUtils";
 
 const TIMEOUT_MS = 5000;
 
 export type Payload = JsonValue | void;
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
 
 export type RequestPacket = {
@@ -56,6 +55,20 @@ export interface PostMessageInfo {
   payload?: Payload;
   recipient: Window;
 }
+
+/**
+ * Metadata about a pending message that is waiting for a response from the sandbox. Introduced to assist in
+ * debugging issues with sandbox messaging, for use with error telemetry.
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/9150
+ */
+type PendingMessageMetadata = {
+  id: string;
+  type: string;
+  payloadSize: number;
+  timestamp: number;
+};
+
+const pendingMessageMetadataMap = new Map<string, PendingMessageMetadata>();
 
 type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
 

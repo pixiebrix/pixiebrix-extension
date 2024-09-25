@@ -21,7 +21,7 @@ import injectIframe, {
   hiddenIframeStyle,
   IframeInjectionError,
 } from "@/utils/injectIframe";
-import postMessage, { type Payload } from "@/utils/postMessage";
+import postMessage, { type Payload } from "@/sandbox/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import pRetry from "p-retry";
