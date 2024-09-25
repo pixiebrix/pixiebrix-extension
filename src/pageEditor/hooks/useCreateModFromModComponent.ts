@@ -122,6 +122,8 @@ function useCreateModFromModComponent(
             await Promise.all(removePromises);
           }
 
+          dispatch(editorActions.checkActiveModComponentAvailability());
+
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
             modId: newModDefinition.metadata.id,
           });
