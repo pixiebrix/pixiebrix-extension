@@ -22,7 +22,10 @@ import type { Timestamp, UUID } from "@/types/stringTypes";
 import type { DeploymentMetadata } from "@/types/deploymentTypes";
 import type { Tagged } from "type-fest";
 
-type ModInstanceId = Tagged<UUID, "ModInstanceId">;
+/**
+ * A unique identifier for a mod instance activation. Tagged to prevent mixing with mod component id.
+ */
+export type ModInstanceId = Tagged<UUID, "ModInstanceId">;
 
 /**
  * An activated mod instance.

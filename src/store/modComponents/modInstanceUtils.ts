@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ModInstance } from "@/types/modInstanceTypes";
+import type { ModInstance, ModInstanceId } from "@/types/modInstanceTypes";
 import type {
   ActivatedModComponent,
   ModComponentBase,
@@ -32,6 +32,10 @@ import { createPrivateSharing } from "@/utils/registryUtils";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
+
+function generateModInstanceId(): ModInstanceId {
+  return uuidv4() as ModInstanceId;
+}
 
 /**
  * Returns true if mod instance is defined and is associated with a personal deployment.
@@ -70,7 +74,7 @@ export function mapActivatedModComponentsToModInstance(
   }
 
   return {
-    id: uuidv4(),
+    id: generateModInstanceId(),
     modComponentIds: modComponents.map(({ id }) => id),
     deploymentMetadata: firstComponent._deployment,
     optionsArgs: collectModOptions(modComponents),
