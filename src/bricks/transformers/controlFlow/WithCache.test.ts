@@ -85,7 +85,7 @@ async function expectPageState(expectedState: UnknownObject): Promise<void> {
   expect(pageState).toStrictEqual(expectedState);
 }
 
-describe("WithAsyncModVariable", () => {
+describe("WithCache", () => {
   let deferred: DeferredPromise<void>;
   let asyncEchoBrick: DeferredEchoBrick;
 
