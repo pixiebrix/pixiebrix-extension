@@ -20,6 +20,9 @@ import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import type { Timestamp, UUID } from "@/types/stringTypes";
 import type { DeploymentMetadata } from "@/types/deploymentTypes";
+import type { Tagged } from "type-fest";
+
+type ModInstanceId = Tagged<UUID, "ModInstanceId">;
 
 /**
  * An activated mod instance.
@@ -31,7 +34,7 @@ export type ModInstance = {
    *
    * NOTE: at this time, a device can only have one instance of a mod active at a time.
    */
-  id: UUID;
+  id: ModInstanceId;
 
   /**
    * Mod component instance ids. Array order corresponds to the order of the ModDefinition.extensionPoints.

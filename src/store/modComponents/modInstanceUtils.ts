@@ -65,6 +65,10 @@ export function mapActivatedModComponentsToModInstance(
   const modMetadata = firstComponent._recipe;
   assertNotNullish(modMetadata, "Mod metadata is required");
 
+  if (modComponents.some((x) => x._recipe?.id !== modMetadata.id)) {
+    throw new Error("Mod id mismatch");
+  }
+
   return {
     id: uuidv4(),
     modComponentIds: modComponents.map(({ id }) => id),
