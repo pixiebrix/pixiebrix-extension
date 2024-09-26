@@ -31,8 +31,9 @@ import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 import { getPlatform } from "@/platform/platformContext";
+import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -71,13 +72,7 @@ describe("WithAsyncModVariable", () => {
   let asyncEchoBrick: DeferredEchoBrick;
 
   beforeEach(async () => {
-    // Reset the page state to avoid interference between tests
-    await getPlatform().state.setState({
-      namespace: StateNamespaces.MOD,
-      data: {},
-      modComponentRef,
-      mergeStrategy: MergeStrategies.REPLACE,
-    });
+    await TEST_resetStateController();
 
     // Most tests just require a single brick instance for testing
     deferred = pDefer();

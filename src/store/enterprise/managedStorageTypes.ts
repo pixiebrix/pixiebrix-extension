@@ -69,7 +69,7 @@ export type ManagedStorageState = {
    */
   deploymentKey?: DeploymentKey;
   /**
-   * Disable the browser warning for non-Chrome browsers, e.g., Microsoft Edge
+   * Disable the browser warning for non-Chrome browsers, e.g., Opera, Brave, etc.
    * @since 1.7.36
    */
   disableBrowserWarning?: boolean;

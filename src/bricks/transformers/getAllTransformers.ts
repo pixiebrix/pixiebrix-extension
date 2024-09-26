@@ -61,6 +61,7 @@ import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
 import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransformer";
 import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";
 import RunMetadataTransformer from "@/bricks/transformers/RunMetadataTransformer";
+import { WithCache } from "@/bricks/transformers/controlFlow/WithCache";
 
 function getAllTransformers(
   registry: RegistryProtocol<RegistryId, Brick>,
@@ -115,6 +116,7 @@ function getAllTransformers(
     new Run(),
     new MapValues(),
     new WithAsyncModVariable(),
+    new WithCache(),
 
     // Render Pipelines
     new DisplayTemporaryInfo(),

@@ -128,7 +128,8 @@ export function shouldIgnoreError(error: Error): boolean {
  */
 export async function reportToErrorService(
   error: Error,
-  flatContext: MessageContext,
+  flatContext: MessageContext &
+    Required<Pick<MessageContext, "modComponentId">>,
   message: string,
 ): Promise<void> {
   expectContext(
@@ -138,12 +139,6 @@ export async function reportToErrorService(
   );
 
   if (await flagOn(FeatureFlags.ERROR_SERVICE_DISABLE_REPORT)) {
-    return;
-  }
-
-  if (flatContext.modComponentId == null) {
-    // Only report errors that occurred within a user-defined extension/blueprint. Other errors only go to Application error telemetry.
-    // (They're problems with our software.)
     return;
   }
 
