@@ -66,12 +66,9 @@ export function mapActivatedModComponentsToModInstance(
   const firstComponent = modComponents[0];
   assertNotNullish(firstComponent, "activatedModComponents is empty");
 
+  // Mod registry id consistency is checked when mapping over the components
   const modMetadata = firstComponent._recipe;
   assertNotNullish(modMetadata, "Mod metadata is required");
-
-  if (modComponents.some((x) => x._recipe?.id !== modMetadata.id)) {
-    throw new Error("Mod id mismatch");
-  }
 
   return {
     id: generateModInstanceId(),
