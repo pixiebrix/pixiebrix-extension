@@ -35,13 +35,27 @@ import { isSpecificError } from "@/errors/errorHelpers";
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
 const MAX_RETRIES = 3;
 
-const loadSandbox = pMemoize(async () =>
-  injectIframe(
-    chrome.runtime.getURL("sandbox.html"),
-    hiddenIframeStyle,
-    SANDBOX_SHADOW_ROOT_ID,
-  ),
-);
+const loadSandbox = pMemoize(async () => {
+  try {
+    return await injectIframe(
+      chrome.runtime.getURL("sandbox.html"),
+      hiddenIframeStyle,
+      SANDBOX_SHADOW_ROOT_ID,
+    );
+  } catch (error) {
+    if (isSpecificError(error, TimeoutError)) {
+      // Implicitly retry sandbox injection by removing the iframe if the load timeout occurs
+      const sandboxWrapper = document.querySelector(
+        `#${SANDBOX_SHADOW_ROOT_ID}`,
+      );
+      if (sandboxWrapper) {
+        sandboxWrapper.remove();
+      }
+    }
+
+    throw error;
+  }
+});
 
 const getSandbox = memoizeUntilSettled(async () => {
   const sandbox = await loadSandbox();
