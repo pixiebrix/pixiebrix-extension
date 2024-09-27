@@ -79,6 +79,12 @@ type ModSaver = {
   isSaving: boolean;
 };
 
+/**
+ * Returns a callback to save a mod by id, accounting for changed components,
+ * activation options definitions, and mod metadata. Also validates the saved
+ * mod and throws errors for various bad data states. The callback returns a
+ * boolean indicating whether the save was successful.
+ */
 function useSaveMod(): ModSaver {
   const dispatch = useDispatch();
   const upsertModComponentFormState = useUpsertModComponentFormState();

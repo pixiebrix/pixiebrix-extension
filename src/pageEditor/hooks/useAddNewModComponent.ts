@@ -39,6 +39,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
@@ -56,34 +57,30 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   );
 
   const getInitialModComponentFormState = useCallback(
-    async (
-      adapter: ModComponentFormStateAdapter,
-    ): Promise<ModComponentFormState> => {
+    async ({
+      starterBrickType,
+      selectNativeElement,
+      fromNativeElement,
+    }: ModComponentFormStateAdapter): Promise<ModComponentFormState> => {
       let element = null;
-      if (adapter.selectNativeElement) {
-        setInsertingStarterBrickType(adapter.starterBrickType);
-        element = await adapter.selectNativeElement(
-          inspectedTab,
-          suggestElements,
-        );
+      if (selectNativeElement) {
+        setInsertingStarterBrickType(starterBrickType);
+        element = await selectNativeElement(inspectedTab, suggestElements);
         setInsertingStarterBrickType(null);
       }
 
       const url = await getCurrentInspectedURL();
       const metadata = internalStarterBrickMetaFactory();
-      const initialFormState = adapter.fromNativeElement(
-        url,
-        metadata,
-        element,
-      );
+      const initialFormState = fromNativeElement(url, metadata, element);
 
-      initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
-        adapter.starterBrickType,
-      );
+      initialFormState.modComponent.brickPipeline =
+        getExampleBrickPipeline(starterBrickType);
 
-      if (modMetadata) {
-        initialFormState.modMetadata = modMetadata;
-      }
+      initialFormState.modMetadata =
+        modMetadata ??
+        createNewUnsavedModMetadata({
+          modName: initialFormState.label,
+        });
 
       return initialFormState as ModComponentFormState;
     },

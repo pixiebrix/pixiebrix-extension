@@ -30,7 +30,7 @@ import useFlags from "@/hooks/useFlags";
 import { selectIsEditorSidebarExpanded } from "@/pageEditor/store/editor/editorSelectors";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
-import AddStarterBrickButton from "./AddStarterBrickButton";
+import NewModButton from "./NewModButton";
 import ModComponents from "./ModComponents";
 import { FeatureFlags } from "@/auth/featureFlags";
 
@@ -81,7 +81,7 @@ const ModListingPanel: React.VFC = () => {
           in={isExpanded}
           className={styles.horizontalActions}
         >
-          <AddStarterBrickButton />
+          <NewModButton />
           {showDeveloperUI && <ReloadButton />}
         </CollapsedElement>
         <CollapsedElement
