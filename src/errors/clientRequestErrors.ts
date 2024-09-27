@@ -16,7 +16,7 @@
  */
 
 import { BusinessError } from "@/errors/businessErrors";
-import { type SerializableAxiosError } from "@/errors/networkErrorHelpers";
+import { type AxiosError } from "axios";
 
 /**
  * @file ONLY KEEP ACTUAL ERRORS IN HERE.
@@ -30,9 +30,9 @@ import { type SerializableAxiosError } from "@/errors/networkErrorHelpers";
 export class ClientRequestError extends BusinessError {
   override name = "ClientRequestError";
   // Specialize the cause type
-  override readonly cause: SerializableAxiosError;
+  override readonly cause: AxiosError;
 
-  constructor(message: string, options: { cause: SerializableAxiosError }) {
+  constructor(message: string, options: { cause: AxiosError }) {
     super(message, options);
     // This assignment seems to be required in Chrome 102 to ensure the cause is serialized by serialize-error
     // https://github.com/pixiebrix/pixiebrix-extension/issues/3613

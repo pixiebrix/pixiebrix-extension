@@ -35,8 +35,7 @@ import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefiniti
 
 let starterBrickCount = 0;
 function newStarterBrickId(): InnerDefinitionRef {
-  // eslint-disable-next-line no-constant-binary-expression -- false positive
-  return `starterBrick${starterBrickCount++ ?? ""}` as InnerDefinitionRef;
+  return `starterBrick${starterBrickCount++}` as InnerDefinitionRef;
 }
 
 describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {

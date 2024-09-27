@@ -58,6 +58,8 @@ const DB_VERSION_NUMBER = 4;
  * impacted due to the number of entries.
  */
 const MAX_LOG_RECORDS = 1250;
+// How many log entries to delete at a time with each transaction.
+const SWEEP_LOGS_BATCH_SIZE = 10;
 
 /**
  * Amount to clear old logs, as a ratio of the maximum number of logs.
@@ -465,6 +467,11 @@ export async function reportToApplicationErrorTelemetry(
   } satisfies RecordErrorMessage);
 }
 
+export type ContextWithMod = MessageContext &
+  Required<Pick<MessageContext, "modComponentId">>;
+const isContextWithMod = (context: MessageContext): context is ContextWithMod =>
+  context.modComponentId != null;
+
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
 export async function recordError(
   this: MessengerMeta, // Enforce usage via Messenger only
@@ -485,19 +492,27 @@ export async function recordError(
     const errorMessage = getErrorMessage(error);
     const flatContext = flattenContext(error, context);
 
+    // Only record entries that occurred within a user-defined extension/blueprint.
+    // Other errors only go to Application error telemetry. (They're problems with our software.)
+    const reportModErrorPromises = isContextWithMod(flatContext)
+      ? [
+          reportToErrorService(error, flatContext, errorMessage),
+          appendEntry({
+            uuid: uuidv4(),
+            timestamp: Date.now().toString(),
+            level: "error",
+            context: flatContext,
+            message: errorMessage,
+            data,
+            // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
+            error: serializedError,
+          }),
+        ]
+      : [];
+
     await Promise.all([
       reportToApplicationErrorTelemetry(error, flatContext, errorMessage),
-      reportToErrorService(error, flatContext, errorMessage),
-      appendEntry({
-        uuid: uuidv4(),
-        timestamp: Date.now().toString(),
-        level: "error",
-        context: flatContext,
-        message: errorMessage,
-        data,
-        // Ensure the object is fully serialized. Required because it will be stored in IDB and flow through the Redux state
-        error: serializedError,
-      }),
+      ...reportModErrorPromises,
     ]);
   } catch (recordErrorError) {
     console.error("An error occurred while recording another error", {
@@ -571,7 +586,7 @@ export async function clearModComponentDebugLogs(
       }
     }
   }, IDB_OPERATION.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
-    // Swallow error because we've reported it to application error telemetry and
+    // Swallow error because we've reported it to application error telemetry, and
     // we don't want to interrupt the execution of mod pipeline
   });
 }
@@ -584,11 +599,6 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  const abortController = new AbortController();
-  // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
-  // of blocking other db transactions.
-  setTimeout(abortController.abort, 30_000);
-
   await withLoggingDB(async (db) => {
     const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
@@ -600,25 +610,37 @@ async function _sweepLogs(): Promise<void> {
         numToDelete,
       });
 
-      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-        durability: "relaxed",
-      });
+      // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+      // of blocking other db transactions.
+      const abortController = new AbortController();
+      setTimeout(() => {
+        abortController.abort();
+      }, 10_000);
 
       let deletedCount = 0;
 
-      // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-      // This might mostly "just work" if the cursor happens to iterate in insertion order
-      for await (const cursor of tx.store) {
-        if (abortController.signal.aborted) {
-          console.warn("Log sweep aborted due to timeout");
-          break;
-        }
+      while (deletedCount < numToDelete) {
+        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+          durability: "relaxed",
+        });
 
-        await cursor.delete();
-        deletedCount++;
+        let processedBatchCount = 0;
+        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+        // This might mostly "just work" if the cursor happens to iterate in insertion order
+        // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
+        for await (const cursor of tx.store) {
+          if (abortController.signal.aborted) {
+            console.warn("Log sweep aborted due to timeout");
+            return;
+          }
 
-        if (deletedCount > numToDelete) {
-          return;
+          await cursor.delete();
+          deletedCount++;
+          processedBatchCount++;
+
+          if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
+            break;
+          }
         }
       }
     }

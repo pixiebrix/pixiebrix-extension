@@ -74,6 +74,7 @@ test.describe("Local Integrations Page", () => {
       localIntegrationsPage.getByText("controlRoomUrl is a required field"),
     ).toBeVisible();
 
+    await localIntegrationsPage.getByLabel("Username").click();
     await expect(localIntegrationsPage.getByLabel("Username")).toBeFocused();
 
     await page.keyboard.press("Tab");

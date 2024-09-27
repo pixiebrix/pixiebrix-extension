@@ -29,6 +29,8 @@ const knipConfig = {
     "end-to-end-tests/setup/unaffiliated.setup.ts",
     "end-to-end-tests/setup/utils.ts",
     "scripts/DiscardFilePlugin.mjs",
+    "scripts/uploadMixpanelLexicon.ts",
+    "src/telemetry/lexicon.ts",
   ],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
   ignore: [

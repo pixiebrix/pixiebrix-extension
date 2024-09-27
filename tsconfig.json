@@ -9,6 +9,7 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "outDir": null,
+    "declaration": false,
 
     // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "strictFunctionTypes": false,
