@@ -122,6 +122,7 @@ function useCreateModFromModComponent(
             await Promise.all(removePromises);
           }
 
+          // Check the new component availability, so it's added to available components if needed
           dispatch(editorActions.checkActiveModComponentAvailability());
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {

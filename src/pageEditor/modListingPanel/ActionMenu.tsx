@@ -137,7 +137,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
-      {onSave && (
+      {onSave != null && (
         <SaveButton
           ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
           onClick={onSave}
