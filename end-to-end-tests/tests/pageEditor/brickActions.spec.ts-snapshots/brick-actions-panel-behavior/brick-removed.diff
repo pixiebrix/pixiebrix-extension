@@ -2,7 +2,7 @@ Index: brick-removed
 ===================================================================
 --- brick-removed
 +++ brick-removed
-@@ -6,84 +6,78 @@
+@@ -6,85 +6,78 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -51,7 +51,7 @@ Index: brick-removed
 -          rootMode: document
 -        - config:
              value: !nunjucks ''
-+            variableName: null
+             variableName: !nunjucks ''
            id: '@pixiebrix/state/assign'
            label: Assign Mod Var Brick 123
            root: null

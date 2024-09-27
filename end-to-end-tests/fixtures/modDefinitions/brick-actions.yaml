@@ -61,6 +61,7 @@ extensionPoints:
           rootMode: document
           config:
             value: !nunjucks ""
+            variableName: !nunjucks ""
           root: null
           label: Assign Mod Var Brick 123
         - id: "@pixiebrix/browser/alert"
