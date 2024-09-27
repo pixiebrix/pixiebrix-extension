@@ -109,7 +109,9 @@ class FeatureFlagBrick extends BrickABC {
 
 export class DeferredEchoBrick extends BrickABC {
   static BRICK_ID = validateRegistryId("test/deferred");
+
   readonly promiseOrFactory: Promise<unknown> | (() => Promise<unknown>);
+
   constructor(promiseOrFactory: Promise<unknown> | (() => Promise<unknown>)) {
     super(DeferredEchoBrick.BRICK_ID, "Deferred Brick");
     this.promiseOrFactory = promiseOrFactory;
@@ -131,7 +133,6 @@ export class DeferredEchoBrick extends BrickABC {
       await this.promiseOrFactory();
     }
 
-    await this.promiseOrFactory;
     return { message };
   }
 }

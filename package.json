@@ -73,7 +73,7 @@
     "copy-text-to-clipboard": "^3.2.0",
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.6.8",
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "dompurify": "^3.1.6",
     "downloadjs": "^1.4.7",
     "exifreader": "^4.23.5",
