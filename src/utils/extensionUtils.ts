@@ -116,10 +116,8 @@ export async function getTabsWithAccess(): Promise<
   });
   return (
     tabs
-      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
-      The type isn't tight enough for tabs.query() */
-      .filter((tab) => isScriptableUrl(tab.url!))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- same as above
+      .filter((tab) => isScriptableUrl(tab.url))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The type isn't tight enough for tabs.query()
       .map((tab) => ({ tabId: tab.id!, url: tab.url! }))
   );
 }

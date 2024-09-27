@@ -659,7 +659,7 @@ describe("editor state migrations", () => {
       initial.brickPipelineUIStateById[componentId] =
         makeInitialBrickPipelineUIState();
 
-      initial.brickPipelineUIStateById[componentId]!.nodeUIStates[
+      initial.brickPipelineUIStateById[componentId].nodeUIStates[
         FOUNDATION_NODE_ID
       ]!.dataPanel = {
         // Exact shape doesn't matter here. Just testing that the migration resets the state
