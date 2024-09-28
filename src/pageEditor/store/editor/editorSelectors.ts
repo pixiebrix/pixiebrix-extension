@@ -549,3 +549,10 @@ export const selectActiveNodeEventData = createSelector(
     } satisfies ReportEventData;
   },
 );
+
+export const selectFirstModComponentFormStateForActiveMod = createSelector(
+  selectModComponentFormStates,
+  selectActiveModId,
+  (formState, activeModId) =>
+    formState.find((x) => x?.modMetadata?.id === activeModId),
+);

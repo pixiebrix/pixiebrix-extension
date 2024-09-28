@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectDirtyMetadataForModId,
+  selectFirstModComponentFormStateForActiveMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
@@ -28,7 +29,10 @@ import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./ModMetadataEditor.module.scss";
 import { object, string } from "yup";
-import { testIsSemVerString } from "@/types/helpers";
+import {
+  isInnerDefinitionRegistryId,
+  testIsSemVerString,
+} from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import Alert from "@/components/Alert";
@@ -105,6 +109,10 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   // Select a single mod component for the mod to check the activated version.
   // We rely on the assumption that every component in the mod has the same version.
   const modDefinitionComponent = useSelector(selectFirstModComponent);
+  // Mod metadata for new mods will only exist on the component form state
+  const firstComponentFormStateForMod = useSelector(
+    selectFirstModComponentFormStateForActiveMod,
+  );
 
   const activatedModVersion = modDefinitionComponent?._recipe?.version;
   const latestModVersion = modDefinition?.metadata?.version;
@@ -116,7 +124,10 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   const dirtyMetadata = useSelector(selectDirtyMetadataForModId(modId));
   // Prefer the metadata from the activated mod component
   const currentMetadata =
-    dirtyMetadata ?? modDefinitionComponent?._recipe ?? modDefinition?.metadata;
+    dirtyMetadata ??
+    modDefinitionComponent?._recipe ??
+    modDefinition?.metadata ??
+    firstComponentFormStateForMod?.modMetadata;
 
   const initialFormState: Partial<ModMetadataFormState> = pick(
     currentMetadata,
@@ -145,13 +156,23 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
               latestModVersion={latestModVersion}
             />
           )}
-          <ConnectedFieldTemplate
-            name="id"
-            label="Mod ID"
-            description={FieldDescriptions.MOD_ID}
-            // Mod IDs may not be changed after creation
-            readOnly
-          />
+          <div className={styles.modIdField}>
+            {isInnerDefinitionRegistryId(
+              (values as ModMetadataFormState).id,
+            ) ? (
+              <Alert variant="info" className={styles.modIdAlert}>
+                Save the mod to assign an id
+              </Alert>
+            ) : (
+              <ConnectedFieldTemplate
+                name="id"
+                label="Mod ID"
+                description={FieldDescriptions.MOD_ID}
+                // Mod IDs may not be changed after creation
+                readOnly
+              />
+            )}
+          </div>
           <ConnectedFieldTemplate
             name="name"
             label="Name"
