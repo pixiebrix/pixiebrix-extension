@@ -102,7 +102,9 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const getDeletedComponentIdsForMod = useSelector(
     selectGetDeletedComponentIdsForMod,
   );
-  const allDirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
+  const allDirtyModOptionsDefinitions = useSelector(
+    selectDirtyModOptionsDefinitions,
+  );
   const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -141,7 +143,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       // Dirty options/metadata or null if there are no staged changes.
       // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-      const dirtyModOptions = allDirtyModOptions[modId];
+      const dirtyModOptionsDefinition = allDirtyModOptionsDefinitions[modId];
       // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
       const dirtyModMetadata = allDirtyModMetadatas[modId];
 
@@ -149,7 +151,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         sourceMod: modDefinition,
         cleanModComponents,
         dirtyModComponentFormStates,
-        dirtyModOptions,
+        dirtyModOptionsDefinition,
         dirtyModMetadata,
       });
 
@@ -214,7 +216,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
     },
     [
       allDirtyModMetadatas,
-      allDirtyModOptions,
+      allDirtyModOptionsDefinitions,
       buildAndValidateMod,
       dispatch,
       editablePackages,

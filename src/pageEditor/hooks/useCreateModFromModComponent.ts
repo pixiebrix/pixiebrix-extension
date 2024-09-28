@@ -74,7 +74,7 @@ function useCreateModFromModComponent(
 
         try {
           const newModDefinition = await buildAndValidateMod({
-            newModComponentFormState,
+            dirtyModComponentFormStates: [newModComponentFormState],
             dirtyModMetadata: modMetadata,
           });
 

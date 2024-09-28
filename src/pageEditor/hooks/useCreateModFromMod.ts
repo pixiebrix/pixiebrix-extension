@@ -42,6 +42,10 @@ type UseCreateModFromModReturn = {
   ) => Promise<void>;
 };
 
+/**
+ * This hook provides a callback function to create a mod copy from the
+ * existing, active mod that HAS been saved on the server before.
+ */
 function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const [createMod] = useCreateModDefinitionMutation();
@@ -60,14 +64,14 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
       // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-      const modOptions = dirtyModOptions[modId];
+      const dirtyModOptionsDefinition = dirtyModOptions[modId];
 
       try {
         const newModDefinition = await buildAndValidateMod({
           sourceMod: modDefinition,
           cleanModComponents,
           dirtyModComponentFormStates,
-          dirtyModOptions: modOptions,
+          dirtyModOptionsDefinition,
           dirtyModMetadata: metadata,
         });
 
@@ -108,6 +112,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           }),
         );
         dispatch(editorActions.setActiveModId(savedModDefinition.metadata.id));
+        dispatch(editorActions.checkAvailableActivatedModComponents());
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
           copiedFrom: modId,

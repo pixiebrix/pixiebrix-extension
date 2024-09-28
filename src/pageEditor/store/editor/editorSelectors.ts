@@ -35,6 +35,7 @@ import { deserializeError } from "serialize-error";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
+  type ModMetadata,
 } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -281,7 +282,8 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
 export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
   selectActivatedModComponents,
-  (formStates, activatedModComponents) => {
+  selectDirtyModMetadata,
+  (formStates, activatedModComponents, dirtyModMetadataById) => {
     const formStateModMetadatas: Array<ModComponentBase["_recipe"]> = formStates
       .filter((formState) => Boolean(formState.modMetadata))
       .map((formState) => formState.modMetadata);
@@ -291,12 +293,24 @@ export const selectActivatedModMetadatas = createSelector(
       .filter((component) => Boolean(component._recipe))
       .map((component) => component._recipe);
 
-    return compact(
+    const baseMetadatas = compact(
       uniqBy(
         [...formStateModMetadatas, ...activatedModComponentModMetadatas],
         (modMetadata) => modMetadata?.id,
       ),
     );
+
+    return baseMetadatas.map((metadata) => {
+      const dirtyMetadata = dirtyModMetadataById[metadata.id];
+      if (dirtyMetadata) {
+        return {
+          ...metadata,
+          ...dirtyMetadata,
+        } as ModMetadata;
+      }
+
+      return metadata;
+    });
   },
 );
 

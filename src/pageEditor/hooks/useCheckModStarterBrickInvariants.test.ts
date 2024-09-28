@@ -73,7 +73,7 @@ describe("useCheckModStarterBrickInvariants", () => {
     ${0}       | ${1}       | ${3}     | ${0}          | ${1}          | ${2}        | ${false}
     ${2}       | ${2}       | ${5}     | ${2}          | ${2}          | ${3}        | ${false}
   `(
-    "given $cleanCount clean component(s) $dirtyCount dirty components(s) $newCount new components(s) and mod definition contains $modCleanCount clean $modDirtyCount dirty $modNewCount new, when called, should return $expectedResult",
+    "given $cleanCount clean component(s), $dirtyCount dirty components(s), $newCount new components(s), and mod definition contains $modCleanCount clean, $modDirtyCount dirty, $modNewCount new, when called, should return $expectedResult",
     async ({
       cleanCount,
       dirtyCount,
@@ -92,6 +92,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       expectedResult: boolean;
     }) => {
       const modMetadata = modMetadataFactory();
+      const sourceModId = modMetadata.id;
       let activatedModDefinition: ModDefinition | undefined;
       const activatedFormStates: ModComponentFormState[] = [];
       const newFormStates: ModComponentFormState[] = [];
@@ -233,7 +234,7 @@ describe("useCheckModStarterBrickInvariants", () => {
       const checkModStarterBrickInvariants = result.current;
       const actualResult = await checkModStarterBrickInvariants(
         resultModDefinition,
-        { sourceModDefinition: activatedModDefinition },
+        sourceModId,
       );
       expect(actualResult).toBe(expectedResult);
     },
@@ -277,54 +278,8 @@ describe("useCheckModStarterBrickInvariants", () => {
     const checkModStarterBrickInvariants = result.current;
     const actualResult = await checkModStarterBrickInvariants(
       resultModDefinition,
-      { newModComponentFormState: formState },
+      modMetadata.id,
     );
     expect(actualResult).toBe(true);
-  });
-
-  it("should return false for one new mod component and no matching component in mod definition", async () => {
-    const modMetadata = modMetadataFactory();
-    const modInnerDefinitions: InnerDefinitions = {};
-    const starterBrickId = newStarterBrickId();
-    const modComponentDefinition = modComponentDefinitionFactory({
-      id: starterBrickId,
-    });
-    modInnerDefinitions[starterBrickId] = {
-      kind: DefinitionKinds.STARTER_BRICK,
-      definition: starterBrickDefinitionFactory().definition,
-    };
-    const modForComponent = modDefinitionFactory({
-      metadata: modMetadata,
-      definitions: modInnerDefinitions,
-      extensionPoints: [modComponentDefinition],
-    });
-    const activatedModComponent =
-      mapModComponentDefinitionToActivatedModComponent({
-        modComponentDefinition,
-        modDefinition: modForComponent,
-        optionsArgs: {},
-        integrationDependencies: [],
-      });
-    const formState = await modComponentToFormState(activatedModComponent);
-    delete formState.modMetadata;
-
-    const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
-      setupRedux(dispatch) {
-        dispatch(editorActions.addModComponentFormState(formState));
-      },
-    });
-    const checkModStarterBrickInvariants = result.current;
-
-    const resultModDefinition = modDefinitionFactory({
-      metadata: modMetadata,
-      definitions: {},
-      extensionPoints: [],
-    });
-
-    const actualResult = await checkModStarterBrickInvariants(
-      resultModDefinition,
-      { newModComponentFormState: formState },
-    );
-    expect(actualResult).toBe(false);
   });
 });
