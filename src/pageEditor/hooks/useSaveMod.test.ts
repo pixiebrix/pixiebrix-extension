@@ -81,7 +81,7 @@ describe("useSaveMod", () => {
     await waitForEffect();
 
     await hookAct(async () => {
-      await result.current.save(modId);
+      await result.current(modId);
     });
 
     expect(notify.success).toHaveBeenCalledWith("Saved mod");
@@ -144,7 +144,7 @@ describe("useSaveMod", () => {
     await waitForEffect();
 
     await hookAct(async () => {
-      await result.current.save(modId);
+      await result.current(modId);
     });
 
     expect(notify.success).toHaveBeenCalledWith("Saved mod");
@@ -226,7 +226,7 @@ describe("useSaveMod", () => {
     await waitForEffect();
 
     await hookAct(async () => {
-      await result.current.save(modId);
+      await result.current(modId);
     });
 
     expect(notify.success).toHaveBeenCalledWith("Saved mod");

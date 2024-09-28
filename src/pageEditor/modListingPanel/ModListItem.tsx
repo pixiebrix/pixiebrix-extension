@@ -44,7 +44,6 @@ import { type ModMetadata } from "@/types/modComponentTypes";
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
   onSave: () => Promise<void>;
-  isSaving: boolean;
   onReset: () => Promise<void>;
   onDeactivate: () => Promise<void>;
   onClone: () => Promise<void>;
@@ -54,7 +53,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
   modMetadata,
   children,
   onSave,
-  isSaving,
   onReset,
   onDeactivate,
   onClone,
@@ -123,7 +121,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
           onAddStarterBrick={addNewModComponent}
           onClone={onClone}
           isDirty={isDirty}
-          disabled={isSaving}
         />
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={modId}>

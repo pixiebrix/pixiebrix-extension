@@ -87,7 +87,7 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
+  const saveMod = useSaveMod();
   const resetMod = useResetMod();
   const deactivateMod = useDeactivateMod();
 
@@ -101,7 +101,6 @@ const ModComponents: React.FunctionComponent = () => {
           onSave={async () => {
             await saveMod(modMetadata.id);
           }}
-          isSaving={isSavingMod}
           onReset={async () => {
             await resetMod(modMetadata.id);
           }}
