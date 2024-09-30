@@ -120,7 +120,7 @@ test("Add new starter brick", async ({
 
     const pageRequestPromise = page.waitForRequest(templatesGalleryUrl);
 
-    await pageEditorPage.modListingPanel.addButton.click();
+    await pageEditorPage.modListingPanel.newModButton.click();
     await pageEditorPage.modListingPanel
       .getByRole("button", {
         name: "Start with a Template",
