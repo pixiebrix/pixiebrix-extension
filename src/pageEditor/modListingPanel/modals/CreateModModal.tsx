@@ -62,19 +62,24 @@ import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "@/hooks/useIsMounted";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.
  *
  * @param activeMod The mod definition fetched from the server for the active mod, if it could be found on the server
  * @param activeModId The mod id for the active mod, if a mod is selected
+ * @param activeModComponentFormState The form state for the active mod component, if a mod component is selected
  */
 function useInitialFormState({
   activeModDefinition,
   activeModId,
+  activeModComponentFormState,
 }: {
-  activeModDefinition?: ModDefinition;
-  activeModId?: RegistryId;
+  // This is only used locally in this module in one place, and we want to make sure all inputs are being passed in, even if they are undefined
+  activeModDefinition: ModDefinition | undefined;
+  activeModId: RegistryId | undefined;
+  activeModComponentFormState: ModComponentFormState | undefined;
 }): ModMetadataFormState | UnknownObject {
   const userScope = useSelector(selectScope);
   assertNotNullish(
@@ -93,8 +98,10 @@ function useInitialFormState({
     dirtyModMetadata ??
     // If an active mod that has been saved to the server already is selected, use its metadata
     activeModDefinition?.metadata ??
-    // If the mod definition has not been created on the server yet, use the metadata from the first component form state
-    firstComponentFormStateForActiveMod?.modMetadata;
+    // If the mod definition has not been created on the server yet, use the metadata from the first component form state of the selected mod
+    firstComponentFormStateForActiveMod?.modMetadata ??
+    // If the mod is not selected, use the metadata from the active mod component form state
+    activeModComponentFormState?.modMetadata;
 
   if (!modMetadata) {
     return {};
@@ -180,6 +187,7 @@ const CreateModModalBody: React.FC = () => {
   const initialModMetadataFormState = useInitialFormState({
     activeModDefinition,
     activeModId,
+    activeModComponentFormState,
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {

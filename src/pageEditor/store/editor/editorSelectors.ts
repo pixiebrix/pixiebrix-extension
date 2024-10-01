@@ -68,11 +68,7 @@ export const selectModComponentFormStates = ({
 export const selectActiveModComponentFormState = createSelector(
   selectActiveModComponentId,
   selectModComponentFormStates,
-  (
-    activeModComponentId,
-    formStates,
-    // XXX: consider making the return value required so callers don't all need their own dynamic check
-  ): Nullishable<EditorState["modComponentFormStates"][number]> =>
+  (activeModComponentId, formStates) =>
     formStates.find((x) => x.uuid === activeModComponentId),
 );
 
