@@ -34,7 +34,7 @@ import pTimeout, { TimeoutError } from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type JsonValue } from "type-fest";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { type AbortSignalAsOptions } from "@/utils/promiseUtils";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -68,15 +68,18 @@ type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
  */
 type PendingMessageMetadata = {
   type: string;
-  payloadSize: number;
+  payloadSize: Nullishable<number>;
   timestamp: number;
 };
 
 const pendingMessageMetadataMap = new Map<string, PendingMessageMetadata>();
 
-function addPendingMessageMetadata(type: string, payload: Payload): UUID {
+function addPendingMessageMetadata(
+  type: string,
+  payload: Nullishable<Payload>,
+): UUID {
   const id = uuidv4();
-  const payloadSize = JSON.stringify(payload).length;
+  const payloadSize = payload ? JSON.stringify(payload).length : null;
   const metadata = { type, payloadSize, timestamp: Date.now() };
   pendingMessageMetadataMap.set(id, metadata);
   return id;
