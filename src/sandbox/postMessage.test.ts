@@ -302,6 +302,7 @@ describe("SandboxTimeoutError", () => {
       ]),
     );
 
+    jest.runAllTimers();
     await expect(promise).resolves.toBe("pong");
 
     expect(pendingMessageMetadataMap).toEqual(new Map());
