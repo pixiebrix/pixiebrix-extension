@@ -21,8 +21,8 @@ import {
   count,
   getLogEntries,
   sweepLogs,
-  reportToApplicationErrorTelemetry,
 } from "@/telemetry/logging";
+import { reportToApplicationErrorTelemetry } from "./reportToApplicationErrorTelemetry";
 import {
   logEntryFactory,
   messageContextFactory,

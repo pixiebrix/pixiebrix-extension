@@ -1,9 +1,34 @@
 import pDefer from "p-defer";
-import { deleteDB } from "idb";
+import { deleteDB, type IDBPDatabase } from "idb";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { type ValueOf } from "type-fest";
+import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
+import castError from "@/utils/castError";
 
 // IDB Connection Error message strings
 const CONNECTION_ERRORS = ["Error Opening IndexedDB"] as const;
+
+export const DATABASE_NAME = {
+  LOG: "LOG",
+  TRACE: "TRACE",
+  PACKAGE_REGISTRY: "BRICK_REGISTRY",
+} as const;
+
+export const IDB_OPERATION = {
+  LOG: {
+    APPEND_ENTRY: "appendEntry",
+    COUNT: "count",
+    RECREATE_DB: "recreateDB",
+    CLEAR_LOGS: "clearLogs",
+    CLEAR_LOG: "clearLog",
+    GET_LOG_ENTRIES: "getLogEntries",
+    SWEEP_LOGS: "sweepLogs",
+    CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
+  },
+  TRACE: {},
+  PACKAGE_REGISTRY: {},
+} as const;
 
 // IDB Quota Error message strings
 const QUOTA_ERRORS = [
@@ -49,3 +74,57 @@ export function isIDBQuotaError(error: unknown): boolean {
   const message = getErrorMessage(error);
   return QUOTA_ERRORS.some((quotaError) => message.includes(quotaError));
 }
+
+// Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
+// to application error telemetry to avoid attempting to record the error in the idb log database.
+export function handleIdbError(
+  error: unknown,
+  {
+    operationName,
+    databaseName,
+  }: {
+    operationName:
+      | ValueOf<typeof IDB_OPERATION.LOG>
+      | ValueOf<typeof IDB_OPERATION.TRACE>;
+    databaseName: ValueOf<typeof DATABASE_NAME>;
+  },
+): void {
+  const errorMessage = getErrorMessage(error);
+  const context = {
+    idbOperationName: operationName,
+    idbDatabaseName: databaseName,
+    ...getReportErrorAdditionalContext(),
+  };
+  console.error("Error during IDB operation", {
+    operationName,
+    databaseName,
+    error,
+    context,
+  });
+  void reportToApplicationErrorTelemetry(
+    castError(error, `Error during ${operationName}`),
+    context,
+    errorMessage,
+  );
+}
+
+export const withIdbErrorHandling =
+  <DBType>(
+    openIDB: () => Promise<IDBPDatabase<DBType>>,
+    databaseName: ValueOf<typeof DATABASE_NAME>,
+  ) =>
+  async <DBOperationResult>(
+    dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
+    operationName: ValueOf<typeof IDB_OPERATION.LOG>,
+  ) => {
+    let db: IDBPDatabase<DBType> | null = null;
+    try {
+      db = await openIDB();
+      return await dbOperation(db);
+    } catch (error) {
+      handleIdbError(error, { operationName, databaseName });
+      throw error;
+    } finally {
+      db?.close();
+    }
+  };

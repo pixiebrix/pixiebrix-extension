@@ -28,10 +28,9 @@ import {
   type OutputKey,
   type RenderedArgs,
 } from "@/types/runtimeTypes";
-import { deleteDatabase } from "@/utils/idbUtils";
+import { DATABASE_NAME, deleteDatabase } from "@/utils/idbUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-const DATABASE_NAME = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
 const DB_VERSION_NUMBER = 4;
 
@@ -181,7 +180,7 @@ async function openTraceDB() {
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<TraceDB> | null = null;
 
-  database = await openDB<TraceDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
+  database = await openDB<TraceDB>(DATABASE_NAME.TRACE, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -315,7 +314,7 @@ export async function count(): Promise<number> {
  */
 export async function recreateDB(): Promise<void> {
   // Delete the database and open the database to recreate it
-  await deleteDatabase(DATABASE_NAME);
+  await deleteDatabase(DATABASE_NAME.TRACE);
   const db = await openTraceDB();
   db.close();
 }

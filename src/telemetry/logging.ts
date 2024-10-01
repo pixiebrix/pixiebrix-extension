@@ -16,41 +16,30 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { type Except, type JsonObject, type ValueOf } from "type-fest";
-import { deserializeError, serializeError } from "serialize-error";
+import { type Except, type JsonObject } from "type-fest";
+import { deserializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
-import { isEmpty, once, sortBy } from "lodash";
-import { allowsTrack } from "@/telemetry/dnt";
-import {
-  getErrorMessage,
-  hasSpecificErrorCause,
-  isSpecificError,
-} from "@/errors/errorHelpers";
+import { isEmpty, sortBy } from "lodash";
+import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import {
-  reportToErrorService,
-  selectExtraContext,
-} from "@/data/service/errorService";
-import { BusinessError } from "@/errors/businessErrors";
+import { reportToErrorService } from "@/data/service/errorService";
 import { ContextError } from "@/errors/genericErrors";
-import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type MessengerMeta } from "webext-messenger";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
-import { deleteDatabase } from "@/utils/idbUtils";
+import {
+  DATABASE_NAME,
+  deleteDatabase,
+  IDB_OPERATION,
+  withIdbErrorHandling,
+} from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
-import { readAuthData } from "@/auth/authStorage";
-import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
-import { type RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 import { FeatureFlags } from "@/auth/featureFlags";
-import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
-import castError from "@/utils/castError";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 
-const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
 const DB_VERSION_NUMBER = 4;
 /**
@@ -125,46 +114,12 @@ const INDEX_KEYS = [
   "authId",
 ] as const satisfies IndexKey[];
 
-const IDB_OPERATION = {
-  APPEND_ENTRY: "appendEntry",
-  COUNT: "count",
-  RECREATE_DB: "recreateDB",
-  CLEAR_LOGS: "clearLogs",
-  CLEAR_LOG: "clearLog",
-  GET_LOG_ENTRIES: "getLogEntries",
-  SWEEP_LOGS: "sweepLogs",
-  CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
-} as const;
-
-// Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
-// to application error telemetry to avoid attempting to record the error in the idb log database.
-function handleIdbError(
-  error: unknown,
-  operationName: ValueOf<typeof IDB_OPERATION>,
-): void {
-  const errorMessage = getErrorMessage(error);
-  const context = {
-    idbOperationName: operationName,
-    ...getReportErrorAdditionalContext(),
-  };
-  console.error("Error during IDB operation", {
-    operationName,
-    error,
-    context,
-  });
-  void reportToApplicationErrorTelemetry(
-    castError(error, `Error during ${operationName}`),
-    context,
-    errorMessage,
-  );
-}
-
 async function openLoggingDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<LogDB> | null = null;
 
-  database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
+  database = await openDB<LogDB>(DATABASE_NAME.LOG, DB_VERSION_NUMBER, {
     upgrade(db, oldVersion, newVersion) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -219,22 +174,8 @@ async function openLoggingDB() {
   return database;
 }
 
-async function withLoggingDB<T>(
-  dbOperation: (db: IDBPDatabase<LogDB>) => Promise<T>,
-  operationName: ValueOf<typeof IDB_OPERATION>,
-): Promise<T> {
-  let db: IDBPDatabase<LogDB> | null = null;
-  try {
-    db = await openLoggingDB();
-    return await dbOperation(db);
-  } catch (error) {
-    handleIdbError(error, operationName);
-    throw error;
-  } finally {
-    db?.close();
-  }
-}
-
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const withLoggingDB = withIdbErrorHandling(openLoggingDB, DATABASE_NAME.LOG);
 /**
  * Add a log entry to the database.
  * @param entry the log entry to add
@@ -246,7 +187,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
 
   await withLoggingDB(async (db) => {
     await db.add(ENTRY_OBJECT_STORE, entry);
-  }, IDB_OPERATION.APPEND_ENTRY).catch((_error) => {
+  }, IDB_OPERATION.LOG.APPEND_ENTRY).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -269,7 +210,7 @@ function makeMatchEntry(
 export async function count(): Promise<number> {
   return withLoggingDB(
     async (db) => db.count(ENTRY_OBJECT_STORE),
-    IDB_OPERATION.COUNT,
+    IDB_OPERATION.LOG.COUNT,
   );
 }
 
@@ -277,9 +218,9 @@ export async function count(): Promise<number> {
  * Deletes and recreates the logging database.
  */
 export async function recreateDB(): Promise<void> {
-  await deleteDatabase(DATABASE_NAME);
+  await deleteDatabase(DATABASE_NAME.LOG);
   // Open the database to recreate it
-  await withLoggingDB(async (_db) => {}, IDB_OPERATION.RECREATE_DB);
+  await withLoggingDB(async (_db) => {}, IDB_OPERATION.LOG.RECREATE_DB);
 }
 
 /**
@@ -288,7 +229,7 @@ export async function recreateDB(): Promise<void> {
 export async function clearLogs(): Promise<void> {
   await withLoggingDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  }, IDB_OPERATION.CLEAR_LOGS).catch((_error) => {
+  }, IDB_OPERATION.LOG.CLEAR_LOGS).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -314,7 +255,7 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
         await cursor.delete();
       }
     }
-  }, IDB_OPERATION.CLEAR_LOG).catch((_error) => {
+  }, IDB_OPERATION.LOG.CLEAR_LOG).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -357,7 +298,7 @@ export async function getLogEntries(
 
     // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
     return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  }, IDB_OPERATION.GET_LOG_ENTRIES);
+  }, IDB_OPERATION.LOG.GET_LOG_ENTRIES);
 }
 
 /**
@@ -380,91 +321,6 @@ function flattenContext(
   }
 
   return context;
-}
-
-const warnAboutDisabledDNT = once(() => {
-  console.warn("Error telemetry is disabled because DNT is turned on");
-});
-
-const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
-const THROTTLE_RATE_MS = 60_000; // 1 minute
-let lastAxiosServerErrorTimestamp: number | null = null;
-
-/**
- * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
- * It's only exported for testing.
- */
-export async function reportToApplicationErrorTelemetry(
-  // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
-  // treats it as the error.
-  error: Error,
-  flatContext: MessageContext,
-  errorMessage: string,
-): Promise<void> {
-  // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
-  if (
-    hasSpecificErrorCause(error, BusinessError) ||
-    (await flagOn(FeatureFlags.APPLICATION_ERROR_TELEMETRY_DISABLE_REPORT))
-  ) {
-    return;
-  }
-
-  // Throttle certain Axios status codes because they are redundant with our platform alerts
-  if (
-    isAxiosError(error) &&
-    error.response?.status &&
-    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response.status)
-  ) {
-    // JS allows subtracting dates directly but TS complains, so get the date as a number in milliseconds:
-    // https://github.com/microsoft/TypeScript/issues/8260
-    const now = Date.now();
-
-    if (
-      lastAxiosServerErrorTimestamp &&
-      now - lastAxiosServerErrorTimestamp < THROTTLE_RATE_MS
-    ) {
-      console.debug("Skipping remote error telemetry report due to throttling");
-      return;
-    }
-
-    lastAxiosServerErrorTimestamp = now;
-  }
-
-  if (!(await allowsTrack())) {
-    warnAboutDisabledDNT();
-    return;
-  }
-
-  const { version_name: versionName } = chrome.runtime.getManifest();
-  const [telemetryUser, extraContext] = await Promise.all([
-    mapAppUserToTelemetryUser(await readAuthData()),
-    selectExtraContext(error),
-  ]);
-  const errorData: RecordErrorMessage["data"] = {
-    error: serializeError(error),
-    errorMessage,
-    errorReporterInitInfo: {
-      // It should never happen that versionName is undefined, but handle undefined just in case
-      versionName: versionName ?? "",
-      telemetryUser,
-    },
-    messageContext: {
-      ...flatContext,
-      ...extraContext,
-    },
-  };
-
-  // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
-  // we need to send the error from an offscreen document.
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
-  // and offscreen.ts
-  await ensureOffscreenDocument();
-
-  await chrome.runtime.sendMessage({
-    type: "record-error",
-    target: "offscreen-doc",
-    data: errorData,
-  } satisfies RecordErrorMessage);
 }
 
 export type ContextWithMod = MessageContext &
@@ -585,7 +441,7 @@ export async function clearModComponentDebugLogs(
         await cursor.delete();
       }
     }
-  }, IDB_OPERATION.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
+  }, IDB_OPERATION.LOG.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry, and
     // we don't want to interrupt the execution of mod pipeline
   });
@@ -644,7 +500,7 @@ async function _sweepLogs(): Promise<void> {
         }
       }
     }
-  }, IDB_OPERATION.SWEEP_LOGS).catch((_error) => {
+  }, IDB_OPERATION.LOG.SWEEP_LOGS).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }

@@ -19,7 +19,7 @@ import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { type Except } from "type-fest";
-import { deleteDatabase } from "@/utils/idbUtils";
+import { deleteDatabase, DATABASE_NAME } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
@@ -27,7 +27,6 @@ import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 import { type DefinitionKind } from "@/types/registryTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
@@ -67,7 +66,7 @@ async function openRegistryDB() {
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<RegistryDB> | null = null;
 
-  database = await openDB<RegistryDB>(DATABASE_NAME, VERSION, {
+  database = await openDB<RegistryDB>(DATABASE_NAME.PACKAGE_REGISTRY, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -176,7 +175,7 @@ export async function clear(): Promise<void> {
  * Deletes and recreates the brick definition database.
  */
 export async function recreateDB(): Promise<void> {
-  await deleteDatabase(DATABASE_NAME);
+  await deleteDatabase(DATABASE_NAME.PACKAGE_REGISTRY);
 
   // Open the database to recreate it
   await openRegistryDB();
