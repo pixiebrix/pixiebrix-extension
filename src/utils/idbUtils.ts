@@ -26,7 +26,15 @@ export const IDB_OPERATION = {
     SWEEP_LOGS: "sweepLogs",
     CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
   },
-  TRACE: {},
+  TRACE: {
+    ADD_TRACE_ENTRY: "addTraceEntry",
+    ADD_TRACE_EXIT: "addTraceExit",
+    CLEAR_TRACES: "clearTraces",
+    COUNT: "count",
+    RECREATE_DB: "recreateDB",
+    CLEAR_MOD_COMPONENT_TRACES: "clearModComponentTraces",
+    GET_LATEST_RUN_BY_MOD_COMPONENT_ID: "getLatestRunByModComponentId",
+  },
   PACKAGE_REGISTRY: {},
 } as const;
 
@@ -115,7 +123,10 @@ export const withIdbErrorHandling =
   ) =>
   async <DBOperationResult>(
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
-    operationName: ValueOf<typeof IDB_OPERATION.LOG>,
+    operationName:
+      | ValueOf<typeof IDB_OPERATION.LOG>
+      | ValueOf<typeof IDB_OPERATION.TRACE>
+      | ValueOf<typeof IDB_OPERATION.PACKAGE_REGISTRY>,
   ) => {
     let db: IDBPDatabase<DBType> | null = null;
     try {
