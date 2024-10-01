@@ -22,6 +22,7 @@ import polyfill from "node:worker_threads";
 import { serializeError } from "serialize-error";
 import postMessage, {
   addPostMessageListener,
+  pendingMessageMetadataMap,
   type RequestPacket,
   SandboxTimeoutError,
 } from "./postMessage";
@@ -288,26 +289,21 @@ describe("SandboxTimeoutError", () => {
       recipient: channel as Window,
     });
 
-    jest.runAllTimers();
-    await promise;
+    expect(pendingMessageMetadataMap).toEqual(
+      new Map([
+        [
+          expect.any(String),
+          {
+            type: "SANDBOX_PING",
+            payloadSize: expect.any(Number),
+            timestamp: expect.any(Number),
+          },
+        ],
+      ]),
+    );
 
-    const timeoutPromise = postMessage({
-      type: "SANDBOX_TIMEOUT",
-      payload: { data: "timeout" },
-      recipient: channel as Window,
-    });
+    await expect(promise).resolves.toBe("pong");
 
-    jest.runAllTimers();
-
-    await expect(timeoutPromise).rejects.toThrow(SandboxTimeoutError);
-    await expect(timeoutPromise).rejects.toMatchObject({
-      name: "SandboxTimeoutError",
-      sandboxMessage: {
-        type: "SANDBOX_TIMEOUT",
-        payloadSize: expect.any(Number),
-        timestamp: expect.any(Number),
-      },
-      pendingSandboxMessages: [],
-    });
+    expect(pendingMessageMetadataMap).toEqual(new Map());
   });
 });

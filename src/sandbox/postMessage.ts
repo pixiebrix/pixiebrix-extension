@@ -72,7 +72,10 @@ type PendingMessageMetadata = {
   timestamp: number;
 };
 
-const pendingMessageMetadataMap = new Map<string, PendingMessageMetadata>();
+export const pendingMessageMetadataMap = new Map<
+  string,
+  PendingMessageMetadata
+>();
 
 function addPendingMessageMetadata(
   type: string,
