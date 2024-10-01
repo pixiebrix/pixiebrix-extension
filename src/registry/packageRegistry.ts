@@ -19,7 +19,12 @@ import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { type Except } from "type-fest";
-import { deleteDatabase, DATABASE_NAME } from "@/utils/idbUtils";
+import {
+  deleteDatabase,
+  DATABASE_NAME,
+  withIdbErrorHandling,
+  IDB_OPERATION,
+} from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
@@ -98,6 +103,12 @@ async function openRegistryDB() {
   return database;
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const withRegistryDB = withIdbErrorHandling(
+  openRegistryDB,
+  DATABASE_NAME.PACKAGE_REGISTRY,
+);
+
 function latestVersion(
   versions: PackageVersion[],
 ): Nullishable<PackageVersion> {
@@ -163,12 +174,9 @@ const ensurePopulated = memoizeUntilSettled(async () => {
  * Clear the brick definition registry.
  */
 export async function clear(): Promise<void> {
-  const db = await openRegistryDB();
-  try {
+  await withRegistryDB(async (db) => {
     await db.clear(BRICK_STORE);
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.PACKAGE_REGISTRY.CLEAR);
 }
 
 /**
@@ -178,7 +186,10 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME.PACKAGE_REGISTRY);
 
   // Open the database to recreate it
-  await openRegistryDB();
+  await withRegistryDB(
+    async () => {},
+    IDB_OPERATION.PACKAGE_REGISTRY.RECREATE_DB,
+  );
 
   // Re-populate the packages from the remote registry
   await syncPackages();
@@ -193,9 +204,7 @@ export async function getByKinds(
 ): Promise<PackageVersion[]> {
   await ensurePopulated();
 
-  const db = await openRegistryDB();
-
-  try {
+  return withRegistryDB(async (db) => {
     const bricks = flatten(
       await Promise.all(
         kinds.map(async (kind) =>
@@ -209,9 +218,7 @@ export async function getByKinds(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
         latestVersion(versions)!,
     );
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.PACKAGE_REGISTRY.GET_BY_KINDS);
 }
 
 /**
@@ -219,12 +226,10 @@ export async function getByKinds(
  */
 export async function count(): Promise<number> {
   // Don't need to ensure populated, because we're just counting current records
-  const db = await openRegistryDB();
-  try {
-    return await db.count(BRICK_STORE);
-  } finally {
-    db.close();
-  }
+  return withRegistryDB(
+    async (db) => db.count(BRICK_STORE),
+    IDB_OPERATION.PACKAGE_REGISTRY.COUNT,
+  );
 }
 
 /**
@@ -232,18 +237,14 @@ export async function count(): Promise<number> {
  * @param packages the packages to put in the database
  */
 async function replaceAll(packages: PackageVersion[]): Promise<void> {
-  const db = await openRegistryDB();
-
-  try {
+  await withRegistryDB(async (db) => {
     const tx = db.transaction(BRICK_STORE, "readwrite");
 
     await tx.store.clear();
     await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
 
     await tx.done;
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.PACKAGE_REGISTRY.REPLACE_ALL);
 }
 
 export function parsePackage(
@@ -289,13 +290,9 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
 
   await ensurePopulated();
 
-  const db = await openRegistryDB();
-
-  try {
+  return withRegistryDB(async (db) => {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
 
     return latestVersion(versions);
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.PACKAGE_REGISTRY.FIND);
 }

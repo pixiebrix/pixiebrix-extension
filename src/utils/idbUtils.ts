@@ -35,7 +35,14 @@ export const IDB_OPERATION = {
     CLEAR_MOD_COMPONENT_TRACES: "clearModComponentTraces",
     GET_LATEST_RUN_BY_MOD_COMPONENT_ID: "getLatestRunByModComponentId",
   },
-  PACKAGE_REGISTRY: {},
+  PACKAGE_REGISTRY: {
+    CLEAR: "clear",
+    RECREATE_DB: "recreateDB",
+    GET_BY_KINDS: "getByKinds",
+    COUNT: "count",
+    REPLACE_ALL: "replaceAll",
+    FIND: "find",
+  },
 } as const;
 
 // IDB Quota Error message strings
@@ -93,7 +100,8 @@ export function handleIdbError(
   }: {
     operationName:
       | ValueOf<typeof IDB_OPERATION.LOG>
-      | ValueOf<typeof IDB_OPERATION.TRACE>;
+      | ValueOf<typeof IDB_OPERATION.TRACE>
+      | ValueOf<typeof IDB_OPERATION.PACKAGE_REGISTRY>;
     databaseName: ValueOf<typeof DATABASE_NAME>;
   },
 ): void {
