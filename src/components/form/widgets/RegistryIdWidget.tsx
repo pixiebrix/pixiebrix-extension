@@ -45,8 +45,9 @@ const emptyObject = {} as const;
 
 const RegistryIdWidget: React.VFC<{
   name: string;
+  id?: string;
   selectStyles?: StylesConfig;
-}> = ({ name, selectStyles = emptyObject }) => {
+}> = ({ name, id, selectStyles = emptyObject }) => {
   const [{ value }, , { setValue }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   // XXX: We should eventually refactor RequireScope to pass the required (non-null) user scope down to children, or set a context value
@@ -113,6 +114,7 @@ const RegistryIdWidget: React.VFC<{
       />
       <span> / </span>
       <Form.Control
+        id={id}
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}

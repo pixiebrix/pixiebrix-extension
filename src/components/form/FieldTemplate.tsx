@@ -36,6 +36,7 @@ import { type Except } from "type-fest";
 import { type ActionMeta } from "react-select";
 import { freeze } from "@/utils/objectUtils";
 import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
+import { uuidv4 } from "@/types/helpers";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType,
@@ -149,7 +150,10 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   // because it gets both `controlId` from Group and `id` from props of `AsControl`.
   // See their logic at https://github.com/react-bootstrap/react-bootstrap/blob/v1.6.4/src/FormControl.tsx#L179:L182
   // The most simple solution is to manually set `htmlFor` on the Label and `id` on the Control.
-  const controlId = name;
+  const controlId = useMemo(() => {
+    const uuid = uuidv4();
+    return `${name}-${uuid}`;
+  }, [name]);
 
   const formControl = isBuiltinControl ? (
     <FormControl

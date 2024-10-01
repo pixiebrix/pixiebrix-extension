@@ -165,12 +165,12 @@ export class PageEditorPage extends BasePageObject {
     await modListItem.saveButton.click();
 
     // Handle the "Save new mod" modal
-    const saveNewModModal = this.page.getByRole("dialog");
+    const saveNewModModal = this.page.locator(".modal-content");
     await expect(saveNewModModal).toBeVisible();
     await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
 
     // Add a random uuid to the mod id to prevent test collisions
-    const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
+    const registryIdInput = saveNewModModal.getByLabel("Mod ID");
     const currentId = await registryIdInput.inputValue();
     await registryIdInput.fill(`${currentId}-${uuidv4()}`);
 
