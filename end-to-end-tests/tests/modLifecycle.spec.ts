@@ -101,7 +101,7 @@ test("create, run, package, and update mod", async ({
   );
   const { modId } = await pageEditorPage.saveNewMod({
     currentModName: newModName,
-    descriptionOverride: "Created with the PixieBrix Page Editor",
+    descriptionOverride: "Created through Playwright Automation",
   });
 
   let newPage: Page | undefined;
@@ -124,8 +124,8 @@ test("create, run, package, and update mod", async ({
       "version: 1.0.1",
     );
     await editWorkshopModPage.editor.findAndReplaceText(
-      "description: Created with the PixieBrix Page Editor",
       "description: Created through Playwright Automation",
+      "description: Created and updated with Playwright Automation",
     );
     await editWorkshopModPage.updateBrick();
   });
@@ -142,7 +142,7 @@ test("create, run, package, and update mod", async ({
     const modActivatePage = new ActivateModPage(newPage!, extensionId, modId);
 
     await expect(modActivatePage.locator("form")).toContainText(
-      "Created through Playwright Automation",
+      "Created and updated with Playwright Automation",
     );
   });
 

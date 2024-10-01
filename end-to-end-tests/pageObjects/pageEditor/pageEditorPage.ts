@@ -176,9 +176,7 @@ export class PageEditorPage extends BasePageObject {
 
     if (descriptionOverride) {
       // Update the mod description
-      const descriptionInput = saveNewModModal.locator(
-        'input[name="description"]',
-      );
+      const descriptionInput = saveNewModModal.getByLabel("Description");
       await descriptionInput.fill(descriptionOverride);
     }
 
