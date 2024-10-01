@@ -1,0 +1,75 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'
+metadata:
+  id: >-
+    @extension-e2e-test-unaffiliated/test-trigger-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
+  name: Test Trigger 00000000-0000-0000-0000-000000000000
+  version: 1.0.0
+  description: Created with the PixieBrix Page Editor
+variables:
+  schema:
+    type: object
+    properties: {}
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: trigger
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      background: true
+      reportMode: once
+      showErrors: true
+  extensionPoint2:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      containerSelector: ul:has(> * > a:contains('navigation'))
+      targetMode: document
+      attachMode: once
+      position: append
+      template: <li><a href="#">{{{ caption }}}</a></li>
+extensionPoints:
+  - label: Test Trigger 00000000-0000-0000-0000-000000000000
+    config:
+      action: []
+    id: extensionPoint
+    services: {}
+  - label: My pbx.vercel.app button
+    config:
+      caption: Action
+      action: []
+      dynamicCaption: false
+      onSuccess: true
+      synchronous: false
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint2
+    services: {}

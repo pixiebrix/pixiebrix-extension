@@ -25,7 +25,7 @@ import {
   PRE_RELEASE_BROWSER_WORKFLOW_NAME,
 } from "../../utils";
 
-test("Add new starter brick", async ({
+test("Add new mod and add starter bricks", async ({
   page,
   newPageEditorPage,
   extensionId,
@@ -134,7 +134,7 @@ test("Add new starter brick", async ({
   });
 });
 
-test("Add starter brick to mod", async ({
+test("Add new mod, save, and then add starter bricks", async ({
   page,
   newPageEditorPage,
   extensionId,
