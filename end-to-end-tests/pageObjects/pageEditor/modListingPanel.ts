@@ -16,10 +16,7 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { uuidv4 } from "@/types/helpers";
 import { ModifiesModFormState } from "./utils";
-import { Except } from "type-fest";
-import { isObject } from "@/utils/objectUtils";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -35,6 +32,23 @@ type NotButtonStarterBrickUIName =
   | "Quick Bar Action"
   | "Dynamic Quick Bar"
   | "Sidebar Panel";
+
+const domainRegExp =
+  /(?:[\da-z](?:[\da-z-]{0,61}[\da-z])?\.)+[\da-z][\da-z-]{0,61}[\da-z]/i;
+
+const starterBrickUINameToComponentDefaultName: Record<
+  StarterBrickUIName,
+  RegExp
+> = {
+  "Context Menu": /Context menu item/,
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Inserting from another static RegExp
+  Trigger: new RegExp(`My ${domainRegExp.source} trigger`),
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Inserting from another static RegExp
+  Button: new RegExp(`My ${domainRegExp.source} button`),
+  "Quick Bar Action": /Quick Bar item/,
+  "Dynamic Quick Bar": /Dynamic Quick Bar/,
+  "Sidebar Panel": /Sidebar Panel/,
+};
 
 export class ModActionMenu extends BasePageObject {
   get copyButton() {
@@ -52,15 +66,21 @@ export class ModActionMenu extends BasePageObject {
   }
 }
 
-type AddStarterBrickInputs =
-  | NotButtonStarterBrickUIName
+type AddStarterBrickInput =
+  | {
+      starterBrickName: NotButtonStarterBrickUIName;
+      insertButtonCallback?: never;
+    }
   | {
       starterBrickName: "Button";
       insertButtonCallback: () => Promise<void>;
     };
 
 export class ModListItem extends BasePageObject {
-  saveButton = this.locator("[data-icon=save]");
+  get saveButton() {
+    return this.locator("[data-icon=save]");
+  }
+
   get menuButton() {
     return this.getByLabel(" - Ellipsis");
   }
@@ -93,30 +113,28 @@ export class ModListingPanel extends BasePageObject {
    * @param inputs the starter brick name to add, corresponding to the name shown in the Page Editor UI,
    * not the underlying type, and optionally a callback to insert the button if using button starter
    * brick type.
-   * @returns modName the generated mod name
    * @returns modComponentName the generated mod component name
    */
   @ModifiesModFormState
-  async addStarterBrick(input: AddStarterBrickInputs): Promise<{
-    modName: string;
-    modComponentName: string;
+  async addStarterBrick({
+    starterBrickName,
+    insertButtonCallback,
+  }: AddStarterBrickInput): Promise<{
+    modComponentNameMatcher: RegExp;
   }> {
-    await this.newModButton.click();
-
-    if (isObject(input)) {
-      const { starterBrickName, insertButtonCallback } = input;
-    } else {
-      const starterBrickName = input;
-    }
-
-    const modUuid = uuidv4();
-    const modComponentName = `Test ${starterBrickName}`;
     await this.newModButton.click();
     await this.locator("[role=button].dropdown-item", {
       hasText: starterBrickName,
     }).click();
 
-    return { modComponentName, modUuid };
+    if (insertButtonCallback) {
+      await insertButtonCallback();
+    }
+
+    return {
+      modComponentNameMatcher:
+        starterBrickUINameToComponentDefaultName[starterBrickName],
+    };
   }
 
   getModListItemByName(modName: string) {

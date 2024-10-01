@@ -34,21 +34,19 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  const { modComponentName, modUuid } =
-    await pageEditorPage.modListingPanel.addStarterBrick("Button");
+  await pageEditorPage.modListingPanel.addStarterBrick({
+    starterBrickName: "Button",
+    async insertButtonCallback() {
+      await pageEditorPage.selectConnectedPageElement(
+        page.getByRole("button", { name: "Action #3" }),
+      );
+    },
+  });
 
   await test.step("Configure the Button brick", async () => {
-    await pageEditorPage.selectConnectedPageElement(
-      page.getByRole("button", { name: "Action #3" }),
-    );
-
     await pageEditorPage.brickConfigurationPanel.fillField(
       "Button text",
       "Search Youtube",
-    );
-    await pageEditorPage.brickConfigurationPanel.fillField(
-      "name",
-      modComponentName,
     );
   });
 
@@ -93,10 +91,17 @@ test("create, run, package, and update mod", async ({
     );
   });
 
-  const { modId } = await pageEditorPage.createModFromModComponent({
-    modNameRoot: "Lifecycle Test",
-    modComponentName,
-    modUuid,
+  const newModName = "Lifecycle Test";
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName("New Mod");
+  await modListItem.select();
+  await pageEditorPage.modEditorPane.editMetadataTabPanel.fillField(
+    "name",
+    newModName,
+  );
+  const { modId } = await pageEditorPage.saveNewMod({
+    currentModName: newModName,
+    descriptionOverride: "Created with the PixieBrix Page Editor",
   });
 
   let newPage: Page | undefined;

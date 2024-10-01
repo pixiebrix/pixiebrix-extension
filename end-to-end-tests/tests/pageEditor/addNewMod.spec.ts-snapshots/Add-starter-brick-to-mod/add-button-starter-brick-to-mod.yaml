@@ -1,0 +1,75 @@
+kind: recipe
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'
+metadata:
+  id: >-
+    @extension-e2e-test-unaffiliated/new-mod-00000000-0000-0000-0000-000000000000
+  name: New Mod
+  version: 1.0.0
+  description: Created by playwright test for adding starter bricks to a mod
+variables:
+  schema:
+    type: object
+    properties: {}
+apiVersion: v3
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: trigger
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      background: true
+      reportMode: once
+      showErrors: true
+  extensionPoint2:
+    kind: extensionPoint
+    definition:
+      type: menuItem
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      containerSelector: ul:has(> * > a:contains('navigation'))
+      targetMode: document
+      attachMode: once
+      position: append
+      template: <li><a href="#">{{{ caption }}}</a></li>
+extensionPoints:
+  - label: My pbx.vercel.app trigger
+    config:
+      action: []
+    id: extensionPoint
+    services: {}
+  - label: My pbx.vercel.app button
+    config:
+      caption: Action
+      action: []
+      dynamicCaption: false
+      onSuccess: true
+      synchronous: false
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint2
+    services: {}

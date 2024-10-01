@@ -29,6 +29,7 @@ import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
+import { uuidv4 } from "@/types/helpers";
 
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });
@@ -132,6 +133,69 @@ export class PageEditorPage extends BasePageObject {
     return this.getByText(
       "Cannot overwrite version of a published brick. Increment the version",
     );
+  }
+
+  /**
+   * Save a new mod with the given name and optional description.
+   *
+   * @param modName the name to use when saving the new mod
+   * @param description the optional description to use when saving the new mod
+   * @returns the modId of the saved mod
+   */
+  @ModifiesModFormState
+  async saveNewMod({
+    currentModName,
+    descriptionOverride,
+  }: {
+    currentModName: string;
+    descriptionOverride?: string;
+  }): Promise<{
+    modId: string;
+  }> {
+    const modListItem =
+      this.modListingPanel.getModListItemByName(currentModName);
+    await modListItem.select();
+    await expect(
+      this.modEditorPane.editMetadataTabPanel.getByText(
+        "Save the mod to assign an id",
+      ),
+    ).toBeVisible();
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
+    await this.page.waitForTimeout(2000);
+    await modListItem.saveButton.click();
+
+    // Handle the "Save new mod" modal
+    const saveNewModModal = this.page.getByRole("dialog");
+    await expect(saveNewModModal).toBeVisible();
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+
+    // Add a random uuid to the mod id to prevent test collisions
+    const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
+    const currentId = await registryIdInput.inputValue();
+    await registryIdInput.fill(`${currentId}-${uuidv4()}`);
+
+    if (descriptionOverride) {
+      // Update the mod description
+      const descriptionInput = saveNewModModal.locator(
+        'input[name="description"]',
+      );
+      await descriptionInput.fill(descriptionOverride);
+    }
+
+    // Click the Save button in the modal
+    await saveNewModModal.getByRole("button", { name: "Save" }).click();
+
+    // Wait for the save confirmation
+    await expect(
+      this.page
+        .getByRole("status")
+        .filter({ hasText: "Mod created successfully" }),
+    ).toBeVisible();
+
+    const modId =
+      await this.modEditorPane.editMetadataTabPanel.modId.inputValue();
+
+    return { modId };
   }
 
   @ModifiesModFormState

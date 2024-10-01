@@ -40,6 +40,7 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
+import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
@@ -55,6 +56,21 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements ?? false,
   );
+
+  const modMetadatas = useSelector(selectActivatedModMetadatas);
+
+  const getNewModName = useCallback((): string => {
+    const nameBase = "New Mod";
+    const existingModNames = modMetadatas.map((m) => m.name);
+    let newModName = nameBase;
+    let i = 1;
+    while (existingModNames.includes(newModName)) {
+      newModName = `${nameBase} ${i}`;
+      i++;
+    }
+
+    return newModName;
+  }, [modMetadatas]);
 
   const getInitialModComponentFormState = useCallback(
     async ({
@@ -79,7 +95,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
       initialFormState.modMetadata =
         modMetadata ??
         createNewUnsavedModMetadata({
-          modName: initialFormState.label,
+          modName: getNewModName(),
         });
 
       return initialFormState as ModComponentFormState;
@@ -98,6 +114,8 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         const initialFormState = await getInitialModComponentFormState(adapter);
 
         dispatch(actions.addModComponentFormState(initialFormState));
+        // Need to explicitly check availability of the new component form state
+        // TODO: refactor this to be an implicit side-effect in the reducer (add action above possibly needs to be a thunk?)
         dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
