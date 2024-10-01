@@ -87,8 +87,7 @@ function flattenTableContent(table: HTMLTableElement): RawTableContent {
           const row = rowIndex + rowSpanIndex;
           const col = cellIndex + colSpanIndex;
           flattened[row] ??= [];
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- It was just created
-          flattened[row]![col] = {
+          flattened[row][col] = {
             type: tagName === "TH" ? "header" : "value",
             value: textContent.trim(),
           };

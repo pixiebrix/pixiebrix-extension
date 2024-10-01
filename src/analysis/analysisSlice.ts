@@ -65,17 +65,15 @@ const analysisSlice = createSlice({
 
       // Clear out any existing annotations for this analysis.
       if (state.extensionAnnotations[modComponentId]) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- validated by if check
         state.extensionAnnotations[modComponentId] = state.extensionAnnotations[
           modComponentId
-        ]!.filter((x) => x.analysisId !== analysisId);
+        ].filter((x) => x.analysisId !== analysisId);
       } else {
         state.extensionAnnotations[modComponentId] = [];
       }
 
       state.extensionAnnotations[modComponentId] = [
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- validated above
-        ...state.extensionAnnotations[modComponentId]!,
+        ...state.extensionAnnotations[modComponentId],
         ...annotations,
       ];
     },

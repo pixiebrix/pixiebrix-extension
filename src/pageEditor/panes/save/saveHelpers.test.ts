@@ -101,7 +101,7 @@ describe("replaceModComponent round trip", () => {
   test("single mod component with versioned starter brick", async () => {
     const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
-      extensionPointId: starterBrick.metadata!.id!,
+      extensionPointId: starterBrick.metadata!.id,
     })();
 
     const state = modComponentSlice.reducer(
@@ -144,7 +144,7 @@ describe("replaceModComponent round trip", () => {
     const starterBrick = starterBrickDefinitionFactory();
 
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
-      extensionPointId: starterBrick.metadata!.id!,
+      extensionPointId: starterBrick.metadata!.id,
     })();
 
     modDefinition.extensionPoints.push({
@@ -404,7 +404,7 @@ describe("replaceModComponent round trip", () => {
       apiVersion: "v2",
     });
 
-    const starterBrickId = starterBrick.metadata!.id!;
+    const starterBrickId = starterBrick.metadata!.id;
     const modDefinition = innerStarterBrickModDefinitionFactory({
       extensionPointRef: starterBrickId as any,
     })({
@@ -444,7 +444,7 @@ describe("replaceModComponent round trip", () => {
       produce(modDefinition, (draft) => {
         draft.apiVersion = "v3";
         castDraft(draft.metadata).id = newId;
-        draft.definitions![starterBrick.metadata!.id!]!.apiVersion = "v3";
+        draft.definitions![starterBrick.metadata!.id]!.apiVersion = "v3";
         draft.extensionPoints[0]!.label = "New Label";
 
         // `variableDefinition` is required on mod component form state, so it gets populated on the mod definition
@@ -456,12 +456,12 @@ describe("replaceModComponent round trip", () => {
   test("throws when API version mismatch and cannot update mod", async () => {
     const starterBrick = starterBrickDefinitionFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
-      extensionPointId: starterBrick.metadata!.id!,
+      extensionPointId: starterBrick.metadata!.id,
     })({
       apiVersion: "v2",
       extensionPoints: [
         modComponentDefinitionFactory({
-          id: starterBrick.metadata!.id!,
+          id: starterBrick.metadata!.id,
         }),
         modComponentDefinitionFactory(),
       ],
@@ -797,7 +797,7 @@ describe("buildNewMod", () => {
       integrationDependencies: [
         integrationDependencyFactory({ integrationId, outputKey }),
       ],
-      extensionPointId: starterBrick.metadata!.id!,
+      extensionPointId: starterBrick.metadata!.id,
     }) as SerializedModComponent;
 
     const { fromModComponent } = adapter(starterBrick.definition.type);
