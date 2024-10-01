@@ -23,6 +23,7 @@ import { serializeError } from "serialize-error";
 import postMessage, {
   addPostMessageListener,
   type RequestPacket,
+  SandboxTimeoutError,
 } from "./postMessage";
 import { sleep } from "@/utils/timeUtils";
 
@@ -146,5 +147,167 @@ describe("addPostMessageListener", () => {
 
     // Cleanup listener
     controller.abort();
+  });
+});
+
+describe("SandboxTimeoutError", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test("throws SandboxTimeoutError with correct information for single message", async () => {
+    const channel = {
+      postMessage(_: unknown, __: string, [port]: MessagePort[]): void {
+        // Don't respond to simulate a timeout
+      },
+    };
+
+    const promise = postMessage({
+      type: "SANDBOX_PING",
+      payload: { data: "test" },
+      recipient: channel as Window,
+    });
+
+    jest.runAllTimers();
+
+    await expect(promise).rejects.toThrow(SandboxTimeoutError);
+    await expect(promise).rejects.toMatchObject({
+      name: "SandboxTimeoutError",
+      message:
+        "Message SANDBOX_PING did not receive a response within 5 seconds",
+      sandboxMessage: {
+        type: "SANDBOX_PING",
+        payloadSize: expect.any(Number),
+        timestamp: expect.any(Number),
+      },
+      pendingSandboxMessages: [],
+    });
+  });
+
+  test("throws SandboxTimeoutError with correct information for multiple messages", async () => {
+    const unresponsiveChannel = {
+      postMessage(_: unknown, __: string, [___]: MessagePort[]): void {
+        // Don't respond to simulate a timeout
+      },
+    };
+
+    const promise1 = postMessage({
+      type: "SANDBOX_FOO",
+      payload: { data: "test1" },
+      recipient: unresponsiveChannel as Window,
+    });
+
+    const promise2 = postMessage({
+      type: "SANDBOX_BAR",
+      payload: { data: "test2" },
+      recipient: unresponsiveChannel as Window,
+    });
+
+    jest.runAllTimers();
+
+    const promise3 = postMessage({
+      type: "SANDBOX_BAZ",
+      payload: { data: "test3" },
+      recipient: unresponsiveChannel as Window,
+    });
+
+    await expect(promise1).rejects.toThrow(SandboxTimeoutError);
+    await expect(promise1).rejects.toMatchObject({
+      name: "SandboxTimeoutError",
+      message:
+        "Message SANDBOX_FOO did not receive a response within 5 seconds",
+      sandboxMessage: {
+        type: "SANDBOX_FOO",
+        payloadSize: expect.any(Number),
+        timestamp: expect.any(Number),
+      },
+      pendingSandboxMessages: expect.arrayContaining([
+        {
+          type: "SANDBOX_BAR",
+          payloadSize: expect.any(Number),
+          timestamp: expect.any(Number),
+        },
+        {
+          type: "SANDBOX_BAZ",
+          payloadSize: expect.any(Number),
+          timestamp: expect.any(Number),
+        },
+      ]),
+    });
+
+    await expect(promise2).rejects.toThrow(SandboxTimeoutError);
+    await expect(promise2).rejects.toMatchObject({
+      name: "SandboxTimeoutError",
+      message:
+        "Message SANDBOX_BAR did not receive a response within 5 seconds",
+      sandboxMessage: {
+        type: "SANDBOX_BAR",
+        payloadSize: expect.any(Number),
+        timestamp: expect.any(Number),
+      },
+      pendingSandboxMessages: expect.arrayContaining([
+        {
+          type: "SANDBOX_BAZ",
+          payloadSize: expect.any(Number),
+          timestamp: expect.any(Number),
+        },
+      ]),
+    });
+
+    jest.runAllTimers();
+    await expect(promise3).rejects.toThrow(SandboxTimeoutError);
+    await expect(promise3).rejects.toMatchObject({
+      name: "SandboxTimeoutError",
+      message:
+        "Message SANDBOX_BAZ did not receive a response within 5 seconds",
+      sandboxMessage: {
+        type: "SANDBOX_BAZ",
+        payloadSize: expect.any(Number),
+        timestamp: expect.any(Number),
+      },
+      pendingSandboxMessages: [],
+    });
+  });
+
+  test("clears metadata for resolved messages", async () => {
+    const channel = {
+      postMessage(_: unknown, __: string, [port]: MessagePort[]): void {
+        setTimeout(() => {
+          port!.postMessage({ response: "pong" });
+        }, 1000);
+      },
+    };
+
+    const promise = postMessage({
+      type: "SANDBOX_PING",
+      payload: { data: "test" },
+      recipient: channel as Window,
+    });
+
+    jest.runAllTimers();
+    await promise;
+
+    const timeoutPromise = postMessage({
+      type: "SANDBOX_TIMEOUT",
+      payload: { data: "timeout" },
+      recipient: channel as Window,
+    });
+
+    jest.runAllTimers();
+
+    await expect(timeoutPromise).rejects.toThrow(SandboxTimeoutError);
+    await expect(timeoutPromise).rejects.toMatchObject({
+      name: "SandboxTimeoutError",
+      sandboxMessage: {
+        type: "SANDBOX_TIMEOUT",
+        payloadSize: expect.any(Number),
+        timestamp: expect.any(Number),
+      },
+      pendingSandboxMessages: [],
+    });
   });
 });
