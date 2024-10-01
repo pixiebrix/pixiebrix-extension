@@ -160,7 +160,7 @@ export class PageEditorPage extends BasePageObject {
         "Save the mod to assign an id",
       ),
     ).toBeVisible();
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-renders several times so we need a slight delay here before playwright clicks
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-mounts several times so we need a slight delay here before playwright clicks
     await this.page.waitForTimeout(2000);
     await modListItem.saveButton.click();
 
