@@ -29,7 +29,7 @@ test.skip("#8104: Do not automatically close the sidebar when saving in the Page
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  await pageEditorPage.modListingPanel.addStarterBrick({
+  await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Sidebar Panel",
   });
 

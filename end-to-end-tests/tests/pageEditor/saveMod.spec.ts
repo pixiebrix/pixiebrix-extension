@@ -30,7 +30,7 @@ test("can save a new trigger mod", async ({
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
-  await pageEditorPage.modListingPanel.addStarterBrick({
+  await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Trigger",
   });
   await pageEditorPage.brickConfigurationPanel.fillField(

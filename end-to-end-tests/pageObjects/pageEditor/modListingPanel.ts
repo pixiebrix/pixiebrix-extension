@@ -66,7 +66,7 @@ export class ModActionMenu extends BasePageObject {
   }
 }
 
-type AddStarterBrickInput =
+type AddNewModInputs =
   | {
       starterBrickName: NotButtonStarterBrickUIName;
       insertButtonCallback?: never;
@@ -116,10 +116,10 @@ export class ModListingPanel extends BasePageObject {
    * @returns modComponentName the generated mod component name
    */
   @ModifiesModFormState
-  async addStarterBrick({
+  async addNewMod({
     starterBrickName,
     insertButtonCallback,
-  }: AddStarterBrickInput): Promise<{
+  }: AddNewModInputs): Promise<{
     modComponentNameMatcher: RegExp;
   }> {
     await this.newModButton.click();

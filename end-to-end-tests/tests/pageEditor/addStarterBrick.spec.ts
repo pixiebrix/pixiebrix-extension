@@ -37,7 +37,7 @@ test("Add new mod with different starter brick components", async ({
 
   await test.step("Add new Button starter brick", async () => {
     const { modComponentNameMatcher } =
-      await pageEditorPage.modListingPanel.addStarterBrick({
+      await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Button",
         async insertButtonCallback() {
           await pageEditorPage.selectConnectedPageElement(
@@ -69,7 +69,7 @@ test("Add new mod with different starter brick components", async ({
 
   await test.step("Add new Context Menu starter brick", async () => {
     const { modComponentNameMatcher } =
-      await pageEditorPage.modListingPanel.addStarterBrick({
+      await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Context Menu",
       });
     await expect(brickPipeline).toHaveCount(1);
@@ -83,7 +83,7 @@ test("Add new mod with different starter brick components", async ({
 
   await test.step("Add new Quick Bar Action starter brick", async () => {
     const { modComponentNameMatcher } =
-      await pageEditorPage.modListingPanel.addStarterBrick({
+      await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Quick Bar Action",
       });
     await expect(brickPipeline).toHaveCount(1);
@@ -97,7 +97,7 @@ test("Add new mod with different starter brick components", async ({
 
   await test.step("Add new Sidebar Panel starter brick", async () => {
     const { modComponentNameMatcher } =
-      await pageEditorPage.modListingPanel.addStarterBrick({
+      await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Sidebar Panel",
       });
     await expect(brickPipeline).toHaveCount(2);
@@ -119,7 +119,7 @@ test("Add new mod with different starter brick components", async ({
 
   await test.step("Add new Trigger starter brick", async () => {
     const { modComponentNameMatcher } =
-      await pageEditorPage.modListingPanel.addStarterBrick({
+      await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Trigger",
       });
     await expect(brickPipeline).toHaveCount(1);
@@ -163,7 +163,7 @@ test("Add starter brick to mod", async ({
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
   // Create arbitrary mod to which to add starter bricks
-  await pageEditorPage.modListingPanel.addStarterBrick({
+  await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Trigger",
   });
   const modName = "New Mod";

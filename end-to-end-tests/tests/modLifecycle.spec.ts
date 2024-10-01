@@ -34,7 +34,7 @@ test("create, run, package, and update mod", async ({
   await page.goto("/create-react-app/table");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  await pageEditorPage.modListingPanel.addStarterBrick({
+  await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Button",
     async insertButtonCallback() {
       await pageEditorPage.selectConnectedPageElement(
