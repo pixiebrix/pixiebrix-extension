@@ -100,7 +100,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
       return initialFormState as ModComponentFormState;
     },
-    [modMetadata, setInsertingStarterBrickType, suggestElements],
+    [getNewModName, modMetadata, setInsertingStarterBrickType, suggestElements],
   );
 
   return useCallback(
@@ -150,13 +150,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         });
       }
     },
-    [
-      dispatch,
-      flagOff,
-      suggestElements,
-      getInitialModComponentFormState,
-      setInsertingStarterBrickType,
-    ],
+    [flagOff, modMetadata, dispatch, getInitialModComponentFormState],
   );
 }
 
