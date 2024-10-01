@@ -279,13 +279,12 @@ describe("SandboxTimeoutError", () => {
       postMessage(_: unknown, __: string, [port]: MessagePort[]): void {
         setTimeout(() => {
           port!.postMessage({ response: "pong" });
-        }, 1000);
+        }, 100);
       },
     };
 
     const promise = postMessage({
       type: "SANDBOX_PING",
-      payload: { data: "test" },
       recipient: channel as Window,
     });
 
@@ -295,14 +294,14 @@ describe("SandboxTimeoutError", () => {
           expect.any(String),
           {
             type: "SANDBOX_PING",
-            payloadSize: expect.any(Number),
+            payloadSize: null,
             timestamp: expect.any(Number),
           },
         ],
       ]),
     );
 
-    jest.runAllTimers();
+    jest.advanceTimersByTime(100);
     await expect(promise).resolves.toBe("pong");
 
     expect(pendingMessageMetadataMap).toEqual(new Map());
