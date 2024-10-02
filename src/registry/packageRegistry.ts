@@ -176,7 +176,7 @@ const ensurePopulated = memoizeUntilSettled(async () => {
 export async function clear(): Promise<void> {
   await withRegistryDB(async (db) => {
     await db.clear(BRICK_STORE);
-  }, IDB_OPERATION.PACKAGE_REGISTRY.CLEAR);
+  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].CLEAR);
 }
 
 /**
@@ -188,7 +188,7 @@ export async function recreateDB(): Promise<void> {
   // Open the database to recreate it
   await withRegistryDB(
     async () => {},
-    IDB_OPERATION.PACKAGE_REGISTRY.RECREATE_DB,
+    IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].RECREATE_DB,
   );
 
   // Re-populate the packages from the remote registry
@@ -218,7 +218,7 @@ export async function getByKinds(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
         latestVersion(versions)!,
     );
-  }, IDB_OPERATION.PACKAGE_REGISTRY.GET_BY_KINDS);
+  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS);
 }
 
 /**
@@ -228,7 +228,7 @@ export async function count(): Promise<number> {
   // Don't need to ensure populated, because we're just counting current records
   return withRegistryDB(
     async (db) => db.count(BRICK_STORE),
-    IDB_OPERATION.PACKAGE_REGISTRY.COUNT,
+    IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].COUNT,
   );
 }
 
@@ -244,7 +244,7 @@ async function replaceAll(packages: PackageVersion[]): Promise<void> {
     await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
 
     await tx.done;
-  }, IDB_OPERATION.PACKAGE_REGISTRY.REPLACE_ALL);
+  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].REPLACE_ALL);
 }
 
 export function parsePackage(
@@ -294,5 +294,5 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
 
     return latestVersion(versions);
-  }, IDB_OPERATION.PACKAGE_REGISTRY.FIND);
+  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].FIND);
 }
