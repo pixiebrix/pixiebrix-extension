@@ -16,7 +16,7 @@ export const DATABASE_NAME = {
 } as const;
 
 export const IDB_OPERATION = {
-  LOG: {
+  [DATABASE_NAME.LOG]: {
     APPEND_ENTRY: "appendEntry",
     COUNT: "count",
     RECREATE_DB: "recreateDB",
@@ -26,7 +26,7 @@ export const IDB_OPERATION = {
     SWEEP_LOGS: "sweepLogs",
     CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
   },
-  TRACE: {
+  [DATABASE_NAME.TRACE]: {
     ADD_TRACE_ENTRY: "addTraceEntry",
     ADD_TRACE_EXIT: "addTraceExit",
     CLEAR_TRACES: "clearTraces",
@@ -35,7 +35,7 @@ export const IDB_OPERATION = {
     CLEAR_MOD_COMPONENT_TRACES: "clearModComponentTraces",
     GET_LATEST_RUN_BY_MOD_COMPONENT_ID: "getLatestRunByModComponentId",
   },
-  PACKAGE_REGISTRY: {
+  [DATABASE_NAME.PACKAGE_REGISTRY]: {
     CLEAR: "clear",
     RECREATE_DB: "recreateDB",
     GET_BY_KINDS: "getByKinds",
@@ -44,6 +44,11 @@ export const IDB_OPERATION = {
     FIND: "find",
   },
 } as const;
+
+type OperationNames =
+  | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.LOG]>
+  | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.TRACE]>
+  | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.PACKAGE_REGISTRY]>;
 
 // IDB Quota Error message strings
 const QUOTA_ERRORS = [
@@ -98,10 +103,8 @@ export function handleIdbError(
     operationName,
     databaseName,
   }: {
-    operationName:
-      | ValueOf<typeof IDB_OPERATION.LOG>
-      | ValueOf<typeof IDB_OPERATION.TRACE>
-      | ValueOf<typeof IDB_OPERATION.PACKAGE_REGISTRY>;
+    operationName: OperationNames;
+
     databaseName: ValueOf<typeof DATABASE_NAME>;
   },
 ): void {
@@ -131,10 +134,7 @@ export const withIdbErrorHandling =
   ) =>
   async <DBOperationResult>(
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
-    operationName:
-      | ValueOf<typeof IDB_OPERATION.LOG>
-      | ValueOf<typeof IDB_OPERATION.TRACE>
-      | ValueOf<typeof IDB_OPERATION.PACKAGE_REGISTRY>,
+    operationName: OperationNames,
   ) => {
     let db: IDBPDatabase<DBType> | null = null;
     try {
