@@ -28,10 +28,14 @@ import {
   type OutputKey,
   type RenderedArgs,
 } from "@/types/runtimeTypes";
-import { deleteDatabase } from "@/utils/idbUtils";
+import {
+  DATABASE_NAME,
+  deleteDatabase,
+  IDB_OPERATION,
+  withIdbErrorHandling,
+} from "@/utils/idbUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-const DATABASE_NAME = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
 const DB_VERSION_NUMBER = 4;
 
@@ -181,7 +185,7 @@ async function openTraceDB() {
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<TraceDB> | null = null;
 
-  database = await openDB<TraceDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
+  database = await openDB<TraceDB>(DATABASE_NAME.TRACE, DB_VERSION_NUMBER, {
     upgrade(db) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -226,6 +230,9 @@ async function openTraceDB() {
   return database;
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const withTraceDB = withIdbErrorHandling(openTraceDB, DATABASE_NAME.TRACE);
+
 export async function addTraceEntry(record: TraceEntryData): Promise<void> {
   if (!record.runId) {
     console.debug("Ignoring trace entry data without runId");
@@ -237,13 +244,10 @@ export async function addTraceEntry(record: TraceEntryData): Promise<void> {
     return;
   }
 
-  const db = await openTraceDB();
-  try {
+  await withTraceDB(async (db) => {
     const callId = objectHash(record.branches);
     await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.TRACE.ADD_TRACE_ENTRY);
 }
 
 export async function addTraceExit(record: TraceExitData): Promise<void> {
@@ -259,9 +263,7 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const callId = objectHash(record.branches);
 
-  const db = await openTraceDB();
-
-  try {
+  await withTraceDB(async (db) => {
     const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
     const data = await tx.store.get(
@@ -281,33 +283,26 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
         callId,
       });
     }
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.TRACE.ADD_TRACE_EXIT);
 }
 
 /**
  * Clear all trace records.
  */
 export async function clearTraces(): Promise<void> {
-  const db = await openTraceDB();
-  try {
+  await withTraceDB(async (db) => {
     await db.clear(ENTRY_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.TRACE.CLEAR_TRACES);
 }
 
 /**
  * Returns the number of trace records in the database.
  */
 export async function count(): Promise<number> {
-  const db = await openTraceDB();
-  try {
-    return await db.count(ENTRY_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  return withTraceDB(
+    async (db) => db.count(ENTRY_OBJECT_STORE),
+    IDB_OPERATION.TRACE.COUNT,
+  );
 }
 
 /**
@@ -315,9 +310,8 @@ export async function count(): Promise<number> {
  */
 export async function recreateDB(): Promise<void> {
   // Delete the database and open the database to recreate it
-  await deleteDatabase(DATABASE_NAME);
-  const db = await openTraceDB();
-  db.close();
+  await deleteDatabase(DATABASE_NAME.TRACE);
+  await withTraceDB(async () => {}, IDB_OPERATION.TRACE.RECREATE_DB);
 }
 
 export async function clearModComponentTraces(
@@ -325,9 +319,7 @@ export async function clearModComponentTraces(
 ): Promise<void> {
   let cnt = 0;
 
-  const db = await openTraceDB();
-
-  try {
+  await withTraceDB(async (db) => {
     if ((await db.count(ENTRY_OBJECT_STORE)) === 0) {
       return;
     }
@@ -344,9 +336,7 @@ export async function clearModComponentTraces(
       cnt,
       modComponentId,
     );
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.TRACE.CLEAR_MOD_COMPONENT_TRACES);
 }
 
 export async function getLatestRunByModComponentId(
@@ -356,9 +346,7 @@ export async function getLatestRunByModComponentId(
     return [];
   }
 
-  const db = await openTraceDB();
-
-  try {
+  return withTraceDB(async (db) => {
     const matches = await db
       .transaction(ENTRY_OBJECT_STORE, "readonly")
       .objectStore(ENTRY_OBJECT_STORE)
@@ -377,7 +365,5 @@ export async function getLatestRunByModComponentId(
     }
 
     return [];
-  } finally {
-    db.close();
-  }
+  }, IDB_OPERATION.TRACE.GET_LATEST_RUN_BY_MOD_COMPONENT_ID);
 }

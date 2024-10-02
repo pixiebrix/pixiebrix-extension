@@ -21,7 +21,6 @@ import {
   count,
   getLogEntries,
   sweepLogs,
-  reportToApplicationErrorTelemetry,
 } from "@/telemetry/logging";
 import {
   logEntryFactory,
@@ -76,13 +75,13 @@ const mockFlag = (flag: FeatureFlag) => {
 
 const sendMessageSpy = jest.spyOn(global.chrome.runtime, "sendMessage");
 
-afterEach(async () => {
-  await clearLog();
-  flagOnMock.mockReset();
-  sendMessageSpy.mockReset();
-});
-
 describe("logging", () => {
+  beforeEach(async () => {
+    await clearLog();
+    flagOnMock.mockReset();
+    sendMessageSpy.mockReset();
+  });
+
   test("appendEntry", async () => {
     flagOnMock.mockResolvedValue(false);
     await appendEntry(logEntryFactory());
@@ -200,42 +199,5 @@ describe("logging", () => {
         context: expect.objectContaining({ modId }),
       }),
     ]);
-  });
-
-  test("allow Application error telemetry reporting", async () => {
-    flagOnMock.mockResolvedValue(false);
-
-    const nestedError = new Error("nested cause");
-    const reportedError = new Error("test", { cause: nestedError });
-    await reportToApplicationErrorTelemetry(reportedError, {}, "error message");
-
-    expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
-      "application-error-telemetry-disable-report",
-    );
-    expect(sendMessageSpy).toHaveBeenCalledOnce();
-    expect(sendMessageSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        target: "offscreen-doc",
-        data: expect.objectContaining({
-          error: serializeError(reportedError),
-          errorMessage: "error message",
-          messageContext: expect.objectContaining({
-            cause: nestedError,
-            code: undefined,
-            extensionVersion: "1.5.2",
-            name: "Error",
-            stack: expect.any(String),
-          }),
-        }),
-      }),
-    );
-  });
-
-  test("disable Application error telemetry reporting", async () => {
-    mockFlag(FeatureFlags.APPLICATION_ERROR_TELEMETRY_DISABLE_REPORT);
-
-    await reportToApplicationErrorTelemetry(new Error("test"), {}, "");
-
-    expect(sendMessageSpy).not.toHaveBeenCalled();
   });
 });
