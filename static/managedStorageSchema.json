@@ -49,6 +49,11 @@
       "type": "boolean",
       "description": "Disable the browser warning for non-Chrome browsers, e.g., Microsoft Edge",
       "default": false
+    },
+    "hideSidebarLogo": {
+      "type": "boolean",
+      "description": "If set, hide the logo on the PixieBrix sidebar, overriding the team theme.",
+      "default": false
     }
   }
 }
