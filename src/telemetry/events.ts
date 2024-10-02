@@ -16,10 +16,10 @@
  */
 
 export const Events = {
-  AUTH_WIDGET_SELECT: "AuthWidgetSelect",
-  AUTH_WIDGET_REFRESH: "AuthWidgetRefresh",
-  AUTH_WIDGET_SHOW_ADD_NEW: "AuthWidgetShowAddNew",
-  AUTH_WIDGET_HIDE_ADD_NEW: "AuthWidgetHideAddNew",
+  ACTIVATION_INTEGRATION_CONFIG_SELECT: "AuthWidgetSelect",
+  ACTIVATION_INTEGRATION_REFRESH: "AuthWidgetRefresh",
+  ACTIVATION_INTEGRATION_ADD_NEW_CLICK: "AuthWidgetShowAddNew",
+  ACTIVATION_INTEGRATION_ADD_NEW_CLOSE: "AuthWidgetHideAddNew",
 
   BRICK_ADD: "BrickAdd",
   BRICK_COMMENTS_UPDATE: "BrickCommentsUpdate",
