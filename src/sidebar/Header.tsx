@@ -53,17 +53,16 @@ const Header: React.FunctionComponent = () => {
 
   return (
     <div className="d-flex py-2 pl-2 pr-0 align-items-center">
-      {showSidebarLogo && (
-        // `mx-auto` centers the logo
-        <div className="mx-auto">
+      <div className="mx-auto">
+        {showSidebarLogo && (
           <img
             src={customSidebarLogo ?? logo.regular}
             alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
             className={styles.logo}
             data-testid="sidebarHeaderLogo"
           />
-        </div>
-      )}
+        )}
+      </div>
       {showDeveloperUI && (
         <Button
           type="button"
