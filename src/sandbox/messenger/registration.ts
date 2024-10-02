@@ -17,7 +17,7 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
-import { addPostMessageListener } from "@/utils/postMessage";
+import { addPostMessageListener } from "@/sandbox/postMessage";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
