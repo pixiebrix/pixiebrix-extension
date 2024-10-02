@@ -25,6 +25,8 @@ import {
 import { initialTheme } from "@/themes/themeStore";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { activateTheme } from "@/background/messenger/api";
+import useAsyncState from "@/hooks/useAsyncState";
+import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 
 const themeStorageSubscribe = (callback: () => void) => {
   const abortController = new AbortController();
@@ -42,10 +44,13 @@ const themeStorageSubscribe = (callback: () => void) => {
 function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   // The active theme is fetched with `getActiveTheme` in the background script and cached in the themeStorage,
   // This hook subscribes to changes in themeStorage to retrieve the latest current activeTheme
-  const { data: cachedTheme, isLoading } = useAsyncExternalStore(
-    themeStorageSubscribe,
-    themeStorage.get,
-  );
+  const { data: cachedTheme, isLoading: isCachedThemeLoading } =
+    useAsyncExternalStore(themeStorageSubscribe, themeStorage.get);
+
+  const { data: hideSidebarLogo, isLoading: isManagedStorageLoading } =
+    useAsyncState(async () => readManagedStorageByKey("hideSidebarLogo"), []);
+
+  const isLoading = isManagedStorageLoading || isCachedThemeLoading;
 
   useEffect(() => {
     if (
@@ -70,7 +75,15 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
     setThemeFavicon(activeTheme.themeName);
   }, [activeTheme, cachedTheme, isLoading]);
 
-  return { activeTheme, isLoading };
+  return {
+    activeTheme: {
+      ...activeTheme,
+      // There is a managed storage policy to hide the sidebar logo, overriding the team theme
+      // See managedStorageSchema.json
+      showSidebarLogo: hideSidebarLogo ? false : activeTheme.showSidebarLogo,
+    },
+    isLoading,
+  };
 }
 
 export default useTheme;
