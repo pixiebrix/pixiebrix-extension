@@ -96,8 +96,7 @@ async function findSpreadsheetIdFromFieldValue(
   const sanitizedIntegrationConfig =
     await integrationConfigLocator.findSanitizedIntegrationConfig(
       integrationId,
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion,@typescript-eslint/no-non-null-assertion -- just checked above
-      configId!,
+      configId,
     );
   const configSpreadsheetId = sanitizedIntegrationConfig.config?.spreadsheetId;
 

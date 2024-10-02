@@ -170,8 +170,8 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
     expect(result).toEqual([
       {
-        name: onePublicActivatedMod!._recipe!.id,
-        version: onePublicActivatedMod!._recipe!.version,
+        name: onePublicActivatedMod._recipe!.id,
+        version: onePublicActivatedMod._recipe!.version,
       },
     ]);
     expect(reportError).toHaveBeenCalled();

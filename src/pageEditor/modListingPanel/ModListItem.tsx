@@ -17,10 +17,7 @@
 
 import React, { type PropsWithChildren } from "react";
 import styles from "./Entry.module.scss";
-import {
-  ModHasUpdateIcon,
-  UnsavedChangesIcon,
-} from "@/pageEditor/modListingPanel/ModComponentIcons";
+import { ModHasUpdateIcon } from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -110,11 +107,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
         </span>
         <span className={styles.name}>{name}</span>
-        {isDirty && !isActive && (
-          <span className={cx(styles.icon, "text-danger")}>
-            <UnsavedChangesIcon />
-          </span>
-        )}
         {hasUpdate && (
           <span className={cx(styles.icon, "text-warning")}>
             <ModHasUpdateIcon
@@ -122,18 +114,17 @@ const ModListItem: React.FC<ModListItemProps> = ({
             />
           </span>
         )}
-        {isActive && (
-          <ActionMenu
-            labelRoot={name}
-            onSave={onSave}
-            onReset={onReset}
-            onDeactivate={onDeactivate}
-            onAddStarterBrick={addNewModComponent}
-            onClone={onClone}
-            isDirty={isDirty}
-            disabled={isSaving}
-          />
-        )}
+        <ActionMenu
+          isActive={isActive}
+          labelRoot={name}
+          onSave={onSave}
+          onReset={onReset}
+          onDeactivate={onDeactivate}
+          onAddStarterBrick={addNewModComponent}
+          onClone={onClone}
+          isDirty={isDirty}
+          disabled={isSaving}
+        />
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={modId}>
         <>{children}</>

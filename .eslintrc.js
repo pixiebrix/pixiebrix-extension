@@ -327,7 +327,6 @@ module.exports = {
     {
       files: ["**/*.test.ts?(x)", "**/*.spec.ts"],
       rules: {
-        "@typescript-eslint/no-unnecessary-type-assertion": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
       },
     },

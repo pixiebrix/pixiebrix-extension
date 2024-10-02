@@ -37,6 +37,7 @@ import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 
 /**
  * Get an example brick config for a given brick id.
@@ -192,9 +193,9 @@ export function getExampleBrickConfig(
       };
     }
 
-    case "@pixiebrix/state/assign": {
+    case AssignModVariable.BRICK_ID: {
       return {
-        variableName: "",
+        variableName: toExpression("nunjucks", ""),
         value: toExpression("nunjucks", ""),
       };
     }

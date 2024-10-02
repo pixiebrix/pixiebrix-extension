@@ -35,8 +35,9 @@ import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponen
 import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
 
 type ActionMenuProps = {
+  isActive: boolean;
   labelRoot?: string;
-  onSave: () => Promise<void>;
+  onSave: (() => Promise<void>) | undefined;
   onDelete?: () => Promise<void>;
   onDeactivate?: () => Promise<void>;
   onClone: () => Promise<void>;
@@ -49,6 +50,7 @@ type ActionMenuProps = {
 };
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
+  isActive,
   labelRoot,
   onSave,
   onDelete = null,
@@ -135,17 +137,21 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
-      <SaveButton
-        ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
-        onClick={onSave}
-        disabled={!isDirty || disabled}
-      />
-      <EllipsisMenu
-        ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
-        items={menuItems}
-        classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
-        portal={true}
-      />
+      {onSave != null && (
+        <SaveButton
+          ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
+          onClick={onSave}
+          disabled={!isDirty || disabled}
+        />
+      )}
+      {isActive && (
+        <EllipsisMenu
+          ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
+          items={menuItems}
+          classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
+          portal={true}
+        />
+      )}
     </div>
   );
 };

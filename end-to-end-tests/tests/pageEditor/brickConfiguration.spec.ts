@@ -21,6 +21,7 @@ import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
 import { type ConfigurationForm } from "../../pageObjects/pageEditor/configurationForm";
+import { type ModListItem } from "../../pageObjects/pageEditor/modListingPanel";
 
 const testModDefinitionName = "brick-configuration";
 test.use({ modDefinitionNames: [testModDefinitionName] });
@@ -34,6 +35,7 @@ test("brick configuration", async ({
   const { id: modId } = modDefinitionsMap[testModDefinitionName]!;
   let pageEditorPage: PageEditorPage;
   let brickConfigurationPanel: ConfigurationForm;
+  let modListItem: ModListItem;
 
   await test.step("Activate mods, and initialize page editor, and select the mod starter brick", async () => {
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -45,7 +47,7 @@ test("brick configuration", async ({
 
     brickConfigurationPanel = pageEditorPage.brickConfigurationPanel;
 
-    const modListItem = pageEditorPage.modListingPanel.getModListItemByName(
+    modListItem = pageEditorPage.modListingPanel.getModListItemByName(
       "Test mod - Brick Configuration",
     );
     await modListItem.select();
@@ -55,19 +57,12 @@ test("brick configuration", async ({
       "Context menu item",
     );
     await testStarterBrick.select();
-
-    await expect(testStarterBrick.saveButton).toBeDisabled();
   });
 
-  await test.step("Modify the mod name, title and menu context", async () => {
+  await test.step("Modify the mod component name, title and menu context", async () => {
     await brickConfigurationPanel.fillField("Name", "A cool menu action");
 
-    const updatedTestStarterBrick =
-      pageEditorPage.modListingPanel.getModStarterBrick(
-        "Test mod - Brick Configuration",
-        "A cool menu action",
-      );
-    await expect(updatedTestStarterBrick.saveButton).toBeEnabled();
+    await expect(modListItem.saveButton).toBeEnabled();
 
     await brickConfigurationPanel.fillField("Title", "Do cool stuff with ");
     await brickConfigurationPanel.clickShortcut("Title", "selected text");
@@ -121,6 +116,7 @@ test("brick configuration", async ({
     await brickConfigurationPanel.clickShortcut("Sites/APIs", "All URLs");
   });
 
+  await modListItem!.select();
   await pageEditorPage!.saveActiveMod();
 
   await verifyModDefinitionSnapshot({

@@ -21,7 +21,10 @@ import injectIframe, {
   hiddenIframeStyle,
   IframeInjectionError,
 } from "@/utils/injectIframe";
-import postMessage, { type Payload } from "@/utils/postMessage";
+import postMessage, {
+  type Payload,
+  SandboxTimeoutError,
+} from "@/sandbox/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import pRetry from "p-retry";
@@ -32,29 +35,57 @@ import { isSpecificError } from "@/errors/errorHelpers";
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
 const MAX_RETRIES = 3;
 
-const loadSandbox = pMemoize(async () =>
-  injectIframe(
-    chrome.runtime.getURL("sandbox.html"),
-    hiddenIframeStyle,
-    SANDBOX_SHADOW_ROOT_ID,
-  ),
-);
+const loadSandbox = pMemoize(async () => {
+  try {
+    return await injectIframe(
+      chrome.runtime.getURL("sandbox.html"),
+      hiddenIframeStyle,
+      SANDBOX_SHADOW_ROOT_ID,
+    );
+  } catch (error) {
+    if (isSpecificError(error, TimeoutError)) {
+      // Implicitly retry sandbox injection by removing the iframe if the load timeout occurs
+      const sandboxWrapper = document.querySelector(
+        `#${SANDBOX_SHADOW_ROOT_ID}`,
+      );
+      if (sandboxWrapper) {
+        sandboxWrapper.remove();
+      }
+    }
+
+    throw error;
+  }
+});
 
 const getSandbox = memoizeUntilSettled(async () => {
   const sandbox = await loadSandbox();
-  const isSandboxWrapperInDom = document.querySelector(
-    `#${SANDBOX_SHADOW_ROOT_ID}`,
-  );
+  const sandboxWrapper = document.querySelector(`#${SANDBOX_SHADOW_ROOT_ID}`);
 
-  if (isSandboxWrapperInDom) {
+  if (!sandboxWrapper) {
+    pMemoizeClear(loadSandbox);
+    throw new IframeInjectionError("Sandbox wrapper was removed from the DOM.");
+  }
+
+  try {
     await postMessage({
       recipient: sandbox.contentWindow,
       payload: "ping",
       type: "SANDBOX_PING",
     });
-  } else {
-    pMemoizeClear(loadSandbox);
-    throw new IframeInjectionError("Sandbox iframe was removed from the DOM.");
+  } catch (error) {
+    if (
+      isSpecificError(error, TimeoutError) ||
+      isSpecificError(error, SandboxTimeoutError)
+    ) {
+      // It's possible that the sandbox has errored and is no longer responding to messages.
+      // In this case, we should remove the sandbox to retry injecting a new one for future
+      // messages.
+      sandboxWrapper.remove();
+      pMemoizeClear(loadSandbox);
+      throw error;
+    }
+
+    throw error;
   }
 
   return sandbox.contentWindow;
@@ -79,7 +110,8 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
         retries: MAX_RETRIES,
         shouldRetry: (error) =>
           isSpecificError(error, TimeoutError) ||
-          isSpecificError(error, IframeInjectionError),
+          isSpecificError(error, IframeInjectionError) ||
+          isSpecificError(error, SandboxTimeoutError),
         onFailedAttempt(error) {
           console.warn(
             `Failed to send message ${type} to sandbox. Retrying... Attempt ${error.attemptNumber}`,
@@ -90,7 +122,8 @@ async function postSandboxMessage<TReturn extends Payload = Payload>({
   } catch (error) {
     if (
       isSpecificError(error, TimeoutError) ||
-      isSpecificError(error, IframeInjectionError)
+      isSpecificError(error, IframeInjectionError) ||
+      isSpecificError(error, SandboxTimeoutError)
     ) {
       throw new Error(
         `Failed to send message ${type} to sandbox. The host page may be preventing the sandbox from loading.`,
