@@ -100,7 +100,7 @@ export function isIDBQuotaError(error: unknown): boolean {
 
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
 // to application error telemetry to avoid attempting to record the error in the idb log database.
-export function handleIdbError(
+function handleIdbError(
   error: unknown,
   {
     operationName,
