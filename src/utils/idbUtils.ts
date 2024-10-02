@@ -43,7 +43,10 @@ export const IDB_OPERATION = {
     REPLACE_ALL: "replaceAll",
     FIND: "find",
   },
-} as const;
+} as const satisfies Record<
+  ValueOf<typeof DATABASE_NAME>,
+  Record<string, string>
+>;
 
 type OperationNames =
   | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.LOG]>
