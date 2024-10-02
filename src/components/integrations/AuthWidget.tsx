@@ -73,7 +73,7 @@ const RefreshButton: React.VFC<{
       className={styles.actionButton}
       onClick={() => {
         refreshAuthOptions();
-        reportEvent(Events.AUTH_WIDGET_REFRESH);
+        reportEvent(Events.ACTIVATION_INTEGRATION_REFRESH);
       }}
       title="Refresh integration configurations"
     >
@@ -150,7 +150,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
 
       await helpers.setValue(id);
 
-      reportEvent(Events.AUTH_WIDGET_SELECT, {
+      reportEvent(Events.ACTIVATION_INTEGRATION_CONFIG_SELECT, {
         integration_id: integration.id,
         is_user_action: true,
         is_create: true,
@@ -186,7 +186,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
         upsertIntegrationConfig(config: IntegrationConfig) {
           dispatch(upsertIntegrationConfig(config));
           void helpers.setValue(config.id);
-          reportEvent(Events.AUTH_WIDGET_SELECT, {
+          reportEvent(Events.ACTIVATION_INTEGRATION_CONFIG_SELECT, {
             integration_id: config.integrationId,
             is_user_action: true,
             is_create: true,
@@ -205,7 +205,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
     }
 
     setShowEditorModal(true);
-    reportEvent(Events.AUTH_WIDGET_SHOW_ADD_NEW);
+    reportEvent(Events.ACTIVATION_INTEGRATION_ADD_NEW_CLICK);
   }, [
     dispatch,
     helpers,
@@ -240,7 +240,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
         integration={integration}
         onClose={() => {
           setShowEditorModal(false);
-          reportEvent(Events.AUTH_WIDGET_HIDE_ADD_NEW);
+          reportEvent(Events.ACTIVATION_INTEGRATION_ADD_NEW_CLOSE);
         }}
         onSave={save}
       />
