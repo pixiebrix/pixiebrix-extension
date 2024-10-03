@@ -98,11 +98,18 @@ describe("useTheme", () => {
     expect(activateTheme).toHaveBeenCalledOnce();
   });
 
-  it.each([{ policyValue: true }, { policyValue: false }])(
-    "overrides activeTheme when showSidebarLogo policy is $policyValue in managed storage",
-    async ({ policyValue }) => {
+  it.each([
+    { policyValue: true, themeValue: true, expectedValue: true },
+    { policyValue: true, themeValue: false, expectedValue: true },
+    { policyValue: false, themeValue: true, expectedValue: false },
+    { policyValue: false, themeValue: false, expectedValue: false },
+    { policyValue: undefined, themeValue: true, expectedValue: true },
+    { policyValue: undefined, themeValue: false, expectedValue: false },
+  ])(
+    "handles showSidebarLogo policy (policy: $policyValue, theme: $themeValue, expected: $expectedValue)",
+    async ({ policyValue, themeValue, expectedValue }) => {
       jest.mocked(useAsyncExternalStore).mockReturnValue({
-        data: { ...customTheme, showSidebarLogo: !policyValue },
+        data: { ...customTheme, showSidebarLogo: themeValue },
         isLoading: false,
       } as AsyncState);
       jest.mocked(readManagedStorageByKey).mockResolvedValue(policyValue);
@@ -111,40 +118,26 @@ describe("useTheme", () => {
 
       await waitForNextUpdate();
 
-      expect(result.current.activeTheme).toMatchObject({
-        ...customTheme,
-        showSidebarLogo: policyValue,
-      });
+      expect(result.current.activeTheme.showSidebarLogo).toBe(expectedValue);
     },
   );
 
-  it.each([
-    { scenario: "showSidebarLogo is undefined", mockPolicyValue: undefined },
-    {
-      scenario: "error occurs",
-      mockPolicyValue: new Error("Managed storage error"),
-    },
-  ])(
-    "uses activeTheme when $scenario in managed storage",
-    async ({ mockPolicyValue }) => {
-      jest.mocked(useAsyncExternalStore).mockReturnValue({
-        data: customTheme,
-        isLoading: false,
-      } as AsyncState);
+  it("uses activeTheme when an error occurs in managed storage", async () => {
+    jest.mocked(useAsyncExternalStore).mockReturnValue({
+      data: customTheme,
+      isLoading: false,
+    } as AsyncState);
 
-      if (mockPolicyValue instanceof Error) {
-        jest.mocked(readManagedStorageByKey).mockRejectedValue(mockPolicyValue);
-      } else {
-        jest.mocked(readManagedStorageByKey).mockResolvedValue(mockPolicyValue);
-      }
+    jest
+      .mocked(readManagedStorageByKey)
+      .mockRejectedValue(new Error("Managed storage error"));
 
-      const { result, waitForNextUpdate } = renderHook(() => useTheme());
+    const { result, waitForNextUpdate } = renderHook(() => useTheme());
 
-      await waitForNextUpdate();
+    await waitForNextUpdate();
 
-      expect(result.current.activeTheme.showSidebarLogo).toBe(
-        customTheme.showSidebarLogo,
-      );
-    },
-  );
+    expect(result.current.activeTheme.showSidebarLogo).toBe(
+      customTheme.showSidebarLogo,
+    );
+  });
 });
