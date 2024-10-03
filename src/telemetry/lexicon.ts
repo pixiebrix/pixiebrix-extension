@@ -88,7 +88,7 @@ export const lexicon: LexiconMap = {
   },
   BRICK_COMMENTS_UPDATE: {
     description:
-      "Triggered when a user updates the brick comment in the Data Panel 'comments' tab in the Page Editor. More specifically," +
+      "Triggered when a user updates the brick comment in the 'comments' tab of the Data Panel in the Page Editor. More specifically, " +
       "when a user modifies the comment and leaves the field.",
     tags: [LexiconTags.PAGE_EDITOR],
   },
