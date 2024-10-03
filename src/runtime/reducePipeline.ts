@@ -257,6 +257,14 @@ type RunBrickOptions = CommonOptions & {
   trace: TraceMetadata;
 };
 
+async function getLogValues(
+  logValues: RunBrickOptions["logValues"] | undefined,
+): Promise<boolean> {
+  const globalLoggingConfig = await getLoggingConfig();
+
+  return logValues ?? globalLoggingConfig.logValues ?? false;
+}
+
 /**
  * Get the lexical environment for running a pipeline. Currently, we're just tracking on the pipeline arg itself.
  * https://en.wikipedia.org/wiki/Closure_(computer_programming)
@@ -456,11 +464,9 @@ async function renderBrickArg(
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
-  const globalLoggingConfig = await getLoggingConfig();
-
   const {
     // If logValues not provided explicitly, default to the global setting
-    logValues = globalLoggingConfig.logValues ?? false,
+    logValues = await getLogValues(options.logValues),
     logger,
     explicitArg,
     explicitDataFlow,
@@ -637,7 +643,6 @@ async function applyReduceDefaults({
   Partial<ReduceOptions>,
   "modComponentRef"
 >): Promise<ReduceOptions> {
-  const globalLoggingConfig = await getLoggingConfig();
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {
@@ -652,7 +657,7 @@ async function applyReduceDefaults({
     explicitDataFlow: false,
     extendModVariable: false,
     // If logValues not provided explicitly, default to the global setting
-    logValues: logValues ?? globalLoggingConfig.logValues ?? false,
+    logValues: await getLogValues(logValues),
     // For stylistic consistency, default here instead of destructured parameters
     branches: [],
     // NOTE: do not set runId here. It should be set by the starter brick explicitly, or implicitly generated
@@ -960,6 +965,7 @@ export async function reduceModComponentPipeline(
       // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
       await platform.debugger.clear(
         partialOptions.modComponentRef.modComponentId,
+        { logValues: await getLogValues(partialOptions.logValues) },
       );
     } catch {
       // NOP
