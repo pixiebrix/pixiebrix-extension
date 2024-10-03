@@ -119,9 +119,11 @@ export function isIDBLargeValueError(error: unknown): boolean {
 function handleIdbError(
   error: unknown,
   {
+    message,
     operationName,
     databaseName,
   }: {
+    message: string;
     operationName: OperationNames;
     databaseName: ValueOf<typeof DATABASE_NAME>;
   },
@@ -132,14 +134,14 @@ function handleIdbError(
     idbDatabaseName: databaseName,
     ...getReportErrorAdditionalContext(),
   };
-  console.error("Error during IDB operation", {
+  console.error(message, {
     operationName,
     databaseName,
     error,
     context,
   });
   void reportToApplicationErrorTelemetry(
-    castError(error, `Error during ${operationName}`),
+    castError(error, message),
     context,
     errorMessage,
   );
@@ -175,9 +177,11 @@ export const withIdbErrorHandling =
           shouldRetry: (error) =>
             isIDBConnectionError(error) || isIDBLargeValueError(error),
           async onFailedAttempt(error) {
-            console.warn(
-              `${operationName} failed for IDB database: ${databaseName}. Retrying... Attempt ${error.attemptNumber}`,
-            );
+            handleIdbError(error, {
+              operationName,
+              databaseName,
+              message: `${operationName} failed for IDB database: ${databaseName}. Retrying... Attempt ${error.attemptNumber}`,
+            });
 
             db?.close();
 
@@ -186,7 +190,11 @@ export const withIdbErrorHandling =
         },
       );
     } catch (error) {
-      handleIdbError(error, { operationName, databaseName });
+      handleIdbError(error, {
+        operationName,
+        databaseName,
+        message: `${operationName} failed for IDB database ${databaseName}`,
+      });
 
       throw error;
     } finally {

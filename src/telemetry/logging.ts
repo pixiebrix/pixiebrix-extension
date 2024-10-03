@@ -189,7 +189,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
     async (db) => {
       await db.add(ENTRY_OBJECT_STORE, entry);
     },
-    { operationName: IDB_OPERATION.LOG.APPEND_ENTRY },
+    { operationName: IDB_OPERATION.LOG.APPEND_ENTRY, retry: true },
   ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
@@ -315,7 +315,7 @@ export async function getLogEntries(
         (x) => -Number.parseInt(x.timestamp, 10),
       );
     },
-    { operationName: IDB_OPERATION.LOG.GET_LOG_ENTRIES },
+    { operationName: IDB_OPERATION.LOG.GET_LOG_ENTRIES, retry: true },
   );
 }
 
