@@ -107,7 +107,7 @@ describe("useTheme", () => {
     "handles showSidebarLogo policy (policy: $policyValue, theme: $themeValue, expected: $expectedValue)",
     async ({ policyValue, themeValue, expectedValue }) => {
       jest.mocked(useAsyncExternalStore).mockReturnValue({
-        data: { ...customTheme, showSidebarLogo: !policyValue },
+        data: { ...customTheme, showSidebarLogo: themeValue },
         isLoading: false,
       } as AsyncState);
       jest.mocked(useManagedStorageState).mockReturnValue({
@@ -119,7 +119,7 @@ describe("useTheme", () => {
 
       expect(result.current.activeTheme).toMatchObject({
         ...customTheme,
-        showSidebarLogo: policyValue,
+        showSidebarLogo: expectedValue,
       });
     },
   );
