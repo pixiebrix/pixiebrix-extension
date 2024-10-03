@@ -25,6 +25,7 @@ import {
   withIdbErrorHandling,
   IDB_OPERATION,
   isIDBLargeValueError,
+  isIDBConnectionError,
 } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -226,6 +227,9 @@ export async function getByKinds(
     {
       operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
       retry: true,
+      // The large value error is fixable by re-syncing the packages
+      shouldRetry: (error) =>
+        isIDBConnectionError(error) || isIDBLargeValueError(error),
       async onRetry(error) {
         if (isIDBLargeValueError(error)) {
           await syncPackages();
