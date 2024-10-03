@@ -86,50 +86,44 @@ describe("useTheme", () => {
     expect(activateTheme).toHaveBeenCalledOnce();
   });
 
-  it("overrides activeTheme when showSidebarLoto policy is true in managed storage", async () => {
-    jest.mocked(readManagedStorageByKey).mockResolvedValue(true);
+  it.each([
+    { policyValue: true, expected: true },
+    { policyValue: false, expected: false },
+  ])(
+    "overrides activeTheme when showSidebarLogo policy is $policyValue in managed storage",
+    async ({ policyValue, expected }) => {
+      jest.mocked(readManagedStorageByKey).mockResolvedValue(policyValue);
 
-    const { result, waitForNextUpdate } = renderHook(() => useTheme());
+      const { result, waitForNextUpdate } = renderHook(() => useTheme());
 
-    await waitForNextUpdate();
+      await waitForNextUpdate();
 
-    expect(result.current.activeTheme.showSidebarLogo).toBe(true);
-  });
+      expect(result.current.activeTheme.showSidebarLogo).toBe(expected);
+    },
+  );
 
-  it("overrides activeTheme when showSidebarLogo policy is false in managed storage", async () => {
-    jest.mocked(readManagedStorageByKey).mockResolvedValue(false);
+  it.each([
+    { scenario: "showSidebarLogo is undefined", mockPolicyValue: undefined },
+    {
+      scenario: "error occurs",
+      mockPolicyValue: new Error("Managed storage error"),
+    },
+  ])(
+    "uses default activeTheme when $scenario in managed storage",
+    async ({ mockPolicyValue }) => {
+      if (mockPolicyValue instanceof Error) {
+        jest.mocked(readManagedStorageByKey).mockRejectedValue(mockPolicyValue);
+      } else {
+        jest.mocked(readManagedStorageByKey).mockResolvedValue(mockPolicyValue);
+      }
 
-    const { result, waitForNextUpdate } = renderHook(() => useTheme());
+      const { result, waitForNextUpdate } = renderHook(() => useTheme());
 
-    await waitForNextUpdate();
+      await waitForNextUpdate();
 
-    expect(result.current.activeTheme.showSidebarLogo).toBe(false);
-  });
-
-  it("uses default activeTheme when showSidebarLogo is undefined in managed storage", async () => {
-    // eslint-disable-next-line no-restricted-syntax -- this func requires a parameter
-    jest.mocked(readManagedStorageByKey).mockResolvedValue(undefined);
-
-    const { result, waitForNextUpdate } = renderHook(() => useTheme());
-
-    await waitForNextUpdate();
-
-    expect(result.current.activeTheme.showSidebarLogo).toBe(
-      initialTheme.showSidebarLogo,
-    );
-  });
-
-  it("uses default activeTheme when an error occurs while fetching from managed storage", async () => {
-    jest
-      .mocked(readManagedStorageByKey)
-      .mockRejectedValue(new Error("Managed storage error"));
-
-    const { result, waitForNextUpdate } = renderHook(() => useTheme());
-
-    await waitForNextUpdate();
-
-    expect(result.current.activeTheme.showSidebarLogo).toBe(
-      initialTheme.showSidebarLogo,
-    );
-  });
+      expect(result.current.activeTheme.showSidebarLogo).toBe(
+        initialTheme.showSidebarLogo,
+      );
+    },
+  );
 });
