@@ -92,6 +92,11 @@ export const lexicon: LexiconMap = {
       "when a user modifies the comment and leaves the field.",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  BROWSER_ACTION_RESTRICTED_URL: {
+    description:
+      "Reported when a user sees the restricted webpage warning 'PixieBrix cannot access this page' when opening the " +
+      "PixieBrix sidebar on a restricted page, e.g. the Extension Console or a new browser tab.",
+  },
 };
 
 /**
