@@ -24,29 +24,39 @@ import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import pDefer from "p-defer";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import {
+  clearModComponentDebugLogs,
+  performConfiguredRequestInBackground,
+  traces,
+} from "@/background/messenger/api";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/contentScript/integrations/deferredLoginController");
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({}),
+  clearModComponentDebugLogs: jest.fn(),
+  traces: {
+    clear: jest.fn(),
+  },
 }));
 
 const deferLoginMock = jest.mocked(deferLogin);
-
 const backgroundRequestMock = jest.mocked(performConfiguredRequestInBackground);
-
-beforeEach(() => {
-  setPlatform(contentScriptPlatform);
-});
-
-afterEach(async () => {
-  jest.clearAllMocks();
-  await TEST_deleteFeatureFlagsCache();
-});
+const clearModComponentDebugLogsMock = jest.mocked(clearModComponentDebugLogs);
+const tracesClearMock = jest.mocked(traces.clear);
 
 describe("contentScriptPlatform", () => {
+  beforeEach(() => {
+    setPlatform(contentScriptPlatform);
+  });
+
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await TEST_deleteFeatureFlagsCache();
+  });
+
   it("makes non-interactive successful call", async () => {
     appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, { flags: [] });
 
@@ -118,5 +128,29 @@ describe("contentScriptPlatform", () => {
     deferredPromise.resolve();
 
     await expect(requestPromise).resolves.toBeObject();
+  });
+
+  describe("debugger", () => {
+    it("clears traces and clears logs when logValues is true", async () => {
+      const componentId = modComponentFactory().id;
+      await contentScriptPlatform.debugger.clear(componentId, {
+        logValues: true,
+      });
+
+      expect(tracesClearMock).toHaveBeenCalledExactlyOnceWith(componentId);
+      expect(clearModComponentDebugLogsMock).toHaveBeenCalledExactlyOnceWith(
+        componentId,
+      );
+    });
+
+    it("clears traces and skips clearing logs when logValues is false", async () => {
+      const componentId = modComponentFactory().id;
+      await contentScriptPlatform.debugger.clear(componentId, {
+        logValues: false,
+      });
+
+      expect(tracesClearMock).toHaveBeenCalledExactlyOnceWith(componentId);
+      expect(clearModComponentDebugLogsMock).not.toHaveBeenCalled();
+    });
   });
 });
