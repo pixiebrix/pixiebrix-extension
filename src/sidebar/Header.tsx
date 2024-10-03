@@ -34,7 +34,7 @@ function reloadSidebar() {
 const Header: React.FunctionComponent = () => {
   const {
     activeTheme: { logo, showSidebarLogo, customSidebarLogo, themeName },
-    isLoading,
+    isLoading: isThemeLoading,
   } = useTheme();
 
   const { flagOn } = useFlags();
@@ -47,14 +47,10 @@ const Header: React.FunctionComponent = () => {
     [styles.themeColor || ""]: themeName !== DEFAULT_THEME,
   });
 
-  if (isLoading) {
-    return null;
-  }
-
   return (
     <div className="d-flex py-2 pl-2 pr-0 align-items-center">
       <div className="mx-auto">
-        {showSidebarLogo && (
+        {!isThemeLoading && showSidebarLogo && (
           <img
             src={customSidebarLogo ?? logo.regular}
             alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}

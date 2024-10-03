@@ -86,8 +86,18 @@ describe("useTheme", () => {
     expect(activateTheme).toHaveBeenCalledOnce();
   });
 
-  it("overrides showSidebarLogo when hideSidebarLogo is true in managed storage", async () => {
+  it("overrides activeTheme when showSidebarLoto policy is true in managed storage", async () => {
     jest.mocked(readManagedStorageByKey).mockResolvedValue(true);
+
+    const { result, waitForNextUpdate } = renderHook(() => useTheme());
+
+    await waitForNextUpdate();
+
+    expect(result.current.activeTheme.showSidebarLogo).toBe(true);
+  });
+
+  it("overrides activeTheme when showSidebarLogo policy is false in managed storage", async () => {
+    jest.mocked(readManagedStorageByKey).mockResolvedValue(false);
 
     const { result, waitForNextUpdate } = renderHook(() => useTheme());
 
@@ -96,19 +106,7 @@ describe("useTheme", () => {
     expect(result.current.activeTheme.showSidebarLogo).toBe(false);
   });
 
-  it("uses default activeTheme when hideSidebarLogo is false in managed storage", async () => {
-    jest.mocked(readManagedStorageByKey).mockResolvedValue(false);
-
-    const { result, waitForNextUpdate } = renderHook(() => useTheme());
-
-    await waitForNextUpdate();
-
-    expect(result.current.activeTheme.showSidebarLogo).toBe(
-      initialTheme.showSidebarLogo,
-    );
-  });
-
-  it("uses default activeTheme when hideSidebarLogo is undefined in managed storage", async () => {
+  it("uses default activeTheme when showSidebarLogo is undefined in managed storage", async () => {
     // eslint-disable-next-line no-restricted-syntax -- this func requires a parameter
     jest.mocked(readManagedStorageByKey).mockResolvedValue(undefined);
 

@@ -47,8 +47,8 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   const { data: cachedTheme, isLoading: isCachedThemeLoading } =
     useAsyncExternalStore(themeStorageSubscribe, themeStorage.get);
 
-  const { data: hideSidebarLogo, isLoading: isManagedStorageLoading } =
-    useAsyncState(async () => readManagedStorageByKey("hideSidebarLogo"), []);
+  const { data: showSidebarLogoOverride, isLoading: isManagedStorageLoading } =
+    useAsyncState(async () => readManagedStorageByKey("showSidebarLogo"), []);
 
   const isLoading = isManagedStorageLoading || isCachedThemeLoading;
 
@@ -78,9 +78,12 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   return {
     activeTheme: {
       ...activeTheme,
-      // There is a managed storage policy to hide the sidebar logo, overriding the team theme
+      // There is a managed storage policy that overrides the sidebar logo visibility specified by the team theme
       // See managedStorageSchema.json
-      showSidebarLogo: hideSidebarLogo ? false : activeTheme.showSidebarLogo,
+      showSidebarLogo:
+        showSidebarLogoOverride == null
+          ? activeTheme.showSidebarLogo
+          : showSidebarLogoOverride,
     },
     isLoading,
   };
