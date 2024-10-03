@@ -137,7 +137,7 @@ export const withIdbErrorHandling =
   ) =>
   async <DBOperationResult>(
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
-    operationName: OperationNames,
+    { operationName }: { operationName: OperationNames },
   ) => {
     let db: IDBPDatabase<DBType> | null = null;
     try {

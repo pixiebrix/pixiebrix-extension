@@ -185,9 +185,12 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    await db.add(ENTRY_OBJECT_STORE, entry);
-  }, IDB_OPERATION.LOG.APPEND_ENTRY).catch((_error) => {
+  await withLoggingDB(
+    async (db) => {
+      await db.add(ENTRY_OBJECT_STORE, entry);
+    },
+    { operationName: IDB_OPERATION.LOG.APPEND_ENTRY },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -208,10 +211,9 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  return withLoggingDB(
-    async (db) => db.count(ENTRY_OBJECT_STORE),
-    IDB_OPERATION.LOG.COUNT,
-  );
+  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE), {
+    operationName: IDB_OPERATION.LOG.COUNT,
+  });
 }
 
 /**
@@ -220,16 +222,21 @@ export async function count(): Promise<number> {
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME.LOG);
   // Open the database to recreate it
-  await withLoggingDB(async (_db) => {}, IDB_OPERATION.LOG.RECREATE_DB);
+  await withLoggingDB(async (_db) => {}, {
+    operationName: IDB_OPERATION.LOG.RECREATE_DB,
+  });
 }
 
 /**
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  await withLoggingDB(async (db) => {
-    await db.clear(ENTRY_OBJECT_STORE);
-  }, IDB_OPERATION.LOG.CLEAR_LOGS).catch((_error) => {
+  await withLoggingDB(
+    async (db) => {
+      await db.clear(ENTRY_OBJECT_STORE);
+    },
+    { operationName: IDB_OPERATION.LOG.CLEAR_LOGS },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -239,23 +246,26 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  await withLoggingDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-      durability: "relaxed",
-    });
+  await withLoggingDB(
+    async (db) => {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+        durability: "relaxed",
+      });
 
-    if (isEmpty(context)) {
-      await tx.store.clear();
-      return;
-    }
-
-    const match = makeMatchEntry(context);
-    for await (const cursor of tx.store) {
-      if (match(cursor.value)) {
-        await cursor.delete();
+      if (isEmpty(context)) {
+        await tx.store.clear();
+        return;
       }
-    }
-  }, IDB_OPERATION.LOG.CLEAR_LOG).catch((_error) => {
+
+      const match = makeMatchEntry(context);
+      for await (const cursor of tx.store) {
+        if (match(cursor.value)) {
+          await cursor.delete();
+        }
+      }
+    },
+    { operationName: IDB_OPERATION.LOG.CLEAR_LOG },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -267,38 +277,46 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {},
 ): Promise<LogEntry[]> {
-  return withLoggingDB(async (db) => {
-    const objectStore = db
-      .transaction(ENTRY_OBJECT_STORE, "readonly", {
-        durability: "relaxed",
-      })
-      .objectStore(ENTRY_OBJECT_STORE);
+  return withLoggingDB(
+    async (db) => {
+      const objectStore = db
+        .transaction(ENTRY_OBJECT_STORE, "readonly", {
+          durability: "relaxed",
+        })
+        .objectStore(ENTRY_OBJECT_STORE);
 
-    let indexKey: IndexKey | undefined;
-    for (const key of INDEX_KEYS) {
-      // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-      if (context[key] != null) {
-        indexKey = key;
-        break;
+      let indexKey: IndexKey | undefined;
+      for (const key of INDEX_KEYS) {
+        // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+        if (context[key] != null) {
+          indexKey = key;
+          break;
+        }
       }
-    }
 
-    if (!indexKey) {
-      throw new Error(
-        "At least one of the known index keys must be set in the context to get logs",
+      if (!indexKey) {
+        throw new Error(
+          "At least one of the known index keys must be set in the context to get logs",
+        );
+      }
+
+      // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
+
+      const entries = await objectStore
+        .index(indexKey)
+        .getAll(context[indexKey]);
+
+      const match = makeMatchEntry(context);
+      const matches = entries.filter((entry) => match(entry));
+
+      // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+      return sortBy(
+        matches.reverse(),
+        (x) => -Number.parseInt(x.timestamp, 10),
       );
-    }
-
-    // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
-    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-    const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
-
-    const match = makeMatchEntry(context);
-    const matches = entries.filter((entry) => match(entry));
-
-    // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-    return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  }, IDB_OPERATION.LOG.GET_LOG_ENTRIES);
+    },
+    { operationName: IDB_OPERATION.LOG.GET_LOG_ENTRIES },
+  );
 }
 
 /**
@@ -431,17 +449,20 @@ export async function clearModComponentDebugLogs(
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-      durability: "relaxed",
-    });
-    const index = tx.store.index("modComponentId");
-    for await (const cursor of index.iterate(modComponentId)) {
-      if (cursor.value.level === "debug" || cursor.value.level === "trace") {
-        await cursor.delete();
+  await withLoggingDB(
+    async (db) => {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+        durability: "relaxed",
+      });
+      const index = tx.store.index("modComponentId");
+      for await (const cursor of index.iterate(modComponentId)) {
+        if (cursor.value.level === "debug" || cursor.value.level === "trace") {
+          await cursor.delete();
+        }
       }
-    }
-  }, IDB_OPERATION.LOG.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
+    },
+    { operationName: IDB_OPERATION.LOG.CLEAR_MOD_COMPONENT_DEBUG_LOGS },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry, and
     // we don't want to interrupt the execution of mod pipeline
   });
@@ -455,52 +476,55 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    const numRecords = await db.count(ENTRY_OBJECT_STORE);
+  await withLoggingDB(
+    async (db) => {
+      const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
-    if (numRecords > MAX_LOG_RECORDS) {
-      const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+      if (numRecords > MAX_LOG_RECORDS) {
+        const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
-      console.debug("Sweeping logs", {
-        numRecords,
-        numToDelete,
-      });
-
-      // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
-      // of blocking other db transactions.
-      const abortController = new AbortController();
-      setTimeout(() => {
-        abortController.abort();
-      }, 10_000);
-
-      let deletedCount = 0;
-
-      while (deletedCount < numToDelete) {
-        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-          durability: "relaxed",
+        console.debug("Sweeping logs", {
+          numRecords,
+          numToDelete,
         });
 
-        let processedBatchCount = 0;
-        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-        // This might mostly "just work" if the cursor happens to iterate in insertion order
-        // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
-        for await (const cursor of tx.store) {
-          if (abortController.signal.aborted) {
-            console.warn("Log sweep aborted due to timeout");
-            return;
-          }
+        // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+        // of blocking other db transactions.
+        const abortController = new AbortController();
+        setTimeout(() => {
+          abortController.abort();
+        }, 10_000);
 
-          await cursor.delete();
-          deletedCount++;
-          processedBatchCount++;
+        let deletedCount = 0;
 
-          if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
-            break;
+        while (deletedCount < numToDelete) {
+          const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+            durability: "relaxed",
+          });
+
+          let processedBatchCount = 0;
+          // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+          // This might mostly "just work" if the cursor happens to iterate in insertion order
+          // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
+          for await (const cursor of tx.store) {
+            if (abortController.signal.aborted) {
+              console.warn("Log sweep aborted due to timeout");
+              return;
+            }
+
+            await cursor.delete();
+            deletedCount++;
+            processedBatchCount++;
+
+            if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
+              break;
+            }
           }
         }
       }
-    }
-  }, IDB_OPERATION.LOG.SWEEP_LOGS).catch((_error) => {
+    },
+    { operationName: IDB_OPERATION.LOG.SWEEP_LOGS },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }

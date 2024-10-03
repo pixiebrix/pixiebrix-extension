@@ -174,9 +174,12 @@ const ensurePopulated = memoizeUntilSettled(async () => {
  * Clear the brick definition registry.
  */
 export async function clear(): Promise<void> {
-  await withRegistryDB(async (db) => {
-    await db.clear(BRICK_STORE);
-  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].CLEAR);
+  await withRegistryDB(
+    async (db) => {
+      await db.clear(BRICK_STORE);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].CLEAR },
+  );
 }
 
 /**
@@ -186,10 +189,9 @@ export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME.PACKAGE_REGISTRY);
 
   // Open the database to recreate it
-  await withRegistryDB(
-    async () => {},
-    IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].RECREATE_DB,
-  );
+  await withRegistryDB(async () => {}, {
+    operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].RECREATE_DB,
+  });
 
   // Re-populate the packages from the remote registry
   await syncPackages();
@@ -204,21 +206,26 @@ export async function getByKinds(
 ): Promise<PackageVersion[]> {
   await ensurePopulated();
 
-  return withRegistryDB(async (db) => {
-    const bricks = flatten(
-      await Promise.all(
-        kinds.map(async (kind) =>
-          db.getAllFromIndex(BRICK_STORE, "kind", kind),
+  return withRegistryDB(
+    async (db) => {
+      const bricks = flatten(
+        await Promise.all(
+          kinds.map(async (kind) =>
+            db.getAllFromIndex(BRICK_STORE, "kind", kind),
+          ),
         ),
-      ),
-    );
+      );
 
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(
-      ([, versions]) =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
-        latestVersion(versions)!,
-    );
-  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS);
+      return Object.entries(groupBy(bricks, (x) => x.id)).map(
+        ([, versions]) =>
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
+          latestVersion(versions)!,
+      );
+    },
+    {
+      operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
+    },
+  );
 }
 
 /**
@@ -226,10 +233,9 @@ export async function getByKinds(
  */
 export async function count(): Promise<number> {
   // Don't need to ensure populated, because we're just counting current records
-  return withRegistryDB(
-    async (db) => db.count(BRICK_STORE),
-    IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].COUNT,
-  );
+  return withRegistryDB(async (db) => db.count(BRICK_STORE), {
+    operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].COUNT,
+  });
 }
 
 /**
@@ -237,14 +243,19 @@ export async function count(): Promise<number> {
  * @param packages the packages to put in the database
  */
 async function replaceAll(packages: PackageVersion[]): Promise<void> {
-  await withRegistryDB(async (db) => {
-    const tx = db.transaction(BRICK_STORE, "readwrite");
+  await withRegistryDB(
+    async (db) => {
+      const tx = db.transaction(BRICK_STORE, "readwrite");
 
-    await tx.store.clear();
-    await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
+      await tx.store.clear();
+      await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
 
-    await tx.done;
-  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].REPLACE_ALL);
+      await tx.done;
+    },
+    {
+      operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].REPLACE_ALL,
+    },
+  );
 }
 
 export function parsePackage(
@@ -290,9 +301,12 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
 
   await ensurePopulated();
 
-  return withRegistryDB(async (db) => {
-    const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+  return withRegistryDB(
+    async (db) => {
+      const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
 
-    return latestVersion(versions);
-  }, IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].FIND);
+      return latestVersion(versions);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].FIND },
+  );
 }
