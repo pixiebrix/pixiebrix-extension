@@ -111,6 +111,8 @@ export function isIDBQuotaError(error: unknown): boolean {
 
 /**
  * Before Chrome 130, there is no way to determine if the file is missing or if some other error occurred.
+ * In Chrome 130 and later, the error message remains the same, the type of error is different.
+ * NotFoundError if the file is missing, DataError for any other error.
  * @see https://chromestatus.com/feature/5140210640486400
  * @param error the error object
  */
