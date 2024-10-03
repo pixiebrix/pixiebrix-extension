@@ -109,6 +109,11 @@ export function isIDBQuotaError(error: unknown): boolean {
   return QUOTA_ERRORS.some((quotaError) => message.includes(quotaError));
 }
 
+/**
+ * Before Chrome 130, there is no way to determine if the file is missing or if some other error occurred.
+ * @see https://chromestatus.com/feature/5140210640486400
+ * @param error the error object
+ */
 export function isIDBLargeValueError(error: unknown): boolean {
   const message = getErrorMessage(error);
   return message.includes("Failed to read large IndexedDB value");
