@@ -163,12 +163,10 @@ export const withIdbErrorHandling =
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
     {
       operationName,
-      retry,
       onRetry,
       shouldRetry,
     }: {
       operationName: OperationNames;
-      retry?: boolean;
       onRetry?: (error: FailedAttemptError) => void | Promise<void>;
       shouldRetry?: (error: FailedAttemptError) => boolean | Promise<boolean>;
     },
@@ -182,7 +180,7 @@ export const withIdbErrorHandling =
           return dbOperation(db);
         },
         {
-          retries: retry ? MAX_RETRIES : 0,
+          retries: shouldRetry ? MAX_RETRIES : 0,
           shouldRetry,
           async onFailedAttempt(error) {
             handleIdbError(error, {

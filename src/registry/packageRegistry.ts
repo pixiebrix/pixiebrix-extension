@@ -226,7 +226,6 @@ export async function getByKinds(
     },
     {
       operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
-      retry: true,
       // The large value error is fixable by re-syncing the packages
       shouldRetry: (error) =>
         isIDBConnectionError(error) || isIDBLargeValueError(error),

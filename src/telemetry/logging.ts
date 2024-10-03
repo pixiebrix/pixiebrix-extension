@@ -193,7 +193,6 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
     },
     {
       operationName: IDB_OPERATION.LOG.APPEND_ENTRY,
-      retry: true,
       shouldRetry: (error) =>
         isIDBConnectionError(error) || isIDBLargeValueError(error),
     },
@@ -324,7 +323,6 @@ export async function getLogEntries(
     },
     {
       operationName: IDB_OPERATION.LOG.GET_LOG_ENTRIES,
-      retry: true,
       shouldRetry: (error) =>
         isIDBConnectionError(error) || isIDBLargeValueError(error),
     },
