@@ -86,6 +86,12 @@ export const lexicon: LexiconMap = {
       'Triggered when a user successfully adds a brick to a Mod in the Page Editor via clicking "Add" or "Add brick" in the Add Brick modal.',
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  BRICK_COMMENTS_UPDATE: {
+    description:
+      "Triggered when a user updates the brick comment in the Data Panel 'comments' tab in the Page Editor. More specifically," +
+      "when a user modifies the comment and leaves the field.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
 };
 
 /**
