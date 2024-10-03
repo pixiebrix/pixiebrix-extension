@@ -24,6 +24,7 @@ import {
   DATABASE_NAME,
   withIdbErrorHandling,
   IDB_OPERATION,
+  isIDBLargeValueError,
 } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -224,6 +225,12 @@ export async function getByKinds(
     },
     {
       operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
+      retry: true,
+      async onRetry(error) {
+        if (isIDBLargeValueError(error)) {
+          await syncPackages();
+        }
+      },
     },
   );
 }

@@ -5,9 +5,11 @@ import { type ValueOf } from "type-fest";
 import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
 import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 import castError from "@/utils/castError";
+import pRetry, { type FailedAttemptError } from "p-retry";
 
 // IDB Connection Error message strings
 const CONNECTION_ERRORS = ["Error Opening IndexedDB"] as const;
+const MAX_RETRIES = 3;
 
 export const DATABASE_NAME = {
   LOG: "LOG",
@@ -98,6 +100,11 @@ export function isIDBQuotaError(error: unknown): boolean {
   return QUOTA_ERRORS.some((quotaError) => message.includes(quotaError));
 }
 
+export function isIDBLargeValueError(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return message.includes("Failed to read large IndexedDB value");
+}
+
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
 // to application error telemetry to avoid attempting to record the error in the idb log database.
 function handleIdbError(
@@ -107,7 +114,6 @@ function handleIdbError(
     databaseName,
   }: {
     operationName: OperationNames;
-
     databaseName: ValueOf<typeof DATABASE_NAME>;
   },
 ): void {
@@ -137,16 +143,44 @@ export const withIdbErrorHandling =
   ) =>
   async <DBOperationResult>(
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
-    { operationName }: { operationName: OperationNames },
+    {
+      operationName,
+      retry,
+      onRetry,
+    }: {
+      operationName: OperationNames;
+      retry?: boolean;
+      onRetry?: (error: FailedAttemptError) => void | Promise<void>;
+    },
   ) => {
     let db: IDBPDatabase<DBType> | null = null;
+
     try {
-      db = await openIDB();
-      return await dbOperation(db);
+      return await pRetry(
+        async () => {
+          db = await openIDB();
+          return dbOperation(db);
+        },
+        {
+          retries: retry ? MAX_RETRIES : 0,
+          shouldRetry: (error) =>
+            isIDBConnectionError(error) || isIDBLargeValueError(error),
+          async onFailedAttempt(error) {
+            console.warn(
+              `${operationName} failed for IDB database: ${databaseName}. Retrying... Attempt ${error.attemptNumber}`,
+            );
+
+            db?.close();
+
+            await onRetry?.(error);
+          },
+        },
+      );
     } catch (error) {
       handleIdbError(error, { operationName, databaseName });
+
       throw error;
     } finally {
-      db?.close();
+      (db as IDBDatabase | null)?.close();
     }
   };
