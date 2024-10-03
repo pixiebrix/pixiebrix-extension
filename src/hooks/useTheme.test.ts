@@ -22,7 +22,7 @@ import { initialTheme } from "@/themes/themeStore";
 import { type AsyncState } from "@/types/sliceTypes";
 import { themeStorage } from "@/themes/themeUtils";
 import { activateTheme } from "@/background/messenger/api";
-import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -30,7 +30,7 @@ afterEach(() => {
 
 jest.mock("@/hooks/useAsyncExternalStore");
 jest.mock("@/background/messenger/api");
-jest.mock("@/store/enterprise/managedStorage");
+jest.mock("@/store/enterprise/useManagedStorageState");
 
 const customTheme = {
   themeName: "custom",
@@ -49,16 +49,14 @@ describe("useTheme", () => {
     jest
       .mocked(useAsyncExternalStore)
       .mockReturnValue({ data: initialTheme, isLoading: false } as AsyncState);
-    // eslint-disable-next-line no-restricted-syntax -- this func requires a parameter
-    jest.mocked(readManagedStorageByKey).mockResolvedValue(undefined);
+    jest.mocked(useManagedStorageState).mockReturnValue({
+      data: {},
+      isLoading: false,
+    });
   });
 
   test("calls useAsyncExternalStore and gets current theme state", async () => {
-    const { result: themeResult, waitForNextUpdate } = renderHook(() =>
-      useTheme(),
-    );
-
-    await waitForNextUpdate();
+    const { result: themeResult } = renderHook(() => useTheme());
 
     expect(useAsyncExternalStore).toHaveBeenNthCalledWith(
       1,
@@ -79,7 +77,7 @@ describe("useTheme", () => {
     });
   });
 
-  it("calls activateTheme after loading is done and it hasn't been called recently", async () => {
+  it("calls activateTheme after loading is done and it hasn't been called recently", () => {
     jest.useFakeTimers();
 
     jest.mocked(useAsyncExternalStore).mockReturnValue({
@@ -87,14 +85,14 @@ describe("useTheme", () => {
       isLoading: false,
     } as AsyncState);
 
-    let result = renderHook(() => useTheme());
-    await result.waitForNextUpdate();
+    renderHook(() => useTheme());
+
     expect(activateTheme).not.toHaveBeenCalled();
 
     jest.advanceTimersByTime(125_000);
 
-    result = renderHook(() => useTheme());
-    await result.waitForNextUpdate();
+    renderHook(() => useTheme());
+
     expect(activateTheme).toHaveBeenCalledOnce();
   });
 
@@ -112,11 +110,12 @@ describe("useTheme", () => {
         data: { ...customTheme, showSidebarLogo: themeValue },
         isLoading: false,
       } as AsyncState);
-      jest.mocked(readManagedStorageByKey).mockResolvedValue(policyValue);
+      jest.mocked(useManagedStorageState).mockReturnValue({
+        data: { showSidebarLogo: policyValue },
+        isLoading: false,
+      });
 
-      const { result, waitForNextUpdate } = renderHook(() => useTheme());
-
-      await waitForNextUpdate();
+      const { result } = renderHook(() => useTheme());
 
       expect(result.current.activeTheme.showSidebarLogo).toBe(expectedValue);
     },
@@ -128,13 +127,18 @@ describe("useTheme", () => {
       isLoading: false,
     } as AsyncState);
 
-    jest
-      .mocked(readManagedStorageByKey)
-      .mockRejectedValue(new Error("Managed storage error"));
+      if (mockManagedStorageResult instanceof Error) {
+        jest.mocked(useManagedStorageState).mockImplementation(() => {
+          throw mockManagedStorageResult;
+        });
+      } else {
+        jest.mocked(useManagedStorageState).mockReturnValue({
+          data: mockManagedStorageResult,
+          isLoading: false,
+        });
+      }
 
-    const { result, waitForNextUpdate } = renderHook(() => useTheme());
-
-    await waitForNextUpdate();
+      const { result } = renderHook(() => useTheme());
 
     expect(result.current.activeTheme.showSidebarLogo).toBe(
       customTheme.showSidebarLogo,

@@ -25,8 +25,7 @@ import {
 import { initialTheme } from "@/themes/themeStore";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { activateTheme } from "@/background/messenger/api";
-import useAsyncState from "@/hooks/useAsyncState";
-import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 const themeStorageSubscribe = (callback: () => void) => {
   const abortController = new AbortController();
@@ -47,8 +46,10 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   const { data: cachedTheme, isLoading: isCachedThemeLoading } =
     useAsyncExternalStore(themeStorageSubscribe, themeStorage.get);
 
-  const { data: showSidebarLogoOverride, isLoading: isManagedStorageLoading } =
-    useAsyncState(async () => readManagedStorageByKey("showSidebarLogo"), []);
+  const { data: managedStorageState, isLoading: isManagedStorageLoading } =
+    useManagedStorageState();
+
+  const showSidebarLogoOverride = managedStorageState?.showSidebarLogo;
 
   const isLoading = isManagedStorageLoading || isCachedThemeLoading;
 
