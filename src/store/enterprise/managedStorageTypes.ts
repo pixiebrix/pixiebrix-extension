@@ -73,4 +73,9 @@ export type ManagedStorageState = {
    * @since 1.7.36
    */
   disableBrowserWarning?: boolean;
+  /**
+   * Controls the visibility of the PixieBrix sidebar logo. Overrides the team theme, if one exists.
+   * @since 2.1.3
+   */
+  showSidebarLogo?: boolean;
 };
