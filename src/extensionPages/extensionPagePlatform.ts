@@ -69,11 +69,17 @@ class ExtensionPagePlatform extends PlatformBase {
   // Support tracing for bricks run in the sidebar and clearing logs in Page Editor/Extension Console. See PanelBody.tsx
   override get debugger(): PlatformProtocol["debugger"] {
     return {
-      async clear(componentId: UUID): Promise<void> {
-        await Promise.all([
-          traces.clear(componentId),
-          clearModComponentDebugLogs(componentId),
-        ]);
+      async clear(
+        componentId: UUID,
+        { logValues }: { logValues: boolean },
+      ): Promise<void> {
+        const clearPromises = [traces.clear(componentId)];
+
+        if (logValues) {
+          clearPromises.push(clearModComponentDebugLogs(componentId));
+        }
+
+        await Promise.all(clearPromises);
       },
       traces: {
         enter: traces.addEntry,

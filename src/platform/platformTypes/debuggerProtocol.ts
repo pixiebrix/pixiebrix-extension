@@ -39,7 +39,10 @@ export interface DebuggerProtocol {
    *
    * @param componentId the mod component id
    */
-  clear: (componentId: UUID) => Promise<void>;
+  clear: (
+    componentId: UUID,
+    { logValues }: { logValues: boolean },
+  ) => Promise<void>;
 
   traces: TraceProtocol;
 }
