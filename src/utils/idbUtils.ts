@@ -13,6 +13,7 @@ export const DATABASE_NAME = {
   LOG: "LOG",
   TRACE: "TRACE",
   PACKAGE_REGISTRY: "BRICK_REGISTRY",
+  TELEMETRY: "telemetrydb",
 } as const;
 
 export const IDB_OPERATION = {
@@ -43,6 +44,13 @@ export const IDB_OPERATION = {
     REPLACE_ALL: "replaceAll",
     FIND: "find",
   },
+  [DATABASE_NAME.TELEMETRY]: {
+    ADD_EVENT: "addEvent",
+    FLUSH_EVENTS: "flushEvents",
+    RECREATE_DB: "recreateDB",
+    COUNT: "count",
+    CLEAR: "clear",
+  },
 } as const satisfies Record<
   ValueOf<typeof DATABASE_NAME>,
   Record<string, string>
@@ -51,7 +59,8 @@ export const IDB_OPERATION = {
 type OperationNames =
   | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.LOG]>
   | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.TRACE]>
-  | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.PACKAGE_REGISTRY]>;
+  | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.PACKAGE_REGISTRY]>
+  | ValueOf<(typeof IDB_OPERATION)[typeof DATABASE_NAME.TELEMETRY]>;
 
 // IDB Quota Error message strings
 const QUOTA_ERRORS = [
