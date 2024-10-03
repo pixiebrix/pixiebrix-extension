@@ -202,6 +202,10 @@ export const withIdbErrorHandling =
         message: `${operationName} failed for IDB database ${databaseName}`,
       });
 
+      if (isIDBLargeValueError(error)) {
+        await deleteDatabase(databaseName);
+      }
+
       throw error;
     } finally {
       (db as IDBDatabase | null)?.close();
