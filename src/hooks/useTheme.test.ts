@@ -127,18 +127,11 @@ describe("useTheme", () => {
       isLoading: false,
     } as AsyncState);
 
-      if (mockManagedStorageResult instanceof Error) {
-        jest.mocked(useManagedStorageState).mockImplementation(() => {
-          throw mockManagedStorageResult;
-        });
-      } else {
-        jest.mocked(useManagedStorageState).mockReturnValue({
-          data: mockManagedStorageResult,
-          isLoading: false,
-        });
-      }
+    jest.mocked(useManagedStorageState).mockImplementation(() => {
+      throw new Error("Managed storage error");
+    });
 
-      const { result } = renderHook(() => useTheme());
+    const { result } = renderHook(() => useTheme());
 
     expect(result.current.activeTheme.showSidebarLogo).toBe(
       customTheme.showSidebarLogo,
