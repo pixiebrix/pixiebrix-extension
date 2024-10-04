@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import pDefer from "p-defer";
 import { deleteDB, type IDBPDatabase } from "idb";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -175,11 +192,11 @@ export const withIdbErrorHandling =
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
     {
       operationName,
-      onRetry,
+      onFailedAttempt,
       shouldRetry,
     }: {
       operationName: OperationNames;
-      onRetry?: (error: FailedAttemptError) => void | Promise<void>;
+      onFailedAttempt?: (error: FailedAttemptError) => void | Promise<void>;
       shouldRetry?: (error: FailedAttemptError) => boolean | Promise<boolean>;
     },
   ) => {
@@ -193,27 +210,23 @@ export const withIdbErrorHandling =
         },
         {
           retries: shouldRetry ? MAX_RETRIES : 0,
-          shouldRetry,
+          // 'p-retry' does not handle an undefined shouldRetry correctly, so we need to ensure it is not passed if undefined
+          // See: https://github.com/sindresorhus/p-retry/issues/36
+          ...(shouldRetry ? { shouldRetry } : {}),
           async onFailedAttempt(error) {
             handleIdbError(error, {
               operationName,
               databaseName,
-              message: `${operationName} failed for IDB database: ${databaseName}. Retrying... Attempt ${error.attemptNumber}`,
+              message: `${operationName} failed for IDB database: ${databaseName}. Attempt Number: ${error.attemptNumber}`,
             });
 
             db?.close();
 
-            await onRetry?.(error);
+            await onFailedAttempt?.(error);
           },
         },
       );
     } catch (error) {
-      handleIdbError(error, {
-        operationName,
-        databaseName,
-        message: `${operationName} failed for IDB database ${databaseName}`,
-      });
-
       /**
        * Any retries have failed by this point
        * An error for a single value can break bulk operations on the whole DB
@@ -221,6 +234,9 @@ export const withIdbErrorHandling =
        * So we delete the database
        */
       if (isIDBLargeValueError(error)) {
+        console.error(
+          `Deleting ${databaseName} database due to permanent IndexDB large value error.`,
+        );
         await deleteDatabase(databaseName);
       }
 

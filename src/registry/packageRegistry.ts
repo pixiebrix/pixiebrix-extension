@@ -227,7 +227,7 @@ export async function getByKinds(
     {
       operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
       shouldRetry: (error) => isMaybeTemporaryIDBError(error),
-      async onRetry(error) {
+      async onFailedAttempt(error) {
         if (isIDBLargeValueError(error)) {
           // If the large value error is a NotFoundError, syncPackages will likely fix it
           // In a future version of Chrome, we will be able to distinguish between NotFoundErrors and DataErrors
@@ -302,11 +302,6 @@ export function parsePackage(
 export async function find(id: string): Promise<Nullishable<PackageVersion>> {
   if (id == null) {
     throw new Error("id is required");
-  }
-
-  if (typeof id !== "string") {
-    console.error("REGISTRY_FIND received invalid id argument", { id });
-    throw new Error("invalid brick id");
   }
 
   await ensurePopulated();
