@@ -17,23 +17,32 @@
 
 import useTheme from "@/hooks/useTheme";
 import { renderHook } from "@/pageEditor/testHelpers";
-import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { initialTheme } from "@/themes/themeStore";
-import { type AsyncState } from "@/types/sliceTypes";
-import { themeStorage } from "@/themes/themeUtils";
+import { type ThemeAssets, themeStorage } from "@/themes/themeUtils";
 import { activateTheme } from "@/background/messenger/api";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
+
+jest.mock("@/themes/themeUtils", () => ({
+  ...jest.requireActual("@/themes/themeUtils"),
+  themeStorage: {
+    get: jest.fn(),
+    onChanged: jest.fn(),
+  },
+}));
+
+jest.mock("@/store/enterprise/managedStorage", () => ({
+  ...jest.requireActual("@/store/enterprise/managedStorage"),
+  readManagedStorage: jest.fn(),
+}));
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-jest.mock("@/hooks/useAsyncExternalStore");
 jest.mock("@/background/messenger/api");
-jest.mock("@/store/enterprise/managedStorage");
 
-const customTheme = {
-  themeName: "custom",
+const customTheme: ThemeAssets = {
+  themeName: "default",
   showSidebarLogo: true,
   customSidebarLogo: "https://example.com/custom-logo.png",
   toolbarIcon: "https://example.com/custom-icon.svg",
@@ -46,26 +55,31 @@ const customTheme = {
 
 describe("useTheme", () => {
   beforeEach(async () => {
-    jest
-      .mocked(useAsyncExternalStore)
-      .mockReturnValue({ data: initialTheme, isLoading: false } as AsyncState);
+    jest.mocked(themeStorage.get).mockResolvedValue({
+      ...initialTheme,
+      lastFetched: Date.now(),
+    });
     jest.mocked(readManagedStorage).mockResolvedValue({});
   });
 
-  test("calls useAsyncExternalStore and gets current theme state", async () => {
-    const { result: themeResult } = renderHook(() => useTheme());
+  afterEach(() => {
+    jest.useRealTimers();
+  });
 
-    expect(useAsyncExternalStore).toHaveBeenNthCalledWith(
-      1,
-      expect.any(Function),
-      themeStorage.get,
+  test("calls themeStorage to get the current theme state", async () => {
+    const { result: themeResult, waitForNextUpdate } = renderHook(() =>
+      useTheme(),
     );
 
-    expect(themeResult.current).toStrictEqual({
+    await waitForNextUpdate();
+
+    expect(themeStorage.get).toHaveBeenCalledOnce();
+
+    expect(themeResult.current).toMatchObject({
       activeTheme: {
         themeName: "default",
         customSidebarLogo: null,
-        lastFetched: null,
+        lastFetched: expect.any(Number),
         logo: { regular: "test-file-stub", small: "test-file-stub" },
         showSidebarLogo: true,
         toolbarIcon: null,
@@ -74,14 +88,8 @@ describe("useTheme", () => {
     });
   });
 
-  it("calls activateTheme after loading is done and it hasn't been called recently", () => {
+  it("calls activateTheme after loading is done and it hasn't been called recently", async () => {
     jest.useFakeTimers();
-
-    jest.mocked(useAsyncExternalStore).mockReturnValue({
-      data: { ...initialTheme, lastFetched: Date.now() },
-      isLoading: false,
-    } as AsyncState);
-
     renderHook(() => useTheme());
 
     expect(activateTheme).not.toHaveBeenCalled();
@@ -103,37 +111,48 @@ describe("useTheme", () => {
   ])(
     "handles showSidebarLogo policy (policy: $policyValue, theme: $themeValue, expected: $expectedValue)",
     async ({ policyValue, themeValue, expectedValue }) => {
-      jest.mocked(useAsyncExternalStore).mockReturnValue({
-        data: { ...customTheme, showSidebarLogo: themeValue },
-        isLoading: false,
-      } as AsyncState);
+      jest.mocked(themeStorage.get).mockResolvedValue({
+        ...customTheme,
+        showSidebarLogo: themeValue,
+        lastFetched: Date.now(),
+      });
+
       jest.mocked(readManagedStorage).mockResolvedValue({
         showSidebarLogo: policyValue,
       });
 
-      const { result } = renderHook(() => useTheme());
+      const { result, waitForNextUpdate } = renderHook(() => useTheme());
+
+      await waitForNextUpdate();
 
       expect(result.current.activeTheme).toMatchObject({
         ...customTheme,
+        lastFetched: expect.any(Number),
         showSidebarLogo: expectedValue,
       });
     },
   );
 
-  it("uses activeTheme when an error occurs in managed storage", async () => {
-    jest.mocked(useAsyncExternalStore).mockReturnValue({
-      data: customTheme,
-      isLoading: false,
-    } as AsyncState);
+  it.each([{ showSidebarLogo: true }, { showSidebarLogo: false }])(
+    "uses activeTheme when an error occurs in managed storage (showSidebarLogo: $showSidebarLogo)",
+    async ({ showSidebarLogo }) => {
+      const customThemeWithSidebarLogo = {
+        ...customTheme,
+        showSidebarLogo,
+        lastFetched: Date.now(),
+      };
 
-    jest
-      .mocked(readManagedStorage)
-      .mockRejectedValue(new Error("Managed storage error"));
+      jest
+        .mocked(themeStorage.get)
+        .mockResolvedValue(customThemeWithSidebarLogo);
 
-    const { result } = renderHook(() => useTheme());
+      jest
+        .mocked(readManagedStorage)
+        .mockRejectedValue(new Error("Managed storage error"));
 
-    expect(result.current.activeTheme.showSidebarLogo).toBe(
-      customTheme.showSidebarLogo,
-    );
-  });
+      const { result } = renderHook(() => useTheme());
+
+      expect(result.current.activeTheme.showSidebarLogo).toBe(showSidebarLogo);
+    },
+  );
 });
