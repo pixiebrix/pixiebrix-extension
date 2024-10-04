@@ -39,6 +39,8 @@ import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
 import { getExtensionToken } from "@/auth/authStorage";
+import type { AsyncState } from "@/types/sliceTypes";
+import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
@@ -57,7 +59,7 @@ beforeEach(() => {
   useManagedStorageStateMock.mockReturnValue({
     data: {},
     isLoading: false,
-  });
+  } as AsyncState<ManagedStorageState>);
 
   usePartnerAuthDataMock.mockReturnValue(valueToAsyncState(undefined));
 });
@@ -166,7 +168,7 @@ describe("useRequiredPartnerAuth", () => {
     useManagedStorageStateMock.mockReturnValue({
       data: { partnerId: "automation-anywhere" },
       isLoading: false,
-    });
+    } as AsyncState<ManagedStorageState>);
 
     mockAnonymousMeApiResponse();
 

@@ -22,7 +22,7 @@ import { initialTheme } from "@/themes/themeStore";
 import { type AsyncState } from "@/types/sliceTypes";
 import { themeStorage } from "@/themes/themeUtils";
 import { activateTheme } from "@/background/messenger/api";
-import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -30,7 +30,7 @@ afterEach(() => {
 
 jest.mock("@/hooks/useAsyncExternalStore");
 jest.mock("@/background/messenger/api");
-jest.mock("@/store/enterprise/useManagedStorageState");
+jest.mock("@/store/enterprise/managedStorage");
 
 const customTheme = {
   themeName: "custom",
@@ -49,10 +49,7 @@ describe("useTheme", () => {
     jest
       .mocked(useAsyncExternalStore)
       .mockReturnValue({ data: initialTheme, isLoading: false } as AsyncState);
-    jest.mocked(useManagedStorageState).mockReturnValue({
-      data: {},
-      isLoading: false,
-    });
+    jest.mocked(readManagedStorage).mockResolvedValue({});
   });
 
   test("calls useAsyncExternalStore and gets current theme state", async () => {
@@ -110,9 +107,8 @@ describe("useTheme", () => {
         data: { ...customTheme, showSidebarLogo: themeValue },
         isLoading: false,
       } as AsyncState);
-      jest.mocked(useManagedStorageState).mockReturnValue({
-        data: { showSidebarLogo: policyValue },
-        isLoading: false,
+      jest.mocked(readManagedStorage).mockResolvedValue({
+        showSidebarLogo: policyValue,
       });
 
       const { result } = renderHook(() => useTheme());
@@ -130,9 +126,9 @@ describe("useTheme", () => {
       isLoading: false,
     } as AsyncState);
 
-    jest.mocked(useManagedStorageState).mockImplementation(() => {
-      throw new Error("Managed storage error");
-    });
+    jest
+      .mocked(readManagedStorage)
+      .mockRejectedValue(new Error("Managed storage error"));
 
     const { result } = renderHook(() => useTheme());
 
