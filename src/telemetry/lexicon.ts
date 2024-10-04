@@ -23,6 +23,7 @@ const LexiconTags = {
   PAGE_EDITOR: "page editor",
   MOD_ACTIVATION: "mod activation",
   EXTENSION_CONSOLE: "extension console",
+  MOD_RUNTIME: "mod runtime",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -85,6 +86,24 @@ export const lexicon: LexiconMap = {
     description:
       'Triggered when a user successfully adds a brick to a Mod in the Page Editor via clicking "Add" or "Add brick" in the Add Brick modal.',
     tags: [LexiconTags.PAGE_EDITOR],
+  },
+  BRICK_COMMENTS_UPDATE: {
+    description:
+      "Triggered when a user updates the brick comment in the 'comments' tab of the Data Panel in the Page Editor. More specifically, " +
+      "when a user modifies the comment and leaves the field.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  BROWSER_ACTION_RESTRICTED_URL: {
+    description:
+      "Reported when a user sees the restricted webpage warning 'PixieBrix cannot access this page' when opening the " +
+      "PixieBrix sidebar on a restricted page, e.g. the Extension Console or a new browser tab.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  CUSTOM_USER_EVENT: {
+    description:
+      "Event reported from the 'Send Telemetry' brick in a mod. Mod developers can customize the `eventName` " +
+      "property and add additional properties to this event at will.",
+    tags: [LexiconTags.MOD_RUNTIME],
   },
 };
 
