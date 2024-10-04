@@ -244,10 +244,13 @@ export async function addTraceEntry(record: TraceEntryData): Promise<void> {
     return;
   }
 
-  await withTraceDB(async (db) => {
-    const callId = objectHash(record.branches);
-    await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
-  }, IDB_OPERATION.TRACE.ADD_TRACE_ENTRY);
+  await withTraceDB(
+    async (db) => {
+      const callId = objectHash(record.branches);
+      await db.add(ENTRY_OBJECT_STORE, { ...record, callId });
+    },
+    { operationName: IDB_OPERATION.TRACE.ADD_TRACE_ENTRY },
+  );
 }
 
 export async function addTraceExit(record: TraceExitData): Promise<void> {
@@ -263,46 +266,51 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const callId = objectHash(record.branches);
 
-  await withTraceDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  await withTraceDB(
+    async (db) => {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
 
-    const data = await tx.store.get(
-      IDBKeyRange.only([record.runId, record.brickInstanceId, callId]),
-    );
+      const data = await tx.store.get(
+        IDBKeyRange.only([record.runId, record.brickInstanceId, callId]),
+      );
 
-    if (data) {
-      await tx.store.put({
-        ...data,
-        ...record,
-        callId,
-      });
-    } else {
-      console.warn("Trace entry record not found", {
-        runId: record.runId,
-        brickInstanceId: record.brickInstanceId,
-        callId,
-      });
-    }
-  }, IDB_OPERATION.TRACE.ADD_TRACE_EXIT);
+      if (data) {
+        await tx.store.put({
+          ...data,
+          ...record,
+          callId,
+        });
+      } else {
+        console.warn("Trace entry record not found", {
+          runId: record.runId,
+          brickInstanceId: record.brickInstanceId,
+          callId,
+        });
+      }
+    },
+    { operationName: IDB_OPERATION.TRACE.ADD_TRACE_EXIT },
+  );
 }
 
 /**
  * Clear all trace records.
  */
 export async function clearTraces(): Promise<void> {
-  await withTraceDB(async (db) => {
-    await db.clear(ENTRY_OBJECT_STORE);
-  }, IDB_OPERATION.TRACE.CLEAR_TRACES);
+  await withTraceDB(
+    async (db) => {
+      await db.clear(ENTRY_OBJECT_STORE);
+    },
+    { operationName: IDB_OPERATION.TRACE.CLEAR_TRACES },
+  );
 }
 
 /**
  * Returns the number of trace records in the database.
  */
 export async function count(): Promise<number> {
-  return withTraceDB(
-    async (db) => db.count(ENTRY_OBJECT_STORE),
-    IDB_OPERATION.TRACE.COUNT,
-  );
+  return withTraceDB(async (db) => db.count(ENTRY_OBJECT_STORE), {
+    operationName: IDB_OPERATION.TRACE.COUNT,
+  });
 }
 
 /**
@@ -311,7 +319,9 @@ export async function count(): Promise<number> {
 export async function recreateDB(): Promise<void> {
   // Delete the database and open the database to recreate it
   await deleteDatabase(DATABASE_NAME.TRACE);
-  await withTraceDB(async () => {}, IDB_OPERATION.TRACE.RECREATE_DB);
+  await withTraceDB(async () => {}, {
+    operationName: IDB_OPERATION.TRACE.RECREATE_DB,
+  });
 }
 
 export async function clearModComponentTraces(
@@ -319,24 +329,27 @@ export async function clearModComponentTraces(
 ): Promise<void> {
   let cnt = 0;
 
-  await withTraceDB(async (db) => {
-    if ((await db.count(ENTRY_OBJECT_STORE)) === 0) {
-      return;
-    }
+  await withTraceDB(
+    async (db) => {
+      if ((await db.count(ENTRY_OBJECT_STORE)) === 0) {
+        return;
+      }
 
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-    const index = tx.store.index("modComponentId");
-    for await (const cursor of index.iterate(modComponentId)) {
-      cnt++;
-      await cursor.delete();
-    }
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+      const index = tx.store.index("modComponentId");
+      for await (const cursor of index.iterate(modComponentId)) {
+        cnt++;
+        await cursor.delete();
+      }
 
-    console.debug(
-      "Cleared %d trace entries for mod component %s",
-      cnt,
-      modComponentId,
-    );
-  }, IDB_OPERATION.TRACE.CLEAR_MOD_COMPONENT_TRACES);
+      console.debug(
+        "Cleared %d trace entries for mod component %s",
+        cnt,
+        modComponentId,
+      );
+    },
+    { operationName: IDB_OPERATION.TRACE.CLEAR_MOD_COMPONENT_TRACES },
+  );
 }
 
 export async function getLatestRunByModComponentId(
@@ -346,24 +359,27 @@ export async function getLatestRunByModComponentId(
     return [];
   }
 
-  return withTraceDB(async (db) => {
-    const matches = await db
-      .transaction(ENTRY_OBJECT_STORE, "readonly")
-      .objectStore(ENTRY_OBJECT_STORE)
-      .index("modComponentId")
-      .getAll(modComponentId);
+  return withTraceDB(
+    async (db) => {
+      const matches = await db
+        .transaction(ENTRY_OBJECT_STORE, "readonly")
+        .objectStore(ENTRY_OBJECT_STORE)
+        .index("modComponentId")
+        .getAll(modComponentId);
 
-    // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-    const sorted = sortBy(
-      matches.reverse(),
-      (x) => -new Date(x.timestamp).getTime(),
-    );
+      // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+      const sorted = sortBy(
+        matches.reverse(),
+        (x) => -new Date(x.timestamp).getTime(),
+      );
 
-    const runId = sorted[0]?.runId;
-    if (runId) {
-      return sorted.filter((x) => x.runId === runId);
-    }
+      const runId = sorted[0]?.runId;
+      if (runId) {
+        return sorted.filter((x) => x.runId === runId);
+      }
 
-    return [];
-  }, IDB_OPERATION.TRACE.GET_LATEST_RUN_BY_MOD_COMPONENT_ID);
+      return [];
+    },
+    { operationName: IDB_OPERATION.TRACE.GET_LATEST_RUN_BY_MOD_COMPONENT_ID },
+  );
 }

@@ -5,9 +5,11 @@ import { type ValueOf } from "type-fest";
 import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
 import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 import castError from "@/utils/castError";
+import pRetry, { type FailedAttemptError } from "p-retry";
 
 // IDB Connection Error message strings
 const CONNECTION_ERRORS = ["Error Opening IndexedDB"] as const;
+const MAX_RETRIES = 3;
 
 export const DATABASE_NAME = {
   LOG: "LOG",
@@ -107,16 +109,41 @@ export function isIDBQuotaError(error: unknown): boolean {
   return QUOTA_ERRORS.some((quotaError) => message.includes(quotaError));
 }
 
+/**
+ * Before Chrome 130, there is no way to determine if the file is missing or if some other error occurred.
+ * In Chrome 130 and later, the error message remains the same, the type of error is different.
+ * NotFoundError if the file is missing, DataError for any other error.
+ * @see https://chromestatus.com/feature/5140210640486400
+ * @param error the error object
+ */
+export function isIDBLargeValueError(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return message.includes("Failed to read large IndexedDB value");
+}
+
+/**
+ * The large value error could be a NotFoundError or a DataError.
+ * NotFoundError may be fixable on a case-by-case basis.
+ * @see getByKinds
+ * DataError and IDBConnectionErrors may be fixed by the retry.
+ * @see https://issues.chromium.org/issues/342779913#comment8
+ * @see isIDBLargeValueError
+ */
+export function isMaybeTemporaryIDBError(error: unknown): boolean {
+  return isIDBConnectionError(error) || isIDBLargeValueError(error);
+}
+
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
 // to application error telemetry to avoid attempting to record the error in the idb log database.
 function handleIdbError(
   error: unknown,
   {
+    message,
     operationName,
     databaseName,
   }: {
+    message: string;
     operationName: OperationNames;
-
     databaseName: ValueOf<typeof DATABASE_NAME>;
   },
 ): void {
@@ -126,14 +153,14 @@ function handleIdbError(
     idbDatabaseName: databaseName,
     ...getReportErrorAdditionalContext(),
   };
-  console.error("Error during IDB operation", {
+  console.error(message, {
     operationName,
     databaseName,
     error,
     context,
   });
   void reportToApplicationErrorTelemetry(
-    castError(error, `Error during ${operationName}`),
+    castError(error, message),
     context,
     errorMessage,
   );
@@ -146,16 +173,59 @@ export const withIdbErrorHandling =
   ) =>
   async <DBOperationResult>(
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
-    operationName: OperationNames,
+    {
+      operationName,
+      onRetry,
+      shouldRetry,
+    }: {
+      operationName: OperationNames;
+      onRetry?: (error: FailedAttemptError) => void | Promise<void>;
+      shouldRetry?: (error: FailedAttemptError) => boolean | Promise<boolean>;
+    },
   ) => {
     let db: IDBPDatabase<DBType> | null = null;
+
     try {
-      db = await openIDB();
-      return await dbOperation(db);
+      return await pRetry(
+        async () => {
+          db = await openIDB();
+          return dbOperation(db);
+        },
+        {
+          retries: shouldRetry ? MAX_RETRIES : 0,
+          shouldRetry,
+          async onFailedAttempt(error) {
+            handleIdbError(error, {
+              operationName,
+              databaseName,
+              message: `${operationName} failed for IDB database: ${databaseName}. Retrying... Attempt ${error.attemptNumber}`,
+            });
+
+            db?.close();
+
+            await onRetry?.(error);
+          },
+        },
+      );
     } catch (error) {
-      handleIdbError(error, { operationName, databaseName });
+      handleIdbError(error, {
+        operationName,
+        databaseName,
+        message: `${operationName} failed for IDB database ${databaseName}`,
+      });
+
+      /**
+       * Any retries have failed by this point
+       * An error for a single value can break bulk operations on the whole DB
+       * We don't know of a way to drop the single bad record even if we know which one it is
+       * So we delete the database
+       */
+      if (isIDBLargeValueError(error)) {
+        await deleteDatabase(databaseName);
+      }
+
       throw error;
     } finally {
-      db?.close();
+      (db as IDBDatabase | null)?.close();
     }
   };

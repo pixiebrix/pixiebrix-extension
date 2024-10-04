@@ -104,8 +104,9 @@ describe("logging", () => {
     await expect(appendEntry(logEntryFactory())).toResolve();
 
     await waitFor(() => {
-      expect(sendMessageSpy).toHaveBeenCalledOnce();
+      expect(sendMessageSpy).toHaveBeenCalled();
     });
+
     expect(sendMessageSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         target: "offscreen-doc",
