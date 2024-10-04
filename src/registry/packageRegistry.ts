@@ -25,7 +25,7 @@ import {
   withIdbErrorHandling,
   IDB_OPERATION,
   isIDBLargeValueError,
-  isIDBConnectionError,
+  isMaybeTemporaryIDBError,
 } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -226,11 +226,11 @@ export async function getByKinds(
     },
     {
       operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
-      // The large value error is fixable by re-syncing the packages
-      shouldRetry: (error) =>
-        isIDBConnectionError(error) || isIDBLargeValueError(error),
+      shouldRetry: (error) => isMaybeTemporaryIDBError(error),
       async onRetry(error) {
         if (isIDBLargeValueError(error)) {
+          // If the large value error is a NotFoundError, syncPackages will likely fix it
+          // In a future version of Chrome, we will be able to distinguish between NotFoundErrors and DataErrors
           await syncPackages();
         }
       },

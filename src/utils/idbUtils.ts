@@ -121,6 +121,18 @@ export function isIDBLargeValueError(error: unknown): boolean {
   return message.includes("Failed to read large IndexedDB value");
 }
 
+/**
+ * The large value error could be a NotFoundError or a DataError.
+ * NotFoundError may be fixable on a case-by-case basis.
+ * @see getByKinds
+ * DataError and IDBConnectionErrors may be fixed by the retry.
+ * @see https://issues.chromium.org/issues/342779913#comment8
+ * @see isIDBLargeValueError
+ */
+export function isMaybeTemporaryIDBError(error: unknown): boolean {
+  return isIDBConnectionError(error) || isIDBLargeValueError(error);
+}
+
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
 // to application error telemetry to avoid attempting to record the error in the idb log database.
 function handleIdbError(
@@ -202,6 +214,12 @@ export const withIdbErrorHandling =
         message: `${operationName} failed for IDB database ${databaseName}`,
       });
 
+      /**
+       * Any retries have failed by this point
+       * An error for a single value can break bulk operations on the whole DB
+       * We don't know of a way to drop the single bad record even if we know which one it is
+       * So we delete the database
+       */
       if (isIDBLargeValueError(error)) {
         await deleteDatabase(databaseName);
       }

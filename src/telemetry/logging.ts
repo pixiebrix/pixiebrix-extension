@@ -32,8 +32,7 @@ import {
   DATABASE_NAME,
   deleteDatabase,
   IDB_OPERATION,
-  isIDBConnectionError,
-  isIDBLargeValueError,
+  isMaybeTemporaryIDBError,
   withIdbErrorHandling,
 } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -193,8 +192,7 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
     },
     {
       operationName: IDB_OPERATION.LOG.APPEND_ENTRY,
-      shouldRetry: (error) =>
-        isIDBConnectionError(error) || isIDBLargeValueError(error),
+      shouldRetry: (error) => isMaybeTemporaryIDBError(error),
     },
   ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
@@ -323,8 +321,7 @@ export async function getLogEntries(
     },
     {
       operationName: IDB_OPERATION.LOG.GET_LOG_ENTRIES,
-      shouldRetry: (error) =>
-        isIDBConnectionError(error) || isIDBLargeValueError(error),
+      shouldRetry: (error) => isMaybeTemporaryIDBError(error),
     },
   );
 }
