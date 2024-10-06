@@ -138,9 +138,9 @@ export class PageEditorPage extends BasePageObject {
   /**
    * Save a new mod with the given name and optional description.
    *
-   * @param modName the name to use when saving the new mod
-   * @param description the optional description to use when saving the new mod
-   * @returns the modId of the saved mod
+   * @param currentModName the current name (not registry id) of the mod to save
+   * @param descriptionOverride the optional description override
+   * @returns the RegistryId of the saved mod
    */
   @ModifiesModFormState
   async saveNewMod({
@@ -155,9 +155,10 @@ export class PageEditorPage extends BasePageObject {
     const modListItem =
       this.modListingPanel.getModListItemByName(currentModName);
     await modListItem.select();
+    // Expect the mod metadata editor to be showing form for a mod that's never been saved before
     await expect(
-      this.modEditorPane.editMetadataTabPanel.getByText(
-        "Save the mod to assign an id",
+      this.modEditorPane.editMetadataTabPanel.getByPlaceholder(
+        "Save the mod to assign a Mod ID",
       ),
     ).toBeVisible();
     // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-mounts several times so we need a slight delay here before playwright clicks
@@ -169,14 +170,17 @@ export class PageEditorPage extends BasePageObject {
     await expect(saveNewModModal).toBeVisible();
     await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
 
-    // Add a random uuid to the mod id to prevent test collisions
-    const registryIdInput = saveNewModModal.getByLabel("Mod ID");
+    // // Can't use getByLabel to target because the field is composed of multiple widgets
+    const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
     const currentId = await registryIdInput.inputValue();
+    // Add a random uuid to the mod id to prevent test collisions
     await registryIdInput.fill(`${currentId}-${uuidv4()}`);
 
     if (descriptionOverride) {
       // Update the mod description
-      const descriptionInput = saveNewModModal.getByLabel("Description");
+      // FIXME: determine why getByLabel is not working for the description field
+      // const descriptionInput = saveNewModModal.getByLabel("Description");
+      const descriptionInput = saveNewModModal.locator("#description");
       await descriptionInput.fill(descriptionOverride);
     }
 

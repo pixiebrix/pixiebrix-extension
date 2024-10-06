@@ -16,6 +16,15 @@
  */
 
 import { type AuthRootState } from "./authTypes";
+import { LegacyUserRole } from "@/data/model/UserRole";
+import { compact } from "lodash";
+import { createSelector } from "@reduxjs/toolkit";
+
+const editorRoles = new Set<number>([
+  LegacyUserRole.admin,
+  LegacyUserRole.developer,
+  LegacyUserRole.manager,
+]);
 
 export const selectAuth = (state: AuthRootState) => state.auth;
 export const selectIsLoggedIn = (state: AuthRootState) =>
@@ -27,3 +36,22 @@ export const selectOrganizations = (state: AuthRootState) =>
   selectAuth(state).organizations;
 export const selectOrganization = (state: AuthRootState) =>
   selectAuth(state).organization;
+
+export const selectEditableScopes = createSelector(
+  selectAuth,
+  (state: AuthRootState["auth"]) => {
+    const { scope: userScope, organizations } = state;
+
+    const organizationScopes: string[] = compact(
+      organizations.map(({ scope, role }) => {
+        if (scope && editorRoles.has(role)) {
+          return scope;
+        }
+
+        return null;
+      }),
+    );
+
+    return [userScope, ...organizationScopes].filter((x) => x != null);
+  },
+);
