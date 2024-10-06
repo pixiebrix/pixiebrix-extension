@@ -99,19 +99,19 @@ test("load mod definitions and save one", async () => {
       AsyncState<ModDefinition[]>
     >(useAllModDefinitions(), []);
 
-    const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
+    const saveMod = useSaveMod();
 
-    // Track if saveRecipe has been called
+    // Track if saveMod has been called
     const calledSave = React.useRef(false);
     // Track if re-fetching of the mod definitions by the registry has been called
     const calledRefetch = React.useRef(false);
 
     if (!isFetching && allModDefinitions!.length > 0 && !calledSave.current) {
-      // The saveRecipe action involves
-      // - preparing a recipe for saving
+      // The saveMod action involves
+      // - preparing a mod for saving
       // - calling RTK Query mutation
-      // - saving the recipe to the server
-      void saveRecipe(modDefinitionId);
+      // - saving the mod to the server
+      void saveMod(modDefinitionId);
       calledSave.current = true;
     }
 
@@ -129,7 +129,6 @@ test("load mod definitions and save one", async () => {
       <div>
         {isFetching ? "Fetching" : "Not Fetching"}
         {`Got ${allModDefinitions!.length} mod definitions`}
-        {isSavingRecipe ? "Saving" : "Not Saving"}
         {calledSave.current ? "Called Save" : "Not Called Save"}
       </div>
     );

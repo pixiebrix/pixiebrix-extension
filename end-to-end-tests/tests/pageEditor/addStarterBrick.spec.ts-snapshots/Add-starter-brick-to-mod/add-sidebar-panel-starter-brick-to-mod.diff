@@ -66,7 +66,7 @@ Index: add-sidebar-panel-starter-brick-to-mod
    - config:
        action: []
      id: extensionPoint
-     label: Test Trigger 00000000-0000-0000-0000-000000000000
+     label: My pbx.vercel.app trigger
      services: {}
    - config:
        action: []
@@ -128,10 +128,10 @@ Index: add-sidebar-panel-starter-brick-to-mod
      services: {}
  kind: recipe
  metadata:
-   description: Created with the PixieBrix Page Editor
+   description: Created by playwright test for adding starter bricks to a mod
    id: >-
-     @extension-e2e-test-unaffiliated/test-trigger-00000000-0000-0000-0000-000000000000-00000000-0000-0000-0000-000000000000
-   name: Test Trigger 00000000-0000-0000-0000-000000000000
+     @extension-e2e-test-unaffiliated/new-mod-00000000-0000-0000-0000-000000000000
+   name: New Mod
    version: 1.0.0
  options:
    schema:

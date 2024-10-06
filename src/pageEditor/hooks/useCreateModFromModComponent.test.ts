@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
 import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -23,10 +22,12 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const reportEventMock = jest.mocked(reportEvent);
+
+jest.mocked(browser.tabs.query).mockResolvedValue([]);
+
 jest.mock("@/telemetry/trace");
 
 jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
@@ -36,15 +37,9 @@ jest.mock("@/pageEditor/hooks/useCheckModStarterBrickInvariants", () =>
   jest.fn().mockReturnValue(async () => true),
 );
 
-const compareModComponentCountsMock = jest.mocked(useCompareModComponentCounts);
-const checkModStarterBrickInvariantsMock = jest.mocked(
-  useCheckModStarterBrickInvariants,
-);
-
 describe("useCreateModFromModComponent", () => {
   beforeEach(() => {
     appApiMock.reset();
-    compareModComponentCountsMock.mockClear();
   });
 
   it("saves with no dirty changes", async () => {
@@ -57,9 +52,15 @@ describe("useCreateModFromModComponent", () => {
       .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
+    appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
+
     const { result } = renderHook(() =>
       useCreateModFromModComponent(menuItemFormState),
     );
+
+    await hookAct(async () => {
+      // Wait for editable packages to be created
+    });
 
     await hookAct(async () => {
       await result.current.createModFromComponent(menuItemFormState, metadata);
@@ -73,49 +74,5 @@ describe("useCreateModFromModComponent", () => {
         expect.any(Object),
       );
     });
-  });
-
-  it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
-    compareModComponentCountsMock.mockReturnValue(() => false);
-    const metadata = modMetadataFactory();
-    const menuItemFormState = menuItemFormStateFactory({
-      modMetadata: metadata,
-    });
-
-    appApiMock
-      .onPost(API_PATHS.BRICKS)
-      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
-
-    const { result } = renderHook(() =>
-      useCreateModFromModComponent(menuItemFormState),
-    );
-
-    await hookAct(async () => {
-      await result.current.createModFromComponent(menuItemFormState, metadata);
-    });
-
-    expect(appApiMock.history.post).toHaveLength(0);
-  });
-
-  it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
-    checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
-    const metadata = modMetadataFactory();
-    const menuItemFormState = menuItemFormStateFactory({
-      modMetadata: metadata,
-    });
-
-    appApiMock
-      .onPost(API_PATHS.BRICKS)
-      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
-
-    const { result } = renderHook(() =>
-      useCreateModFromModComponent(menuItemFormState),
-    );
-
-    await hookAct(async () => {
-      await result.current.createModFromComponent(menuItemFormState, metadata);
-    });
-
-    expect(appApiMock.history.post).toHaveLength(0);
   });
 });

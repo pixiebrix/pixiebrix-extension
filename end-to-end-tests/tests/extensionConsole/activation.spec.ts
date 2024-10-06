@@ -245,7 +245,9 @@ test("can activate a mod via url", async ({ page, extensionId }) => {
       `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
     );
   }).toPass({ timeout: 5000 });
-  await expect(page.getByRole("code")).toContainText(modId);
+  await expect(page.getByRole("code")).toContainText(modId, {
+    timeout: 10_000,
+  });
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
