@@ -36,7 +36,6 @@ import { type Except } from "type-fest";
 import { type ActionMeta } from "react-select";
 import { freeze } from "@/utils/objectUtils";
 import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
-import { uuidv4 } from "@/types/helpers";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType,

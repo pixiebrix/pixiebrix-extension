@@ -48,6 +48,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { pick } from "lodash";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { UI_PATHS } from "@/data/service/urlPaths";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -160,9 +161,13 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
             {isInnerDefinitionRegistryId(
               (values as ModMetadataFormState).id,
             ) ? (
-              <Alert variant="info" className={styles.modIdAlert}>
-                Save the mod to assign an id
-              </Alert>
+              <FieldTemplate
+                name="id"
+                label="Mod ID"
+                description={FieldDescriptions.MOD_ID}
+                placeholder="Save the mod to assign a Mod ID"
+                readOnly
+              />
             ) : (
               <ConnectedFieldTemplate
                 name="id"
