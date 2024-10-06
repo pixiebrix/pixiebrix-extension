@@ -114,7 +114,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
       }
     }
 
-    reportEvent(Events.AUTH_WIDGET_SELECT, eventPayload);
+    reportEvent(Events.ACTIVATION_INTEGRATION_CONFIG_SELECT, eventPayload);
   };
 
   // `react-select` barfs on undefined component overrides

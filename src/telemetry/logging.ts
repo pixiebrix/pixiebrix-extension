@@ -16,41 +16,31 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { type Except, type JsonObject, type ValueOf } from "type-fest";
-import { deserializeError, serializeError } from "serialize-error";
+import { type Except, type JsonObject } from "type-fest";
+import { deserializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
-import { isEmpty, once, sortBy } from "lodash";
-import { allowsTrack } from "@/telemetry/dnt";
-import {
-  getErrorMessage,
-  hasSpecificErrorCause,
-  isSpecificError,
-} from "@/errors/errorHelpers";
+import { isEmpty, sortBy } from "lodash";
+import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import {
-  reportToErrorService,
-  selectExtraContext,
-} from "@/data/service/errorService";
-import { BusinessError } from "@/errors/businessErrors";
+import { reportToErrorService } from "@/data/service/errorService";
 import { ContextError } from "@/errors/genericErrors";
-import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { type MessengerMeta } from "webext-messenger";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type UUID } from "@/types/stringTypes";
-import { deleteDatabase } from "@/utils/idbUtils";
+import {
+  DATABASE_NAME,
+  deleteDatabase,
+  IDB_OPERATION,
+  isMaybeTemporaryIDBError,
+  withIdbErrorHandling,
+} from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
-import { readAuthData } from "@/auth/authStorage";
-import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
-import { type RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 import { FeatureFlags } from "@/auth/featureFlags";
-import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
-import castError from "@/utils/castError";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 
-const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
 const DB_VERSION_NUMBER = 4;
 /**
@@ -125,46 +115,12 @@ const INDEX_KEYS = [
   "authId",
 ] as const satisfies IndexKey[];
 
-const IDB_OPERATION = {
-  APPEND_ENTRY: "appendEntry",
-  COUNT: "count",
-  RECREATE_DB: "recreateDB",
-  CLEAR_LOGS: "clearLogs",
-  CLEAR_LOG: "clearLog",
-  GET_LOG_ENTRIES: "getLogEntries",
-  SWEEP_LOGS: "sweepLogs",
-  CLEAR_MOD_COMPONENT_DEBUG_LOGS: "clearModComponentDebugLogs",
-} as const;
-
-// Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
-// to application error telemetry to avoid attempting to record the error in the idb log database.
-function handleIdbError(
-  error: unknown,
-  operationName: ValueOf<typeof IDB_OPERATION>,
-): void {
-  const errorMessage = getErrorMessage(error);
-  const context = {
-    idbOperationName: operationName,
-    ...getReportErrorAdditionalContext(),
-  };
-  console.error("Error during IDB operation", {
-    operationName,
-    error,
-    context,
-  });
-  void reportToApplicationErrorTelemetry(
-    castError(error, `Error during ${operationName}`),
-    context,
-    errorMessage,
-  );
-}
-
 async function openLoggingDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<LogDB> | null = null;
 
-  database = await openDB<LogDB>(DATABASE_NAME, DB_VERSION_NUMBER, {
+  database = await openDB<LogDB>(DATABASE_NAME.LOG, DB_VERSION_NUMBER, {
     upgrade(db, oldVersion, newVersion) {
       try {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
@@ -219,22 +175,8 @@ async function openLoggingDB() {
   return database;
 }
 
-async function withLoggingDB<T>(
-  dbOperation: (db: IDBPDatabase<LogDB>) => Promise<T>,
-  operationName: ValueOf<typeof IDB_OPERATION>,
-): Promise<T> {
-  let db: IDBPDatabase<LogDB> | null = null;
-  try {
-    db = await openLoggingDB();
-    return await dbOperation(db);
-  } catch (error) {
-    handleIdbError(error, operationName);
-    throw error;
-  } finally {
-    db?.close();
-  }
-}
-
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const withLoggingDB = withIdbErrorHandling(openLoggingDB, DATABASE_NAME.LOG);
 /**
  * Add a log entry to the database.
  * @param entry the log entry to add
@@ -244,9 +186,15 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    await db.add(ENTRY_OBJECT_STORE, entry);
-  }, IDB_OPERATION.APPEND_ENTRY).catch((_error) => {
+  await withLoggingDB(
+    async (db) => {
+      await db.add(ENTRY_OBJECT_STORE, entry);
+    },
+    {
+      operationName: IDB_OPERATION.LOG.APPEND_ENTRY,
+      shouldRetry: (error) => isMaybeTemporaryIDBError(error),
+    },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -267,28 +215,32 @@ function makeMatchEntry(
  * Returns the number of log entries in the database.
  */
 export async function count(): Promise<number> {
-  return withLoggingDB(
-    async (db) => db.count(ENTRY_OBJECT_STORE),
-    IDB_OPERATION.COUNT,
-  );
+  return withLoggingDB(async (db) => db.count(ENTRY_OBJECT_STORE), {
+    operationName: IDB_OPERATION.LOG.COUNT,
+  });
 }
 
 /**
  * Deletes and recreates the logging database.
  */
 export async function recreateDB(): Promise<void> {
-  await deleteDatabase(DATABASE_NAME);
+  await deleteDatabase(DATABASE_NAME.LOG);
   // Open the database to recreate it
-  await withLoggingDB(async (_db) => {}, IDB_OPERATION.RECREATE_DB);
+  await withLoggingDB(async (_db) => {}, {
+    operationName: IDB_OPERATION.LOG.RECREATE_DB,
+  });
 }
 
 /**
  * Clears all log entries from the database.
  */
 export async function clearLogs(): Promise<void> {
-  await withLoggingDB(async (db) => {
-    await db.clear(ENTRY_OBJECT_STORE);
-  }, IDB_OPERATION.CLEAR_LOGS).catch((_error) => {
+  await withLoggingDB(
+    async (db) => {
+      await db.clear(ENTRY_OBJECT_STORE);
+    },
+    { operationName: IDB_OPERATION.LOG.CLEAR_LOGS },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -298,23 +250,26 @@ export async function clearLogs(): Promise<void> {
  * @param context the query context to clear.
  */
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  await withLoggingDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-      durability: "relaxed",
-    });
+  await withLoggingDB(
+    async (db) => {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+        durability: "relaxed",
+      });
 
-    if (isEmpty(context)) {
-      await tx.store.clear();
-      return;
-    }
-
-    const match = makeMatchEntry(context);
-    for await (const cursor of tx.store) {
-      if (match(cursor.value)) {
-        await cursor.delete();
+      if (isEmpty(context)) {
+        await tx.store.clear();
+        return;
       }
-    }
-  }, IDB_OPERATION.CLEAR_LOG).catch((_error) => {
+
+      const match = makeMatchEntry(context);
+      for await (const cursor of tx.store) {
+        if (match(cursor.value)) {
+          await cursor.delete();
+        }
+      }
+    },
+    { operationName: IDB_OPERATION.LOG.CLEAR_LOG },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }
@@ -326,38 +281,49 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
 export async function getLogEntries(
   context: MessageContext = {},
 ): Promise<LogEntry[]> {
-  return withLoggingDB(async (db) => {
-    const objectStore = db
-      .transaction(ENTRY_OBJECT_STORE, "readonly", {
-        durability: "relaxed",
-      })
-      .objectStore(ENTRY_OBJECT_STORE);
+  return withLoggingDB(
+    async (db) => {
+      const objectStore = db
+        .transaction(ENTRY_OBJECT_STORE, "readonly", {
+          durability: "relaxed",
+        })
+        .objectStore(ENTRY_OBJECT_STORE);
 
-    let indexKey: IndexKey | undefined;
-    for (const key of INDEX_KEYS) {
-      // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-      if (context[key] != null) {
-        indexKey = key;
-        break;
+      let indexKey: IndexKey | undefined;
+      for (const key of INDEX_KEYS) {
+        // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+        if (context[key] != null) {
+          indexKey = key;
+          break;
+        }
       }
-    }
 
-    if (!indexKey) {
-      throw new Error(
-        "At least one of the known index keys must be set in the context to get logs",
+      if (!indexKey) {
+        throw new Error(
+          "At least one of the known index keys must be set in the context to get logs",
+        );
+      }
+
+      // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
+
+      const entries = await objectStore
+        .index(indexKey)
+        .getAll(context[indexKey]);
+
+      const match = makeMatchEntry(context);
+      const matches = entries.filter((entry) => match(entry));
+
+      // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+      return sortBy(
+        matches.reverse(),
+        (x) => -Number.parseInt(x.timestamp, 10),
       );
-    }
-
-    // Use the index to do an initial filter on IDB, and then makeMatchEntry to apply the full filter in JS.
-    // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-    const entries = await objectStore.index(indexKey).getAll(context[indexKey]);
-
-    const match = makeMatchEntry(context);
-    const matches = entries.filter((entry) => match(entry));
-
-    // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-    return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
-  }, IDB_OPERATION.GET_LOG_ENTRIES);
+    },
+    {
+      operationName: IDB_OPERATION.LOG.GET_LOG_ENTRIES,
+      shouldRetry: (error) => isMaybeTemporaryIDBError(error),
+    },
+  );
 }
 
 /**
@@ -380,91 +346,6 @@ function flattenContext(
   }
 
   return context;
-}
-
-const warnAboutDisabledDNT = once(() => {
-  console.warn("Error telemetry is disabled because DNT is turned on");
-});
-
-const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
-const THROTTLE_RATE_MS = 60_000; // 1 minute
-let lastAxiosServerErrorTimestamp: number | null = null;
-
-/**
- * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
- * It's only exported for testing.
- */
-export async function reportToApplicationErrorTelemetry(
-  // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
-  // treats it as the error.
-  error: Error,
-  flatContext: MessageContext,
-  errorMessage: string,
-): Promise<void> {
-  // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
-  if (
-    hasSpecificErrorCause(error, BusinessError) ||
-    (await flagOn(FeatureFlags.APPLICATION_ERROR_TELEMETRY_DISABLE_REPORT))
-  ) {
-    return;
-  }
-
-  // Throttle certain Axios status codes because they are redundant with our platform alerts
-  if (
-    isAxiosError(error) &&
-    error.response?.status &&
-    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response.status)
-  ) {
-    // JS allows subtracting dates directly but TS complains, so get the date as a number in milliseconds:
-    // https://github.com/microsoft/TypeScript/issues/8260
-    const now = Date.now();
-
-    if (
-      lastAxiosServerErrorTimestamp &&
-      now - lastAxiosServerErrorTimestamp < THROTTLE_RATE_MS
-    ) {
-      console.debug("Skipping remote error telemetry report due to throttling");
-      return;
-    }
-
-    lastAxiosServerErrorTimestamp = now;
-  }
-
-  if (!(await allowsTrack())) {
-    warnAboutDisabledDNT();
-    return;
-  }
-
-  const { version_name: versionName } = chrome.runtime.getManifest();
-  const [telemetryUser, extraContext] = await Promise.all([
-    mapAppUserToTelemetryUser(await readAuthData()),
-    selectExtraContext(error),
-  ]);
-  const errorData: RecordErrorMessage["data"] = {
-    error: serializeError(error),
-    errorMessage,
-    errorReporterInitInfo: {
-      // It should never happen that versionName is undefined, but handle undefined just in case
-      versionName: versionName ?? "",
-      telemetryUser,
-    },
-    messageContext: {
-      ...flatContext,
-      ...extraContext,
-    },
-  };
-
-  // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
-  // we need to send the error from an offscreen document.
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
-  // and offscreen.ts
-  await ensureOffscreenDocument();
-
-  await chrome.runtime.sendMessage({
-    type: "record-error",
-    target: "offscreen-doc",
-    data: errorData,
-  } satisfies RecordErrorMessage);
 }
 
 export type ContextWithMod = MessageContext &
@@ -575,17 +456,20 @@ export async function clearModComponentDebugLogs(
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-      durability: "relaxed",
-    });
-    const index = tx.store.index("modComponentId");
-    for await (const cursor of index.iterate(modComponentId)) {
-      if (cursor.value.level === "debug" || cursor.value.level === "trace") {
-        await cursor.delete();
+  await withLoggingDB(
+    async (db) => {
+      const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+        durability: "relaxed",
+      });
+      const index = tx.store.index("modComponentId");
+      for await (const cursor of index.iterate(modComponentId)) {
+        if (cursor.value.level === "debug" || cursor.value.level === "trace") {
+          await cursor.delete();
+        }
       }
-    }
-  }, IDB_OPERATION.CLEAR_MOD_COMPONENT_DEBUG_LOGS).catch((_error) => {
+    },
+    { operationName: IDB_OPERATION.LOG.CLEAR_MOD_COMPONENT_DEBUG_LOGS },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry, and
     // we don't want to interrupt the execution of mod pipeline
   });
@@ -599,52 +483,55 @@ async function _sweepLogs(): Promise<void> {
     return;
   }
 
-  await withLoggingDB(async (db) => {
-    const numRecords = await db.count(ENTRY_OBJECT_STORE);
+  await withLoggingDB(
+    async (db) => {
+      const numRecords = await db.count(ENTRY_OBJECT_STORE);
 
-    if (numRecords > MAX_LOG_RECORDS) {
-      const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
+      if (numRecords > MAX_LOG_RECORDS) {
+        const numToDelete = numRecords - MAX_LOG_RECORDS * LOG_STORAGE_RATIO;
 
-      console.debug("Sweeping logs", {
-        numRecords,
-        numToDelete,
-      });
-
-      // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
-      // of blocking other db transactions.
-      const abortController = new AbortController();
-      setTimeout(() => {
-        abortController.abort();
-      }, 10_000);
-
-      let deletedCount = 0;
-
-      while (deletedCount < numToDelete) {
-        const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
-          durability: "relaxed",
+        console.debug("Sweeping logs", {
+          numRecords,
+          numToDelete,
         });
 
-        let processedBatchCount = 0;
-        // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
-        // This might mostly "just work" if the cursor happens to iterate in insertion order
-        // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
-        for await (const cursor of tx.store) {
-          if (abortController.signal.aborted) {
-            console.warn("Log sweep aborted due to timeout");
-            return;
-          }
+        // Ensure in cases where the sweep is taking too long, we abort the operation to reduce the likelihood
+        // of blocking other db transactions.
+        const abortController = new AbortController();
+        setTimeout(() => {
+          abortController.abort();
+        }, 10_000);
 
-          await cursor.delete();
-          deletedCount++;
-          processedBatchCount++;
+        let deletedCount = 0;
 
-          if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
-            break;
+        while (deletedCount < numToDelete) {
+          const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite", {
+            durability: "relaxed",
+          });
+
+          let processedBatchCount = 0;
+          // Ideally this would be ordered by timestamp to delete the oldest records, but timestamp is not an index.
+          // This might mostly "just work" if the cursor happens to iterate in insertion order
+          // eslint-disable-next-line no-await-in-loop -- Process one entry at a time
+          for await (const cursor of tx.store) {
+            if (abortController.signal.aborted) {
+              console.warn("Log sweep aborted due to timeout");
+              return;
+            }
+
+            await cursor.delete();
+            deletedCount++;
+            processedBatchCount++;
+
+            if (processedBatchCount >= SWEEP_LOGS_BATCH_SIZE) {
+              break;
+            }
           }
         }
       }
-    }
-  }, IDB_OPERATION.SWEEP_LOGS).catch((_error) => {
+    },
+    { operationName: IDB_OPERATION.LOG.SWEEP_LOGS },
+  ).catch((_error) => {
     // Swallow error because we've reported it to application error telemetry
   });
 }

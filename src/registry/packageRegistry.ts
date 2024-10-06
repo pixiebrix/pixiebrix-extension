@@ -19,7 +19,14 @@ import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { type Except } from "type-fest";
-import { deleteDatabase } from "@/utils/idbUtils";
+import {
+  deleteDatabase,
+  DATABASE_NAME,
+  withIdbErrorHandling,
+  IDB_OPERATION,
+  isIDBLargeValueError,
+  isMaybeTemporaryIDBError,
+} from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
@@ -27,7 +34,6 @@ import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 import { type DefinitionKind } from "@/types/registryTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
@@ -67,7 +73,7 @@ async function openRegistryDB() {
   // https://stackoverflow.com/questions/21418954/is-it-bad-to-open-several-database-connections-in-indexeddb
   let database: IDBPDatabase<RegistryDB> | null = null;
 
-  database = await openDB<RegistryDB>(DATABASE_NAME, VERSION, {
+  database = await openDB<RegistryDB>(DATABASE_NAME.PACKAGE_REGISTRY, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -98,6 +104,12 @@ async function openRegistryDB() {
 
   return database;
 }
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const withRegistryDB = withIdbErrorHandling(
+  openRegistryDB,
+  DATABASE_NAME.PACKAGE_REGISTRY,
+);
 
 function latestVersion(
   versions: PackageVersion[],
@@ -164,22 +176,24 @@ const ensurePopulated = memoizeUntilSettled(async () => {
  * Clear the brick definition registry.
  */
 export async function clear(): Promise<void> {
-  const db = await openRegistryDB();
-  try {
-    await db.clear(BRICK_STORE);
-  } finally {
-    db.close();
-  }
+  await withRegistryDB(
+    async (db) => {
+      await db.clear(BRICK_STORE);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].CLEAR },
+  );
 }
 
 /**
  * Deletes and recreates the brick definition database.
  */
 export async function recreateDB(): Promise<void> {
-  await deleteDatabase(DATABASE_NAME);
+  await deleteDatabase(DATABASE_NAME.PACKAGE_REGISTRY);
 
   // Open the database to recreate it
-  await openRegistryDB();
+  await withRegistryDB(async () => {}, {
+    operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].RECREATE_DB,
+  });
 
   // Re-populate the packages from the remote registry
   await syncPackages();
@@ -194,25 +208,34 @@ export async function getByKinds(
 ): Promise<PackageVersion[]> {
   await ensurePopulated();
 
-  const db = await openRegistryDB();
-
-  try {
-    const bricks = flatten(
-      await Promise.all(
-        kinds.map(async (kind) =>
-          db.getAllFromIndex(BRICK_STORE, "kind", kind),
+  return withRegistryDB(
+    async (db) => {
+      const bricks = flatten(
+        await Promise.all(
+          kinds.map(async (kind) =>
+            db.getAllFromIndex(BRICK_STORE, "kind", kind),
+          ),
         ),
-      ),
-    );
+      );
 
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(
-      ([, versions]) =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
-        latestVersion(versions)!,
-    );
-  } finally {
-    db.close();
-  }
+      return Object.entries(groupBy(bricks, (x) => x.id)).map(
+        ([, versions]) =>
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
+          latestVersion(versions)!,
+      );
+    },
+    {
+      operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].GET_BY_KINDS,
+      shouldRetry: (error) => isMaybeTemporaryIDBError(error),
+      async onFailedAttempt(error) {
+        if (isIDBLargeValueError(error)) {
+          // If the large value error is a NotFoundError, syncPackages will likely fix it
+          // In a future version of Chrome, we will be able to distinguish between NotFoundErrors and DataErrors
+          await syncPackages();
+        }
+      },
+    },
+  );
 }
 
 /**
@@ -220,12 +243,9 @@ export async function getByKinds(
  */
 export async function count(): Promise<number> {
   // Don't need to ensure populated, because we're just counting current records
-  const db = await openRegistryDB();
-  try {
-    return await db.count(BRICK_STORE);
-  } finally {
-    db.close();
-  }
+  return withRegistryDB(async (db) => db.count(BRICK_STORE), {
+    operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].COUNT,
+  });
 }
 
 /**
@@ -233,18 +253,19 @@ export async function count(): Promise<number> {
  * @param packages the packages to put in the database
  */
 async function replaceAll(packages: PackageVersion[]): Promise<void> {
-  const db = await openRegistryDB();
+  await withRegistryDB(
+    async (db) => {
+      const tx = db.transaction(BRICK_STORE, "readwrite");
 
-  try {
-    const tx = db.transaction(BRICK_STORE, "readwrite");
+      await tx.store.clear();
+      await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
 
-    await tx.store.clear();
-    await Promise.all(packages.map(async (obj) => tx.store.add(obj)));
-
-    await tx.done;
-  } finally {
-    db.close();
-  }
+      await tx.done;
+    },
+    {
+      operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].REPLACE_ALL,
+    },
+  );
 }
 
 export function parsePackage(
@@ -283,20 +304,14 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
     throw new Error("id is required");
   }
 
-  if (typeof id !== "string") {
-    console.error("REGISTRY_FIND received invalid id argument", { id });
-    throw new Error("invalid brick id");
-  }
-
   await ensurePopulated();
 
-  const db = await openRegistryDB();
+  return withRegistryDB(
+    async (db) => {
+      const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
 
-  try {
-    const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
-
-    return latestVersion(versions);
-  } finally {
-    db.close();
-  }
+      return latestVersion(versions);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.PACKAGE_REGISTRY].FIND },
+  );
 }

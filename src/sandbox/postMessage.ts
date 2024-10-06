@@ -30,18 +30,20 @@
  * Relevant discussion: https://github.com/w3c/webextensions/issues/78
  */
 
-import pTimeout from "p-timeout";
+import pTimeout, { TimeoutError } from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
-import { assertNotNullish } from "./nullishUtils";
 import { type JsonValue } from "type-fest";
-import { type AbortSignalAsOptions } from "./promiseUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { type AbortSignalAsOptions } from "@/utils/promiseUtils";
+import { uuidv4 } from "@/types/helpers";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { type UUID } from "@/types/stringTypes";
 
 const TIMEOUT_MS = 5000;
 
 export type Payload = JsonValue | void;
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
 
 export type RequestPacket = {
@@ -58,6 +60,54 @@ export interface PostMessageInfo {
 }
 
 type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
+
+/**
+ * Metadata about a pending message that is waiting for a response from the sandbox. Introduced to assist in
+ * debugging issues with sandbox messaging, for use with error telemetry.
+ * See https://github.com/pixiebrix/pixiebrix-extension/issues/9150
+ */
+type PendingMessageMetadata = {
+  type: string;
+  payloadSize: Nullishable<number>;
+  timestamp: number;
+};
+
+export const pendingMessageMetadataMap = new Map<
+  string,
+  PendingMessageMetadata
+>();
+
+function addPendingMessageMetadata(
+  type: string,
+  payload: Nullishable<Payload>,
+): UUID {
+  const id = uuidv4();
+  const payloadSize = payload ? JSON.stringify(payload).length : null;
+  const metadata = { type, payloadSize, timestamp: Date.now() };
+  pendingMessageMetadataMap.set(id, metadata);
+  return id;
+}
+
+function removePendingMessageMetadata(id: UUID) {
+  const removedMessage = pendingMessageMetadataMap.get(id);
+  pendingMessageMetadataMap.delete(id);
+  return removedMessage;
+}
+
+export class SandboxTimeoutError extends Error {
+  override name = "SandboxTimeoutError";
+
+  constructor(
+    message: string,
+    public readonly sandboxMessage: PendingMessageMetadata | undefined,
+    public readonly pendingSandboxMessages: PendingMessageMetadata[],
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.pendingSandboxMessages = pendingSandboxMessages;
+    this.sandboxMessage = sandboxMessage;
+  }
+}
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage<TReturn extends Payload = Payload>({
@@ -91,12 +141,31 @@ export default async function postMessage<TReturn extends Payload = Payload>({
     recipient.postMessage(packet, "*", [privateChannel.port2]);
   });
 
-  return pTimeout(promise, {
-    milliseconds: TIMEOUT_MS,
-    message: `Message ${type} did not receive a response within ${
-      TIMEOUT_MS / 1000
-    } seconds`,
-  });
+  const messageKey = addPendingMessageMetadata(type, payload);
+  try {
+    const result = await pTimeout(promise, {
+      milliseconds: TIMEOUT_MS,
+      message: `Message ${type} did not receive a response within ${
+        TIMEOUT_MS / 1000
+      } seconds`,
+    });
+    removePendingMessageMetadata(messageKey);
+    return result;
+  } catch (error) {
+    const messageMetadata = removePendingMessageMetadata(messageKey);
+    if (isSpecificError(error, TimeoutError)) {
+      throw new SandboxTimeoutError(
+        error.message,
+        messageMetadata,
+        [...pendingMessageMetadataMap.values()],
+        {
+          cause: error,
+        },
+      );
+    }
+
+    throw error;
+  }
 }
 
 export function addPostMessageListener(

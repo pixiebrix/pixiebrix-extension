@@ -23,7 +23,12 @@ import {
 } from "@/data/service/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
-import { deleteDatabase } from "@/utils/idbUtils";
+import {
+  DATABASE_NAME,
+  deleteDatabase,
+  IDB_OPERATION,
+  withIdbErrorHandling,
+} from "@/utils/idbUtils";
 import { browserVersion, detectBrowser } from "@/vendors/mixpanelBrowser";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
@@ -35,7 +40,6 @@ import { API_PATHS } from "@/data/service/urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
-const TELEMETRY_DB_NAME = "telemetrydb";
 const TELEMETRY_DB_VERSION_NUMBER = 1;
 const TELEMETRY_EVENT_OBJECT_STORE = "events";
 
@@ -162,7 +166,7 @@ async function openTelemetryDB() {
   let database: IDBPDatabase<TelemetryDB> | null = null;
 
   database = await openDB<TelemetryDB>(
-    TELEMETRY_DB_NAME,
+    DATABASE_NAME.TELEMETRY,
     TELEMETRY_DB_VERSION_NUMBER,
     {
       upgrade(db) {
@@ -193,61 +197,63 @@ async function openTelemetryDB() {
   return database;
 }
 
-async function addEvent(event: UserTelemetryEvent): Promise<void> {
-  const db = await openTelemetryDB();
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const withTelemetryDB = withIdbErrorHandling(
+  openTelemetryDB,
+  DATABASE_NAME.TELEMETRY,
+);
 
-  try {
-    await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
-  } finally {
-    db.close();
-  }
+async function addEvent(event: UserTelemetryEvent): Promise<void> {
+  await withTelemetryDB(
+    async (db) => {
+      await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].ADD_EVENT },
+  );
 }
 
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
-  const db = await openTelemetryDB();
-  try {
-    const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
-    const allEvents = await tx.store.getAll();
-    await tx.store.clear();
-    return allEvents;
-  } finally {
-    db.close();
-  }
+  return withTelemetryDB(
+    async (db) => {
+      const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+      const allEvents = await tx.store.getAll();
+      await tx.store.clear();
+      return allEvents;
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].FLUSH_EVENTS },
+  );
 }
 
 /**
  * Deletes and recreates the logging database.
  */
 export async function recreateDB(): Promise<void> {
-  await deleteDatabase(TELEMETRY_DB_NAME);
+  await deleteDatabase(DATABASE_NAME.TELEMETRY);
 
-  // Open the database to recreate it
-  const db = await openTelemetryDB();
-  db.close();
+  await withTelemetryDB(async () => {}, {
+    operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].RECREATE_DB,
+  });
 }
 
 /**
  * Returns the number of telemetry entries in the database.
  */
 export async function count(): Promise<number> {
-  const db = await openTelemetryDB();
-  try {
-    return await db.count(TELEMETRY_EVENT_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  return withTelemetryDB(async (db) => db.count(TELEMETRY_EVENT_OBJECT_STORE), {
+    operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].COUNT,
+  });
 }
 
 /**
  * Clears all event entries from the database.
  */
 export async function clear(): Promise<void> {
-  const db = await openTelemetryDB();
-  try {
-    await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
-  } finally {
-    db.close();
-  }
+  await withTelemetryDB(
+    async (db) => {
+      await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].CLEAR },
+  );
 }
 
 async function flush(): Promise<void> {

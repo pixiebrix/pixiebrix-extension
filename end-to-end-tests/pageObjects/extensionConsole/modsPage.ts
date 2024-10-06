@@ -64,7 +64,7 @@ export class ModsPage extends BasePageObject {
       .waitForEvent("requestfinished", {
         predicate: (request) =>
           request.url().includes(API_PATHS.REGISTRY_BRICKS),
-        timeout: 15_000,
+        timeout: 30_000,
       });
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.getByText("Extension Console")).toBeVisible();
