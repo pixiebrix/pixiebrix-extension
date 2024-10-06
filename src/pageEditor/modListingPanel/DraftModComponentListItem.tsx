@@ -43,7 +43,7 @@ import {
   selectActiveModId,
   selectModComponentIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
-import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
+import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import {
   useRemoveModComponentFromStorage,
@@ -113,6 +113,7 @@ const DraftModComponentListItem: React.FunctionComponent<
         ? DELETE_STARTER_BRICK_MODAL_PROPS
         : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
     });
+
   const deactivateModComponent = async () =>
     removeModComponentFromStorage({
       modComponentId: modComponentFormState.uuid,
@@ -137,10 +138,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
 
   const onDeactivate = onDelete ? undefined : deactivateModComponent;
-
-  const onClone = async () => {
-    dispatch(actions.cloneActiveModComponent());
-  };
 
   return (
     <ListGroup.Item
@@ -201,17 +198,19 @@ const DraftModComponentListItem: React.FunctionComponent<
             <UnsavedChangesIcon />
           </span>
         )}
-      <ActionMenu
+      <ModComponentActionMenu
         isActive={isActive}
+        isDirty={isDirty}
         labelRoot={`${getLabel(modComponentFormState)}`}
         onSave={onSave}
         onDelete={onDelete}
         onDeactivate={onDeactivate}
-        onClone={onClone}
+        onDuplicate={async () => {
+          dispatch(actions.duplicateActiveModComponent());
+        }}
         onClearChanges={
           modComponentFormState.installed ? onClearChanges : undefined
         }
-        isDirty={isDirty}
         onAddToMod={
           modComponentFormState.modMetadata
             ? undefined

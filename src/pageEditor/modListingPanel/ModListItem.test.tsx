@@ -43,7 +43,7 @@ describe("ModListItem", () => {
             onSave={jest.fn()}
             onClearChanges={jest.fn()}
             onDeactivate={jest.fn()}
-            onClone={jest.fn()}
+            onMakeCopy={jest.fn()}
           >
             <div>test children</div>
           </ModListItem>
@@ -74,7 +74,7 @@ describe("ModListItem", () => {
             onSave={jest.fn()}
             onClearChanges={jest.fn()}
             onDeactivate={jest.fn()}
-            onClone={jest.fn()}
+            onMakeCopy={jest.fn()}
           >
             <div>test children</div>
           </ModListItem>
@@ -114,7 +114,7 @@ describe("ModListItem", () => {
             onSave={jest.fn()}
             onClearChanges={jest.fn()}
             onDeactivate={jest.fn()}
-            onClone={jest.fn()}
+            onMakeCopy={jest.fn()}
           >
             <div>test children</div>
           </ModListItem>

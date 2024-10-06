@@ -108,7 +108,7 @@ const ModComponents: React.FunctionComponent = () => {
           onDeactivate={async () => {
             await deactivateMod({ modId: modMetadata.id });
           }}
-          onClone={async () => {
+          onMakeCopy={async () => {
             dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
           }}
         >
