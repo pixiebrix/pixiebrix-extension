@@ -46,6 +46,23 @@ export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
 ) => void;
 
+function useFreshModNameGenerator(): () => string {
+  const modMetadatas = useSelector(selectActivatedModMetadatas);
+
+  return useCallback((): string => {
+    const nameBase = "New Mod";
+    const existingModNames = new Set(modMetadatas.map((m) => m.name));
+    let newModName = nameBase;
+    let i = 1;
+    while (existingModNames.has(newModName)) {
+      newModName = `${nameBase} ${i}`;
+      i++;
+    }
+
+    return newModName;
+  }, [modMetadatas]);
+}
+
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
   const { setInsertingStarterBrickType } = useInsertPane();
@@ -57,20 +74,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
     (x) => x.settings.suggestElements ?? false,
   );
 
-  const modMetadatas = useSelector(selectActivatedModMetadatas);
-
-  const getNewModName = useCallback((): string => {
-    const nameBase = "New Mod";
-    const existingModNames = modMetadatas.map((m) => m.name);
-    let newModName = nameBase;
-    let i = 1;
-    while (existingModNames.includes(newModName)) {
-      newModName = `${nameBase} ${i}`;
-      i++;
-    }
-
-    return newModName;
-  }, [modMetadatas]);
+  const generateFreshModName = useFreshModNameGenerator();
 
   const getInitialModComponentFormState = useCallback(
     async ({
@@ -95,12 +99,17 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
       initialFormState.modMetadata =
         modMetadata ??
         createNewUnsavedModMetadata({
-          modName: getNewModName(),
+          modName: generateFreshModName(),
         });
 
       return initialFormState as ModComponentFormState;
     },
-    [getNewModName, modMetadata, setInsertingStarterBrickType, suggestElements],
+    [
+      generateFreshModName,
+      modMetadata,
+      setInsertingStarterBrickType,
+      suggestElements,
+    ],
   );
 
   return useCallback(
