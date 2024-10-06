@@ -37,6 +37,7 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 type ActivateModPayload = {
   /**
@@ -120,6 +121,12 @@ const modComponentSlice = createSlice({
         },
       }: PayloadAction<ActivateModPayload>,
     ) {
+      if (isInnerDefinitionRegistryId(modDefinition.metadata.id)) {
+        throw new Error(
+          "Unsaved Page Editor mod definitions should not be included in the modComponentSlice",
+        );
+      }
+
       for (const modComponentDefinition of modDefinition.extensionPoints) {
         // May be null from bad Workshop edit?
         if (modComponentDefinition.id == null) {

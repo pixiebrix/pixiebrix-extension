@@ -22,6 +22,9 @@ import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactori
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 describe("ModListingPanel", () => {
   it("renders listing for activated mod with no changes", async () => {
@@ -59,6 +62,46 @@ describe("ModListingPanel", () => {
     );
 
     // "Clear Changes" is disabled because there's no dirty state
+    expect(screen.getByText("Clear Changes")).toBeInTheDocument();
+    expect(screen.getByText("Clear Changes")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+  });
+
+  it("renders listing for unsaved mod", async () => {
+    const modName = "Test Mod";
+
+    const formState = formStateFactory({
+      formStateConfig: {
+        modMetadata: createNewUnsavedModMetadata({
+          modName,
+        }),
+      },
+    });
+
+    render(<ModListingPanel />, {
+      setupRedux(dispatch) {
+        // The addElement also sets the active element
+        dispatch(editorActions.addModComponentFormState(formState));
+      },
+    });
+
+    expect(screen.getByText(modName)).toBeInTheDocument();
+
+    // Select the mod
+    await userEvent.click(screen.getByText(modName));
+
+    // Check that clicking expands the mod listing
+    expect(screen.getByText(formState.label)).toBeVisible();
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: `${modName} - Ellipsis`,
+      }),
+    );
+
+    // "Clear Changes" is disabled because the mod's never been saved
     expect(screen.getByText("Clear Changes")).toBeInTheDocument();
     expect(screen.getByText("Clear Changes")).toHaveAttribute(
       "aria-disabled",

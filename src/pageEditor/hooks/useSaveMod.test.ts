@@ -274,6 +274,7 @@ describe("useSaveMod", () => {
         setupRedux(dispatch, { store }) {
           jest.spyOn(store, "dispatch");
           dispatch(
+            // FIXME: temporary mod ids should never be activated in the mod component slice
             modComponentSlice.actions.activateMod({
               modDefinition: defaultModDefinitionFactory({
                 metadata: modMetadataFactory({
