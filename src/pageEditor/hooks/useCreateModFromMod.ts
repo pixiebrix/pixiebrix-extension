@@ -34,6 +34,7 @@ import { actions as modComponentActions } from "@/store/modComponents/modCompone
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
+import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -58,73 +59,86 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
-    async (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
+    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+    (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
       const modId = modDefinition.metadata.id;
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
-      // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-      const dirtyModOptionsDefinition = dirtyModOptions[modId];
-
-      try {
-        const newModDefinition = await buildAndValidateMod({
-          sourceMod: modDefinition,
-          cleanModComponents,
-          dirtyModComponentFormStates,
-          dirtyModOptionsDefinition,
-          dirtyModMetadata: metadata,
-        });
-
-        const upsertResponse = await createMod({
-          modDefinition: newModDefinition,
-          organizations: [],
-          public: false,
-        }).unwrap();
-
-        const savedModDefinition: ModDefinition = {
-          ...newModDefinition,
-          sharing: {
-            public: upsertResponse.public,
-            organizations: upsertResponse.organizations,
-          },
-          updated_at: upsertResponse.updated_at,
-        };
-
-        if (!keepLocalCopy) {
-          await deactivateMod({ modId, shouldShowConfirmation: false });
+      return ensureModComponentFormStatePermissionsFromUserGesture(
+        dirtyModComponentFormStates,
+        // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+      ).then(async (hasPermissions) => {
+        if (!hasPermissions) {
+          return;
         }
 
-        const modComponents = [
-          ...dirtyModComponentFormStates,
-          ...cleanModComponents,
-        ];
+        // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
+        const dirtyModOptionsDefinition = dirtyModOptions[modId];
 
-        dispatch(
-          modComponentActions.activateMod({
-            modDefinition: savedModDefinition,
-            configuredDependencies: collectExistingConfiguredDependenciesForMod(
-              savedModDefinition,
-              modComponents,
-            ),
-            optionsArgs: collectModOptions(modComponents),
-            screen: "pageEditor",
-            isReactivate: false,
-          }),
-        );
-        dispatch(editorActions.setActiveModId(savedModDefinition.metadata.id));
-        dispatch(editorActions.checkAvailableActivatedModComponents());
+        try {
+          const newModDefinition = await buildAndValidateMod({
+            sourceMod: modDefinition,
+            cleanModComponents,
+            dirtyModComponentFormStates,
+            dirtyModOptionsDefinition,
+            dirtyModMetadata: metadata,
+          });
 
-        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-          copiedFrom: modId,
-          modId: savedModDefinition.metadata.id,
-        });
-      } catch (error) {
-        if (error instanceof BusinessError) {
-          // Error is already handled by buildAndValidateMod.
-        } else {
-          throw error;
-        } // Other errors can be thrown during mod activation
-      }
+          const upsertResponse = await createMod({
+            modDefinition: newModDefinition,
+            organizations: [],
+            public: false,
+          }).unwrap();
+
+          const savedModDefinition: ModDefinition = {
+            ...newModDefinition,
+            sharing: {
+              public: upsertResponse.public,
+              organizations: upsertResponse.organizations,
+            },
+            updated_at: upsertResponse.updated_at,
+          };
+
+          if (!keepLocalCopy) {
+            await deactivateMod({ modId, shouldShowConfirmation: false });
+          }
+
+          const modComponents = [
+            ...dirtyModComponentFormStates,
+            ...cleanModComponents,
+          ];
+
+          dispatch(
+            modComponentActions.activateMod({
+              modDefinition: savedModDefinition,
+              configuredDependencies:
+                collectExistingConfiguredDependenciesForMod(
+                  savedModDefinition,
+                  modComponents,
+                ),
+              optionsArgs: collectModOptions(modComponents),
+              screen: "pageEditor",
+              isReactivate: false,
+            }),
+          );
+          dispatch(
+            editorActions.setActiveModId(savedModDefinition.metadata.id),
+          );
+          dispatch(editorActions.checkAvailableActivatedModComponents());
+
+          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+            copiedFrom: modId,
+            modId: savedModDefinition.metadata.id,
+          });
+        } catch (error) {
+          if (error instanceof BusinessError) {
+            // Error is already handled by buildAndValidateMod.
+          } else {
+            throw error;
+          } // Other errors can be thrown during mod activation
+        }
+      });
     },
     [
       getCleanComponentsAndDirtyFormStatesForMod,
