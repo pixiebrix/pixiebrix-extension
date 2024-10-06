@@ -35,7 +35,12 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
-function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
+/**
+ * @see useClearModChanges
+ */
+function useClearModComponentChanges(): (
+  useClearModComponentChangesConfig: Config,
+) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activatedModComponents = useSelector(selectActivatedModComponents);
@@ -46,9 +51,10 @@ function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
     async ({ modComponentId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
-          title: "Reset Brick?",
-          message: "Any changes you made since the last save will be lost",
-          submitCaption: "Reset",
+          title: "Clear Mod Component Changes?",
+          message:
+            "Any changes you made to this mod component since the last save will be lost",
+          submitCaption: "Clear Changes",
         });
 
         if (!confirm) {
@@ -56,7 +62,7 @@ function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
         }
       }
 
-      reportEvent(Events.PAGE_EDITOR_RESET, {
+      reportEvent(Events.PAGE_EDITOR_CLEAR_CHANGES, {
         sessionId,
         modComponentId,
       });
@@ -81,4 +87,4 @@ function useResetModComponent(): (useResetConfig: Config) => Promise<void> {
   );
 }
 
-export default useResetModComponent;
+export default useClearModComponentChanges;

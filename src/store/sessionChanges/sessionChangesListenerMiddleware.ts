@@ -33,7 +33,7 @@ sessionChangesListenerMiddleware.startListening({
     actions.editModMetadata,
     actions.editModOptionsDefinitions,
     actions.editModOptionsValues,
-    actions.resetMetadataAndOptionsForMod,
+    actions.clearMetadataAndOptionsChangesForMod,
     actions.addModComponentFormStateToMod,
     actions.addModComponentFormState,
     actions.removeModComponentFormStateFromMod,

@@ -42,7 +42,7 @@ const Template: ComponentStory<typeof ActionMenu> = (args) => (
 
 export const NewModComponent = Template.bind({});
 NewModComponent.args = {
-  onReset: undefined,
+  onClearChanges: undefined,
   onRemoveFromMod: undefined,
   isDirty: true,
 };
@@ -60,7 +60,7 @@ Mod.args = {
 
 export const NewModComponentInMod = Template.bind({});
 NewModComponentInMod.args = {
-  onReset: undefined,
+  onClearChanges: undefined,
   onAddToMod: undefined,
 };
 

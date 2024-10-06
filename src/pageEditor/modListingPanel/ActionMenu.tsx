@@ -41,7 +41,7 @@ type ActionMenuProps = {
   onDelete?: () => Promise<void>;
   onDeactivate?: () => Promise<void>;
   onClone: () => Promise<void>;
-  onReset?: () => Promise<void>;
+  onClearChanges?: () => Promise<void>;
   isDirty?: boolean;
   onAddToMod?: () => Promise<void>;
   onRemoveFromMod?: () => Promise<void>;
@@ -56,7 +56,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   onDelete = null,
   onDeactivate = null,
   onClone,
-  onReset = null,
+  onClearChanges = null,
   isDirty,
   onAddToMod = null,
   onRemoveFromMod = null,
@@ -67,11 +67,11 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 
   const menuItems: EllipsisMenuItem[] = [
     {
-      title: "Reset",
+      title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
-      action: onReset,
-      disabled: !isDirty || disabled,
-      hide: !onReset,
+      action: onClearChanges,
+      // Always show Clear Changes button, even if there are no changes
+      disabled: !isDirty || disabled || !onClearChanges,
     },
     {
       title: "Add Starter Brick",

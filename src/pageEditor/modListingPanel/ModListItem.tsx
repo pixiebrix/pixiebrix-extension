@@ -40,11 +40,12 @@ import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { type ModMetadata } from "@/types/modComponentTypes";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
   onSave: () => Promise<void>;
-  onReset: () => Promise<void>;
+  onClearChanges: () => Promise<void>;
   onDeactivate: () => Promise<void>;
   onClone: () => Promise<void>;
 }>;
@@ -53,7 +54,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   modMetadata,
   children,
   onSave,
-  onReset,
+  onClearChanges,
   onDeactivate,
   onClone,
 }) => {
@@ -80,6 +81,8 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectModIsDirty(modId));
+
+  const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
 
   const hasUpdate =
     latestModVersion != null &&
@@ -116,7 +119,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
           isActive={isActive}
           labelRoot={name}
           onSave={onSave}
-          onReset={onReset}
+          onClearChanges={isUnsavedMod ? undefined : onClearChanges}
           onDeactivate={onDeactivate}
           onAddStarterBrick={addNewModComponent}
           onClone={onClone}
