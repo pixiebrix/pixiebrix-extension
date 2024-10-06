@@ -26,13 +26,6 @@ export type StarterBrickUIName =
   | "Dynamic Quick Bar"
   | "Sidebar Panel";
 
-type NotButtonStarterBrickUIName =
-  | "Context Menu"
-  | "Trigger"
-  | "Quick Bar Action"
-  | "Dynamic Quick Bar"
-  | "Sidebar Panel";
-
 const domainRegExp =
   /(?:[\da-z](?:[\da-z-]{0,61}[\da-z])?\.)+[\da-z][\da-z-]{0,61}[\da-z]/i;
 
@@ -66,16 +59,6 @@ export class ModActionMenu extends BasePageObject {
   }
 }
 
-type AddNewModInputs =
-  | {
-      starterBrickName: NotButtonStarterBrickUIName;
-      insertButtonCallback?: never;
-    }
-  | {
-      starterBrickName: "Button";
-      insertButtonCallback: () => Promise<void>;
-    };
-
 export class ModListItem extends BasePageObject {
   get saveButton() {
     return this.locator("[data-icon=save]");
@@ -102,34 +85,32 @@ export class ModListItem extends BasePageObject {
 
 export class ModListingPanel extends BasePageObject {
   newModButton = this.getByRole("button", { name: "New Mod", exact: true });
-  quickFilterInput = this.getByPlaceholder("Quick filter");
+
   get activeModListItem() {
     return new ModListItem(this.locator(".list-group-item.active"));
   }
 
   /**
-   * Adds a new mod in the page editor, with one component with the given starter brick type.
+   * Adds a new mod in the Page Editor, with one component with the given starter brick type.
    *
-   * @param inputs the starter brick name to add, corresponding to the name shown in the Page Editor UI,
-   * not the underlying type, and optionally a callback to insert the button if using button starter
-   * brick type.
-   * @returns modComponentName the generated mod component name
+   * When adding a Button starter brick, the caller is responsible for placing the button on the page. See
+   * `selectConnectedPageElement`
+   *
+   * @param starterBrickName the UI label of the starter brick to add
+   * @returns matcher to match the auto-generated mod component name
    */
   @ModifiesModFormState
   async addNewMod({
     starterBrickName,
-    insertButtonCallback,
-  }: AddNewModInputs): Promise<{
+  }: {
+    starterBrickName: StarterBrickUIName;
+  }): Promise<{
     modComponentNameMatcher: RegExp;
   }> {
     await this.newModButton.click();
     await this.locator("[role=button].dropdown-item", {
       hasText: starterBrickName,
     }).click();
-
-    if (insertButtonCallback) {
-      await insertButtonCallback();
-    }
 
     return {
       modComponentNameMatcher:

@@ -36,12 +36,11 @@ test("create, run, package, and update mod", async ({
 
   await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Button",
-    async insertButtonCallback() {
-      await pageEditorPage.selectConnectedPageElement(
-        page.getByRole("button", { name: "Action #3" }),
-      );
-    },
   });
+
+  await pageEditorPage.selectConnectedPageElement(
+    page.getByRole("button", { name: "Action #3" }),
+  );
 
   await test.step("Configure the Button brick", async () => {
     await pageEditorPage.brickConfigurationPanel.fillField(

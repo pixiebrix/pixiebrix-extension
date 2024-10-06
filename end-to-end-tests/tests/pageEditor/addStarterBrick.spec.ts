@@ -39,12 +39,11 @@ test("Add new mod with different starter brick components", async ({
     const { modComponentNameMatcher } =
       await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Button",
-        async insertButtonCallback() {
-          await pageEditorPage.selectConnectedPageElement(
-            page.getByRole("link", { name: "navigation" }),
-          );
-        },
       });
+
+    await pageEditorPage.selectConnectedPageElement(
+      page.getByRole("link", { name: "navigation" }),
+    );
 
     await expect(
       pageEditorPage.getByText(modComponentNameMatcher),
