@@ -82,7 +82,6 @@ describe("ModListingPanel", () => {
 
     render(<ModListingPanel />, {
       setupRedux(dispatch) {
-        // The addElement also sets the active element
         dispatch(editorActions.addModComponentFormState(formState));
       },
     });
