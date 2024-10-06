@@ -178,8 +178,7 @@ export class PageEditorPage extends BasePageObject {
 
     if (descriptionOverride) {
       // Update the mod description
-      // FIXME: determine why getByLabel is not working for the description field
-      // const descriptionInput = saveNewModModal.getByLabel("Description");
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9238, prefer getByLabel
       const descriptionInput = saveNewModModal.locator("#description");
       await descriptionInput.fill(descriptionOverride);
     }
