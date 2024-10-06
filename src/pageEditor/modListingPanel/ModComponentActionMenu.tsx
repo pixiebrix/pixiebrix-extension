@@ -19,7 +19,6 @@ import React from "react";
 import {
   faClone,
   faFileExport,
-  faFileImport,
   faHistory,
   faTimes,
   faTrash,
@@ -40,8 +39,8 @@ type ActionMenuProps = {
   onDelete: OptionalAction;
   onDuplicate: OptionalAction;
   onClearChanges: OptionalAction;
-  onAddToMod: OptionalAction;
-  onRemoveFromMod: OptionalAction;
+  onMoveToMod: OptionalAction;
+  onCopyToMod: OptionalAction;
   // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9242, remove standalone mod component actions
   onSave: OptionalAction;
   onDeactivate: OptionalAction;
@@ -54,8 +53,8 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
   onDelete = null,
   onDuplicate = null,
   onClearChanges = null,
-  onAddToMod = null,
-  onRemoveFromMod = null,
+  onMoveToMod = null,
+  onCopyToMod = null,
   // Standalone Mod Component Actions
   onSave = null,
   onDeactivate = null,
@@ -76,28 +75,28 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
       hide: !onDuplicate,
     },
     {
-      title: "Add to mod",
-      icon: (
-        <FontAwesomeIcon
-          icon={faFileImport}
-          fixedWidth
-          className={styles.addIcon}
-        />
-      ),
-      action: onAddToMod,
-      hide: !onAddToMod,
-    },
-    {
-      title: "Move from mod",
+      title: "Move to mod",
       icon: (
         <FontAwesomeIcon
           icon={faFileExport}
           fixedWidth
-          className={styles.removeIcon}
+          className={styles.moveIcon}
         />
       ),
-      action: onRemoveFromMod,
-      hide: !onRemoveFromMod,
+      action: onMoveToMod,
+      hide: !onMoveToMod,
+    },
+    {
+      title: "Copy to mod",
+      icon: (
+        <FontAwesomeIcon
+          icon={faFileExport}
+          fixedWidth
+          className={styles.moveIcon}
+        />
+      ),
+      action: onCopyToMod,
+      hide: !onCopyToMod,
     },
     {
       title: "Delete",

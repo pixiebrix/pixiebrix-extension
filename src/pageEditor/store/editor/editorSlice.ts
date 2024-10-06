@@ -119,34 +119,44 @@ export const initialState: EditorState = {
 
 /**
  * Duplicate the active mod component within the containing mod.
+ *
  */
 const duplicateActiveModComponent = createAsyncThunk<
   void,
-  void,
+  {
+    /**
+     * Optional destination mod to create the duplicate in.
+     */
+    destinationModMetadata?: ModComponentBase["_recipe"];
+  },
   { state: EditorRootState }
->("editor/duplicateActiveModComponent", async (arg, thunkAPI) => {
-  const state = thunkAPI.getState();
+>(
+  "editor/duplicateActiveModComponent",
+  async ({ destinationModMetadata }, thunkAPI) => {
+    const state = thunkAPI.getState();
 
-  const originalFormState = selectActiveModComponentFormState(state);
-  assertNotNullish(
-    originalFormState,
-    "Active mod component form state not found",
-  );
-
-  const newFormState = await produce(originalFormState, async (draft) => {
-    draft.uuid = uuidv4();
-    draft.label += " (Copy)";
-    // Re-generate instance IDs for all the bricks in the mod component
-    draft.modComponent.brickPipeline = await normalizePipelineForEditor(
-      draft.modComponent.brickPipeline,
+    const originalFormState = selectActiveModComponentFormState(state);
+    assertNotNullish(
+      originalFormState,
+      "Active mod component form state not found",
     );
-  });
 
-  thunkAPI.dispatch(
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
-    actions.addModComponentFormState(newFormState),
-  );
-});
+    const newFormState = await produce(originalFormState, async (draft) => {
+      draft.uuid = uuidv4();
+      draft.label += " (Copy)";
+      draft.modMetadata = destinationModMetadata ?? draft.modMetadata;
+      // Re-generate instance IDs for all the bricks in the mod component
+      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+        draft.modComponent.brickPipeline,
+      );
+    });
+
+    thunkAPI.dispatch(
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
+      actions.addModComponentFormState(newFormState),
+    );
+  },
+);
 
 type AvailableActivatedModComponents = {
   availableActivatedModComponentIds: UUID[];
@@ -607,9 +617,6 @@ export const editorSlice = createSlice({
         formState.modMetadata = modMetadata;
       }
     },
-    showAddToModModal(state) {
-      state.visibleModalKey = ModalKey.ADD_TO_MOD;
-    },
     addModComponentFormStateToMod(
       state,
       action: PayloadAction<{
@@ -655,8 +662,13 @@ export const editorSlice = createSlice({
         }
       }
     },
-    showRemoveFromModModal(state) {
-      state.visibleModalKey = ModalKey.REMOVE_FROM_MOD;
+    showMoveCopyToModModal(
+      state,
+      action: PayloadAction<{ moveOrCopy: "move" | "copy" }>,
+    ) {
+      const { moveOrCopy } = action.payload;
+      state.visibleModalKey = ModalKey.MOVE_COPY_TO_MOD;
+      state.keepLocalCopyOnCreateMod = moveOrCopy === "copy";
     },
     removeModComponentFormStateFromMod(
       state,

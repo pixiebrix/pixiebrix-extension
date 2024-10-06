@@ -264,9 +264,7 @@ export const selectModIsDirty =
     Boolean(modId && modIsDirtySelector(state, modId));
 
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
-  isAddToModModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_MOD,
-  isRemoveFromModModalVisible:
-    editor.visibleModalKey === ModalKey.REMOVE_FROM_MOD,
+  isMoveCopyToModVisible: editor.visibleModalKey === ModalKey.MOVE_COPY_TO_MOD,
   isSaveAsNewModModalVisible:
     editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
   isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
@@ -307,6 +305,18 @@ export const selectActivatedModMetadatas = createSelector(
 
       return metadata;
     });
+  },
+);
+
+export const selectModMetadataMap = createSelector(
+  selectActivatedModMetadatas,
+  (metadatas) => {
+    const metadataMap = new Map<RegistryId, ModMetadata>();
+    for (const metadata of metadatas) {
+      metadataMap.set(metadata.id, metadata);
+    }
+
+    return metadataMap;
   },
 );
 
