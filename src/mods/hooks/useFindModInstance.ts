@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type React from "react";
-import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { type RegistryId } from "@/types/registryTypes";
+import { useSelector } from "react-redux";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 /**
- * Mapping from brick id to brick editor.
- * @see genericOptionsFactory
+ * Hook to the activated mod instance for a given mod, or undefined if the mod is not activated on the device.
+ * @param modId the mod id to find
  */
-const optionsRegistry = new Map<
-  RegistryId,
-  React.FunctionComponent<BrickOptionProps>
->();
-
-export default optionsRegistry;
+export default function useFindModInstance(
+  modId: RegistryId,
+): ModInstance | undefined {
+  const modInstanceMap = useSelector(selectModInstanceMap);
+  return modInstanceMap.get(modId);
+}

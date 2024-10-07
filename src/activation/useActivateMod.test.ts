@@ -62,7 +62,6 @@ function setupInputs(): {
   modDefinition: ModDefinition;
 } {
   const formValues: WizardValues = {
-    modComponents: { 0: true },
     integrationDependencies: [],
     optionsArgs: {},
   };

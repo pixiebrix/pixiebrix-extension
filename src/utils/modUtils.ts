@@ -40,7 +40,7 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { cloneDeep, mapValues, sortBy } from "lodash";
+import { cloneDeep, isEmpty, mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
@@ -202,7 +202,7 @@ export function emptyModVariablesDefinitionFactory(): Required<ModVariablesDefin
  */
 export function normalizeModOptionsDefinition(
   optionsDefinition: ModDefinition["options"] | null,
-): Required<ModDefinition["options"]> {
+): NonNullable<Required<ModDefinition["options"]>> {
   if (!optionsDefinition) {
     return emptyModOptionsDefinitionFactory();
   }
@@ -231,6 +231,15 @@ export function normalizeModOptionsDefinition(
     schema,
     uiSchema,
   };
+}
+
+/**
+ * Returns true if the mod definition any defined options.
+ */
+export function hasDefinedModOptions(modDefinition: ModDefinition): boolean {
+  return !isEmpty(
+    normalizeModOptionsDefinition(modDefinition.options).schema.properties,
+  );
 }
 
 /**

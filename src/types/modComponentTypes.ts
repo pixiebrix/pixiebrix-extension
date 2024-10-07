@@ -35,6 +35,7 @@ import {
   type IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import { isRegistryId, isUUID } from "@/types/helpers";
+import { type DeploymentMetadata } from "@/types/deploymentTypes";
 import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
 
 /**
@@ -61,61 +62,6 @@ export type ModMetadata = Metadata & {
    */
   updated_at: Timestamp | null;
 };
-
-type BaseDeploymentMetadata = {
-  /**
-   * Unique id of the deployment
-   */
-  id: UUID;
-
-  /**
-   * `updated_at` timestamp of the deployment object from the server (in ISO format). Used to determine whether the
-   * client has the latest deployment configuration activated.
-   */
-  timestamp: string;
-
-  /**
-   * True iff the deployment is temporarily disabled.
-   *
-   * If undefined, is considered active for backward compatability
-   *
-   * @since 1.4.0
-   */
-  active?: boolean;
-};
-
-/**
- * Context about an automatically activated organization Deployment.
- * Don't export -- context is clearer if it's always written as ModComponentBase[_deployment] property
- */
-type DeploymentMetadata =
-  | (BaseDeploymentMetadata & {
-      /**
-       * Indicates if the deployment is a personal deployment.
-       * If true, the organization property should be undefined.
-       * @since 2.1.2
-       */
-      isPersonalDeployment: true;
-      organization?: undefined;
-    })
-  | (BaseDeploymentMetadata & {
-      isPersonalDeployment?: false;
-      /**
-       * Context about the organization that the deployment is associated with.
-       * @since 2.1.2
-       */
-      organization?: {
-        /**
-         * UUID of the organization
-         */
-        id: UUID;
-
-        /**
-         * Name of the organization
-         */
-        name: string;
-      };
-    });
 
 /**
  * @deprecated - Do not use versioned state types directly

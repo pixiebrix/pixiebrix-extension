@@ -60,8 +60,6 @@ function useModNotFoundRedirectEffect(error: unknown): void {
 
 /**
  * Common page for activating a mod definition
- *
- * @param modDefinitionQuery The mod definition to activate
  */
 const ActivateModPage: React.FC = () => {
   const modId = useRegistryIdParam();
