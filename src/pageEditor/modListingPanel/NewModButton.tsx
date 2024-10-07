@@ -51,7 +51,7 @@ const DropdownEntry: React.FunctionComponent<{
   </Dropdown.Item>
 );
 
-const AddStarterBrickButton: React.FunctionComponent = () => {
+const NewModButton: React.FunctionComponent = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);
   const sessionId = useSelector(selectSessionId);
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
@@ -62,7 +62,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
       disabled={!tabHasPermissions}
       variant="info"
       size="sm"
-      title="Add"
+      title="New Mod"
       id="add-starter-brick"
     >
       {modComponentFormStateAdapters.map((adapter) => (
@@ -96,4 +96,4 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
   );
 };
 
-export default AddStarterBrickButton;
+export default NewModButton;

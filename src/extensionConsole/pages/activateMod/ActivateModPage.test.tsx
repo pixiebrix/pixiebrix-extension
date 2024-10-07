@@ -20,7 +20,6 @@ import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen, waitFor } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type RegistryId } from "@/types/registryTypes";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -28,8 +27,8 @@ import { appApiMock, mockAllApiEndpoints } from "@/testUtils/appApiMock";
 import { validateRegistryId } from "@/types/helpers";
 import { type RetrieveRecipeResponse } from "@/types/contract";
 import {
-  modComponentDefinitionFactory,
   defaultModDefinitionFactory,
+  modComponentDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import useActivateMod, {
@@ -144,7 +143,7 @@ describe("ActivateModDefinitionPage", () => {
   test("activate mod definition permissions", async () => {
     const modDefinition = defaultModDefinitionFactory({
       metadata: metadataFactory({
-        id: "test/blueprint-with-required-options" as RegistryId,
+        id: validateRegistryId("test/blueprint-with-required-options"),
         name: "A Mod",
       }),
       extensionPoints: [
@@ -163,7 +162,6 @@ describe("ActivateModDefinitionPage", () => {
     await waitFor(() => {
       expect(activateModCallbackMock).toHaveBeenCalledWith(
         {
-          modComponents: { "0": true },
           optionsArgs: {},
           integrationDependencies: [],
           personalDeployment: false,
@@ -206,7 +204,6 @@ describe("ActivateModDefinitionPage", () => {
     await waitFor(() => {
       expect(activateModCallbackMock).toHaveBeenCalledWith(
         {
-          modComponents: { "0": true },
           optionsArgs: {},
           integrationDependencies: [],
           personalDeployment: true,

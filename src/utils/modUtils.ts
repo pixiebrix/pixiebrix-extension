@@ -26,6 +26,7 @@ import {
   type HydratedModComponent,
   type ModComponentBase,
   type ModComponentRef,
+  type ModMetadata,
 } from "@/types/modComponentTypes";
 import {
   DefinitionKinds,
@@ -39,7 +40,7 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { cloneDeep, mapValues, sortBy } from "lodash";
+import { cloneDeep, isEmpty, mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
@@ -51,7 +52,11 @@ import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
-import { validateRegistryId } from "@/types/helpers";
+import {
+  normalizeSemVerString,
+  uuidv4,
+  validateRegistryId,
+} from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
 
 /**
@@ -197,7 +202,7 @@ export function emptyModVariablesDefinitionFactory(): Required<ModVariablesDefin
  */
 export function normalizeModOptionsDefinition(
   optionsDefinition: ModDefinition["options"] | null,
-): Required<ModDefinition["options"]> {
+): NonNullable<Required<ModDefinition["options"]>> {
   if (!optionsDefinition) {
     return emptyModOptionsDefinitionFactory();
   }
@@ -226,6 +231,15 @@ export function normalizeModOptionsDefinition(
     schema,
     uiSchema,
   };
+}
+
+/**
+ * Returns true if the mod definition any defined options.
+ */
+export function hasDefinedModOptions(modDefinition: ModDefinition): boolean {
+  return !isEmpty(
+    normalizeModOptionsDefinition(modDefinition.options).schema.properties,
+  );
 }
 
 /**
@@ -289,5 +303,28 @@ export function mapModComponentToUnavailableMod(
       public: false,
       organizations: [],
     },
+  };
+}
+
+/**
+ * Generate a temporary, "unsaved" mod metadata
+ * @param name the name of the mod
+ */
+export function createNewUnsavedModMetadata({
+  modName,
+}: {
+  modName: string;
+}): ModMetadata {
+  const randomId = uuidv4();
+  return {
+    id: validateRegistryId(`${INNER_SCOPE}/mod/${randomId.toLowerCase()}`),
+    name: modName,
+    description: "Created with the PixieBrix Page Editor",
+    version: normalizeSemVerString("1.0.0"),
+    sharing: {
+      public: false,
+      organizations: [] as UUID[],
+    },
+    updated_at: nowTimestamp(),
   };
 }

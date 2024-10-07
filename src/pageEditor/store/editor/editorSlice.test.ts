@@ -222,11 +222,12 @@ describe("Add/Remove Bricks", () => {
     ).toBeArrayOfSize(initialIntegrationDependencies.length);
   });
 
-  test("Can clone a mod compoenent", async () => {
+  test("Can duplicate a mod component", async () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 
-    await actions.cloneActiveModComponent()(dispatch, getState, undefined);
+    // Duplicate the mod component in the same mod
+    await actions.duplicateActiveModComponent()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:
     //  1. thunk pending
@@ -238,7 +239,7 @@ describe("Add/Remove Bricks", () => {
     const action1 = dispatch.mock.calls[0][0];
     expect(action1).toHaveProperty(
       "type",
-      "editor/cloneActiveModComponent/pending",
+      "editor/duplicateActiveModComponent/pending",
     );
 
     const action2 = dispatch.mock.calls[1][0];
@@ -254,7 +255,7 @@ describe("Add/Remove Bricks", () => {
     const action3 = dispatch.mock.calls[2][0];
     expect(action3).toHaveProperty(
       "type",
-      "editor/cloneActiveModComponent/fulfilled",
+      "editor/duplicateActiveModComponent/fulfilled",
     );
   });
 });

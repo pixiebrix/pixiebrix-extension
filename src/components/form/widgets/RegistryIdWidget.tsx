@@ -18,53 +18,37 @@
 import { useField } from "formik";
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectAuth } from "@/auth/authSelectors";
+import { selectEditableScopes, selectScope } from "@/auth/authSelectors";
 import SelectWidget, {
   type Option,
   type SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
-import { compact } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { type StylesConfig } from "react-select";
-import { LegacyUserRole } from "@/data/model/UserRole";
-
 import { getScopeAndId } from "@/utils/registryUtils";
 import useAsyncEffect from "use-async-effect";
 import { assertNotNullish } from "@/utils/nullishUtils";
-
-const editorRoles = new Set<number>([
-  LegacyUserRole.admin,
-  LegacyUserRole.developer,
-  LegacyUserRole.manager,
-]);
 
 const emptyObject = {} as const;
 
 const RegistryIdWidget: React.VFC<{
   name: string;
+  id?: string;
   selectStyles?: StylesConfig;
-}> = ({ name, selectStyles = emptyObject }) => {
+}> = ({ name, id, selectStyles = emptyObject }) => {
   const [{ value }, , { setValue }] = useField<RegistryId>(name);
-  const { scope: userScope, organizations } = useSelector(selectAuth);
-  // XXX: We should eventually refactor RequireScope to pass the required (non-null) user scope down to children, or set a context value
+  const userScope = useSelector(selectScope);
+  const editableScopes = useSelector(selectEditableScopes);
+
   assertNotNullish(
     userScope,
-    "This widget should only be used inside RequireScope, userScope should be defined",
+    "RegistryIdWidget should only be used inside RequireScope",
   );
-  const organizationScopes: string[] = compact(
-    organizations.map(({ scope, role }) => {
-      if (scope && editorRoles.has(role)) {
-        return scope;
-      }
 
-      return null;
-    }),
-  );
-  const scopes: string[] = [userScope, ...organizationScopes];
-  const options: Option[] = scopes.map((scope) => ({
+  const options: Option[] = editableScopes.map((scope) => ({
     label: scope,
     value: scope,
   }));
@@ -100,7 +84,7 @@ const RegistryIdWidget: React.VFC<{
   return (
     <div className={styles.root}>
       <SelectWidget
-        // This doesn't impact formik because these widgets aren't connected to formik directly;
+        // Passing `name` doesn't impact formik because these widgets aren't connected to formik directly;
         // we need it for testing because the react-select element is hard to identify in tests - it
         // doesn't accept a top-level data-testid prop
         name={`${name}-scope`}
@@ -109,13 +93,14 @@ const RegistryIdWidget: React.VFC<{
         onChange={onChangeScope}
         options={options}
         className={styles.select}
-        styles={selectStyles}
       />
       <span> / </span>
       <Form.Control
+        id={id}
         value={idValue}
         onChange={onChangeId}
         className={styles.idInput}
+        // Can't use getByLabel to target because the field is composed of multiple widgets
         data-testid={`registryId-${name}-id`}
       />
     </div>

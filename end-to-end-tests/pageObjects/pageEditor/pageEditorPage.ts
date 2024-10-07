@@ -29,10 +29,10 @@ import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
+import { uuidv4 } from "@/types/helpers";
 
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });
-  logsTab = this.getByRole("tab", { name: "Logs" });
 
   runTriggerButton = this.getByRole("button", { name: "Run Trigger" });
   autoRunTrigger = this.getSwitchByLabel("Auto-Run");
@@ -134,16 +134,134 @@ export class PageEditorPage extends BasePageObject {
     );
   }
 
+  /**
+   * Save a new mod with the given name and optional description.
+   *
+   * @param currentModName the current name (not registry id) of the mod to save
+   * @param descriptionOverride the optional description override
+   * @returns the RegistryId of the saved mod
+   */
   @ModifiesModFormState
-  async saveStandaloneMod(modName: string, modUuid: UUID) {
-    const modListItem = this.modListingPanel.getModListItemByName(modName);
+  async saveNewMod({
+    currentModName,
+    descriptionOverride,
+  }: {
+    currentModName: string;
+    descriptionOverride?: string;
+  }): Promise<{
+    modId: string;
+  }> {
+    const modListItem =
+      this.modListingPanel.getModListItemByName(currentModName);
     await modListItem.select();
+    // Expect the mod metadata editor to be showing form for a mod that's never been saved before
+    await expect(
+      this.modEditorPane.editMetadataTabPanel.getByPlaceholder(
+        "Save the mod to assign a Mod ID",
+      ),
+    ).toBeVisible();
+    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-mounts several times so we need a slight delay here before playwright clicks
+    await this.page.waitForTimeout(2000);
     await modListItem.saveButton.click();
 
-    const createModModal = new CreateModModal(this.getByRole("dialog"));
-    const modId = await createModModal.createMod(modName, modUuid);
+    // Handle the "Save new mod" modal
+    const saveNewModModal = this.page.locator(".modal-content");
+    await expect(saveNewModModal).toBeVisible();
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
 
-    this.savedPackageModIds.push(modId);
+    // // Can't use getByLabel to target because the field is composed of multiple widgets
+    const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
+    const currentId = await registryIdInput.inputValue();
+    // Add a random uuid to the mod id to prevent test collisions
+    await registryIdInput.fill(`${currentId}-${uuidv4()}`);
+
+    if (descriptionOverride) {
+      // Update the mod description
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9238, prefer getByLabel
+      const descriptionInput = saveNewModModal.locator("#description");
+      await descriptionInput.fill(descriptionOverride);
+    }
+
+    // Click the Save button in the modal
+    await saveNewModModal.getByRole("button", { name: "Save" }).click();
+
+    // Wait for the save confirmation
+    await expect(
+      this.page
+        .getByRole("status")
+        .filter({ hasText: "Mod created successfully" }),
+    ).toBeVisible();
+
+    const modId =
+      await this.modEditorPane.editMetadataTabPanel.modId.inputValue();
+
+    return { modId };
+  }
+
+  /**
+   * Create a new mod by moving a mod component to a new mod.
+   * @param sourceModComponentName the name of the mod component to move
+   * @param destinationModName the root name of the new mod (to avoid test data collision, a unique string is appended
+   * to this root name, see CreateModModal)
+   */
+  @ModifiesModFormState
+  async moveModComponentToNewMod({
+    sourceModComponentName,
+    destinationModName,
+  }: {
+    sourceModComponentName: string;
+    destinationModName: string;
+  }) {
+    const modListItem = this.modListingPanel.getModListItemByName(
+      sourceModComponentName,
+    );
+    await modListItem.menuButton.click();
+    await this.getByRole("menuitem", { name: "Move to Mod" }).click();
+
+    const moveDialog = this.getByRole("dialog");
+
+    await moveDialog.getByRole("combobox").click();
+    await moveDialog.getByRole("option", { name: /Create new mod.../ }).click();
+    await moveDialog.getByRole("button", { name: "Move" }).click();
+
+    // Create mod modal is shown
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
+
+    const modId = await createModModal.createMod(destinationModName);
+    return { modId };
+  }
+
+  /**
+   * Create a new mod by copying a mod component to a new mod.
+   * @param sourceModComponentName the name of the mod component to move
+   * @param destinationModName the root name of the new mod (to avoid test data collision, a unique string is appended
+   * to this root name, see CreateModModal)
+   */
+  @ModifiesModFormState
+  async copyModComponentToNewMod({
+    sourceModComponentName,
+    destinationModName,
+  }: {
+    sourceModComponentName: string;
+    destinationModName: string;
+  }) {
+    const modListItem = this.modListingPanel.getModListItemByName(
+      sourceModComponentName,
+    );
+    await modListItem.menuButton.click();
+    await this.getByRole("menuitem", { name: "Copy to Mod" }).click();
+
+    const moveDialog = this.getByRole("dialog");
+
+    await moveDialog.getByRole("combobox").click();
+    await moveDialog.getByRole("option", { name: /Create new mod.../ }).click();
+    await moveDialog.getByRole("button", { name: "Copy" }).click();
+
+    // Create mod modal is shown
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
+
+    const modId = await createModModal.createMod(destinationModName);
+    return { modId };
   }
 
   @ModifiesModFormState
@@ -171,34 +289,6 @@ export class PageEditorPage extends BasePageObject {
 
     const deactivateModModal = new DeactivateModModal(this.getByRole("dialog"));
     await deactivateModModal.deactivateButton.click();
-  }
-
-  @ModifiesModFormState
-  async createModFromModComponent({
-    modNameRoot,
-    modComponentName,
-    modUuid,
-  }: {
-    modNameRoot: string;
-    modComponentName: string;
-    modUuid: UUID;
-  }) {
-    const modName = `${modNameRoot} ${modUuid}`;
-
-    const modListItem =
-      this.modListingPanel.getModListItemByName(modComponentName);
-    await modListItem.menuButton.click();
-    await this.getByRole("menuitem", { name: "Add to mod" }).click();
-
-    await this.getByText("Select...Choose a mod").click();
-    await this.getByRole("option", { name: /Create new mod.../ }).click();
-    await this.getByRole("button", { name: "Move" }).click();
-
-    // Create mod modal is shown
-    const createModModal = new CreateModModal(this.getByRole("dialog"));
-    const modId = await createModModal.createMod(modName, modUuid);
-
-    return { modName, modId };
   }
 
   /**

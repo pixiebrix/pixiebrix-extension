@@ -55,6 +55,9 @@ export type ActivateModComponentParam = {
 
 /**
  * Transform a given ModComponentDefinition into an ActivatedModComponent.
+ *
+ * Assigns a fresh UUID to the mod component.
+ *
  * Note: This function has no side effects, it's just a type-transformer. It does
  * NOT save the activated mod component anywhere.
  */

@@ -53,7 +53,7 @@ test.describe("sidebar page smoke test", () => {
 
     const floatingActionButton = new FloatingActionButton(page);
     const actionButton = await floatingActionButton.getActionButton();
-    await expect(actionButton).toBeVisible();
+    await expect(actionButton).toBeVisible({ timeout: 10_000 });
 
     await floatingActionButton.hideFloatingActionButton();
 

@@ -16,10 +16,10 @@
  */
 
 import {
+  DefinitionKinds,
   type InnerDefinitionRef,
   type InnerDefinitions,
   type Metadata,
-  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import {
@@ -49,15 +49,9 @@ import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
-  type IntegrationDependency,
-  type ModDependencyAPIVersion,
-} from "@/integrations/integrationTypes";
-import { type Schema } from "@/types/schemaTypes";
-import {
   emptyModVariablesDefinitionFactory,
   normalizeModOptionsDefinition,
 } from "@/utils/modUtils";
-import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
@@ -68,6 +62,8 @@ import {
 } from "@/starterBricks/starterBrickUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { selectModComponentIntegrations } from "@/store/modComponents/modComponentUtils";
+import { mapModComponentBaseToModComponentDefinition } from "@/store/modComponents/modInstanceUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -129,68 +125,6 @@ function findModComponentIndex(
   return modDefinition.extensionPoints.findIndex(
     (x) => x.label === modComponent.label,
   );
-}
-
-/**
- * Return the highest API Version used by any of the integrations in the mod. Only exported for testing.
- * @param integrationDependencies mod integration dependencies
- * @since 1.7.37
- * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
- */
-export function findMaxIntegrationDependencyApiVersion(
-  integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>,
-): ModDependencyAPIVersion {
-  let maxApiVersion: ModDependencyAPIVersion = "v1";
-  for (const integrationDependency of integrationDependencies) {
-    const { apiVersion } = integrationDependency;
-    if (apiVersion && apiVersion > maxApiVersion) {
-      maxApiVersion = apiVersion;
-    }
-  }
-
-  return maxApiVersion;
-}
-
-export function selectModComponentIntegrations({
-  integrationDependencies,
-}: Pick<
-  ModComponentBase,
-  "integrationDependencies"
->): ModComponentDefinition["services"] {
-  const _integrationDependencies = compact(integrationDependencies);
-  const apiVersion = findMaxIntegrationDependencyApiVersion(
-    _integrationDependencies,
-  );
-  if (apiVersion === "v1") {
-    return Object.fromEntries(
-      _integrationDependencies.map((x) => [x.outputKey, x.integrationId]),
-    );
-  }
-
-  if (apiVersion === "v2") {
-    const properties: Record<string, Schema> = {};
-    const required: string[] = [];
-    for (const {
-      outputKey,
-      integrationId,
-      isOptional,
-    } of _integrationDependencies) {
-      properties[outputKey] = {
-        $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationId}`,
-      };
-      if (!isOptional) {
-        required.push(outputKey);
-      }
-    }
-
-    return {
-      properties,
-      required,
-    } as Schema;
-  }
-
-  const exhaustiveCheck: never = apiVersion;
-  throw new Error(`Unknown ModDependencyApiVersion: ${exhaustiveCheck}`);
 }
 
 /**
@@ -359,16 +293,6 @@ export function replaceModComponent(
   });
 }
 
-function selectModComponentDefinition(
-  modComponent: ModComponentBase,
-): ModComponentDefinition {
-  return {
-    ...pick(modComponent, ["label", "config", "permissions", "templateEngine"]),
-    id: modComponent.extensionPointId,
-    services: selectModComponentIntegrations(modComponent),
-  };
-}
-
 export type ModParts = {
   sourceMod?: ModDefinition;
   cleanModComponents: SerializedModComponent[];
@@ -376,7 +300,7 @@ export type ModParts = {
   /**
    * Dirty/new options to save. Undefined if there are no changes.
    */
-  dirtyModOptions?: ModOptionsDefinition;
+  dirtyModOptionsDefinition?: ModOptionsDefinition;
   /**
    * Dirty/new metadata to save. Undefined if there are no changes.
    */
@@ -412,7 +336,7 @@ export function buildNewMod({
   sourceMod,
   cleanModComponents,
   dirtyModComponentFormStates,
-  dirtyModOptions,
+  dirtyModOptionsDefinition,
   dirtyModMetadata,
 }: ModParts): UnsavedModDefinition {
   // If there's no source mod, then we're creating a new one, so we
@@ -421,8 +345,8 @@ export function buildNewMod({
     sourceMod ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
-    if (dirtyModOptions) {
-      draft.options = normalizeModOptionsDefinition(dirtyModOptions);
+    if (dirtyModOptionsDefinition) {
+      draft.options = normalizeModOptionsDefinition(dirtyModOptionsDefinition);
     }
 
     if (dirtyModMetadata) {
@@ -587,7 +511,8 @@ export function buildModComponents(
     }
 
     // Construct the modComponent point config from the modComponent
-    const modComponentDefinition = selectModComponentDefinition(modComponent);
+    const modComponentDefinition =
+      mapModComponentBaseToModComponentDefinition(modComponent);
 
     // Add the starter brick, replacing the id with our updated
     // starter brick id, if we've tracked a change in newStarterBrickId

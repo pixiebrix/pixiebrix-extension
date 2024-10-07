@@ -39,10 +39,29 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
+import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
 ) => void;
+
+function useFreshModNameGenerator(): () => string {
+  const modMetadatas = useSelector(selectActivatedModMetadatas);
+
+  return useCallback((): string => {
+    const nameBase = "New Mod";
+    const existingModNames = new Set(modMetadatas.map((m) => m.name));
+    let newModName = nameBase;
+    let i = 1;
+    while (existingModNames.has(newModName)) {
+      newModName = `${nameBase} ${i}`;
+      i++;
+    }
+
+    return newModName;
+  }, [modMetadatas]);
+}
 
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch();
@@ -55,39 +74,42 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
     (x) => x.settings.suggestElements ?? false,
   );
 
+  const generateFreshModName = useFreshModNameGenerator();
+
   const getInitialModComponentFormState = useCallback(
-    async (
-      adapter: ModComponentFormStateAdapter,
-    ): Promise<ModComponentFormState> => {
+    async ({
+      starterBrickType,
+      selectNativeElement,
+      fromNativeElement,
+    }: ModComponentFormStateAdapter): Promise<ModComponentFormState> => {
       let element = null;
-      if (adapter.selectNativeElement) {
-        setInsertingStarterBrickType(adapter.starterBrickType);
-        element = await adapter.selectNativeElement(
-          inspectedTab,
-          suggestElements,
-        );
+      if (selectNativeElement) {
+        setInsertingStarterBrickType(starterBrickType);
+        element = await selectNativeElement(inspectedTab, suggestElements);
         setInsertingStarterBrickType(null);
       }
 
       const url = await getCurrentInspectedURL();
       const metadata = internalStarterBrickMetaFactory();
-      const initialFormState = adapter.fromNativeElement(
-        url,
-        metadata,
-        element,
-      );
+      const initialFormState = fromNativeElement(url, metadata, element);
 
-      initialFormState.modComponent.brickPipeline = getExampleBrickPipeline(
-        adapter.starterBrickType,
-      );
+      initialFormState.modComponent.brickPipeline =
+        getExampleBrickPipeline(starterBrickType);
 
-      if (modMetadata) {
-        initialFormState.modMetadata = modMetadata;
-      }
+      initialFormState.modMetadata =
+        modMetadata ??
+        createNewUnsavedModMetadata({
+          modName: generateFreshModName(),
+        });
 
       return initialFormState as ModComponentFormState;
     },
-    [modMetadata, setInsertingStarterBrickType, suggestElements],
+    [
+      generateFreshModName,
+      modMetadata,
+      setInsertingStarterBrickType,
+      suggestElements,
+    ],
   );
 
   return useCallback(
@@ -101,6 +123,8 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         const initialFormState = await getInitialModComponentFormState(adapter);
 
         dispatch(actions.addModComponentFormState(initialFormState));
+        // Need to explicitly check availability of the new component form state
+        // TODO: refactor this to be an implicit side-effect in the reducer (add action above possibly needs to be a thunk?)
         dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
@@ -135,13 +159,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         });
       }
     },
-    [
-      dispatch,
-      flagOff,
-      suggestElements,
-      getInitialModComponentFormState,
-      setInsertingStarterBrickType,
-    ],
+    [flagOff, modMetadata, dispatch, getInitialModComponentFormState],
   );
 }
 

@@ -20,22 +20,26 @@ import { type RegistryId } from "@/types/registryTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
-import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
+import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 
-function useResetMod(): (modId: RegistryId) => Promise<void> {
+/**
+ * Hook that returns a callback to clear unsaved mod changes for a given mod id.
+ * @see useClearModComponentChanges
+ */
+function useClearModChanges(): (modId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
-  const resetModComponent = useResetModComponent();
+  const clearModComponentChanges = useClearModComponentChanges();
   const modComponentFormStates = useSelector(selectModComponentFormStates);
 
   return useCallback(
     async (modId: RegistryId) => {
       const confirmed = await showConfirmation({
-        title: "Reset Mod?",
+        title: "Clear Mod Changes?",
         message:
           "Unsaved changes to this mod, or to mod options and metadata, will be lost.",
-        submitCaption: "Reset",
+        submitCaption: "Clear Changes",
       });
       if (!confirmed) {
         return;
@@ -43,24 +47,26 @@ function useResetMod(): (modId: RegistryId) => Promise<void> {
 
       await Promise.all(
         modComponentFormStates
-          .filter(
-            (modComponentFormState) =>
-              modComponentFormState.modMetadata?.id === modId,
-          )
+          .filter((x) => x.modMetadata?.id === modId)
           .map(async (modComponentFormState) =>
-            resetModComponent({
+            clearModComponentChanges({
               modComponentId: modComponentFormState.uuid,
               shouldShowConfirmation: false,
             }),
           ),
       );
 
-      dispatch(actions.resetMetadataAndOptionsForMod(modId));
+      dispatch(actions.clearMetadataAndOptionsChangesForMod(modId));
       dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
       dispatch(actions.setActiveModId(modId));
     },
-    [dispatch, modComponentFormStates, resetModComponent, showConfirmation],
+    [
+      dispatch,
+      modComponentFormStates,
+      clearModComponentChanges,
+      showConfirmation,
+    ],
   );
 }
 
-export default useResetMod;
+export default useClearModChanges;

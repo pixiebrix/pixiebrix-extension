@@ -35,6 +35,7 @@ import { deserializeError } from "serialize-error";
 import {
   type ActivatedModComponent,
   type ModComponentBase,
+  type ModMetadata,
 } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -67,11 +68,7 @@ export const selectModComponentFormStates = ({
 export const selectActiveModComponentFormState = createSelector(
   selectActiveModComponentId,
   selectModComponentFormStates,
-  (
-    activeModComponentId,
-    formStates,
-    // XXX: consider making the return value required so callers don't all need their own dynamic check
-  ): Nullishable<EditorState["modComponentFormStates"][number]> =>
+  (activeModComponentId, formStates) =>
     formStates.find((x) => x.uuid === activeModComponentId),
 );
 
@@ -267,9 +264,7 @@ export const selectModIsDirty =
     Boolean(modId && modIsDirtySelector(state, modId));
 
 export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
-  isAddToModModalVisible: editor.visibleModalKey === ModalKey.ADD_TO_MOD,
-  isRemoveFromModModalVisible:
-    editor.visibleModalKey === ModalKey.REMOVE_FROM_MOD,
+  isMoveCopyToModVisible: editor.visibleModalKey === ModalKey.MOVE_COPY_TO_MOD,
   isSaveAsNewModModalVisible:
     editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
   isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
@@ -281,7 +276,8 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
 export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
   selectActivatedModComponents,
-  (formStates, activatedModComponents) => {
+  selectDirtyModMetadata,
+  (formStates, activatedModComponents, dirtyModMetadataById) => {
     const formStateModMetadatas: Array<ModComponentBase["_recipe"]> = formStates
       .filter((formState) => Boolean(formState.modMetadata))
       .map((formState) => formState.modMetadata);
@@ -291,12 +287,36 @@ export const selectActivatedModMetadatas = createSelector(
       .filter((component) => Boolean(component._recipe))
       .map((component) => component._recipe);
 
-    return compact(
+    const baseMetadatas = compact(
       uniqBy(
         [...formStateModMetadatas, ...activatedModComponentModMetadatas],
         (modMetadata) => modMetadata?.id,
       ),
     );
+
+    return baseMetadatas.map((metadata) => {
+      const dirtyMetadata = dirtyModMetadataById[metadata.id];
+      if (dirtyMetadata) {
+        return {
+          ...metadata,
+          ...dirtyMetadata,
+        } as ModMetadata;
+      }
+
+      return metadata;
+    });
+  },
+);
+
+export const selectModMetadataMap = createSelector(
+  selectActivatedModMetadatas,
+  (metadatas) => {
+    const metadataMap = new Map<RegistryId, ModMetadata>();
+    for (const metadata of metadatas) {
+      metadataMap.set(metadata.id, metadata);
+    }
+
+    return metadataMap;
   },
 );
 
@@ -548,4 +568,11 @@ export const selectActiveNodeEventData = createSelector(
       brickId: activeNodeInfo.blockId,
     } satisfies ReportEventData;
   },
+);
+
+export const selectFirstModComponentFormStateForActiveMod = createSelector(
+  selectModComponentFormStates,
+  selectActiveModId,
+  (formState, activeModId) =>
+    formState.find((x) => x.modMetadata?.id === activeModId),
 );

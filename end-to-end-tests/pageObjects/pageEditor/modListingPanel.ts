@@ -16,8 +16,8 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { uuidv4 } from "@/types/helpers";
 import { ModifiesModFormState } from "./utils";
+import { type Locator } from "@playwright/test";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -26,6 +26,23 @@ export type StarterBrickUIName =
   | "Quick Bar Action"
   | "Dynamic Quick Bar"
   | "Sidebar Panel";
+
+const domainRegExp =
+  /(?:[\da-z](?:[\da-z-]{0,61}[\da-z])?\.)+[\da-z][\da-z-]{0,61}[\da-z]/i;
+
+const starterBrickUINameToComponentDefaultName: Record<
+  StarterBrickUIName,
+  RegExp
+> = {
+  "Context Menu": /Context menu item/,
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Inserting from another static RegExp
+  Trigger: new RegExp(`My ${domainRegExp.source} trigger`),
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Inserting from another static RegExp
+  Button: new RegExp(`My ${domainRegExp.source} button`),
+  "Quick Bar Action": /Quick Bar item/,
+  "Dynamic Quick Bar": /Dynamic Quick Bar/,
+  "Sidebar Panel": /Sidebar Panel/,
+};
 
 export class ModActionMenu extends BasePageObject {
   get copyButton() {
@@ -44,7 +61,10 @@ export class ModActionMenu extends BasePageObject {
 }
 
 export class ModListItem extends BasePageObject {
-  saveButton = this.locator("[data-icon=save]");
+  get saveButton() {
+    return this.locator("[data-icon=save]");
+  }
+
   get menuButton() {
     return this.getByLabel(" - Ellipsis");
   }
@@ -65,39 +85,49 @@ export class ModListItem extends BasePageObject {
 }
 
 export class ModListingPanel extends BasePageObject {
-  addButton = this.getByRole("button", { name: "Add", exact: true });
-  quickFilterInput = this.getByPlaceholder("Quick filter");
+  newModButton = this.getByRole("button", { name: "New Mod", exact: true });
+
   get activeModListItem() {
     return new ModListItem(this.locator(".list-group-item.active"));
   }
 
   /**
-   * Adds a starter brick in the Page Editor. Generates a unique mod name to prevent
-   * test collision.
+   * Adds a new mod in the Page Editor, with one component with the given starter brick type.
    *
-   * @param starterBrickName the starter brick name to add, corresponding to the name shown in the Page Editor UI,
-   * not the underlying type
-   * @returns modName the generated mod name
+   * When adding a Button starter brick, the caller is responsible for placing the button on the page. See
+   * `selectConnectedPageElement`
+   *
+   * @param starterBrickName the UI label of the starter brick to add
+   * @returns matcher to match the auto-generated mod component name
    */
   @ModifiesModFormState
-  async addStarterBrick(starterBrickName: StarterBrickUIName) {
-    const modUuid = uuidv4();
-    const modComponentName = `Test ${starterBrickName} ${modUuid}`;
-    await this.addButton.click();
+  async addNewMod({
+    starterBrickName,
+  }: {
+    starterBrickName: StarterBrickUIName;
+  }): Promise<{
+    modComponentNameMatcher: RegExp;
+  }> {
+    await this.newModButton.click();
     await this.locator("[role=button].dropdown-item", {
       hasText: starterBrickName,
     }).click();
 
-    return { modComponentName, modUuid };
+    return {
+      modComponentNameMatcher:
+        starterBrickUINameToComponentDefaultName[starterBrickName],
+    };
   }
 
-  getModListItemByName(modName: string) {
-    return new ModListItem(
-      this.locator(".list-group-item", { hasText: modName }).first(),
-    );
+  getModListItemLocatorByName(modName: string): Locator {
+    return this.locator(".list-group-item", { hasText: modName }).first();
   }
 
-  getModStarterBrick(modName: string, starterBrickName: string) {
+  getModListItemByName(modName: string): ModListItem {
+    return new ModListItem(this.getModListItemLocatorByName(modName));
+  }
+
+  getModStarterBrick(modName: string, starterBrickName: string): ModListItem {
     const modStarterBricks = this.locator(
       `.collapse:below(:text("${modName}"))`,
     );

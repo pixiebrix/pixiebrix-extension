@@ -19,12 +19,9 @@ import React from "react";
 import SaveButton from "@/pageEditor/modListingPanel/SaveButton";
 import {
   faClone,
-  faFileExport,
-  faFileImport,
   faHistory,
   faPlus,
   faTimes,
-  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
@@ -34,103 +31,63 @@ import EllipsisMenu, {
 import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponent";
 import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
 
+type OptionalAction = (() => Promise<void>) | undefined;
+
 type ActionMenuProps = {
+  isDirty: boolean;
   isActive: boolean;
-  labelRoot?: string;
-  onSave: (() => Promise<void>) | undefined;
-  onDelete?: () => Promise<void>;
-  onDeactivate?: () => Promise<void>;
-  onClone: () => Promise<void>;
-  onReset?: () => Promise<void>;
-  isDirty?: boolean;
-  onAddToMod?: () => Promise<void>;
-  onRemoveFromMod?: () => Promise<void>;
-  disabled?: boolean;
-  onAddStarterBrick?: AddNewModComponent;
+  labelRoot: string;
+  onDeactivate: () => Promise<void>;
+  onMakeCopy: () => Promise<void>;
+  onAddStarterBrick: AddNewModComponent;
+  // Actions only defined if there are changes
+  onSave: OptionalAction;
+  onClearChanges: OptionalAction;
 };
 
-const ActionMenu: React.FC<ActionMenuProps> = ({
+const ModActionMenu: React.FC<ActionMenuProps> = ({
   isActive,
   labelRoot,
-  onSave,
-  onDelete = null,
-  onDeactivate = null,
-  onClone,
-  onReset = null,
   isDirty,
-  onAddToMod = null,
-  onRemoveFromMod = null,
-  disabled,
-  onAddStarterBrick = null,
+  onAddStarterBrick,
+  onDeactivate,
+  onMakeCopy,
+  // Convert to null because EllipsisMenuItem expects null vs. undefined
+  onSave = null,
+  onClearChanges = null,
 }) => {
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
 
   const menuItems: EllipsisMenuItem[] = [
     {
-      title: "Reset",
+      title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
-      action: onReset,
-      disabled: !isDirty || disabled,
-      hide: !onReset,
+      action: onClearChanges,
+      // Always show Clear Changes button, even if there are no changes so the UI is more consistent / the user doesn't
+      // wonder why the menu item is missing
+      disabled: !isDirty || !onClearChanges,
     },
     {
       title: "Add Starter Brick",
       icon: <FontAwesomeIcon icon={faPlus} fixedWidth />,
       submenu: modComponentFormStateAdapters.map((adapter) => ({
         title: adapter.label,
-        action: onAddStarterBrick
-          ? () => {
-              onAddStarterBrick(adapter);
-            }
-          : null,
+        action() {
+          onAddStarterBrick(adapter);
+        },
         icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
       })),
       hide: !onAddStarterBrick,
     },
     {
-      title: "Add to mod",
-      icon: (
-        <FontAwesomeIcon
-          icon={faFileImport}
-          fixedWidth
-          className={styles.addIcon}
-        />
-      ),
-      action: onAddToMod,
-      disabled,
-      hide: !onAddToMod,
-    },
-    {
-      title: "Move from mod",
-      icon: (
-        <FontAwesomeIcon
-          icon={faFileExport}
-          fixedWidth
-          className={styles.removeIcon}
-        />
-      ),
-      action: onRemoveFromMod,
-      disabled,
-      hide: !onRemoveFromMod,
-    },
-    {
       title: "Make a copy",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
-      action: onClone,
-      disabled,
-    },
-    {
-      title: "Delete",
-      icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
-      action: onDelete,
-      disabled,
-      hide: !onDelete,
+      action: onMakeCopy,
     },
     {
       title: "Deactivate",
       icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
       action: onDeactivate,
-      disabled,
       hide: !onDeactivate,
     },
   ];
@@ -141,19 +98,19 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
         <SaveButton
           ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
           onClick={onSave}
-          disabled={!isDirty || disabled}
+          disabled={!isDirty}
         />
       )}
       {isActive && (
         <EllipsisMenu
+          portal
           ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
           items={menuItems}
           classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
-          portal={true}
         />
       )}
     </div>
   );
 };
 
-export default ActionMenu;
+export default ModActionMenu;

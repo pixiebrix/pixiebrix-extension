@@ -15,37 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  flex-shrink: 0;
-  gap: 4px;
-}
+import { useSelector } from "react-redux";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
-.menu {
-  z-index: 999;
-}
-
-// Increase specificity to override the default styles
-.ellipsisMenu.ellipsisMenu {
-  background-color: #e8f3fc;
-  color: #1368aa;
-
-  &:hover {
-    background-color: #ddedfb;
-    color: #0f5388;
-  }
-
-  &:active {
-    background-color: #b8dbf6;
-    color: #0b3e66;
-  }
-}
-.addIcon {
-  margin-left: -2px;
-  margin-right: 2px;
-}
-
-.moveIcon {
-  margin-left: 3px;
-  margin-right: -3px;
+/**
+ * Hook to the activated mod instance for a given mod, or undefined if the mod is not activated on the device.
+ * @param modId the mod id to find
+ */
+export default function useFindModInstance(
+  modId: RegistryId,
+): ModInstance | undefined {
+  const modInstanceMap = useSelector(selectModInstanceMap);
+  return modInstanceMap.get(modId);
 }

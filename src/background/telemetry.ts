@@ -204,18 +204,24 @@ const withTelemetryDB = withIdbErrorHandling(
 );
 
 async function addEvent(event: UserTelemetryEvent): Promise<void> {
-  await withTelemetryDB(async (db) => {
-    await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
-  }, IDB_OPERATION[DATABASE_NAME.TELEMETRY].ADD_EVENT);
+  await withTelemetryDB(
+    async (db) => {
+      await db.add(TELEMETRY_EVENT_OBJECT_STORE, event);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].ADD_EVENT },
+  );
 }
 
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
-  return withTelemetryDB(async (db) => {
-    const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
-    const allEvents = await tx.store.getAll();
-    await tx.store.clear();
-    return allEvents;
-  }, IDB_OPERATION[DATABASE_NAME.TELEMETRY].FLUSH_EVENTS);
+  return withTelemetryDB(
+    async (db) => {
+      const tx = db.transaction(TELEMETRY_EVENT_OBJECT_STORE, "readwrite");
+      const allEvents = await tx.store.getAll();
+      await tx.store.clear();
+      return allEvents;
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].FLUSH_EVENTS },
+  );
 }
 
 /**
@@ -224,29 +230,30 @@ export async function flushEvents(): Promise<UserTelemetryEvent[]> {
 export async function recreateDB(): Promise<void> {
   await deleteDatabase(DATABASE_NAME.TELEMETRY);
 
-  await withTelemetryDB(
-    async () => {},
-    IDB_OPERATION[DATABASE_NAME.TELEMETRY].RECREATE_DB,
-  );
+  await withTelemetryDB(async () => {}, {
+    operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].RECREATE_DB,
+  });
 }
 
 /**
  * Returns the number of telemetry entries in the database.
  */
 export async function count(): Promise<number> {
-  return withTelemetryDB(
-    async (db) => db.count(TELEMETRY_EVENT_OBJECT_STORE),
-    IDB_OPERATION[DATABASE_NAME.TELEMETRY].COUNT,
-  );
+  return withTelemetryDB(async (db) => db.count(TELEMETRY_EVENT_OBJECT_STORE), {
+    operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].COUNT,
+  });
 }
 
 /**
  * Clears all event entries from the database.
  */
 export async function clear(): Promise<void> {
-  await withTelemetryDB(async (db) => {
-    await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
-  }, IDB_OPERATION[DATABASE_NAME.TELEMETRY].CLEAR);
+  await withTelemetryDB(
+    async (db) => {
+      await db.clear(TELEMETRY_EVENT_OBJECT_STORE);
+    },
+    { operationName: IDB_OPERATION[DATABASE_NAME.TELEMETRY].CLEAR },
+  );
 }
 
 async function flush(): Promise<void> {

@@ -16,55 +16,55 @@
  */
 
 import React from "react";
-import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
+import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 
 export default {
   title: "Sidebar/ActionMenu",
-  component: ActionMenu,
+  component: ModComponentActionMenu,
   argTypes: {
     isDirty: {
       control: "boolean",
       defaultValue: false,
     },
-    disabled: {
-      control: "boolean",
-      defaultValue: false,
-    },
   },
-} as ComponentMeta<typeof ActionMenu>;
+} as ComponentMeta<typeof ModComponentActionMenu>;
 
-const Template: ComponentStory<typeof ActionMenu> = (args) => (
+const Template: ComponentStory<typeof ModComponentActionMenu> = (args) => (
   <div className="d-flex">
-    <ActionMenu {...args} />
+    <ModComponentActionMenu {...args} />
   </div>
 );
 
 export const NewModComponent = Template.bind({});
 NewModComponent.args = {
-  onReset: undefined,
-  onRemoveFromMod: undefined,
+  onClearChanges: undefined,
+  onCopyToMod: undefined,
+  onMoveToMod: undefined,
   isDirty: true,
 };
 
 export const OldModComponent = Template.bind({});
 OldModComponent.args = {
-  onRemoveFromMod: undefined,
+  onCopyToMod: undefined,
+  onMoveToMod: undefined,
 };
 
 export const Mod = Template.bind({});
 Mod.args = {
-  onAddToMod: undefined,
-  onRemoveFromMod: undefined,
+  onCopyToMod: undefined,
+  onMoveToMod: undefined,
 };
 
 export const NewModComponentInMod = Template.bind({});
 NewModComponentInMod.args = {
-  onReset: undefined,
-  onAddToMod: undefined,
+  onClearChanges: undefined,
+  onCopyToMod: undefined,
+  onMoveToMod: undefined,
 };
 
 export const OldModComponentInMod = Template.bind({});
 OldModComponentInMod.args = {
-  onAddToMod: undefined,
+  onCopyToMod: undefined,
+  onMoveToMod: undefined,
 };

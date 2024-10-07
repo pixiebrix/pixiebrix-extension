@@ -35,7 +35,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
-import useResetMod from "@/pageEditor/hooks/useResetMod";
+import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
@@ -87,13 +87,14 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const { save: saveMod, isSaving: isSavingMod } = useSaveMod();
-  const resetMod = useResetMod();
+  const saveMod = useSaveMod();
+  const clearModChanges = useClearModChanges();
   const deactivateMod = useDeactivateMod();
 
   const listItems = filteredSidebarItems.map((sidebarItem) => {
     if (isModSidebarItem(sidebarItem)) {
       const { modMetadata, modComponents } = sidebarItem;
+
       return (
         <ModListItem
           key={modMetadata.id}
@@ -101,14 +102,13 @@ const ModComponents: React.FunctionComponent = () => {
           onSave={async () => {
             await saveMod(modMetadata.id);
           }}
-          isSaving={isSavingMod}
-          onReset={async () => {
-            await resetMod(modMetadata.id);
+          onClearChanges={async () => {
+            await clearModChanges(modMetadata.id);
           }}
           onDeactivate={async () => {
             await deactivateMod({ modId: modMetadata.id });
           }}
-          onClone={async () => {
+          onMakeCopy={async () => {
             dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
           }}
         >
