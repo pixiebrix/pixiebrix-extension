@@ -201,30 +201,38 @@ const DraftModComponentListItem: React.FunctionComponent<
       <ModComponentActionMenu
         isActive={isActive}
         isDirty={isDirty}
-        labelRoot={`${getLabel(modComponentFormState)}`}
-        onSave={onSave}
-        onDelete={onDelete}
+        labelRoot={getLabel(modComponentFormState)}
         onDeactivate={onDeactivate}
         onDuplicate={async () => {
-          dispatch(actions.duplicateActiveModComponent());
+          dispatch(
+            // Duplicate the mod component in the same mod
+            actions.duplicateActiveModComponent(),
+          );
         }}
         onClearChanges={
           modComponentFormState.installed ? onClearChanges : undefined
         }
-        onAddToMod={
-          modComponentFormState.modMetadata
-            ? undefined
-            : async () => {
-                dispatch(actions.showAddToModModal());
-              }
-        }
-        onRemoveFromMod={
+        onMoveToMod={
           modComponentFormState.modMetadata
             ? async () => {
-                dispatch(actions.showRemoveFromModModal());
+                dispatch(
+                  actions.showMoveCopyToModModal({ moveOrCopy: "move" }),
+                );
               }
             : undefined
         }
+        onCopyToMod={
+          modComponentFormState.modMetadata
+            ? async () => {
+                dispatch(
+                  actions.showMoveCopyToModModal({ moveOrCopy: "copy" }),
+                );
+              }
+            : undefined
+        }
+        // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9242, remove standalone mod component actions
+        onSave={onSave}
+        onDelete={onDelete}
       />
     </ListGroup.Item>
   );

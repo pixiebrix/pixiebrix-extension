@@ -119,13 +119,22 @@ export const initialState: EditorState = {
 
 /**
  * Duplicate the active mod component within the containing mod.
+ *
  */
 const duplicateActiveModComponent = createAsyncThunk<
   void,
-  void,
+  | {
+      /**
+       * Optional destination mod to create the duplicate in.
+       */
+      destinationModMetadata?: ModComponentBase["_recipe"];
+    }
+  | undefined,
   { state: EditorRootState }
->("editor/duplicateActiveModComponent", async (arg, thunkAPI) => {
+>("editor/duplicateActiveModComponent", async (options, thunkAPI) => {
   const state = thunkAPI.getState();
+
+  const destinationModMetadata = options?.destinationModMetadata;
 
   const originalFormState = selectActiveModComponentFormState(state);
   assertNotNullish(
@@ -136,6 +145,7 @@ const duplicateActiveModComponent = createAsyncThunk<
   const newFormState = await produce(originalFormState, async (draft) => {
     draft.uuid = uuidv4();
     draft.label += " (Copy)";
+    draft.modMetadata = destinationModMetadata ?? draft.modMetadata;
     // Re-generate instance IDs for all the bricks in the mod component
     draft.modComponent.brickPipeline = await normalizePipelineForEditor(
       draft.modComponent.brickPipeline,
@@ -607,9 +617,6 @@ export const editorSlice = createSlice({
         formState.modMetadata = modMetadata;
       }
     },
-    showAddToModModal(state) {
-      state.visibleModalKey = ModalKey.ADD_TO_MOD;
-    },
     addModComponentFormStateToMod(
       state,
       action: PayloadAction<{
@@ -655,8 +662,13 @@ export const editorSlice = createSlice({
         }
       }
     },
-    showRemoveFromModModal(state) {
-      state.visibleModalKey = ModalKey.REMOVE_FROM_MOD;
+    showMoveCopyToModModal(
+      state,
+      action: PayloadAction<{ moveOrCopy: "move" | "copy" }>,
+    ) {
+      const { moveOrCopy } = action.payload;
+      state.visibleModalKey = ModalKey.MOVE_COPY_TO_MOD;
+      state.keepLocalCopyOnCreateMod = moveOrCopy === "copy";
     },
     removeModComponentFormStateFromMod(
       state,

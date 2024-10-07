@@ -17,6 +17,7 @@
 
 import { BasePageObject } from "../basePageObject";
 import { ModifiesModFormState } from "./utils";
+import { type Locator } from "@playwright/test";
 
 export type StarterBrickUIName =
   | "Context Menu"
@@ -118,13 +119,15 @@ export class ModListingPanel extends BasePageObject {
     };
   }
 
-  getModListItemByName(modName: string) {
-    return new ModListItem(
-      this.locator(".list-group-item", { hasText: modName }).first(),
-    );
+  getModListItemLocatorByName(modName: string): Locator {
+    return this.locator(".list-group-item", { hasText: modName }).first();
   }
 
-  getModStarterBrick(modName: string, starterBrickName: string) {
+  getModListItemByName(modName: string): ModListItem {
+    return new ModListItem(this.getModListItemLocatorByName(modName));
+  }
+
+  getModStarterBrick(modName: string, starterBrickName: string): ModListItem {
     const modStarterBricks = this.locator(
       `.collapse:below(:text("${modName}"))`,
     );
