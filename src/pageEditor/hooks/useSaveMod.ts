@@ -201,7 +201,9 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       }
 
       // Clear the dirty states
-      dispatch(editorActions.resetMetadataAndOptionsForMod(newModMetadata.id));
+      dispatch(
+        editorActions.clearMetadataAndOptionsChangesForMod(newModMetadata.id),
+      );
       dispatch(
         editorActions.clearDeletedModComponentFormStatesForMod(
           newModMetadata.id,

@@ -44,7 +44,7 @@ import {
   selectModComponentIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
-import useResetModComponent from "@/pageEditor/hooks/useResetModComponent";
+import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import {
   useRemoveModComponentFromStorage,
   DEACTIVATE_MOD_MODAL_PROPS,
@@ -104,7 +104,7 @@ const DraftModComponentListItem: React.FunctionComponent<
     await disableOverlay(inspectedTab);
   }, []);
 
-  const resetModComponent = useResetModComponent();
+  const clearModComponentChanges = useClearModComponentChanges();
 
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
@@ -131,8 +131,8 @@ const DraftModComponentListItem: React.FunctionComponent<
     return undefined;
   }, [dispatch, modComponentFormState.modMetadata, modComponentFormState.uuid]);
 
-  const onReset = async () =>
-    resetModComponent({ modComponentId: modComponentFormState.uuid });
+  const onClearChanges = async () =>
+    clearModComponentChanges({ modComponentId: modComponentFormState.uuid });
 
   const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
 
@@ -208,7 +208,9 @@ const DraftModComponentListItem: React.FunctionComponent<
         onDelete={onDelete}
         onDeactivate={onDeactivate}
         onClone={onClone}
-        onReset={modComponentFormState.installed ? onReset : undefined}
+        onClearChanges={
+          modComponentFormState.installed ? onClearChanges : undefined
+        }
         isDirty={isDirty}
         onAddToMod={
           modComponentFormState.modMetadata

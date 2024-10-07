@@ -35,7 +35,7 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type UUID } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
-import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -264,26 +264,23 @@ describe("useSaveMod", () => {
   it("opens the create mod modal if save is called with a temporary, internal mod", async () => {
     appApiMock.reset();
 
-    const temporaryModId = createNewUnsavedModMetadata({
+    const temporaryModMetadata = createNewUnsavedModMetadata({
       modName: "Test Mod",
-    }).id;
+    });
 
     const { result, waitForEffect, getReduxStore } = renderHook(
       () => useSaveMod(),
       {
         setupRedux(dispatch, { store }) {
           jest.spyOn(store, "dispatch");
-          dispatch(
-            modComponentSlice.actions.activateMod({
-              modDefinition: defaultModDefinitionFactory({
-                metadata: modMetadataFactory({
-                  id: temporaryModId,
-                }),
-              }),
-              screen: "pageEditor",
-              isReactivate: false,
-            }),
-          );
+
+          const formState = formStateFactory({
+            formStateConfig: {
+              modMetadata: temporaryModMetadata,
+            },
+          });
+
+          dispatch(editorActions.addModComponentFormState(formState));
         },
       },
     );
@@ -293,7 +290,7 @@ describe("useSaveMod", () => {
     const { dispatch } = getReduxStore();
 
     await hookAct(async () => {
-      await result.current(temporaryModId);
+      await result.current(temporaryModMetadata.id);
     });
 
     expect(dispatch).toHaveBeenCalledWith(

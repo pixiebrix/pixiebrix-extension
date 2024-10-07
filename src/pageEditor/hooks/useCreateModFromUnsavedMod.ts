@@ -172,7 +172,9 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
           }
 
           const newModId = newModDefinition.metadata.id;
-          dispatch(editorActions.resetMetadataAndOptionsForMod(newModId));
+          dispatch(
+            editorActions.clearMetadataAndOptionsChangesForMod(newModId),
+          );
           dispatch(
             editorActions.clearDeletedModComponentFormStatesForMod(newModId),
           );

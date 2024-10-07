@@ -582,7 +582,10 @@ export const editorSlice = createSlice({
       const { payload: metadata } = action;
       editModMetadata(state, metadata);
     },
-    resetMetadataAndOptionsForMod(state, action: PayloadAction<RegistryId>) {
+    clearMetadataAndOptionsChangesForMod(
+      state,
+      action: PayloadAction<RegistryId>,
+    ) {
       const { payload: modId } = action;
       delete state.dirtyModMetadataById[modId];
       delete state.dirtyModOptionsById[modId];
