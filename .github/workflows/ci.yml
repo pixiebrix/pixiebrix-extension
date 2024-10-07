@@ -3,13 +3,16 @@ name: CI
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - .gitignore
-      - .editorconfig
-      - LICENSE
-      - "**.iml"
-      - .idea/**
+  ## Ideally we could include the following `paths-ignore` option to avoid unnecessary runs, but
+  ## it conflicts with branch protection rules that always require successful CI job status checks
+  ## See: https://github.com/orgs/community/discussions/13690
+  #    paths-ignore:
+  #      - "**.md"
+  #      - .gitignore
+  #      - .editorconfig
+  #      - LICENSE
+  #      - "**.iml"
+  #      - .idea/**
   push:
     branches:
       - release/**
