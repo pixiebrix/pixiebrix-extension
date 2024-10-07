@@ -28,8 +28,14 @@ describe("useManagedStorageState", () => {
   it("waits on uninitialized state", async () => {
     const { result, waitFor } = renderHook(() => useManagedStorageState());
     expect(result.current).toStrictEqual({
+      currentData: undefined,
       data: undefined,
+      error: undefined,
+      isError: false,
+      isFetching: true,
       isLoading: true,
+      isSuccess: false,
+      isUninitialized: false,
     });
 
     await waitFor(
@@ -55,10 +61,19 @@ describe("useManagedStorageState", () => {
     await waitForNextUpdate();
 
     expect(result.current).toStrictEqual({
+      currentData: {
+        partnerId: "taco-bell",
+      },
       data: {
         partnerId: "taco-bell",
       },
+      error: undefined,
+      isError: false,
+      isFetching: false,
       isLoading: false,
+      isSuccess: true,
+      isUninitialized: false,
+      refetch: expect.any(Function),
     });
   });
 
