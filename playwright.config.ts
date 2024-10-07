@@ -92,7 +92,8 @@ export default defineConfig<{ chromiumChannel: string }>({
     baseURL: "https://pbx.vercel.app",
 
     /* Collect trace when retrying the failed test in CI, and always on failure when running locally. See https://playwright.dev/docs/trace-viewer */
-    trace: CI ? "on-first-retry" : "retain-on-failure",
+    // Temporarily always collect trace to debug flakiness
+    trace: "retain-on-failure",
 
     /* Set the default timeout for actions such as `click` */
     actionTimeout: 5000,
