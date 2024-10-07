@@ -387,7 +387,7 @@ describe("syncDeployments", () => {
     const manualModComponent = activatedModComponentFactory({
       extensionPointId: starterBrick.metadata!.id,
       _recipe: modMetadataFactory(),
-    }) as ActivatedModComponent;
+    });
     delete manualModComponent._deployment;
 
     await saveModComponentState({
@@ -762,7 +762,7 @@ describe("syncDeployments", () => {
 
     const manuallyActivatedModComponent = activatedModComponentFactory({
       _recipe: modMetadataFactory(),
-    }) as ActivatedModComponent;
+    });
 
     const deploymentStarterBrickDefinition = starterBrickDefinitionFactory();
     const deploymentStarterBrickPackageVersion = {
