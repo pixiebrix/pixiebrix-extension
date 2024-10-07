@@ -105,6 +105,11 @@ export const lexicon: LexiconMap = {
       "property and add additional properties to this event at will.",
     tags: [LexiconTags.MOD_RUNTIME],
   },
+  PAGE_EDITOR_CLEAR_CHANGES: {
+    description:
+      "Reported when Clear Changes is clicked in 3-dot action action menu for a mod/mod component in the Page Editor",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
 };
 
 /**

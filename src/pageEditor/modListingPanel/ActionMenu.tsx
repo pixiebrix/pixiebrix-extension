@@ -70,7 +70,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: onClearChanges,
-      // Always show Clear Changes button, even if there are no changes
+      // Always show Clear Changes button, even if there are no changes so the UI is more consistent / the user doesn't
+      // wonder why the menu item is missing
       disabled: !isDirty || disabled || !onClearChanges,
     },
     {

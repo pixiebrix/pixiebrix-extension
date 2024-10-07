@@ -36,6 +36,7 @@ type Config = {
 };
 
 /**
+ * Hook that returns a callback to clear unsaved changes for a given mod component id.
  * @see useClearModChanges
  */
 function useClearModComponentChanges(): (

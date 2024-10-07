@@ -24,6 +24,7 @@ import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponent
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
+ * Hook that returns a callback to clear unsaved mod changes for a given mod id.
  * @see useClearModComponentChanges
  */
 function useClearModChanges(): (modId: RegistryId) => Promise<void> {
