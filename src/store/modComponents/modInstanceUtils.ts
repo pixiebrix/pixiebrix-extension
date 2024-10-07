@@ -45,7 +45,10 @@ type ModInstanceActivatedModComponent = SetRequired<
   "_recipe" | "definitions" | "integrationDependencies" | "permissions"
 >;
 
-function generateModInstanceId(): ModInstanceId {
+/**
+ * Generate a tagged UUID for a mod instance.
+ */
+export function generateModInstanceId(): ModInstanceId {
   return uuidv4() as ModInstanceId;
 }
 

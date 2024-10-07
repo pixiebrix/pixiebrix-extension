@@ -20,12 +20,12 @@ import type { ModInstance } from "@/types/modInstanceTypes";
 import {
   autoUUIDSequence,
   timestampFactory,
-  uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { generateModInstanceId } from "@/store/modComponents/modInstanceUtils";
 
 export const modInstanceFactory = define<ModInstance>({
-  id: uuidSequence,
+  id: generateModInstanceId,
   modComponentIds: () => [autoUUIDSequence()],
   definition: modDefinitionFactory(),
   deploymentMetadata: undefined,
