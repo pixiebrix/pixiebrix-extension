@@ -73,8 +73,15 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Timeout for the entire test run */
   globalTimeout: 30 * 60 * 1000, // 30 minutes
   expect: {
-    /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
-    timeout: 5000,
+    /**
+     * Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting
+     * Set to 20s due to API slowness. See example traces:
+     * GET api/bricks/
+     * https://app.datadoghq.com/apm/trace/1816851494275985657?graphType=flamegraph&shouldShowLegend=true&sort=time&spanID=14068679180114270950&timeHint=1728332087443.742
+     * POST api/bricks/
+     * https://app.datadoghq.com/apm/trace/7735170839924641545?graphType=flamegraph&shouldShowLegend=true&sort=time&spanID=13697932419891897088&timeHint=1728331856832.3618
+     */
+    timeout: 20_000,
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.1,
     },
