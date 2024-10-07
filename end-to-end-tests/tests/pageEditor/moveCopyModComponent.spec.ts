@@ -47,9 +47,8 @@ test("Create new mod by moving mod component", async ({
     .inputValue();
 
   // Since 2.1.4, new mods are created with the name "New Mod" instead of being a standalone mod component
-  // Use span locator to distinguish from the New Mod button
   await expect(
-    pageEditorPage.locator("span").filter({ hasText: "New Mod" }),
+    pageEditorPage.modListingPanel.getModListItemLocatorByName("New Mod"),
   ).toBeVisible();
 
   const modName = `Destination Mod ${uuidv4()}`;
@@ -95,9 +94,8 @@ test("Create new mod by copying a mod component", async ({
     .inputValue();
 
   // Since 2.1.4, new mods are created with the name "New Mod" instead of being a standalone mod component
-  // Use span locator to distinguish from the New Mod button
   await expect(
-    pageEditorPage.locator("span").filter({ hasText: "New Mod" }),
+    pageEditorPage.modListingPanel.getModListItemLocatorByName("New Mod"),
   ).toBeVisible();
 
   const modName = `Destination Mod ${uuidv4()}`;

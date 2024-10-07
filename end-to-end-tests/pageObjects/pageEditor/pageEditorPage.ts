@@ -201,7 +201,8 @@ export class PageEditorPage extends BasePageObject {
   /**
    * Create a new mod by moving a mod component to a new mod.
    * @param sourceModComponentName the name of the mod component to move
-   * @param destinationModName the root name of the new mod
+   * @param destinationModName the root name of the new mod (to avoid test data collision, a unique string is appended
+   * to this root name, see CreateModModal)
    */
   @ModifiesModFormState
   async moveModComponentToNewMod({
@@ -233,7 +234,8 @@ export class PageEditorPage extends BasePageObject {
   /**
    * Create a new mod by copying a mod component to a new mod.
    * @param sourceModComponentName the name of the mod component to move
-   * @param destinationModName the root name of the new mod
+   * @param destinationModName the root name of the new mod (to avoid test data collision, a unique string is appended
+   * to this root name, see CreateModModal)
    */
   @ModifiesModFormState
   async copyModComponentToNewMod({
