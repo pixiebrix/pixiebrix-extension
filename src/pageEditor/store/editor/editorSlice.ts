@@ -123,40 +123,40 @@ export const initialState: EditorState = {
  */
 const duplicateActiveModComponent = createAsyncThunk<
   void,
-  {
-    /**
-     * Optional destination mod to create the duplicate in.
-     */
-    destinationModMetadata?: ModComponentBase["_recipe"];
-  },
+  | {
+      /**
+       * Optional destination mod to create the duplicate in.
+       */
+      destinationModMetadata?: ModComponentBase["_recipe"];
+    }
+  | undefined,
   { state: EditorRootState }
->(
-  "editor/duplicateActiveModComponent",
-  async ({ destinationModMetadata }, thunkAPI) => {
-    const state = thunkAPI.getState();
+>("editor/duplicateActiveModComponent", async (options, thunkAPI) => {
+  const state = thunkAPI.getState();
 
-    const originalFormState = selectActiveModComponentFormState(state);
-    assertNotNullish(
-      originalFormState,
-      "Active mod component form state not found",
+  const destinationModMetadata = options?.destinationModMetadata;
+
+  const originalFormState = selectActiveModComponentFormState(state);
+  assertNotNullish(
+    originalFormState,
+    "Active mod component form state not found",
+  );
+
+  const newFormState = await produce(originalFormState, async (draft) => {
+    draft.uuid = uuidv4();
+    draft.label += " (Copy)";
+    draft.modMetadata = destinationModMetadata ?? draft.modMetadata;
+    // Re-generate instance IDs for all the bricks in the mod component
+    draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+      draft.modComponent.brickPipeline,
     );
+  });
 
-    const newFormState = await produce(originalFormState, async (draft) => {
-      draft.uuid = uuidv4();
-      draft.label += " (Copy)";
-      draft.modMetadata = destinationModMetadata ?? draft.modMetadata;
-      // Re-generate instance IDs for all the bricks in the mod component
-      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
-        draft.modComponent.brickPipeline,
-      );
-    });
-
-    thunkAPI.dispatch(
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
-      actions.addModComponentFormState(newFormState),
-    );
-  },
-);
+  thunkAPI.dispatch(
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
+    actions.addModComponentFormState(newFormState),
+  );
+});
 
 type AvailableActivatedModComponents = {
   availableActivatedModComponentIds: UUID[];

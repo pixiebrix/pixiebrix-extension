@@ -226,10 +226,8 @@ describe("Add/Remove Bricks", () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 
-    await actions.duplicateActiveModComponent({
-      // Pass undefined to duplicate the mod component in the same mod
-      destinationModMetadata: undefined,
-    })(dispatch, getState, undefined);
+    // Duplicate the mod component in the same mod
+    await actions.duplicateActiveModComponent()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:
     //  1. thunk pending

@@ -205,10 +205,8 @@ const DraftModComponentListItem: React.FunctionComponent<
         onDeactivate={onDeactivate}
         onDuplicate={async () => {
           dispatch(
-            actions.duplicateActiveModComponent({
-              // Pass undefined to duplicate the mod component in the same mod
-              destinationModMetadata: undefined,
-            }),
+            // Duplicate the mod component in the same mod
+            actions.duplicateActiveModComponent(),
           );
         }}
         onClearChanges={
