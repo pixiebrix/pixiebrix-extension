@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import ActionMenu from "@/pageEditor/modListingPanel/ActionMenu";
+import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 
 export default {
   title: "Sidebar/ActionMenu",
-  component: ActionMenu,
+  component: ModComponentActionMenu,
   argTypes: {
     isDirty: {
       control: "boolean",
@@ -32,11 +32,11 @@ export default {
       defaultValue: false,
     },
   },
-} as ComponentMeta<typeof ActionMenu>;
+} as ComponentMeta<typeof ModComponentActionMenu>;
 
-const Template: ComponentStory<typeof ActionMenu> = (args) => (
+const Template: ComponentStory<typeof ModComponentActionMenu> = (args) => (
   <div className="d-flex">
-    <ActionMenu {...args} />
+    <ModComponentActionMenu {...args} />
   </div>
 );
 

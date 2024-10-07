@@ -117,33 +117,34 @@ export const initialState: EditorState = {
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
-const cloneActiveModComponent = createAsyncThunk<
+/**
+ * Duplicate the active mod component within the containing mod.
+ */
+const duplicateActiveModComponent = createAsyncThunk<
   void,
   void,
   { state: EditorRootState }
->("editor/cloneActiveModComponent", async (arg, thunkAPI) => {
+>("editor/duplicateActiveModComponent", async (arg, thunkAPI) => {
   const state = thunkAPI.getState();
-  const newActiveModComponentFormState = await produce(
-    selectActiveModComponentFormState(state),
-    async (draft) => {
-      assertNotNullish(draft, "Active mod component form state not found");
-      draft.uuid = uuidv4();
-      draft.label += " (Copy)";
-      // Remove from its mod, if any (the user can add it to any mod after creation)
-      delete draft.modMetadata;
-      // Re-generate instance IDs for all the bricks in the mod component
-      draft.modComponent.brickPipeline = await normalizePipelineForEditor(
-        draft.modComponent.brickPipeline,
-      );
-    },
-  );
+
+  const originalFormState = selectActiveModComponentFormState(state);
   assertNotNullish(
-    newActiveModComponentFormState,
-    "New active mod component form state not found",
+    originalFormState,
+    "Active mod component form state not found",
   );
+
+  const newFormState = await produce(originalFormState, async (draft) => {
+    draft.uuid = uuidv4();
+    draft.label += " (Copy)";
+    // Re-generate instance IDs for all the bricks in the mod component
+    draft.modComponent.brickPipeline = await normalizePipelineForEditor(
+      draft.modComponent.brickPipeline,
+    );
+  });
+
   thunkAPI.dispatch(
     // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned mod component
-    actions.addModComponentFormState(newActiveModComponentFormState),
+    actions.addModComponentFormState(newFormState),
   );
 });
 
@@ -317,8 +318,8 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<ModComponentFormState>,
     ) {
-      const modComponentFormState =
-        action.payload as Draft<ModComponentFormState>;
+      // Ensure the form state is writeable for normalization
+      const modComponentFormState = cloneDeep(action.payload);
 
       // Check if the new form state has modMetadata
       if (modComponentFormState.modMetadata) {
@@ -333,12 +334,15 @@ export const editorSlice = createSlice({
         // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
         // are stored/owned at the mod-level in the Page Editor
         if (existingModComponents.length > 0) {
-          const collectedOptions = collectModOptions(existingModComponents);
-          modComponentFormState.optionsArgs = collectedOptions;
+          modComponentFormState.optionsArgs = collectModOptions(
+            existingModComponents,
+          );
         }
       }
 
-      state.modComponentFormStates.push(modComponentFormState);
+      state.modComponentFormStates.push(
+        modComponentFormState as Draft<ModComponentFormState>,
+      );
       state.dirty[modComponentFormState.uuid] = true;
 
       setActiveModComponentId(state, modComponentFormState);
@@ -1033,7 +1037,7 @@ export const editorSlice = createSlice({
 
 export const actions = {
   ...editorSlice.actions,
-  cloneActiveModComponent,
+  duplicateActiveModComponent,
   checkAvailableActivatedModComponents,
   checkAvailableDraftModComponents,
   checkActiveModComponentAvailability,

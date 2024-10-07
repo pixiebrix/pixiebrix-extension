@@ -107,4 +107,42 @@ describe("ModListingPanel", () => {
       "true",
     );
   });
+
+  describe("mod component actions", () => {
+    it("duplicates mod component", async () => {
+      const modName = "Test Mod";
+
+      const formState = formStateFactory({
+        formStateConfig: {
+          modMetadata: createNewUnsavedModMetadata({
+            modName,
+          }),
+        },
+      });
+
+      render(<ModListingPanel />, {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addModComponentFormState(formState));
+        },
+      });
+
+      // Select the mod then mod component
+      await userEvent.click(screen.getByText(modName));
+      await userEvent.click(screen.getByText(formState.label));
+
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: `${formState.label} - Ellipsis`,
+        }),
+      );
+
+      await userEvent.click(
+        screen.getByRole("menuitem", {
+          name: "Duplicate",
+        }),
+      );
+
+      expect(screen.getByText(`${formState.label} (Copy)`)).toBeInTheDocument();
+    });
+  });
 });
