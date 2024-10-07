@@ -21,7 +21,10 @@ import { type Metadata } from "@/types/registryTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { type Target } from "@/types/messengerTypes";
 import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -85,11 +88,12 @@ export interface ModComponentFormStateAdapter<
    * @param metadata the initial metadata for the new mod component
    * @param element the result of the `selectNativeElement` method
    */
-  readonly fromNativeElement: (
-    url: string,
-    metadata: Metadata,
-    element: Nullishable<TResult>,
-  ) => TState;
+  readonly fromNativeElement: (args: {
+    url: string;
+    modMetadata: ModMetadata;
+    starterBrickMetadata: Metadata;
+    element: Nullishable<TResult>;
+  }) => TState;
 
   /**
    * Returns a draft mod component definition that the content script can render on the page

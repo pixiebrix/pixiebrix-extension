@@ -89,18 +89,19 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         setInsertingStarterBrickType(null);
       }
 
-      const url = await getCurrentInspectedURL();
-      const metadata = internalStarterBrickMetaFactory();
-      const initialFormState = fromNativeElement(url, metadata, element);
+      const initialFormState = fromNativeElement({
+        url: await getCurrentInspectedURL(),
+        starterBrickMetadata: internalStarterBrickMetaFactory(),
+        modMetadata:
+          modMetadata ??
+          createNewUnsavedModMetadata({
+            modName: generateFreshModName(),
+          }),
+        element,
+      });
 
       initialFormState.modComponent.brickPipeline =
         getExampleBrickPipeline(starterBrickType);
-
-      initialFormState.modMetadata =
-        modMetadata ??
-        createNewUnsavedModMetadata({
-          modName: generateFreshModName(),
-        });
 
       return initialFormState as ModComponentFormState;
     },

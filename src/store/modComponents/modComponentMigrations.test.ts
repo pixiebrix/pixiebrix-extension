@@ -52,6 +52,7 @@ import type {
   IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import type { FactoryConfig } from "cooky-cutter/dist/define";
+import { array } from "cooky-cutter";
 
 const testUserScope = "@test-user";
 
@@ -118,21 +119,18 @@ describe("migrateStandaloneComponentsToMods", () => {
 
   it("returns only mod components when userScope is null", () => {
     const modMetadata = modMetadataFactory();
-    const modComponents = [
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-    ];
-    const standaloneComponents = [
-      activatedModComponentFactory(),
-      activatedModComponentFactory(),
-    ];
+    const modComponents = array(
+      activatedModComponentFactory,
+      3,
+    )({
+      _recipe: modMetadata,
+    });
+    const standaloneComponents = array(
+      activatedModComponentFactory,
+      2,
+    )({
+      _recipe: undefined,
+    });
 
     expect(
       migrateStandaloneComponentsToMods(
@@ -144,21 +142,20 @@ describe("migrateStandaloneComponentsToMods", () => {
 
   it("converts standalone components correctly", () => {
     const modMetadata = modMetadataFactory();
-    const modComponents = [
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-    ];
-    const standaloneComponents = [
-      activatedModComponentFactory(),
-      activatedModComponentFactory(),
-    ];
+    const modComponents = array(
+      activatedModComponentFactory,
+      3,
+    )({
+      _recipe: modMetadata,
+    });
+
+    const standaloneComponents = array(
+      activatedModComponentFactory,
+      2,
+    )({
+      _recipe: undefined,
+    });
+
     const migratedStandaloneComponents = standaloneComponents.map((component) =>
       createModMetadataForStandaloneComponent(component, testUserScope),
     );
@@ -390,8 +387,12 @@ describe("inferModComponentStateVersion", () => {
     // type, and have at least one "standalone" mod component present (no _recipe).
     const state: ModComponentStateV3 = {
       extensions: [
-        activatedFactoryV2(),
-        activatedFactoryV2(),
+        activatedFactoryV2({
+          _recipe: undefined,
+        }),
+        activatedFactoryV2({
+          _recipe: undefined,
+        }),
         activatedFactoryV2({
           _recipe: modMetadataFactory(),
         }),

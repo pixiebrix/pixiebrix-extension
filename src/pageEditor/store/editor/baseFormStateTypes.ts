@@ -25,7 +25,10 @@ import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import {
   type ModOptionsDefinition,
   type ModVariablesDefinition,
@@ -232,14 +235,31 @@ export type BaseFormStateV5<
   variablesDefinition: ModVariablesDefinition;
 };
 
+/**
+ * Base form state version that eliminates standalone mod components by containing in an unsaved mod
+ * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
+ * @since 2.1.4
+ */
+export type BaseFormStateV6<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<BaseFormStateV5<TModComponent, TStarterBrick>, "modMetadata"> & {
+  /**
+   * The mod metadata for the mod component
+   * @see createNewUnsavedModMetadata
+   */
+  modMetadata: ModMetadata;
+};
+
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
   // On migration, re-point this type to the most recent BaseFormStateV<N> type name
-  BaseFormStateV5<TModComponent, TStarterBrick>,
-  // NOTE: this is not changing the type shape/structure. It's just cleaning up the type name/reference which makes
-  // types easier to work with for testing migrations.
+  BaseFormStateV6<TModComponent, TStarterBrick>,
+  // NOTE: overriding integrationDependencies is not changing the type shape/structure. It's just cleaning up the
+  // type name/reference which makes types easier to work with for testing migrations.
   "integrationDependencies"
 > & {
   integrationDependencies: IntegrationDependency[];

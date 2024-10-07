@@ -69,15 +69,14 @@ async function selectActiveModFormStates(
   if (activeModComponentFormState?.modMetadata) {
     const dirtyModComponentFormStates =
       state.editor.modComponentFormStates.filter(
-        (x) =>
-          x.modMetadata?.id === activeModComponentFormState.modMetadata?.id,
+        (x) => x.modMetadata.id === activeModComponentFormState.modMetadata.id,
       );
     const dirtyIds = new Set(dirtyModComponentFormStates.map((x) => x.uuid));
 
     const activatedModComponents = selectActivatedModComponents(state);
     const otherModComponents = activatedModComponents.filter(
       (x) =>
-        x._recipe?.id === activeModComponentFormState.modMetadata?.id &&
+        x._recipe?.id === activeModComponentFormState.modMetadata.id &&
         !dirtyIds.has(x.id),
     );
     const otherModComponentFormStates = await Promise.all(

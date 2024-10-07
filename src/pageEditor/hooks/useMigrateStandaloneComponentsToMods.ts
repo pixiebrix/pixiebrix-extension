@@ -24,6 +24,8 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 /**
  * Note: This must be run underneath the PersistGate component in the React component tree
  */
+// FIXME: why is this hook still required?
+//  See comment: https://www.notion.so/pixiebrix/Re-Slicing-Eliminate-Standalone-mods-from-UI-694e4c85e61441809e14aec18f6b6109?pvs=4#10a43b21a25380e4974ae924d03f3fc5
 export default function useMigrateStandaloneComponentsToMods() {
   const dispatch = useDispatch();
   const formStates = useSelector(selectModComponentFormStates);

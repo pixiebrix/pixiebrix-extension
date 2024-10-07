@@ -104,7 +104,7 @@ export const selectActiveModComponentRef = createSelector(
     return {
       modComponentId: formState.uuid,
       modId:
-        formState.modMetadata?.id ??
+        formState.modMetadata.id ??
         getStandaloneModComponentRuntimeModId(formState.uuid),
       // XXX: the Page Editor form state uses an artificial id. When it's added to the page, the artificial id will be
       // replaced with the hash id calculated during hydration
@@ -192,7 +192,7 @@ const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId | null) => modId,
   (formStates, modId) =>
-    formStates.find((formState) => formState.modMetadata?.id === modId)
+    formStates.find((formState) => formState.modMetadata.id === modId)
       ?.optionsArgs,
 );
 
@@ -236,7 +236,7 @@ const modIsDirtySelector = createSelector(
     selectDeletedComponentFormStatesByModId(state)[modId],
   ({ editor }: EditorRootState, modId: RegistryId) =>
     editor.modComponentFormStates
-      .filter((formState) => formState.modMetadata?.id === modId)
+      .filter((formState) => formState.modMetadata.id === modId)
       .map((formState) => formState.uuid),
   (
     isModComponentDirtyById,
@@ -290,7 +290,7 @@ export const selectActivatedModMetadatas = createSelector(
     const baseMetadatas = compact(
       uniqBy(
         [...formStateModMetadatas, ...activatedModComponentModMetadatas],
-        (modMetadata) => modMetadata?.id,
+        (x) => x?.id,
       ),
     );
 
@@ -564,7 +564,7 @@ export const selectActiveNodeEventData = createSelector(
     );
 
     return {
-      modId: activeModComponentFormState.modMetadata?.id,
+      modId: activeModComponentFormState.modMetadata.id,
       brickId: activeNodeInfo.blockId,
     } satisfies ReportEventData;
   },
@@ -574,5 +574,5 @@ export const selectFirstModComponentFormStateForActiveMod = createSelector(
   selectModComponentFormStates,
   selectActiveModId,
   (formState, activeModId) =>
-    formState.find((x) => x.modMetadata?.id === activeModId),
+    formState.find((x) => x.modMetadata.id === activeModId),
 );

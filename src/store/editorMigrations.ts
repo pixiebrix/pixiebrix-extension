@@ -23,6 +23,7 @@ import {
   type BaseFormStateV3,
   type BaseFormStateV4,
   type BaseFormStateV5,
+  type BaseFormStateV6,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -40,13 +41,17 @@ import {
   type EditorStateV6,
   type EditorStateV7,
   type EditorStateV8,
+  type EditorStateV9,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produce } from "immer";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { makeInitialDataTabState } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
-import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
+import {
+  createNewUnsavedModMetadata,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -60,6 +65,7 @@ export const migrations: MigrationManifest = {
   6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
   7: (state: EditorStateV6 & PersistedState) => migrateEditorStateV6(state),
   8: (state: EditorStateV7 & PersistedState) => migrateEditorStateV7(state),
+  9: (state: EditorStateV8 & PersistedState) => migrateEditorStateV8(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -246,6 +252,21 @@ export function migrateEditorStateV7(
         (formState as BaseFormStateV5).variablesDefinition =
           emptyModVariablesDefinitionFactory();
       }
+    }
+  }) as EditorState & PersistedState;
+}
+
+export function migrateEditorStateV8(
+  state: EditorStateV8 & PersistedState,
+): EditorStateV9 & PersistedState {
+  return produce(state, (draft) => {
+    // Don't need to also loop over deletedModComponentFormStatesByModId, because there can't be any standalone
+    // mod components in there
+    for (const formState of draft.modComponentFormStates) {
+      (formState as BaseFormStateV6).modMetadata ??=
+        createNewUnsavedModMetadata({
+          modName: formState.label,
+        });
     }
   }) as EditorState & PersistedState;
 }

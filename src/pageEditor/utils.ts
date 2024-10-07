@@ -30,7 +30,10 @@ import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -47,7 +50,7 @@ import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 export function mapModDefinitionUpsertResponseToModMetadata(
   unsavedModDefinition: UnsavedModDefinition,
   response: PackageUpsertResponse,
-): ModComponentBase["_recipe"] {
+): ModMetadata {
   return {
     ...unsavedModDefinition.metadata,
     sharing: pick(response, ["public", "organizations"]),
@@ -68,7 +71,7 @@ export function getModId(
 ): RegistryId | undefined {
   return isModComponentBase(modComponentOrFormState)
     ? modComponentOrFormState._recipe?.id
-    : modComponentOrFormState.modMetadata?.id;
+    : modComponentOrFormState.modMetadata.id;
 }
 
 /**

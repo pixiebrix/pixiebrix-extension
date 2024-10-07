@@ -382,11 +382,9 @@ describe("syncDeployments", () => {
     };
     registryFindMock.mockResolvedValue(brick);
 
-    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
       extensionPointId: starterBrick.metadata!.id,
     }) as ActivatedModComponent;
-    delete modComponent._recipe;
     delete modComponent._deployment;
 
     await saveModComponentState({

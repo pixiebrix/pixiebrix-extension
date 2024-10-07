@@ -25,6 +25,7 @@ import {
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { array } from "cooky-cutter";
 
 describe("useMigrateStandaloneComponentsToMods", () => {
   test("given empty form states and components, does nothing", () => {
@@ -53,11 +54,9 @@ describe("useMigrateStandaloneComponentsToMods", () => {
         setupRedux(dispatch, { store }) {
           jest.spyOn(store, "dispatch");
           dispatch(
-            modComponentActions.UNSAFE_setModComponents([
-              activatedModComponentFactory(),
-              activatedModComponentFactory(),
-              activatedModComponentFactory(),
-            ]),
+            modComponentActions.UNSAFE_setModComponents(
+              array(activatedModComponentFactory, 3)(),
+            ),
           );
         },
       },
@@ -87,6 +86,7 @@ describe("useMigrateStandaloneComponentsToMods", () => {
   });
 
   test("given activated component with no mod metadata and a form state, logs a warning and does nothing", () => {
+    // Handle completely missing _recipe property
     const standaloneComponent = activatedModComponentFactory();
     delete standaloneComponent._recipe;
 
