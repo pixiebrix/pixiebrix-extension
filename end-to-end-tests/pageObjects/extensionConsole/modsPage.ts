@@ -29,10 +29,17 @@ export class ModTableItem extends BasePageObject {
 
   async clickAction(actionName: string) {
     // Wrapped in `toPass` due to flakiness with dropdown visibility
-    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
     await expect(async () => {
       if (!(await this.dropdownMenu.isVisible())) {
         await this.dropdownButton.click();
+      }
+
+      if (
+        !(await this.getByRole("menuitem", { name: actionName }).isVisible())
+      ) {
+        // Close the dropdown menu if the action is not visible, and try opening again.
+        await this.dropdownButton.click();
+        throw new Error(`Action ${actionName} not visible in dropdown menu`);
       }
 
       await this.getByRole("menuitem", { name: actionName }).click({
