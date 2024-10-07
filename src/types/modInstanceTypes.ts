@@ -40,7 +40,8 @@ export type ModInstance = {
   id: ModInstanceId;
 
   /**
-   * Mod component instance ids. Array order corresponds to the order of the ModDefinition.extensionPoints.
+   * A non-empty array of mod component instance ids. Array order must match the order of the mod component definitions
+   * in ModDefinition.extensionPoints.
    *
    * Required to be able to track and correlate mod components across contexts (e.g., content script, page editor,
    * extension console), e.g., for logging, error handling.

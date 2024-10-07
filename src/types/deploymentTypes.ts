@@ -55,8 +55,8 @@ type BaseDeploymentMetadata = {
 };
 
 /**
- * Context about an automatically activated organization Deployment.
- * Don't export -- context is clearer if it's always written as ModComponentBase[_deployment] property
+ * Context about a team or personal mod Deployment that automatically activated the mod.
+ * Prefer ModComponentBase[_deployment] vs. direct use of this type where possible to make usage clearer.
  */
 export type DeploymentMetadata =
   | (BaseDeploymentMetadata & {
