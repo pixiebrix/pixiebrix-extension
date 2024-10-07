@@ -109,7 +109,7 @@ describe("ModListingPanel", () => {
   });
 
   describe("mod component actions", () => {
-    it("duplicate mod component", async () => {
+    it("duplicates mod component", async () => {
       const modName = "Test Mod";
 
       const formState = formStateFactory({
