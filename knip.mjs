@@ -73,6 +73,12 @@ const knipConfig = {
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
+    // Not getting detected by webpack plugin for webpack.sharedConfig.js
+    "@svgr/webpack",
+    "css-loader",
+    "sass-loader",
+    "ts-loader",
+    "yaml-loader",
   ],
   // False positive for PackageInstance.featureFlag
   ignoreMembers: ["featureFlag"],
