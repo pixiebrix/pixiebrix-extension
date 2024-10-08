@@ -66,12 +66,6 @@ export function getModComponentId(
     : modComponentOrFormState.uuid;
 }
 
-export function getModId(
-  modComponentOrFormState: ModComponentBase | ModComponentFormState,
-): RegistryId | undefined {
-  return modComponentOrFormState.modMetadata.id;
-}
-
 /**
  * Return pipeline prop names for a configured brick.
  *
