@@ -17,7 +17,7 @@
 
 import styles from "./Status.module.scss";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -32,9 +32,10 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
-import useActivatedModComponents from "@/mods/hooks/useActivatedModComponents";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
+import useFindModInstance from "@/mods/hooks/useFindModInstance";
+import { compact } from "lodash";
 
 const Status: React.VoidFunctionComponent<{
   modViewItem: ModViewItem;
@@ -51,11 +52,13 @@ const Status: React.VoidFunctionComponent<{
     modActions: { showActivate, showReactivate },
   } = modViewItem;
 
-  const activatedModComponents = useActivatedModComponents(modId);
+  const modInstance = useFindModInstance(modId);
 
-  const { hasPermissions, requestPermissions } = useModPermissions(
-    activatedModComponents,
-  );
+  // Memoize array reference to avoid infinite re-render loop with useModPermissions
+  const modInstances = useMemo(() => compact([modInstance]), [modInstance]);
+
+  const { hasPermissions, requestPermissions } =
+    useModPermissions(modInstances);
 
   if (isUnavailable) {
     return (

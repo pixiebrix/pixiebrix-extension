@@ -24,6 +24,7 @@ import type { Tagged } from "type-fest";
 
 /**
  * A unique identifier for a mod instance activation. Tagged to prevent mixing with mod component id.
+ * @see generateModInstanceId
  */
 export type ModInstanceId = Tagged<UUID, "ModInstanceId">;
 

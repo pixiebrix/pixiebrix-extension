@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelector } from "react-redux";
-import { selectGetModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
-import { useMemo } from "react";
-import type { RegistryId } from "@/types/registryTypes";
+import { define } from "cooky-cutter";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import {
+  autoUUIDSequence,
+  timestampFactory,
+} from "@/testUtils/factories/stringFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { generateModInstanceId } from "@/store/modComponents/modInstanceUtils";
 
-export default function useActivatedModComponents(modId: RegistryId) {
-  const getModComponentsForMod = useSelector(selectGetModComponentsForMod);
-  return useMemo(
-    () => getModComponentsForMod(modId),
-    [modId, getModComponentsForMod],
-  );
-}
+export const modInstanceFactory = define<ModInstance>({
+  id: generateModInstanceId,
+  modComponentIds: () => [autoUUIDSequence()],
+  definition: modDefinitionFactory(),
+  deploymentMetadata: undefined,
+  integrationsArgs: [],
+  optionsArgs: {},
+  updatedAt: timestampFactory(),
+});

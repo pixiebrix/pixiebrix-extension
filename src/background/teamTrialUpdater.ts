@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import deactivateModComponentsAndSaveState from "@/background/utils/deactivateModComponentsAndSaveState";
+import deactivateModInstancesAndSaveState from "@/background/utils/deactivateModInstancesAndSaveState";
 import { type Team } from "@/data/model/Team";
 import { getTeams } from "@/data/service/backgroundApi";
 import { getEditorState } from "@/store/editorStorage";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { getModComponentState } from "@/store/modComponents/modComponentStorage";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { getScopeAndId } from "@/utils/registryUtils";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 async function getTeamsWithTrials() {
   const teams = await getTeams();
   return teams.filter((x) => x.trialEndTimestamp != null);
 }
 
-function getManuallyActivatedTeamModComponents(
-  activatedModComponents: ActivatedModComponent[],
+function getManuallyActivatedTeamModInstances(
+  modInstances: ModInstance[],
   teamsWithTrials: Team[],
 ) {
   const teamScopes = teamsWithTrials.map((x) => x.scope);
-  return activatedModComponents.filter((x) => {
-    if (x._deployment != null) {
+  return modInstances.filter((x) => {
+    if (x.deploymentMetadata != null) {
       return false;
     }
 
-    const { scope } = getScopeAndId(x._recipe?.id);
+    const { scope } = getScopeAndId(x.definition.metadata.id);
     return Boolean(scope && teamScopes.includes(scope));
   });
 }
@@ -49,11 +49,11 @@ async function syncActivatedModComponents() {
     getEditorState(),
   ]);
 
-  const activatedModComponents = selectActivatedModComponents({
+  const modInstances = selectModInstances({
     options: modComponentState,
   });
 
-  if (activatedModComponents.length === 0) {
+  if (modInstances.length === 0) {
     return;
   }
 
@@ -63,23 +63,17 @@ async function syncActivatedModComponents() {
     return;
   }
 
-  const manuallyActivatedTeamModComponents =
-    getManuallyActivatedTeamModComponents(
-      activatedModComponents,
-      teamsWithTrials,
-    );
+  const manuallyActivatedTeamModInstances =
+    getManuallyActivatedTeamModInstances(modInstances, teamsWithTrials);
 
-  if (manuallyActivatedTeamModComponents.length === 0) {
+  if (manuallyActivatedTeamModInstances.length === 0) {
     return;
   }
 
-  await deactivateModComponentsAndSaveState(
-    manuallyActivatedTeamModComponents,
-    {
-      modComponentState,
-      editorState,
-    },
-  );
+  await deactivateModInstancesAndSaveState(manuallyActivatedTeamModInstances, {
+    modComponentState,
+    editorState,
+  });
 }
 
 // Update interval for the team trial updater: 5 minutes

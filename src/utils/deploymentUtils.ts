@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Deployment } from "@/types/contract";
+import { type ActivatedDeployment, type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, uniqBy } from "lodash";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
 import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
@@ -31,6 +30,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { getExtensionVersion } from "@/utils/extensionUtils";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -60,44 +60,41 @@ export function isDeploymentActive(extensionLike: {
  * - Same as above, but ignore deployments where the user has a newer version of the blueprint installed because that
  *   means they are doing local deployment on the blueprint.
  *
- * @param activatedModComponents the user's currently installed modComponents (including for paused deployments)
+ * @param modInstances the user's currently activated mod instances (including for paused deployments)
  * @param restricted `true` if the user is a restricted organization user (i.e., as opposed to a developer)
  */
 export const makeUpdatedFilter =
-  (
-    activatedModComponents: ModComponentBase[],
-    { restricted }: { restricted: boolean },
-  ) =>
+  (modInstances: ModInstance[], { restricted }: { restricted: boolean }) =>
   (deployment: Deployment) => {
-    const deploymentMatch = activatedModComponents.find(
-      (modComponent) => modComponent._deployment?.id === deployment.id,
+    const deploymentMatch = modInstances.find(
+      (x) => x.deploymentMetadata?.id === deployment.id,
     );
 
     if (restricted) {
       return (
-        !deploymentMatch?._deployment ||
+        !deploymentMatch?.deploymentMetadata ||
         !deployment.updated_at ||
-        new Date(deploymentMatch._deployment.timestamp) <
+        new Date(deploymentMatch.deploymentMetadata.timestamp) <
           new Date(deployment.updated_at)
       );
     }
 
     // Local copies an unrestricted user (i.e., a developer role) is working on
-    const modMatch = activatedModComponents.find(
-      (modComponent) =>
-        modComponent._deployment == null &&
-        modComponent._recipe?.id === deployment.package.package_id,
+    const packageMatch = modInstances.find(
+      (modInstance) =>
+        modInstance.deploymentMetadata == null &&
+        modInstance.definition.metadata.id === deployment.package.package_id,
     );
 
-    if (!deploymentMatch && !modMatch) {
+    if (!deploymentMatch && !packageMatch) {
       return true;
     }
 
     if (
-      modMatch &&
+      packageMatch &&
       gte(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- modMatch is checked above
-        modMatch._recipe!.version!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- version is present for persisted mods
+        packageMatch.definition.metadata.version!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- deployment package is checked above
         deployment.package.version!,
       )
@@ -111,9 +108,9 @@ export const makeUpdatedFilter =
     }
 
     return (
-      !deploymentMatch?._deployment ||
+      !deploymentMatch?.deploymentMetadata ||
       !deployment.updated_at ||
-      new Date(deploymentMatch._deployment?.timestamp) <
+      new Date(deploymentMatch.deploymentMetadata?.timestamp) <
         new Date(deployment.updated_at)
     );
   };
@@ -147,32 +144,18 @@ export function checkExtensionUpdateRequired(
   );
 }
 
-/**
- * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
- */
-export type InstalledDeployment = {
-  deployment: UUID;
-  blueprint: RegistryId;
-  blueprintVersion: string;
-};
-
-export function selectInstalledDeployments(
-  activatedModComponents: Array<
-    Pick<ModComponentBase, "_deployment" | "_recipe">
-  >,
-): InstalledDeployment[] {
+export function selectActivatedDeployments(
+  modInstances: ModInstance[],
+): ActivatedDeployment[] {
   return uniqBy(
-    activatedModComponents
-      .filter((x) => x._deployment?.id != null)
-      .map(
-        (x) =>
-          ({
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- _deployment is checked above
-            deployment: x._deployment!.id,
-            blueprint: x._recipe?.id,
-            blueprintVersion: x._recipe?.version,
-          }) as InstalledDeployment,
-      ),
+    modInstances
+      .filter((x) => x.deploymentMetadata != null)
+      .map((x) => ({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Typescript not picking up filter
+        deployment: x.deploymentMetadata!.id,
+        blueprint: x.definition.metadata.id,
+        blueprintVersion: x.definition.metadata.id,
+      })),
     (x) => x.deployment,
   );
 }
