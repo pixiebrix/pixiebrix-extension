@@ -19,27 +19,15 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import {
-  getSidebarPage,
-  isMsEdge,
-  isSidebarOpen,
-  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
-} from "../../utils";
+import { getSidebarPage, isMsEdge, isSidebarOpen } from "../../utils";
+import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
 
 test("live editing behavior", async ({
   page,
   extensionId,
-  modDefinitionsMap,
   newPageEditorPage,
-  verifyModDefinitionSnapshot,
   chromiumChannel,
 }) => {
-  test.fixme(
-    process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
-      isMsEdge(chromiumChannel),
-    "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
-  );
-
   await test.step("Activate test mod and navigate to testing site", async () => {
     const modId = "@e2e-testing/page-editor-live-editing-test";
     const activationPage = new ActivateModPage(page, extensionId, modId);
@@ -86,6 +74,16 @@ test("live editing behavior", async ({
     await expect(pageEditor.editorPane.renderPanelButton).toBeVisible();
 
     expect(isSidebarOpen(page, extensionId)).toBe(false);
+
+    /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
+     * cannot open the sidebar, so we need to open it manually.
+     * https://www.loom.com/share/fbad85e901794161960b737b27a13677
+     */
+    if (isMsEdge(chromiumChannel)) {
+      await page.bringToFront();
+      const floatingActionButton = new FloatingActionButton(page);
+      await floatingActionButton.toggleSidebar();
+    }
 
     await pageEditor.editorPane.renderPanelButton.click();
     const sidebar = await getSidebarPage(page, extensionId);

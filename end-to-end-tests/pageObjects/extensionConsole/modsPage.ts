@@ -28,7 +28,7 @@ export class ModTableItem extends BasePageObject {
   statusCell = this.getByTestId("status-cell");
 
   async clickAction(actionName: string) {
-    // Wrapped in `toPass` due to flakiness with dropdown visibility
+    // Wrapped in `toPass` due to flakiness with dropdown visibility due to component remounting
     await expect(async () => {
       if (!(await this.dropdownMenu.isVisible())) {
         await this.dropdownButton.click();
@@ -37,6 +37,7 @@ export class ModTableItem extends BasePageObject {
       if (
         !(await this.getByRole("menuitem", { name: actionName }).isVisible())
       ) {
+        // Sometimes the action is not visible because the permissions network request has not completed.
         // Close the dropdown menu if the action is not visible, and try opening again.
         await this.dropdownButton.click();
         throw new Error(`Action ${actionName} not visible in dropdown menu`);

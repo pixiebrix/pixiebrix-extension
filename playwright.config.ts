@@ -72,6 +72,7 @@ export default defineConfig<{ chromiumChannel: string }>({
   timeout: 60_000,
   /* Timeout for the entire test run */
   globalTimeout: 30 * 60 * 1000, // 30 minutes
+  repeatEach: 2,
   expect: {
     /**
      * Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting
