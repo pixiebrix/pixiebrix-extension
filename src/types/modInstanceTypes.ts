@@ -20,7 +20,7 @@ import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import type { Timestamp, UUID } from "@/types/stringTypes";
 import type { DeploymentMetadata } from "@/types/deploymentTypes";
-import type { Tagged } from "type-fest";
+import type { SetRequired, Tagged } from "type-fest";
 
 /**
  * A unique identifier for a mod instance activation. Tagged to prevent mixing with mod component id.
@@ -56,7 +56,7 @@ export type ModInstance = {
    * The deployment metadata for the mod instance, or undefined if the mod instance is not managed via a
    * team or personal deployment
    */
-  deploymentMetadata: DeploymentMetadata | undefined;
+  deploymentMetadata: SetRequired<DeploymentMetadata, "active"> | undefined;
 
   /**
    * The mod definition.

@@ -22,14 +22,35 @@ import {
   timestampFactory,
 } from "@/testUtils/factories/stringFactories";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { nowTimestamp } from "@/utils/timeUtils";
+import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 import { generateModInstanceId } from "@/store/modComponents/modInstanceUtils";
+
+export const personalDeploymentMetadataFactory = define<
+  ModInstance["deploymentMetadata"]
+>({
+  id: autoUUIDSequence(),
+  timestamp: nowTimestamp(),
+  active: true,
+  isPersonalDeployment: true,
+  organization: undefined,
+});
+
+export const teamDeploymentMetadataFactory = define<
+  ModInstance["deploymentMetadata"]
+>({
+  id: autoUUIDSequence(),
+  timestamp: nowTimestamp(),
+  active: true,
+  organization: organizationStateFactory(),
+});
 
 export const modInstanceFactory = define<ModInstance>({
   id: generateModInstanceId,
   modComponentIds: () => [autoUUIDSequence()],
-  definition: modDefinitionFactory(),
+  definition: modDefinitionFactory,
   deploymentMetadata: undefined,
-  integrationsArgs: [],
-  optionsArgs: {},
+  integrationsArgs: () => [],
+  optionsArgs: () => ({}),
   updatedAt: timestampFactory(),
 });

@@ -15,38 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Mod, type ModActivationStatus } from "@/types/modTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
 
 export default function buildGetModActivationStatus(
-  activatedModComponents: ActivatedModComponent[],
+  modInstanceMap: Map<RegistryId, ModInstance>,
 ): (mod: Mod) => ModActivationStatus {
   return (mod: Mod) => {
-    const activatedComponentsForMod = activatedModComponents.filter(
-      ({ _recipe }) => _recipe?.id === mod.metadata.id,
-    );
+    const modInstance = modInstanceMap.get(mod.metadata.id);
 
-    // If there are no activated components, then the mod is inactive, regardless of deployment status
-    if (activatedComponentsForMod.length === 0) {
+    // If there is no mod instance, then the mod is inactive, regardless of deployment status
+    if (modInstance == null) {
       return "Inactive";
     }
 
-    const deploymentFromComponent = activatedComponentsForMod.find(
-      ({ _deployment }) => _deployment != null,
-    )?._deployment;
+    const { deploymentMetadata } = modInstance;
 
     // If not part of a deployment, then the mod is active
-    if (!deploymentFromComponent) {
+    if (!deploymentMetadata) {
       return "Active";
     }
 
     // If part of a deployment, check deployment status
-    if (
-      // Check for null/undefined to preserve backward compatability
-      // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
-      deploymentFromComponent.active == null ||
-      deploymentFromComponent.active
-    ) {
+    if (deploymentMetadata.active) {
       return "Active";
     }
 

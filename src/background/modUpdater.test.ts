@@ -39,7 +39,10 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/editorStorage";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import {
+  personalSharingDefinitionFactory,
+  publicSharingDefinitionFactory,
+} from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
@@ -67,26 +70,26 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
     publicActivatedMod = activatedModComponentFactory({
       _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: true }),
+        sharing: publicSharingDefinitionFactory(),
       }),
     });
 
     privateActivatedMod = activatedModComponentFactory({
       _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: false }),
+        sharing: personalSharingDefinitionFactory(),
       }),
     });
 
     publicActivatedDeployment = activatedModComponentFactory({
       _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: true }),
+        sharing: publicSharingDefinitionFactory(),
       }),
       _deployment: {} as ActivatedModComponent["_deployment"],
     });
 
     privateActivatedDeployment = activatedModComponentFactory({
       _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: false }),
+        sharing: personalSharingDefinitionFactory(),
       }),
       _deployment: {} as ActivatedModComponent["_deployment"],
     });
@@ -119,7 +122,7 @@ describe("getActivatedMarketplaceModVersions function", () => {
   it("returns expected object with registry id keys and version number values", async () => {
     const anotherPublicActivatedMod = activatedModComponentFactory({
       _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: true }),
+        sharing: publicSharingDefinitionFactory(),
       }),
     });
 
@@ -143,7 +146,7 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
   it("reports error if multiple mod component versions activated for same mod", async () => {
     const sameMod = modMetadataFactory({
-      sharing: sharingDefinitionFactory({ public: true }),
+      sharing: publicSharingDefinitionFactory(),
     });
 
     const onePublicActivatedMod = activatedModComponentFactory({
@@ -185,12 +188,12 @@ describe("fetchModUpdates function", () => {
     activatedMods = [
       activatedModComponentFactory({
         _recipe: modMetadataFactory({
-          sharing: sharingDefinitionFactory({ public: true }),
+          sharing: publicSharingDefinitionFactory(),
         }),
       }),
       activatedModComponentFactory({
         _recipe: modMetadataFactory({
-          sharing: sharingDefinitionFactory({ public: true }),
+          sharing: publicSharingDefinitionFactory(),
         }),
       }),
     ];
@@ -284,7 +287,7 @@ describe("updateModsIfUpdatesAvailable", () => {
     axiosMock.reset();
 
     publicMod = modDefinitionWithVersionedStarterBrickFactory()({
-      sharing: sharingDefinitionFactory({ public: true }),
+      sharing: publicSharingDefinitionFactory(),
     });
 
     publicModUpdate = {

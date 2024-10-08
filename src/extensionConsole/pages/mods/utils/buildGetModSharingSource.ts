@@ -16,18 +16,16 @@
  */
 
 import type { AuthUserOrganization } from "@/auth/authTypes";
-import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import type { Mod, SharingSource, SharingType } from "@/types/modTypes";
 import { idHasScope } from "@/utils/modUtils";
-
-type ActivatedModComponentWithDeployment = ActivatedModComponent & {
-  _deployment: NonNullable<ActivatedModComponent["_deployment"]>;
-};
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
 
 export default function buildGetModSharingSource(
   userScope: string,
   organizations: AuthUserOrganization[],
-  activatedModComponents: ActivatedModComponent[],
+  modInstanceMap: Map<RegistryId, ModInstance>,
 ): (mod: Mod) => SharingSource {
   return (mod: Mod) => {
     let sharingType: SharingType | null;
@@ -37,20 +35,16 @@ export default function buildGetModSharingSource(
     let label: string;
     const modId = mod.metadata.id;
 
-    const activatedModComponentFromDeployment = activatedModComponents.find(
-      ({ _recipe, _deployment }) => _recipe?.id === modId && _deployment,
-    ) as ActivatedModComponentWithDeployment | undefined;
+    const packageMatch = modInstanceMap.get(modId);
 
-    if (activatedModComponentFromDeployment) {
-      if (
-        activatedModComponentFromDeployment._deployment.isPersonalDeployment
-      ) {
+    if (packageMatch?.deploymentMetadata) {
+      if (getIsPersonalDeployment(packageMatch)) {
         sharingType = "PersonalDeployment";
         label = "Personal (Synced)";
       } else {
         sharingType = "Deployment";
         label =
-          activatedModComponentFromDeployment._deployment.organization?.name ||
+          packageMatch.deploymentMetadata.organization?.name ||
           organization?.name || // In case organization is not on the _deployment object (due to an old deployment)
           sharingType;
       }

@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { Mod } from "@/types/modTypes";
-import { idHasScope, mapModComponentToUnavailableMod } from "@/utils/modUtils";
-import { uniqBy } from "lodash";
+import { idHasScope, mapModInstanceToUnavailableMod } from "@/utils/modUtils";
+import { type ModInstance } from "@/types/modInstanceTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 // Note: Using regular function inputs here instead of an object for better
 // ergonomics when using as the "result function" with reselect selectors.
 export default function buildModsList(
   userScope: string,
-  activatedModComponents: ActivatedModComponent[],
+  modInstanceMap: Map<RegistryId, ModInstance>,
   allModDefinitions: ModDefinition[],
-  activatedModIds: Set<RegistryId>,
 ): Mod[] {
-  if (allModDefinitions.length === 0 && activatedModComponents.length === 0) {
+  if (allModDefinitions.length === 0 && modInstanceMap.size === 0) {
     return [] as Mod[];
   }
+
+  const activatedModIds = new Set(modInstanceMap.keys());
 
   const knownPersonalOrTeamModDefinitions = allModDefinitions.filter(
     ({ metadata: { id }, sharing }) =>
@@ -50,15 +50,13 @@ export default function buildModsList(
 
   // Find mod components that were activated by a mod definitions that's no longer available to the user, e.g.,
   // because it was deleted, or because the user no longer has access to it.
-  const unavailableModComponents = activatedModComponents.filter(
-    (modComponent) =>
-      modComponent._recipe != null && !knownModIds.has(modComponent._recipe.id),
+  const unavailableModInstances = [...modInstanceMap.values()].filter(
+    (x) => !knownModIds.has(x.definition.metadata.id),
   );
 
-  const unavailableMods = uniqBy(
-    unavailableModComponents,
-    ({ _recipe }) => _recipe?.id,
-  ).map((modComponent) => mapModComponentToUnavailableMod(modComponent));
+  const unavailableMods = unavailableModInstances.map((x) =>
+    mapModInstanceToUnavailableMod(x),
+  );
 
   return [...knownPersonalOrTeamModDefinitions, ...unavailableMods];
 }
