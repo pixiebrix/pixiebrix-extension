@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import pDefer from "p-defer";
 import { deleteDB, type IDBPDatabase } from "idb";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -5,9 +22,11 @@ import { type ValueOf } from "type-fest";
 import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
 import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 import castError from "@/utils/castError";
+import pRetry, { type FailedAttemptError } from "p-retry";
 
 // IDB Connection Error message strings
 const CONNECTION_ERRORS = ["Error Opening IndexedDB"] as const;
+const MAX_RETRIES = 3;
 
 export const DATABASE_NAME = {
   LOG: "LOG",
@@ -107,16 +126,56 @@ export function isIDBQuotaError(error: unknown): boolean {
   return QUOTA_ERRORS.some((quotaError) => message.includes(quotaError));
 }
 
+/**
+ * Before Chrome 130, there is no way to determine if the file is missing or if some other error occurred.
+ * In Chrome 130 and later, the error message remains the same, the type of error is different.
+ * NotFoundError if the file is missing, DataError for any other error.
+ *
+ * @see https://chromestatus.com/feature/5140210640486400
+ * @param error the error object
+ */
+export function isIDBLargeValueError(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return message.includes("Failed to read large IndexedDB value");
+}
+
+/**
+ * Error occurring due to corrupt chrome profile but unclear how this happens.
+ * This error seems to be unrecoverable and the only solution is to delete the database.
+ * https://jasonsavard.com/forum/discussion/4233/unknownerror-internal-error-opening-backing-store-for-indexeddb-open
+ *
+ * @param error the error object
+ */
+function isIDBErrorOpeningBackingStore(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return message.includes(
+    "Internal error opening backing store for indexedDB.open",
+  );
+}
+
+/**
+ * The large value error could be a NotFoundError or a DataError.
+ * NotFoundError may be fixable on a case-by-case basis.
+ * @see getByKinds
+ * DataError and IDBConnectionErrors may be fixed by the retry.
+ * @see https://issues.chromium.org/issues/342779913#comment8
+ * @see isIDBLargeValueError
+ */
+export function isMaybeTemporaryIDBError(error: unknown): boolean {
+  return isIDBConnectionError(error) || isIDBLargeValueError(error);
+}
+
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
 // to application error telemetry to avoid attempting to record the error in the idb log database.
 function handleIdbError(
   error: unknown,
   {
+    message,
     operationName,
     databaseName,
   }: {
+    message: string;
     operationName: OperationNames;
-
     databaseName: ValueOf<typeof DATABASE_NAME>;
   },
 ): void {
@@ -126,14 +185,14 @@ function handleIdbError(
     idbDatabaseName: databaseName,
     ...getReportErrorAdditionalContext(),
   };
-  console.error("Error during IDB operation", {
+  console.error(message, {
     operationName,
     databaseName,
     error,
     context,
   });
   void reportToApplicationErrorTelemetry(
-    castError(error, `Error during ${operationName}`),
+    castError(error, message),
     context,
     errorMessage,
   );
@@ -146,16 +205,60 @@ export const withIdbErrorHandling =
   ) =>
   async <DBOperationResult>(
     dbOperation: (db: IDBPDatabase<DBType>) => Promise<DBOperationResult>,
-    operationName: OperationNames,
+    {
+      operationName,
+      onFailedAttempt,
+      shouldRetry,
+    }: {
+      operationName: OperationNames;
+      onFailedAttempt?: (error: FailedAttemptError) => void | Promise<void>;
+      shouldRetry?: (error: FailedAttemptError) => boolean | Promise<boolean>;
+    },
   ) => {
     let db: IDBPDatabase<DBType> | null = null;
+
     try {
-      db = await openIDB();
-      return await dbOperation(db);
+      return await pRetry(
+        async () => {
+          db = await openIDB();
+          return dbOperation(db);
+        },
+        {
+          retries: shouldRetry ? MAX_RETRIES : 0,
+          // 'p-retry' does not handle an undefined shouldRetry correctly, so we need to ensure it is not passed if undefined
+          // See: https://github.com/sindresorhus/p-retry/issues/36
+          ...(shouldRetry ? { shouldRetry } : {}),
+          async onFailedAttempt(error) {
+            handleIdbError(error, {
+              operationName,
+              databaseName,
+              message: `${operationName} failed for IDB database: ${databaseName}. Attempt Number: ${error.attemptNumber}`,
+            });
+
+            db?.close();
+
+            await onFailedAttempt?.(error);
+          },
+        },
+      );
     } catch (error) {
-      handleIdbError(error, { operationName, databaseName });
+      if (
+        // Large IndexedDB value error for a single DB entry can break bulk operations on the whole DB,
+        // and we don't know of a way to drop the single bad record even if we know which one it is,
+        // so we need to delete the whole database.
+        isIDBLargeValueError(error) ||
+        // "Internal error opening backing store for indexedDB.open" is an unrecoverable error that
+        // requires deleting the database.
+        isIDBErrorOpeningBackingStore(error)
+      ) {
+        console.error(
+          `Deleting ${databaseName} database due to unrecoverable IndexDB error.`,
+        );
+        await deleteDatabase(databaseName);
+      }
+
       throw error;
     } finally {
-      db?.close();
+      (db as IDBDatabase | null)?.close();
     }
   };
