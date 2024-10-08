@@ -40,6 +40,7 @@ import {
   type BaseFormStateV3,
   type BaseFormStateV4,
   type BaseFormStateV5,
+  type BaseFormStateV6,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 
 export type AddBrickLocation = {
@@ -408,12 +409,26 @@ export type EditorStateV8 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV5[]>;
 };
 
+/**
+ * Version bump to account for adding variableDefinition property in BaseFormState
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @see migrateEditorStateV8
+ */
+export type EditorStateV9 = Except<
+  EditorStateV8,
+  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+> & {
+  modComponentFormStates: BaseFormStateV6[];
+  deletedModComponentFormStatesByModId: Record<string, BaseFormStateV6[]>;
+};
+
 export type EditorState = Except<
   // On migration, re-point this type to the most recent EditorStateV<N> type name
-  EditorStateV8,
+  EditorStateV9,
   // Swap out any properties with versioned types for type references to the latest version.
-  // NOTE: this is not changing the type shape/structure. It's just cleaning up the type name/reference which makes
-  // types easier to work with for testing migrations.
+  // NOTE: overriding these properties is not changing the type shape/structure. It's just cleaning up the type
+  // name/reference which makes types easier to work with for testing migrations.
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];

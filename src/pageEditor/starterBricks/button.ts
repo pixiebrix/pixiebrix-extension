@@ -16,7 +16,10 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -51,19 +54,28 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-function fromNativeElement(
-  url: string,
-  metadata: Metadata,
-  button: ButtonSelectionResult,
-): ButtonFormState {
+function fromNativeElement({
+  url,
+  modMetadata,
+  starterBrickMetadata,
+  element,
+}: {
+  url: string;
+  modMetadata: ModMetadata;
+  starterBrickMetadata: Metadata;
+  element: ButtonSelectionResult;
+}): ButtonFormState {
   return {
     label: `My ${getDomain(url)} button`,
-    ...makeInitialBaseState(button.uuid),
-    containerInfo: button.containerInfo,
+    ...makeInitialBaseState({
+      modComponentId: element.uuid,
+      modMetadata,
+    }),
+    containerInfo: element.containerInfo,
     starterBrick: {
-      metadata,
+      metadata: starterBrickMetadata,
       definition: {
-        ...button.menu,
+        ...element.menu,
         type: StarterBrickTypes.BUTTON,
         reader: getImplicitReader(StarterBrickTypes.BUTTON),
         isAvailable: getDefaultAvailabilityForUrl(url),
@@ -77,7 +89,7 @@ function fromNativeElement(
       },
     },
     modComponent: {
-      caption: button.item.caption,
+      caption: element.item.caption,
       brickPipeline: [],
       dynamicCaption: false,
       onSuccess: true,

@@ -16,7 +16,10 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -46,11 +49,14 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-function fromNativeElement(
-  url: string,
-  metadata: Metadata,
-): ContextMenuFormState {
-  const base = makeInitialBaseState();
+function fromNativeElement({
+  modMetadata,
+  starterBrickMetadata,
+}: {
+  modMetadata: ModMetadata;
+  starterBrickMetadata: Metadata;
+}): ContextMenuFormState {
+  const base = makeInitialBaseState({ modMetadata });
 
   const isAvailable = ALL_SITES_AVAILABILITY;
 
@@ -61,7 +67,7 @@ function fromNativeElement(
     label: title,
     ...base,
     starterBrick: {
-      metadata,
+      metadata: starterBrickMetadata,
       definition: {
         type: StarterBrickTypes.CONTEXT_MENU,
         reader: getImplicitReader(StarterBrickTypes.CONTEXT_MENU),

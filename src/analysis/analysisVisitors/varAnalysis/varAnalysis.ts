@@ -57,6 +57,7 @@ import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
@@ -305,11 +306,13 @@ async function setOptionsVars(
   formState: ModComponentFormState,
   contextVars: VarMap,
 ): Promise<void> {
-  if (formState.modMetadata == null) {
+  const modId = formState.modMetadata.id;
+
+  // Mod is unsaved, so definition won't be in the registry
+  if (isInnerDefinitionRegistryId(modId)) {
     return;
   }
 
-  const modId = formState.modMetadata.id;
   const mod = await modRegistry.lookup(modId);
   const optionsSchema = mod?.options?.schema;
   if (isEmpty(optionsSchema)) {

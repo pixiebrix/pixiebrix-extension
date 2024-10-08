@@ -171,7 +171,7 @@ const CreateModModalBody: React.FC = () => {
   // `selectActiveModId` returns the mod id if a mod entry is selected (not a mod component within the mod)
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id;
+    directlyActiveModId ?? activeModComponentFormState?.modMetadata.id;
 
   const { data: activeModDefinition, isFetching: isModDefinitionFetching } =
     useOptionalModDefinition(activeModId);

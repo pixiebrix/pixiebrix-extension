@@ -52,7 +52,7 @@ export const modComponentRefFactory = define<ModComponentRef>({
 /**
  * Factory for a mod component ref from a standalone mod component.
  * @deprecated standalone mod components are deprecated
- * @since 2.0.6 provides a internal mod id instead of `undefined`
+ * @since 2.0.6 provides an internal mod id instead of `undefined`
  */
 export const standaloneModComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts
@@ -113,7 +113,8 @@ export const modComponentFactory = define<ModComponentBase>({
   apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  // @since 2.1.4 includes mod metadata
+  _recipe: modMetadataFactory,
   _deployment: undefined,
   label: "Test label",
   integrationDependencies(): IntegrationDependency[] {

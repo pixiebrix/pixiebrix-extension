@@ -51,9 +51,10 @@ const formStateSchema = object({
 });
 
 /**
- * Modal to move/copy a mod component to an existing or new mod
+ * Modal to move or copy a mod component to an existing or new mod.
+ * @see selectKeepLocalCopyOnCreateMod
  */
-const MoveCopyToModModal: React.FC = () => {
+const MoveOrCopyToModModal: React.FC = () => {
   const { isMoveCopyToModVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
@@ -168,4 +169,4 @@ const MoveCopyToModModal: React.FC = () => {
   );
 };
 
-export default MoveCopyToModModal;
+export default MoveOrCopyToModModal;

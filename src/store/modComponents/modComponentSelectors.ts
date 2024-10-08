@@ -20,7 +20,6 @@ import { createSelector } from "@reduxjs/toolkit";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty, memoize } from "lodash";
-import { type UUID } from "@/types/stringTypes";
 
 export function selectActivatedModComponents({
   options,
@@ -34,17 +33,6 @@ export function selectActivatedModComponents({
 
   return options.activatedModComponents;
 }
-
-const isModComponentSavedOnCloudSelector = createSelector(
-  selectActivatedModComponents,
-  (_state: ModComponentsRootState, modComponentId: UUID) => modComponentId,
-  (modComponents, modComponentId) =>
-    modComponents.some((modComponent) => modComponent.id === modComponentId),
-);
-
-export const selectIsModComponentSavedOnCloud =
-  (modComponentId: UUID) => (state: ModComponentsRootState) =>
-    isModComponentSavedOnCloudSelector(state, modComponentId);
 
 export const selectGetModComponentsForMod = createSelector(
   selectActivatedModComponents,

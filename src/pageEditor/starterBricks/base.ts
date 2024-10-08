@@ -46,7 +46,10 @@ import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -68,6 +71,7 @@ import {
 } from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export interface WizardStep {
   step: string;
@@ -129,6 +133,11 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
+  assertNotNullish(
+    config._recipe,
+    "Standalone mod components are not supported",
+  );
+
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -152,9 +161,9 @@ export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
   modComponentFormState: TFormState,
   modDefinitions: ModDefinition[],
 ) {
-  if (modComponentFormState.modMetadata?.id) {
+  if (modComponentFormState.modMetadata.id) {
     const mod = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.modMetadata?.id,
+      (x) => x.metadata.id === modComponentFormState.modMetadata.id,
     );
 
     if (mod?.options == null) {
@@ -209,12 +218,17 @@ export function baseSelectModComponent({
   };
 }
 
-export function makeInitialBaseState(
-  uuid: UUID = uuidv4(),
-): Except<BaseFormState, "label" | "starterBrick"> {
+export function makeInitialBaseState({
+  modMetadata,
+  modComponentId = uuidv4(),
+}: {
+  modComponentId?: UUID;
+  modMetadata: ModMetadata;
+}): Except<BaseFormState, "label" | "starterBrick"> {
   return {
-    uuid,
+    uuid: modComponentId,
     apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
+    modMetadata,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
     optionsArgs: {},
@@ -222,7 +236,6 @@ export function makeInitialBaseState(
     modComponent: {
       brickPipeline: [],
     },
-    modMetadata: undefined,
   };
 }
 
