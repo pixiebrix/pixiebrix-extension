@@ -130,12 +130,31 @@ export function isIDBQuotaError(error: unknown): boolean {
  * Before Chrome 130, there is no way to determine if the file is missing or if some other error occurred.
  * In Chrome 130 and later, the error message remains the same, the type of error is different.
  * NotFoundError if the file is missing, DataError for any other error.
+ *
+ * This error for a single value can break bulk operations on the whole DB,
+ * and we don't know of a way to drop the single bad record even if we know which one it is.
+ *
  * @see https://chromestatus.com/feature/5140210640486400
  * @param error the error object
  */
 export function isIDBLargeValueError(error: unknown): boolean {
   const message = getErrorMessage(error);
   return message.includes("Failed to read large IndexedDB value");
+}
+
+/**
+ * Corrupt chrome profile. Not sure how this happens, but it seems to happen to users
+ * on citrix machines. This error seems to be unrecoverable and the only solution is to
+ * delete the database.
+ * https://jasonsavard.com/forum/discussion/4233/unknownerror-internal-error-opening-backing-store-for-indexeddb-open
+ *
+ * @param error the error object
+ */
+function isIDBErrorOpeningBackingStore(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return message.includes(
+    "Internal error opening backing store for indexedDB.open",
+  );
 }
 
 /**
@@ -148,6 +167,10 @@ export function isIDBLargeValueError(error: unknown): boolean {
  */
 export function isMaybeTemporaryIDBError(error: unknown): boolean {
   return isIDBConnectionError(error) || isIDBLargeValueError(error);
+}
+
+export function isPermanentIDBError(error: unknown): boolean {
+  return isIDBLargeValueError(error) || isIDBErrorOpeningBackingStore(error);
 }
 
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
@@ -227,15 +250,10 @@ export const withIdbErrorHandling =
         },
       );
     } catch (error) {
-      /**
-       * Any retries have failed by this point
-       * An error for a single value can break bulk operations on the whole DB
-       * We don't know of a way to drop the single bad record even if we know which one it is
-       * So we delete the database
-       */
-      if (isIDBLargeValueError(error)) {
+      // If all retries have failed and the latest error is a permanent error, we delete the database.
+      if (isPermanentIDBError(error)) {
         console.error(
-          `Deleting ${databaseName} database due to permanent IndexDB large value error.`,
+          `Deleting ${databaseName} database due to permanent IndexDB error.`,
         );
         await deleteDatabase(databaseName);
       }
