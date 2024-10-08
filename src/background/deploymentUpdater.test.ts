@@ -48,6 +48,7 @@ import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsH
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { TEST_setContext } from "webext-detect";
 import {
+  activatedModComponentFactory,
   modComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
@@ -376,27 +377,31 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
 
     const starterBrick = starterBrickDefinitionFactory();
-    const brick = {
+    const packageVersion = {
       ...parsePackage(starterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
-    registryFindMock.mockResolvedValue(brick);
+    registryFindMock.mockResolvedValue(packageVersion);
 
-    const modComponent = modComponentFactory({
+    // A mod without a deployment. Exclude _deployment entirely to handle the case where the property is missing
+    const manualModComponent = activatedModComponentFactory({
       extensionPointId: starterBrick.metadata!.id,
-    }) as ActivatedModComponent;
-    delete modComponent._deployment;
+      _recipe: modMetadataFactory(),
+    });
+    delete manualModComponent._deployment;
 
     await saveModComponentState({
-      activatedModComponents: [modComponent],
+      activatedModComponents: [manualModComponent],
     });
 
     let editorState = initialEditorState;
     const { fromModComponent } = adapter(starterBrick.definition.type);
-    const element = (await fromModComponent(modComponent)) as ButtonFormState;
+    const editorComponentFormState = (await fromModComponent(
+      manualModComponent,
+    )) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addModComponentFormState(element),
+      editorSlice.actions.addModComponentFormState(editorComponentFormState),
     );
     await saveEditorState(editorState);
 
@@ -747,58 +752,58 @@ describe("syncDeployments", () => {
   });
 
   test("can deactivate all deployed mods", async () => {
-    const personalStarterBrick = starterBrickDefinitionFactory();
-    const personalBrick = {
-      ...parsePackage(personalStarterBrick as unknown as RegistryPackage),
+    const manualModStarterBrickDefinition = starterBrickDefinitionFactory();
+    const manualModStarterBrickPackageVersion = {
+      ...parsePackage(
+        manualModStarterBrickDefinition as unknown as RegistryPackage,
+      ),
       timestamp: new Date(),
     };
 
-    const standaloneModComponent = modComponentFactory({
-      extensionPointId: personalStarterBrick.metadata!.id,
-    }) as ActivatedModComponent;
-
-    const recipeModComponent = modComponentFactory({
+    const manuallyActivatedModComponent = activatedModComponentFactory({
       _recipe: modMetadataFactory(),
-    }) as ActivatedModComponent;
+    });
 
-    const deploymentStarterBrick = starterBrickDefinitionFactory();
-    const deploymentsBrick = {
-      ...parsePackage(deploymentStarterBrick as unknown as RegistryPackage),
+    const deploymentStarterBrickDefinition = starterBrickDefinitionFactory();
+    const deploymentStarterBrickPackageVersion = {
+      ...parsePackage(
+        deploymentStarterBrickDefinition as unknown as RegistryPackage,
+      ),
       timestamp: new Date(),
     };
 
     const deploymentModComponent = modComponentFactory({
-      extensionPointId: deploymentStarterBrick.metadata!.id,
+      extensionPointId: deploymentStarterBrickDefinition.metadata!.id,
       _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
       _recipe: modMetadataFactory(),
     }) as ActivatedModComponent;
 
     registryFindMock.mockImplementation(async (id) => {
-      if (id === personalBrick.id) {
-        return personalBrick;
+      if (id === manualModStarterBrickPackageVersion.id) {
+        return manualModStarterBrickPackageVersion;
       }
 
-      return deploymentsBrick;
+      return deploymentStarterBrickPackageVersion;
     });
 
     let editorState = initialEditorState;
 
-    const personalModComponentAdapter = adapter(
-      personalStarterBrick.definition.type,
+    const manualModAdapter = adapter(
+      manualModStarterBrickDefinition.definition.type,
     );
-    const personalModComponentFormState =
-      (await personalModComponentAdapter.fromModComponent(
-        standaloneModComponent,
+    const manualModComponentEditorFormState =
+      (await manualModAdapter.fromModComponent(
+        manuallyActivatedModComponent,
       )) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(
-        personalModComponentFormState,
+        manualModComponentEditorFormState,
       ),
     );
 
     const deploymentModComponentAdapter = adapter(
-      deploymentStarterBrick.definition.type,
+      deploymentStarterBrickDefinition.definition.type,
     );
     const deploymentElement =
       (await deploymentModComponentAdapter.fromModComponent(
@@ -811,9 +816,8 @@ describe("syncDeployments", () => {
 
     await saveModComponentState({
       activatedModComponents: [
-        standaloneModComponent,
         deploymentModComponent,
-        recipeModComponent,
+        manuallyActivatedModComponent,
       ],
     });
     await saveEditorState(editorState);
@@ -825,15 +829,18 @@ describe("syncDeployments", () => {
 
     const { activatedModComponents } = await getModComponentState();
 
-    expect(activatedModComponents).toHaveLength(2);
+    expect(activatedModComponents).toHaveLength(1);
 
     const activatedModComponentIds = activatedModComponents.map((x) => x.id);
-    expect(activatedModComponentIds).toContain(standaloneModComponent.id);
-    expect(activatedModComponentIds).toContain(recipeModComponent.id);
+    expect(activatedModComponentIds).toContain(
+      manuallyActivatedModComponent.id,
+    );
 
     const { modComponentFormStates } = (await getEditorState()) ?? {};
     expect(modComponentFormStates).toBeArrayOfSize(1);
-    expect(modComponentFormStates![0]!).toEqual(personalModComponentFormState);
+    expect(modComponentFormStates![0]!).toEqual(
+      manualModComponentEditorFormState,
+    );
   });
 
   test("deactivates old mod when deployed mod id is changed", async () => {

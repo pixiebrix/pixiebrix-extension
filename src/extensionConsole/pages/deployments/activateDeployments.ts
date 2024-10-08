@@ -19,7 +19,6 @@ import { integrationConfigLocator } from "@/background/messenger/api";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
-import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
@@ -28,6 +27,7 @@ import {
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
 import { persistor } from "@/extensionConsole/store";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 const { actions } = modComponentSlice;
 
@@ -44,27 +44,24 @@ async function flushAndPersist(mode: "queue" | "immediate") {
 async function activateDeployment({
   dispatch,
   activatableDeployment,
-  activatedModComponents,
+  modInstances,
 }: {
   dispatch: Dispatch;
   activatableDeployment: ActivatableDeployment;
-  activatedModComponents: ModComponentBase[];
+  modInstances: ModInstance[];
 }): Promise<void> {
   const { deployment, modDefinition } = activatableDeployment;
   let isReactivate = false;
 
-  // Clear existing activated mod deployments
-  for (const modComponent of activatedModComponents) {
-    if (
-      modComponent._deployment?.id === deployment.id ||
-      modComponent._recipe?.id === deployment.package.package_id
-    ) {
-      dispatch(
-        actions.removeModComponent({
-          modComponentId: modComponent.id,
-        }),
-      );
+  // Clear instances associated activated mod deployments, or packages that would be replaced by a deployment
+  for (const modInstance of modInstances) {
+    const activatedModId = modInstance.definition.metadata.id;
 
+    if (
+      modInstance.deploymentMetadata?.id === deployment.id ||
+      activatedModId === deployment.package.package_id
+    ) {
+      dispatch(actions.removeModById(activatedModId));
       isReactivate = true;
     }
   }
@@ -93,12 +90,12 @@ async function activateDeployment({
 export async function activateDeployments({
   dispatch,
   activatableDeployments,
-  activatedModComponents,
+  modInstances,
   reloadMode,
 }: {
   dispatch: Dispatch;
   activatableDeployments: ActivatableDeployment[];
-  activatedModComponents: ModComponentBase[];
+  modInstances: ModInstance[];
   reloadMode: "queue" | "immediate";
 }): Promise<void> {
   // Activate as many as we can
@@ -110,7 +107,7 @@ export async function activateDeployments({
       await activateDeployment({
         dispatch,
         activatableDeployment,
-        activatedModComponents,
+        modInstances,
       });
     } catch (error) {
       errors.push(error);
@@ -130,21 +127,17 @@ export async function activateDeployments({
 
 export function deactivateUnassignedModComponents({
   dispatch,
-  unassignedModComponents,
+  unassignedModInstances,
 }: {
   dispatch: Dispatch;
-  unassignedModComponents: ModComponentBase[];
+  unassignedModInstances: ModInstance[];
 }) {
-  const deactivatedModComponents = [];
+  const deactivatedModInstances = [];
 
-  for (const modComponent of unassignedModComponents) {
+  for (const modInstance of unassignedModInstances) {
     try {
-      dispatch(
-        actions.removeModComponent({
-          modComponentId: modComponent.id,
-        }),
-      );
-      deactivatedModComponents.push(modComponent);
+      dispatch(actions.removeModById(modInstance.definition.metadata.id));
+      deactivatedModInstances.push(modInstance);
     } catch (error) {
       reportError(
         new Error("Error deactivating unassigned mod component", {
@@ -158,8 +151,8 @@ export function deactivateUnassignedModComponents({
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: deactivatedModComponents.map(
-      (modComponent) => modComponent._deployment?.id,
-    ),
+    deployments: deactivatedModInstances
+      .map((x) => x.deploymentMetadata?.id)
+      .filter((x) => x != null),
   });
 }

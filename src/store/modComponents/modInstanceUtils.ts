@@ -20,7 +20,7 @@ import type {
   ActivatedModComponent,
   ModComponentBase,
 } from "@/types/modComponentTypes";
-import { omit, pick } from "lodash";
+import { omit, pick, zip } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -32,8 +32,23 @@ import { createPrivateSharing } from "@/utils/registryUtils";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
+import type { SetRequired } from "type-fest";
+import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
-function generateModInstanceId(): ModInstanceId {
+/**
+ * A version of ActivatedModComponent with stronger nullness guarantees to support type evolution in the future.
+ */
+type ModInstanceActivatedModComponent = SetRequired<
+  ActivatedModComponent,
+  "_recipe" | "definitions" | "integrationDependencies" | "permissions"
+>;
+
+/**
+ * Generate a tagged UUID for a mod instance.
+ */
+export function generateModInstanceId(): ModInstanceId {
   return uuidv4() as ModInstanceId;
 }
 
@@ -54,6 +69,72 @@ export function mapModComponentBaseToModComponentDefinition(
     id: modComponent.extensionPointId,
     services: selectModComponentIntegrations(modComponent),
   };
+}
+
+/**
+ * Returns the activated mod component for a given mod instance. Is side effect free -- only maps the shape, does
+ * not persist the mod components or modify the UI.
+ *
+ * @see mapModComponentDefinitionToActivatedModComponent
+ */
+export function mapModInstanceToActivatedModComponents(
+  modInstance: ModInstance,
+): ModInstanceActivatedModComponent[] {
+  const { deploymentMetadata, integrationsArgs, updatedAt, definition } =
+    modInstance;
+
+  const modMetadata = pickModDefinitionMetadata(definition);
+
+  return zip(definition.extensionPoints, modInstance.modComponentIds).map(
+    ([modComponentDefinition, modComponentId]) => {
+      assertNotNullish(
+        modComponentDefinition,
+        "extensionPoints mismatch with modComponentIds",
+      );
+      assertNotNullish(
+        modComponentId,
+        "extensionPoints mismatch with modComponentIds",
+      );
+
+      const componentIntegrationIds = getModDefinitionIntegrationIds({
+        extensionPoints: [modComponentDefinition],
+      });
+
+      const base = {
+        id: modComponentId,
+        active: true,
+        label: modComponentDefinition.label,
+        config: modComponentDefinition.config,
+        permissions:
+          modComponentDefinition.permissions ?? emptyPermissionsFactory(),
+        // Default to `v1` for backward compatability
+        apiVersion: definition.apiVersion ?? "v1",
+        _recipe: modMetadata,
+        // All definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
+        // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
+        definitions: definition.definitions ?? {},
+        optionsArgs: modInstance.optionsArgs,
+        extensionPointId: modComponentDefinition.id,
+        createTimestamp: updatedAt,
+        updateTimestamp: updatedAt,
+        // XXX: do we have to filter to only the integrations referenced by this particular mod? Historically, was this
+        // only to simplify moving mod components in the Page Editor?
+        integrationDependencies: integrationsArgs.filter(({ integrationId }) =>
+          componentIntegrationIds.includes(integrationId),
+        ),
+      } as ModInstanceActivatedModComponent;
+
+      if (modComponentDefinition.templateEngine) {
+        base.templateEngine = modComponentDefinition.templateEngine;
+      }
+
+      if (deploymentMetadata) {
+        base._deployment = deploymentMetadata;
+      }
+
+      return base;
+    },
+  );
 }
 
 /**

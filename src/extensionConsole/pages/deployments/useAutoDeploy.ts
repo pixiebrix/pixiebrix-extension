@@ -18,7 +18,6 @@
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { type ModComponentBase } from "@/types/modComponentTypes";
 import notify from "@/utils/notify";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
@@ -27,6 +26,7 @@ import useAsyncEffect from "use-async-effect";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 type UseAutoDeployReturn = {
   /**
@@ -37,12 +37,12 @@ type UseAutoDeployReturn = {
 
 function useAutoDeploy({
   activatableDeployments,
-  activatedModComponents,
+  modInstances,
   extensionUpdateRequired,
 }: {
   // Expects nullish value if activatableDeployments are uninitialized/not loaded yet
   activatableDeployments: Nullishable<ActivatableDeployment[]>;
-  activatedModComponents: ModComponentBase[];
+  modInstances: ModInstance[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
@@ -53,7 +53,7 @@ function useAutoDeploy({
   ] = useState(true);
   // Only `true` while deployments are being activated. Prevents multiple activations from happening at once.
   const [isActivationInProgress, setIsActivationInProgress] = useState(false);
-  const { hasPermissions } = useModPermissions(activatedModComponents);
+  const { hasPermissions } = useModPermissions(modInstances);
   const { restrict } = useFlags();
 
   /**
@@ -91,7 +91,7 @@ function useAutoDeploy({
         await activateDeployments({
           dispatch,
           activatableDeployments,
-          activatedModComponents,
+          modInstances,
           reloadMode: "queue",
         });
         notify.success("Updated team deployments");
