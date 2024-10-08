@@ -37,10 +37,7 @@ import { omit, toLower } from "lodash";
 import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
-import {
-  type ActivatedModComponentV2,
-  type ActivatedModComponentV4,
-} from "@/types/modComponentTypes";
+import { type ActivatedModComponentV2 } from "@/types/modComponentTypes";
 import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
 import { getUserScope } from "@/auth/authUtils";
 
@@ -73,7 +70,7 @@ const migrations: MigrationManifest = {
 
     return state;
   },
-  // V4 migration defined below
+  // V4 migration defined via createMigrationsManifest
   5(
     state: ModComponentStateV4 & PersistedState,
   ): ModComponentStateV5 & PersistedState {
@@ -83,7 +80,6 @@ const migrations: MigrationManifest = {
 
     return state;
   },
-  // V4 migration defined below
   6(
     state: ModComponentStateV5 & PersistedState,
   ): ModComponentStateV6 & PersistedState {
