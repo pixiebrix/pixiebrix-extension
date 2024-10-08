@@ -17,7 +17,7 @@
 
 import styles from "./Status.module.scss";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -54,9 +54,11 @@ const Status: React.VoidFunctionComponent<{
 
   const modInstance = useFindModInstance(modId);
 
-  const { hasPermissions, requestPermissions } = useModPermissions(
-    compact([modInstance]),
-  );
+  // Memoize array reference to avoid infinite re-render loop with useModPermissions
+  const modInstances = useMemo(() => compact([modInstance]), [modInstance]);
+
+  const { hasPermissions, requestPermissions } =
+    useModPermissions(modInstances);
 
   if (isUnavailable) {
     return (
