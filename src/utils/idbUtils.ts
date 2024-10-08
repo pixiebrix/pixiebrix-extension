@@ -131,9 +131,6 @@ export function isIDBQuotaError(error: unknown): boolean {
  * In Chrome 130 and later, the error message remains the same, the type of error is different.
  * NotFoundError if the file is missing, DataError for any other error.
  *
- * This error for a single value can break bulk operations on the whole DB,
- * and we don't know of a way to drop the single bad record even if we know which one it is.
- *
  * @see https://chromestatus.com/feature/5140210640486400
  * @param error the error object
  */
@@ -245,10 +242,17 @@ export const withIdbErrorHandling =
         },
       );
     } catch (error) {
-      // If all retries have failed and the latest error is a permanent error, we delete the database.
-      if (isIDBLargeValueError(error) || isIDBErrorOpeningBackingStore(error)) {
+      if (
+        // Large IndexedDB value error for a single DB entry can break bulk operations on the whole DB,
+        // and we don't know of a way to drop the single bad record even if we know which one it is,
+        // so we need to delete the whole database.
+        isIDBLargeValueError(error) ||
+        // "Internal error opening backing store for indexedDB.open" is an unrecoverable error that
+        // requires deleting the database.
+        isIDBErrorOpeningBackingStore(error)
+      ) {
         console.error(
-          `Deleting ${databaseName} database due to permanent IndexDB error.`,
+          `Deleting ${databaseName} database due to unrecoverable IndexDB error.`,
         );
         await deleteDatabase(databaseName);
       }
