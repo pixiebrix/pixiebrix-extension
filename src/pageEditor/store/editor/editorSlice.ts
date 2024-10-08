@@ -123,6 +123,7 @@ export const initialState: EditorState = {
 /**
  * Duplicate the active mod component within the containing mod.
  *
+ * Is an AsyncThunk because it depends on data from the brick registry.
  */
 const duplicateActiveModComponent = createAsyncThunk<
   void,

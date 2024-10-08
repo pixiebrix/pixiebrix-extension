@@ -18,13 +18,13 @@
 import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import React from "react";
 import CreateModModal from "@/pageEditor/modListingPanel/modals/CreateModModal";
-import MoveCopyToModModal from "@/pageEditor/modListingPanel/modals/MoveCopyToModModal";
+import MoveOrCopyToModModal from "@/pageEditor/modListingPanel/modals/MoveOrCopyToModModal";
 import SaveAsNewModModal from "@/pageEditor/modListingPanel/modals/SaveAsNewModModal";
 import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
-    <MoveCopyToModModal />
+    <MoveOrCopyToModModal />
     <SaveAsNewModModal />
     <CreateModModal />
     <AddBrickModal />
