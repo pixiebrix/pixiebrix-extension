@@ -22,12 +22,13 @@ import {
   migrateStandaloneComponentsToMods,
 } from "@/store/modComponents/modComponentMigrations";
 import {
-  activatedModComponentFactory,
+  modComponentConfigFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import {
   autoUUIDSequence,
   timestampFactory,
+  uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { omit, toLower } from "lodash";
 import {
@@ -41,18 +42,20 @@ import {
 } from "@/store/modComponents/modComponentTypes";
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import {
-  type ActivatedModComponent,
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
   type SerializedModComponentV1,
 } from "@/types/modComponentTypes";
 import { produce } from "immer";
 import type {
+  IntegrationDependency,
   IntegrationDependencyV1,
   IntegrationDependencyV2,
 } from "@/integrations/integrationTypes";
 import type { FactoryConfig } from "cooky-cutter/dist/define";
-import { array } from "cooky-cutter";
+import { array, define } from "cooky-cutter";
+import type { ApiVersion } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 const testUserScope = "@test-user";
 
@@ -64,12 +67,50 @@ jest.mock("@/auth/authUtils", () => {
   };
 });
 
+/**
+ * Factory producing retired version of mod component
+ * @deprecated
+ */
+const activatedModComponentFactoryV2 = define<ActivatedModComponentV2>({
+  id: uuidSequence,
+  apiVersion: "v3" as ApiVersion,
+  extensionPointId: (n: number) =>
+    validateRegistryId(`test/starter-brick-${n}`),
+  _recipe: modMetadataFactory,
+  _deployment: undefined,
+  label: "Test label",
+  integrationDependencies(): IntegrationDependency[] {
+    return [];
+  },
+  config: modComponentConfigFactory,
+  active: true,
+  createTimestamp: timestampFactory,
+  updateTimestamp: timestampFactory,
+  _serializedModComponentBrand: undefined as never,
+});
+
+const activatedFactoryV2 = activatedModComponentFactoryV2;
+
+const activatedFactoryV1 = (
+  override?: FactoryConfig<ActivatedModComponentV2>,
+) => {
+  const activatedV2 = activatedFactoryV2(override);
+  return unmigrateActivatedV2ToActivatedV1(activatedV2);
+};
+
+const serializedFactoryV1 = (
+  override?: FactoryConfig<ActivatedModComponentV2>,
+) => {
+  const activatedV1 = activatedFactoryV1(override);
+  return unmigrateActivatedV1ToSerializedV1(activatedV1);
+};
+
 describe("createModMetadataForStandaloneComponent", () => {
   it("creates correct metadata", () => {
     const componentId = autoUUIDSequence();
     const componentLabel = "My Test Mod Component";
     const componentUpdateTimestamp = timestampFactory();
-    const component = activatedModComponentFactory({
+    const component = activatedModComponentFactoryV2({
       id: componentId,
       label: componentLabel,
       updateTimestamp: componentUpdateTimestamp,
@@ -100,17 +141,12 @@ describe("migrateStandaloneComponentsToMods", () => {
 
   it("returns mod components when there are no standalone components", () => {
     const modMetadata = modMetadataFactory();
-    const modComponents = [
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-      }),
-    ];
+    const modComponents = array(
+      activatedModComponentFactoryV2,
+      3,
+    )({
+      _recipe: modMetadata,
+    }).map((x) => x);
 
     expect(
       migrateStandaloneComponentsToMods(modComponents, testUserScope),
@@ -120,13 +156,13 @@ describe("migrateStandaloneComponentsToMods", () => {
   it("returns only mod components when userScope is null", () => {
     const modMetadata = modMetadataFactory();
     const modComponents = array(
-      activatedModComponentFactory,
+      activatedModComponentFactoryV2,
       3,
     )({
       _recipe: modMetadata,
     });
     const standaloneComponents = array(
-      activatedModComponentFactory,
+      activatedModComponentFactoryV2,
       2,
     )({
       _recipe: undefined,
@@ -143,14 +179,14 @@ describe("migrateStandaloneComponentsToMods", () => {
   it("converts standalone components correctly", () => {
     const modMetadata = modMetadataFactory();
     const modComponents = array(
-      activatedModComponentFactory,
+      activatedModComponentFactoryV2,
       3,
     )({
       _recipe: modMetadata,
     });
 
     const standaloneComponents = array(
-      activatedModComponentFactory,
+      activatedModComponentFactoryV2,
       2,
     )({
       _recipe: undefined,
@@ -321,22 +357,6 @@ function unmigrateStateV1toV0(
     extensions: unmigratedExtensions,
   };
 }
-
-const activatedFactoryV2 = activatedModComponentFactory;
-
-const activatedFactoryV1 = (
-  override?: FactoryConfig<ActivatedModComponent>,
-) => {
-  const activatedV2 = activatedFactoryV2(override);
-  return unmigrateActivatedV2ToActivatedV1(activatedV2);
-};
-
-const serializedFactoryV1 = (
-  override?: FactoryConfig<ActivatedModComponent>,
-) => {
-  const activatedV1 = activatedFactoryV1(override);
-  return unmigrateActivatedV1ToSerializedV1(activatedV1);
-};
 
 describe("inferModComponentStateVersion", () => {
   const serialized1 = serializedFactoryV1();

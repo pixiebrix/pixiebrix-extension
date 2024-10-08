@@ -171,3 +171,16 @@ export function isModComponentStateV5(
 
   return Array.isArray(state.activatedModComponents);
 }
+
+export function isModComponentStateV6(
+  state: ModComponentStateVersions,
+): state is ModComponentStateV6 {
+  if (!("activatedModComponents" in state)) {
+    return false;
+  }
+
+  return (
+    Array.isArray(state.activatedModComponents) &&
+    state.activatedModComponents.every((x) => "modMetadata" in x)
+  );
+}

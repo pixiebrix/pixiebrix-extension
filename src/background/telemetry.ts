@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, debounce, throttle, uniq } from "lodash";
+import { debounce, throttle, uniq } from "lodash";
 import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import {
   getLinkedApiClient,

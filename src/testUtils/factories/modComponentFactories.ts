@@ -75,7 +75,7 @@ export const modMetadataFactory = extend<Metadata, ModMetadata>(
   },
 );
 
-const modComponentConfigFactory = define<ModComponentBase["config"]>({
+export const modComponentConfigFactory = define<ModComponentBase["config"]>({
   apiVersion: "v3" as ApiVersion,
   kind: DefinitionKinds.BRICK,
   metadata: (n: number) =>
@@ -113,7 +113,7 @@ export const modComponentFactory = define<ModComponentBase>({
   apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  // @since 2.1.4 includes mod metadata
+  // @since 2.1.5 includes mod metadata
   modMetadata: modMetadataFactory,
   deploymentMetadata: undefined,
   label: "Test label",
