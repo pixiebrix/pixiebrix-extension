@@ -62,10 +62,8 @@ export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
 /**
  * Returns a callback that removes a mod component from the Page Editor and Mod Component Storage.
  *
- * For mod components packaged inside a mod and standalone mod components not saved on the cloud, this callback will effectively delete the mod component.
- * For saved standalone mods, this callback will simply deactivate the mod and remove it from the Page Editor.
- *
- * In both cases, unsaved changes will be lost.
+ * For mod components packaged inside a mod, this callback will effectively delete the mod component. Any unsaved
+ * changes will be lost.
  */
 export function useRemoveModComponentFromStorage(): (
   useRemoveConfig: Config,
