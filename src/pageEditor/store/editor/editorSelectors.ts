@@ -23,7 +23,7 @@ import {
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
+import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
@@ -279,20 +279,14 @@ export const selectActivatedModMetadatas = createSelector(
   selectDirtyModMetadata,
   (formStates, activatedModComponents, dirtyModMetadataById) => {
     const formStateModMetadatas: Array<ModComponentBase["modMetadata"]> =
-      formStates
-        .filter((formState) => Boolean(formState.modMetadata))
-        .map((formState) => formState.modMetadata);
+      formStates.map((formState) => formState.modMetadata);
     const activatedModComponentModMetadatas: Array<
       ModComponentBase["modMetadata"]
-    > = activatedModComponents
-      .filter((component) => Boolean(component.modMetadata))
-      .map((component) => component.modMetadata);
+    > = activatedModComponents.map((component) => component.modMetadata);
 
-    const baseMetadatas = compact(
-      uniqBy(
-        [...formStateModMetadatas, ...activatedModComponentModMetadatas],
-        (x) => x?.id,
-      ),
+    const baseMetadatas = uniqBy(
+      [...formStateModMetadatas, ...activatedModComponentModMetadatas],
+      (x) => x.id,
     );
 
     return baseMetadatas.map((metadata) => {

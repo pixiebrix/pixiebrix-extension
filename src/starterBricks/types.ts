@@ -261,12 +261,10 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     // `registerModVariables` is safe to call multiple times for the same modId because the variable definitions
     // will be consistent across components.
     for (const modComponent of modComponents) {
-      if (modComponent.modMetadata) {
-        this.platform.state.registerModVariables(
-          modComponent.modMetadata.id,
-          modComponent.variablesDefinition,
-        );
-      }
+      this.platform.state.registerModVariables(
+        modComponent.modMetadata.id,
+        modComponent.variablesDefinition,
+      );
     }
 
     console.debug("synchronizeComponents for extension point %s", this.id, {

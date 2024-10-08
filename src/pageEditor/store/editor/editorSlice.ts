@@ -335,23 +335,20 @@ export const editorSlice = createSlice({
       // Ensure the form state is writeable for normalization
       const modComponentFormState = cloneDeep(action.payload);
 
-      // Check if the new form state has modMetadata
-      if (modComponentFormState.modMetadata) {
-        const modId = modComponentFormState.modMetadata.id;
+      const modId = modComponentFormState.modMetadata.id;
 
-        // Find existing activated mod components with the same mod id
-        const existingModComponents = state.modComponentFormStates.filter(
-          (formState) => formState.modMetadata.id === modId,
+      // Find existing activated mod components with the same mod id
+      const existingModComponents = state.modComponentFormStates.filter(
+        (formState) => formState.modMetadata.id === modId,
+      );
+
+      // If there are existing components, collect their option arguments, and assign.
+      // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
+      // are stored/owned at the mod-level in the Page Editor
+      if (existingModComponents.length > 0) {
+        modComponentFormState.optionsArgs = collectModOptions(
+          existingModComponents,
         );
-
-        // If there are existing components, collect their option arguments, and assign.
-        // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
-        // are stored/owned at the mod-level in the Page Editor
-        if (existingModComponents.length > 0) {
-          modComponentFormState.optionsArgs = collectModOptions(
-            existingModComponents,
-          );
-        }
       }
 
       state.modComponentFormStates.push(
