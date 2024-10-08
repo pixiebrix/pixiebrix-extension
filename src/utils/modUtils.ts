@@ -296,8 +296,8 @@ export function mapModInstanceToUnavailableMod(
     metadata: modInstance.definition.metadata,
     kind: DefinitionKinds.MOD,
     isStub: true,
-    updated_at: modInstance.definition.updated_at ?? nowTimestamp(),
-    sharing: modInstance.definition.sharing ?? createPrivateSharing(),
+    updated_at: modInstance.definition.updated_at,
+    sharing: modInstance.definition.sharing,
   };
 }
 
@@ -316,10 +316,7 @@ export function createNewUnsavedModMetadata({
     name: modName,
     description: "Created with the PixieBrix Page Editor",
     version: normalizeSemVerString("1.0.0"),
-    sharing: {
-      public: false,
-      organizations: [] as UUID[],
-    },
+    sharing: createPrivateSharing(),
     updated_at: nowTimestamp(),
   };
 }
