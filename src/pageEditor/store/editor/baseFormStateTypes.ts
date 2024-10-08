@@ -244,13 +244,15 @@ export type BaseFormStateV5<
 export type BaseFormStateV6<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
-> = Except<BaseFormStateV5<TModComponent, TStarterBrick>, "modMetadata"> & {
-  /**
-   * The mod metadata for the mod component
-   * @see createNewUnsavedModMetadata
-   */
-  modMetadata: ModMetadata;
-};
+> =
+  // Can't use SetRequired because the property is required (it does not use ?), but it can be set to undefined
+  Except<BaseFormStateV5<TModComponent, TStarterBrick>, "modMetadata"> & {
+    /**
+     * The mod metadata for the mod component
+     * @see createNewUnsavedModMetadata
+     */
+    modMetadata: ModMetadata;
+  };
 
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,

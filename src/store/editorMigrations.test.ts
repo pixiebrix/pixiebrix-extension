@@ -24,6 +24,7 @@ import {
   type EditorStateV6,
   type EditorStateV7,
   type EditorStateV8,
+  type EditorStateV9,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { cloneDeep, mapValues, omit } from "lodash";
 import {
@@ -40,13 +41,17 @@ import {
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { validateRegistryId } from "@/types/helpers";
+import {
+  isInnerDefinitionRegistryId,
+  validateRegistryId,
+} from "@/types/helpers";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
   type BaseFormStateV3,
   type BaseFormStateV4,
   type BaseFormStateV5,
+  type BaseFormStateV6,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -59,6 +64,7 @@ import {
   migrateEditorStateV5,
   migrateEditorStateV6,
   migrateEditorStateV7,
+  migrateEditorStateV8,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -286,6 +292,12 @@ const initialStateV8: EditorStateV8 & PersistedState = {
   },
 };
 
+const initialStateV9: EditorStateV9 & PersistedState = {
+  ...cloneDeep(initialStateV8),
+  modComponentFormStates: [],
+  deletedModComponentFormStatesByModId: {},
+};
+
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],
 ): IntegrationDependencyV1[] {
@@ -420,6 +432,15 @@ function unmigrateFormStateV5toV4(formState: BaseFormStateV5): BaseFormStateV4 {
   return omit(formState, "variablesDefinition");
 }
 
+function unmigrateFormStateV6toV5(formState: BaseFormStateV6): BaseFormStateV5 {
+  return {
+    ...formState,
+    modMetadata: isInnerDefinitionRegistryId(formState.modMetadata.id)
+      ? undefined
+      : formState.modMetadata,
+  };
+}
+
 function unmigrateEditorStateV5toV4(
   state: EditorStateV5 & PersistedState,
 ): EditorStateV4 & PersistedState {
@@ -471,12 +492,26 @@ function unmigrateEditorStateV8toV7(
   };
 }
 
+function unmigrateEditorStateV9toV8(
+  state: EditorStateV9 & PersistedState,
+): EditorStateV8 & PersistedState {
+  return {
+    ...state,
+    modComponentFormStates: state.modComponentFormStates.map((formState) =>
+      unmigrateFormStateV6toV5(formState),
+    ),
+  };
+}
+
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
-const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = (override) =>
+const formStateFactoryV6: SimpleFactory<BaseFormStateV6> = (override) =>
   formStateFactory({
     formStateConfig: override as FactoryConfig<InternalFormStateOverride>,
   });
+
+const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = (override) =>
+  unmigrateFormStateV6toV5(formStateFactoryV6());
 
 const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
   unmigrateFormStateV5toV4(formStateFactoryV5());
@@ -698,6 +733,35 @@ describe("editor state migrations", () => {
       expect(migrateEditorStateV7(unmigrated)).toStrictEqual(
         expectedEditorStateV8,
       );
+    });
+  });
+
+  describe("migrateEditorState V8 to V9", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV8(initialStateV8)).toStrictEqual(
+        initialStateV9,
+      );
+    });
+
+    it("adds missing modMetadata", () => {
+      const expectedEditorStateV9: EditorStateV9 & PersistedState = {
+        ...initialStateV9,
+        modComponentFormStates: [formStateFactoryV6()],
+      };
+      const unmigrated = unmigrateEditorStateV9toV8(expectedEditorStateV9);
+      expect(migrateEditorStateV8(unmigrated)).toStrictEqual({
+        ...expectedEditorStateV9,
+        modComponentFormStates: [
+          {
+            ...expectedEditorStateV9.modComponentFormStates[0],
+            modMetadata: expect.objectContaining({
+              // Won't match exactly because the naming scheme is different between the factory and generation
+              id: expect.stringMatching(/@internal\/mod\/\S+/),
+              name: expect.toBeString(),
+            }),
+          },
+        ],
+      });
     });
   });
 });

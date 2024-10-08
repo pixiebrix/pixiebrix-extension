@@ -261,7 +261,7 @@ export function migrateEditorStateV8(
 ): EditorStateV9 & PersistedState {
   return produce(state, (draft) => {
     // Don't need to also loop over deletedModComponentFormStatesByModId, because there can't be any standalone
-    // mod components in there
+    // mod components in there. (Standalone mods when deleted are removed from the editor state entirely.)
     for (const formState of draft.modComponentFormStates) {
       (formState as BaseFormStateV6).modMetadata ??=
         createNewUnsavedModMetadata({

@@ -62,7 +62,7 @@ describe("ModMetadataEditor", () => {
           modComponentSlice.actions.UNSAFE_setModComponents([modComponent]),
         );
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.setActiveModId(formState.modMetadata!.id));
+        dispatch(editorActions.setActiveModId(formState.modMetadata.id));
       },
     });
 
@@ -98,7 +98,7 @@ describe("ModMetadataEditor", () => {
           modComponentSlice.actions.UNSAFE_setModComponents([modComponent]),
         );
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.setActiveModId(formState.modMetadata!.id));
+        dispatch(editorActions.setActiveModId(formState.modMetadata.id));
       },
     });
 
