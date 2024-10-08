@@ -38,7 +38,6 @@ import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactori
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
-import { waitFor } from "@testing-library/react";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 const useAllModDefinitionsMock = jest.mocked(useAllModDefinitions);
@@ -252,9 +251,9 @@ describe("ModsPage", () => {
     await userEvent.type(searchInput, searchQuery);
 
     // Wait for the search query to take effect
-    await waitFor(() => {
-      expect(screen.getByText("No mods found")).toBeInTheDocument();
-    });
+    await expect(
+      screen.findByText("No mods found"),
+    ).resolves.toBeInTheDocument();
 
     expect(screen.queryByText("Test Mod 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Mod 2")).not.toBeInTheDocument();
