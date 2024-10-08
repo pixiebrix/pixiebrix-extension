@@ -22,6 +22,7 @@ import {
   migrateStandaloneComponentsToMods,
 } from "@/store/modComponents/modComponentMigrations";
 import {
+  activatedModComponentFactory,
   modComponentConfigFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
@@ -38,6 +39,7 @@ import {
   type ModComponentStateV3,
   type ModComponentStateV4,
   type ModComponentStateV5,
+  type ModComponentStateV6,
   type ModComponentStateVersions,
 } from "@/store/modComponents/modComponentTypes";
 import { type MigrationManifest, type PersistedState } from "redux-persist";
@@ -257,6 +259,24 @@ const initialStateV5: ModComponentStateV5 & PersistedState = {
     rehydrated: false,
   },
 };
+
+// Empty state is the same as V5
+const initialStateV6: ModComponentStateV5 & PersistedState = initialStateV5;
+
+function unmigrateStateV6toV5(
+  state: ModComponentStateV6 & PersistedState,
+): ModComponentStateV5 & PersistedState {
+  return {
+    ...omit(state, "activatedModComponents"),
+    activatedModComponents: state.activatedModComponents.map(
+      (modComponent) => ({
+        ...omit(modComponent, ["modMetadata", "deploymentMetadata"]),
+        _recipe: modComponent.modMetadata,
+        _deployment: modComponent.deploymentMetadata,
+      }),
+    ),
+  };
+}
 
 function unmigrateStateV5toV4(
   state: ModComponentStateV5 & PersistedState,
@@ -496,6 +516,9 @@ describe("mod component state migrations", () => {
   let migrateModComponentStateV4toV5:
     | ((state: PersistedState) => PersistedState)
     | undefined;
+  let migrateModComponentStateV5toV6:
+    | ((state: PersistedState) => PersistedState)
+    | undefined;
 
   const serialized1 = serializedFactoryV1();
   const serialized2 = serializedFactoryV1({
@@ -514,6 +537,7 @@ describe("mod component state migrations", () => {
     migrateModComponentStateV2toV3 = migrationsManifest[3];
     migrateModComponentStateV3toV4 = migrationsManifest[4];
     migrateModComponentStateV4toV5 = migrationsManifest[5];
+    migrateModComponentStateV5toV6 = migrationsManifest[6];
   });
 
   describe("migrateModComponentState V0 to V1", () => {
@@ -704,6 +728,40 @@ describe("mod component state migrations", () => {
     it("does not migrate or throw with wrong version", () => {
       expect(migrateModComponentStateV4toV5!(expectedStateV5)).toStrictEqual(
         expectedStateV5,
+      );
+    });
+  });
+
+  describe("migrateModComponentState V5 to V6", () => {
+    // Create two regular mod components of a mod
+    const sharedModMetadata = modMetadataFactory();
+
+    const expectedStateV6 = {
+      ...initialStateV6,
+      activatedModComponents: array(
+        activatedModComponentFactory,
+        2,
+      )({
+        modMetadata: sharedModMetadata,
+      }),
+    };
+
+    it("migrates initial state", () => {
+      expect(migrateModComponentStateV5toV6!(initialStateV5)).toStrictEqual(
+        initialStateV6,
+      );
+    });
+
+    it("migrates state with components", () => {
+      const unmigrated = unmigrateStateV6toV5(expectedStateV6);
+      expect(migrateModComponentStateV5toV6!(unmigrated)).toStrictEqual(
+        expectedStateV6,
+      );
+    });
+
+    it("does not migrate or throw with wrong version", () => {
+      expect(migrateModComponentStateV5toV6!(expectedStateV6)).toStrictEqual(
+        expectedStateV6,
       );
     });
   });

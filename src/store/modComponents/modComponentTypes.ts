@@ -169,7 +169,10 @@ export function isModComponentStateV5(
     return false;
   }
 
-  return Array.isArray(state.activatedModComponents);
+  return (
+    Array.isArray(state.activatedModComponents) &&
+    state.activatedModComponents.every((x) => !("modMetadata" in x))
+  );
 }
 
 export function isModComponentStateV6(
