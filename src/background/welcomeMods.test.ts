@@ -24,12 +24,11 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/authStorage";
 import { refreshRegistries } from "./refreshRegistries";
-import {
-  type ActivatedModComponent,
-  type ModComponentBase,
-} from "@/types/modComponentTypes";
 import { uuidv4 } from "@/types/helpers";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  activatedModComponentFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
@@ -56,8 +55,8 @@ import {
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import {
-  PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
+  PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
@@ -153,7 +152,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]!._recipe!.id).toEqual(
+    expect(activatedModComponents[0]!.modMetadata.id).toEqual(
       modDefinition.metadata.id,
     );
 
@@ -179,7 +178,7 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]!._recipe!.id).toEqual(
+    expect(activatedModComponents[0]!.modMetadata.id).toEqual(
       modDefinition.metadata.id,
     );
 
@@ -274,9 +273,9 @@ describe("debouncedActivateWelcomeMods", () => {
 
     const modDefinition = defaultModDefinitionFactory();
 
-    const activatedModComponent = modComponentFactory({
-      _recipe: { id: modDefinition.metadata.id } as ModComponentBase["_recipe"],
-    }) as ActivatedModComponent;
+    const activatedModComponent = activatedModComponentFactory({
+      modMetadata: modMetadataFactory({ id: modDefinition.metadata.id }),
+    });
     await saveModComponentState({
       activatedModComponents: [activatedModComponent],
     });
@@ -293,31 +292,11 @@ describe("debouncedActivateWelcomeMods", () => {
     const { closedTabs } = await getSidebarState();
 
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]!._recipe!.id).toEqual(
+    expect(activatedModComponents[0]!.modMetadata.id).toEqual(
       modDefinition.metadata.id,
     );
 
     expect(closedTabs).toStrictEqual({});
-  });
-
-  test("activated mod component with no _recipe doesn't throw undefined error", async () => {
-    isLinkedMock.mockResolvedValue(true);
-
-    const activatedModComponent = modComponentFactory({
-      _recipe: undefined,
-    }) as ActivatedModComponent;
-    await saveModComponentState({
-      activatedModComponents: [activatedModComponent],
-    });
-
-    axiosMock
-      .onGet(API_PATHS.ONBOARDING_STARTER_BLUEPRINTS)
-      .reply(200, [defaultModDefinitionFactory()]);
-
-    await debouncedActivateWelcomeMods();
-    const { activatedModComponents } = await getModComponentState();
-
-    expect(activatedModComponents).toHaveLength(2);
   });
 
   test("activate welcome mod with optional integrations", async () => {
@@ -342,7 +321,7 @@ describe("debouncedActivateWelcomeMods", () => {
 
     expect(activatedModComponents).toHaveLength(1);
     const activatedModComponent = activatedModComponents[0]!;
-    expect(activatedModComponent._recipe!.id).toEqual(
+    expect(activatedModComponent.modMetadata.id).toEqual(
       modDefinition.metadata.id,
     );
     expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);

@@ -278,14 +278,15 @@ export const selectActivatedModMetadatas = createSelector(
   selectActivatedModComponents,
   selectDirtyModMetadata,
   (formStates, activatedModComponents, dirtyModMetadataById) => {
-    const formStateModMetadatas: Array<ModComponentBase["_recipe"]> = formStates
-      .filter((formState) => Boolean(formState.modMetadata))
-      .map((formState) => formState.modMetadata);
+    const formStateModMetadatas: Array<ModComponentBase["modMetadata"]> =
+      formStates
+        .filter((formState) => Boolean(formState.modMetadata))
+        .map((formState) => formState.modMetadata);
     const activatedModComponentModMetadatas: Array<
-      ModComponentBase["_recipe"]
+      ModComponentBase["modMetadata"]
     > = activatedModComponents
-      .filter((component) => Boolean(component._recipe))
-      .map((component) => component._recipe);
+      .filter((component) => Boolean(component.modMetadata))
+      .map((component) => component.modMetadata);
 
     const baseMetadatas = compact(
       uniqBy(

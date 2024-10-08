@@ -95,7 +95,7 @@ const modComponentSlice = createSlice({
         payload,
       }: PayloadAction<{
         modComponentId: UUID;
-        modMetadata: ModComponentBase["_recipe"];
+        modMetadata: ModComponentBase["modMetadata"];
       }>,
     ) {
       const { modComponentId, modMetadata } = payload;
@@ -104,7 +104,7 @@ const modComponentSlice = createSlice({
       );
 
       if (modComponent != null) {
-        modComponent._recipe = modMetadata;
+        modComponent.modMetadata = modMetadata;
       }
     },
 
@@ -200,7 +200,7 @@ const modComponentSlice = createSlice({
           optionsArgs,
           integrationDependencies,
           updateTimestamp,
-          _recipe,
+          modMetadata,
         },
       } = payload;
 
@@ -220,8 +220,8 @@ const modComponentSlice = createSlice({
         id,
         apiVersion,
         extensionPointId,
-        _recipe,
-        _deployment: undefined,
+        modMetadata,
+        deploymentMetadata: undefined,
         label,
         definitions,
         optionsArgs,
@@ -279,14 +279,14 @@ const modComponentSlice = createSlice({
      */
     updateModMetadata(
       state,
-      action: PayloadAction<ModComponentBase["_recipe"]>,
+      action: PayloadAction<ModComponentBase["modMetadata"]>,
     ) {
       const metadata = action.payload;
       const modComponents = state.activatedModComponents.filter(
-        (extension) => extension._recipe?.id === metadata?.id,
+        (extension) => extension.modMetadata.id === metadata?.id,
       );
       for (const modComponent of modComponents) {
-        modComponent._recipe = metadata;
+        modComponent.modMetadata = metadata;
       }
     },
 
@@ -296,7 +296,7 @@ const modComponentSlice = createSlice({
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
       const [, extensions] = partition(
         state.activatedModComponents,
-        (x) => x._recipe?.id === modId,
+        (x) => x.modMetadata.id === modId,
       );
 
       state.activatedModComponents = extensions;

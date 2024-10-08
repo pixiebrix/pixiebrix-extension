@@ -294,7 +294,7 @@ async function collectUserSummary(): Promise<UserSummary> {
     const { activatedModComponents } = await getModComponentState();
     numActiveExtensions = activatedModComponents.length;
     numActiveBlueprints = uniq(
-      compact(activatedModComponents.map((x) => x._recipe?.id)),
+      activatedModComponents.map((x) => x.modMetadata.id),
     ).length;
     numActiveExtensionPoints = uniq(
       activatedModComponents.map((x) => x.extensionPointId),

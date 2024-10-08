@@ -67,7 +67,7 @@ export function isModEditable(
 function selectModMetadata(
   unsavedModDefinition: UnsavedModDefinition,
   response: PackageUpsertResponse,
-): ModComponentBase["_recipe"] {
+): ModComponentBase["modMetadata"] {
   return {
     ...unsavedModDefinition.metadata,
     sharing: pick(response, ["public", "organizations"]),

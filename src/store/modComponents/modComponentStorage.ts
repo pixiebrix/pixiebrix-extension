@@ -54,7 +54,7 @@ export async function getModComponentState(): Promise<ModComponentState> {
 export async function getActivatedModIds(): Promise<Set<RegistryId>> {
   const { activatedModComponents = [] } = await getModComponentState();
   return new Set(
-    compact(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+    compact(activatedModComponents.map(({ modMetadata }) => modMetadata.id)),
   );
 }
 

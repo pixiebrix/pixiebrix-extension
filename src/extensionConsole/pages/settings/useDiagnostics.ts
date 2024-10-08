@@ -55,10 +55,10 @@ async function collectDiagnostics({
     },
     extensions: {
       blueprints: uniqBy(
-        compact(modComponents.map((x) => x._recipe)),
+        compact(modComponents.map((x) => x.modMetadata)),
         (x) => x.id,
       ),
-      extensions: modComponents.filter((x) => !x._recipe),
+      extensions: modComponents.filter((x) => !x.modMetadata),
     },
   };
 }

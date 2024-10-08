@@ -131,7 +131,7 @@ const duplicateActiveModComponent = createAsyncThunk<
       /**
        * Optional destination mod to create the duplicate in.
        */
-      destinationModMetadata?: ModComponentBase["_recipe"];
+      destinationModMetadata?: ModComponentBase["modMetadata"];
     }
   | undefined,
   { state: EditorRootState }

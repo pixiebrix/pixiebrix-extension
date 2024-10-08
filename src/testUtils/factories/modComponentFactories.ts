@@ -114,8 +114,8 @@ export const modComponentFactory = define<ModComponentBase>({
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   // @since 2.1.4 includes mod metadata
-  _recipe: modMetadataFactory,
-  _deployment: undefined,
+  modMetadata: modMetadataFactory,
+  deploymentMetadata: undefined,
   label: "Test label",
   integrationDependencies(): IntegrationDependency[] {
     return [];

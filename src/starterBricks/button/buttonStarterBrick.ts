@@ -766,7 +766,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
             errors.push(error);
             reportError(error, {
               context: {
-                deploymentId: modComponent._deployment?.id,
+                deploymentId: modComponent.deploymentMetadata?.id,
                 starterBrickId: modComponent.extensionPointId,
                 modComponentId: modComponent.id,
               },

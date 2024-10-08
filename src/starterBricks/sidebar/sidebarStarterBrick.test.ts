@@ -77,7 +77,7 @@ const modComponentFactory = define<HydratedModComponent<SidebarConfig>>({
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  modMetadata: modMetadataFactory,
   label: "Test Extension",
   config: define<SidebarConfig>({
     heading: "Test Action",
@@ -178,7 +178,6 @@ describe("sidebarExtension", () => {
 
     const modComponent = modComponentFactory({
       extensionPointId: starterBrick.id,
-      _recipe: modMetadataFactory(),
     });
 
     starterBrick.registerModComponent(modComponent);
@@ -193,7 +192,7 @@ describe("sidebarExtension", () => {
       mergeStrategy: MergeStrategies.REPLACE,
       modComponentRef: {
         modComponentId: modComponent.id,
-        modId: modComponent._recipe!.id,
+        modId: modComponent.modMetadata.id,
       },
     });
 
@@ -216,7 +215,7 @@ describe("sidebarExtension", () => {
       mergeStrategy: MergeStrategies.REPLACE,
       modComponentRef: {
         modComponentId: modComponent.id,
-        modId: modComponent._recipe!.id,
+        modId: modComponent.modMetadata.id,
       },
     });
 
@@ -256,7 +255,6 @@ describe("sidebarExtension", () => {
 
     const extension = modComponentFactory({
       extensionPointId: starterBrick.id,
-      _recipe: modMetadataFactory(),
     });
 
     starterBrick.registerModComponent(extension);
@@ -280,7 +278,7 @@ describe("sidebarExtension", () => {
         mergeStrategy: MergeStrategies.REPLACE,
         modComponentRef: {
           modComponentId: extension.id,
-          modId: extension._recipe!.id,
+          modId: extension.modMetadata.id,
         },
       });
     }

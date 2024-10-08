@@ -236,7 +236,7 @@ async function activateMods(
   const newMods = modDefinitions.filter(
     (modDefinition) =>
       !optionsState.activatedModComponents.some(
-        (mod) => mod._recipe?.id === modDefinition.metadata.id,
+        (mod) => mod.modMetadata.id === modDefinition.metadata.id,
       ),
   );
 

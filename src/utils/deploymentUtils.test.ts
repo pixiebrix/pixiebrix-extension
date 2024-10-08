@@ -101,8 +101,8 @@ describe("makeUpdatedFilter", () => {
 
     const modInstance = mapActivatedModComponentsToModInstance([
       activatedModComponentFactory({
-        _deployment: undefined,
-        _recipe: {
+        deploymentMetadata: undefined,
+        modMetadata: {
           ...modDefinition.metadata,
           updated_at: validateTimestamp(deployment.updated_at!),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
@@ -120,8 +120,8 @@ describe("makeUpdatedFilter", () => {
 
     const modInstance = mapActivatedModComponentsToModInstance([
       activatedModComponentFactory({
-        _deployment: undefined,
-        _recipe: {
+        deploymentMetadata: undefined,
+        modMetadata: {
           ...modDefinition.metadata,
           // The factory produces version "1.0.1"
           version: normalizeSemVerString("1.0.1"),
@@ -171,7 +171,7 @@ describe("isDeploymentActive", () => {
     const deployment = deploymentFactory();
 
     const modComponent = modComponentFactory({
-      _deployment: {
+      deploymentMetadata: {
         id: deployment.id,
         timestamp: deployment.updated_at!,
         // Legacy deployments don't have an `active` field
@@ -187,7 +187,7 @@ describe("isDeploymentActive", () => {
       const deployment = deploymentFactory();
 
       const modComponent = modComponentFactory({
-        _deployment: {
+        deploymentMetadata: {
           id: deployment.id,
           timestamp: deployment.updated_at!,
           active,

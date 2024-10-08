@@ -69,9 +69,7 @@ export function getModComponentId(
 export function getModId(
   modComponentOrFormState: ModComponentBase | ModComponentFormState,
 ): RegistryId | undefined {
-  return isModComponentBase(modComponentOrFormState)
-    ? modComponentOrFormState._recipe?.id
-    : modComponentOrFormState.modMetadata.id;
+  return modComponentOrFormState.modMetadata.id;
 }
 
 /**

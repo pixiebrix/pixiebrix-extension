@@ -16,29 +16,23 @@ export function selectEventData(
 
   // For team deployments and blueprints, include additional information to track use consistently across installations.
   // The extension on each activation
-  if (modComponent._deployment) {
+  if (modComponent.deploymentMetadata) {
     return {
       label: modComponent.label,
       modComponentId: modComponent.id,
-      deploymentId: modComponent._deployment?.id,
+      deploymentId: modComponent.deploymentMetadata.id,
       starterBrickId: isRegistryId(modComponent.extensionPointId)
         ? modComponent.extensionPointId
         : undefined,
-      modId: modComponent._recipe?.id,
-      modVersion: modComponent._recipe?.version,
-    };
-  }
-
-  if (modComponent._recipe) {
-    return {
-      label: modComponent.label,
-      modComponentId: modComponent.id,
-      modId: modComponent._recipe?.id,
-      modVersion: modComponent._recipe?.version,
+      modId: modComponent.modMetadata?.id,
+      modVersion: modComponent.modMetadata?.version,
     };
   }
 
   return {
+    label: modComponent.label,
     modComponentId: modComponent.id,
+    modId: modComponent.modMetadata.id,
+    modVersion: modComponent.modMetadata.version,
   };
 }

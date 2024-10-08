@@ -71,7 +71,6 @@ import {
 } from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 export interface WizardStep {
   step: string;
@@ -133,11 +132,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
-  assertNotNullish(
-    config._recipe,
-    "Standalone mod components are not supported",
-  );
-
   return {
     uuid: config.id,
     apiVersion: config.apiVersion,
@@ -150,7 +144,7 @@ export function baseFromModComponent<T extends StarterBrickType>(
     variablesDefinition:
       config.variablesDefinition ?? emptyModVariablesDefinitionFactory(),
     type,
-    modMetadata: config._recipe,
+    modMetadata: config.modMetadata,
   };
 }
 
@@ -198,7 +192,7 @@ export function baseSelectModComponent({
   | "id"
   | "apiVersion"
   | "extensionPointId"
-  | "_recipe"
+  | "modMetadata"
   | "label"
   | "integrationDependencies"
   | "permissions"
@@ -209,7 +203,7 @@ export function baseSelectModComponent({
     id: uuid,
     apiVersion,
     extensionPointId: starterBrick.metadata.id,
-    _recipe: modMetadata,
+    modMetadata,
     label,
     integrationDependencies,
     permissions,
