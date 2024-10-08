@@ -143,9 +143,8 @@ export function isIDBLargeValueError(error: unknown): boolean {
 }
 
 /**
- * Corrupt chrome profile. Not sure how this happens, but it seems to happen to users
- * on citrix machines. This error seems to be unrecoverable and the only solution is to
- * delete the database.
+ * Error occurring due to corrupt chrome profile but unclear how this happens.
+ * This error seems to be unrecoverable and the only solution is to delete the database.
  * https://jasonsavard.com/forum/discussion/4233/unknownerror-internal-error-opening-backing-store-for-indexeddb-open
  *
  * @param error the error object
@@ -167,10 +166,6 @@ function isIDBErrorOpeningBackingStore(error: unknown): boolean {
  */
 export function isMaybeTemporaryIDBError(error: unknown): boolean {
   return isIDBConnectionError(error) || isIDBLargeValueError(error);
-}
-
-function isPermanentIDBError(error: unknown): boolean {
-  return isIDBLargeValueError(error) || isIDBErrorOpeningBackingStore(error);
 }
 
 // Rather than use reportError from @/telemetry/reportError, IDB errors are directly reported
@@ -251,7 +246,7 @@ export const withIdbErrorHandling =
       );
     } catch (error) {
       // If all retries have failed and the latest error is a permanent error, we delete the database.
-      if (isPermanentIDBError(error)) {
+      if (isIDBLargeValueError(error) || isIDBErrorOpeningBackingStore(error)) {
         console.error(
           `Deleting ${databaseName} database due to permanent IndexDB error.`,
         );
