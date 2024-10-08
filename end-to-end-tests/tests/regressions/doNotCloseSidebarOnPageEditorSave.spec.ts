@@ -18,13 +18,14 @@
 import { test, expect } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { getSidebarPage } from "../../utils";
+import { getSidebarPage, isMsEdge } from "../../utils";
+import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
 
-// eslint-disable-next-line playwright/no-skipped-test -- There is a race condition that makes this flaky, we will fix later
-test.skip("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
+test("#8104: Do not automatically close the sidebar when saving in the Page Editor", async ({
   page,
   newPageEditorPage,
   extensionId,
+  chromiumChannel,
 }) => {
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
@@ -32,6 +33,16 @@ test.skip("#8104: Do not automatically close the sidebar when saving in the Page
   await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Sidebar Panel",
   });
+
+  /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
+   * cannot open the sidebar, so we need to open it manually.
+   * https://www.loom.com/share/fbad85e901794161960b737b27a13677
+   */
+  if (isMsEdge(chromiumChannel)) {
+    await page.bringToFront();
+    const floatingActionButton = new FloatingActionButton(page);
+    await floatingActionButton.toggleSidebar();
+  }
 
   const sidebar = await getSidebarPage(page, extensionId);
   await expect(
