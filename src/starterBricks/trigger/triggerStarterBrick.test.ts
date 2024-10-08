@@ -587,9 +587,12 @@ describe("triggerStarterBrick", () => {
     await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
     await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
 
-    // Does not report successful event only once
+    // Report successful event only once
     expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
+      label: modComponent.label,
       modComponentId: modComponent.id,
+      modId: modComponent.modMetadata.id,
+      modVersion: modComponent.modMetadata.version,
       trigger: Triggers.LOAD,
     });
 

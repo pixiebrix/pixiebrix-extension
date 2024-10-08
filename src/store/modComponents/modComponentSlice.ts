@@ -77,8 +77,7 @@ const modComponentSlice = createSlice({
   name: "extensions",
   initialState,
   reducers: {
-    // Helper method to directly update extensions in tests. Can't use activateStandaloneModDefinition because
-    // StandaloneModDefinition doesn't have the _recipe field
+    // Helper method to directly update mod components in tests
     UNSAFE_setModComponents(
       state,
       { payload }: PayloadAction<ActivatedModComponent[]>,
