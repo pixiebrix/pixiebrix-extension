@@ -25,25 +25,20 @@ import {
   modMetadataFactory,
   activatedModComponentFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { type RegistryId } from "@/types/registryTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 describe("deactivateMod", () => {
-  let modToDeactivate: ActivatedModComponent["_recipe"];
+  let modToDeactivate: ModInstance;
 
   beforeEach(async () => {
-    modToDeactivate = modMetadataFactory({});
-    const anotherMod = modMetadataFactory({});
+    modToDeactivate = modInstanceFactory();
+    const anotherMod = modMetadataFactory();
 
     await saveModComponentState({
       activatedModComponents: [
-        activatedModComponentFactory({
-          _recipe: modToDeactivate,
-        }),
-        activatedModComponentFactory({
-          _recipe: modToDeactivate,
-        }),
+        ...mapModInstanceToActivatedModComponents(modToDeactivate),
         activatedModComponentFactory({
           _recipe: anotherMod,
         }),
@@ -55,50 +50,17 @@ describe("deactivateMod", () => {
     const modComponentState = await getModComponentState();
     const editorState = await getEditorState();
 
-    const {
-      modComponentState: nextModComponentState,
-      deactivatedModComponents,
-    } = deactivateMod(modToDeactivate!.id, {
-      modComponentState,
-      editorState,
-    });
-
-    expect(deactivatedModComponents).toHaveLength(2);
-    expect(deactivatedModComponents[0]!._recipe!.id).toEqual(
-      modToDeactivate!.id,
-    );
-    expect(deactivatedModComponents[1]!._recipe!.id).toEqual(
-      modToDeactivate!.id,
+    const { modComponentState: nextModComponentState } = deactivateMod(
+      modToDeactivate,
+      {
+        modComponentState,
+        editorState,
+      },
     );
 
     expect(nextModComponentState.activatedModComponents).toHaveLength(1);
-  });
-
-  it("should do nothing if mod id does not have any activated mod components", async () => {
-    const starterBrick = starterBrickDefinitionFactory();
-    const modComponent = activatedModComponentFactory({
-      extensionPointId: starterBrick.metadata!.id,
-      _recipe: modMetadataFactory({}),
-    });
-
-    await saveModComponentState({
-      activatedModComponents: [modComponent],
-    });
-
-    const modComponentState = await getModComponentState();
-    const editorState = await getEditorState();
-
-    const {
-      modComponentState: nextModComponentState,
-      deactivatedModComponents,
-    } = deactivateMod("@test/id-doesnt-exist" as RegistryId, {
-      modComponentState,
-      editorState,
-    });
-
-    expect(deactivatedModComponents).toEqual([]);
-    expect(nextModComponentState.activatedModComponents).toEqual(
-      modComponentState.activatedModComponents,
-    );
+    expect(
+      nextModComponentState.activatedModComponents[0]!._recipe!.id,
+    ).not.toEqual(modToDeactivate.definition.metadata.id);
   });
 });
