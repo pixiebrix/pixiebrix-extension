@@ -163,20 +163,18 @@ const CreateModModalBody: React.FC = () => {
   );
 
   const { createModFromMod } = useCreateModFromMod();
+  const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
   const { createModFromComponent } = useCreateModFromModComponent(
     activeModComponentFormState,
   );
 
-  // `selectActiveModId` returns the mod id if a mod is selected. Assumption: if the CreateModal
-  // is open, and a mod is active, then we're performing a "Save as New" on that mod.
+  // `selectActiveModId` returns the mod id if a mod entry is selected (not a mod component within the mod)
   const directlyActiveModId = useSelector(selectActiveModId);
   const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.modMetadata?.id;
+    directlyActiveModId ?? activeModComponentFormState?.modMetadata.id;
 
-  const { data: activeModDefinition, isFetching: isModFetching } =
+  const { data: activeModDefinition, isFetching: isModDefinitionFetching } =
     useOptionalModDefinition(activeModId);
-
-  const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
 
   const formSchema = useFormSchema();
 
@@ -191,21 +189,20 @@ const CreateModModalBody: React.FC = () => {
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
-    if (isModFetching) {
+    if (isModDefinitionFetching) {
       helpers.setSubmitting(false);
       return;
     }
 
     try {
-      // If the active mod's saved definition could be loaded from the server, we need to use createModFromMod
-      if (activeModDefinition) {
-        await createModFromMod(activeModDefinition, values);
-      } else if (activeModId && isInnerDefinitionRegistryId(activeModId)) {
-        // New local mod, definition couldn't be fetched from the server, so we use createModFromUnsavedMod
-        await createModFromUnsavedMod(activeModId, values);
-      } else if (activeModComponentFormState) {
-        // Stand-alone mod component
+      if (activeModComponentFormState) {
+        // Move/Copy a mod component to create a new mod
         await createModFromComponent(activeModComponentFormState, values);
+      } else if (directlyActiveModId && activeModDefinition) {
+        await createModFromMod(activeModDefinition, values);
+      } else if (directlyActiveModId) {
+        // If the mod is unsaved or there was an error fetching the mod definition from the server
+        await createModFromUnsavedMod(directlyActiveModId, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
@@ -215,6 +212,7 @@ const CreateModModalBody: React.FC = () => {
       notify.success({
         message: "Mod created successfully",
       });
+
       hideModal();
     } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
@@ -280,7 +278,7 @@ const CreateModModalBody: React.FC = () => {
 
   return (
     <>
-      {isModFetching ? (
+      {isModDefinitionFetching ? (
         <Loader />
       ) : (
         <Form

@@ -76,7 +76,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
 
   // Set the alternate background if a mod component in this mod is active
   const hasModBackground =
-    activeModComponentFormState?.modMetadata?.id === modId;
+    activeModComponentFormState?.modMetadata.id === modId;
 
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";

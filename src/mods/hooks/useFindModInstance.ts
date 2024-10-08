@@ -16,14 +16,17 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectGetModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
-import { useMemo } from "react";
 import type { RegistryId } from "@/types/registryTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
-export default function useActivatedModComponents(modId: RegistryId) {
-  const getModComponentsForMod = useSelector(selectGetModComponentsForMod);
-  return useMemo(
-    () => getModComponentsForMod(modId),
-    [modId, getModComponentsForMod],
-  );
+/**
+ * Hook to the activated mod instance for a given mod, or undefined if the mod is not activated on the device.
+ * @param modId the mod id to find
+ */
+export default function useFindModInstance(
+  modId: RegistryId,
+): ModInstance | undefined {
+  const modInstanceMap = useSelector(selectModInstanceMap);
+  return modInstanceMap.get(modId);
 }

@@ -32,6 +32,7 @@ import {
   type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
   type DeploymentPayload,
+  type ActivatedDeployment,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -42,7 +43,6 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/data/service/baseQuery";
-import { type InstalledDeployment } from "@/utils/deploymentUtils";
 import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
@@ -398,7 +398,7 @@ export const appApi = createApi({
     getDeployments: builder.query<
       Deployment[],
       // Uid is used for the clientId property on events in Mixpanel telemetry
-      { uid: UUID; version: string; active: InstalledDeployment[] }
+      { uid: UUID; version: string; active: ActivatedDeployment[] }
     >({
       query: (data) => ({
         url: API_PATHS.DEPLOYMENTS,

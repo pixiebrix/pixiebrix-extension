@@ -247,14 +247,19 @@ describe("ModsPage", () => {
 
     const searchQuery = "query doesn't match any mods";
     const searchInput = screen.getByTestId("mod-search-input");
+
     await userEvent.type(searchInput, searchQuery);
 
-    expect(screen.getByText("No mods found")).toBeInTheDocument();
+    // Wait for the search query to take effect
+    await expect(
+      screen.findByText("No mods found"),
+    ).resolves.toBeInTheDocument();
+
     expect(screen.queryByText("Test Mod 1")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Mod 2")).not.toBeInTheDocument();
   }, 10_000);
 
-  test("renders OnboardingView when there are no mods anfd no search query", async () => {
+  test("renders OnboardingView when there are no mods and no search query", async () => {
     render(
       <DeploymentsProvider>
         <ModsPage />

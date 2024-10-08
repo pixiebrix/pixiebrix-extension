@@ -25,20 +25,21 @@ import {
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import { groupBy, isEmpty, uniq } from "lodash";
+import { isEmpty } from "lodash";
 import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
 import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import type { ActivatedModComponent } from "@/types/modComponentTypes";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { FeatureFlags } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
 import deactivateMod from "@/background/utils/deactivateMod";
+import {
+  selectModInstanceMap,
+  selectModInstances,
+} from "@/store/modComponents/modInstanceSelectors";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -62,41 +63,21 @@ type PackageVersionPair = { name: RegistryId; version: SemVerString };
 export async function getActivatedMarketplaceModVersions(): Promise<
   PackageVersionPair[]
 > {
-  const { activatedModComponents } = await getModComponentState();
+  const modInstances = selectModInstances({
+    options: await getModComponentState(),
+  });
 
   // Typically most Marketplace mods would not be a deployment. If this happens to be the case,
   // the deployment updater will handle the updates.
-  const mods: Array<ActivatedModComponent["_recipe"]> = activatedModComponents
-    .filter((mod) => mod._recipe?.sharing?.public && !mod._deployment)
-    .map((mod) => mod._recipe);
+  const marketplaceModInstances = modInstances.filter(
+    (mod) => mod.definition.sharing.public && !mod.deploymentMetadata,
+  );
 
-  const modVersions: PackageVersionPair[] = [];
-
-  for (const [name, modComponents] of Object.entries(
-    groupBy(mods, "id"),
-  ) as Array<[RegistryId, Array<ActivatedModComponent["_recipe"]>]>) {
-    const uniqueModVersions: SemVerString[] = uniq(
-      modComponents
-        .map((modComponent) => modComponent?.version)
-        .filter((x) => x != null),
-    );
-
-    if (uniqueModVersions.length > 1) {
-      reportError(
-        new Error(
-          `Found multiple mod component versions activated for the same mod: ${name} (${uniqueModVersions.join(
-            ", ",
-          )})`,
-        ),
-      );
-    }
-
-    assertNotNullish(uniqueModVersions[0], "Mod component version is required");
-
-    modVersions.push({ name, version: uniqueModVersions[0] });
-  }
-
-  return modVersions;
+  return marketplaceModInstances.map(({ definition }) => {
+    const { id, version } = definition.metadata;
+    assertNotNullish(version, "Mod component version is required");
+    return { name: id, version };
+  });
 }
 
 /**
@@ -146,14 +127,23 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
  *
  * The ModComponents will have new UUIDs.
  *
- * @param modDefinition the mod to update
+ * @param newModDefinition the mod to update
  * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod updated
  */
 export function updateMod(
-  modDefinition: ModDefinition,
+  newModDefinition: ModDefinition,
   { options: modComponentState, editor: editorState }: ActivatedModState,
 ): ActivatedModState {
+  const modInstanceMap = selectModInstanceMap({
+    options: modComponentState,
+  });
+
+  const modInstance = modInstanceMap.get(newModDefinition.metadata.id);
+
+  // Must be present because updateMod is only called when there is an update available for an existing mod
+  assertNotNullish(modInstance, "Mod instance not found");
+
   console.log({
     modComponentState: JSON.stringify(modComponentState, null, 2),
   });
@@ -161,40 +151,26 @@ export function updateMod(
   const {
     modComponentState: nextModComponentState,
     editorState: nextEditorState,
-    // This type is weird, please ignore it for now, we need to clean up a lot of stuff with these
-    // mod component types. These "deactivated" components are not passed anywhere else, or put into
-    // redux, or anything like that. They are only used to collect the configured dependencies and the
-    // mod options in order to re-install the mod (see the calls to collectExistingConfiguredDependenciesForMod
-    // and collectRecipeOptions immediately following this code).
-    deactivatedModComponents,
-  } = deactivateMod(modDefinition.metadata.id, {
+  } = deactivateMod(modInstance, {
     modComponentState,
     editorState,
   });
 
-  for (const deactivatedModComponent of deactivatedModComponents) {
+  for (const modComponentId of modInstance.modComponentIds) {
     // Remove the menu item UI from all mods. We must explicitly remove context menu items because otherwise the user
     // will see duplicate menu items because the old/new mod components have different UUIDs.
     // `updateMods` calls `queueReloadModEveryTab`. Therefore, if the user clicks on a tab where the new version of the
     // mod component is not loaded yet, they'll get a notification to reload the page.
-    void uninstallContextMenu({ modComponentId: deactivatedModComponent.id });
+    void uninstallContextMenu({ modComponentId });
   }
-
-  const configuredDependencies = collectExistingConfiguredDependenciesForMod(
-    modDefinition,
-    deactivatedModComponents,
-  );
-
-  const optionsArgs = collectModOptions(
-    deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
-  );
 
   const finalModComponentState = modComponentSlice.reducer(
     nextModComponentState,
     modComponentSlice.actions.activateMod({
-      modDefinition,
-      configuredDependencies,
-      optionsArgs,
+      modDefinition: newModDefinition,
+      // Activate using the same options/configuration
+      configuredDependencies: modInstance.integrationsArgs,
+      optionsArgs: modInstance.optionsArgs,
       screen: "background",
       isReactivate: true,
     }),
@@ -210,8 +186,8 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
   let newOptionsState = await getModComponentState();
   let newEditorState = await getEditorState();
 
-  for (const { backwards_compatible: update } of modUpdates) {
-    const { options, editor } = updateMod(update, {
+  for (const { backwards_compatible: updatedDefinition } of modUpdates) {
+    const { options, editor } = updateMod(updatedDefinition, {
       options: newOptionsState,
       editor: newEditorState,
     });

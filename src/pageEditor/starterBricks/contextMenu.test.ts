@@ -17,14 +17,16 @@
 
 import config from "@/pageEditor/starterBricks/contextMenu";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 describe("contextMenu", () => {
   it("smoke test", () => {
-    const formState = config.fromNativeElement(
-      "https://example.com",
-      internalStarterBrickMetaFactory(),
-      null,
-    );
+    const formState = config.fromNativeElement({
+      url: "https://example.com",
+      starterBrickMetadata: internalStarterBrickMetaFactory(),
+      modMetadata: createNewUnsavedModMetadata({ modName: "Smoke Test" }),
+      element: null,
+    });
 
     expect(config.selectModComponent(formState)).toEqual(
       expect.objectContaining({
@@ -38,11 +40,12 @@ describe("contextMenu", () => {
   });
 
   it("defaults to all sites", () => {
-    const formState = config.fromNativeElement(
-      "https://example.com",
-      internalStarterBrickMetaFactory(),
-      null,
-    );
+    const formState = config.fromNativeElement({
+      url: "https://example.com",
+      starterBrickMetadata: internalStarterBrickMetaFactory(),
+      modMetadata: createNewUnsavedModMetadata({ modName: "Smoke Test" }),
+      element: null,
+    });
 
     expect(
       config.selectStarterBrickDefinition(formState).definition.isAvailable,

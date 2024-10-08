@@ -47,7 +47,7 @@ function useClearModChanges(): (modId: RegistryId) => Promise<void> {
 
       await Promise.all(
         modComponentFormStates
-          .filter((x) => x.modMetadata?.id === modId)
+          .filter((x) => x.modMetadata.id === modId)
           .map(async (modComponentFormState) =>
             clearModComponentChanges({
               modComponentId: modComponentFormState.uuid,

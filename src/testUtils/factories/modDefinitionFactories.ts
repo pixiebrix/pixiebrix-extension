@@ -30,7 +30,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type BrickPipeline } from "@/bricks/types";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type StarterBrickDefinitionLike,
@@ -67,7 +67,7 @@ export const modDefinitionFactory = define<ModDefinition>({
   kind: DefinitionKinds.MOD,
   apiVersion: "v3",
   metadata: metadataFactory,
-  sharing: sharingDefinitionFactory,
+  sharing: personalSharingDefinitionFactory,
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   extensionPoints: array(modComponentDefinitionFactory, 1),
 });

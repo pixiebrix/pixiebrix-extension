@@ -23,7 +23,6 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { wizardStateFactory } from "@/activation/useActivateModWizard";
@@ -34,6 +33,7 @@ import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import type { ModActivationConfig } from "@/types/modTypes";
 import useFlags from "@/hooks/useFlags";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 
 type ModResultPair = {
   mod: RequiredModDefinition;
@@ -76,7 +76,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   // Only activate new mods that the user does not already have activated. If there are updates available, the
   // user will be prompted to update according to marketplace mod updater rules.
   const newMods = useMemo(() => mods.filter((x) => !x.isActive), [mods]);
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstances = useSelector(selectModInstances);
   const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
   const { flagOn } = useFlags();
 
@@ -103,7 +103,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
             databaseOptions,
             optionsValidationSchema,
             initialModOptions: mod.initialOptions,
-            activatedModComponents,
+            modInstance: modInstances.find((x) => x.definition.metadata.id),
           });
 
           const result = await activate(

@@ -40,7 +40,7 @@ import {
   minimalUiSchemaFactory,
   propertiesToSchema,
 } from "@/utils/schemaUtils";
-import { cloneDeep, mapValues, sortBy } from "lodash";
+import { cloneDeep, isEmpty, mapValues, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
@@ -58,6 +58,8 @@ import {
   validateRegistryId,
 } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 /**
  * Returns a synthetic mod id for a standalone mod component for use in the runtime
@@ -202,7 +204,7 @@ export function emptyModVariablesDefinitionFactory(): Required<ModVariablesDefin
  */
 export function normalizeModOptionsDefinition(
   optionsDefinition: ModDefinition["options"] | null,
-): Required<ModDefinition["options"]> {
+): NonNullable<Required<ModDefinition["options"]>> {
   if (!optionsDefinition) {
     return emptyModOptionsDefinitionFactory();
   }
@@ -231,6 +233,15 @@ export function normalizeModOptionsDefinition(
     schema,
     uiSchema,
   };
+}
+
+/**
+ * Returns true if the mod definition any defined options.
+ */
+export function hasDefinedModOptions(modDefinition: ModDefinition): boolean {
+  return !isEmpty(
+    normalizeModOptionsDefinition(modDefinition.options).schema.properties,
+  );
 }
 
 /**
@@ -278,22 +289,15 @@ export function normalizeModDefinition<
   });
 }
 
-export function mapModComponentToUnavailableMod(
-  modComponent: ModComponentBase,
+export function mapModInstanceToUnavailableMod(
+  modInstance: ModInstance,
 ): UnavailableMod {
-  assertNotNullish(
-    modComponent._recipe,
-    "modComponent._recipe is nullish, can't map to unavailable mod, something went wrong, this shouldn't happen",
-  );
   return {
-    metadata: modComponent._recipe,
+    metadata: modInstance.definition.metadata,
     kind: DefinitionKinds.MOD,
     isStub: true,
-    updated_at: modComponent._recipe.updated_at ?? nowTimestamp(),
-    sharing: modComponent._recipe.sharing ?? {
-      public: false,
-      organizations: [],
-    },
+    updated_at: modInstance.definition.updated_at,
+    sharing: modInstance.definition.sharing,
   };
 }
 
@@ -312,10 +316,7 @@ export function createNewUnsavedModMetadata({
     name: modName,
     description: "Created with the PixieBrix Page Editor",
     version: normalizeSemVerString("1.0.0"),
-    sharing: {
-      public: false,
-      organizations: [] as UUID[],
-    },
+    sharing: createPrivateSharing(),
     updated_at: nowTimestamp(),
   };
 }

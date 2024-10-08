@@ -16,6 +16,7 @@
  */
 
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
+import { createSelector } from "@reduxjs/toolkit";
 
 export function selectModDefinitionsAsyncState({
   modDefinitions,
@@ -23,8 +24,8 @@ export function selectModDefinitionsAsyncState({
   return modDefinitions;
 }
 
-export function selectAllModDefinitions({
-  modDefinitions,
-}: ModDefinitionsRootState): ModDefinitionsRootState["modDefinitions"]["data"] {
-  return modDefinitions.data ?? [];
-}
+// Memoize via createSelector because it produces a new object if data is undefined
+export const selectAllModDefinitions = createSelector(
+  (state: ModDefinitionsRootState) => state.modDefinitions.data,
+  (modDefinitions) => modDefinitions ?? [],
+);

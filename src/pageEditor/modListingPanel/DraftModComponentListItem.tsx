@@ -16,7 +16,7 @@
  */
 
 import styles from "./Entry.module.scss";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
@@ -47,11 +47,8 @@ import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentAct
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import {
   useRemoveModComponentFromStorage,
-  DEACTIVATE_MOD_MODAL_PROPS,
-  DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
   DELETE_STARTER_BRICK_MODAL_PROPS,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
-import { selectIsModComponentSavedOnCloud } from "@/store/modComponents/modComponentSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
@@ -78,18 +75,15 @@ const DraftModComponentListItem: React.FunctionComponent<
 
   const isActive =
     activeModComponentFormState?.uuid === modComponentFormState.uuid;
-  const modId = modComponentFormState.modMetadata?.id;
-  const isSiblingOfActiveListItem = activeModComponentFormState?.modMetadata?.id
-    ? modId === activeModComponentFormState?.modMetadata?.id
+  const modId = modComponentFormState.modMetadata.id;
+  const isSiblingOfActiveListItem = activeModComponentFormState?.modMetadata.id
+    ? modId === activeModComponentFormState?.modMetadata.id
     : false;
   const isChildOfActiveListItem = modId === activeModId;
   const isRelativeOfActiveListItem =
     !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
   const isDirty = useSelector(
     selectModComponentIsDirty(modComponentFormState.uuid),
-  );
-  const isSavedOnCloud = useSelector(
-    selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const isButton =
@@ -109,35 +103,11 @@ const DraftModComponentListItem: React.FunctionComponent<
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
       modComponentId: modComponentFormState.uuid,
-      showConfirmationModal: modId
-        ? DELETE_STARTER_BRICK_MODAL_PROPS
-        : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+      showConfirmationModal: DELETE_STARTER_BRICK_MODAL_PROPS,
     });
-
-  const deactivateModComponent = async () =>
-    removeModComponentFromStorage({
-      modComponentId: modComponentFormState.uuid,
-      showConfirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
-    });
-
-  const onSave = useMemo(() => {
-    if (modComponentFormState.modMetadata == null) {
-      return async () => {
-        dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));
-        dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
-      };
-    }
-
-    // eslint-disable-next-line unicorn/no-useless-undefined -- Code clarity, implicit returns are bad
-    return undefined;
-  }, [dispatch, modComponentFormState.modMetadata, modComponentFormState.uuid]);
 
   const onClearChanges = async () =>
     clearModComponentChanges({ modComponentId: modComponentFormState.uuid });
-
-  const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
-
-  const onDeactivate = onDelete ? undefined : deactivateModComponent;
 
   return (
     <ListGroup.Item
@@ -191,40 +161,31 @@ const DraftModComponentListItem: React.FunctionComponent<
           <NotAvailableIcon />
         </span>
       )}
-      {isDirty &&
-        // Don't show the dirty icon and save button at the same time
-        !onSave && (
-          <span className={cx(styles.icon, styles.unsaved, "text-danger")}>
-            <UnsavedChangesIcon />
-          </span>
-        )}
+      {isDirty && (
+        <span className={cx(styles.icon, styles.unsaved, "text-danger")}>
+          <UnsavedChangesIcon />
+        </span>
+      )}
       <ModComponentActionMenu
         isActive={isActive}
         isDirty={isDirty}
-        labelRoot={`${getLabel(modComponentFormState)}`}
-        onSave={onSave}
-        onDelete={onDelete}
-        onDeactivate={onDeactivate}
+        labelRoot={getLabel(modComponentFormState)}
+        onDelete={deleteModComponent}
         onDuplicate={async () => {
-          dispatch(actions.duplicateActiveModComponent());
+          dispatch(
+            // Duplicate the mod component in the same mod
+            actions.duplicateActiveModComponent(),
+          );
         }}
         onClearChanges={
           modComponentFormState.installed ? onClearChanges : undefined
         }
-        onAddToMod={
-          modComponentFormState.modMetadata
-            ? undefined
-            : async () => {
-                dispatch(actions.showAddToModModal());
-              }
-        }
-        onRemoveFromMod={
-          modComponentFormState.modMetadata
-            ? async () => {
-                dispatch(actions.showRemoveFromModModal());
-              }
-            : undefined
-        }
+        onMoveToMod={async () => {
+          dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
+        }}
+        onCopyToMod={async () => {
+          dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
+        }}
       />
     </ListGroup.Item>
   );

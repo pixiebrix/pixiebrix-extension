@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Primitive } from "type-fest";
 import type React from "react";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
+import type { OptionsArgs } from "@/types/runtimeTypes";
 
 export type WizardStep = {
   key: string;
@@ -30,20 +30,16 @@ export type WizardStep = {
 
 export type WizardValues = {
   /**
-   * Mapping from mod component index to whether or not it's toggled.
-   */
-  modComponents: Record<string, boolean>;
-
-  /**
    * Integration dependencies for the mod
    */
   integrationDependencies: IntegrationDependency[];
 
-  // XXX: optionsArgs can contain periods, which will throw off formik
-  optionsArgs: Record<string, Primitive>;
+  // XXX: optionsArgs keys (options names) can contain periods, which will throw off formik
+  optionsArgs: OptionsArgs;
 
   /**
    * Whether to set up a personal deployment with the mod
+   * @since 2.1.2
    */
   personalDeployment?: boolean;
 };

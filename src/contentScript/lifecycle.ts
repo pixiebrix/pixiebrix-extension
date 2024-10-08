@@ -438,7 +438,7 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
 
   // Exclude the following:
   // - disabled deployments: the organization admin might have disabled the deployment because via Admin Console
-  // - draft mod components: these are already installed on the page via the Page Editor
+  // - draft mod components: these are already registered on the page via the Page Editor
   const modComponentsToActivate = options.activatedModComponents.filter(
     (modComponent) => {
       if (_draftModComponentStarterBrickMap.has(modComponent.id)) {

@@ -51,7 +51,7 @@ export async function autoCreateDatabaseOptionsArgsInPlace(
   databaseFactory: (args: { name: string }) => Promise<UUID | undefined>,
 ): Promise<OptionsArgs> {
   const optionsProperties = Object.entries(
-    modDefinition.options?.schema?.properties ?? {},
+    modDefinition.options?.schema.properties ?? {},
   )
     .filter(
       ([name, fieldSchema]) =>

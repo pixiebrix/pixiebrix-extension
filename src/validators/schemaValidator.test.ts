@@ -30,7 +30,7 @@ import reactReader from "@contrib/readers/redfin-reader.yaml";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integrationFactories";
 import integrationRegistry from "@/integrations/registry";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
@@ -64,7 +64,7 @@ describe("validateKind", () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
 
     json.updated_at = timestampFactory();
-    json.sharing = sharingDefinitionFactory();
+    json.sharing = personalSharingDefinitionFactory();
 
     const result = validatePackageDefinition("service", json);
 

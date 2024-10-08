@@ -16,13 +16,12 @@
  */
 
 import { type Deployment } from "@/types/contract";
-import { isEmpty } from "lodash";
+import { uniq } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
 import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
@@ -40,7 +39,7 @@ import {
   findLocalDeploymentConfiguredIntegrationDependencies,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
-  selectInstalledDeployments,
+  selectActivatedDeployments,
 } from "@/utils/deploymentUtils";
 import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
@@ -66,10 +65,14 @@ import { SessionValue } from "@/mv3/SessionStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
 import deactivateMod from "@/background/utils/deactivateMod";
-import deactivateModComponentsAndSaveState from "@/background/utils/deactivateModComponentsAndSaveState";
+import deactivateModInstancesAndSaveState from "@/background/utils/deactivateModInstancesAndSaveState";
 import saveModComponentStateAndReloadTabs, {
   type ReloadOptions,
 } from "@/background/utils/saveModComponentStateAndReloadTabs";
+import {
+  selectModInstanceMap,
+  selectModInstances,
+} from "@/store/modComponents/modInstanceSelectors";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -107,29 +110,31 @@ export async function deactivateAllDeployedMods(): Promise<void> {
     getModComponentState(),
     getEditorState(),
   ]);
-  const activatedModComponents = selectActivatedModComponents({
+  const modInstances = selectModInstances({
     options: modComponentState,
   });
 
-  const modComponentsToDeactivate = activatedModComponents.filter(
-    (activatedModComponent) => !isEmpty(activatedModComponent._deployment),
+  const modsToDeactivate = modInstances.filter(
+    (x) => x.deploymentMetadata != null,
   );
 
-  if (modComponentsToDeactivate.length === 0) {
+  if (modsToDeactivate.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await deactivateModComponentsAndSaveState(modComponentsToDeactivate, {
+  await deactivateModInstancesAndSaveState(modsToDeactivate, {
     editorState,
     modComponentState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_ALL, {
     auto: true,
-    deployments: modComponentsToDeactivate
-      .map((x) => x._deployment?.id)
-      .filter((x) => x != null),
+    deployments: uniq(
+      modsToDeactivate
+        .map((x) => x.deploymentMetadata?.id)
+        .filter((x) => x != null),
+    ),
   });
 }
 
@@ -140,7 +145,7 @@ async function deactivateUnassignedDeployments(
     getModComponentState(),
     getEditorState(),
   ]);
-  const activatedModComponents = selectActivatedModComponents({
+  const allModInstances = selectModInstances({
     options: modComponentState,
   });
 
@@ -148,28 +153,29 @@ async function deactivateUnassignedDeployments(
     assignedDeployments.map((deployment) => deployment.package.package_id),
   );
 
-  const unassignedModComponents = activatedModComponents.filter(
-    (activatedModComponent) =>
-      !isEmpty(activatedModComponent._deployment) &&
-      activatedModComponent._recipe?.id &&
-      !deployedModIds.has(activatedModComponent._recipe.id),
+  const unassignedModInstances = allModInstances.filter(
+    (modInstance) =>
+      modInstance.deploymentMetadata != null &&
+      !deployedModIds.has(modInstance.definition.metadata.id),
   );
 
-  if (unassignedModComponents.length === 0) {
+  if (unassignedModInstances.length === 0) {
     // Short-circuit to skip reporting telemetry
     return;
   }
 
-  await deactivateModComponentsAndSaveState(unassignedModComponents, {
+  await deactivateModInstancesAndSaveState(unassignedModInstances, {
     editorState,
     modComponentState,
   });
 
   reportEvent(Events.DEPLOYMENT_DEACTIVATE_UNASSIGNED, {
     auto: true,
-    deployments: unassignedModComponents
-      .map((x) => x._deployment?.id)
-      .filter((x) => x != null),
+    deployments: uniq(
+      unassignedModInstances
+        .map((x) => x.deploymentMetadata?.id)
+        .filter((x) => x != null),
+    ),
   });
 }
 
@@ -189,19 +195,26 @@ async function activateDeployment({
   let _editorState = editorState;
   const { deployment, modDefinition } = activatableDeployment;
 
-  const isAlreadyActivated = optionsState.activatedModComponents.some(
-    (activatedModComponent) =>
-      activatedModComponent._deployment?.id === deployment.id,
-  );
-
-  // Deactivate existing mod component versions
-  const result = deactivateMod(deployment.package.package_id, {
-    modComponentState: _optionsState,
-    editorState: _editorState,
+  const modInstanceMap = selectModInstanceMap({
+    options: _optionsState,
   });
 
-  _optionsState = result.modComponentState;
-  _editorState = result.editorState;
+  // Check if the deployment is already activated, regardless of the package id
+  const isAlreadyActivated = [...modInstanceMap.values()].some(
+    (modInstance) => modInstance.deploymentMetadata?.id === deployment.id,
+  );
+
+  // Deactivate any existing mod instance corresponding to the deployed package, regardless of deployment
+  const packageModInstance = modInstanceMap.get(deployment.package.package_id);
+  if (packageModInstance) {
+    const result = deactivateMod(packageModInstance, {
+      modComponentState: _optionsState,
+      editorState: _editorState,
+    });
+
+    _optionsState = result.modComponentState;
+    _editorState = result.editorState;
+  }
 
   // Activate the deployed mod with the service definition
   _optionsState = modComponentReducer(
@@ -303,9 +316,11 @@ async function selectUpdatedDeployments(
   deployments: Deployment[],
   { restricted }: { restricted: boolean },
 ): Promise<Deployment[]> {
-  // Always get the freshest options slice from the local storage
-  const { activatedModComponents } = await getModComponentState();
-  const updatePredicate = makeUpdatedFilter(activatedModComponents, {
+  // Always get the freshest data from the local storage
+  const modInstances = selectModInstances({
+    options: await getModComponentState(),
+  });
+  const updatePredicate = makeUpdatedFilter(modInstances, {
     restricted,
   });
   return deployments.filter((deployment) => updatePredicate(deployment));
@@ -405,8 +420,10 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  // Always get the freshest options slice from the local storage
-  const { activatedModComponents } = await getModComponentState();
+  // Always get the freshest data from the local storage
+  const modInstances = selectModInstances({
+    options: await getModComponentState(),
+  });
 
   // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment activated.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
@@ -449,7 +466,7 @@ export async function syncDeployments(): Promise<void> {
     {
       uid: await getUUID(),
       version: getExtensionVersion(),
-      active: selectInstalledDeployments(activatedModComponents),
+      active: selectActivatedDeployments(modInstances),
       campaignIds,
     },
   );

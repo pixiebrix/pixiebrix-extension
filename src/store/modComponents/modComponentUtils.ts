@@ -15,14 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uniqBy } from "lodash";
+import { compact, uniqBy } from "lodash";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import {
+  type IntegrationDependency,
+  type ModDependencyAPIVersion,
+} from "@/integrations/integrationTypes";
+import {
+  INTEGRATIONS_BASE_SCHEMA_URL,
+  PIXIEBRIX_INTEGRATION_ID,
+} from "@/integrations/constants";
+import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
+import type { Schema } from "@/types/schemaTypes";
 
 /**
- * Infer options args from existing mod-component-like instances for reinstalling a mod
+ * Infer options from existing mod-component-like instances for reactivating a mod
+ * @see activateMod
  */
 export function collectModOptions(
   modComponents: Array<Pick<ModComponentBase, "optionsArgs">>,
@@ -34,11 +43,30 @@ export function collectModOptions(
 }
 
 /**
+ * Collect integration dependencies from existing mod-component-like instances.
+ *
+ * Includes unconfigured integrations and the PixieBrix integration.
+ *
+ * @see collectConfiguredIntegrationDependencies
+ */
+export function collectIntegrationDependencies(
+  modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
+): IntegrationDependency[] {
+  return uniqBy(
+    modComponents.flatMap(
+      ({ integrationDependencies }) => integrationDependencies ?? [],
+    ),
+    ({ integrationId }) => integrationId,
+  );
+}
+
+/**
  * Collect configured integration dependencies from existing mod-component-like
- * instances for reinstalling a mod. Filters out any optional integrations that
+ * instances for re-activating a mod. Filters out any optional integrations that
  * don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies
  * @returns IntegrationDependency[] the configured integration dependencies for the mod components
+ * @see activateMod
  */
 export function collectConfiguredIntegrationDependencies(
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
@@ -52,4 +80,66 @@ export function collectConfiguredIntegrationDependencies(
       ),
     ({ integrationId }) => integrationId,
   );
+}
+
+/**
+ * Return the highest API Version used by any of the integrations in the mod. Only exported for testing.
+ * @param integrationDependencies mod integration dependencies
+ * @since 1.7.37
+ * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
+ */
+export function findMaxIntegrationDependencyApiVersion(
+  integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>,
+): ModDependencyAPIVersion {
+  let maxApiVersion: ModDependencyAPIVersion = "v1";
+  for (const integrationDependency of integrationDependencies) {
+    const { apiVersion } = integrationDependency;
+    if (apiVersion && apiVersion > maxApiVersion) {
+      maxApiVersion = apiVersion;
+    }
+  }
+
+  return maxApiVersion;
+}
+
+export function selectModComponentIntegrations({
+  integrationDependencies,
+}: Pick<
+  ModComponentBase,
+  "integrationDependencies"
+>): ModComponentDefinition["services"] {
+  const _integrationDependencies = compact(integrationDependencies);
+  const apiVersion = findMaxIntegrationDependencyApiVersion(
+    _integrationDependencies,
+  );
+  if (apiVersion === "v1") {
+    return Object.fromEntries(
+      _integrationDependencies.map((x) => [x.outputKey, x.integrationId]),
+    );
+  }
+
+  if (apiVersion === "v2") {
+    const properties: Record<string, Schema> = {};
+    const required: string[] = [];
+    for (const {
+      outputKey,
+      integrationId,
+      isOptional,
+    } of _integrationDependencies) {
+      properties[outputKey] = {
+        $ref: `${INTEGRATIONS_BASE_SCHEMA_URL}${integrationId}`,
+      };
+      if (!isOptional) {
+        required.push(outputKey);
+      }
+    }
+
+    return {
+      properties,
+      required,
+    } as Schema;
+  }
+
+  const exhaustiveCheck: never = apiVersion;
+  throw new Error(`Unknown ModDependencyApiVersion: ${exhaustiveCheck}`);
 }

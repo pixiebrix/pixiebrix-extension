@@ -16,7 +16,10 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -47,11 +50,14 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { FeatureFlags } from "@/auth/featureFlags";
 
-function fromNativeElement(
-  _url: string,
-  metadata: Metadata,
-): DynamicQuickBarFormState {
-  const base = makeInitialBaseState();
+function fromNativeElement({
+  modMetadata,
+  starterBrickMetadata,
+}: {
+  modMetadata: ModMetadata;
+  starterBrickMetadata: Metadata;
+}): DynamicQuickBarFormState {
+  const base = makeInitialBaseState({ modMetadata });
 
   const isAvailable = ALL_SITES_AVAILABILITY;
 
@@ -62,7 +68,7 @@ function fromNativeElement(
     label: title,
     ...base,
     starterBrick: {
-      metadata,
+      metadata: starterBrickMetadata,
       definition: {
         type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
         reader: getImplicitReader(StarterBrickTypes.DYNAMIC_QUICK_BAR),

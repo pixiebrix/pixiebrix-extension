@@ -226,6 +226,7 @@ describe("Add/Remove Bricks", () => {
     const dispatch = jest.fn();
     const getState: () => EditorRootState = () => ({ editor });
 
+    // Duplicate the mod component in the same mod
     await actions.duplicateActiveModComponent()(dispatch, getState, undefined);
 
     // Dispatch call args (actions) should be:

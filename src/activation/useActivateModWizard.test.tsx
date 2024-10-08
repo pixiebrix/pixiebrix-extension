@@ -34,7 +34,7 @@ import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { publicSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -195,9 +195,7 @@ describe("useActivateModWizard", () => {
 
   test("reject public marketplace activations", async () => {
     const modDefinition = defaultModDefinitionFactory({
-      sharing: sharingDefinitionFactory({
-        public: true,
-      }),
+      sharing: publicSharingDefinitionFactory(),
     });
 
     appApiMock.onGet(API_PATHS.FEATURE_FLAGS).reply(200, {
@@ -235,7 +233,7 @@ describe("useActivateModWizard", () => {
       ],
       defaultAuthOptions: {},
       databaseOptions: [],
-      activatedModComponents: [],
+      modInstance: undefined,
       optionsValidationSchema: Yup.object(),
       initialModOptions: {},
     });

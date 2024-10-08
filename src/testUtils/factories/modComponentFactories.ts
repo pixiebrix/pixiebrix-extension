@@ -31,7 +31,7 @@ import {
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import {
   DefinitionKinds,
@@ -52,7 +52,7 @@ export const modComponentRefFactory = define<ModComponentRef>({
 /**
  * Factory for a mod component ref from a standalone mod component.
  * @deprecated standalone mod components are deprecated
- * @since 2.0.6 provides a internal mod id instead of `undefined`
+ * @since 2.0.6 provides an internal mod id instead of `undefined`
  */
 export const standaloneModComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts
@@ -71,7 +71,7 @@ export const modMetadataFactory = extend<Metadata, ModMetadata>(
   metadataFactory,
   {
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-    sharing: sharingDefinitionFactory,
+    sharing: personalSharingDefinitionFactory,
   },
 );
 
@@ -113,7 +113,8 @@ export const modComponentFactory = define<ModComponentBase>({
   apiVersion: "v3" as ApiVersion,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  // @since 2.1.4 includes mod metadata
+  _recipe: modMetadataFactory,
   _deployment: undefined,
   label: "Test label",
   integrationDependencies(): IntegrationDependency[] {

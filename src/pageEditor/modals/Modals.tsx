@@ -17,16 +17,14 @@
 
 import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import React from "react";
-import AddToModModal from "@/pageEditor/modListingPanel/modals/AddToModModal";
 import CreateModModal from "@/pageEditor/modListingPanel/modals/CreateModModal";
-import MoveFromModModal from "@/pageEditor/modListingPanel/modals/MoveFromModModal";
+import MoveOrCopyToModModal from "@/pageEditor/modListingPanel/modals/MoveOrCopyToModModal";
 import SaveAsNewModModal from "@/pageEditor/modListingPanel/modals/SaveAsNewModModal";
 import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
-    <AddToModModal />
-    <MoveFromModModal />
+    <MoveOrCopyToModModal />
     <SaveAsNewModModal />
     <CreateModModal />
     <AddBrickModal />
