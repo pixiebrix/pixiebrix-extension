@@ -121,7 +121,6 @@ test("can activate a mod with built-in integration", async ({
 test("validates activating a mod with required integrations", async ({
   page,
   extensionId,
-  context,
 }) => {
   const modId = "@e2e-testing/summarize-text-open-ai";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -160,13 +159,16 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
 
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeVisible();
 
-  // Get the correct container element, as the note text and delete button are wrapped in a div
-  await sideBarPage
-    .getByText(`${note} Delete Note`)
-    .getByRole("button", { name: "Delete Note" })
-    .click();
+  // Wrapped in a toPass block in case the delete button isn't clicked successfully due to page shifting
+  await expect(async () => {
+    // Get the correct container element, as the note text and delete button are wrapped in a div
+    await sideBarPage
+      .getByText(`${note} Delete Note`)
+      .getByRole("button", { name: "Delete Note" })
+      .click();
 
-  await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+    await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+  }).toPass({ timeout: 20_000 });
 });
 
 test("activating a mod when the quickbar shortcut is not configured", async ({

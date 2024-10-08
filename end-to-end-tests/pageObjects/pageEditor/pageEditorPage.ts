@@ -160,14 +160,14 @@ export class PageEditorPage extends BasePageObject {
         "Save the mod to assign a Mod ID",
       ),
     ).toBeVisible();
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-mounts several times so we need a slight delay here before playwright clicks
-    await this.page.waitForTimeout(2000);
-    await modListItem.saveButton.click();
 
-    // Handle the "Save new mod" modal
     const saveNewModModal = this.page.locator(".modal-content");
-    await expect(saveNewModModal).toBeVisible();
-    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+    // The save button re-mounts several times so we need to retry clicking the saveButton until the modal is visible
+    await expect(async () => {
+      await modListItem.saveButton.click();
+      await expect(saveNewModModal).toBeVisible();
+      await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+    }).toPass({ timeout: 20_000 });
 
     // // Can't use getByLabel to target because the field is composed of multiple widgets
     const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");

@@ -28,19 +28,22 @@ then
 fi
 
 # Check if a named argument was provided
-while getopts ":p:" opt; do
+while getopts ":p:r:" opt; do
   case $opt in
     p) PR_ID="$OPTARG"
     ;;
+    r) RUN_ID="$OPTARG"
+    ;;
     \?) echo "Invalid option -$OPTARG" >&2
+       exit 1
     ;;
   esac
 done
 
-# Check if PR_ID is set
-if [ -z "$PR_ID" ]
+# Check if either PR_ID or RUN_ID is set
+if [ -z "$PR_ID" ] && [ -z "$RUN_ID" ]
 then
-  echo "Pull request ID is required. Use -p to provide it."
+  echo "Either pull request ID (-p) or run ID (-r) is required."
   exit 1
 fi
 
@@ -48,8 +51,13 @@ fi
 rm -rf .playwright-report/*
 mkdir .playwright-report
 
+# Get the RUN_ID if PR_ID was provided
+if [ -n "$PR_ID" ]
+then
+  RUN_ID=$(gh pr checks "$PR_ID" --repo pixiebrix/pixiebrix-extension --json 'name,link' --jq ".[] | select(.name == \"Create report\") | .link" | cut -d'/' -f8)
+fi
+
 # Get the URL of the playwright-report artifact from the GitHub API
-RUN_ID=$(gh pr checks "$PR_ID" --repo pixiebrix/pixiebrix-extension --json 'name,link' --jq ".[] | select(.name == \"Create report\") | .link" | cut -d'/' -f8)
 ARTIFACT_URL=$(gh api "repos/pixiebrix/pixiebrix-extension/actions/runs/$RUN_ID" --jq ".artifacts_url" | xargs gh api --jq ".artifacts[] | select(.name == \"end-to-end-tests-report\") | .archive_download_url")
 
 echo "Artifact URL: $ARTIFACT_URL"
