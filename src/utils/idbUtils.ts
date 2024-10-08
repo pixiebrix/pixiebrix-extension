@@ -169,7 +169,7 @@ export function isMaybeTemporaryIDBError(error: unknown): boolean {
   return isIDBConnectionError(error) || isIDBLargeValueError(error);
 }
 
-export function isPermanentIDBError(error: unknown): boolean {
+function isPermanentIDBError(error: unknown): boolean {
   return isIDBLargeValueError(error) || isIDBErrorOpeningBackingStore(error);
 }
 
