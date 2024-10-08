@@ -85,7 +85,7 @@ export const persistModComponentOptionsConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 5,
+  version: 6,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate,
 };
