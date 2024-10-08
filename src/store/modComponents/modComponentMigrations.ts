@@ -235,31 +235,6 @@ function migrateModComponentStateV5toV6(
   };
 }
 
-export function TEST_unmigrateActivatedModComponentV4toV2(
-  modComponent: ActivatedModComponentV4,
-): ActivatedModComponentV2 {
-  return {
-    ...omit(modComponent, ["modMetadata", "deploymentMetadata"]),
-    _recipe: modComponent.modMetadata,
-    _deployment: modComponent.deploymentMetadata,
-  };
-}
-
-export function TEST_unmigrateModComponentStateV6toV5(
-  state: ModComponentStateV6 & PersistedState,
-): ModComponentStateV5 & PersistedState {
-  return {
-    ...state,
-    activatedModComponents: state.activatedModComponents.map(
-      (modComponent) => ({
-        ...omit(modComponent, ["modMetadata", "deploymentMetadata"]),
-        _recipe: modComponent.modMetadata,
-        _deployment: modComponent.deploymentMetadata,
-      }),
-    ),
-  };
-}
-
 export function inferModComponentStateVersion(
   state: ModComponentStateVersions,
 ): number {

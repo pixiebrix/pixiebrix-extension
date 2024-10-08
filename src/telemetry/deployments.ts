@@ -24,8 +24,8 @@ export function selectEventData(
       starterBrickId: isRegistryId(modComponent.extensionPointId)
         ? modComponent.extensionPointId
         : undefined,
-      modId: modComponent.modMetadata?.id,
-      modVersion: modComponent.modMetadata?.version,
+      modId: modComponent.modMetadata.id,
+      modVersion: modComponent.modMetadata.version,
     };
   }
 

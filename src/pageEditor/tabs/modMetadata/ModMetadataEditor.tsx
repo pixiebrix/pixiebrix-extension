@@ -69,7 +69,7 @@ const selectFirstModComponent = createSelector(
   selectActivatedModComponents,
   selectActiveModId,
   (modComponents, activeModId) =>
-    modComponents.find((x) => x.modMetadata?.id === activeModId),
+    modComponents.find((x) => x.modMetadata.id === activeModId),
 );
 
 const OldModVersionAlert: React.FunctionComponent<{

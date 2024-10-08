@@ -112,7 +112,7 @@ export class PageEditorPage extends BasePageObject {
   }
 
   /**
-   * Save the current active mod. Prefer saveStandaloneMod for standalone mods.
+   * Save the current active mod
    */
   async saveActiveMod() {
     // TODO: this method is currently meant for mods that aren't meant to be
