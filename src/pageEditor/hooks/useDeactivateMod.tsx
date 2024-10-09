@@ -38,7 +38,8 @@ type Config = {
 };
 
 /**
- * This hook provides a callback function to deactivate a mod and remove it from the Page Editor
+ * This hook provides a callback function to deactivate a mod and remove it from the Page Editor. Note that in the case
+ * of unsaved mods, the mod will be deleted instead of deactivated.
  */
 function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
