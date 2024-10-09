@@ -34,7 +34,6 @@ import {
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
@@ -85,8 +84,6 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const clearModChanges = useClearModChanges();
-
   const listItems = filteredSidebarItems.map((sidebarItem) => {
     if (isModSidebarItem(sidebarItem)) {
       const { modMetadata, modComponents } = sidebarItem;
@@ -95,9 +92,6 @@ const ModComponents: React.FunctionComponent = () => {
         <ModListItem
           key={modMetadata.id}
           modMetadata={modMetadata}
-          onClearChanges={async () => {
-            await clearModChanges(modMetadata.id);
-          }}
           onMakeCopy={async () => {
             dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
           }}

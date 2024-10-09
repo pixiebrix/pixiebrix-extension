@@ -33,8 +33,8 @@ import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapte
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { type ModMetadata } from "@/types/modComponentTypes";
-
-type OptionalAction = (() => Promise<void>) | undefined;
+import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 type ActionMenuProps = {
   modMetadata: ModMetadata;
@@ -42,7 +42,6 @@ type ActionMenuProps = {
   isActive: boolean;
   labelRoot: string;
   onMakeCopy: () => Promise<void>;
-  onClearChanges: OptionalAction;
 };
 
 const ModActionMenu: React.FC<ActionMenuProps> = ({
@@ -51,22 +50,27 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
   labelRoot,
   isDirty,
   onMakeCopy,
-  onClearChanges = null,
 }) => {
   const { id: modId } = modMetadata;
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
+
   const deactivateMod = useDeactivateMod();
   const saveMod = useSaveMod();
+  const clearModChanges = useClearModChanges();
   const addNewModComponent = useAddNewModComponent(modMetadata);
+
+  const isUnsavedMod = isInnerDefinitionRegistryId(modId);
 
   const menuItems: EllipsisMenuItem[] = [
     {
       title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
-      action: onClearChanges,
-      // Always show Clear Changes button, even if there are no changes so the UI is more consistent / the user doesn't
-      // wonder why the menu item is missing
-      disabled: !isDirty || !onClearChanges,
+      async action() {
+        await clearModChanges(modId);
+      },
+      // Always show Clear Changes button, even if there are no changes or the mod is an unsaved mod so the UI is more
+      // consistent / the user doesn't wonder why the menu item is missing
+      disabled: !isDirty || isUnsavedMod,
     },
     {
       title: "Add Starter Brick",

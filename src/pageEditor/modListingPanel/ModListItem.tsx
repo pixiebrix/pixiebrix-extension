@@ -38,19 +38,16 @@ import {
 import * as semver from "semver";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 import { type ModMetadata } from "@/types/modComponentTypes";
-import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
-  onClearChanges: () => Promise<void>;
   onMakeCopy: () => Promise<void>;
 }>;
 
 const ModListItem: React.FC<ModListItemProps> = ({
   modMetadata,
   children,
-  onClearChanges,
   onMakeCopy,
 }) => {
   const dispatch = useDispatch();
@@ -75,8 +72,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
   const isDirty = useSelector(selectModIsDirty(modId));
-
-  const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
 
   const hasUpdate =
     latestModVersion != null &&
@@ -113,7 +108,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
           modMetadata={modMetadata}
           isActive={isActive}
           labelRoot={name}
-          onClearChanges={isUnsavedMod ? undefined : onClearChanges}
           onMakeCopy={onMakeCopy}
           isDirty={isDirty}
         />
