@@ -24,7 +24,7 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
-import { validateUUID } from "@/types/helpers";
+import { normalizeSemVerString, validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
@@ -150,11 +150,15 @@ export function selectActivatedDeployments(
   return uniqBy(
     modInstances
       .filter((x) => x.deploymentMetadata != null)
-      .map((x) => ({
+      .map((modInstance) => ({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Typescript not picking up filter
-        deployment: x.deploymentMetadata!.id,
-        blueprint: x.definition.metadata.id,
-        blueprintVersion: x.definition.metadata.id,
+        deployment: modInstance.deploymentMetadata!.id,
+        blueprint: modInstance.definition.metadata.id,
+        // In practice, all activated mods must have a version. But be defensive given that Metadata type used by
+        // ModDefinition does not currently require version.
+        blueprintVersion:
+          modInstance.definition.metadata.version ??
+          normalizeSemVerString("0.0.0"),
       })),
     (x) => x.deployment,
   );
