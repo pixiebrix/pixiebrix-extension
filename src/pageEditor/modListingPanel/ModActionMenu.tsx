@@ -28,36 +28,36 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponent";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
-import { type RegistryId } from "@/types/registryTypes";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
+import { type ModMetadata } from "@/types/modComponentTypes";
 
 type OptionalAction = (() => Promise<void>) | undefined;
 
 type ActionMenuProps = {
-  modId: RegistryId;
+  modMetadata: ModMetadata;
   isDirty: boolean;
   isActive: boolean;
   labelRoot: string;
   onMakeCopy: () => Promise<void>;
-  onAddStarterBrick: AddNewModComponent;
   onClearChanges: OptionalAction;
 };
 
 const ModActionMenu: React.FC<ActionMenuProps> = ({
-  modId,
+  modMetadata,
   isActive,
   labelRoot,
   isDirty,
-  onAddStarterBrick,
   onMakeCopy,
   onClearChanges = null,
 }) => {
+  const { id: modId } = modMetadata;
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
   const deactivateMod = useDeactivateMod();
   const saveMod = useSaveMod();
+  const addNewModComponent = useAddNewModComponent(modMetadata);
 
   const menuItems: EllipsisMenuItem[] = [
     {
@@ -74,11 +74,10 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
       submenu: modComponentFormStateAdapters.map((adapter) => ({
         title: adapter.label,
         action() {
-          onAddStarterBrick(adapter);
+          addNewModComponent(adapter);
         },
         icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
       })),
-      hide: !onAddStarterBrick,
     },
     {
       title: "Make a copy",
@@ -96,6 +95,7 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
+      {/* TODO: did we really want to always show SaveButton? That is the current behavior as of 2.1.5-beta.1 */}
       <SaveButton
         ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
         onClick={async () => {

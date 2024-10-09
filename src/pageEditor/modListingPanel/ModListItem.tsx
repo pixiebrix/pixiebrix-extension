@@ -37,7 +37,6 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import * as semver from "semver";
 import { useGetModDefinitionQuery } from "@/data/service/api";
-import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
@@ -60,7 +59,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-  const addNewModComponent = useAddNewModComponent(modMetadata);
 
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
@@ -112,11 +110,10 @@ const ModListItem: React.FC<ModListItemProps> = ({
           </span>
         )}
         <ModActionMenu
-          modId={modId}
+          modMetadata={modMetadata}
           isActive={isActive}
           labelRoot={name}
           onClearChanges={isUnsavedMod ? undefined : onClearChanges}
-          onAddStarterBrick={addNewModComponent}
           onMakeCopy={onMakeCopy}
           isDirty={isDirty}
         />
