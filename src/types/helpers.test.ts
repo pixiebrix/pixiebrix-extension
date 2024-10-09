@@ -125,6 +125,12 @@ describe("types/helpers.ts", () => {
         coerce: true,
         expected: "v1.2.3",
       },
+      {
+        value: "0.0.0",
+        allowLeadingV: false,
+        coerce: false,
+        expected: "0.0.0",
+      },
     ])(
       "$value with allowLeadingV: $allowLeadingV and coerce: $coerce returns $expected",
       ({ value, allowLeadingV, coerce, expected }) => {

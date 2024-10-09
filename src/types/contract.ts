@@ -271,5 +271,5 @@ export type ActivatedDeployment = {
   deployment: UUID;
   // Use legacy names - these are passed to the server
   blueprint: RegistryId;
-  blueprintVersion: string;
+  blueprintVersion: SemVerString;
 };

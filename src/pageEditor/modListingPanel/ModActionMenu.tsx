@@ -28,44 +28,49 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponent";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
+import { type ModMetadata } from "@/types/modComponentTypes";
+import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectActiveModId,
+  selectModIsDirty,
+} from "@/pageEditor/store/editor/editorSelectors";
 
-type OptionalAction = (() => Promise<void>) | undefined;
-
-type ActionMenuProps = {
-  isDirty: boolean;
-  isActive: boolean;
+const ModActionMenu: React.FC<{
+  modMetadata: ModMetadata;
   labelRoot: string;
-  onDeactivate: () => Promise<void>;
-  onMakeCopy: () => Promise<void>;
-  onAddStarterBrick: AddNewModComponent;
-  // Actions only defined if there are changes
-  onSave: OptionalAction;
-  onClearChanges: OptionalAction;
-};
+}> = ({ modMetadata, labelRoot }) => {
+  const { id: modId } = modMetadata;
+  const activeModId = useSelector(selectActiveModId);
 
-const ModActionMenu: React.FC<ActionMenuProps> = ({
-  isActive,
-  labelRoot,
-  isDirty,
-  onAddStarterBrick,
-  onDeactivate,
-  onMakeCopy,
-  // Convert to null because EllipsisMenuItem expects null vs. undefined
-  onSave = null,
-  onClearChanges = null,
-}) => {
+  const dispatch = useDispatch();
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
+
+  const deactivateMod = useDeactivateMod();
+  const saveMod = useSaveMod();
+  const clearModChanges = useClearModChanges();
+  const addNewModComponent = useAddNewModComponent(modMetadata);
+
+  const isUnsavedMod = isInnerDefinitionRegistryId(modId);
+  const isDirty = useSelector(selectModIsDirty(modId));
+  const isActive = activeModId === modId;
 
   const menuItems: EllipsisMenuItem[] = [
     {
       title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
-      action: onClearChanges,
-      // Always show Clear Changes button, even if there are no changes so the UI is more consistent / the user doesn't
-      // wonder why the menu item is missing
-      disabled: !isDirty || !onClearChanges,
+      async action() {
+        await clearModChanges(modId);
+      },
+      // Always show Clear Changes button, even if there are no changes or the mod is an unsaved mod so the UI is more
+      // consistent / the user doesn't wonder why the menu item is missing
+      disabled: !isDirty || isUnsavedMod,
     },
     {
       title: "Add Starter Brick",
@@ -73,34 +78,36 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
       submenu: modComponentFormStateAdapters.map((adapter) => ({
         title: adapter.label,
         action() {
-          onAddStarterBrick(adapter);
+          addNewModComponent(adapter);
         },
         icon: <FontAwesomeIcon icon={adapter.icon} fixedWidth />,
       })),
-      hide: !onAddStarterBrick,
     },
     {
       title: "Make a copy",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
-      action: onMakeCopy,
+      async action() {
+        dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
+      },
     },
     {
       title: "Deactivate",
       icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
-      action: onDeactivate,
-      hide: !onDeactivate,
+      async action() {
+        await deactivateMod({ modId });
+      },
     },
   ];
 
   return (
     <div className={styles.root}>
-      {onSave != null && (
-        <SaveButton
-          ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
-          onClick={onSave}
-          disabled={!isDirty}
-        />
-      )}
+      <SaveButton
+        ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
+        onClick={async () => {
+          await saveMod(modId);
+        }}
+        disabled={!isDirty}
+      />
       {isActive && (
         <EllipsisMenu
           portal

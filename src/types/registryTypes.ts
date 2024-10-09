@@ -77,16 +77,8 @@ export type Metadata = {
   /**
    * An optional human-readable description.
    */
-  /**
-   * An optional human-readable description.
-   */
   readonly description?: string;
 
-  /**
-   * The semantic version of the package.
-   *
-   * Currently optional because it defaults to the browser extension version for bricks defined in JS.
-   */
   /**
    * The semantic version of the package.
    *

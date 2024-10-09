@@ -21,6 +21,7 @@ import {
   isDeploymentActive,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
+  selectActivatedDeployments,
 } from "./deploymentUtils";
 import {
   uuidv4,
@@ -46,7 +47,10 @@ import {
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { validateTimestamp } from "@/utils/timeUtils";
-import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import {
+  modInstanceFactory,
+  teamDeploymentMetadataFactory,
+} from "@/testUtils/factories/modInstanceFactories";
 import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 
 describe("makeUpdatedFilter", () => {
@@ -491,6 +495,25 @@ describe("mergeDeploymentIntegrationDependencies", () => {
         outputKey: "pixiebrix",
         isOptional: false,
         apiVersion: "v1",
+      },
+    ]);
+  });
+});
+
+describe("selectActivatedDeployments", () => {
+  it("selects deployment", () => {
+    const manualMod = modInstanceFactory();
+    const deploymentMod = modInstanceFactory({
+      deploymentMetadata: teamDeploymentMetadataFactory(),
+    });
+
+    const result = selectActivatedDeployments([manualMod, deploymentMod]);
+
+    expect(result).toStrictEqual([
+      {
+        deployment: deploymentMod.deploymentMetadata!.id,
+        blueprint: deploymentMod.definition.metadata.id,
+        blueprintVersion: deploymentMod.definition.metadata.version,
       },
     ]);
   });
