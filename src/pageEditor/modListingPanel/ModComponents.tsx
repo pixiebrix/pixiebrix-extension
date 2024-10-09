@@ -33,14 +33,12 @@ import {
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import ModComponentListItem from "./ModComponentListItem";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 
 const ModComponents: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
@@ -89,13 +87,7 @@ const ModComponents: React.FunctionComponent = () => {
       const { modMetadata, modComponents } = sidebarItem;
 
       return (
-        <ModListItem
-          key={modMetadata.id}
-          modMetadata={modMetadata}
-          onMakeCopy={async () => {
-            dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
-          }}
-        >
+        <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
           {modComponents.map((modComponentSidebarItem) => (
             <ModComponentListItem
               key={getModComponentItemId(modComponentSidebarItem)}

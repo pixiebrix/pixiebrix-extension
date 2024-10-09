@@ -38,7 +38,7 @@ describe("ModListItem", () => {
     render(
       <Accordion defaultActiveKey={modMetadata.id}>
         <ListGroup>
-          <ModListItem modMetadata={modMetadata} onMakeCopy={jest.fn()}>
+          <ModListItem modMetadata={modMetadata}>
             <div>test children</div>
           </ModListItem>
         </ListGroup>
@@ -63,7 +63,7 @@ describe("ModListItem", () => {
     render(
       <Accordion>
         <ListGroup>
-          <ModListItem modMetadata={modMetadata} onMakeCopy={jest.fn()}>
+          <ModListItem modMetadata={modMetadata}>
             <div>test children</div>
           </ModListItem>
         </ListGroup>
@@ -97,7 +97,7 @@ describe("ModListItem", () => {
     render(
       <Accordion defaultActiveKey={modMetadata.id}>
         <ListGroup>
-          <ModListItem modMetadata={modMetadata} onMakeCopy={jest.fn()}>
+          <ModListItem modMetadata={modMetadata}>
             <div>test children</div>
           </ModListItem>
         </ListGroup>

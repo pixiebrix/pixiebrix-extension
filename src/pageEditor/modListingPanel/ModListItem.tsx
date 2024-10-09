@@ -42,14 +42,9 @@ import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
-  onMakeCopy: () => Promise<void>;
 }>;
 
-const ModListItem: React.FC<ModListItemProps> = ({
-  modMetadata,
-  children,
-  onMakeCopy,
-}) => {
+const ModListItem: React.FC<ModListItemProps> = ({ modMetadata, children }) => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
@@ -108,7 +103,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
           modMetadata={modMetadata}
           isActive={isActive}
           labelRoot={name}
-          onMakeCopy={onMakeCopy}
           isDirty={isDirty}
         />
       </Accordion.Toggle>

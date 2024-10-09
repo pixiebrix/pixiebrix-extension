@@ -35,13 +35,14 @@ import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { useDispatch } from "react-redux";
 
 type ActionMenuProps = {
   modMetadata: ModMetadata;
   isDirty: boolean;
   isActive: boolean;
   labelRoot: string;
-  onMakeCopy: () => Promise<void>;
 };
 
 const ModActionMenu: React.FC<ActionMenuProps> = ({
@@ -49,9 +50,9 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
   isActive,
   labelRoot,
   isDirty,
-  onMakeCopy,
 }) => {
   const { id: modId } = modMetadata;
+  const dispatch = useDispatch();
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
 
   const deactivateMod = useDeactivateMod();
@@ -86,7 +87,9 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: "Make a copy",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
-      action: onMakeCopy,
+      async action() {
+        dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
+      },
     },
     {
       title: "Deactivate",
