@@ -42,7 +42,6 @@ describe("ModListItem", () => {
             modMetadata={modMetadata}
             onSave={jest.fn()}
             onClearChanges={jest.fn()}
-            onDeactivate={jest.fn()}
             onMakeCopy={jest.fn()}
           >
             <div>test children</div>
@@ -73,7 +72,6 @@ describe("ModListItem", () => {
             modMetadata={modMetadata}
             onSave={jest.fn()}
             onClearChanges={jest.fn()}
-            onDeactivate={jest.fn()}
             onMakeCopy={jest.fn()}
           >
             <div>test children</div>
@@ -113,7 +111,6 @@ describe("ModListItem", () => {
             modMetadata={modMetadata}
             onSave={jest.fn()}
             onClearChanges={jest.fn()}
-            onDeactivate={jest.fn()}
             onMakeCopy={jest.fn()}
           >
             <div>test children</div>

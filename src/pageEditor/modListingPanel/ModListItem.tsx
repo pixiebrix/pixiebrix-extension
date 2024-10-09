@@ -46,7 +46,6 @@ export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
   onSave: () => Promise<void>;
   onClearChanges: () => Promise<void>;
-  onDeactivate: () => Promise<void>;
   onMakeCopy: () => Promise<void>;
 }>;
 
@@ -55,7 +54,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
   children,
   onSave,
   onClearChanges,
-  onDeactivate,
   onMakeCopy,
 }) => {
   const dispatch = useDispatch();
@@ -116,11 +114,11 @@ const ModListItem: React.FC<ModListItemProps> = ({
           </span>
         )}
         <ModActionMenu
+          modId={modId}
           isActive={isActive}
           labelRoot={name}
           onSave={onSave}
           onClearChanges={isUnsavedMod ? undefined : onClearChanges}
-          onDeactivate={onDeactivate}
           onAddStarterBrick={addNewModComponent}
           onMakeCopy={onMakeCopy}
           isDirty={isDirty}

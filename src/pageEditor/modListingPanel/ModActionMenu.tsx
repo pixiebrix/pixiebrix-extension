@@ -30,14 +30,16 @@ import EllipsisMenu, {
 } from "@/components/ellipsisMenu/EllipsisMenu";
 import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponent";
 import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import { type RegistryId } from "@/types/registryTypes";
 
 type OptionalAction = (() => Promise<void>) | undefined;
 
 type ActionMenuProps = {
+  modId: RegistryId;
   isDirty: boolean;
   isActive: boolean;
   labelRoot: string;
-  onDeactivate: () => Promise<void>;
   onMakeCopy: () => Promise<void>;
   onAddStarterBrick: AddNewModComponent;
   // Actions only defined if there are changes
@@ -46,17 +48,18 @@ type ActionMenuProps = {
 };
 
 const ModActionMenu: React.FC<ActionMenuProps> = ({
+  modId,
   isActive,
   labelRoot,
   isDirty,
   onAddStarterBrick,
-  onDeactivate,
   onMakeCopy,
   // Convert to null because EllipsisMenuItem expects null vs. undefined
   onSave = null,
   onClearChanges = null,
 }) => {
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
+  const deactivateMod = useDeactivateMod();
 
   const menuItems: EllipsisMenuItem[] = [
     {
@@ -87,8 +90,9 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: "Deactivate",
       icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
-      action: onDeactivate,
-      hide: !onDeactivate,
+      async action() {
+        await deactivateMod({ modId });
+      },
     },
   ];
 

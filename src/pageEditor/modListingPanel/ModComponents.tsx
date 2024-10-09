@@ -36,7 +36,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
-import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
@@ -89,7 +88,6 @@ const ModComponents: React.FunctionComponent = () => {
 
   const saveMod = useSaveMod();
   const clearModChanges = useClearModChanges();
-  const deactivateMod = useDeactivateMod();
 
   const listItems = filteredSidebarItems.map((sidebarItem) => {
     if (isModSidebarItem(sidebarItem)) {
@@ -104,9 +102,6 @@ const ModComponents: React.FunctionComponent = () => {
           }}
           onClearChanges={async () => {
             await clearModChanges(modMetadata.id);
-          }}
-          onDeactivate={async () => {
-            await deactivateMod({ modId: modMetadata.id });
           }}
           onMakeCopy={async () => {
             dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
