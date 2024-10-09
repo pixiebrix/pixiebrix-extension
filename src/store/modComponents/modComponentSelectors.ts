@@ -16,11 +16,13 @@
  */
 
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
-import { createSelector } from "@reduxjs/toolkit";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { type RegistryId } from "@/types/registryTypes";
-import { isEmpty, memoize } from "lodash";
 
+/**
+ * Select all activated mod components, including paused mods associated with paused deployments
+ * @deprecated prefer selectModInstances
+ * @see selectModInstances
+ */
 export function selectActivatedModComponents({
   options,
 }: ModComponentsRootState): ActivatedModComponent[] {
@@ -33,18 +35,3 @@ export function selectActivatedModComponents({
 
   return options.activatedModComponents;
 }
-
-export const selectGetModComponentsForMod = createSelector(
-  selectActivatedModComponents,
-  (activatedModComponents) =>
-    // When activatedModComponents changes, the createSelector call will return a new function with the memoized
-    // method referencing the new activatedModComponents
-    memoize((modId: RegistryId) =>
-      activatedModComponents.filter((x) => x.modMetadata.id === modId),
-    ),
-);
-
-export const selectModHasAnyActivatedModComponents =
-  (modId?: RegistryId) =>
-  (state: ModComponentsRootState): boolean =>
-    Boolean(modId && !isEmpty(selectGetModComponentsForMod(state)(modId)));

@@ -24,37 +24,12 @@ import {
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { SemVerString } from "@/types/registryTypes";
-import {
-  modComponentRefFactory,
-  standaloneModComponentRefFactory,
-} from "@/testUtils/factories/modComponentFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const brick = new RunMetadataTransformer();
 
 describe("RunMetadataTransformer", () => {
-  it("returns standalone mod metadata", async () => {
-    const modComponentRef = standaloneModComponentRefFactory();
-
-    const brickOptions = brickOptionsFactory({
-      meta: runMetadataFactory({
-        modComponentRef,
-      }),
-    });
-
-    const result = await brick.run(unsafeAssumeValidArg({}), brickOptions);
-
-    expect(result).toEqual({
-      modComponentId: modComponentRef.modComponentId,
-      mod: {
-        id: modComponentRef.modId,
-        version: undefined,
-      },
-      deploymentId: null,
-      runId: null,
-    });
-  });
-
   it("returns packaged mod metadata", async () => {
     const modComponentRef = modComponentRefFactory();
 

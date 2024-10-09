@@ -41,10 +41,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
-import {
-  normalizeModOptionsDefinition,
-  getStandaloneModComponentRuntimeModId,
-} from "@/utils/modUtils";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
@@ -80,8 +77,7 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
 /**
- * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane. NOTE: when editing a standalone
- * mod component, an unrelated mod might be in an expanded state.
+ * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane.
  * @see selectActiveModId
  */
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
@@ -89,8 +85,6 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
 
 /**
  * Select a runtime ModComponentRef for the mod component being edited
- * @since 2.0.6 returns a synthetic mod id for standalone mods
- * @see getStandaloneModComponentRuntimeModId
  * @see ModComponentRef
  */
 export const selectActiveModComponentRef = createSelector(
@@ -103,9 +97,7 @@ export const selectActiveModComponentRef = createSelector(
 
     return {
       modComponentId: formState.uuid,
-      modId:
-        formState.modMetadata.id ??
-        getStandaloneModComponentRuntimeModId(formState.uuid),
+      modId: formState.modMetadata.id,
       // XXX: the Page Editor form state uses an artificial id. When it's added to the page, the artificial id will be
       // replaced with the hash id calculated during hydration
       starterBrickId: formState.starterBrick.metadata.id,

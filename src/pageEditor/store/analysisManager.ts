@@ -57,8 +57,7 @@ const runtimeActions = runtimeSlice.actions;
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
 /**
- * Returns mod component form states for the active mod, or the mod component form state of the active standalone
- * mod component. Includes both clean and dirty mod component form states.
+ * Returns mod component form states for the active mod. Includes both clean and dirty mod component form states.
  * @param state the Page Editor Redux State
  */
 async function selectActiveModFormStates(

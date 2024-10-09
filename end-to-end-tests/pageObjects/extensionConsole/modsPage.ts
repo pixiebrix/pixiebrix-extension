@@ -126,10 +126,7 @@ export class ModsPage extends BasePageObject {
     await modToDelete.clickAction("Delete");
     // Click the delete button in the delete confirmation modal
     await this.getByRole("button", { name: "Delete" }).click();
-    await expect(
-      // Exact text varies by standalone mod vs. mod package
-      this.getByText(`Deleted mod ${modName}`),
-    ).toBeVisible();
+    await expect(this.getByText(`Deleted mod ${modName}`)).toBeVisible();
   }
 }
 

@@ -104,8 +104,8 @@ export const test = base.extend<
     // The page is closed by the context fixture `.close` cleanup step
   },
   /**
-   * Create a new page editor instance for the given URL. Cleans up any saved standalone mods after the test.
-   * TODO: support "packaged" mod cleanup
+   * Create a new Page Editor instance for the given URL. Cleans up any mods after the test.
+   * TODO: support saved "packaged" mod cleanup
    */
   async newPageEditorPage({ context, extensionId }, use) {
     const pageEditorPages: PageEditorPage[] = [];
