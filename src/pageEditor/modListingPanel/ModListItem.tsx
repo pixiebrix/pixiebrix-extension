@@ -33,7 +33,6 @@ import {
   selectActiveModId,
   selectDirtyMetadataForModId,
   selectExpandedModId,
-  selectModIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import * as semver from "semver";
 import { useGetModDefinitionQuery } from "@/data/service/api";
@@ -66,7 +65,6 @@ const ModListItem: React.FC<ModListItemProps> = ({ modMetadata, children }) => {
 
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
-  const isDirty = useSelector(selectModIsDirty(modId));
 
   const hasUpdate =
     latestModVersion != null &&
@@ -103,7 +101,6 @@ const ModListItem: React.FC<ModListItemProps> = ({ modMetadata, children }) => {
           modMetadata={modMetadata}
           isActive={isActive}
           labelRoot={name}
-          isDirty={isDirty}
         />
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={modId}>
