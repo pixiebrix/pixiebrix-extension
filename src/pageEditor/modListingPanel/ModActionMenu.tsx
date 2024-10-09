@@ -22,6 +22,7 @@ import {
   faHistory,
   faPlus,
   faTimes,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
@@ -92,7 +93,9 @@ const ModActionMenu: React.FC<{
     },
     {
       title: isUnsavedMod ? "Delete" : "Deactivate",
-      icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
+      icon: (
+        <FontAwesomeIcon icon={isUnsavedMod ? faTrash : faTimes} fixedWidth />
+      ),
       async action() {
         await deactivateMod({ modId });
       },
