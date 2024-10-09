@@ -69,7 +69,7 @@ const selectFirstModComponent = createSelector(
   selectActivatedModComponents,
   selectActiveModId,
   (modComponents, activeModId) =>
-    modComponents.find((x) => x._recipe?.id === activeModId),
+    modComponents.find((x) => x.modMetadata.id === activeModId),
 );
 
 const OldModVersionAlert: React.FunctionComponent<{
@@ -115,7 +115,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     selectFirstModComponentFormStateForActiveMod,
   );
 
-  const activatedModVersion = modDefinitionComponent?._recipe?.version;
+  const activatedModVersion = modDefinitionComponent?.modMetadata.version;
   const latestModVersion = modDefinition?.metadata?.version;
   const showOldModVersionWarning =
     activatedModVersion &&
@@ -126,7 +126,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   // Prefer the metadata from the activated mod component
   const currentMetadata =
     dirtyMetadata ??
-    modDefinitionComponent?._recipe ??
+    modDefinitionComponent?.modMetadata ??
     modDefinition?.metadata ??
     firstComponentFormStateForMod?.modMetadata;
 

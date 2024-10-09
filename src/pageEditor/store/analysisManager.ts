@@ -76,7 +76,7 @@ async function selectActiveModFormStates(
     const activatedModComponents = selectActivatedModComponents(state);
     const otherModComponents = activatedModComponents.filter(
       (x) =>
-        x._recipe?.id === activeModComponentFormState.modMetadata.id &&
+        x.modMetadata.id === activeModComponentFormState.modMetadata.id &&
         !dirtyIds.has(x.id),
     );
     const otherModComponentFormStates = await Promise.all(

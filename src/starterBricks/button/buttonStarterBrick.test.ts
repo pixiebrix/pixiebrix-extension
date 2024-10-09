@@ -39,6 +39,7 @@ import {
   type ButtonStarterBrickConfig,
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/runtime/reducePipeline");
 
@@ -83,7 +84,7 @@ const modComponentFactory = define<HydratedModComponent>({
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  modMetadata: modMetadataFactory,
   label: "Test Button",
   config: define<ButtonStarterBrickConfig>({
     caption: "Hello World",

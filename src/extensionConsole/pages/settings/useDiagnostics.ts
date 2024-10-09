@@ -21,7 +21,7 @@ import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
-import { compact, uniqBy } from "lodash";
+import { uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
@@ -54,11 +54,10 @@ async function collectDiagnostics({
       eventCount: await eventsSize(),
     },
     extensions: {
-      blueprints: uniqBy(
-        compact(modComponents.map((x) => x._recipe)),
+      mods: uniqBy(
+        modComponents.map((x) => x.modMetadata),
         (x) => x.id,
       ),
-      extensions: modComponents.filter((x) => !x._recipe),
     },
   };
 }

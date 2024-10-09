@@ -43,7 +43,7 @@ import { type DeploymentMetadata } from "@/types/deploymentTypes";
  */
 type ModInstanceActivatedModComponent = SetRequired<
   ActivatedModComponent,
-  "_recipe" | "definitions" | "integrationDependencies" | "permissions"
+  "definitions" | "integrationDependencies" | "permissions"
 >;
 
 /**
@@ -110,7 +110,7 @@ export function mapModInstanceToActivatedModComponents(
           modComponentDefinition.permissions ?? emptyPermissionsFactory(),
         // Default to `v1` for backward compatability
         apiVersion: definition.apiVersion ?? "v1",
-        _recipe: modMetadata,
+        modMetadata,
         // All definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
         // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
         definitions: definition.definitions ?? {},
@@ -130,7 +130,7 @@ export function mapModInstanceToActivatedModComponents(
       }
 
       if (deploymentMetadata) {
-        base._deployment = deploymentMetadata;
+        base.deploymentMetadata = deploymentMetadata;
       }
 
       return base;
@@ -158,14 +158,15 @@ export function mapActivatedModComponentsToModInstance(
   assertNotNullish(firstComponent, "activatedModComponents is empty");
 
   // Mod registry id consistency is checked when mapping over the components
-  const modMetadata = firstComponent._recipe;
+  const { modMetadata } = firstComponent;
+  // Impossible from typings, but keeping assertion to localize error if the migration was incorrect
   assertNotNullish(modMetadata, "Mod metadata is required");
 
   return {
     id: generateModInstanceId(),
     modComponentIds: modComponents.map(({ id }) => id),
-    deploymentMetadata: firstComponent._deployment
-      ? migrateDeploymentMetadata(firstComponent._deployment)
+    deploymentMetadata: firstComponent.deploymentMetadata
+      ? migrateDeploymentMetadata(firstComponent.deploymentMetadata)
       : undefined,
     optionsArgs: collectModOptions(modComponents),
     integrationsArgs: collectIntegrationDependencies(modComponents),
@@ -186,7 +187,7 @@ export function mapActivatedModComponentsToModInstance(
       extensionPoints: modComponents.map((modComponent) => {
         assertModComponentNotHydrated(modComponent);
 
-        if (modComponent._recipe?.id !== modMetadata.id) {
+        if (modComponent.modMetadata.id !== modMetadata.id) {
           throw new Error("Mod component does not match mod metadata");
         }
 

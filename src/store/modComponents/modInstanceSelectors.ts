@@ -34,7 +34,7 @@ export const selectModInstances = createSelector(
     }
 
     return Object.values(
-      groupBy(activatedModComponents, (x) => x._recipe?.id),
+      groupBy(activatedModComponents, (x) => x.modMetadata.id),
     ).map((modComponents) =>
       mapActivatedModComponentsToModInstance(modComponents),
     );

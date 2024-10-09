@@ -242,7 +242,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   async registerMenuItem(
     modComponent: Pick<
       HydratedModComponent<ContextMenuConfig>,
-      "id" | "config" | "_deployment"
+      "id" | "config" | "deploymentMetadata"
     >,
     handler: (clickData: Menus.OnClickData) => Promise<void>,
   ): Promise<void> {
@@ -278,7 +278,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       } catch (error) {
         reportError(error, {
           context: {
-            deploymentId: modComponent._deployment?.id,
+            deploymentId: modComponent.deploymentMetadata?.id,
             starterBrickId: modComponent.extensionPointId,
             modComponentId: modComponent.id,
           },

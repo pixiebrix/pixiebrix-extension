@@ -151,7 +151,7 @@ describe("buildModsList", () => {
           activatedModComponentFactory,
           count,
         )({
-          _recipe: metadata,
+          modMetadata: metadata,
         }),
       ),
     );

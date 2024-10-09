@@ -57,6 +57,7 @@ import {
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 let hidden = false;
 
@@ -111,7 +112,7 @@ const modComponentFactory = define<HydratedModComponent<TriggerConfig>>({
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  modMetadata: modMetadataFactory,
   label: "Test Extension",
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,
@@ -586,9 +587,12 @@ describe("triggerStarterBrick", () => {
     await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will run successfully
     await starterBrick.runModComponents({ reason: RunReason.MANUAL }); // Will also run successfully
 
-    // Does not report successful event only once
+    // Report successful event only once
     expect(reportEventMock).toHaveBeenCalledExactlyOnceWith("TriggerRun", {
+      label: modComponent.label,
       modComponentId: modComponent.id,
+      modId: modComponent.modMetadata.id,
+      modVersion: modComponent.modMetadata.version,
       trigger: Triggers.LOAD,
     });
 

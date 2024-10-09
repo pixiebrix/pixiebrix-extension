@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { compact, debounce, throttle, uniq } from "lodash";
+import { debounce, throttle, uniq } from "lodash";
 import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import {
   getLinkedApiClient,
@@ -294,7 +294,7 @@ async function collectUserSummary(): Promise<UserSummary> {
     const { activatedModComponents } = await getModComponentState();
     numActiveExtensions = activatedModComponents.length;
     numActiveBlueprints = uniq(
-      compact(activatedModComponents.map((x) => x._recipe?.id)),
+      activatedModComponents.map((x) => x.modMetadata.id),
     ).length;
     numActiveExtensionPoints = uniq(
       activatedModComponents.map((x) => x.extensionPointId),

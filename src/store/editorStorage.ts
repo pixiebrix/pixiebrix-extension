@@ -114,7 +114,7 @@ export async function removeDraftModComponentsForMod(
     removeModData(draft, modId);
 
     for (const modComponentFormState of state.modComponentFormStates) {
-      if (modComponentFormState.modMetadata?.id === modId) {
+      if (modComponentFormState.modMetadata.id === modId) {
         removedDraftModComponents.push(modComponentFormState.uuid);
         removeModComponentFormState(draft, modComponentFormState.uuid);
       }

@@ -261,14 +261,10 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     // `registerModVariables` is safe to call multiple times for the same modId because the variable definitions
     // will be consistent across components.
     for (const modComponent of modComponents) {
-      if (modComponent._recipe) {
-        // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
-        // for draft mod components. However, there's old test code that doesn't set `_recipe` on the mod component.
-        this.platform.state.registerModVariables(
-          modComponent._recipe.id,
-          modComponent.variablesDefinition,
-        );
-      }
+      this.platform.state.registerModVariables(
+        modComponent.modMetadata.id,
+        modComponent.variablesDefinition,
+      );
     }
 
     console.debug("synchronizeComponents for extension point %s", this.id, {
@@ -297,11 +293,9 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
       this.modComponents.push(modComponent);
     }
 
-    if (modComponent._recipe) {
-      // `_recipe` is still optional on the type, but should always be present now that internal ids are generated
-      // for draft mod components. However, there's old test code that doesn't set `_recipe` on the mod component.
+    if (modComponent.modMetadata) {
       this.platform.state.registerModVariables(
-        modComponent._recipe.id,
+        modComponent.modMetadata.id,
         modComponent.variablesDefinition,
       );
     }

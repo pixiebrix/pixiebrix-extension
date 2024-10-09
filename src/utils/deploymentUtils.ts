@@ -24,7 +24,7 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "@/integrations/integrationTypes";
-import { validateUUID } from "@/types/helpers";
+import { normalizeSemVerString, validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
@@ -35,16 +35,16 @@ import type { ModInstance } from "@/types/modInstanceTypes";
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
  * @since 1.4.0
- * @see ModComponentBase._deployment
+ * @see ModComponentBase.deploymentMetadata
  */
 export function isDeploymentActive(extensionLike: {
-  _deployment?: ModComponentBase["_deployment"];
+  deploymentMetadata?: ModComponentBase["deploymentMetadata"];
 }): boolean {
   return (
     // Check for null/undefined to preserve backward compatability
     // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
-    extensionLike._deployment?.active == null ||
-    extensionLike._deployment.active
+    extensionLike.deploymentMetadata?.active == null ||
+    extensionLike.deploymentMetadata.active
   );
 }
 
@@ -144,17 +144,25 @@ export function checkExtensionUpdateRequired(
   );
 }
 
+/**
+ * Return activated deployment telemetry for heartbeat. Includes deployments that are activated, but paused.
+ */
 export function selectActivatedDeployments(
   modInstances: ModInstance[],
 ): ActivatedDeployment[] {
   return uniqBy(
     modInstances
       .filter((x) => x.deploymentMetadata != null)
-      .map((x) => ({
+      .map((modInstance) => ({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Typescript not picking up filter
-        deployment: x.deploymentMetadata!.id,
-        blueprint: x.definition.metadata.id,
-        blueprintVersion: x.definition.metadata.id,
+        deployment: modInstance.deploymentMetadata!.id,
+        blueprint: modInstance.definition.metadata.id,
+        // In practice, all activated mods must have a version. But be defensive given that Metadata type used by
+        // ModDefinition does not currently require version.
+        blueprintVersion:
+          modInstance.definition.metadata.version ??
+          // 0.0.0 so it's easier to see the defaulting in the backend
+          normalizeSemVerString("0.0.0"),
       })),
     (x) => x.deployment,
   );

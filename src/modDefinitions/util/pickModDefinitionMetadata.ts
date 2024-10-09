@@ -25,11 +25,11 @@ import { isInternalRegistryId } from "@/utils/registryUtils";
  *
  * If the mod definition was transformed from a standalone mod component definition, returns undefined.
  *
- * @see ModComponentBase._recipe
+ * @see ModComponentBase.modMetadata
  */
 export function pickModDefinitionMetadata(
   modDefinition: ModDefinition,
-): ModComponentBase["_recipe"] {
+): ModComponentBase["modMetadata"] | undefined {
   if (isInternalRegistryId(modDefinition.metadata.id)) {
     return undefined;
   }

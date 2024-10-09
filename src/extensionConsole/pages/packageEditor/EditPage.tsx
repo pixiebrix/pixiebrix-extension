@@ -65,7 +65,7 @@ function useParsePackage(config: string | null): ParsedPackageInfo {
       return {
         isMod: true,
         isActivated: activatedModComponents.some(
-          (x) => x._recipe?.id === configJSON.metadata?.id,
+          (x) => x.modMetadata.id === configJSON.metadata?.id,
         ),
         config: configJSON,
       };

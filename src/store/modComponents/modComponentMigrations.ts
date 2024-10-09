@@ -23,12 +23,14 @@ import {
   isModComponentStateV3,
   isModComponentStateV4,
   isModComponentStateV5,
+  isModComponentStateV6,
   type ModComponentStateV0,
   type ModComponentStateV1,
   type ModComponentStateV2,
   type ModComponentStateV3,
   type ModComponentStateV4,
   type ModComponentStateV5,
+  type ModComponentStateV6,
   type ModComponentStateVersions,
 } from "@/store/modComponents/modComponentTypes";
 import { omit, toLower } from "lodash";
@@ -68,12 +70,21 @@ const migrations: MigrationManifest = {
 
     return state;
   },
-  // V4 migration defined below
+  // V4 migration defined via createMigrationsManifest
   5(
     state: ModComponentStateV4 & PersistedState,
   ): ModComponentStateV5 & PersistedState {
     if (isModComponentStateV4(state)) {
       return migrateModComponentStateV4toV5(state);
+    }
+
+    return state;
+  },
+  6(
+    state: ModComponentStateV5 & PersistedState,
+  ): ModComponentStateV6 & PersistedState {
+    if (isModComponentStateV5(state)) {
+      return migrateModComponentStateV5toV6(state);
     }
 
     return state;
@@ -140,21 +151,23 @@ function migrateModComponentStateV2toV3(
  * @see mapStandaloneModDefinitionToModDefinition - similar functionality
  */
 export function createModMetadataForStandaloneComponent(
-  extension: ActivatedModComponentV2,
+  modComponent: ActivatedModComponentV2,
   userScope: string,
 ): ActivatedModComponentV2 {
   return {
-    ...extension,
+    ...modComponent,
     _recipe: {
-      id: validateRegistryId(`${userScope}/converted/${toLower(extension.id)}`),
-      name: extension.label,
+      id: validateRegistryId(
+        `${userScope}/converted/${toLower(modComponent.id)}`,
+      ),
+      name: modComponent.label,
       version: normalizeSemVerString("1.0.0"),
       description: "Page Editor mod automatically converted to a package",
       sharing: {
         public: false,
         organizations: [],
       },
-      updated_at: extension.updateTimestamp,
+      updated_at: modComponent.updateTimestamp,
     },
   };
 }
@@ -200,9 +213,32 @@ function migrateModComponentStateV4toV5(
   };
 }
 
+function migrateModComponentStateV5toV6(
+  state: ModComponentStateV5 & PersistedState,
+): ModComponentStateV6 & PersistedState {
+  return {
+    ...state,
+    activatedModComponents: state.activatedModComponents
+      // In previous migration, _recipe was added to all activatedModComponents.
+      // Exclude un-migrated mod components to be extra defensive
+      .filter((x) => x._recipe != null)
+      .map((modComponent) => ({
+        ...omit(modComponent, ["_recipe", "_deployment"]),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- see filter above
+        modMetadata: modComponent._recipe!,
+        deploymentMetadata: modComponent._deployment,
+      })),
+  };
+}
+
 export function inferModComponentStateVersion(
   state: ModComponentStateVersions,
 ): number {
+  // Check highest numbered versions first, because empty state (without any activated mods) matches multiple versions
+  if (isModComponentStateV6(state)) {
+    return 6;
+  }
+
   if (isModComponentStateV5(state)) {
     return 5;
   }

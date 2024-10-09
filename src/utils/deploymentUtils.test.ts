@@ -21,6 +21,7 @@ import {
   isDeploymentActive,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
+  selectActivatedDeployments,
 } from "./deploymentUtils";
 import {
   uuidv4,
@@ -46,7 +47,10 @@ import {
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { validateTimestamp } from "@/utils/timeUtils";
-import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import {
+  modInstanceFactory,
+  teamDeploymentMetadataFactory,
+} from "@/testUtils/factories/modInstanceFactories";
 import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 
 describe("makeUpdatedFilter", () => {
@@ -101,8 +105,8 @@ describe("makeUpdatedFilter", () => {
 
     const modInstance = mapActivatedModComponentsToModInstance([
       activatedModComponentFactory({
-        _deployment: undefined,
-        _recipe: {
+        deploymentMetadata: undefined,
+        modMetadata: {
           ...modDefinition.metadata,
           updated_at: validateTimestamp(deployment.updated_at!),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
@@ -120,8 +124,8 @@ describe("makeUpdatedFilter", () => {
 
     const modInstance = mapActivatedModComponentsToModInstance([
       activatedModComponentFactory({
-        _deployment: undefined,
-        _recipe: {
+        deploymentMetadata: undefined,
+        modMetadata: {
           ...modDefinition.metadata,
           // The factory produces version "1.0.1"
           version: normalizeSemVerString("1.0.1"),
@@ -171,7 +175,7 @@ describe("isDeploymentActive", () => {
     const deployment = deploymentFactory();
 
     const modComponent = modComponentFactory({
-      _deployment: {
+      deploymentMetadata: {
         id: deployment.id,
         timestamp: deployment.updated_at!,
         // Legacy deployments don't have an `active` field
@@ -187,7 +191,7 @@ describe("isDeploymentActive", () => {
       const deployment = deploymentFactory();
 
       const modComponent = modComponentFactory({
-        _deployment: {
+        deploymentMetadata: {
           id: deployment.id,
           timestamp: deployment.updated_at!,
           active,
@@ -491,6 +495,25 @@ describe("mergeDeploymentIntegrationDependencies", () => {
         outputKey: "pixiebrix",
         isOptional: false,
         apiVersion: "v1",
+      },
+    ]);
+  });
+});
+
+describe("selectActivatedDeployments", () => {
+  it("selects deployment", () => {
+    const manualMod = modInstanceFactory();
+    const deploymentMod = modInstanceFactory({
+      deploymentMetadata: teamDeploymentMetadataFactory(),
+    });
+
+    const result = selectActivatedDeployments([manualMod, deploymentMod]);
+
+    expect(result).toStrictEqual([
+      {
+        deployment: deploymentMod.deploymentMetadata!.id,
+        blueprint: deploymentMod.definition.metadata.id,
+        blueprintVersion: deploymentMod.definition.metadata.version,
       },
     ]);
   });
