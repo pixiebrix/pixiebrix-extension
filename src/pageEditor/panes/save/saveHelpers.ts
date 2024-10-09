@@ -95,12 +95,12 @@ function findModComponentIndex(
   modDefinition: ModDefinition,
   modComponent: ModComponentBase,
 ): number {
-  if (modDefinition.metadata.version !== modComponent._recipe?.version) {
+  if (modDefinition.metadata.version !== modComponent.modMetadata.version) {
     console.warn(
       "Mod component was activated using a different version of the mod",
       {
         modDefinitionVersion: modDefinition.metadata.version,
-        modComponentModVersion: modComponent._recipe?.version,
+        modComponentModVersion: modComponent.modMetadata.version,
       },
     );
   }

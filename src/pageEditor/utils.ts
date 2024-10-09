@@ -35,7 +35,6 @@ import {
   type ModMetadata,
 } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
@@ -64,14 +63,6 @@ export function getModComponentId(
   return isModComponentBase(modComponentOrFormState)
     ? modComponentOrFormState.id
     : modComponentOrFormState.uuid;
-}
-
-export function getModId(
-  modComponentOrFormState: ModComponentBase | ModComponentFormState,
-): RegistryId | undefined {
-  return isModComponentBase(modComponentOrFormState)
-    ? modComponentOrFormState._recipe?.id
-    : modComponentOrFormState.modMetadata.id;
 }
 
 /**

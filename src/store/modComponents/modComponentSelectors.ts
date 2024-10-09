@@ -40,9 +40,7 @@ export const selectGetModComponentsForMod = createSelector(
     // When activatedModComponents changes, the createSelector call will return a new function with the memoized
     // method referencing the new activatedModComponents
     memoize((modId: RegistryId) =>
-      activatedModComponents.filter(
-        (activatedModComponent) => activatedModComponent._recipe?.id === modId,
-      ),
+      activatedModComponents.filter((x) => x.modMetadata.id === modId),
     ),
 );
 

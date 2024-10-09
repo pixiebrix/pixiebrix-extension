@@ -35,16 +35,16 @@ import type { ModInstance } from "@/types/modInstanceTypes";
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
  * @since 1.4.0
- * @see ModComponentBase._deployment
+ * @see ModComponentBase.deploymentMetadata
  */
 export function isDeploymentActive(extensionLike: {
-  _deployment?: ModComponentBase["_deployment"];
+  deploymentMetadata?: ModComponentBase["deploymentMetadata"];
 }): boolean {
   return (
     // Check for null/undefined to preserve backward compatability
     // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
-    extensionLike._deployment?.active == null ||
-    extensionLike._deployment.active
+    extensionLike.deploymentMetadata?.active == null ||
+    extensionLike.deploymentMetadata.active
   );
 }
 

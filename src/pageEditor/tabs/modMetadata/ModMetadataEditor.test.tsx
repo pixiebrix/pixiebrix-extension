@@ -49,7 +49,7 @@ describe("ModMetadataEditor", () => {
     const formState = formStateFactory({ formStateConfig: { modMetadata } });
 
     const modComponent = activatedModComponentFactory({
-      _recipe: modMetadata,
+      modMetadata,
     });
 
     useOptionalModDefinitionMock.mockReturnValue(
@@ -78,7 +78,7 @@ describe("ModMetadataEditor", () => {
     const formState = formStateFactory({ formStateConfig: { modMetadata } });
 
     const modComponent = activatedModComponentFactory({
-      _recipe: modMetadata,
+      modMetadata,
     });
 
     useOptionalModDefinitionMock.mockReturnValue(

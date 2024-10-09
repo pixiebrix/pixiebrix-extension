@@ -35,7 +35,7 @@ const modMetadataBar = modMetadataFactory({
 // Mod Components
 const cleanModComponentFooA = modComponentFactory({
   label: "A",
-  _recipe: modMetadataFoo,
+  modMetadata: modMetadataFoo,
 });
 
 const formStateModComponentFooA = menuItemFormStateFactory({
@@ -51,7 +51,7 @@ const formStateModComponentFooB = menuItemFormStateFactory({
 
 const cleanModComponentBarD = modComponentFactory({
   label: "D",
-  _recipe: modMetadataBar,
+  modMetadata: modMetadataBar,
 });
 
 const formStateModComponentBarE = menuItemFormStateFactory({
@@ -61,7 +61,7 @@ const formStateModComponentBarE = menuItemFormStateFactory({
 
 const cleanModComponentBarF: ModComponentBase = modComponentFactory({
   label: "F",
-  _recipe: modMetadataBar,
+  modMetadata: modMetadataBar,
 });
 
 describe("arrangeSidebarItems()", () => {

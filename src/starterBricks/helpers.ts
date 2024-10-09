@@ -193,8 +193,7 @@ export function shouldModComponentRunForStateChange(
     // Ignore state changes from shared state and unrelated mods/mod components
     return (
       detail?.extensionId === modComponent.id ||
-      (modComponent._recipe?.id != null &&
-        modComponent._recipe?.id === detail?.blueprintId)
+      modComponent.modMetadata.id === detail?.blueprintId
     );
   }
 

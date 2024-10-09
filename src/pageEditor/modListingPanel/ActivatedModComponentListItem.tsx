@@ -80,7 +80,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   const modId = activeModId ?? activeModComponentFormState?.modMetadata.id;
   // Set the alternate background if this item isn't active, but either its mod or another item in its mod is active
   const hasActiveModBackground =
-    !isActive && modId && modComponent._recipe?.id === modId;
+    !isActive && modId && modComponent.modMetadata.id === modId;
 
   const selectHandler = useCallback(
     async (modComponent: ModComponentBase) => {
@@ -94,9 +94,9 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           await modComponentToFormState(modComponent);
 
         // Initialize mod options schema if needed
-        if (modComponent._recipe) {
+        if (modComponent.modMetadata) {
           const { data: modDefinition } = await getModDefinition(
-            { modId: modComponent._recipe.id },
+            { modId: modComponent.modMetadata.id },
             true,
           );
           if (modDefinition) {

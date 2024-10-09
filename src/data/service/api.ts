@@ -63,7 +63,6 @@ export const appApi = createApi({
     "MarketplaceTags",
     "EditablePackages",
     "Invitations",
-    "StandaloneModDefinitions",
     "Package",
     "PackageVersion",
     "StarterBlueprints",

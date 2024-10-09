@@ -27,6 +27,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import {
   type ModComponentBase,
+  type ModComponentBaseV3,
   type ModMetadata,
 } from "@/types/modComponentTypes";
 import {
@@ -136,9 +137,9 @@ export interface BaseFormStateV1<
   /**
    * Information about the mod used to activate the mod component, or `undefined`
    * if the mod component is not part of a mod.
-   * @see ModComponentBase._recipe
+   * @see ModComponentBase.metadata
    */
-  recipe: ModComponentBase["_recipe"] | undefined;
+  recipe: ModComponentBaseV3["_recipe"] | undefined;
 
   /**
    * Information about the mod options or `undefined`
@@ -191,14 +192,12 @@ export type BaseFormStateV3<
   modComponent: TModComponent;
 
   /**
-   * @since 2.0.5
-   * Part of the Page Editor renaming effort
-   * `recipe` to `modMetadata`
    * Information about the mod used to activate the mod component, or `undefined`
    * if the mod component is not part of a mod.
-   * @see ModComponentBase._recipe
+   * @see ModComponentBase.modMetadata
+   * @since 2.0.5
    */
-  modMetadata: ModComponentBase["_recipe"] | undefined;
+  modMetadata: ModComponentBase["modMetadata"] | undefined;
 };
 
 /**

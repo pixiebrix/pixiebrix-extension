@@ -65,6 +65,7 @@ import { createPrivateSharing } from "@/utils/registryUtils";
  * Returns a synthetic mod id for a standalone mod component for use in the runtime
  * @param modComponentId the standalone mod component id
  * @see INNER_SCOPE
+ * @deprecated standalone mod components have been retired
  */
 export function getStandaloneModComponentRuntimeModId(
   modComponentId: UUID,
@@ -77,12 +78,10 @@ export function getStandaloneModComponentRuntimeModId(
 /**
  * Returns a modId suitable for use in the runtime.
  * @since 2.0.6
+ * @deprecated standalone mod components have been retired
  */
 function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
-  return (
-    modComponent._recipe?.id ??
-    getStandaloneModComponentRuntimeModId(modComponent.id)
-  );
+  return modComponent.modMetadata.id;
 }
 
 /**
@@ -113,9 +112,9 @@ export function mapModComponentToMessageContext(
     modComponentLabel: modComponent.label ?? undefined,
     modComponentId: modComponent.id,
     starterBrickId: modComponent.extensionPointId,
-    deploymentId: modComponent._deployment?.id,
-    modId: getRuntimeModId(modComponent),
-    modVersion: modComponent._recipe?.version,
+    deploymentId: modComponent.deploymentMetadata?.id,
+    modId: modComponent.modMetadata.id,
+    modVersion: modComponent.modMetadata.version,
   };
 }
 

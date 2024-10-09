@@ -54,7 +54,7 @@ export async function getModComponentState(): Promise<ModComponentState> {
 export async function getActivatedModIds(): Promise<Set<RegistryId>> {
   const { activatedModComponents = [] } = await getModComponentState();
   return new Set(
-    compact(activatedModComponents.map(({ _recipe }) => _recipe?.id)),
+    compact(activatedModComponents.map(({ modMetadata }) => modMetadata.id)),
   );
 }
 
@@ -85,7 +85,7 @@ export const persistModComponentOptionsConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 5,
+  version: 6,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate,
 };

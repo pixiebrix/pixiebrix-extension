@@ -40,7 +40,7 @@ describe("deactivateMod", () => {
       activatedModComponents: [
         ...mapModInstanceToActivatedModComponents(modToDeactivate),
         activatedModComponentFactory({
-          _recipe: anotherMod,
+          modMetadata: anotherMod,
         }),
       ],
     });
@@ -60,7 +60,7 @@ describe("deactivateMod", () => {
 
     expect(nextModComponentState.activatedModComponents).toHaveLength(1);
     expect(
-      nextModComponentState.activatedModComponents[0]!._recipe!.id,
+      nextModComponentState.activatedModComponents[0]!.modMetadata.id,
     ).not.toEqual(modToDeactivate.definition.metadata.id);
   });
 });

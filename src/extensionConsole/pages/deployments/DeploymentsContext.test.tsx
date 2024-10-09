@@ -290,7 +290,9 @@ describe("DeploymentsContext", () => {
       options: { activatedModComponents: initialActivatedModComponents },
     } = getReduxStore().getState() as { options: ModComponentState };
     expect(initialActivatedModComponents).toHaveLength(1);
-    expect(initialActivatedModComponents[0]!._deployment).toBeUndefined();
+    expect(
+      initialActivatedModComponents[0]!.deploymentMetadata,
+    ).toBeUndefined();
 
     expect(screen.queryAllByTestId("Component")).toHaveLength(1);
     expect(screen.queryAllByTestId("Error")).toHaveLength(0);
@@ -306,7 +308,9 @@ describe("DeploymentsContext", () => {
       options: { activatedModComponents },
     } = getReduxStore().getState() as { options: ModComponentState };
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]!._deployment?.id).toBe(deployment.id);
+    expect(activatedModComponents[0]!.deploymentMetadata?.id).toBe(
+      deployment.id,
+    );
   });
 
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {

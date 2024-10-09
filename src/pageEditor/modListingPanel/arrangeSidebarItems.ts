@@ -24,7 +24,6 @@ import {
   type ModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/modListingPanel/common";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ArrangeSidebarItemsArgs = {
   modComponentFormStates: ModComponentFormState[];
@@ -56,17 +55,14 @@ function arrangeSidebarItems({
   );
 
   for (const cleanModComponent of cleanModComponentsWithoutFormStates) {
-    assertNotNullish(
-      cleanModComponent._recipe,
-      "Expected mod component to have mod metadata",
-    );
-
-    const modSidebarItem = modSidebarItems[cleanModComponent._recipe.id] ?? {
-      modMetadata: cleanModComponent._recipe,
+    const modSidebarItem = modSidebarItems[
+      cleanModComponent.modMetadata.id
+    ] ?? {
+      modMetadata: cleanModComponent.modMetadata,
       modComponents: [],
     };
     modSidebarItem.modComponents.push(cleanModComponent);
-    modSidebarItems[cleanModComponent._recipe.id] = modSidebarItem;
+    modSidebarItems[cleanModComponent.modMetadata.id] = modSidebarItem;
   }
 
   for (const modSidebarItem of Object.values(modSidebarItems)) {
