@@ -40,7 +40,6 @@ describe("ModListItem", () => {
         <ListGroup>
           <ModListItem
             modMetadata={modMetadata}
-            onSave={jest.fn()}
             onClearChanges={jest.fn()}
             onMakeCopy={jest.fn()}
           >
@@ -70,7 +69,6 @@ describe("ModListItem", () => {
         <ListGroup>
           <ModListItem
             modMetadata={modMetadata}
-            onSave={jest.fn()}
             onClearChanges={jest.fn()}
             onMakeCopy={jest.fn()}
           >
@@ -109,7 +107,6 @@ describe("ModListItem", () => {
         <ListGroup>
           <ModListItem
             modMetadata={modMetadata}
-            onSave={jest.fn()}
             onClearChanges={jest.fn()}
             onMakeCopy={jest.fn()}
           >

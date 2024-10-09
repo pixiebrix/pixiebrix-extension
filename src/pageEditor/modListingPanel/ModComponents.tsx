@@ -34,7 +34,6 @@ import {
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
@@ -86,7 +85,6 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const saveMod = useSaveMod();
   const clearModChanges = useClearModChanges();
 
   const listItems = filteredSidebarItems.map((sidebarItem) => {
@@ -97,9 +95,6 @@ const ModComponents: React.FunctionComponent = () => {
         <ModListItem
           key={modMetadata.id}
           modMetadata={modMetadata}
-          onSave={async () => {
-            await saveMod(modMetadata.id);
-          }}
           onClearChanges={async () => {
             await clearModChanges(modMetadata.id);
           }}

@@ -32,6 +32,7 @@ import { type AddNewModComponent } from "@/pageEditor/hooks/useAddNewModComponen
 import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type RegistryId } from "@/types/registryTypes";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 
 type OptionalAction = (() => Promise<void>) | undefined;
 
@@ -42,8 +43,6 @@ type ActionMenuProps = {
   labelRoot: string;
   onMakeCopy: () => Promise<void>;
   onAddStarterBrick: AddNewModComponent;
-  // Actions only defined if there are changes
-  onSave: OptionalAction;
   onClearChanges: OptionalAction;
 };
 
@@ -54,12 +53,11 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
   isDirty,
   onAddStarterBrick,
   onMakeCopy,
-  // Convert to null because EllipsisMenuItem expects null vs. undefined
-  onSave = null,
   onClearChanges = null,
 }) => {
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
   const deactivateMod = useDeactivateMod();
+  const saveMod = useSaveMod();
 
   const menuItems: EllipsisMenuItem[] = [
     {
@@ -98,13 +96,13 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
-      {onSave != null && (
-        <SaveButton
-          ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
-          onClick={onSave}
-          disabled={!isDirty}
-        />
-      )}
+      <SaveButton
+        ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
+        onClick={async () => {
+          await saveMod(modId);
+        }}
+        disabled={!isDirty}
+      />
       {isActive && (
         <EllipsisMenu
           portal

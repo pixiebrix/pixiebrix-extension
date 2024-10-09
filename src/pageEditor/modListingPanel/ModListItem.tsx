@@ -44,7 +44,6 @@ import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: ModMetadata;
-  onSave: () => Promise<void>;
   onClearChanges: () => Promise<void>;
   onMakeCopy: () => Promise<void>;
 }>;
@@ -52,7 +51,6 @@ export type ModListItemProps = PropsWithChildren<{
 const ModListItem: React.FC<ModListItemProps> = ({
   modMetadata,
   children,
-  onSave,
   onClearChanges,
   onMakeCopy,
 }) => {
@@ -117,7 +115,6 @@ const ModListItem: React.FC<ModListItemProps> = ({
           modId={modId}
           isActive={isActive}
           labelRoot={name}
-          onSave={onSave}
           onClearChanges={isUnsavedMod ? undefined : onClearChanges}
           onAddStarterBrick={addNewModComponent}
           onMakeCopy={onMakeCopy}
