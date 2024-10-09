@@ -21,11 +21,10 @@ import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/mo
 import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 
 /**
- * Returns all activated mod instances.
+ * Returns all activated mod instances. Includes mod instances corresponding to paused deployments.
  * @throws {TypeError} if required state migrations have not been applied yet
  */
-// Written using createSelector to memoize because it creates a new object. Not a big deal at the moment because
-// that's the only property in the slice. But it's good habit to memoize properly.
+// Written using createSelector to memoize because it creates a new object
 export const selectModInstances = createSelector(
   (state: ModComponentsRootState) => state.options.activatedModComponents,
   (activatedModComponents) => {
@@ -42,7 +41,7 @@ export const selectModInstances = createSelector(
 );
 
 /**
- * Returns a Map of activated mod instances keyed by mod id.
+ * Returns a Map of activated mod instances keyed by mod id. Includes mod instances corresponding to paused deployments.
  * @see useFindModInstance
  */
 export const selectModInstanceMap = createSelector(
