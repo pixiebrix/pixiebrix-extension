@@ -17,7 +17,7 @@
 
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uuidv4 } from "@/types/helpers";
-import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import type {
   ModComponentDefinition,
@@ -79,7 +79,7 @@ export function mapModComponentDefinitionToActivatedModComponent<
     id: uuidv4(),
     // Default to `v1` for backward compatability
     apiVersion: modDefinition.apiVersion ?? "v1",
-    modMetadata: pickModDefinitionMetadata(modDefinition),
+    modMetadata: mapModDefinitionToModMetadata(modDefinition),
     // Definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
     // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
     definitions: modDefinition.definitions ?? {},

@@ -22,7 +22,6 @@ import {
   ModalKey,
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
@@ -45,6 +44,9 @@ import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -267,17 +269,16 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
 
 export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
-  selectActivatedModComponents,
+  selectModInstances,
   selectDirtyModMetadata,
-  (formStates, activatedModComponents, dirtyModMetadataById) => {
+  (formStates, modInstances, dirtyModMetadataById) => {
     const formStateModMetadatas: Array<ModComponentBase["modMetadata"]> =
       formStates.map((formState) => formState.modMetadata);
-    const activatedModComponentModMetadatas: Array<
-      ModComponentBase["modMetadata"]
-    > = activatedModComponents.map((component) => component.modMetadata);
+    const activatedModMetadatas: Array<ModComponentBase["modMetadata"]> =
+      modInstances.map((x) => mapModDefinitionToModMetadata(x.definition));
 
     const baseMetadatas = uniqBy(
-      [...formStateModMetadatas, ...activatedModComponentModMetadatas],
+      [...formStateModMetadatas, ...activatedModMetadatas],
       (x) => x.id,
     );
 

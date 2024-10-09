@@ -33,7 +33,7 @@ import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
 import type { SetRequired } from "type-fest";
-import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type DeploymentMetadata } from "@/types/deploymentTypes";
@@ -84,7 +84,7 @@ export function mapModInstanceToActivatedModComponents(
   const { deploymentMetadata, integrationsArgs, updatedAt, definition } =
     modInstance;
 
-  const modMetadata = pickModDefinitionMetadata(definition);
+  const modMetadata = mapModDefinitionToModMetadata(definition);
 
   return zip(definition.extensionPoints, modInstance.modComponentIds).map(
     ([modComponentDefinition, modComponentId]) => {

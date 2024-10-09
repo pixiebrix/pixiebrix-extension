@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
 /**
- * Select all activated mod components, including paused mods associated with paused deployments
- * @deprecated prefer selectModInstances
+ * Select all activated mod components. Includes activated components associated with paused deployments.
+ * Prefer selectModInstances where possible.
  * @see selectModInstances
  */
 export function selectActivatedModComponents({
@@ -33,5 +33,7 @@ export function selectActivatedModComponents({
     throw new TypeError("state migration has not been applied yet");
   }
 
+  // For now, just return the activated mod components directly. In the future, we'll likely store ModInstances
+  // in the state instead so this selector will be re-written to map the ModInstances to their components
   return options.activatedModComponents;
 }
