@@ -101,7 +101,6 @@ const ModActionMenu: React.FC<{
 
   return (
     <div className={styles.root}>
-      {/* TODO: did we really want to always show SaveButton? That is the current behavior as of 2.1.5-beta.1 */}
       <SaveButton
         ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
         onClick={async () => {
