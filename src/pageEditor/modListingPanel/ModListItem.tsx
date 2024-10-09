@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type PropsWithChildren } from "react";
+import React from "react";
 import styles from "./Entry.module.scss";
 import { ModHasUpdateIcon } from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
@@ -39,11 +39,9 @@ import { useGetModDefinitionQuery } from "@/data/service/api";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
-export type ModListItemProps = PropsWithChildren<{
+const ModListItem: React.FC<{
   modMetadata: ModMetadata;
-}>;
-
-const ModListItem: React.FC<ModListItemProps> = ({ modMetadata, children }) => {
+}> = ({ modMetadata, children }) => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
