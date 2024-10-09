@@ -37,20 +37,18 @@ import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModIsDirty } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModId,
+  selectModIsDirty,
+} from "@/pageEditor/store/editor/editorSelectors";
 
-type ActionMenuProps = {
+const ModActionMenu: React.FC<{
   modMetadata: ModMetadata;
-  isActive: boolean;
   labelRoot: string;
-};
-
-const ModActionMenu: React.FC<ActionMenuProps> = ({
-  modMetadata,
-  isActive,
-  labelRoot,
-}) => {
+}> = ({ modMetadata, labelRoot }) => {
   const { id: modId } = modMetadata;
+  const activeModId = useSelector(selectActiveModId);
+
   const dispatch = useDispatch();
   const modComponentFormStateAdapters = useAvailableFormStateAdapters();
 
@@ -61,6 +59,7 @@ const ModActionMenu: React.FC<ActionMenuProps> = ({
 
   const isUnsavedMod = isInnerDefinitionRegistryId(modId);
   const isDirty = useSelector(selectModIsDirty(modId));
+  const isActive = activeModId === modId;
 
   const menuItems: EllipsisMenuItem[] = [
     {
