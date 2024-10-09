@@ -33,17 +33,12 @@ import {
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { useDispatch, useSelector } from "react-redux";
-import useSaveMod from "@/pageEditor/hooks/useSaveMod";
-import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
-import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import { useSelector } from "react-redux";
 import ModComponentListItem from "./ModComponentListItem";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 
 const ModComponents: React.FunctionComponent = () => {
-  const dispatch = useDispatch();
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
@@ -87,31 +82,12 @@ const ModComponents: React.FunctionComponent = () => {
     ],
   );
 
-  const saveMod = useSaveMod();
-  const clearModChanges = useClearModChanges();
-  const deactivateMod = useDeactivateMod();
-
   const listItems = filteredSidebarItems.map((sidebarItem) => {
     if (isModSidebarItem(sidebarItem)) {
       const { modMetadata, modComponents } = sidebarItem;
 
       return (
-        <ModListItem
-          key={modMetadata.id}
-          modMetadata={modMetadata}
-          onSave={async () => {
-            await saveMod(modMetadata.id);
-          }}
-          onClearChanges={async () => {
-            await clearModChanges(modMetadata.id);
-          }}
-          onDeactivate={async () => {
-            await deactivateMod({ modId: modMetadata.id });
-          }}
-          onMakeCopy={async () => {
-            dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
-          }}
-        >
+        <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
           {modComponents.map((modComponentSidebarItem) => (
             <ModComponentListItem
               key={getModComponentItemId(modComponentSidebarItem)}
