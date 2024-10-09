@@ -91,7 +91,7 @@ const ModActionMenu: React.FC<{
       },
     },
     {
-      title: "Deactivate",
+      title: isUnsavedMod ? "Delete" : "Deactivate",
       icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
       async action() {
         await deactivateMod({ modId });
