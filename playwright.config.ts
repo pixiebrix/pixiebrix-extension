@@ -72,11 +72,11 @@ export default defineConfig<{ chromiumChannel: string }>({
   timeout: 60_000,
   /* Timeout for the entire test run */
   globalTimeout: 30 * 60 * 1000, // 30 minutes
-  repeatEach: 2,
   expect: {
     /**
-     * Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting
-     * Set to 20s due to API slowness. See example traces:
+     * Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting.
+     *
+     * Set to 20s due to spikes in API latency. See example traces:
      * GET api/bricks/
      * https://app.datadoghq.com/apm/trace/1816851494275985657?graphType=flamegraph&shouldShowLegend=true&sort=time&spanID=14068679180114270950&timeHint=1728332087443.742
      * POST api/bricks/
@@ -100,8 +100,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     baseURL: "https://pbx.vercel.app",
 
     /* Collect trace when retrying the failed test in CI, and always on failure when running locally. See https://playwright.dev/docs/trace-viewer */
-    // Temporarily always collect trace to debug flakiness
-    trace: "retain-on-failure",
+    trace: CI ? "on-first-retry" : "retain-on-failure",
 
     /* Set the default timeout for actions such as `click` */
     actionTimeout: 5000,

@@ -125,6 +125,12 @@ view the report by running
 ./scripts/show-pr-e2e-report.sh -p <pull-request-number>
 ```
 
+You can also pass in the run id instead if you want to view a specific run's report.
+
+```bash
+./scripts/show-pr-e2e-report.sh -r <run-id>
+```
+
 You will need to have `7zz` and `gh` installed to run this script (install using brew).
 
 ```bash
