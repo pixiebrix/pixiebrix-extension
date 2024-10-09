@@ -46,6 +46,6 @@ test.describe("sidebar effect bricks", () => {
 
     await expect(() => {
       expect(isSidebarOpen(page, extensionId)).toBe(false);
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: 20_000 });
   });
 });

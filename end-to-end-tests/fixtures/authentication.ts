@@ -85,7 +85,7 @@ export const test = mergeTests(
       );
 
       // The admin console automatically opens a new tab to log in and link the newly installed extension to the user's account.
-      const page = await context.waitForEvent("page", { timeout: 10_000 });
+      const page = await context.waitForEvent("page", { timeout: 20_000 });
 
       await use({ context, page });
 

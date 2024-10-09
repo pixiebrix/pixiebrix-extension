@@ -44,8 +44,10 @@ export const openExtensionConsoleFromAdmin = async (
     await expect(extensionConsolePage.locator("#container")).toContainText(
       "Extension Console",
     );
-    await expect(extensionConsolePage.getByText(userName)).toBeVisible();
-  }).toPass({ timeout: 15_000 });
+    await expect(extensionConsolePage.getByText(userName)).toBeVisible({
+      timeout: 5000,
+    });
+  }).toPass({ timeout: 20_000 });
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- extensionConsolePage is defined
   return extensionConsolePage!;

@@ -32,6 +32,6 @@ test("can open mod in the workshop", async ({ page, extensionId }) => {
     expect(pageTitle).toBe("Edit [Testing] St... | PixieBrix");
   }).toPass({
     // Clicking Edit in Workshop fetches editable packages to determine the surrogate package id
-    timeout: 10_000,
+    timeout: 20_000,
   });
 });

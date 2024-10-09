@@ -72,7 +72,7 @@ export async function ensureVisibility(
 ) {
   await expect(async () => {
     await expect(locator).toBeVisible({ timeout: 0 }); // Retry handling is done by the outer expect
-  }).toPass({ timeout: 5000, ...options });
+  }).toPass({ timeout: 20_000, ...options });
 }
 
 // Run a mod via the Quickbar.

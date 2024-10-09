@@ -47,7 +47,6 @@ test("authenticate with unaffiliated user", async ({
       page.getByText(
         "Successfully linked the Browser Extension to your PixieBrix account",
       ),
-      { timeout: 12_000 },
     );
     await expect(
       page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
@@ -74,7 +73,7 @@ test("authenticate with unaffiliated user", async ({
       );
       await localIntegrationsPage.goto();
 
-      const popupPromise = context.waitForEvent("page", { timeout: 5000 });
+      const popupPromise = context.waitForEvent("page", { timeout: 20_000 });
       await localIntegrationsPage.createNewIntegration("Google Drive");
 
       const googleAuthPopup = await popupPromise;

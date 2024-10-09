@@ -167,7 +167,9 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
       .getByRole("button", { name: "Delete Note" })
       .click();
 
-    await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+    await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden({
+      timeout: 5000,
+    });
   }).toPass({ timeout: 20_000 });
 });
 
@@ -247,9 +249,7 @@ test("can activate a mod via url", async ({ page, extensionId }) => {
       `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
     );
   }).toPass({ timeout: 5000 });
-  await expect(page.getByRole("code")).toContainText(modId, {
-    timeout: 10_000,
-  });
+  await expect(page.getByRole("code")).toContainText(modId);
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();

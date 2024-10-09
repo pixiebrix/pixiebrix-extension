@@ -45,7 +45,7 @@ test.describe("sidebar page smoke test", () => {
 
     await expect(() => {
       expect(isSidebarOpen(page, extensionId)).toBe(false);
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: 20_000 });
   });
 
   test("can hide the floating action button", async ({ page, extensionId }) => {
@@ -53,7 +53,7 @@ test.describe("sidebar page smoke test", () => {
 
     const floatingActionButton = new FloatingActionButton(page);
     const actionButton = await floatingActionButton.getActionButton();
-    await expect(actionButton).toBeVisible({ timeout: 10_000 });
+    await expect(actionButton).toBeVisible();
 
     await floatingActionButton.hideFloatingActionButton();
 

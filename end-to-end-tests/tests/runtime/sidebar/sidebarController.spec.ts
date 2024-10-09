@@ -41,7 +41,7 @@ test.describe("sidebar controller", () => {
     const frame = page.frameLocator("iframe");
     await frame.getByRole("link", { name: "Show Sidebar Immediately" }).click();
 
-    // Don't use getSidebarPage because it automatically clicks the MV3 focus dialog.
+    // Don't use getSidebarPage because it automatically clicks the focus dialog.
     await expect(() => {
       expect(isSidebarOpen(page, extensionId)).toBe(false);
     }).toPass({ timeout: 5000 });

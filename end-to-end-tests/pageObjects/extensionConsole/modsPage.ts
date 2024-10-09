@@ -34,20 +34,19 @@ export class ModTableItem extends BasePageObject {
         await this.dropdownButton.click();
       }
 
-      if (
-        !(await this.getByRole("menuitem", { name: actionName }).isVisible())
-      ) {
+      try {
+        await this.getByRole("menuitem", { name: actionName }).waitFor({
+          timeout: 5000,
+        });
+      } catch (error) {
         // Sometimes the action is not visible because the permissions network request has not completed.
         // Close the dropdown menu if the action is not visible, and try opening again.
         await this.dropdownButton.click();
-        throw new Error(`Action ${actionName} not visible in dropdown menu`);
+        throw error;
       }
 
-      await this.getByRole("menuitem", { name: actionName }).click({
-        // Short timeout in order to handle retrying in the `toPass` block.
-        timeout: 500,
-      });
-    }).toPass({ timeout: 5000 });
+      await this.getByRole("menuitem", { name: actionName }).click();
+    }).toPass({ timeout: 20_000 });
   }
 }
 
@@ -82,7 +81,7 @@ export class ModsPage extends BasePageObject {
     const contentLoadedLocator = this.getByText("Welcome to PixieBrix!").or(
       this.modTableItems.nth(0),
     );
-    await expect(contentLoadedLocator).toBeVisible({ timeout: 15_000 });
+    await expect(contentLoadedLocator).toBeVisible();
   }
 
   async viewAllMods() {
@@ -173,9 +172,7 @@ export class ActivateModPage extends BasePageObject {
       this.getByRole("heading", { name: "Activate " }),
     ).toBeVisible();
     // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
-    await ensureVisibility(this.getByText(this.modId), {
-      timeout: 10_000,
-    });
+    await ensureVisibility(this.getByText(this.modId));
   }
 
   async getIntegrationConfigField(index: number) {
@@ -201,9 +198,7 @@ export class ActivateModPage extends BasePageObject {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.viewActiveMods();
     // Loading mods sometimes takes upwards of 10s
-    await expect(modsPage.modTableItems.getByText(this.modId)).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(modsPage.modTableItems.getByText(this.modId)).toBeVisible();
     return modsPage;
   }
 

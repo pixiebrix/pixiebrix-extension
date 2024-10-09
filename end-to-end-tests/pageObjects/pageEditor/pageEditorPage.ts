@@ -165,10 +165,10 @@ export class PageEditorPage extends BasePageObject {
     // The save button re-mounts several times so we need to retry clicking the saveButton until the modal is visible
     await expect(async () => {
       await modListItem.saveButton.click();
-      await expect(saveNewModModal).toBeVisible();
-      await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+      await expect(saveNewModModal).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 20_000 });
 
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
     // // Can't use getByLabel to target because the field is composed of multiple widgets
     const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
     const currentId = await registryIdInput.inputValue();

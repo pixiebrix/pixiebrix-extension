@@ -57,9 +57,7 @@ export class WorkshopPage extends BasePageObject {
     const modMedata =
       await createPage.editor.replaceWithModDefinition(modDefinitionName);
     await createPage.createBrickButton.click();
-    await expect(this.getByRole("status").getByText("Created ")).toBeVisible({
-      timeout: 8000,
-    });
+    await expect(this.getByRole("status").getByText("Created ")).toBeVisible();
     return modMedata;
   }
 
