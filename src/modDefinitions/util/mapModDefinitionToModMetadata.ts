@@ -20,7 +20,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 
 /**
- * Select information about the ModDefinition used to activate an ModComponentBase
+ * Select information about the ModDefinition used to activate a ModComponentBase
  *
  * @see ModComponentBase.modMetadata
  */

@@ -30,7 +30,7 @@ import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 const brick = new RunMetadataTransformer();
 
 describe("RunMetadataTransformer", () => {
-  it("returns packaged mod metadata", async () => {
+  it("returns mod metadata", async () => {
     const modComponentRef = modComponentRefFactory();
 
     const logger = new ConsoleLogger({

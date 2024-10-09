@@ -148,7 +148,7 @@ test("create, run, package, and update mod", async ({
   await test.step("Delete the mod in the Workshop", async () => {
     const workshopPage = new WorkshopPage(newPage!, extensionId);
     await workshopPage.goto();
-    await workshopPage.deletePackagedModByModId(modId);
+    await workshopPage.deleteModByModId(modId);
 
     const modsPage = new ModsPage(newPage!, extensionId);
     await modsPage.goto();

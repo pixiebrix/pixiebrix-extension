@@ -105,7 +105,7 @@ export const test = base.extend<
   },
   /**
    * Create a new Page Editor instance for the given URL. Cleans up any mods after the test.
-   * TODO: support saved "packaged" mod cleanup
+   * TODO: support cleaning up mods that have been saved to the server after the test
    */
   async newPageEditorPage({ context, extensionId }, use) {
     const pageEditorPages: PageEditorPage[] = [];
@@ -121,6 +121,7 @@ export const test = base.extend<
       return newPageEditorPage;
     });
 
+    // Cleanup
     for (const page of pageEditorPages) {
       await page.bringToFront();
       await page.cleanup();

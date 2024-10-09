@@ -62,7 +62,7 @@ export class WorkshopPage extends BasePageObject {
     return modMedata;
   }
 
-  async deletePackagedModByModId(modId: string) {
+  async deleteModByModId(modId: string) {
     const editWorkshopModPage = await this.findAndSelectMod(modId);
     await editWorkshopModPage.deleteBrick();
   }
