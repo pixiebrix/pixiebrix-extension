@@ -144,6 +144,9 @@ export function checkExtensionUpdateRequired(
   );
 }
 
+/**
+ * Return activated deployment telemetry for heartbeat. Includes deployments that are activated, but paused.
+ */
 export function selectActivatedDeployments(
   modInstances: ModInstance[],
 ): ActivatedDeployment[] {
@@ -158,6 +161,7 @@ export function selectActivatedDeployments(
         // ModDefinition does not currently require version.
         blueprintVersion:
           modInstance.definition.metadata.version ??
+          // 0.0.0 so it's easier to see the defaulting in the backend
           normalizeSemVerString("0.0.0"),
       })),
     (x) => x.deployment,
