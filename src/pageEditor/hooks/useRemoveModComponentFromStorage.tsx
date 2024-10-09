@@ -59,6 +59,17 @@ export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
   submitCaption: "Deactivate",
 };
 
+export const DELETE_UNSAVED_MOD_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Delete Mod?",
+  message: (
+    <>
+      This action cannot be undone. If you&apos;d like to deactivate this mod
+      instead, save the mod first.
+    </>
+  ),
+  submitCaption: "Delete",
+};
+
 /**
  * Returns a callback that removes a mod component from the Page Editor and Mod Component Storage.
  *
