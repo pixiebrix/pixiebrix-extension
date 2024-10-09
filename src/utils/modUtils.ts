@@ -81,7 +81,6 @@ export function getStandaloneModComponentRuntimeModId(
  * @deprecated standalone mod components have been retired
  */
 function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
-  assertNotNullish(modComponent.modMetadata, "Expected modMetadata");
   return modComponent.modMetadata.id;
 }
 
