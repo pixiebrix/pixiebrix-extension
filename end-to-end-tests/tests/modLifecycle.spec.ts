@@ -25,7 +25,7 @@ import {
 import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
 import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 
-test("create, run, package, and update mod", async ({
+test.only("create, run, package, and update mod", async ({
   page,
   extensionId,
   newPageEditorPage,
