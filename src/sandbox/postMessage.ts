@@ -144,6 +144,9 @@ export default async function postMessage<TReturn extends Payload = Payload>({
     const messageMetadata = removePendingMessageMetadata(messageKey);
     if (isSpecificError(error, TimeoutError)) {
       throw new SandboxTimeoutError(
+        // Datadog strips any additional properties from the error object, so we include the metadata in the message
+        // itself for now until we have a better solution.
+        // See https://github.com/DataDog/browser-sdk/issues/3067
         `Sandbox message timed out: type=${type}, sent=${messageMetadata?.timestamp}, payloadSize=${messageMetadata?.payloadSize}B, pendingMessageCount=${pendingMessageMetadataMap.size}`,
         {
           cause: error,

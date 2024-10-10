@@ -24,7 +24,6 @@ import postMessage, {
   addPostMessageListener,
   pendingMessageMetadataMap,
   type RequestPacket,
-  SandboxTimeoutError,
 } from "./postMessage";
 import { sleep } from "@/utils/timeUtils";
 
@@ -175,18 +174,14 @@ describe("SandboxTimeoutError", () => {
 
     jest.runAllTimers();
 
-    await expect(promise).rejects.toThrow(SandboxTimeoutError);
-    await expect(promise).rejects.toMatchObject({
-      name: "SandboxTimeoutError",
-      message:
-        "Message SANDBOX_PING did not receive a response within 5 seconds",
-      sandboxMessage: {
-        type: "SANDBOX_PING",
-        payloadSize: expect.any(Number),
-        timestamp: expect.any(Number),
-      },
-      pendingSandboxMessages: [],
-    });
+    await expect(promise).rejects.toThrow(
+      expect.objectContaining({
+        name: "SandboxTimeoutError",
+        message: expect.stringMatching(
+          /Sandbox message timed out: type=SANDBOX_PING, sent=\d+, payloadSize=\d+B, pendingMessageCount=0/,
+        ),
+      }),
+    );
   });
 
   test("throws SandboxTimeoutError with correct information for multiple messages", async () => {
@@ -216,62 +211,34 @@ describe("SandboxTimeoutError", () => {
       recipient: unresponsiveChannel as Window,
     });
 
-    await expect(promise1).rejects.toThrow(SandboxTimeoutError);
-    await expect(promise1).rejects.toMatchObject({
-      name: "SandboxTimeoutError",
-      message:
-        "Message SANDBOX_FOO did not receive a response within 5 seconds",
-      sandboxMessage: {
-        type: "SANDBOX_FOO",
-        payloadSize: expect.any(Number),
-        timestamp: expect.any(Number),
-      },
-      pendingSandboxMessages: expect.arrayContaining([
-        {
-          type: "SANDBOX_BAR",
-          payloadSize: expect.any(Number),
-          timestamp: expect.any(Number),
-        },
-        {
-          type: "SANDBOX_BAZ",
-          payloadSize: expect.any(Number),
-          timestamp: expect.any(Number),
-        },
-      ]),
-    });
+    await expect(promise1).rejects.toThrow(
+      expect.objectContaining({
+        name: "SandboxTimeoutError",
+        message: expect.stringMatching(
+          /Sandbox message timed out: type=SANDBOX_FOO, sent=\d+, payloadSize=\d+B, pendingMessageCount=2/,
+        ),
+      }),
+    );
 
-    await expect(promise2).rejects.toThrow(SandboxTimeoutError);
-    await expect(promise2).rejects.toMatchObject({
-      name: "SandboxTimeoutError",
-      message:
-        "Message SANDBOX_BAR did not receive a response within 5 seconds",
-      sandboxMessage: {
-        type: "SANDBOX_BAR",
-        payloadSize: expect.any(Number),
-        timestamp: expect.any(Number),
-      },
-      pendingSandboxMessages: expect.arrayContaining([
-        {
-          type: "SANDBOX_BAZ",
-          payloadSize: expect.any(Number),
-          timestamp: expect.any(Number),
-        },
-      ]),
-    });
+    await expect(promise2).rejects.toThrow(
+      expect.objectContaining({
+        name: "SandboxTimeoutError",
+        message: expect.stringMatching(
+          /Sandbox message timed out: type=SANDBOX_BAR, sent=\d+, payloadSize=\d+B, pendingMessageCount=1/,
+        ),
+      }),
+    );
 
     jest.runAllTimers();
-    await expect(promise3).rejects.toThrow(SandboxTimeoutError);
-    await expect(promise3).rejects.toMatchObject({
-      name: "SandboxTimeoutError",
-      message:
-        "Message SANDBOX_BAZ did not receive a response within 5 seconds",
-      sandboxMessage: {
-        type: "SANDBOX_BAZ",
-        payloadSize: expect.any(Number),
-        timestamp: expect.any(Number),
-      },
-      pendingSandboxMessages: [],
-    });
+
+    await expect(promise3).rejects.toThrow(
+      expect.objectContaining({
+        name: "SandboxTimeoutError",
+        message: expect.stringMatching(
+          /Sandbox message timed out: type=SANDBOX_BAZ, sent=\d+, payloadSize=\d+B, pendingMessageCount=0/,
+        ),
+      }),
+    );
   });
 
   test("clears metadata for resolved messages", async () => {
