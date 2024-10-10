@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
+import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import {
@@ -24,7 +25,8 @@ import {
 } from "@/utils/asyncStateUtils";
 
 beforeEach(async () => {
-  await INTERNAL_reset();
+  await resetManagedStorage();
+  resetAsyncExternalStore();
   await browser.storage.managed.clear();
 });
 
