@@ -47,6 +47,10 @@ import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import { InsertPaneProvider } from "@/pageEditor/panes/insert/InsertPane";
+import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
+import useTeamTrialStatus, {
+  TeamTrialStatus,
+} from "@/components/teamTrials/useTeamTrialStatus";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   StarterBrickTypes.SIDEBAR_PANEL,
@@ -76,6 +80,8 @@ const cleanUpStarterBrickForModComponentFormState = (
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
+  const trialStatus = useTeamTrialStatus();
+
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -128,6 +134,7 @@ const PanelContent: React.FC = () => {
       <ReduxPersistenceContext.Provider value={authPersistenceContext}>
         <ModalProvider>
           <ErrorBoundary>
+            {trialStatus === TeamTrialStatus.EXPIRED && <TeamTrialBanner />}
             <TabConnectionErrorBanner />
             <DatabaseUnresponsiveBanner />
             <DimensionGate>
