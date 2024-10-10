@@ -319,17 +319,6 @@ export function isInitialized(): boolean {
 }
 
 /**
- * Get a _synchronous_ snapshot of the managed storage state.
- * @see useManagedStorageState
- * @see readManagedStorage
- */
-export function getSnapshot(): Nullishable<ManagedStorageState> {
-  expectContext("extension");
-
-  return managedStorageSnapshot;
-}
-
-/**
  * Helper method for resetting the module for testing.
  */
 export async function INTERNAL_reset(): Promise<void> {

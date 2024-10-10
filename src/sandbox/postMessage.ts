@@ -96,17 +96,6 @@ function removePendingMessageMetadata(id: UUID) {
 
 export class SandboxTimeoutError extends Error {
   override name = "SandboxTimeoutError";
-
-  constructor(
-    message: string,
-    public readonly sandboxMessage: PendingMessageMetadata | undefined,
-    public readonly pendingSandboxMessages: PendingMessageMetadata[],
-    options?: ErrorOptions,
-  ) {
-    super(message, options);
-    this.pendingSandboxMessages = pendingSandboxMessages;
-    this.sandboxMessage = sandboxMessage;
-  }
 }
 
 /** Use the postMessage API but expect a response from the target */
@@ -155,9 +144,10 @@ export default async function postMessage<TReturn extends Payload = Payload>({
     const messageMetadata = removePendingMessageMetadata(messageKey);
     if (isSpecificError(error, TimeoutError)) {
       throw new SandboxTimeoutError(
-        error.message,
-        messageMetadata,
-        [...pendingMessageMetadataMap.values()],
+        // Datadog strips any additional properties from the error object, so we include the metadata in the message
+        // itself for now until we have a better solution.
+        // See https://github.com/DataDog/browser-sdk/issues/3067
+        `Sandbox message timed out: type=${type}, sent=${messageMetadata?.timestamp}, payloadSize=${messageMetadata?.payloadSize}B, pendingMessageCount=${pendingMessageMetadataMap.size}`,
         {
           cause: error,
         },

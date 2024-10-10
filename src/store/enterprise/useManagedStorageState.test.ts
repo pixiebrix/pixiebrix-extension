@@ -15,38 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
+import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import {
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 beforeEach(async () => {
-  await INTERNAL_reset();
+  await resetManagedStorage();
+  resetAsyncExternalStore();
   await browser.storage.managed.clear();
 });
 
 describe("useManagedStorageState", () => {
   it("waits on uninitialized state", async () => {
-    const { result, waitFor } = renderHook(() => useManagedStorageState());
-    expect(result.current).toStrictEqual({
-      data: undefined,
-      isLoading: true,
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useManagedStorageState(),
+    );
+    expect(result.current).toStrictEqual(loadingAsyncStateFactory());
+
+    await waitForNextUpdate({
+      // `readManagedStorage` will take a few seconds if there are no policies set
+      timeout: 5000,
     });
 
-    await waitFor(
-      () => {
-        expect(result.current).toStrictEqual({
-          data: {},
-          isLoading: false,
-        });
-      },
-      // XXX: figure out how to use fake timers to avoid slowing down test suite
-      // Must be longer than MAX_MANAGED_STORAGE_WAIT_MILLIS
-      { timeout: 5000 },
-    );
+    expect(result.current).toStrictEqual(valueToAsyncState({}));
   });
 
   it("handles already initialized state", async () => {
-    await browser.storage.managed.set({ partnerId: "taco-bell" });
+    const expectedPolicy = { partnerId: "foo" };
+    await browser.storage.managed.set(expectedPolicy);
 
     const { result, waitForNextUpdate } = renderHook(() =>
       useManagedStorageState(),
@@ -54,25 +55,19 @@ describe("useManagedStorageState", () => {
 
     await waitForNextUpdate();
 
-    expect(result.current).toStrictEqual({
-      data: {
-        partnerId: "taco-bell",
-      },
-      isLoading: false,
-    });
+    expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
   });
 
-  // Can't test because mock doesn't fire change events: https://github.com/clarkbw/jest-webextension-mock/issues/170
-  it.skip("listens for changes", async () => {
+  it("listens for changes", async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       useManagedStorageState(),
     );
     expect(result.current.data).toBeUndefined();
-    await browser.storage.managed.set({ partnerId: "taco-bell" });
+
+    const expectedPolicy = { partnerId: "foo" };
+    await browser.storage.managed.set(expectedPolicy);
+
     await waitForNextUpdate();
-    expect(result.current).toStrictEqual({
-      data: { partnerId: "taco-bell" },
-      isLoading: false,
-    });
+    expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
   });
 });
