@@ -39,8 +39,6 @@ import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
 import { getExtensionToken } from "@/auth/authStorage";
-import type { AsyncState } from "@/types/sliceTypes";
-import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
@@ -56,10 +54,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   // eslint-disable-next-line no-restricted-syntax -- we really do want to resolve to undefined
   getExtensionTokenMock.mockResolvedValue(undefined);
-  useManagedStorageStateMock.mockReturnValue({
-    data: {},
-    isLoading: false,
-  } as AsyncState<ManagedStorageState>);
+  useManagedStorageStateMock.mockReturnValue(valueToAsyncState({}));
 
   usePartnerAuthDataMock.mockReturnValue(valueToAsyncState(undefined));
 });
@@ -165,10 +160,9 @@ describe("useRequiredPartnerAuth", () => {
   });
 
   test("requires integration for managed storage partner", async () => {
-    useManagedStorageStateMock.mockReturnValue({
-      data: { partnerId: "automation-anywhere" },
-      isLoading: false,
-    } as AsyncState<ManagedStorageState>);
+    useManagedStorageStateMock.mockReturnValue(
+      valueToAsyncState({ partnerId: "automation-anywhere" }),
+    );
 
     mockAnonymousMeApiResponse();
 
