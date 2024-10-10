@@ -32,7 +32,9 @@ export class ModTableItem extends BasePageObject {
     // Wrapped in `toPass` due to flakiness with dropdown visibility due to component remounting
     await expect(async () => {
       if (!(await this.dropdownMenu.isVisible())) {
-        await this.dropdownButton.click();
+        await this.dropdownButton.click({
+          timeout: 5000,
+        });
       }
 
       try {
@@ -46,7 +48,9 @@ export class ModTableItem extends BasePageObject {
         throw error;
       }
 
-      await this.getByRole("menuitem", { name: actionName }).click();
+      await this.getByRole("menuitem", { name: actionName }).click({
+        timeout: 5000,
+      });
     }).toPass({ timeout: DEFAULT_TIMEOUT });
   }
 }
