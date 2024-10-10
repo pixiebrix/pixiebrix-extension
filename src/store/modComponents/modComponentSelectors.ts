@@ -33,7 +33,8 @@ export function selectActivatedModComponents({
     throw new TypeError("state migration has not been applied yet");
   }
 
-  // For now, just return the activated mod components directly. In the future, we'll likely store ModInstances
-  // in the state instead so this selector will be re-written to map the ModInstances to their components
+  // For now, just return the activated mod components directly. In the future work, we'll potentially store
+  // ModInstances in the state instead so this selector will be re-written to map the ModInstances to their components
+  // See https://www.notion.so/pixiebrix/Simplify-data-representation-of-activated-mods-to-simplify-code-and-eliminate-common-bugs-10b43b21a25380eaac05d286ca2acb88?pvs=4
   return options.activatedModComponents;
 }

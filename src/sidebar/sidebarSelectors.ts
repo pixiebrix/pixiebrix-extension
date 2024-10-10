@@ -62,6 +62,7 @@ export const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
   sidebar.modActivationPanel,
 ];
 
+// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
 const modComponentForEventKeySelector = createSelector(
   selectSidebarEntries,
   selectActivatedModComponents,
@@ -83,10 +84,12 @@ const modComponentForEventKeySelector = createSelector(
   },
 );
 
+// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
 export const selectModComponentForEventKey =
   (eventKey: string) => (state: SidebarRootState) =>
     modComponentForEventKeySelector(state, eventKey);
 
+// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
 export const selectModComponentFromEventKey = createSelector(
   selectSidebarEntries,
   selectActivatedModComponents,
