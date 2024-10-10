@@ -32,13 +32,14 @@ import {
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { useSelector } from "react-redux";
+import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
 
 type OptionalAction = (() => Promise<void>) | undefined;
 
 type ActionMenuProps = {
   modComponentFormState: ModComponentFormState;
   labelRoot: string;
-  isDirty: boolean;
   isActive: boolean;
   onDuplicate: () => Promise<void>;
   onClearChanges: OptionalAction;
@@ -50,13 +51,15 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
   modComponentFormState,
   isActive,
   labelRoot,
-  isDirty,
   onDuplicate,
   onClearChanges = null,
   onMoveToMod,
   onCopyToMod,
 }) => {
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const isDirty = useSelector(
+    selectModComponentIsDirty(modComponentFormState.uuid),
+  );
 
   const menuItems: EllipsisMenuItem[] = [
     {

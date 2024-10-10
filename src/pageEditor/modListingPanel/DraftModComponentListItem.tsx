@@ -158,7 +158,6 @@ const DraftModComponentListItem: React.FunctionComponent<
       <ModComponentActionMenu
         modComponentFormState={modComponentFormState}
         isActive={isActive}
-        isDirty={isDirty}
         labelRoot={getLabel(modComponentFormState)}
         onDuplicate={async () => {
           dispatch(
