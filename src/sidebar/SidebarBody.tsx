@@ -29,7 +29,6 @@ import useTeamTrialStatus, {
 
 const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
   const restricted = getRestrictedReasonByUrl(url);
-  const trialStatus = useTeamTrialStatus();
 
   return restricted ? (
     <RestrictedUrlPopupApp reason={restricted} url={url} />
@@ -42,6 +41,8 @@ const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
 // navigation in the SidebarApp
 function SidebarBody() {
   const url = useConnectedTargetUrl();
+  const trialStatus = useTeamTrialStatus();
+
   return (
     <>
       <Header />
