@@ -44,29 +44,24 @@ const Template: ComponentStory<typeof ModComponentActionMenu> = (args) => (
 export const NewModComponent = Template.bind({});
 NewModComponent.args = {
   modComponentFormState: triggerFormStateFactory(),
-  onMoveToMod: undefined,
 };
 
 export const OldModComponent = Template.bind({});
 OldModComponent.args = {
   modComponentFormState: triggerFormStateFactory(),
-  onMoveToMod: undefined,
 };
 
 export const Mod = Template.bind({});
 Mod.args = {
   modComponentFormState: triggerFormStateFactory(),
-  onMoveToMod: undefined,
 };
 
 export const NewModComponentInMod = Template.bind({});
 NewModComponentInMod.args = {
   modComponentFormState: triggerFormStateFactory(),
-  onMoveToMod: undefined,
 };
 
 export const OldModComponentInMod = Template.bind({});
 OldModComponentInMod.args = {
   modComponentFormState: triggerFormStateFactory(),
-  onMoveToMod: undefined,
 };

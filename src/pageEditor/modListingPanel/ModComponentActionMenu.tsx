@@ -37,17 +37,10 @@ import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelec
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 
-type ActionMenuProps = {
+const ModComponentActionMenu: React.FC<{
   modComponentFormState: ModComponentFormState;
   labelRoot: string;
-  onMoveToMod: () => Promise<void>;
-};
-
-const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
-  modComponentFormState,
-  labelRoot,
-  onMoveToMod,
-}) => {
+}> = ({ modComponentFormState, labelRoot }) => {
   const dispatch = useDispatch();
 
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
@@ -89,7 +82,9 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
           className={styles.moveIcon}
         />
       ),
-      action: onMoveToMod,
+      async action() {
+        dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
+      },
     },
     {
       title: "Copy to mod",

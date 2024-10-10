@@ -153,9 +153,6 @@ const DraftModComponentListItem: React.FunctionComponent<
         <ModComponentActionMenu
           modComponentFormState={modComponentFormState}
           labelRoot={getLabel(modComponentFormState)}
-          onMoveToMod={async () => {
-            dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
-          }}
         />
       )}
     </ListGroup.Item>
