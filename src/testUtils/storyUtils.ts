@@ -36,7 +36,7 @@ export function settingsStore() {
   });
 }
 
-export function editorStore() {
+export function editorStore(initialState = {}) {
   return configureStore({
     reducer: {
       editor: editorSlice.reducer,
@@ -49,6 +49,6 @@ export function editorStore() {
     middleware(getDefaultMiddleware) {
       return getDefaultMiddleware().concat(appApi.middleware);
     },
-    preloadedState: {},
+    preloadedState: initialState,
   });
 }

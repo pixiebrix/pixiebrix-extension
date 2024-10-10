@@ -21,47 +21,69 @@ import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { editorStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
+import {
+  FOUNDATION_NODE_ID,
+  makeInitialBrickConfigurationUIState,
+} from "@/pageEditor/store/editor/uiState";
+
+type StoryArgs = typeof ModComponentActionMenu & { isDirty: boolean };
 
 export default {
   title: "Sidebar/ActionMenu",
   component: ModComponentActionMenu,
   argTypes: {
-    modComponentFormState: {
-      control: "object",
-      defaultValue: triggerFormStateFactory(),
+    isDirty: {
+      control: "boolean",
+      defaultValue: false,
     },
   },
-} as ComponentMeta<typeof ModComponentActionMenu>;
+} as ComponentMeta<StoryArgs>;
 
-const Template: ComponentStory<typeof ModComponentActionMenu> = (args) => (
-  <div className="d-flex">
-    <Provider store={editorStore()}>
-      <ModComponentActionMenu {...args} />
-    </Provider>
-  </div>
-);
+const Template: ComponentStory<StoryArgs> = (args: { isDirty?: boolean }) => {
+  const { isDirty } = args;
+  const modComponentFormState = triggerFormStateFactory();
+  const store = editorStore({
+    editor: {
+      dirty: isDirty ? { [modComponentFormState.uuid]: true } : {},
+      modComponentFormStates: [modComponentFormState],
+      brickPipelineUIStateById: {
+        [modComponentFormState.uuid]: {
+          pipelineMap: getPipelineMap(
+            modComponentFormState.modComponent.brickPipeline,
+          ),
+          activeNodeId:
+            modComponentFormState.modComponent.brickPipeline[0]?.instanceId ??
+            FOUNDATION_NODE_ID,
+          nodeUIStates: {
+            [FOUNDATION_NODE_ID]:
+              makeInitialBrickConfigurationUIState(FOUNDATION_NODE_ID),
+          },
+        },
+      },
+    },
+  });
 
-export const NewModComponent = Template.bind({});
-NewModComponent.args = {
-  modComponentFormState: triggerFormStateFactory(),
+  // Set the active mod component
+  store.dispatch(actions.setActiveModComponentId(modComponentFormState.uuid));
+
+  return (
+    <div className="d-flex">
+      <Provider store={store}>
+        <ModComponentActionMenu
+          modComponentFormState={modComponentFormState}
+          labelRoot={modComponentFormState.label}
+        />
+      </Provider>
+    </div>
+  );
 };
 
-export const OldModComponent = Template.bind({});
-OldModComponent.args = {
-  modComponentFormState: triggerFormStateFactory(),
-};
+export const CleanModComponent = Template.bind({
+  isDirty: false,
+});
 
-export const Mod = Template.bind({});
-Mod.args = {
-  modComponentFormState: triggerFormStateFactory(),
-};
-
-export const NewModComponentInMod = Template.bind({});
-NewModComponentInMod.args = {
-  modComponentFormState: triggerFormStateFactory(),
-};
-
-export const OldModComponentInMod = Template.bind({});
-OldModComponentInMod.args = {
-  modComponentFormState: triggerFormStateFactory(),
-};
+export const DirtyModComponent = Template.bind({
+  isDirty: true,
+});
