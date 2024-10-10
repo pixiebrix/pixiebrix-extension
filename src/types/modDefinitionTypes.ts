@@ -22,6 +22,7 @@ import {
   type InnerDefinitions,
   type DefinitionKinds,
   type RegistryId,
+  type VersionedMetadata,
 } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
@@ -120,6 +121,8 @@ export type HydratedModComponentDefinition = ModComponentDefinition & {
  */
 export interface UnsavedModDefinition extends Definition {
   kind: typeof DefinitionKinds.MOD;
+  // Strengthen Metadata.version to be required
+  metadata: VersionedMetadata;
   extensionPoints: ModComponentDefinition[];
   definitions?: InnerDefinitions;
   options?: ModOptionsDefinition;

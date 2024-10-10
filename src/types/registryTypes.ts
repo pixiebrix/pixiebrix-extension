@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type Tagged, type ValueOf } from "type-fest";
+import { type SetRequired, type Tagged, type ValueOf } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 import { type FeatureFlag } from "@/auth/featureFlags";
 
@@ -93,6 +93,8 @@ export type Metadata = {
   // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0
   readonly extensionVersion?: SemVerString;
 };
+
+export type VersionedMetadata = SetRequired<Metadata, "version">;
 
 /**
  * Interface for registry package instances, i.e., `Brick`, `StarterBrick`, and `Integration`.

@@ -16,10 +16,10 @@
  */
 
 import { define } from "cooky-cutter";
-import { type Metadata } from "@/types/registryTypes";
+import type { VersionedMetadata } from "@/types/registryTypes";
 import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
 
-export const metadataFactory = define<Metadata>({
+export const metadataFactory = define<VersionedMetadata>({
   id: (n: number) => validateRegistryId(`test/mod-${n}`),
   name: (n: number) => `Mod ${n}`,
   description: "Mod generated from factory",
