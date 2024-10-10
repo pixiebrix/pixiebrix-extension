@@ -20,7 +20,10 @@ import { renderHook } from "@/pageEditor/testHelpers";
 import { initialTheme } from "@/themes/themeStore";
 import { type ThemeAssets, themeStorage } from "@/themes/themeUtils";
 import { activateTheme } from "@/background/messenger/api";
-import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import {
+  INTERNAL_reset,
+  readManagedStorage,
+} from "@/store/enterprise/managedStorage";
 
 jest.mock("@/themes/themeUtils", () => ({
   ...jest.requireActual("@/themes/themeUtils"),
@@ -55,6 +58,9 @@ const customTheme: ThemeAssets = {
 
 describe("useTheme", () => {
   beforeEach(async () => {
+    await INTERNAL_reset();
+    await browser.storage.managed.clear();
+
     jest.mocked(themeStorage.get).mockResolvedValue({
       ...initialTheme,
       lastFetched: Date.now(),

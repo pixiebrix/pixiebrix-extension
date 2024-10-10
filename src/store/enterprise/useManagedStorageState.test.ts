@@ -18,6 +18,10 @@
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import {
+  loadingAsyncStateFactory,
+  valueToAsyncState,
+} from "@/utils/asyncStateUtils";
 
 beforeEach(async () => {
   await INTERNAL_reset();
@@ -26,29 +30,16 @@ beforeEach(async () => {
 
 describe("useManagedStorageState", () => {
   it("waits on uninitialized state", async () => {
-    const { result, waitFor } = renderHook(() => useManagedStorageState());
-    expect(result.current).toStrictEqual({
-      currentData: undefined,
-      data: undefined,
-      error: undefined,
-      isError: false,
-      isFetching: true,
-      isLoading: true,
-      isSuccess: false,
-      isUninitialized: false,
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useManagedStorageState(),
+    );
+    expect(result.current).toStrictEqual(loadingAsyncStateFactory());
+
+    await waitForNextUpdate({
+      timeout: 5000,
     });
 
-    await waitFor(
-      () => {
-        expect(result.current).toStrictEqual({
-          data: {},
-          isLoading: false,
-        });
-      },
-      // XXX: figure out how to use fake timers to avoid slowing down test suite
-      // Must be longer than MAX_MANAGED_STORAGE_WAIT_MILLIS
-      { timeout: 5000 },
-    );
+    expect(result.current).toStrictEqual(valueToAsyncState({}));
   });
 
   it("handles already initialized state", async () => {
