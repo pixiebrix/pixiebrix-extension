@@ -9611,7 +9611,40 @@ exports[`Storyshots Sidebar/ActionMenu Mod 1`] = `
 >
   <div
     className="root"
-  />
+  >
+    <span
+      onClick={[Function]}
+    >
+      <button
+        aria-expanded={false}
+        aria-haspopup={true}
+        className="szh-menu-button button ellipsisMenu"
+        data-testid="ellipsis-menu-button"
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        onMouseDown={[Function]}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </button>
+    </span>
+  </div>
 </div>
 `;
 
@@ -9621,7 +9654,40 @@ exports[`Storyshots Sidebar/ActionMenu New Mod Component 1`] = `
 >
   <div
     className="root"
-  />
+  >
+    <span
+      onClick={[Function]}
+    >
+      <button
+        aria-expanded={false}
+        aria-haspopup={true}
+        className="szh-menu-button button ellipsisMenu"
+        data-testid="ellipsis-menu-button"
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        onMouseDown={[Function]}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </button>
+    </span>
+  </div>
 </div>
 `;
 
@@ -9631,7 +9697,40 @@ exports[`Storyshots Sidebar/ActionMenu New Mod Component In Mod 1`] = `
 >
   <div
     className="root"
-  />
+  >
+    <span
+      onClick={[Function]}
+    >
+      <button
+        aria-expanded={false}
+        aria-haspopup={true}
+        className="szh-menu-button button ellipsisMenu"
+        data-testid="ellipsis-menu-button"
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        onMouseDown={[Function]}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </button>
+    </span>
+  </div>
 </div>
 `;
 
@@ -9641,7 +9740,40 @@ exports[`Storyshots Sidebar/ActionMenu Old Mod Component 1`] = `
 >
   <div
     className="root"
-  />
+  >
+    <span
+      onClick={[Function]}
+    >
+      <button
+        aria-expanded={false}
+        aria-haspopup={true}
+        className="szh-menu-button button ellipsisMenu"
+        data-testid="ellipsis-menu-button"
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        onMouseDown={[Function]}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </button>
+    </span>
+  </div>
 </div>
 `;
 
@@ -9651,7 +9783,40 @@ exports[`Storyshots Sidebar/ActionMenu Old Mod Component In Mod 1`] = `
 >
   <div
     className="root"
-  />
+  >
+    <span
+      onClick={[Function]}
+    >
+      <button
+        aria-expanded={false}
+        aria-haspopup={true}
+        className="szh-menu-button button ellipsisMenu"
+        data-testid="ellipsis-menu-button"
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        onMouseDown={[Function]}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="svg-inline--fa fa-ellipsis-v fa-w-6 "
+          data-icon="ellipsis-v"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          style={{}}
+          viewBox="0 0 192 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            fill="currentColor"
+            style={{}}
+          />
+        </svg>
+      </button>
+    </span>
+  </div>
 </div>
 `;
 
