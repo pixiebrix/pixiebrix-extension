@@ -96,7 +96,7 @@ export const test = pageContextFixture.extend<{
         )) {
           if (autoCleanup) {
             await workshopPage.goto();
-            await workshopPage.deletePackagedModByModId(id);
+            await workshopPage.deleteModByModId(id);
           }
         }
       }

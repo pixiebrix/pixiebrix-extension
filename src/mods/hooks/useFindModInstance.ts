@@ -23,6 +23,7 @@ import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors
 /**
  * Hook to the activated mod instance for a given mod, or undefined if the mod is not activated on the device.
  * @param modId the mod id to find
+ * @returns the mod instance or undefined, if the mod is not activated
  */
 export default function useFindModInstance(
   modId: RegistryId,

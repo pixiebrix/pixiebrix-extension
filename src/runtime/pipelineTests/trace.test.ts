@@ -37,9 +37,9 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type RenderedArgs } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { standaloneModComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
@@ -230,7 +230,7 @@ describe("Trace normal execution", () => {
 
     const instanceId = autoUUIDSequence();
     const runId = autoUUIDSequence();
-    const modComponentRef = standaloneModComponentRefFactory();
+    const modComponentRef = modComponentRefFactory();
 
     const brickConfig = {
       id: echoBrick.id,
@@ -285,7 +285,7 @@ describe("Trace normal execution", () => {
     const runId = autoUUIDSequence();
     const outputKey = validateOutputKey("echo");
 
-    const modComponentRef = standaloneModComponentRefFactory();
+    const modComponentRef = modComponentRefFactory();
 
     const brickPipeline: BrickPipeline = [
       {
@@ -334,7 +334,7 @@ describe("Trace normal execution", () => {
 
     const instanceId = uuidv4();
     const runId = uuidv4();
-    const modComponentRef = standaloneModComponentRefFactory();
+    const modComponentRef = modComponentRefFactory();
     const logger = new ConsoleLogger(
       mapModComponentRefToMessageContext(modComponentRef),
     );

@@ -94,25 +94,23 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           await modComponentToFormState(modComponent);
 
         // Initialize mod options schema if needed
-        if (modComponent.modMetadata) {
-          const { data: modDefinition } = await getModDefinition(
-            { modId: modComponent.modMetadata.id },
-            true,
-          );
-          if (modDefinition) {
-            modComponentFormState.optionsDefinition =
-              modDefinition.options == null
-                ? emptyModOptionsDefinitionFactory()
-                : {
-                    schema: modDefinition.options.schema.properties
-                      ? modDefinition.options.schema
-                      : ({
-                          type: "object",
-                          properties: modDefinition.options.schema,
-                        } as Schema),
-                    uiSchema: modDefinition.options.uiSchema,
-                  };
-          }
+        const { data: modDefinition } = await getModDefinition(
+          { modId: modComponent.modMetadata.id },
+          true,
+        );
+        if (modDefinition) {
+          modComponentFormState.optionsDefinition =
+            modDefinition.options == null
+              ? emptyModOptionsDefinitionFactory()
+              : {
+                  schema: modDefinition.options.schema.properties
+                    ? modDefinition.options.schema
+                    : ({
+                        type: "object",
+                        properties: modDefinition.options.schema,
+                      } as Schema),
+                  uiSchema: modDefinition.options.uiSchema,
+                };
         }
 
         dispatch(

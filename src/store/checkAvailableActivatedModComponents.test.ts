@@ -38,6 +38,7 @@ import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes"
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 jest.mock("@/contentScript/messenger/api");

@@ -17,7 +17,6 @@
 
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
@@ -29,6 +28,8 @@ import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { compact } from "lodash";
+
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 type Config = {
   modComponentId: UUID;
@@ -69,13 +70,15 @@ function useClearModComponentChanges(): (
       });
 
       try {
-        const modComponent = activatedModComponents.find(
+        const activatedModComponent = activatedModComponents.find(
           (x) => x.id === modComponentId,
         );
-        if (modComponent == null) {
+        if (activatedModComponent == null) {
           dispatch(actions.removeModComponentFormState(modComponentId));
         } else {
-          const formState = await modComponentToFormState(modComponent);
+          const formState = await modComponentToFormState(
+            activatedModComponent,
+          );
           initModOptionsIfNeeded(formState, compact(mods));
           dispatch(actions.resetActivatedModComponentFormState(formState));
         }

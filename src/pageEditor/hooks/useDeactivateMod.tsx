@@ -23,13 +23,12 @@ import {
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { getModComponentId } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 type Config = {
@@ -44,7 +43,7 @@ type Config = {
 function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstanceMap = useSelector(selectModInstanceMap);
   const modComponentFormStates = useSelector(selectModComponentFormStates);
   const { showConfirmation } = useModals();
 
@@ -63,11 +62,17 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
         }
       }
 
-      const modComponentIds = uniq(
-        [...activatedModComponents, ...modComponentFormStates]
-          .filter((x) => x.modMetadata.id === modId)
-          .map((x) => getModComponentId(x)),
-      );
+      const modInstance = modInstanceMap.get(modId);
+
+      const formComponentIds = modComponentFormStates
+        .filter((x) => x.modMetadata.id === modId)
+        .map((x) => x.uuid);
+
+      const modComponentIds = uniq([
+        ...(modInstance?.modComponentIds ?? []),
+        ...formComponentIds,
+      ]);
+
       await Promise.all(
         modComponentIds.map(async (modComponentId) =>
           removeModComponentFromStorage({
@@ -85,8 +90,8 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
     [
       dispatch,
       modComponentFormStates,
-      activatedModComponents,
-      useRemoveModComponentFromStorage,
+      modInstanceMap,
+      removeModComponentFromStorage,
       showConfirmation,
     ],
   );
