@@ -24,7 +24,6 @@ import {
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import {
   type HydratedModComponent,
-  type ModComponentBase,
   type ModComponentRef,
   type ModMetadata,
 } from "@/types/modComponentTypes";
@@ -33,7 +32,6 @@ import {
   INNER_SCOPE,
   type RegistryId,
 } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
 import { assertNotNullish, type Nullishable } from "./nullishUtils";
 import {
   minimalSchemaFactory,
@@ -62,29 +60,6 @@ import { type ModInstance } from "@/types/modInstanceTypes";
 import { createPrivateSharing } from "@/utils/registryUtils";
 
 /**
- * Returns a synthetic mod id for a standalone mod component for use in the runtime
- * @param modComponentId the standalone mod component id
- * @see INNER_SCOPE
- * @deprecated standalone mod components have been retired
- */
-export function getStandaloneModComponentRuntimeModId(
-  modComponentId: UUID,
-): RegistryId {
-  return validateRegistryId(
-    `${INNER_SCOPE}/mod/${modComponentId.toLowerCase()}`,
-  );
-}
-
-/**
- * Returns a modId suitable for use in the runtime.
- * @since 2.0.6
- * @deprecated standalone mod components have been retired
- */
-function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
-  return modComponent.modMetadata.id;
-}
-
-/**
  * Returns the ModComponentRef for a given mod component.
  * @see mapMessageContextToModComponentRef
  */
@@ -94,7 +69,7 @@ export function getModComponentRef(
 ): ModComponentRef {
   return {
     modComponentId: modComponent.id,
-    modId: getRuntimeModId(modComponent),
+    modId: modComponent.modMetadata.id,
     starterBrickId: modComponent.extensionPointId,
   };
 }

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isModComponentBase } from "@/pageEditor/modListingPanel/common";
 import { type BrickConfig } from "@/bricks/types";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
@@ -30,11 +28,7 @@ import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
-import {
-  type ModComponentBase,
-  type ModMetadata,
-} from "@/types/modComponentTypes";
-import { type UUID } from "@/types/stringTypes";
+import { type ModMetadata } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
@@ -55,14 +49,6 @@ export function mapModDefinitionUpsertResponseToModMetadata(
     sharing: pick(response, ["public", "organizations"]),
     ...pick(response, ["updated_at"]),
   };
-}
-
-export function getModComponentId(
-  modComponentOrFormState: ModComponentBase | ModComponentFormState,
-): UUID {
-  return isModComponentBase(modComponentOrFormState)
-    ? modComponentOrFormState.id
-    : modComponentOrFormState.uuid;
 }
 
 /**

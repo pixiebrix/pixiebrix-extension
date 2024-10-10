@@ -120,8 +120,7 @@ export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
 }
 
 /**
- * Remove a mod component form state from the Page Editor. This could result in deleting the mod component if
- * it is not saved to the cloud as a standalone mod.
+ * Remove a mod component form state from the Page Editor.
  * @param state The redux state (slice)
  * @param uuid The id for the mod component to remove
  */

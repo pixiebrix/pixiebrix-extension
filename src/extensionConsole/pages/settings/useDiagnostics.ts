@@ -16,7 +16,6 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
@@ -32,6 +31,8 @@ import download from "downloadjs";
 import filenamify from "filenamify";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
+
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 async function collectDiagnostics({
   modComponents,

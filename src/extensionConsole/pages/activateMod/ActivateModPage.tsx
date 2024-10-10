@@ -26,7 +26,6 @@ import { useHistory } from "react-router";
 import Page from "@/layout/Page";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { useSelector } from "react-redux";
-import { selectModHasAnyActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { BusinessError } from "@/errors/businessErrors";
 import { DefinitionKinds } from "@/types/registryTypes";
@@ -34,6 +33,7 @@ import { truncate } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import { useGetModDefinitionQuery } from "@/data/service/api";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 /**
  * Effect to automatically redirect the user to the mods screen if the mod is not found.
@@ -65,6 +65,8 @@ const ActivateModPage: React.FC = () => {
   const modId = useRegistryIdParam();
   assertNotNullish(modId, "modId is required to activate a mod definition");
 
+  const modInstanceMap = useSelector(selectModInstanceMap);
+
   const modDefinitionQuery = useGetModDefinitionQuery(
     { modId },
     {
@@ -91,14 +93,9 @@ const ActivateModPage: React.FC = () => {
     },
   );
 
-  // Standalone mod components can't be reactivated. So will always be false for standalone mod components synthetic ids
   // For mod definitions, we could use the queried modId to decide if the mod is already activated before the mod
   // definition is fetched. But in practice, fetching the mod definition will be fast enough that there's no UX benefit
   const { data: modDefinition } = validatedModDefinitionQuery;
-
-  const isReactivate = useSelector(
-    selectModHasAnyActivatedModComponents(modId),
-  );
 
   if (!validatedModDefinitionQuery.isSuccess) {
     return (
@@ -116,6 +113,7 @@ const ActivateModPage: React.FC = () => {
     );
   }
 
+  const isReactivate = modInstanceMap.has(modId);
   const title = `${isReactivate ? "Reactivate" : "Activate"} ${truncate(
     modDefinition?.metadata.name,
     {

@@ -321,7 +321,7 @@ export type ModComponentRef = {
   modComponentId: UUID;
 
   /**
-   * Mod the ModComponent is from. An `@internal` scope, if from a standalone mod component.
+   * Mod the ModComponent is from.
    * @see INNER_SCOPE
    */
   modId: RegistryId;

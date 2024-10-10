@@ -78,8 +78,8 @@ class RunMetadataTransformer extends TransformerABC {
         description: "The run id, or null if run id is not tracked for run",
       },
       mod: {
-        type: ["object", "null"],
-        description: "Mod metadata, or null if not running in a packaged mod",
+        type: "object",
+        description: "Mod metadata",
         properties: {
           id: {
             type: "string",
@@ -109,14 +109,10 @@ class RunMetadataTransformer extends TransformerABC {
     const { context } = logger;
 
     return {
-      mod:
-        context.modId == null
-          ? null
-          : {
-              id: context.modId,
-              // `modVersion` won't be present for standalone mod components
-              version: context.modVersion,
-            },
+      mod: {
+        id: meta.modComponentRef.modId,
+        version: context.modVersion,
+      },
       deploymentId: context.deploymentId ?? null,
       modComponentId: meta.modComponentRef.modComponentId,
       runId: meta.runId,

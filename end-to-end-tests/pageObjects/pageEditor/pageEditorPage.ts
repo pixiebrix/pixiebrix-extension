@@ -59,7 +59,7 @@ class EditorPane extends BasePageObject {
  */
 export class PageEditorPage extends BasePageObject {
   private readonly pageEditorUrl: string;
-  private readonly savedPackageModIds: string[] = [];
+  private readonly savedModIds: string[] = [];
 
   modListingPanel = new ModListingPanel(this.getByTestId("modListingPanel"));
 
@@ -116,7 +116,7 @@ export class PageEditorPage extends BasePageObject {
    */
   async saveActiveMod() {
     // TODO: this method is currently meant for mods that aren't meant to be
-    //  cleaned up after the test. Future work is adding affordance to clean up saved packaged
+    //  cleaned up after the test. Future work is adding affordance to clean up saved
     //  mods, with an option to avoid cleanup for certain mods.
     await this.modListingPanel.activeModListItem.saveButton.click();
     await expect(
@@ -276,7 +276,7 @@ export class PageEditorPage extends BasePageObject {
     const createModModal = new CreateModModal(this.getByRole("dialog"));
     const modId = await createModModal.copyMod(modName, modUuid);
 
-    this.savedPackageModIds.push(modId);
+    this.savedModIds.push(modId);
   }
 
   async deactivateMod(modName: string) {
@@ -303,8 +303,8 @@ export class PageEditorPage extends BasePageObject {
 
     const workshopPage = new WorkshopPage(this.page, this.extensionId);
     await workshopPage.goto();
-    for (const packagedModId of this.savedPackageModIds) {
-      await workshopPage.deletePackagedModByModId(packagedModId);
+    for (const modId of this.savedModIds) {
+      await workshopPage.deleteModByModId(modId);
     }
   }
 }

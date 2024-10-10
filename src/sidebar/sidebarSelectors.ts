@@ -19,13 +19,14 @@ import {
   isBaseModComponentPanelEntry,
   type SidebarRootState,
 } from "@/types/sidebarTypes";
-import { isEmpty } from "lodash";
+import { isEmpty, memoize } from "lodash";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { getVisiblePanelCount } from "@/store/sidebar/sidebarUtils";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
+
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
@@ -61,6 +62,7 @@ export const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
   sidebar.modActivationPanel,
 ];
 
+// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
 const modComponentForEventKeySelector = createSelector(
   selectSidebarEntries,
   selectActivatedModComponents,
@@ -82,30 +84,31 @@ const modComponentForEventKeySelector = createSelector(
   },
 );
 
+// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
 export const selectModComponentForEventKey =
   (eventKey: string) => (state: SidebarRootState) =>
     modComponentForEventKeySelector(state, eventKey);
 
-export const selectModComponentFromEventKey =
-  (state: SidebarRootState) =>
-  (eventKey: Nullishable<string>): ActivatedModComponent | undefined => {
-    const sidebarEntries = selectSidebarEntries(state);
-    const modComponents = selectActivatedModComponents(state);
+// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
+export const selectModComponentFromEventKey = createSelector(
+  selectSidebarEntries,
+  selectActivatedModComponents,
+  (sidebarEntries, modComponents) =>
+    memoize((eventKey: Nullishable<string>) => {
+      // Get sidebar entry by event key
+      const sidebarEntry = sidebarEntries.find(
+        (entry) => eventKeyForEntry(entry) === eventKey,
+      );
 
-    // Get sidebar entry by event key
-    const sidebarEntry = sidebarEntries.find(
-      (entry) => eventKeyForEntry(entry) === eventKey,
-    );
+      if (!isBaseModComponentPanelEntry(sidebarEntry)) {
+        return;
+      }
 
-    if (!isBaseModComponentPanelEntry(sidebarEntry)) {
-      return;
-    }
-
-    return modComponents.find(
-      (modComponent) =>
-        modComponent.id === sidebarEntry.modComponentRef.modComponentId,
-    );
-  };
+      return modComponents.find(
+        (x) => x.id === sidebarEntry.modComponentRef.modComponentId,
+      );
+    }),
+);
 
 export const selectClosedTabs = ({ sidebar }: SidebarRootState) =>
   sidebar.closedTabs;

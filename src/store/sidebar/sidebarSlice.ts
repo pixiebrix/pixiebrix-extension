@@ -130,13 +130,10 @@ export function fixActiveTabOnRemoveInPlace(
       state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
       // No mod component match, try finding another panel for the mod
-
       const matchingMod = panels.find(
         ({ modComponentRef: { modId } }) =>
           "modComponentRef" in removedEntry &&
-          modId === removedEntry.modComponentRef.modId &&
-          // Require modId to avoid switching between panels of standalone mod components
-          modId,
+          modId === removedEntry.modComponentRef.modId,
       );
 
       if (matchingMod) {

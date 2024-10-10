@@ -293,12 +293,10 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
       this.modComponents.push(modComponent);
     }
 
-    if (modComponent.modMetadata) {
-      this.platform.state.registerModVariables(
-        modComponent.modMetadata.id,
-        modComponent.variablesDefinition,
-      );
-    }
+    this.platform.state.registerModVariables(
+      modComponent.modMetadata.id,
+      modComponent.variablesDefinition,
+    );
   }
 
   abstract defaultReader(): Promise<Reader>;
