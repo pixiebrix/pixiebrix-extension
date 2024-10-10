@@ -20,9 +20,9 @@ import { type Except } from "type-fest";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
-  type Metadata,
   type RegistryId,
   type Sharing,
+  type VersionedMetadata,
 } from "@/types/registryTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
@@ -50,7 +50,7 @@ import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
  */
 // XXX: previously we didn't export because the usage was clearer as ModComponentBase[_recipe]. However, the ergonomics
 // of (ModMetadata | undefined) were bad to handle with strict null checks
-export type ModMetadata = Metadata & {
+export type ModMetadata = VersionedMetadata & {
   /**
    * `undefined` for mods that were activated prior to the field being added
    */

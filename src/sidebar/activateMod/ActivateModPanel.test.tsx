@@ -54,6 +54,7 @@ import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");
@@ -147,10 +148,10 @@ function setupMocksAndRender(
 ) {
   modDefinition = defaultModDefinitionFactory({
     ...modDefinitionOverride,
-    metadata: {
+    metadata: modMetadataFactory({
       id: modRegistryId,
       name: "Test Mod",
-    },
+    }),
   });
   useRequiredModDefinitionsMock.mockReturnValue(
     valueToAsyncCacheState([modDefinition]),

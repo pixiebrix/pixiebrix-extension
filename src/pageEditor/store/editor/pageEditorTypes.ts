@@ -22,7 +22,7 @@ import { type SettingsRootState } from "@/store/settings/settingsTypes";
 import { type RuntimeRootState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import { type RegistryId, type VersionedMetadata } from "@/types/registryTypes";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
@@ -70,7 +70,7 @@ export enum ModalKey {
 }
 
 export type ModMetadataFormState = Pick<
-  Metadata,
+  VersionedMetadata,
   "id" | "name" | "version" | "description"
 >;
 
