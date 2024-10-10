@@ -84,6 +84,7 @@ export type Metadata = {
    *
    * Currently optional because it defaults to the browser extension version for bricks defined in JS.
    */
+  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9265 -- require version for all metadata
   readonly version?: SemVerString;
 
   /**
@@ -94,6 +95,19 @@ export type Metadata = {
   readonly extensionVersion?: SemVerString;
 };
 
+/**
+ * Registry item metadata definition shape with required version.
+ *
+ * Introduced in 2.1.5 to strengthen the type of `Metadata.version` for ModDefinitions.
+ *
+ * Use PackageInstance instead if expecting a package instance, e.g., `Brick`, `StarterBrick`, `Integration`.
+ *
+ * @see ModDefinition.metadata
+ * @see Metadata
+ * @see PackageInstance
+ * @since 2.1.5
+ */
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9265 -- require version for all metadata
 export type VersionedMetadata = SetRequired<Metadata, "version">;
 
 /**
