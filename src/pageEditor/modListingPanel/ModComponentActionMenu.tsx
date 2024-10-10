@@ -40,14 +40,12 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 type ActionMenuProps = {
   modComponentFormState: ModComponentFormState;
   labelRoot: string;
-  onDuplicate: () => Promise<void>;
   onMoveToMod: () => Promise<void>;
 };
 
 const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
   modComponentFormState,
   labelRoot,
-  onDuplicate,
   onMoveToMod,
 }) => {
   const dispatch = useDispatch();
@@ -75,7 +73,12 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: "Duplicate",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
-      action: onDuplicate,
+      async action() {
+        dispatch(
+          // Duplicate the mod component within the current mod
+          actions.duplicateActiveModComponent(),
+        );
+      },
     },
     {
       title: "Move to mod",

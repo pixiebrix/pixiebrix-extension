@@ -153,12 +153,6 @@ const DraftModComponentListItem: React.FunctionComponent<
         <ModComponentActionMenu
           modComponentFormState={modComponentFormState}
           labelRoot={getLabel(modComponentFormState)}
-          onDuplicate={async () => {
-            dispatch(
-              // Duplicate the mod component in the same mod
-              actions.duplicateActiveModComponent(),
-            );
-          }}
           onMoveToMod={async () => {
             dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
           }}
