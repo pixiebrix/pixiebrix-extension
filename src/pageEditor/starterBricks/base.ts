@@ -347,6 +347,7 @@ export function baseSelectStarterBrick(
       id: metadata.id,
       // The server requires the version to save the brick, even though it's not marked as required
       // in the front-end schemas
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9265 -- mark version as required
       version: metadata.version ?? normalizeSemVerString("1.0.0"),
       name: metadata.name,
       // The server requires the description to save the brick, even though it's not marked as required

@@ -48,7 +48,10 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  modComponentFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import {
   defaultModDefinitionFactory,
   innerStarterBrickModDefinitionFactory,
@@ -356,13 +359,12 @@ describe("replaceModComponent round trip", () => {
 
     jest.mocked(lookupStarterBrick).mockResolvedValue({
       ...modDefinition.definitions!.extensionPoint!,
-      metadata: {
+      metadata: modMetadataFactory({
         id: calculateInnerRegistryId(
           modDefinition.definitions!.extensionPoint!,
         ),
         name: "Internal Starter Brick",
-        version: normalizeSemVerString("1.0.0"),
-      },
+      }),
     } as any);
 
     const modComponentFormState =
