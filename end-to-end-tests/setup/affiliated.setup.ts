@@ -45,7 +45,6 @@ test("authenticate with affiliated user", async ({
       page.getByText(
         "Successfully linked the Browser Extension to your PixieBrix account",
       ),
-      { timeout: 12_000 },
     );
     await expect(page.getByText(E2E_TEST_USER_EMAIL_AFFILIATED)).toBeVisible();
     await expect(page.getByText("Admin Console")).toBeVisible();
@@ -54,7 +53,7 @@ test("authenticate with affiliated user", async ({
   // We need to wait for a couple of seconds to ensure that the deployment is activated in the bg script to avoid flakiness
   // when loading the extension console. If the deployment is not activated, then a modal will pop up prompting for activation.
   // eslint-disable-next-line playwright/no-wait-for-timeout -- no easy way to detect when the bg script is done activating the deployment
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(5000);
 
   let extensionConsolePage: Page;
   await test.step("Open Extension Console", async () => {

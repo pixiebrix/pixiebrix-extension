@@ -31,7 +31,7 @@ export const openExtensionConsoleFromAdmin = async (
     await adminPage
       .locator("button")
       .filter({ hasText: "Open Extension Console" })
-      .click();
+      .click({ timeout: 5000 });
 
     extensionConsolePage = context
       .pages()
@@ -40,12 +40,14 @@ export const openExtensionConsoleFromAdmin = async (
     if (!extensionConsolePage) {
       throw new Error("Extension console page not found");
     }
+  }).toPass({ timeout: 20_000 });
 
-    await expect(extensionConsolePage.locator("#container")).toContainText(
-      "Extension Console",
-    );
-    await expect(extensionConsolePage.getByText(userName)).toBeVisible();
-  }).toPass({ timeout: 15_000 });
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- extensionConsolePage is defined
+  await expect(extensionConsolePage!.locator("#container")).toContainText(
+    "Extension Console",
+  );
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- extensionConsolePage is defined
+  await expect(extensionConsolePage!.getByText(userName)).toBeVisible();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- extensionConsolePage is defined
   return extensionConsolePage!;

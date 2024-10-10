@@ -21,6 +21,7 @@ import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
 import { validateRegistryId } from "@/types/helpers";
 import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
+import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.getByTestId("ellipsis-menu-button");
@@ -28,18 +29,29 @@ export class ModTableItem extends BasePageObject {
   statusCell = this.getByTestId("status-cell");
 
   async clickAction(actionName: string) {
-    // Wrapped in `toPass` due to flakiness with dropdown visibility
-    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
+    // Wrapped in `toPass` due to flakiness with dropdown visibility due to component remounting
     await expect(async () => {
       if (!(await this.dropdownMenu.isVisible())) {
+        await this.dropdownButton.click({
+          timeout: 5000,
+        });
+      }
+
+      try {
+        await this.getByRole("menuitem", { name: actionName }).waitFor({
+          timeout: 5000,
+        });
+      } catch (error) {
+        // Sometimes the action is not visible because the permissions network request has not completed.
+        // Close the dropdown menu if the action is not visible, and try opening again.
         await this.dropdownButton.click();
+        throw error;
       }
 
       await this.getByRole("menuitem", { name: actionName }).click({
-        // Short timeout in order to handle retrying in the `toPass` block.
-        timeout: 500,
+        timeout: 5000,
       });
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: DEFAULT_TIMEOUT });
   }
 }
 
@@ -74,7 +86,7 @@ export class ModsPage extends BasePageObject {
     const contentLoadedLocator = this.getByText("Welcome to PixieBrix!").or(
       this.modTableItems.nth(0),
     );
-    await expect(contentLoadedLocator).toBeVisible({ timeout: 15_000 });
+    await expect(contentLoadedLocator).toBeVisible();
   }
 
   async viewAllMods() {
@@ -162,9 +174,7 @@ export class ActivateModPage extends BasePageObject {
       this.getByRole("heading", { name: "Activate " }),
     ).toBeVisible();
     // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
-    await ensureVisibility(this.getByText(this.modId), {
-      timeout: 10_000,
-    });
+    await ensureVisibility(this.getByText(this.modId));
   }
 
   async getIntegrationConfigField(index: number) {
@@ -190,9 +200,7 @@ export class ActivateModPage extends BasePageObject {
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.viewActiveMods();
     // Loading mods sometimes takes upwards of 10s
-    await expect(modsPage.modTableItems.getByText(this.modId)).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(modsPage.modTableItems.getByText(this.modId)).toBeVisible();
     return modsPage;
   }
 

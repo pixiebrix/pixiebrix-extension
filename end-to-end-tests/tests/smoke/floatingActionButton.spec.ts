@@ -19,6 +19,7 @@ import { test, expect } from "../../fixtures/testBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
 import { getSidebarPage, isSidebarOpen } from "../../utils";
+import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 test.describe("sidebar page smoke test", () => {
   test("can toggle the sidebar from the floating action button and view the related mod's sidebar panel", async ({
@@ -45,7 +46,7 @@ test.describe("sidebar page smoke test", () => {
 
     await expect(() => {
       expect(isSidebarOpen(page, extensionId)).toBe(false);
-    }).toPass({ timeout: 5000 });
+    }).toPass({ timeout: DEFAULT_TIMEOUT });
   });
 
   test("can hide the floating action button", async ({ page, extensionId }) => {
@@ -53,7 +54,7 @@ test.describe("sidebar page smoke test", () => {
 
     const floatingActionButton = new FloatingActionButton(page);
     const actionButton = await floatingActionButton.getActionButton();
-    await expect(actionButton).toBeVisible({ timeout: 10_000 });
+    await expect(actionButton).toBeVisible();
 
     await floatingActionButton.hideFloatingActionButton();
 

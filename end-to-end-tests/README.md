@@ -65,7 +65,8 @@ in the cli.
 
 Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
 test should represent one full feature flow, which may include multiple steps and assertions. Avoid splitting
-a single feature flow across multiple tests, preferring longer tests if necessary.
+a single feature flow across multiple tests, preferring longer tests if necessary. Ensure that new tests are not flaky by running them
+multiple times locally (you can use the `--repeat-each` option for convenience: `npm run test:e2e -- <name-of-test --repeat-each 3`)
 
 ## Debugging Tests
 
@@ -122,6 +123,12 @@ view the report by running
 
 ```bash
 ./scripts/show-pr-e2e-report.sh -p <pull-request-number>
+```
+
+You can also pass in the run id instead if you want to view a specific run's report.
+
+```bash
+./scripts/show-pr-e2e-report.sh -r <run-id>
 ```
 
 You will need to have `7zz` and `gh` installed to run this script (install using brew).

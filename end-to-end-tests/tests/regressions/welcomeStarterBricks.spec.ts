@@ -50,7 +50,15 @@ test("#8740: can view the starter mods on the pixiebrix.com/welcome page", async
 
   const sideBarPage = await getSidebarPage(page, extensionId);
 
-  await expect(sideBarPage.getByRole("tab", { name: "Mods" })).toBeVisible();
+  try {
+    await expect(sideBarPage.getByRole("tab", { name: "Mods" })).toBeVisible();
+  } catch {
+    // There seems to be a race condition where a welcome mod is already loaded, which will then hide the Mod launcher tab
+    // If this happens, we can open the mod launcher tab directly
+    await sideBarPage.getByLabel("Open Mod Launcher").click();
+    // eslint-disable-next-line playwright/no-conditional-expect -- see above comment
+    await expect(sideBarPage.getByRole("tab", { name: "Mods" })).toBeVisible();
+  }
 
   await expect(
     sideBarPage.locator(".list-group").getByRole("heading").first(),

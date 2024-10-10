@@ -53,6 +53,9 @@ const getChromiumChannelsFromEnv = (): SupportedChannel[] => {
   });
 };
 
+/** Default timeout used for each action and assertion */
+export const DEFAULT_TIMEOUT = 20_000;
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -73,8 +76,16 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Timeout for the entire test run */
   globalTimeout: 30 * 60 * 1000, // 30 minutes
   expect: {
-    /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
-    timeout: 5000,
+    /**
+     * Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting.
+     *
+     * Set to 20s due to spikes in API latency. See example traces:
+     * GET api/bricks/
+     * https://app.datadoghq.com/apm/trace/1816851494275985657?graphType=flamegraph&shouldShowLegend=true&sort=time&spanID=14068679180114270950&timeHint=1728332087443.742
+     * POST api/bricks/
+     * https://app.datadoghq.com/apm/trace/7735170839924641545?graphType=flamegraph&shouldShowLegend=true&sort=time&spanID=13697932419891897088&timeHint=1728331856832.3618
+     */
+    timeout: DEFAULT_TIMEOUT,
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.1,
     },
@@ -86,6 +97,8 @@ export default defineConfig<{ chromiumChannel: string }>({
     ["html", { outputFolder: "./end-to-end-tests/.report" }],
     ["json", { outputFile: "./end-to-end-tests/.report/report.json" }],
   ],
+  // /* Repeat each test N times. Useful for catching flaky test. */
+  // repeatEach: 3,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -95,7 +108,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     trace: CI ? "on-first-retry" : "retain-on-failure",
 
     /* Set the default timeout for actions such as `click` */
-    actionTimeout: 5000,
+    actionTimeout: DEFAULT_TIMEOUT,
 
     /* Set the default timeout for page navigations */
     navigationTimeout: 10_000,

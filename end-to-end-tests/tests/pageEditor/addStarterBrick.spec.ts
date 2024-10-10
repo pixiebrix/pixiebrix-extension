@@ -157,6 +157,11 @@ test("Add starter brick to mod", async ({
   verifyModDefinitionSnapshot,
   chromiumChannel,
 }) => {
+  test.slow(
+    true,
+    "Longer test due to verifying each starter brick definition in one user flow",
+  );
+
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;

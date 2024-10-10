@@ -30,6 +30,7 @@ import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 import { uuidv4 } from "@/types/helpers";
+import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 class EditorPane extends BasePageObject {
   editTab = this.getByRole("tab", { name: "Edit" });
@@ -160,15 +161,16 @@ export class PageEditorPage extends BasePageObject {
         "Save the mod to assign a Mod ID",
       ),
     ).toBeVisible();
-    // eslint-disable-next-line playwright/no-wait-for-timeout -- The save button re-mounts several times so we need a slight delay here before playwright clicks
-    await this.page.waitForTimeout(2000);
-    await modListItem.saveButton.click();
 
-    // Handle the "Save new mod" modal
     const saveNewModModal = this.page.locator(".modal-content");
-    await expect(saveNewModModal).toBeVisible();
-    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
+    // The save button re-mounts several times so we need to retry clicking the saveButton until the modal is visible
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9266
+    await expect(async () => {
+      await modListItem.saveButton.click();
+      await expect(saveNewModModal).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: DEFAULT_TIMEOUT });
 
+    await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
     // // Can't use getByLabel to target because the field is composed of multiple widgets
     const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
     const currentId = await registryIdInput.inputValue();

@@ -32,6 +32,7 @@ import { type Serializable } from "playwright-core/types/structs";
 import { SERVICE_URL } from "../../env";
 import { ExtensionsShortcutsPage } from "../../pageObjects/extensionsShortcutsPage";
 import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
+import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -121,7 +122,6 @@ test("can activate a mod with built-in integration", async ({
 test("validates activating a mod with required integrations", async ({
   page,
   extensionId,
-  context,
 }) => {
   const modId = "@e2e-testing/summarize-text-open-ai";
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -160,13 +160,18 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
 
   await expect(sideBarPage.getByTestId("card").getByText(note)).toBeVisible();
 
-  // Get the correct container element, as the note text and delete button are wrapped in a div
-  await sideBarPage
-    .getByText(`${note} Delete Note`)
-    .getByRole("button", { name: "Delete Note" })
-    .click();
+  // Wrapped in a toPass block in case the delete button isn't clicked successfully due to page shifting
+  await expect(async () => {
+    // Get the correct container element, as the note text and delete button are wrapped in a div
+    await sideBarPage
+      .getByText(`${note} Delete Note`)
+      .getByRole("button", { name: "Delete Note" })
+      .click();
 
-  await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden();
+    await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden({
+      timeout: 5000,
+    });
+  }).toPass({ timeout: DEFAULT_TIMEOUT });
 });
 
 test("activating a mod when the quickbar shortcut is not configured", async ({
@@ -240,14 +245,10 @@ test("can activate a mod via url", async ({ page, extensionId }) => {
 
   await page.goto(activationLink);
 
-  await expect(async () => {
-    await expect(page).toHaveURL(
-      `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
-    );
-  }).toPass({ timeout: 5000 });
-  await expect(page.getByRole("code")).toContainText(modId, {
-    timeout: 10_000,
-  });
+  await page.waitForURL(
+    `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+  );
+  await expect(page.getByRole("code")).toContainText(modId);
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();

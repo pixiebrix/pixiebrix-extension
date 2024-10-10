@@ -48,9 +48,7 @@ export const launchPersistentContextWithExtension = async (
 export const getExtensionId = async (context: BrowserContext) => {
   const background =
     context.serviceWorkers()[0] ||
-    (await context.waitForEvent("serviceworker", {
-      timeout: 3000,
-    }));
+    (await context.waitForEvent("serviceworker"));
 
   const extensionId = background.url().split("/")[2];
 

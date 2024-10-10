@@ -121,7 +121,7 @@ test("#8206: clicking links from the sidebar doesn't crash browser", async ({
       name: "Active Mods",
     });
     // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
-    await ensureVisibility(activeModsHeading, { timeout: 10_000 });
+    await ensureVisibility(activeModsHeading);
   });
 
   await test.step("Clicking markdown text link", async () => {

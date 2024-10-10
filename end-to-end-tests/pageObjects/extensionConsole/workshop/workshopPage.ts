@@ -42,6 +42,7 @@ export class WorkshopPage extends BasePageObject {
 
   async findAndSelectMod(modId: string) {
     await this.getByPlaceholder("Start typing to find results").fill(modId);
+    await this.getByRole("cell", { name: modId }).waitFor();
     await this.getByRole("cell", { name: modId }).click();
 
     const editPage = new EditWorkshopModPage(this.page);
@@ -56,9 +57,7 @@ export class WorkshopPage extends BasePageObject {
     const modMedata =
       await createPage.editor.replaceWithModDefinition(modDefinitionName);
     await createPage.createBrickButton.click();
-    await expect(this.getByRole("status").getByText("Created ")).toBeVisible({
-      timeout: 8000,
-    });
+    await expect(this.getByRole("status").getByText("Created ")).toBeVisible();
     return modMedata;
   }
 

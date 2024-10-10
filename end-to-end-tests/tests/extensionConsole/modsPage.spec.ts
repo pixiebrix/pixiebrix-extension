@@ -19,6 +19,7 @@ import { expect, test } from "../../fixtures/testBase";
 import { ModsPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
+import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 test("can open mod in the workshop", async ({ page, extensionId }) => {
   const modId = "@e2e-testing/shared-notes-sidebar";
@@ -32,6 +33,6 @@ test("can open mod in the workshop", async ({ page, extensionId }) => {
     expect(pageTitle).toBe("Edit [Testing] St... | PixieBrix");
   }).toPass({
     // Clicking Edit in Workshop fetches editable packages to determine the surrogate package id
-    timeout: 10_000,
+    timeout: DEFAULT_TIMEOUT,
   });
 });
