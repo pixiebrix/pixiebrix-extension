@@ -44,7 +44,6 @@ import {
   selectModComponentIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
-import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
@@ -92,11 +91,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   const hideOverlay = useCallback(async () => {
     await disableOverlay(inspectedTab);
   }, []);
-
-  const clearModComponentChanges = useClearModComponentChanges();
-
-  const onClearChanges = async () =>
-    clearModComponentChanges({ modComponentId: modComponentFormState.uuid });
 
   return (
     <ListGroup.Item
@@ -165,14 +159,8 @@ const DraftModComponentListItem: React.FunctionComponent<
               actions.duplicateActiveModComponent(),
             );
           }}
-          onClearChanges={
-            modComponentFormState.installed ? onClearChanges : undefined
-          }
           onMoveToMod={async () => {
             dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
-          }}
-          onCopyToMod={async () => {
-            dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
           }}
         />
       )}

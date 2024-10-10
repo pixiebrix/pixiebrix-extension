@@ -32,29 +32,29 @@ import {
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
-
-type OptionalAction = (() => Promise<void>) | undefined;
+import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 
 type ActionMenuProps = {
   modComponentFormState: ModComponentFormState;
   labelRoot: string;
   onDuplicate: () => Promise<void>;
-  onClearChanges: OptionalAction;
   onMoveToMod: () => Promise<void>;
-  onCopyToMod: () => Promise<void>;
 };
 
 const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
   modComponentFormState,
   labelRoot,
   onDuplicate,
-  onClearChanges = null,
   onMoveToMod,
-  onCopyToMod,
 }) => {
+  const dispatch = useDispatch();
+
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const clearModComponentChanges = useClearModComponentChanges();
+
   const isDirty = useSelector(
     selectModComponentIsDirty(modComponentFormState.uuid),
   );
@@ -63,10 +63,14 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
-      action: onClearChanges,
+      action: async () =>
+        clearModComponentChanges({
+          modComponentId: modComponentFormState.uuid,
+        }),
       // Always show Clear Changes button, even if there are no changes so the UI is more consistent / the user doesn't
       // wonder why the menu item is missing
-      disabled: !isDirty || !onClearChanges,
+      disabled: !isDirty,
+      hide: !modComponentFormState.installed,
     },
     {
       title: "Duplicate",
@@ -93,7 +97,9 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
           className={styles.moveIcon}
         />
       ),
-      action: onCopyToMod,
+      async action() {
+        dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
+      },
     },
     {
       title: "Delete",
