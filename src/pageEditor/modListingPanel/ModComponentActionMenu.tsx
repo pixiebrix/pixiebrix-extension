@@ -27,14 +27,19 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
+import {
+  DELETE_STARTER_BRICK_MODAL_PROPS,
+  useRemoveModComponentFromStorage,
+} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 type OptionalAction = (() => Promise<void>) | undefined;
 
 type ActionMenuProps = {
+  modComponentFormState: ModComponentFormState;
   labelRoot: string;
   isDirty: boolean;
   isActive: boolean;
-  onDelete: () => Promise<void>;
   onDuplicate: () => Promise<void>;
   onClearChanges: OptionalAction;
   onMoveToMod: () => Promise<void>;
@@ -42,15 +47,17 @@ type ActionMenuProps = {
 };
 
 const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
+  modComponentFormState,
   isActive,
   labelRoot,
   isDirty,
-  onDelete,
   onDuplicate,
   onClearChanges = null,
   onMoveToMod,
   onCopyToMod,
 }) => {
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+
   const menuItems: EllipsisMenuItem[] = [
     {
       title: "Clear Changes",
@@ -90,7 +97,11 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
     {
       title: "Delete",
       icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
-      action: onDelete,
+      action: async () =>
+        removeModComponentFromStorage({
+          modComponentId: modComponentFormState.uuid,
+          showConfirmationModal: DELETE_STARTER_BRICK_MODAL_PROPS,
+        }),
     },
   ];
 
