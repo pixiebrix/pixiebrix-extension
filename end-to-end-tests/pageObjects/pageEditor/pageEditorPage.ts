@@ -164,6 +164,7 @@ export class PageEditorPage extends BasePageObject {
 
     const saveNewModModal = this.page.locator(".modal-content");
     // The save button re-mounts several times so we need to retry clicking the saveButton until the modal is visible
+    // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9266
     await expect(async () => {
       await modListItem.saveButton.click();
       await expect(saveNewModModal).toBeVisible({ timeout: 5000 });
