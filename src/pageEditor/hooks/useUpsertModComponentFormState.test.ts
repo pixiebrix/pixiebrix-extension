@@ -21,8 +21,8 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 
 const axiosMock = new MockAdapter(axios);
 const defaultOptions = {
@@ -61,16 +61,23 @@ describe("useUpsertModComponentFormState", () => {
       options: defaultOptions,
     });
 
-    const modComponents = selectActivatedModComponents(
+    const modInstances = selectModInstances(
       getReduxStore().getState() as { options: ModComponentState },
     );
 
-    expect(modComponents).toHaveLength(1);
-    expect(modComponents[0]).toEqual(
+    expect(modInstances).toHaveLength(1);
+
+    expect(modInstances[0]!).toEqual(
       expect.objectContaining({
-        id: modComponentFormState.uuid,
-        extensionPointId: modComponentFormState.starterBrick.metadata.id,
-        updateTimestamp: expectedUpdateDate.toISOString(),
+        modComponentIds: [modComponentFormState.uuid],
+        definition: expect.objectContaining({
+          extensionPoints: [
+            expect.objectContaining({
+              id: modComponentFormState.starterBrick.metadata.id,
+            }),
+          ],
+        }),
+        updatedAt: expectedUpdateDate.toISOString(),
       }),
     );
   });

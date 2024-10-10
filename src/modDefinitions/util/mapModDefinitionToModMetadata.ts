@@ -18,24 +18,19 @@
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
-import { isInternalRegistryId } from "@/utils/registryUtils";
 
 /**
- * Select information about the ModDefinition used to activate an ModComponentBase
- *
- * If the mod definition was transformed from a standalone mod component definition, returns undefined.
+ * Select information about the ModDefinition used to activate a ModComponentBase
  *
  * @see ModComponentBase.modMetadata
  */
-export function pickModDefinitionMetadata(
+function mapModDefinitionToModMetadata(
   modDefinition: ModDefinition,
-): ModComponentBase["modMetadata"] | undefined {
-  if (isInternalRegistryId(modDefinition.metadata.id)) {
-    return undefined;
-  }
-
+): ModComponentBase["modMetadata"] {
   return {
     ...pick(modDefinition.metadata, ["id", "version", "name", "description"]),
     ...pick(modDefinition, ["sharing", "updated_at"]),
   };
 }
+
+export default mapModDefinitionToModMetadata;

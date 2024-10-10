@@ -15,25 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getStandaloneModComponentRuntimeModId,
-  isUnavailableMod,
-  normalizeModOptionsDefinition,
-} from "./modUtils";
-import { isRegistryId } from "@/types/helpers";
+import { isUnavailableMod, normalizeModOptionsDefinition } from "./modUtils";
 import { type UnavailableMod } from "@/types/modTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { freeze } from "@/utils/objectUtils";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-
-describe("getStandaloneModComponentRuntimeModId", () => {
-  it("returns valid registry id", () => {
-    expect(
-      isRegistryId(getStandaloneModComponentRuntimeModId(autoUUIDSequence())),
-    ).toBe(true);
-  });
-});
 
 describe("isUnavailableMod", () => {
   it("returns false for a recipe definition", () => {

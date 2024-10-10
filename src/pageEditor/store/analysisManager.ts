@@ -41,7 +41,6 @@ import {
   selectActiveModComponentRef,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
@@ -51,14 +50,15 @@ import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
 import { StateNamespaces } from "@/platform/state/stateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 const runtimeActions = runtimeSlice.actions;
 
 const pageEditorAnalysisManager = new ReduxAnalysisManager();
 
 /**
- * Returns mod component form states for the active mod, or the mod component form state of the active standalone
- * mod component. Includes both clean and dirty mod component form states.
+ * Returns mod component form states for the active mod. Includes both clean and dirty mod component form states.
  * @param state the Page Editor Redux State
  */
 async function selectActiveModFormStates(
@@ -67,23 +67,27 @@ async function selectActiveModFormStates(
   const activeModComponentFormState = selectActiveModComponentFormState(state);
 
   if (activeModComponentFormState?.modMetadata) {
-    const dirtyModComponentFormStates =
-      state.editor.modComponentFormStates.filter(
-        (x) => x.modMetadata.id === activeModComponentFormState.modMetadata.id,
+    const dirtyFormStates = state.editor.modComponentFormStates.filter(
+      (x) => x.modMetadata.id === activeModComponentFormState.modMetadata.id,
+    );
+    const dirtyModComponentIds = new Set(dirtyFormStates.map((x) => x.uuid));
+
+    const modInstanceMap = selectModInstanceMap(state);
+    const modInstance = modInstanceMap.get(
+      activeModComponentFormState.modMetadata.id,
+    );
+
+    // Create implied form states for untouched mod components
+    let otherFormStates: ModComponentFormState[] = [];
+    if (modInstance) {
+      otherFormStates = await Promise.all(
+        mapModInstanceToActivatedModComponents(modInstance)
+          .filter((x) => !dirtyModComponentIds.has(x.id))
+          .map(async (x) => modComponentToFormState(x)),
       );
-    const dirtyIds = new Set(dirtyModComponentFormStates.map((x) => x.uuid));
+    }
 
-    const activatedModComponents = selectActivatedModComponents(state);
-    const otherModComponents = activatedModComponents.filter(
-      (x) =>
-        x.modMetadata.id === activeModComponentFormState.modMetadata.id &&
-        !dirtyIds.has(x.id),
-    );
-    const otherModComponentFormStates = await Promise.all(
-      otherModComponents.map(async (x) => modComponentToFormState(x)),
-    );
-
-    return [...dirtyModComponentFormStates, ...otherModComponentFormStates];
+    return [...dirtyFormStates, ...otherFormStates];
   }
 
   if (activeModComponentFormState) {

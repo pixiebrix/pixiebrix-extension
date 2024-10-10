@@ -15,17 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { validateRegistryId } from "@/types/helpers";
-import { INNER_SCOPE } from "@/types/registryTypes";
-import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
-describe("pickModDefinitionMetadata", () => {
+describe("mapModDefinitionToModMetadata", () => {
   it("picks metadata correctly for mod definition", () => {
     const modDefinition = modDefinitionFactory();
 
-    expect(pickModDefinitionMetadata(modDefinition)).toEqual(
+    expect(mapModDefinitionToModMetadata(modDefinition)).toEqual(
       expect.objectContaining({
         id: modDefinition.metadata.id,
         version: modDefinition.metadata.version,
@@ -35,15 +32,5 @@ describe("pickModDefinitionMetadata", () => {
         updated_at: modDefinition.updated_at,
       }),
     );
-  });
-
-  it("returns undefined for internal registry ids", () => {
-    const modDefinition = modDefinitionFactory({
-      metadata: modMetadataFactory({
-        id: validateRegistryId(`${INNER_SCOPE}/some-id`),
-      }),
-    });
-
-    expect(pickModDefinitionMetadata(modDefinition)).toBeUndefined();
   });
 });

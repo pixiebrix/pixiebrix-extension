@@ -73,8 +73,7 @@ export const DELETE_UNSAVED_MOD_MODAL_PROPS: ConfirmationModalProps = {
 /**
  * Returns a callback that removes a mod component from the Page Editor and Mod Component Storage.
  *
- * For mod components packaged inside a mod, this callback will effectively delete the mod component. Any unsaved
- * changes will be lost.
+ * This callback will effectively delete the mod component. Any unsaved changes will be lost.
  */
 export function useRemoveModComponentFromStorage(): (
   useRemoveConfig: Config,
