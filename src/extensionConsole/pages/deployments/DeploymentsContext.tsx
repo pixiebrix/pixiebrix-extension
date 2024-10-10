@@ -23,7 +23,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import notify from "@/utils/notify";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -31,9 +30,8 @@ import { type Dispatch } from "@reduxjs/toolkit";
 import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
-  type InstalledDeployment,
   makeUpdatedFilter,
-  selectInstalledDeployments,
+  selectActivatedDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
@@ -49,14 +47,15 @@ import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRaw
 import { isEqual } from "lodash";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import type { Deployment } from "@/types/contract";
+import type { ActivatedDeployment, Deployment } from "@/types/contract";
 import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Permissions } from "webextension-polyfill";
 import useDeactivateUnassignedDeploymentsEffect from "@/extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { RestrictedFeatures } from "@/auth/featureFlags";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 export type DeploymentsState = {
   /**
@@ -98,10 +97,10 @@ export type DeploymentsState = {
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
   const { data: browserIdentifier } = useBrowserIdentifier();
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstances = useSelector(selectModInstances);
   const { state: flagsState } = useFlags();
-  const activeDeployments = useMemoCompare<InstalledDeployment[]>(
-    selectInstalledDeployments(activatedModComponents),
+  const activeDeployments = useMemoCompare<ActivatedDeployment[]>(
+    selectActivatedDeployments(modInstances),
     isEqual,
   );
 
@@ -121,14 +120,14 @@ function useDeployments(): DeploymentsState {
   const deploymentUpdateState = useDeriveAsyncState(
     deploymentsState,
     flagsState,
-    // Including activatedModComponents in the dependencies to ensure the derived state is recalculated when they change
-    valueToAsyncState(activatedModComponents),
+    // Including modInstances in the dependencies to ensure the derived state is recalculated when they change
+    valueToAsyncState(modInstances),
     async (
       deployments: Deployment[],
       { restrict }: FlagHelpers,
-      _activatedModComponents: ActivatedModComponent[],
+      _modInstances: ModInstance[],
     ) => {
-      const isUpdated = makeUpdatedFilter(_activatedModComponents, {
+      const isUpdated = makeUpdatedFilter(_modInstances, {
         restricted: restrict(RestrictedFeatures.DEACTIVATE_DEPLOYMENT),
       });
 
@@ -136,11 +135,10 @@ function useDeployments(): DeploymentsState {
         deployments.map((deployment) => deployment.package.package_id),
       );
 
-      const unassignedModComponents = _activatedModComponents.filter(
-        (activeModComponent) =>
-          activeModComponent._deployment &&
-          activeModComponent._recipe &&
-          !deployedModIds.has(activeModComponent._recipe.id),
+      const unassignedModInstances = _modInstances.filter(
+        (modInstance) =>
+          modInstance.deploymentMetadata &&
+          !deployedModIds.has(modInstance.definition.metadata.id),
       );
 
       const updatedDeployments = deployments.filter((x) => isUpdated(x));
@@ -173,7 +171,7 @@ function useDeployments(): DeploymentsState {
 
       return {
         activatableDeployments,
-        unassignedModComponents,
+        unassignedModInstances,
         extensionUpdateRequired: checkExtensionUpdateRequired(
           activatableDeployments,
         ),
@@ -185,24 +183,24 @@ function useDeployments(): DeploymentsState {
   // Fallback values for loading/error states
   const {
     activatableDeployments,
-    unassignedModComponents,
+    unassignedModInstances,
     extensionUpdateRequired,
     permissions,
   } = deploymentUpdateState.data ?? {
     // `useAutoDeploy` expects `null` to represent deployment loading state. It tries to activate once available
     activatableDeployments: null as ActivatableDeployment[] | null,
     extensionUpdateRequired: false as boolean,
-    unassignedModComponents: [],
+    unassignedModInstances: [],
     permissions: [] as Permissions.Permissions,
   };
 
   const { isAutoDeploying } = useAutoDeploy({
     activatableDeployments,
-    activatedModComponents,
+    modInstances,
     extensionUpdateRequired,
   });
 
-  useDeactivateUnassignedDeploymentsEffect(unassignedModComponents);
+  useDeactivateUnassignedDeploymentsEffect(unassignedModInstances);
 
   const handleUpdateFromUserGesture = useCallback(async () => {
     // IMPORTANT: can't do a fetch or any potentially stalling operation (including IDB calls) because the call to
@@ -255,14 +253,14 @@ function useDeployments(): DeploymentsState {
       await activateDeployments({
         dispatch,
         activatableDeployments,
-        activatedModComponents,
+        modInstances,
         reloadMode: "immediate",
       });
       notify.success("Updated team deployments");
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [dispatch, activatableDeployments, permissions, activatedModComponents]);
+  }, [dispatch, activatableDeployments, permissions, modInstances]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();

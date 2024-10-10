@@ -18,6 +18,7 @@
 import {
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
+  type ActivatedModComponentV4,
   type SerializedModComponentV1,
 } from "@/types/modComponentTypes";
 
@@ -70,14 +71,22 @@ export type ModComponentStateV5 = {
   activatedModComponents: ActivatedModComponentV2[];
 };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentStateV6 = {
+  activatedModComponents: ActivatedModComponentV4[];
+};
+
 export type ModComponentStateVersions =
   | ModComponentStateV0
   | ModComponentStateV1
   | ModComponentStateV2
   | ModComponentStateV3
-  | ModComponentStateV5;
+  | ModComponentStateV5
+  | ModComponentStateV6;
 
-export type ModComponentState = ModComponentStateV5;
+export type ModComponentState = ModComponentStateV6;
 
 export type ModComponentsRootState = {
   options: ModComponentState;
@@ -160,5 +169,21 @@ export function isModComponentStateV5(
     return false;
   }
 
-  return Array.isArray(state.activatedModComponents);
+  return (
+    Array.isArray(state.activatedModComponents) &&
+    state.activatedModComponents.every((x) => !("modMetadata" in x))
+  );
+}
+
+export function isModComponentStateV6(
+  state: ModComponentStateVersions,
+): state is ModComponentStateV6 {
+  if (!("activatedModComponents" in state)) {
+    return false;
+  }
+
+  return (
+    Array.isArray(state.activatedModComponents) &&
+    state.activatedModComponents.every((x) => "modMetadata" in x)
+  );
 }

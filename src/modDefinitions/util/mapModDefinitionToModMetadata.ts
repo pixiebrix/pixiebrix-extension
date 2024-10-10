@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type {
-  ModComponentsRootState,
-  ModComponentState,
-} from "@/store/modComponents/modComponentTypes";
-import type { ActivatedModComponent } from "@/types/modComponentTypes";
-import type { RegistryId } from "@/types/registryTypes";
-import { selectGetModComponentsForMod } from "@/store/modComponents/modComponentSelectors";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { pick } from "lodash";
 
-export default function getModComponentsForMod(
-  modId: RegistryId,
-  modComponentState: ModComponentState,
-): ActivatedModComponent[] {
-  const modComponentsState: ModComponentsRootState = {
-    options: modComponentState,
+/**
+ * Select information about the ModDefinition used to activate a ModComponentBase
+ *
+ * @see ModComponentBase.modMetadata
+ */
+function mapModDefinitionToModMetadata(
+  modDefinition: ModDefinition,
+): ModComponentBase["modMetadata"] {
+  return {
+    ...pick(modDefinition.metadata, ["id", "version", "name", "description"]),
+    ...pick(modDefinition, ["sharing", "updated_at"]),
   };
-  const getModComponentsForMod =
-    selectGetModComponentsForMod(modComponentsState);
-  return getModComponentsForMod(modId);
 }
+
+export default mapModDefinitionToModMetadata;

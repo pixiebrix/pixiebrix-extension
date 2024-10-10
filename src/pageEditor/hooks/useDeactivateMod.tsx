@@ -19,16 +19,17 @@ import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   DEACTIVATE_MOD_MODAL_PROPS,
+  DELETE_UNSAVED_MOD_MODAL_PROPS,
   useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { getModComponentId, getModId } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 type Config = {
   modId: RegistryId;
@@ -36,30 +37,42 @@ type Config = {
 };
 
 /**
- * This hook provides a callback function to deactivate a mod and remove it from the Page Editor
+ * This hook provides a callback function to deactivate a mod and remove it from the Page Editor. Note that in the case
+ * of unsaved mods, the mod will be deleted instead of deactivated.
  */
 function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstanceMap = useSelector(selectModInstanceMap);
   const modComponentFormStates = useSelector(selectModComponentFormStates);
   const { showConfirmation } = useModals();
 
   return useCallback(
     async ({ modId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
-        const confirmed = await showConfirmation(DEACTIVATE_MOD_MODAL_PROPS);
+        const isUnsavedMod = isInnerDefinitionRegistryId(modId);
+        const confirmed = await showConfirmation(
+          isUnsavedMod
+            ? DELETE_UNSAVED_MOD_MODAL_PROPS
+            : DEACTIVATE_MOD_MODAL_PROPS,
+        );
 
         if (!confirmed) {
           return;
         }
       }
 
-      const modComponentIds = uniq(
-        [...activatedModComponents, ...modComponentFormStates]
-          .filter((x) => getModId(x) === modId)
-          .map((x) => getModComponentId(x)),
-      );
+      const modInstance = modInstanceMap.get(modId);
+
+      const formComponentIds = modComponentFormStates
+        .filter((x) => x.modMetadata.id === modId)
+        .map((x) => x.uuid);
+
+      const modComponentIds = uniq([
+        ...(modInstance?.modComponentIds ?? []),
+        ...formComponentIds,
+      ]);
+
       await Promise.all(
         modComponentIds.map(async (modComponentId) =>
           removeModComponentFromStorage({
@@ -77,8 +90,8 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
     [
       dispatch,
       modComponentFormStates,
-      activatedModComponents,
-      useRemoveModComponentFromStorage,
+      modInstanceMap,
+      removeModComponentFromStorage,
       showConfirmation,
     ],
   );

@@ -39,11 +39,18 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { getEditorState } from "@/store/editorStorage";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import {
+  personalSharingDefinitionFactory,
+  publicSharingDefinitionFactory,
+} from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
+import {
+  personalDeploymentMetadataFactory,
+  teamDeploymentMetadataFactory,
+} from "@/testUtils/factories/modInstanceFactories";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError");
@@ -66,29 +73,29 @@ describe("getActivatedMarketplaceModVersions function", () => {
     await saveModComponentState({ activatedModComponents: [] });
 
     publicActivatedMod = activatedModComponentFactory({
-      _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: true }),
+      modMetadata: modMetadataFactory({
+        sharing: publicSharingDefinitionFactory(),
       }),
     });
 
     privateActivatedMod = activatedModComponentFactory({
-      _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: false }),
+      modMetadata: modMetadataFactory({
+        sharing: personalSharingDefinitionFactory(),
       }),
     });
 
     publicActivatedDeployment = activatedModComponentFactory({
-      _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: true }),
+      modMetadata: modMetadataFactory({
+        sharing: publicSharingDefinitionFactory(),
       }),
-      _deployment: {} as ActivatedModComponent["_deployment"],
+      deploymentMetadata: teamDeploymentMetadataFactory(),
     });
 
     privateActivatedDeployment = activatedModComponentFactory({
-      _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: false }),
+      modMetadata: modMetadataFactory({
+        sharing: personalSharingDefinitionFactory(),
       }),
-      _deployment: {} as ActivatedModComponent["_deployment"],
+      deploymentMetadata: personalDeploymentMetadataFactory(),
     });
   });
 
@@ -110,16 +117,16 @@ describe("getActivatedMarketplaceModVersions function", () => {
     const result = await getActivatedMarketplaceModVersions();
     expect(result).toEqual([
       {
-        name: publicActivatedMod._recipe!.id,
-        version: publicActivatedMod._recipe!.version,
+        name: publicActivatedMod.modMetadata.id,
+        version: publicActivatedMod.modMetadata.version,
       },
     ]);
   });
 
   it("returns expected object with registry id keys and version number values", async () => {
     const anotherPublicActivatedMod = activatedModComponentFactory({
-      _recipe: modMetadataFactory({
-        sharing: sharingDefinitionFactory({ public: true }),
+      modMetadata: modMetadataFactory({
+        sharing: publicSharingDefinitionFactory(),
       }),
     });
 
@@ -131,50 +138,14 @@ describe("getActivatedMarketplaceModVersions function", () => {
 
     expect(result).toEqual([
       {
-        name: publicActivatedMod._recipe!.id,
-        version: publicActivatedMod._recipe!.version,
+        name: publicActivatedMod.modMetadata.id,
+        version: publicActivatedMod.modMetadata.version,
       },
       {
-        name: anotherPublicActivatedMod._recipe!.id,
-        version: anotherPublicActivatedMod._recipe!.version,
+        name: anotherPublicActivatedMod.modMetadata.id,
+        version: anotherPublicActivatedMod.modMetadata.version,
       },
     ]);
-  });
-
-  it("reports error if multiple mod component versions activated for same mod", async () => {
-    const sameMod = modMetadataFactory({
-      sharing: sharingDefinitionFactory({ public: true }),
-    });
-
-    const onePublicActivatedMod = activatedModComponentFactory({
-      _recipe: sameMod,
-    });
-
-    const sameModDifferentVersion = modMetadataFactory({
-      ...sameMod,
-      version: "2.0.0" as SemVerString,
-    });
-
-    const anotherPublicActivatedMod = activatedModComponentFactory({
-      _recipe: sameModDifferentVersion,
-    });
-
-    await saveModComponentState({
-      activatedModComponents: [
-        onePublicActivatedMod,
-        anotherPublicActivatedMod,
-      ],
-    });
-
-    const result = await getActivatedMarketplaceModVersions();
-
-    expect(result).toEqual([
-      {
-        name: onePublicActivatedMod._recipe!.id,
-        version: onePublicActivatedMod._recipe!.version,
-      },
-    ]);
-    expect(reportError).toHaveBeenCalled();
   });
 });
 
@@ -184,13 +155,13 @@ describe("fetchModUpdates function", () => {
   beforeEach(async () => {
     activatedMods = [
       activatedModComponentFactory({
-        _recipe: modMetadataFactory({
-          sharing: sharingDefinitionFactory({ public: true }),
+        modMetadata: modMetadataFactory({
+          sharing: publicSharingDefinitionFactory(),
         }),
       }),
       activatedModComponentFactory({
-        _recipe: modMetadataFactory({
-          sharing: sharingDefinitionFactory({ public: true }),
+        modMetadata: modMetadataFactory({
+          sharing: publicSharingDefinitionFactory(),
         }),
       }),
     ];
@@ -209,12 +180,12 @@ describe("fetchModUpdates function", () => {
     expect(payload).toEqual({
       versions: [
         {
-          name: activatedMods[0]!._recipe!.id,
-          version: activatedMods[0]!._recipe!.version,
+          name: activatedMods[0]!.modMetadata.id,
+          version: activatedMods[0]!.modMetadata.version,
         },
         {
-          name: activatedMods[1]!._recipe!.id,
-          version: activatedMods[1]!._recipe!.version,
+          name: activatedMods[1]!.modMetadata.id,
+          version: activatedMods[1]!.modMetadata.version,
         },
       ],
     });
@@ -238,10 +209,10 @@ describe("updateMod function", () => {
   beforeEach(async () => {
     const modToDeactivate = modMetadataFactory(modToUpdate.metadata);
     modComponentToDeactivate1 = activatedModComponentFactory({
-      _recipe: modToDeactivate,
+      modMetadata: modToDeactivate,
     });
     modComponentToDeactivate2 = activatedModComponentFactory({
-      _recipe: modToDeactivate,
+      modMetadata: modToDeactivate,
     });
     const anotherMod = modMetadataFactory({});
 
@@ -250,7 +221,7 @@ describe("updateMod function", () => {
         modComponentToDeactivate1,
         modComponentToDeactivate2,
         activatedModComponentFactory({
-          _recipe: anotherMod,
+          modMetadata: anotherMod,
         }),
       ],
     });
@@ -284,7 +255,7 @@ describe("updateModsIfUpdatesAvailable", () => {
     axiosMock.reset();
 
     publicMod = modDefinitionWithVersionedStarterBrickFactory()({
-      sharing: sharingDefinitionFactory({ public: true }),
+      sharing: publicSharingDefinitionFactory(),
     });
 
     publicModUpdate = {
@@ -372,7 +343,7 @@ describe("updateModsIfUpdatesAvailable", () => {
     const resultingOptionsState = await getModComponentState();
     expect(resultingOptionsState.activatedModComponents).toHaveLength(1);
     expect(
-      resultingOptionsState.activatedModComponents[0]!._recipe!.version,
+      resultingOptionsState.activatedModComponents[0]!.modMetadata.version,
     ).toBe("2.0.1");
   });
 });

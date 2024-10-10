@@ -24,7 +24,6 @@ import {
 import { type Mod, type UnavailableMod } from "@/types/modTypes";
 import {
   type HydratedModComponent,
-  type ModComponentBase,
   type ModComponentRef,
   type ModMetadata,
 } from "@/types/modComponentTypes";
@@ -33,7 +32,6 @@ import {
   INNER_SCOPE,
   type RegistryId,
 } from "@/types/registryTypes";
-import { type UUID } from "@/types/stringTypes";
 import { assertNotNullish, type Nullishable } from "./nullishUtils";
 import {
   minimalSchemaFactory,
@@ -58,30 +56,8 @@ import {
   validateRegistryId,
 } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
-
-/**
- * Returns a synthetic mod id for a standalone mod component for use in the runtime
- * @param modComponentId the standalone mod component id
- * @see INNER_SCOPE
- */
-export function getStandaloneModComponentRuntimeModId(
-  modComponentId: UUID,
-): RegistryId {
-  return validateRegistryId(
-    `${INNER_SCOPE}/mod/${modComponentId.toLowerCase()}`,
-  );
-}
-
-/**
- * Returns a modId suitable for use in the runtime.
- * @since 2.0.6
- */
-function getRuntimeModId(modComponent: ModComponentBase): RegistryId {
-  return (
-    modComponent._recipe?.id ??
-    getStandaloneModComponentRuntimeModId(modComponent.id)
-  );
-}
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 /**
  * Returns the ModComponentRef for a given mod component.
@@ -93,7 +69,7 @@ export function getModComponentRef(
 ): ModComponentRef {
   return {
     modComponentId: modComponent.id,
-    modId: getRuntimeModId(modComponent),
+    modId: modComponent.modMetadata.id,
     starterBrickId: modComponent.extensionPointId,
   };
 }
@@ -111,9 +87,9 @@ export function mapModComponentToMessageContext(
     modComponentLabel: modComponent.label ?? undefined,
     modComponentId: modComponent.id,
     starterBrickId: modComponent.extensionPointId,
-    deploymentId: modComponent._deployment?.id,
-    modId: getRuntimeModId(modComponent),
-    modVersion: modComponent._recipe?.version,
+    deploymentId: modComponent.deploymentMetadata?.id,
+    modId: modComponent.modMetadata.id,
+    modVersion: modComponent.modMetadata.version,
   };
 }
 
@@ -287,22 +263,15 @@ export function normalizeModDefinition<
   });
 }
 
-export function mapModComponentToUnavailableMod(
-  modComponent: ModComponentBase,
+export function mapModInstanceToUnavailableMod(
+  modInstance: ModInstance,
 ): UnavailableMod {
-  assertNotNullish(
-    modComponent._recipe,
-    "modComponent._recipe is nullish, can't map to unavailable mod, something went wrong, this shouldn't happen",
-  );
   return {
-    metadata: modComponent._recipe,
+    metadata: modInstance.definition.metadata,
     kind: DefinitionKinds.MOD,
     isStub: true,
-    updated_at: modComponent._recipe.updated_at ?? nowTimestamp(),
-    sharing: modComponent._recipe.sharing ?? {
-      public: false,
-      organizations: [],
-    },
+    updated_at: modInstance.definition.updated_at,
+    sharing: modInstance.definition.sharing,
   };
 }
 
@@ -321,10 +290,7 @@ export function createNewUnsavedModMetadata({
     name: modName,
     description: "Created with the PixieBrix Page Editor",
     version: normalizeSemVerString("1.0.0"),
-    sharing: {
-      public: false,
-      organizations: [] as UUID[],
-    },
+    sharing: createPrivateSharing(),
     updated_at: nowTimestamp(),
   };
 }

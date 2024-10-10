@@ -20,7 +20,6 @@ import { createSelector } from "@reduxjs/toolkit";
 import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelectors";
 import { appApi } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
 import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
 import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
@@ -32,7 +31,7 @@ import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;
@@ -50,36 +49,20 @@ export const selectSearchQuery = ({ modsPage }: ModsPageRootState) =>
 export const selectIsLoadingData = ({ modsPage }: ModsPageRootState) =>
   modsPage.isLoadingData;
 
-const selectActivatedModIds = createSelector(
-  selectActivatedModComponents,
-  (activatedModComponents) =>
-    new Set(
-      activatedModComponents.map((modComponent) => {
-        assertNotNullish(
-          modComponent._recipe,
-          "Found activated mod component without a _recipe! " +
-            modComponent.label,
-        );
-        return modComponent._recipe.id;
-      }),
-    ),
-);
-
 const selectModsList = createSelector(
   selectScope,
-  selectActivatedModComponents,
+  selectModInstanceMap,
   selectAllModDefinitions,
-  selectActivatedModIds,
   buildModsList,
 );
 
 const selectGetModActivationStatus = createSelector(
-  selectActivatedModComponents,
+  selectModInstanceMap,
   buildGetModActivationStatus,
 );
 
 const selectGetModVersionStatus = createSelector(
-  selectActivatedModComponents,
+  selectModInstanceMap,
   buildGetModVersionStatus,
 );
 
@@ -112,7 +95,7 @@ const selectModsPageUserPermissions = createSelector(
 const selectGetModSharingSource = createSelector(
   selectScope,
   selectOrganizations,
-  selectActivatedModComponents,
+  selectModInstanceMap,
   buildGetModSharingSource,
 );
 

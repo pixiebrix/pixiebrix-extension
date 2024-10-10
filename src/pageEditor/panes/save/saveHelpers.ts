@@ -19,11 +19,12 @@ import {
   DefinitionKinds,
   type InnerDefinitionRef,
   type InnerDefinitions,
-  type Metadata,
   type RegistryId,
+  type VersionedMetadata,
 } from "@/types/registryTypes";
 import {
   isInnerDefinitionRegistryId,
+  normalizeSemVerString,
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
@@ -95,12 +96,12 @@ function findModComponentIndex(
   modDefinition: ModDefinition,
   modComponent: ModComponentBase,
 ): number {
-  if (modDefinition.metadata.version !== modComponent._recipe?.version) {
+  if (modDefinition.metadata.version !== modComponent.modMetadata.version) {
     console.warn(
       "Mod component was activated using a different version of the mod",
       {
         modDefinitionVersion: modDefinition.metadata.version,
-        modComponentModVersion: modComponent._recipe?.version,
+        modComponentModVersion: modComponent.modMetadata.version,
       },
     );
   }
@@ -160,7 +161,7 @@ function deleteUnusedStarterBrickDefinitions(
  */
 export function replaceModComponent(
   sourceMod: ModDefinition,
-  modMetadata: Metadata,
+  modMetadata: VersionedMetadata,
   activatedModComponents: ModComponentBase[],
   newModComponent: ModComponentFormState,
 ): UnsavedModDefinition {
@@ -313,6 +314,7 @@ const emptyModDefinition: UnsavedModDefinition = {
   metadata: {
     id: "" as RegistryId,
     name: "",
+    version: normalizeSemVerString("1.0.0"),
   },
   extensionPoints: [],
   definitions: {},
@@ -323,7 +325,7 @@ const emptyModDefinition: UnsavedModDefinition = {
 /**
  * Create a copy of `sourceMod` (if provided) with given mod metadata, mod options, and mod components.
  *
- * NOTE: the caller is responsible for updating an starter brick package (i.e., that has its own version). This method
+ * NOTE: the caller is responsible for updating a starter brick package (i.e., that has its own version). This method
  * only handles the starter brick if it's an inner definition
  *
  * @param sourceMod the original mod definition, or undefined for new mods

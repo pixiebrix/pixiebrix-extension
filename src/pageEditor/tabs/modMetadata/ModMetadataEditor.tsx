@@ -34,7 +34,6 @@ import {
   testIsSemVerString,
 } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import Alert from "@/components/Alert";
 import { createSelector } from "@reduxjs/toolkit";
 import { lt } from "semver";
@@ -49,6 +48,7 @@ import { pick } from "lodash";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -65,11 +65,11 @@ const editModSchema = object({
   description: string(),
 });
 
-const selectFirstModComponent = createSelector(
-  selectActivatedModComponents,
+const selectActiveModInstance = createSelector(
+  selectModInstanceMap,
   selectActiveModId,
-  (modComponents, activeModId) =>
-    modComponents.find((x) => x._recipe?.id === activeModId),
+  (modInstanceMap, activeModId) =>
+    activeModId ? modInstanceMap.get(activeModId) : undefined,
 );
 
 const OldModVersionAlert: React.FunctionComponent<{
@@ -109,13 +109,13 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
 
   // Select a single mod component for the mod to check the activated version.
   // We rely on the assumption that every component in the mod has the same version.
-  const modDefinitionComponent = useSelector(selectFirstModComponent);
+  const modInstance = useSelector(selectActiveModInstance);
   // Mod metadata for new mods will only exist on the component form state
   const firstComponentFormStateForMod = useSelector(
     selectFirstModComponentFormStateForActiveMod,
   );
 
-  const activatedModVersion = modDefinitionComponent?._recipe?.version;
+  const activatedModVersion = modInstance?.definition.metadata.version;
   const latestModVersion = modDefinition?.metadata?.version;
   const showOldModVersionWarning =
     activatedModVersion &&
@@ -126,7 +126,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   // Prefer the metadata from the activated mod component
   const currentMetadata =
     dirtyMetadata ??
-    modDefinitionComponent?._recipe ??
+    modInstance?.definition.metadata ??
     modDefinition?.metadata ??
     firstComponentFormStateForMod?.modMetadata;
 

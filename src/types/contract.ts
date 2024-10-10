@@ -258,3 +258,18 @@ export type PackageVersionUpdates = {
 
 export type OrganizationAuthUrlPattern =
   components["schemas"]["OrganizationAuthUrlPattern"];
+
+/**
+ * Deployment installed on the client. A deployment may be "activated" locally but not paused
+ * (see DeploymentContext.active)
+ *
+ * See https://github.com/pixiebrix/pixiebrix-app/blob/71cdfd8aea1992ae7cac7cb6fd049d38f7135c10/api/serializers/deployments.py#L109-L109
+ *
+ * @see DeploymentTelemetrySerializer
+ */
+export type ActivatedDeployment = {
+  deployment: UUID;
+  // Use legacy names - these are passed to the server
+  blueprint: RegistryId;
+  blueprintVersion: SemVerString;
+};

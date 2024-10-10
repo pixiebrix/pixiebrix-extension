@@ -22,10 +22,7 @@ import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { getActivatingMods } from "@/background/messenger/external/_implementation";
-import {
-  modComponentFactory,
-  modMetadataFactory,
-} from "@/testUtils/factories/modComponentFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   loadActivationEnhancements,
   TEST_unloadActivationEnhancements,
@@ -109,14 +106,9 @@ describe("marketplace enhancements", () => {
     isLinkedMock.mockResolvedValue(true);
     window.location.assign("https://www.pixiebrix.com/");
 
-    const components = array(
-      modComponentFactory,
-      2,
-    )({
-      _recipe: modMetadataFactory,
-    });
+    const components = array(modComponentFactory, 2)();
 
-    const modIds = components.map((x) => x._recipe?.id);
+    const modIds = components.map((x) => x.modMetadata.id);
 
     document.body.innerHTML = `
     <div>

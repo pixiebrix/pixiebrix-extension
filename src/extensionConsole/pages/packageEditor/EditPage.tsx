@@ -28,7 +28,6 @@ import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitPackage from "./useSubmitPackage";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
@@ -42,6 +41,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type Definition, DefinitionKinds } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import castError from "@/utils/castError";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 const { touchPackage } = workshopSlice.actions;
 
@@ -52,7 +52,7 @@ type ParsedPackageInfo = {
 };
 
 function useParsePackage(config: string | null): ParsedPackageInfo {
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstanceMap = useSelector(selectModInstanceMap);
 
   return useMemo(() => {
     if (config == null) {
@@ -64,15 +64,13 @@ function useParsePackage(config: string | null): ParsedPackageInfo {
     if (isBlueprint) {
       return {
         isMod: true,
-        isActivated: activatedModComponents.some(
-          (x) => x._recipe?.id === configJSON.metadata?.id,
-        ),
+        isActivated: modInstanceMap.has(configJSON.metadata?.id),
         config: configJSON,
       };
     }
 
     return { isMod: false, isActivated: false, config: configJSON };
-  }, [config, activatedModComponents]);
+  }, [config, modInstanceMap]);
 }
 
 const LoadingBody: React.FC = () => (

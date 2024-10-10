@@ -29,7 +29,6 @@ import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
@@ -37,6 +36,7 @@ import type { ModActivationConfig } from "@/types/modTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import castError from "@/utils/castError";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 export type RequiredModDefinition = {
   /**
@@ -151,8 +151,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
   );
   const originalState = valueToAsyncState(mods);
   const authOptionsState = useAuthOptions();
-
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const modInstanceMap = useSelector(selectModInstanceMap);
 
   const state = useDeriveAsyncState(
     originalState,
@@ -186,9 +185,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
               ),
               includesQuickBar:
                 await includesQuickBarStarterBrick(modDefinition),
-              isActive: activatedModComponents.some(
-                (x) => x._recipe?.id === modDefinition.metadata.id,
-              ),
+              isActive: modInstanceMap.has(modDefinition.metadata.id),
             };
           },
         ),

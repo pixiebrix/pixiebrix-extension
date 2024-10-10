@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type PropsWithChildren } from "react";
+import React from "react";
 import styles from "./Entry.module.scss";
 import { ModHasUpdateIcon } from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
@@ -33,38 +33,21 @@ import {
   selectActiveModId,
   selectDirtyMetadataForModId,
   selectExpandedModId,
-  selectModIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import * as semver from "semver";
 import { useGetModDefinitionQuery } from "@/data/service/api";
-import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { type ModMetadata } from "@/types/modComponentTypes";
-import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
-export type ModListItemProps = PropsWithChildren<{
+const ModListItem: React.FC<{
   modMetadata: ModMetadata;
-  onSave: () => Promise<void>;
-  onClearChanges: () => Promise<void>;
-  onDeactivate: () => Promise<void>;
-  onMakeCopy: () => Promise<void>;
-}>;
-
-const ModListItem: React.FC<ModListItemProps> = ({
-  modMetadata,
-  children,
-  onSave,
-  onClearChanges,
-  onDeactivate,
-  onMakeCopy,
-}) => {
+}> = ({ modMetadata, children }) => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-  const addNewModComponent = useAddNewModComponent(modMetadata);
 
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
   const isActive = activeModId === modId;
@@ -76,13 +59,10 @@ const ModListItem: React.FC<ModListItemProps> = ({
 
   // Set the alternate background if a mod component in this mod is active
   const hasModBackground =
-    activeModComponentFormState?.modMetadata?.id === modId;
+    activeModComponentFormState?.modMetadata.id === modId;
 
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
-  const isDirty = useSelector(selectModIsDirty(modId));
-
-  const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
 
   const hasUpdate =
     latestModVersion != null &&
@@ -115,16 +95,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
             />
           </span>
         )}
-        <ModActionMenu
-          isActive={isActive}
-          labelRoot={name}
-          onSave={onSave}
-          onClearChanges={isUnsavedMod ? undefined : onClearChanges}
-          onDeactivate={onDeactivate}
-          onAddStarterBrick={addNewModComponent}
-          onMakeCopy={onMakeCopy}
-          isDirty={isDirty}
-        />
+        <ModActionMenu modMetadata={modMetadata} labelRoot={name} />
       </Accordion.Toggle>
       <Accordion.Collapse eventKey={modId}>
         <>{children}</>

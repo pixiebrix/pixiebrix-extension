@@ -21,16 +21,13 @@ import {
   getScopeAndId,
   isInternalRegistryId,
 } from "@/utils/registryUtils";
-import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 describe("isInternalRegistryId", () => {
   it("returns true for internal registry ids", () => {
     expect(
-      isInternalRegistryId(
-        getStandaloneModComponentRuntimeModId(autoUUIDSequence()),
-      ),
+      isInternalRegistryId(createNewUnsavedModMetadata({ modName: "Mod" }).id),
     ).toBe(true);
   });
 

@@ -98,7 +98,6 @@ export const Events = {
   PAGE_EDITOR_MOD_COMPONENT_ERROR: "PageEditorExtensionError",
   PAGE_EDITOR_REMOVE: "PageEditorRemove",
   PAGE_EDITOR_CLEAR_CHANGES: "PageEditorReset",
-  PAGE_EDITOR_STANDALONE_MOD_COMPONENT_UPDATE: "PageEditorSave",
   PAGE_EDITOR_VIEW_TEMPLATES: "PageEditorViewTemplates",
   PAGE_EDITOR_MOD_CREATE: "PageEditorModCreate",
   PAGE_EDITOR_MOD_UPDATE: "PageEditorModUpdate",
@@ -140,8 +139,6 @@ export const Events = {
 
   SNOOZE_UPDATES: "SnoozeUpdates",
   SETTINGS_EXPERIMENTAL_CONFIGURE: "SettingsExperimentalConfigure",
-
-  STANDALONE_MOD_DELETE: "ExtensionCloudDelete",
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 

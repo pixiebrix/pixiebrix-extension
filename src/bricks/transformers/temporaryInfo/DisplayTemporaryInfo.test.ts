@@ -52,10 +52,7 @@ import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import {
-  modComponentRefFactory,
-  standaloneModComponentRefFactory,
-} from "@/testUtils/factories/modComponentFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import {
@@ -336,7 +333,7 @@ describe("DisplayTemporaryInfo", () => {
       },
     };
 
-    const modComponentRef = standaloneModComponentRefFactory();
+    const modComponentRef = modComponentRefFactory();
 
     void reducePipeline(
       pipeline,

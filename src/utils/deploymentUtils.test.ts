@@ -21,6 +21,7 @@ import {
   isDeploymentActive,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
+  selectActivatedDeployments,
 } from "./deploymentUtils";
 import {
   uuidv4,
@@ -29,7 +30,10 @@ import {
 } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  activatedModComponentFactory,
+  modComponentFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
@@ -43,14 +47,19 @@ import {
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { validateTimestamp } from "@/utils/timeUtils";
+import {
+  modInstanceFactory,
+  teamDeploymentMetadataFactory,
+} from "@/testUtils/factories/modInstanceFactories";
+import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(
     "unassigned deployment",
     ({ restricted }) => {
-      const modComponents = [modComponentFactory()];
+      const modInstances = [modInstanceFactory()];
 
-      const filter = makeUpdatedFilter(modComponents, { restricted });
+      const filter = makeUpdatedFilter(modInstances, { restricted });
       expect(filter(deploymentFactory())).toBeTrue();
     },
   );
@@ -60,17 +69,15 @@ describe("makeUpdatedFilter", () => {
     ({ restricted }) => {
       const deployment = deploymentFactory();
 
-      const extensions = [
-        modComponentFactory({
-          _deployment: {
-            id: deployment.id,
-            timestamp: deployment.updated_at!,
-            active: true,
-          },
-        }),
-      ];
+      const modInstance = modInstanceFactory({
+        deploymentMetadata: {
+          id: deployment.id,
+          timestamp: deployment.updated_at!,
+          active: true,
+        },
+      });
 
-      const filter = makeUpdatedFilter(extensions, { restricted });
+      const filter = makeUpdatedFilter([modInstance], { restricted });
       expect(filter(deployment)).toBeFalse();
     },
   );
@@ -80,47 +87,45 @@ describe("makeUpdatedFilter", () => {
     ({ restricted }) => {
       const deployment = deploymentFactory();
 
-      const extensions = [
-        modComponentFactory({
-          _deployment: {
-            id: deployment.id,
-            timestamp: "2020-10-07T12:52:16.189Z",
-            active: true,
-          },
-        }),
-      ];
+      const modInstance = modInstanceFactory({
+        deploymentMetadata: {
+          id: deployment.id,
+          timestamp: "2020-10-07T12:52:16.189Z",
+          active: true,
+        },
+      });
 
-      const filter = makeUpdatedFilter(extensions, { restricted });
+      const filter = makeUpdatedFilter([modInstance], { restricted });
       expect(filter(deployment)).toBeTrue();
     },
   );
 
-  test("matched blueprint for restricted user", () => {
+  test("matched mod for restricted user", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
 
-    const extensions = [
-      modComponentFactory({
-        _deployment: undefined,
-        _recipe: {
+    const modInstance = mapActivatedModComponentsToModInstance([
+      activatedModComponentFactory({
+        deploymentMetadata: undefined,
+        modMetadata: {
           ...modDefinition.metadata,
           updated_at: validateTimestamp(deployment.updated_at!),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
           sharing: null,
         },
       }),
-    ];
+    ]);
 
-    const filter = makeUpdatedFilter(extensions, { restricted: true });
+    const filter = makeUpdatedFilter([modInstance], { restricted: true });
     expect(filter(deployment)).toBeTrue();
   });
 
   test("matched blueprint for unrestricted user / developer", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
 
-    const extensions = [
-      modComponentFactory({
-        _deployment: undefined,
-        _recipe: {
+    const modInstance = mapActivatedModComponentsToModInstance([
+      activatedModComponentFactory({
+        deploymentMetadata: undefined,
+        modMetadata: {
           ...modDefinition.metadata,
           // The factory produces version "1.0.1"
           version: normalizeSemVerString("1.0.1"),
@@ -129,9 +134,9 @@ describe("makeUpdatedFilter", () => {
           sharing: null,
         },
       }),
-    ];
+    ]);
 
-    const filter = makeUpdatedFilter(extensions, { restricted: false });
+    const filter = makeUpdatedFilter([modInstance], { restricted: false });
     expect(filter(deployment)).toBeFalse();
   });
 });
@@ -170,7 +175,7 @@ describe("isDeploymentActive", () => {
     const deployment = deploymentFactory();
 
     const modComponent = modComponentFactory({
-      _deployment: {
+      deploymentMetadata: {
         id: deployment.id,
         timestamp: deployment.updated_at!,
         // Legacy deployments don't have an `active` field
@@ -186,7 +191,7 @@ describe("isDeploymentActive", () => {
       const deployment = deploymentFactory();
 
       const modComponent = modComponentFactory({
-        _deployment: {
+        deploymentMetadata: {
           id: deployment.id,
           timestamp: deployment.updated_at!,
           active,
@@ -490,6 +495,25 @@ describe("mergeDeploymentIntegrationDependencies", () => {
         outputKey: "pixiebrix",
         isOptional: false,
         apiVersion: "v1",
+      },
+    ]);
+  });
+});
+
+describe("selectActivatedDeployments", () => {
+  it("selects deployment", () => {
+    const manualMod = modInstanceFactory();
+    const deploymentMod = modInstanceFactory({
+      deploymentMetadata: teamDeploymentMetadataFactory(),
+    });
+
+    const result = selectActivatedDeployments([manualMod, deploymentMod]);
+
+    expect(result).toStrictEqual([
+      {
+        deployment: deploymentMod.deploymentMetadata!.id,
+        blueprint: deploymentMod.definition.metadata.id,
+        blueprintVersion: deploymentMod.definition.metadata.version,
       },
     ]);
   });

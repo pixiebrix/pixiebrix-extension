@@ -78,10 +78,10 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
   // Apply emoji icon or mod icon if available
   if (emojiIcon) {
     icon = emojiIcon;
-  } else if (modComponent?._recipe) {
+  } else if (modComponent?.modMetadata) {
     icon = (
       <MarketplaceListingIcon
-        packageId={modComponent._recipe.id}
+        packageId={modComponent.modMetadata.id}
         defaultIcon={faCube}
       />
     );

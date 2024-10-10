@@ -77,10 +77,10 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   );
   const isActive = activeModComponentFormState?.uuid === modComponent.id;
   // Get the selected mod id, or the mod id of the selected mod component
-  const modId = activeModId ?? activeModComponentFormState?.modMetadata?.id;
+  const modId = activeModId ?? activeModComponentFormState?.modMetadata.id;
   // Set the alternate background if this item isn't active, but either its mod or another item in its mod is active
   const hasActiveModBackground =
-    !isActive && modId && modComponent._recipe?.id === modId;
+    !isActive && modId && modComponent.modMetadata.id === modId;
 
   const selectHandler = useCallback(
     async (modComponent: ModComponentBase) => {
@@ -94,25 +94,23 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           await modComponentToFormState(modComponent);
 
         // Initialize mod options schema if needed
-        if (modComponent._recipe) {
-          const { data: modDefinition } = await getModDefinition(
-            { modId: modComponent._recipe.id },
-            true,
-          );
-          if (modDefinition) {
-            modComponentFormState.optionsDefinition =
-              modDefinition.options == null
-                ? emptyModOptionsDefinitionFactory()
-                : {
-                    schema: modDefinition.options.schema.properties
-                      ? modDefinition.options.schema
-                      : ({
-                          type: "object",
-                          properties: modDefinition.options.schema,
-                        } as Schema),
-                    uiSchema: modDefinition.options.uiSchema,
-                  };
-          }
+        const { data: modDefinition } = await getModDefinition(
+          { modId: modComponent.modMetadata.id },
+          true,
+        );
+        if (modDefinition) {
+          modComponentFormState.optionsDefinition =
+            modDefinition.options == null
+              ? emptyModOptionsDefinitionFactory()
+              : {
+                  schema: modDefinition.options.schema.properties
+                    ? modDefinition.options.schema
+                    : ({
+                        type: "object",
+                        properties: modDefinition.options.schema,
+                      } as Schema),
+                  uiSchema: modDefinition.options.uiSchema,
+                };
         }
 
         dispatch(

@@ -16,12 +16,11 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
 import { type SerializedModComponent } from "@/types/modComponentTypes";
-import { compact, uniqBy } from "lodash";
+import { uniqBy } from "lodash";
 import { type StorageEstimate } from "@/types/browserTypes";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
@@ -32,6 +31,8 @@ import download from "downloadjs";
 import filenamify from "filenamify";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { nowTimestamp } from "@/utils/timeUtils";
+
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 async function collectDiagnostics({
   modComponents,
@@ -54,17 +55,16 @@ async function collectDiagnostics({
       eventCount: await eventsSize(),
     },
     extensions: {
-      blueprints: uniqBy(
-        compact(modComponents.map((x) => x._recipe)),
+      mods: uniqBy(
+        modComponents.map((x) => x.modMetadata),
         (x) => x.id,
       ),
-      extensions: modComponents.filter((x) => !x._recipe),
     },
   };
 }
 
 function useDiagnostics() {
-  const extensions = useSelector(selectActivatedModComponents);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const permissionsState = useExtensionPermissions();
 
   const exportDiagnostics = useUserAction(
@@ -75,7 +75,7 @@ function useDiagnostics() {
 
       const data = await collectDiagnostics({
         permissions: permissionsState.data,
-        modComponents: extensions,
+        modComponents: activatedModComponents,
       });
 
       download(
@@ -88,7 +88,7 @@ function useDiagnostics() {
       successMessage: "Exported diagnostics",
       errorMessage: "Error exporting diagnostics",
     },
-    [permissionsState, extensions],
+    [permissionsState, activatedModComponents],
   );
 
   return {

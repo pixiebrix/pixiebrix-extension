@@ -20,7 +20,6 @@ import {
   faClone,
   faFileExport,
   faHistory,
-  faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +27,6 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import SaveButton from "@/pageEditor/modListingPanel/SaveButton";
 
 type OptionalAction = (() => Promise<void>) | undefined;
 
@@ -36,28 +34,22 @@ type ActionMenuProps = {
   labelRoot: string;
   isDirty: boolean;
   isActive: boolean;
-  onDelete: OptionalAction;
-  onDuplicate: OptionalAction;
+  onDelete: () => Promise<void>;
+  onDuplicate: () => Promise<void>;
   onClearChanges: OptionalAction;
-  onMoveToMod: OptionalAction;
-  onCopyToMod: OptionalAction;
-  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9242, remove standalone mod component actions
-  onSave: OptionalAction;
-  onDeactivate: OptionalAction;
+  onMoveToMod: () => Promise<void>;
+  onCopyToMod: () => Promise<void>;
 };
 
 const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
   isActive,
   labelRoot,
   isDirty,
-  onDelete = null,
-  onDuplicate = null,
+  onDelete,
+  onDuplicate,
   onClearChanges = null,
-  onMoveToMod = null,
-  onCopyToMod = null,
-  // Standalone Mod Component Actions
-  onSave = null,
-  onDeactivate = null,
+  onMoveToMod,
+  onCopyToMod,
 }) => {
   const menuItems: EllipsisMenuItem[] = [
     {
@@ -72,7 +64,6 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
       title: "Duplicate",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
       action: onDuplicate,
-      hide: !onDuplicate,
     },
     {
       title: "Move to mod",
@@ -84,7 +75,6 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
         />
       ),
       action: onMoveToMod,
-      hide: !onMoveToMod,
     },
     {
       title: "Copy to mod",
@@ -96,31 +86,16 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
         />
       ),
       action: onCopyToMod,
-      hide: !onCopyToMod,
     },
     {
       title: "Delete",
       icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
       action: onDelete,
-      hide: !onDelete,
-    },
-    {
-      title: "Deactivate",
-      icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
-      action: onDeactivate,
-      hide: !onDeactivate,
     },
   ];
 
   return (
     <div className={styles.root}>
-      {onSave != null && (
-        <SaveButton
-          ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
-          onClick={onSave}
-          disabled={!isDirty}
-        />
-      )}
       {isActive && (
         <EllipsisMenu
           portal

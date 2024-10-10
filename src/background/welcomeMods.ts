@@ -61,10 +61,11 @@ import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import getModComponentsForMod from "@/mods/util/getModComponentsForMod";
 import { restrict } from "@/auth/featureFlagStorage";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =
@@ -123,17 +124,20 @@ function closeWelcomeModTabs({
     modDefinition,
     StarterBrickTypes.SIDEBAR_PANEL,
   );
-  const activatedModComponents = getModComponentsForMod(
-    modDefinition.metadata.id,
-    optionsState,
-  );
-  const actionPanelIds = getModComponentIdsForModComponentDefinitions(
-    activatedModComponents,
-    actionPanelDefinitions,
-  );
 
-  for (const actionPanelId of actionPanelIds) {
-    sidebarState = closeSidebarTab(sidebarState, actionPanelId);
+  const modInstance = selectModInstanceMap({
+    options: optionsState,
+  }).get(modDefinition.metadata.id);
+
+  if (modInstance) {
+    const actionPanelIds = getModComponentIdsForModComponentDefinitions(
+      mapModInstanceToActivatedModComponents(modInstance),
+      actionPanelDefinitions,
+    );
+
+    for (const actionPanelId of actionPanelIds) {
+      sidebarState = closeSidebarTab(sidebarState, actionPanelId);
+    }
   }
 
   return sidebarState;
@@ -236,7 +240,7 @@ async function activateMods(
   const newMods = modDefinitions.filter(
     (modDefinition) =>
       !optionsState.activatedModComponents.some(
-        (mod) => mod._recipe?.id === modDefinition.metadata.id,
+        (mod) => mod.modMetadata.id === modDefinition.metadata.id,
       ),
   );
 

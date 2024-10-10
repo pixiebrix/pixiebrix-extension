@@ -21,8 +21,6 @@ import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
-  isModSidebarItem,
-  type ModComponentSidebarItem,
   type ModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/modListingPanel/common";
@@ -37,23 +35,19 @@ function arrangeSidebarItems({
   cleanModComponents,
 }: ArrangeSidebarItemsArgs): SidebarItem[] {
   const modSidebarItems: Record<RegistryId, ModSidebarItem> = {};
-  const orphanSidebarItems: ModComponentSidebarItem[] = [];
 
   const formStateModComponentIds = new Set<UUID>();
 
   for (const formState of modComponentFormStates) {
     formStateModComponentIds.add(formState.uuid);
 
-    if (formState.modMetadata == null) {
-      orphanSidebarItems.push(formState);
-    } else {
-      const modSidebarItem = modSidebarItems[formState.modMetadata.id] ?? {
-        modMetadata: formState.modMetadata,
-        modComponents: [],
-      };
-      modSidebarItem.modComponents.push(formState);
-      modSidebarItems[formState.modMetadata.id] = modSidebarItem;
-    }
+    const modSidebarItem = modSidebarItems[formState.modMetadata.id] ?? {
+      modMetadata: formState.modMetadata,
+      modComponents: [],
+    };
+
+    modSidebarItem.modComponents.push(formState);
+    modSidebarItems[formState.modMetadata.id] = modSidebarItem;
   }
 
   const cleanModComponentsWithoutFormStates = cleanModComponents.filter(
@@ -61,16 +55,14 @@ function arrangeSidebarItems({
   );
 
   for (const cleanModComponent of cleanModComponentsWithoutFormStates) {
-    if (cleanModComponent._recipe == null) {
-      orphanSidebarItems.push(cleanModComponent);
-    } else {
-      const modSidebarItem = modSidebarItems[cleanModComponent._recipe.id] ?? {
-        modMetadata: cleanModComponent._recipe,
-        modComponents: [],
-      };
-      modSidebarItem.modComponents.push(cleanModComponent);
-      modSidebarItems[cleanModComponent._recipe.id] = modSidebarItem;
-    }
+    const modSidebarItem = modSidebarItems[
+      cleanModComponent.modMetadata.id
+    ] ?? {
+      modMetadata: cleanModComponent.modMetadata,
+      modComponents: [],
+    };
+    modSidebarItem.modComponents.push(cleanModComponent);
+    modSidebarItems[cleanModComponent.modMetadata.id] = modSidebarItem;
   }
 
   for (const modSidebarItem of Object.values(modSidebarItems)) {
@@ -79,12 +71,8 @@ function arrangeSidebarItems({
     );
   }
 
-  return sortBy(
-    [...Object.values(modSidebarItems), ...orphanSidebarItems],
-    (item) =>
-      isModSidebarItem(item)
-        ? item.modMetadata.name.toLowerCase()
-        : item.label.toLowerCase(),
+  return sortBy(Object.values(modSidebarItems), (item) =>
+    item.modMetadata.name.toLowerCase(),
   );
 }
 

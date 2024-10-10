@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
-import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -26,91 +24,47 @@ import {
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Mods
-const ID_FOO = validateRegistryId("test/mod-foo");
 const modMetadataFoo = modMetadataFactory({
-  id: ID_FOO,
   name: "Foo Mod",
 });
 
-const ID_BAR = validateRegistryId("test/mod-bar");
 const modMetadataBar = modMetadataFactory({
-  id: ID_BAR,
   name: "Bar Mod",
 });
 
 // Mod Components
-const ID_FOO_A = uuidv4();
-const cleanModComponentFooA: ModComponentBase = modComponentFactory({
-  id: ID_FOO_A,
+const cleanModComponentFooA = modComponentFactory({
   label: "A",
-  _recipe: modMetadataFoo,
+  modMetadata: modMetadataFoo,
 });
 
-const ID_FOO_B = uuidv4();
-const formStateModComponentFooB: ButtonFormState = menuItemFormStateFactory({
-  uuid: ID_FOO_B,
+const formStateModComponentFooA = menuItemFormStateFactory({
+  uuid: cleanModComponentFooA.id,
+  label: "A",
+  modMetadata: modMetadataFoo,
+});
+
+const formStateModComponentFooB = menuItemFormStateFactory({
   label: "B",
   modMetadata: modMetadataFoo,
 });
 
-const ID_ORPHAN_C = uuidv4();
-const formStateModComponentOrphanC: ButtonFormState = menuItemFormStateFactory({
-  uuid: ID_ORPHAN_C,
-  label: "C",
-});
-
-const ID_BAR_D = uuidv4();
-const cleanModComponentBarD: ModComponentBase = modComponentFactory({
-  id: ID_BAR_D,
+const cleanModComponentBarD = modComponentFactory({
   label: "D",
-  _recipe: modMetadataBar,
+  modMetadata: modMetadataBar,
 });
 
-const ID_BAR_E = uuidv4();
-const formStateModComponentBarE: ButtonFormState = menuItemFormStateFactory({
-  uuid: ID_BAR_E,
+const formStateModComponentBarE = menuItemFormStateFactory({
   label: "E",
   modMetadata: modMetadataBar,
 });
 
-const ID_BAR_F = uuidv4();
 const cleanModComponentBarF: ModComponentBase = modComponentFactory({
-  id: ID_BAR_F,
   label: "F",
-  _recipe: modMetadataBar,
-});
-
-const ID_ORPHAN_G = uuidv4();
-const cleanModComponentOrphanG: ModComponentBase = modComponentFactory({
-  id: ID_ORPHAN_G,
-  label: "G",
-});
-
-const ID_ORPHAN_H = uuidv4();
-const cleanModComponentOrphanH: ModComponentBase = modComponentFactory({
-  id: ID_ORPHAN_H,
-  label: "H",
-});
-
-const formStateModComponentOrphanH: ButtonFormState = menuItemFormStateFactory({
-  uuid: ID_ORPHAN_H,
-  label: "H",
+  modMetadata: modMetadataBar,
 });
 
 describe("arrangeSidebarItems()", () => {
-  test("sort orphaned mods by metadata.name", () => {
-    const sidebarItems = arrangeSidebarItems({
-      modComponentFormStates: [formStateModComponentOrphanC],
-      cleanModComponents: [cleanModComponentOrphanH, cleanModComponentOrphanG],
-    });
-
-    expect(sidebarItems).toStrictEqual([
-      formStateModComponentOrphanC,
-      cleanModComponentOrphanG,
-      cleanModComponentOrphanH,
-    ]);
-  });
-
   test("groups mods and sorts mod components by label", () => {
     const sidebarItems = arrangeSidebarItems({
       modComponentFormStates: [
@@ -142,10 +96,15 @@ describe("arrangeSidebarItems()", () => {
 
   test("do not duplicate modComponent/modComponentFormState pairs in the results", () => {
     const sidebarItems = arrangeSidebarItems({
-      modComponentFormStates: [formStateModComponentOrphanH],
-      cleanModComponents: [cleanModComponentOrphanH],
+      modComponentFormStates: [formStateModComponentFooA],
+      cleanModComponents: [cleanModComponentFooA],
     });
 
-    expect(sidebarItems).toStrictEqual([formStateModComponentOrphanH]);
+    expect(sidebarItems).toStrictEqual([
+      {
+        modMetadata: modMetadataFoo,
+        modComponents: [formStateModComponentFooA],
+      },
+    ]);
   });
 });

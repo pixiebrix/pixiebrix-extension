@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "@/types/modComponentTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { checkExtensionPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -24,9 +23,11 @@ import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
-// By default, assume the extensions have permissions.
-const fallback: PermissionsStatus = {
+// By default, assume the extension has required permissions.
+const noRequiredPermissionsStatus: PermissionsStatus = {
   hasPermissions: true,
   permissions: emptyPermissionsFactory(),
 };
@@ -36,7 +37,7 @@ const fallback: PermissionsStatus = {
  * Outside the `ModsPage` you probably want to use useAsyncState with `collectModComponentPermissions`
  * @see collectModComponentPermissions
  */
-function useModPermissions(modComponents: ModComponentBase[]): {
+function useModPermissions(modInstances: ModInstance[]): {
   hasPermissions: boolean;
   requestPermissions: () => Promise<boolean>;
 } {
@@ -44,13 +45,16 @@ function useModPermissions(modComponents: ModComponentBase[]): {
 
   const { data } = fallbackValue(
     useAsyncState(async () => {
-      if (isSuccess) {
+      if (isSuccess && modInstances.length > 0) {
+        const modComponents = modInstances.flatMap((x) =>
+          mapModInstanceToActivatedModComponents(x),
+        );
         return checkExtensionPermissions(modComponents);
       }
 
-      return fallback;
-    }, [modComponents, browserPermissions, isSuccess]),
-    fallback,
+      return noRequiredPermissionsStatus;
+    }, [modInstances, browserPermissions, isSuccess]),
+    noRequiredPermissionsStatus,
   );
 
   assertNotNullish(data, "Permissions data is null");

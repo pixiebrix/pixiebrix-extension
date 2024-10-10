@@ -56,7 +56,10 @@ import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormSt
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type Permissions } from "webextension-polyfill";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
+import {
+  createNewUnsavedModMetadata,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
@@ -75,12 +78,15 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs: () => ({}) as OptionsArgs,
+  optionsArgs() {
+    return {} as OptionsArgs;
+  },
   variablesDefinition: () => emptyModVariablesDefinitionFactory(),
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
-  modMetadata: undefined,
+  modMetadata: (n: number) =>
+    createNewUnsavedModMetadata({ modName: `Unsaved Mod ${n}` }),
   permissions(): Permissions.Permissions {
     return {
       permissions: [],
@@ -133,14 +139,15 @@ export const triggerFormStateFactory = (
   override?: FactoryConfig<TriggerFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultProps = trigger.fromNativeElement(
-    "https://test.com",
-    metadataFactory({
+  const defaultProps = trigger.fromNativeElement({
+    url: "https://test.com",
+    modMetadata: createNewUnsavedModMetadata({ modName: "Unsaved Mod" }),
+    starterBrickMetadata: metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    null,
-  );
+    element: null,
+  });
 
   return formStateFactory({
     formStateConfig: {
@@ -155,15 +162,15 @@ export const sidebarPanelFormStateFactory = (
   override?: FactoryConfig<SidebarFormState>,
   pipelineOverride?: BrickPipeline,
 ): SidebarFormState => {
-  const defaultProps = sidebar.fromNativeElement(
-    "https://test.com",
-    metadataFactory({
+  const defaultProps = sidebar.fromNativeElement({
+    url: "https://test.com",
+    modMetadata: createNewUnsavedModMetadata({ modName: "Unsaved Mod" }),
+    starterBrickMetadata: metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    // TypeScript complains if the 3rd positional argument is left off
-    undefined as never,
-  );
+    element: null,
+  });
 
   return formStateFactory({
     formStateConfig: {
@@ -178,14 +185,15 @@ export const contextMenuFormStateFactory = (
   override?: FactoryConfig<ContextMenuFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultProps = contextMenu.fromNativeElement(
-    "https://test.com",
-    metadataFactory({
+  const defaultProps = contextMenu.fromNativeElement({
+    url: "https://test.com",
+    modMetadata: createNewUnsavedModMetadata({ modName: "Unsaved Mod" }),
+    starterBrickMetadata: metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    null,
-  );
+    element: null,
+  });
 
   return formStateFactory({
     formStateConfig: {
@@ -200,14 +208,15 @@ export const quickbarFormStateFactory = (
   override?: FactoryConfig<QuickBarFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultProps = quickBar.fromNativeElement(
-    "https://test.com",
-    metadataFactory({
+  const defaultProps = quickBar.fromNativeElement({
+    url: "https://test.com",
+    modMetadata: createNewUnsavedModMetadata({ modName: "Unsaved Mod" }),
+    starterBrickMetadata: metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    null,
-  );
+    element: null,
+  });
 
   return formStateFactory({
     formStateConfig: {
@@ -222,18 +231,19 @@ export const menuItemFormStateFactory = (
   override?: FactoryConfig<ButtonFormState>,
   pipelineOverride?: BrickPipeline,
 ) => {
-  const defaultTriggerProps = menuItem.fromNativeElement(
-    "https://test.com",
-    metadataFactory({
+  const defaultTriggerProps = menuItem.fromNativeElement({
+    url: "https://test.com",
+    modMetadata: createNewUnsavedModMetadata({ modName: "Unsaved Mod" }),
+    starterBrickMetadata: metadataFactory({
       id: (n: number) => validateRegistryId(`test/extension-point-${n}`),
       name: (n: number) => `Extension Point ${n}`,
     }),
-    {
+    element: {
       item: {
         caption: "Caption for test",
       },
     } as ButtonSelectionResult,
-  );
+  });
 
   return formStateFactory({
     formStateConfig: {

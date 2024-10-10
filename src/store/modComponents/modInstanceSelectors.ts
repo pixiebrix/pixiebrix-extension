@@ -19,31 +19,29 @@ import { createSelector } from "@reduxjs/toolkit";
 import { groupBy } from "lodash";
 import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
-import type { ModInstance } from "@/types/modInstanceTypes";
 
 /**
- * Returns all activated mod instances.
+ * Returns all activated mod instances. Includes mod instances corresponding to paused deployments.
  * @throws {TypeError} if required state migrations have not been applied yet
  */
-export function selectModInstances({
-  options,
-}: ModComponentsRootState): ModInstance[] {
-  if (!Array.isArray(options.activatedModComponents)) {
-    console.warn("state migration has not been applied yet", {
-      options,
-    });
-    throw new TypeError("state migration has not been applied yet");
-  }
+// Written using createSelector to memoize because it creates a new object
+export const selectModInstances = createSelector(
+  (state: ModComponentsRootState) => state.options.activatedModComponents,
+  (activatedModComponents) => {
+    if (!Array.isArray(activatedModComponents)) {
+      throw new TypeError("state migration has not been applied yet");
+    }
 
-  return Object.values(
-    groupBy(options.activatedModComponents, (x) => x._recipe?.id),
-  ).map((modComponents) =>
-    mapActivatedModComponentsToModInstance(modComponents),
-  );
-}
+    return Object.values(
+      groupBy(activatedModComponents, (x) => x.modMetadata.id),
+    ).map((modComponents) =>
+      mapActivatedModComponentsToModInstance(modComponents),
+    );
+  },
+);
 
 /**
- * Returns a Map of activated mod instances keyed by mod id.
+ * Returns a Map of activated mod instances keyed by mod id. Includes mod instances corresponding to paused deployments.
  * @see useFindModInstance
  */
 export const selectModInstanceMap = createSelector(

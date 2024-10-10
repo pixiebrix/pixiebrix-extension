@@ -45,7 +45,7 @@ type BaseDeploymentMetadata = {
   timestamp: string;
 
   /**
-   * True iff the deployment is temporarily disabled.
+   * False iff the deployment is temporarily disabled.
    *
    * If undefined, is considered active for backward compatability
    *

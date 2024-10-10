@@ -16,7 +16,10 @@
  */
 
 import { type Metadata } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -45,8 +48,16 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
-  const base = makeInitialBaseState();
+function fromNativeElement({
+  modMetadata,
+  starterBrickMetadata,
+}: {
+  modMetadata: ModMetadata;
+  starterBrickMetadata: Metadata;
+}): SidebarFormState {
+  const base = makeInitialBaseState({
+    modMetadata,
+  });
 
   const heading = "Sidebar Panel";
 
@@ -54,7 +65,7 @@ function fromNativeElement(url: string, metadata: Metadata): SidebarFormState {
     label: heading,
     ...base,
     starterBrick: {
-      metadata,
+      metadata: starterBrickMetadata,
 
       definition: {
         type: StarterBrickTypes.SIDEBAR_PANEL,

@@ -93,7 +93,7 @@ describe("CommentsTab", () => {
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: newComments.length,
       brickId: expectedBrickId,
-      modId: undefined,
+      modId: expect.toBeString(),
     });
   });
 
@@ -115,7 +115,7 @@ describe("CommentsTab", () => {
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: expectedComments.length,
       brickId: expectedBrickId,
-      modId: formStateWithComments.modMetadata!.id,
+      modId: formStateWithComments.modMetadata.id,
     });
   });
 });

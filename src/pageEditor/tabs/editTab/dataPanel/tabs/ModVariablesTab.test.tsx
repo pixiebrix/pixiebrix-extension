@@ -26,7 +26,6 @@ import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { getStandaloneModComponentRuntimeModId } from "@/utils/modUtils";
 
 const getPageStateMock = jest.mocked(getPageState);
 
@@ -56,27 +55,6 @@ describe("ModVariablesTab", () => {
 
     return utils;
   }
-
-  it("renders with standalone mod component", async () => {
-    const formState = formStateFactory();
-    const { asFragment } = await renderPageStateTab(formState);
-    expect(asFragment()).toMatchSnapshot();
-
-    expect(getPageStateMock).toHaveBeenCalledWith(
-      {
-        frameId: 0,
-        tabId: 0,
-      },
-      {
-        namespace: expect.toBeString(),
-        modComponentRef: {
-          modComponentId: formState.uuid,
-          modId: getStandaloneModComponentRuntimeModId(formState.uuid),
-          starterBrickId: formState.starterBrick.metadata.id,
-        },
-      },
-    );
-  });
 
   it("renders with mod's mod component", async () => {
     const modMetadata = modMetadataFactory();

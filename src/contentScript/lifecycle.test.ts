@@ -36,6 +36,7 @@ import {
 import { type getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;
@@ -75,7 +76,8 @@ const activatedModComponentFactory = define<
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  modMetadata: modMetadataFactory,
+  deploymentMetadata: undefined,
   label: "Test Mod Component",
   config: define<TriggerConfig>({
     action: () => [] as BrickPipeline,

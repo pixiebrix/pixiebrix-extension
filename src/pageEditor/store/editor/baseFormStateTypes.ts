@@ -25,7 +25,11 @@ import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModComponentBaseV3,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import {
   type ModOptionsDefinition,
   type ModVariablesDefinition,
@@ -133,9 +137,9 @@ export interface BaseFormStateV1<
   /**
    * Information about the mod used to activate the mod component, or `undefined`
    * if the mod component is not part of a mod.
-   * @see ModComponentBase._recipe
+   * @see ModComponentBase.metadata
    */
-  recipe: ModComponentBase["_recipe"] | undefined;
+  recipe: ModComponentBaseV3["_recipe"] | undefined;
 
   /**
    * Information about the mod options or `undefined`
@@ -188,14 +192,12 @@ export type BaseFormStateV3<
   modComponent: TModComponent;
 
   /**
-   * @since 2.0.5
-   * Part of the Page Editor renaming effort
-   * `recipe` to `modMetadata`
    * Information about the mod used to activate the mod component, or `undefined`
    * if the mod component is not part of a mod.
-   * @see ModComponentBase._recipe
+   * @see ModComponentBase.modMetadata
+   * @since 2.0.5
    */
-  modMetadata: ModComponentBase["_recipe"] | undefined;
+  modMetadata: ModComponentBase["modMetadata"] | undefined;
 };
 
 /**
@@ -232,14 +234,33 @@ export type BaseFormStateV5<
   variablesDefinition: ModVariablesDefinition;
 };
 
+/**
+ * Base form state version that eliminates standalone mod components by containing in an unsaved mod
+ * @deprecated - Do not use versioned state types directly
+ * @see BaseFormState
+ * @since 2.1.4
+ */
+export type BaseFormStateV6<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> =
+  // Can't use SetRequired because the property is required (it does not use ?), but it can be set to undefined
+  Except<BaseFormStateV5<TModComponent, TStarterBrick>, "modMetadata"> & {
+    /**
+     * The mod metadata for the mod component
+     * @see createNewUnsavedModMetadata
+     */
+    modMetadata: ModMetadata;
+  };
+
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
   // On migration, re-point this type to the most recent BaseFormStateV<N> type name
-  BaseFormStateV5<TModComponent, TStarterBrick>,
-  // NOTE: this is not changing the type shape/structure. It's just cleaning up the type name/reference which makes
-  // types easier to work with for testing migrations.
+  BaseFormStateV6<TModComponent, TStarterBrick>,
+  // NOTE: overriding integrationDependencies is not changing the type shape/structure. It's just cleaning up the
+  // type name/reference which makes types easier to work with for testing migrations.
   "integrationDependencies"
 > & {
   integrationDependencies: IntegrationDependency[];

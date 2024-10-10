@@ -77,7 +77,7 @@ describe("BrickDataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Input,
       brickId: formState.modComponent.brickPipeline[1]!.id,
-      modId: undefined,
+      modId: expect.toBeString(),
     });
 
     reportEventMock.mockClear();
@@ -96,7 +96,7 @@ describe("BrickDataPanel", () => {
     expect(reportEventMock).toHaveBeenCalledWith(Events.DATA_PANEL_TAB_VIEW, {
       tabName: DataPanelTabKey.Comments,
       brickId: formState.modComponent.brickPipeline[1]!.id,
-      modId: undefined,
+      modId: expect.toBeString(),
     });
   });
 });

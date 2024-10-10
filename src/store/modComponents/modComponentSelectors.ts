@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
-import { createSelector } from "@reduxjs/toolkit";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { type RegistryId } from "@/types/registryTypes";
-import { isEmpty, memoize } from "lodash";
-import { type UUID } from "@/types/stringTypes";
+import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
+/**
+ * Select all activated mod components. Includes activated components associated with paused deployments.
+ * Prefer selectModInstances where possible.
+ * @see selectModInstances
+ */
 export function selectActivatedModComponents({
   options,
 }: ModComponentsRootState): ActivatedModComponent[] {
@@ -32,31 +33,8 @@ export function selectActivatedModComponents({
     throw new TypeError("state migration has not been applied yet");
   }
 
+  // For now, just return the activated mod components directly. In the future work, we'll potentially store
+  // ModInstances in the state instead so this selector will be re-written to map the ModInstances to their components
+  // See https://www.notion.so/pixiebrix/Simplify-data-representation-of-activated-mods-to-simplify-code-and-eliminate-common-bugs-10b43b21a25380eaac05d286ca2acb88?pvs=4
   return options.activatedModComponents;
 }
-
-const isModComponentSavedOnCloudSelector = createSelector(
-  selectActivatedModComponents,
-  (_state: ModComponentsRootState, modComponentId: UUID) => modComponentId,
-  (modComponents, modComponentId) =>
-    modComponents.some((modComponent) => modComponent.id === modComponentId),
-);
-
-export const selectIsModComponentSavedOnCloud =
-  (modComponentId: UUID) => (state: ModComponentsRootState) =>
-    isModComponentSavedOnCloudSelector(state, modComponentId);
-
-export const selectGetModComponentsForMod = createSelector(
-  selectActivatedModComponents,
-  (activatedModComponents) =>
-    memoize((modId: RegistryId) =>
-      activatedModComponents.filter(
-        (activatedModComponent) => activatedModComponent._recipe?.id === modId,
-      ),
-    ),
-);
-
-export const selectModHasAnyActivatedModComponents =
-  (modId?: RegistryId) =>
-  (state: ModComponentsRootState): boolean =>
-    Boolean(modId && !isEmpty(selectGetModComponentsForMod(state)(modId)));

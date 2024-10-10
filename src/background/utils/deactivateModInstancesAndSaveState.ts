@@ -21,11 +21,11 @@ import saveModComponentStateAndReloadTabs from "@/background/utils/saveModCompon
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { saveEditorState } from "@/store/editorStorage";
 import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
-import { type SerializedModComponent } from "@/types/modComponentTypes";
 import { allSettled } from "@/utils/promiseUtils";
+import { type ModInstance } from "@/types/modInstanceTypes";
 
-async function deactivateModComponentsAndSaveState(
-  modComponentsToDeactivate: SerializedModComponent[],
+async function deactivateModInstancesAndSaveState(
+  modInstancesToDeactivate: ModInstance[],
   {
     modComponentState,
     editorState,
@@ -37,9 +37,13 @@ async function deactivateModComponentsAndSaveState(
   let _modComponentState = modComponentState;
   let _editorState = editorState;
 
+  const modComponentIds = modInstancesToDeactivate.flatMap(
+    (x) => x.modComponentIds,
+  );
+
   // Deactivate existing mod components
-  for (const modComponent of modComponentsToDeactivate) {
-    const result = deactivateModComponent(modComponent.id, {
+  for (const modComponentId of modComponentIds) {
+    const result = deactivateModComponent(modComponentId, {
       modComponentState: _modComponentState,
       editorState: _editorState,
     });
@@ -48,9 +52,7 @@ async function deactivateModComponentsAndSaveState(
   }
 
   await allSettled(
-    modComponentsToDeactivate.map(async ({ id }) =>
-      removeModComponentForEveryTab(id),
-    ),
+    modComponentIds.map(async (id) => removeModComponentForEveryTab(id)),
     { catch: "ignore" },
   );
 
@@ -61,4 +63,4 @@ async function deactivateModComponentsAndSaveState(
   await saveEditorState(_editorState);
 }
 
-export default deactivateModComponentsAndSaveState;
+export default deactivateModInstancesAndSaveState;

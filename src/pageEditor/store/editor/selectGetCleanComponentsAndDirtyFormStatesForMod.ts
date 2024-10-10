@@ -31,13 +31,13 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
     (modId: RegistryId | null) => {
       const dirtyModComponentFormStates = formStates.filter(
         (formState) =>
-          formState.modMetadata?.id === modId &&
+          formState.modMetadata.id === modId &&
           isDirtyByComponentId[formState.uuid],
       );
 
       const cleanModComponents = activatedModComponents.filter(
         (modComponent) =>
-          modComponent._recipe?.id === modId &&
+          modComponent.modMetadata.id === modId &&
           !dirtyModComponentFormStates.some(
             (formState) => formState.uuid === modComponent.id,
           ),

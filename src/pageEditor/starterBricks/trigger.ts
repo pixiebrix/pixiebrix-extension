@@ -44,21 +44,28 @@ import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/mo
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ModComponentBase,
+  type ModMetadata,
+} from "@/types/modComponentTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { ReportModes } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 
-function fromNativeElement(
-  url: string,
-  metadata: Metadata,
-  _element: null,
-): TriggerFormState {
+function fromNativeElement({
+  starterBrickMetadata,
+  modMetadata,
+  url,
+}: {
+  url: string;
+  modMetadata: ModMetadata;
+  starterBrickMetadata: Metadata;
+}): TriggerFormState {
   return {
     label: `My ${getDomain(url)} trigger`,
-    ...makeInitialBaseState(),
+    ...makeInitialBaseState({ modMetadata }),
     starterBrick: {
-      metadata,
+      metadata: starterBrickMetadata,
       definition: {
         type: StarterBrickTypes.TRIGGER,
         trigger: "load",

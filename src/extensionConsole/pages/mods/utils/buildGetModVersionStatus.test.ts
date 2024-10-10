@@ -17,17 +17,15 @@
 
 import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import {
-  activatedModComponentFactory,
-  modMetadataFactory,
-} from "@/testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { normalizeSemVerString } from "@/types/helpers";
-import { mapModComponentToUnavailableMod } from "@/utils/modUtils";
+import { mapModInstanceToUnavailableMod } from "@/utils/modUtils";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
 
 describe("buildGetModVersionStatus", () => {
   it("handles no activated mod components", () => {
-    const getVersionStatus = buildGetModVersionStatus([]);
+    const getVersionStatus = buildGetModVersionStatus(new Map());
     expect(getVersionStatus(modDefinitionFactory())).toStrictEqual({
       hasUpdate: false,
       activatedModVersion: null,
@@ -36,21 +34,19 @@ describe("buildGetModVersionStatus", () => {
 
   it("handles unavailable mod", () => {
     const version = normalizeSemVerString("1.2.3");
-    const modMetadata = modMetadataFactory({ version });
-    const unavailableModComponent = activatedModComponentFactory({
-      _recipe: modMetadata,
+
+    const modInstance = modInstanceFactory({
+      definition: modDefinitionFactory({
+        metadata: modMetadataFactory({ version }),
+      }),
     });
 
-    const getVersionStatus = buildGetModVersionStatus([
-      unavailableModComponent,
-      activatedModComponentFactory({ _recipe: modMetadataFactory() }),
-      activatedModComponentFactory({ _recipe: modMetadataFactory() }),
-    ]);
+    const getVersionStatus = buildGetModVersionStatus(
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
+    );
 
     expect(
-      getVersionStatus(
-        mapModComponentToUnavailableMod(unavailableModComponent),
-      ),
+      getVersionStatus(mapModInstanceToUnavailableMod(modInstance)),
     ).toStrictEqual({
       hasUpdate: false,
       activatedModVersion: version,
@@ -68,14 +64,19 @@ describe("buildGetModVersionStatus", () => {
     "handles activatedModVersion: $activatedModVersion, latestModVersion: $modVersion",
     ({ activatedModVersion, latestModVersion, expectedHasUpdate }) => {
       const modId = registryIdFactory();
-      const getVersionStatus = buildGetModVersionStatus([
-        activatedModComponentFactory({
-          _recipe: modMetadataFactory({
+
+      const modInstance = modInstanceFactory({
+        definition: modDefinitionFactory({
+          metadata: modMetadataFactory({
             id: modId,
             version: normalizeSemVerString(activatedModVersion),
           }),
         }),
-      ]);
+      });
+
+      const getVersionStatus = buildGetModVersionStatus(
+        new Map([[modInstance.definition.metadata.id, modInstance]]),
+      );
 
       expect(
         getVersionStatus(

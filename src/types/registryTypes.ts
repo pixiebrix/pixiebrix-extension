@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type Tagged, type ValueOf } from "type-fest";
+import { type SetRequired, type Tagged, type ValueOf } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 import { type FeatureFlag } from "@/auth/featureFlags";
 
@@ -77,9 +77,6 @@ export type Metadata = {
   /**
    * An optional human-readable description.
    */
-  /**
-   * An optional human-readable description.
-   */
   readonly description?: string;
 
   /**
@@ -87,11 +84,7 @@ export type Metadata = {
    *
    * Currently optional because it defaults to the browser extension version for bricks defined in JS.
    */
-  /**
-   * The semantic version of the package.
-   *
-   * Currently optional because it defaults to the browser extension version for bricks defined in JS.
-   */
+  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9265 -- require version for all metadata
   readonly version?: SemVerString;
 
   /**
@@ -101,6 +94,21 @@ export type Metadata = {
   // FIXME: this type is wrong. In practice, the value should be a semantic version range, e.g., >=1.4.0
   readonly extensionVersion?: SemVerString;
 };
+
+/**
+ * Registry item metadata definition shape with required version.
+ *
+ * Introduced in 2.1.5 to strengthen the type of `Metadata.version` for ModDefinitions.
+ *
+ * Use PackageInstance instead if expecting a package instance, e.g., `Brick`, `StarterBrick`, `Integration`.
+ *
+ * @see ModDefinition.metadata
+ * @see Metadata
+ * @see PackageInstance
+ * @since 2.1.5
+ */
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9265 -- require version for all metadata
+export type VersionedMetadata = SetRequired<Metadata, "version">;
 
 /**
  * Interface for registry package instances, i.e., `Brick`, `StarterBrick`, and `Integration`.

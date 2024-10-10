@@ -61,15 +61,15 @@ describe("collectExistingConfiguredDependenciesForMod", () => {
     });
     const activatedModComponents = [
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [integrationDependency1],
       }),
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [integrationDependency2],
       }),
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [
           integrationDependency1,
           integrationDependency2,
@@ -116,11 +116,11 @@ describe("collectExistingConfiguredDependenciesForMod", () => {
     });
     const activatedModComponents = [
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [integrationDependency1],
       }),
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [integrationDependency2],
       }),
     ];
@@ -161,15 +161,15 @@ describe("collectExistingConfiguredDependenciesForMod", () => {
     });
     const activatedModComponents = [
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [integrationDependency1],
       }),
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [integrationDependency2],
       }),
       activatedModComponentFactory({
-        _recipe: modMetadata,
+        modMetadata,
         integrationDependencies: [
           integrationDependency1,
           integrationDependency2,

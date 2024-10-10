@@ -101,7 +101,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       for (let i = 0; i < cleanCount; i++) {
         const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
-          _recipe: primaryModMetadata,
+          modMetadata: primaryModMetadata,
           extensionPointId: starterBrickId,
           definitions: {
             [starterBrickId]: {
@@ -119,7 +119,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       for (let i = 0; i < cleanFormCount; i++) {
         const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
-          _recipe: primaryModMetadata,
+          modMetadata: primaryModMetadata,
           extensionPointId: starterBrickId,
           definitions: {
             [starterBrickId]: {
@@ -139,7 +139,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       for (let i = 0; i < dirtyCount; i++) {
         const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
-          _recipe: primaryModMetadata,
+          modMetadata: primaryModMetadata,
           extensionPointId: starterBrickId,
           definitions: {
             [starterBrickId]: {
@@ -159,7 +159,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       for (let i = 0; i < deletedCount; i++) {
         const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
-          _recipe: primaryModMetadata,
+          modMetadata: primaryModMetadata,
           extensionPointId: starterBrickId,
           definitions: {
             [starterBrickId]: {
@@ -189,7 +189,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       const extraCleanModComponents: ActivatedModComponent[] = [];
       for (let i = 0; i < extraClean; i++) {
         const activatedModComponent = activatedModComponentFactory({
-          _recipe: otherModMetadata,
+          modMetadata: otherModMetadata,
         });
         extraCleanModComponents.push(activatedModComponent);
       }
@@ -199,7 +199,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       for (let i = 0; i < extraDirty; i++) {
         const starterBrickId = newStarterBrickId();
         const activatedModComponent = activatedModComponentFactory({
-          _recipe: otherModMetadata,
+          modMetadata: otherModMetadata,
           extensionPointId: starterBrickId,
           definitions: {
             [starterBrickId]: {

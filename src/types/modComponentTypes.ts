@@ -20,9 +20,9 @@ import { type Except } from "type-fest";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
-  type Metadata,
   type RegistryId,
   type Sharing,
+  type VersionedMetadata,
 } from "@/types/registryTypes";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
@@ -45,12 +45,12 @@ import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
  * e.g. on the mods screen.
  *
  * @see optionsSlice
- * @see ModComponentBase._recipe
+ * @see ModComponentBase.modMetadata
  * @see Metadata
  */
 // XXX: previously we didn't export because the usage was clearer as ModComponentBase[_recipe]. However, the ergonomics
 // of (ModMetadata | undefined) were bad to handle with strict null checks
-export type ModMetadata = Metadata & {
+export type ModMetadata = VersionedMetadata & {
   /**
    * `undefined` for mods that were activated prior to the field being added
    */
@@ -84,8 +84,8 @@ export type ModComponentBaseV1<Config extends UnknownObject = UnknownObject> = {
   extensionPointId: RegistryId | InnerDefinitionRef;
 
   /**
-   * Metadata about the deployment used to install the ModComponent, or `undefined` if the ModComponent was not installed
-   * via a deployment.
+   * Metadata about the deployment used to activate the ModComponent, or `undefined` if the ModComponent was not
+   * installed via a deployment.
    */
   _deployment?: DeploymentMetadata;
 
@@ -177,9 +177,27 @@ export type ModComponentBaseV3<Config extends UnknownObject = UnknownObject> =
     variablesDefinition?: ModVariablesDefinition;
   };
 
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type ModComponentBaseV4<Config extends UnknownObject = UnknownObject> =
+  Except<ModComponentBaseV3<Config>, "_recipe" | "_deployment"> & {
+    /**
+     * Metadata about the mod used to activate the ModComponent.
+     * @since 2.1.5
+     */
+    modMetadata: ModMetadata;
+
+    /**
+     * Metadata about the deployment used to activate the ModComponent, or `undefined` if the ModComponent was not
+     * installed via a deployment.
+     */
+    deploymentMetadata?: DeploymentMetadata | undefined;
+  };
+
 // XXX: technically Config could be JsonObject, but that's annoying to work with at callsites.
 export type ModComponentBase<Config extends UnknownObject = UnknownObject> =
-  ModComponentBaseV3<Config>;
+  ModComponentBaseV4<Config>;
 
 export type SerializedModComponentV1<
   Config extends UnknownObject = UnknownObject,
@@ -196,6 +214,12 @@ export type SerializedModComponentV2<
 export type SerializedModComponentV3<
   Config extends UnknownObject = UnknownObject,
 > = ModComponentBaseV3<Config> & {
+  _serializedModComponentBrand: never;
+};
+
+export type SerializedModComponentV4<
+  Config extends UnknownObject = UnknownObject,
+> = ModComponentBaseV4<Config> & {
   _serializedModComponentBrand: never;
 };
 
@@ -247,6 +271,10 @@ export type ActivatedModComponentV3<
   Config extends UnknownObject = UnknownObject,
 > = SerializedModComponentV3<Config> & ActivatedModComponentBase;
 
+export type ActivatedModComponentV4<
+  Config extends UnknownObject = UnknownObject,
+> = SerializedModComponentV4<Config> & ActivatedModComponentBase;
+
 /**
  * A ModComponent that has been activated locally
  * @see ModComponentBase
@@ -254,7 +282,7 @@ export type ActivatedModComponentV3<
  */
 export type ActivatedModComponent<
   Config extends UnknownObject = UnknownObject,
-> = ActivatedModComponentV3<Config>;
+> = ActivatedModComponentV4<Config>;
 
 /**
  * An `ModComponentBase` with all inner brick definitions hydrated.
@@ -293,7 +321,7 @@ export type ModComponentRef = {
   modComponentId: UUID;
 
   /**
-   * Mod the ModComponent is from. An `@internal` scope, if from a standalone mod component.
+   * Mod the ModComponent is from.
    * @see INNER_SCOPE
    */
   modId: RegistryId;

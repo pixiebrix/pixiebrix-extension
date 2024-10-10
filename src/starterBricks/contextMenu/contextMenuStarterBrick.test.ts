@@ -36,6 +36,7 @@ import {
   type ContextMenuConfig,
 } from "@/starterBricks/contextMenu/contextMenuTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);
@@ -69,7 +70,7 @@ const modComponentFactory = define<HydratedModComponent<ContextMenuConfig>>({
   id: uuidSequence,
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
-  _recipe: undefined,
+  modMetadata: modMetadataFactory,
   label: "Test Extension",
   config: define<ContextMenuConfig>({
     title: "Test Menu Item",

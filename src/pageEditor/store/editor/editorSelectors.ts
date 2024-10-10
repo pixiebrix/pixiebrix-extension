@@ -22,8 +22,7 @@ import {
   ModalKey,
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import { compact, flatMap, isEmpty, sortBy, uniqBy } from "lodash";
+import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
@@ -41,13 +40,13 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
-import {
-  normalizeModOptionsDefinition,
-  getStandaloneModComponentRuntimeModId,
-} from "@/utils/modUtils";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -80,8 +79,7 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
 /**
- * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane. NOTE: when editing a standalone
- * mod component, an unrelated mod might be in an expanded state.
+ * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane.
  * @see selectActiveModId
  */
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
@@ -89,8 +87,6 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
 
 /**
  * Select a runtime ModComponentRef for the mod component being edited
- * @since 2.0.6 returns a synthetic mod id for standalone mods
- * @see getStandaloneModComponentRuntimeModId
  * @see ModComponentRef
  */
 export const selectActiveModComponentRef = createSelector(
@@ -103,9 +99,7 @@ export const selectActiveModComponentRef = createSelector(
 
     return {
       modComponentId: formState.uuid,
-      modId:
-        formState.modMetadata?.id ??
-        getStandaloneModComponentRuntimeModId(formState.uuid),
+      modId: formState.modMetadata.id,
       // XXX: the Page Editor form state uses an artificial id. When it's added to the page, the artificial id will be
       // replaced with the hash id calculated during hydration
       starterBrickId: formState.starterBrick.metadata.id,
@@ -192,7 +186,7 @@ const dirtyOptionValuesForModIdSelector = createSelector(
   selectNotDeletedModComponentFormStates,
   (_state: EditorRootState, modId: RegistryId | null) => modId,
   (formStates, modId) =>
-    formStates.find((formState) => formState.modMetadata?.id === modId)
+    formStates.find((formState) => formState.modMetadata.id === modId)
       ?.optionsArgs,
 );
 
@@ -236,7 +230,7 @@ const modIsDirtySelector = createSelector(
     selectDeletedComponentFormStatesByModId(state)[modId],
   ({ editor }: EditorRootState, modId: RegistryId) =>
     editor.modComponentFormStates
-      .filter((formState) => formState.modMetadata?.id === modId)
+      .filter((formState) => formState.modMetadata.id === modId)
       .map((formState) => formState.uuid),
   (
     isModComponentDirtyById,
@@ -275,23 +269,17 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
 
 export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
-  selectActivatedModComponents,
+  selectModInstances,
   selectDirtyModMetadata,
-  (formStates, activatedModComponents, dirtyModMetadataById) => {
-    const formStateModMetadatas: Array<ModComponentBase["_recipe"]> = formStates
-      .filter((formState) => Boolean(formState.modMetadata))
-      .map((formState) => formState.modMetadata);
-    const activatedModComponentModMetadatas: Array<
-      ModComponentBase["_recipe"]
-    > = activatedModComponents
-      .filter((component) => Boolean(component._recipe))
-      .map((component) => component._recipe);
+  (formStates, modInstances, dirtyModMetadataById) => {
+    const formStateModMetadatas: Array<ModComponentBase["modMetadata"]> =
+      formStates.map((formState) => formState.modMetadata);
+    const activatedModMetadatas: Array<ModComponentBase["modMetadata"]> =
+      modInstances.map((x) => mapModDefinitionToModMetadata(x.definition));
 
-    const baseMetadatas = compact(
-      uniqBy(
-        [...formStateModMetadatas, ...activatedModComponentModMetadatas],
-        (modMetadata) => modMetadata?.id,
-      ),
+    const baseMetadatas = uniqBy(
+      [...formStateModMetadatas, ...activatedModMetadatas],
+      (x) => x.id,
     );
 
     return baseMetadatas.map((metadata) => {
@@ -564,7 +552,7 @@ export const selectActiveNodeEventData = createSelector(
     );
 
     return {
-      modId: activeModComponentFormState.modMetadata?.id,
+      modId: activeModComponentFormState.modMetadata.id,
       brickId: activeNodeInfo.blockId,
     } satisfies ReportEventData;
   },
@@ -574,5 +562,5 @@ export const selectFirstModComponentFormStateForActiveMod = createSelector(
   selectModComponentFormStates,
   selectActiveModId,
   (formState, activeModId) =>
-    formState.find((x) => x.modMetadata?.id === activeModId),
+    formState.find((x) => x.modMetadata.id === activeModId),
 );

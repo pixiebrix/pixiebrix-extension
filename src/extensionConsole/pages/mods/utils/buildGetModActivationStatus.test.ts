@@ -18,74 +18,46 @@
 import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import {
-  activatedModComponentFactory,
-  modMetadataFactory,
-} from "@/testUtils/factories/modComponentFactories";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import { nowTimestamp } from "@/utils/timeUtils";
+  modInstanceFactory,
+  teamDeploymentMetadataFactory,
+} from "@/testUtils/factories/modInstanceFactories";
 
 describe("buildGetModActivationStatus", () => {
   it("returns inactive for a mod with no activated components", () => {
-    const getActivationStatus = buildGetModActivationStatus([]);
+    const getActivationStatus = buildGetModActivationStatus(new Map());
     expect(getActivationStatus(modDefinitionFactory())).toBe("Inactive");
   });
 
   it("returns active for a mod with an activated component and no deployment", () => {
-    const modMetadata = modMetadataFactory();
-    const mod = modDefinitionFactory({
-      metadata: modMetadata,
-    });
-    const activatedModComponents = [
-      activatedModComponentFactory({ _recipe: modMetadata }),
-    ];
+    const modInstance = modInstanceFactory();
 
     const getActivationStatus = buildGetModActivationStatus(
-      activatedModComponents,
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
     );
-    expect(getActivationStatus(mod)).toBe("Active");
+    expect(getActivationStatus(modInstance.definition)).toBe("Active");
   });
 
   it("returns active for a mod with an activated component and an active deployment", () => {
-    const modMetadata = modMetadataFactory();
-    const mod = modDefinitionFactory({
-      metadata: modMetadata,
+    const modInstance = modInstanceFactory({
+      deploymentMetadata: teamDeploymentMetadataFactory(),
     });
-    const activatedModComponents = [
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-        _deployment: {
-          id: autoUUIDSequence(),
-          timestamp: nowTimestamp(),
-          active: true,
-        },
-      }),
-    ];
 
     const getActivationStatus = buildGetModActivationStatus(
-      activatedModComponents,
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
     );
-    expect(getActivationStatus(mod)).toBe("Active");
+    expect(getActivationStatus(modInstance.definition)).toBe("Active");
   });
 
   it("returns paused for a mod with an activated component and a paused deployment", () => {
-    const modMetadata = modMetadataFactory();
-    const mod = modDefinitionFactory({
-      metadata: modMetadata,
-    });
-    const activatedModComponents = [
-      activatedModComponentFactory({
-        _recipe: modMetadata,
-        _deployment: {
-          id: autoUUIDSequence(),
-          timestamp: nowTimestamp(),
-          active: false,
-        },
+    const modInstance = modInstanceFactory({
+      deploymentMetadata: teamDeploymentMetadataFactory({
+        active: false,
       }),
-    ];
+    });
 
     const getActivationStatus = buildGetModActivationStatus(
-      activatedModComponents,
+      new Map([[modInstance.definition.metadata.id, modInstance]]),
     );
-    expect(getActivationStatus(mod)).toBe("Paused");
+    expect(getActivationStatus(modInstance.definition)).toBe("Paused");
   });
 });

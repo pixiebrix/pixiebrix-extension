@@ -127,4 +127,28 @@ describe("withIdbErrorHandling", () => {
 
     expect(deleteDB).toHaveBeenCalledWith(databaseName, expect.anything());
   }, 10_000); // Increased timeout due to default backoffs in p-retry
+
+  it("should delete the database if it fails all retries with Internal error opening backing store", async () => {
+    const onFailedAttemptMock = jest.fn();
+    mockOpenIDB.mockRejectedValue(
+      new DOMException(
+        "Internal error opening backing store for indexedDB.open.",
+      ),
+    );
+
+    await expect(
+      withIdbErrorHandling(mockOpenIDB, databaseName)(mockDbOperation, {
+        operationName,
+        shouldRetry: () => true,
+        onFailedAttempt: onFailedAttemptMock,
+      }),
+    ).rejects.toThrow(
+      "Internal error opening backing store for indexedDB.open.",
+    );
+
+    expect(mockOpenIDB).toHaveBeenCalledTimes(4); // 1 initial + 3 retries
+    expect(onFailedAttemptMock).toHaveBeenCalledTimes(4);
+
+    expect(deleteDB).toHaveBeenCalledWith(databaseName, expect.anything());
+  }, 10_000); // Increased timeout due to default backoffs in p-retry
 });

@@ -48,10 +48,11 @@ import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsH
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { TEST_setContext } from "webext-detect";
 import {
+  activatedModComponentFactory,
   modComponentFactory,
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
-import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   modComponentDefinitionFactory,
   starterBrickDefinitionFactory,
@@ -376,29 +377,31 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
 
     const starterBrick = starterBrickDefinitionFactory();
-    const brick = {
+    const packageVersion = {
       ...parsePackage(starterBrick as unknown as RegistryPackage),
       timestamp: new Date(),
     };
-    registryFindMock.mockResolvedValue(brick);
+    registryFindMock.mockResolvedValue(packageVersion);
 
-    // An extension without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const modComponent = modComponentFactory({
+    // A mod without a deployment. Exclude _deployment entirely to handle the case where the property is missing
+    const manualModComponent = activatedModComponentFactory({
       extensionPointId: starterBrick.metadata!.id,
-    }) as ActivatedModComponent;
-    delete modComponent._recipe;
-    delete modComponent._deployment;
+      modMetadata: modMetadataFactory(),
+    });
+    delete manualModComponent.deploymentMetadata;
 
     await saveModComponentState({
-      activatedModComponents: [modComponent],
+      activatedModComponents: [manualModComponent],
     });
 
     let editorState = initialEditorState;
     const { fromModComponent } = adapter(starterBrick.definition.type);
-    const element = (await fromModComponent(modComponent)) as ButtonFormState;
+    const editorComponentFormState = (await fromModComponent(
+      manualModComponent,
+    )) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
-      editorSlice.actions.addModComponentFormState(element),
+      editorSlice.actions.addModComponentFormState(editorComponentFormState),
     );
     await saveEditorState(editorState);
 
@@ -430,17 +433,16 @@ describe("syncDeployments", () => {
     const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
-    // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const modComponent = modComponentFactory({
-      _recipe: {
+    const modComponent = activatedModComponentFactory({
+      deploymentMetadata: undefined,
+      modMetadata: {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
         updated_at: deployment.updated_at!,
-        sharing: sharingDefinitionFactory(),
+        sharing: personalSharingDefinitionFactory(),
       },
-    }) as ActivatedModComponent;
-    delete modComponent._deployment;
+    });
 
     await saveModComponentState({
       activatedModComponents: [modComponent],
@@ -463,7 +465,7 @@ describe("syncDeployments", () => {
 
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toBeArrayOfSize(1);
-    expect(activatedModComponents[0]!._recipe!.version).toBe(
+    expect(activatedModComponents[0]!.modMetadata.version).toBe(
       deployment.package.version,
     );
   });
@@ -481,18 +483,17 @@ describe("syncDeployments", () => {
     };
     registryFindMock.mockResolvedValue(brick);
 
-    // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
-    const modComponent = modComponentFactory({
+    const modComponent = activatedModComponentFactory({
       extensionPointId: starterBrick.metadata!.id,
-      _recipe: {
+      deploymentMetadata: undefined,
+      modMetadata: {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: normalizeSemVerString("0.0.1"),
         updated_at: deployment.updated_at!,
-        sharing: sharingDefinitionFactory(),
+        sharing: personalSharingDefinitionFactory(),
       },
-    }) as ActivatedModComponent;
-    delete modComponent._deployment;
+    });
 
     await saveModComponentState({
       activatedModComponents: [modComponent],
@@ -524,7 +525,7 @@ describe("syncDeployments", () => {
     const { modComponentFormStates } = (await getEditorState()) ?? {};
     // Expect draft mod component to be removed
     expect(modComponentFormStates).toBeArrayOfSize(0);
-    expect(activatedModComponents[0]!._recipe!.version).toBe(
+    expect(activatedModComponents[0]!.modMetadata.version).toBe(
       deployment.package.version,
     );
   });
@@ -749,58 +750,61 @@ describe("syncDeployments", () => {
   });
 
   test("can deactivate all deployed mods", async () => {
-    const personalStarterBrick = starterBrickDefinitionFactory();
-    const personalBrick = {
-      ...parsePackage(personalStarterBrick as unknown as RegistryPackage),
+    const manualModStarterBrickDefinition = starterBrickDefinitionFactory();
+    const manualModStarterBrickPackageVersion = {
+      ...parsePackage(
+        manualModStarterBrickDefinition as unknown as RegistryPackage,
+      ),
       timestamp: new Date(),
     };
 
-    const standaloneModComponent = modComponentFactory({
-      extensionPointId: personalStarterBrick.metadata!.id,
-    }) as ActivatedModComponent;
+    const manuallyActivatedModComponent = activatedModComponentFactory({
+      modMetadata: modMetadataFactory(),
+    });
 
-    const recipeModComponent = modComponentFactory({
-      _recipe: modMetadataFactory(),
-    }) as ActivatedModComponent;
-
-    const deploymentStarterBrick = starterBrickDefinitionFactory();
-    const deploymentsBrick = {
-      ...parsePackage(deploymentStarterBrick as unknown as RegistryPackage),
+    const deploymentStarterBrickDefinition = starterBrickDefinitionFactory();
+    const deploymentStarterBrickPackageVersion = {
+      ...parsePackage(
+        deploymentStarterBrickDefinition as unknown as RegistryPackage,
+      ),
       timestamp: new Date(),
     };
 
     const deploymentModComponent = modComponentFactory({
-      extensionPointId: deploymentStarterBrick.metadata!.id,
-      _deployment: { id: uuidv4(), timestamp: "2021-10-07T12:52:16.189Z" },
-      _recipe: modMetadataFactory(),
+      extensionPointId: deploymentStarterBrickDefinition.metadata!.id,
+      deploymentMetadata: {
+        id: uuidv4(),
+        timestamp: "2021-10-07T12:52:16.189Z",
+      },
+      modMetadata: modMetadataFactory(),
     }) as ActivatedModComponent;
 
     registryFindMock.mockImplementation(async (id) => {
-      if (id === personalBrick.id) {
-        return personalBrick;
+      if (id === manualModStarterBrickPackageVersion.id) {
+        return manualModStarterBrickPackageVersion;
       }
 
-      return deploymentsBrick;
+      return deploymentStarterBrickPackageVersion;
     });
 
     let editorState = initialEditorState;
 
-    const personalModComponentAdapter = adapter(
-      personalStarterBrick.definition.type,
+    const manualModAdapter = adapter(
+      manualModStarterBrickDefinition.definition.type,
     );
-    const personalModComponentFormState =
-      (await personalModComponentAdapter.fromModComponent(
-        standaloneModComponent,
+    const manualModComponentEditorFormState =
+      (await manualModAdapter.fromModComponent(
+        manuallyActivatedModComponent,
       )) as ButtonFormState;
     editorState = editorSlice.reducer(
       editorState,
       editorSlice.actions.addModComponentFormState(
-        personalModComponentFormState,
+        manualModComponentEditorFormState,
       ),
     );
 
     const deploymentModComponentAdapter = adapter(
-      deploymentStarterBrick.definition.type,
+      deploymentStarterBrickDefinition.definition.type,
     );
     const deploymentElement =
       (await deploymentModComponentAdapter.fromModComponent(
@@ -813,9 +817,8 @@ describe("syncDeployments", () => {
 
     await saveModComponentState({
       activatedModComponents: [
-        standaloneModComponent,
         deploymentModComponent,
-        recipeModComponent,
+        manuallyActivatedModComponent,
       ],
     });
     await saveEditorState(editorState);
@@ -827,15 +830,18 @@ describe("syncDeployments", () => {
 
     const { activatedModComponents } = await getModComponentState();
 
-    expect(activatedModComponents).toHaveLength(2);
+    expect(activatedModComponents).toHaveLength(1);
 
     const activatedModComponentIds = activatedModComponents.map((x) => x.id);
-    expect(activatedModComponentIds).toContain(standaloneModComponent.id);
-    expect(activatedModComponentIds).toContain(recipeModComponent.id);
+    expect(activatedModComponentIds).toContain(
+      manuallyActivatedModComponent.id,
+    );
 
     const { modComponentFormStates } = (await getEditorState()) ?? {};
     expect(modComponentFormStates).toBeArrayOfSize(1);
-    expect(modComponentFormStates![0]!).toEqual(personalModComponentFormState);
+    expect(modComponentFormStates![0]!).toEqual(
+      manualModComponentEditorFormState,
+    );
   });
 
   test("deactivates old mod when deployed mod id is changed", async () => {
@@ -858,7 +864,7 @@ describe("syncDeployments", () => {
     await syncDeployments();
     const { activatedModComponents } = await getModComponentState();
     expect(activatedModComponents).toHaveLength(1);
-    expect(activatedModComponents[0]!._recipe!.id).toBe(
+    expect(activatedModComponents[0]!.modMetadata.id).toBe(
       deployment.package.package_id,
     );
 
@@ -889,7 +895,7 @@ describe("syncDeployments", () => {
     const { activatedModComponents: expectedModComponents } =
       await getModComponentState();
     expect(expectedModComponents).toHaveLength(1);
-    expect(expectedModComponents[0]!._recipe!.id).toBe(
+    expect(expectedModComponents[0]!.modMetadata.id).toBe(
       updatedDeployment.package.package_id,
     );
   });

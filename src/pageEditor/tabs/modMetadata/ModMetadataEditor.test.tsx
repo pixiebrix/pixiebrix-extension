@@ -49,7 +49,7 @@ describe("ModMetadataEditor", () => {
     const formState = formStateFactory({ formStateConfig: { modMetadata } });
 
     const modComponent = activatedModComponentFactory({
-      _recipe: modMetadata,
+      modMetadata,
     });
 
     useOptionalModDefinitionMock.mockReturnValue(
@@ -62,7 +62,7 @@ describe("ModMetadataEditor", () => {
           modComponentSlice.actions.UNSAFE_setModComponents([modComponent]),
         );
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.setActiveModId(formState.modMetadata!.id));
+        dispatch(editorActions.setActiveModId(formState.modMetadata.id));
       },
     });
 
@@ -78,7 +78,7 @@ describe("ModMetadataEditor", () => {
     const formState = formStateFactory({ formStateConfig: { modMetadata } });
 
     const modComponent = activatedModComponentFactory({
-      _recipe: modMetadata,
+      modMetadata,
     });
 
     useOptionalModDefinitionMock.mockReturnValue(
@@ -98,7 +98,7 @@ describe("ModMetadataEditor", () => {
           modComponentSlice.actions.UNSAFE_setModComponents([modComponent]),
         );
         dispatch(editorActions.addModComponentFormState(formState));
-        dispatch(editorActions.setActiveModId(formState.modMetadata!.id));
+        dispatch(editorActions.setActiveModId(formState.modMetadata.id));
       },
     });
 

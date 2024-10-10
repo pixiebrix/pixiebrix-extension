@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Mod, type ModVersionStatus } from "@/types/modTypes";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { isUnavailableMod } from "@/utils/modUtils";
 import * as semver from "semver";
-import { type SemVerString } from "@/types/registryTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type Timestamp } from "@/types/stringTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
 
 type ModVersionInfo = {
   version: SemVerString;
@@ -65,44 +65,33 @@ function getModVersionInfo(mod: Mod): ModVersionInfo | null {
 }
 
 function getActivatedModVersionInfo(
-  activatedModComponent: ActivatedModComponent | undefined,
+  modInstance: ModInstance | undefined,
 ): ModVersionInfo | null {
-  if (activatedModComponent == null) {
+  if (modInstance == null) {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We've migrated _recipe to be non-null everywhere but the type isn't updated yet
-  const modMetadata = activatedModComponent._recipe!;
-  const { version: activatedModVersion, updated_at: activatedModUpdatedAt } =
-    modMetadata;
+  const { version, id } = modInstance.definition.metadata;
 
   assertNotNullish(
-    activatedModVersion,
-    `Activated mod version is null for mod: ${modMetadata.id}, something went wrong`,
-  );
-  assertNotNullish(
-    activatedModUpdatedAt,
-    `Activated mod updated_at is null for mod: ${modMetadata.id}, something went wrong`,
+    version,
+    `Unexpected missing version for activated mod: ${id}`,
   );
 
   return {
-    version: activatedModVersion,
-    updatedAt: activatedModUpdatedAt,
+    version,
+    updatedAt: modInstance.definition.updated_at,
   };
 }
 
 export default function buildGetModVersionStatus(
-  activatedModComponents: ActivatedModComponent[],
+  modInstanceMap: Map<RegistryId, ModInstance>,
 ): (mod: Mod) => ModVersionStatus {
   return (mod: Mod) => {
-    const activatedModComponent = activatedModComponents.find(
-      ({ _recipe }) => _recipe?.id === mod.metadata.id,
-    );
+    const modInstance = modInstanceMap.get(mod.metadata.id);
 
     const currentVersionInfo = getModVersionInfo(mod);
-    const activatedVersionInfo = getActivatedModVersionInfo(
-      activatedModComponent,
-    );
+    const activatedVersionInfo = getActivatedModVersionInfo(modInstance);
 
     return {
       hasUpdate: !isLatestVersion(activatedVersionInfo, currentVersionInfo),
