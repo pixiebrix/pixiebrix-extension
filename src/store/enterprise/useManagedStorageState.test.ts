@@ -36,6 +36,7 @@ describe("useManagedStorageState", () => {
     expect(result.current).toStrictEqual(loadingAsyncStateFactory());
 
     await waitForNextUpdate({
+      // `readManagedStorage` will take a few seconds if there are no policies set
       timeout: 5000,
     });
 
@@ -43,7 +44,7 @@ describe("useManagedStorageState", () => {
   });
 
   it("handles already initialized state", async () => {
-    await browser.storage.managed.set({ partnerId: "taco-bell" });
+    await browser.storage.managed.set({ partnerId: "foo" });
 
     const { result, waitForNextUpdate } = renderHook(() =>
       useManagedStorageState(),
@@ -51,21 +52,9 @@ describe("useManagedStorageState", () => {
 
     await waitForNextUpdate();
 
-    expect(result.current).toStrictEqual({
-      currentData: {
-        partnerId: "taco-bell",
-      },
-      data: {
-        partnerId: "taco-bell",
-      },
-      error: undefined,
-      isError: false,
-      isFetching: false,
-      isLoading: false,
-      isSuccess: true,
-      isUninitialized: false,
-      refetch: expect.any(Function),
-    });
+    expect(result.current).toStrictEqual(
+      valueToAsyncState({ partnerId: "foo" }),
+    );
   });
 
   // Can't test because mock doesn't fire change events: https://github.com/clarkbw/jest-webextension-mock/issues/170
