@@ -20,14 +20,15 @@ import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentAct
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { editorStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 export default {
   title: "Sidebar/ActionMenu",
   component: ModComponentActionMenu,
   argTypes: {
-    isDirty: {
-      control: "boolean",
-      defaultValue: false,
+    modComponentFormState: {
+      control: "object",
+      defaultValue: triggerFormStateFactory(),
     },
   },
 } as ComponentMeta<typeof ModComponentActionMenu>;
@@ -42,26 +43,29 @@ const Template: ComponentStory<typeof ModComponentActionMenu> = (args) => (
 
 export const NewModComponent = Template.bind({});
 NewModComponent.args = {
+  modComponentFormState: triggerFormStateFactory(),
   onClearChanges: undefined,
   onCopyToMod: undefined,
   onMoveToMod: undefined,
-  isDirty: true,
 };
 
 export const OldModComponent = Template.bind({});
 OldModComponent.args = {
+  modComponentFormState: triggerFormStateFactory(),
   onCopyToMod: undefined,
   onMoveToMod: undefined,
 };
 
 export const Mod = Template.bind({});
 Mod.args = {
+  modComponentFormState: triggerFormStateFactory(),
   onCopyToMod: undefined,
   onMoveToMod: undefined,
 };
 
 export const NewModComponentInMod = Template.bind({});
 NewModComponentInMod.args = {
+  modComponentFormState: triggerFormStateFactory(),
   onClearChanges: undefined,
   onCopyToMod: undefined,
   onMoveToMod: undefined,
@@ -69,6 +73,7 @@ NewModComponentInMod.args = {
 
 export const OldModComponentInMod = Template.bind({});
 OldModComponentInMod.args = {
+  modComponentFormState: triggerFormStateFactory(),
   onCopyToMod: undefined,
   onMoveToMod: undefined,
 };

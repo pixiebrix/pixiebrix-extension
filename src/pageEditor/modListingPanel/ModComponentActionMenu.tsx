@@ -40,7 +40,6 @@ type OptionalAction = (() => Promise<void>) | undefined;
 type ActionMenuProps = {
   modComponentFormState: ModComponentFormState;
   labelRoot: string;
-  isActive: boolean;
   onDuplicate: () => Promise<void>;
   onClearChanges: OptionalAction;
   onMoveToMod: () => Promise<void>;
@@ -49,7 +48,6 @@ type ActionMenuProps = {
 
 const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
   modComponentFormState,
-  isActive,
   labelRoot,
   onDuplicate,
   onClearChanges = null,
@@ -110,14 +108,12 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
 
   return (
     <div className={styles.root}>
-      {isActive && (
-        <EllipsisMenu
-          portal
-          ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
-          items={menuItems}
-          classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
-        />
-      )}
+      <EllipsisMenu
+        portal
+        ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
+        items={menuItems}
+        classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
+      />
     </div>
   );
 };

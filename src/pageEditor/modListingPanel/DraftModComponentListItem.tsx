@@ -155,26 +155,27 @@ const DraftModComponentListItem: React.FunctionComponent<
           <UnsavedChangesIcon />
         </span>
       )}
-      <ModComponentActionMenu
-        modComponentFormState={modComponentFormState}
-        isActive={isActive}
-        labelRoot={getLabel(modComponentFormState)}
-        onDuplicate={async () => {
-          dispatch(
-            // Duplicate the mod component in the same mod
-            actions.duplicateActiveModComponent(),
-          );
-        }}
-        onClearChanges={
-          modComponentFormState.installed ? onClearChanges : undefined
-        }
-        onMoveToMod={async () => {
-          dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
-        }}
-        onCopyToMod={async () => {
-          dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
-        }}
-      />
+      {isActive && (
+        <ModComponentActionMenu
+          modComponentFormState={modComponentFormState}
+          labelRoot={getLabel(modComponentFormState)}
+          onDuplicate={async () => {
+            dispatch(
+              // Duplicate the mod component in the same mod
+              actions.duplicateActiveModComponent(),
+            );
+          }}
+          onClearChanges={
+            modComponentFormState.installed ? onClearChanges : undefined
+          }
+          onMoveToMod={async () => {
+            dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
+          }}
+          onCopyToMod={async () => {
+            dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
+          }}
+        />
+      )}
     </ListGroup.Item>
   );
 };
