@@ -16,10 +16,10 @@
  */
 
 import Banner from "@/components/banner/Banner";
-import TrialCallToActionLink from "@/extensionConsole/pages/teamTrials/TrialCallToActionLink";
+import TrialCallToActionLink from "@/components/teamTrials/TrialCallToActionLink";
 import useTeamTrialStatus, {
   TeamTrialStatus,
-} from "@/extensionConsole/pages/teamTrials/useTeamTrialStatus";
+} from "@/components/teamTrials/useTeamTrialStatus";
 import React from "react";
 import { Collapse } from "react-bootstrap";
 

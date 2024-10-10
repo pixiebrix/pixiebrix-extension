@@ -33,7 +33,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useHistory } from "react-router";
 import { UI_PATHS } from "@/data/service/urlPaths";
-import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
+import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 import useFindModInstance from "@/mods/hooks/useFindModInstance";
 import { compact } from "lodash";
 

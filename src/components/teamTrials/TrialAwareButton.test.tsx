@@ -16,7 +16,7 @@
  */
 
 import { render, screen, waitFor } from "@/extensionConsole/testHelpers";
-import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
+import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import React from "react";
