@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type ComponentStory, type ComponentMeta } from "@storybook/react";
+import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import modsPageSlice, {
@@ -28,13 +28,11 @@ import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
-import { type ApiVersion } from "@/types/runtimeTypes";
-import { type Timestamp } from "@/types/stringTypes";
-import { validateRegistryId } from "@/types/helpers";
-import { DefinitionKinds } from "@/types/registryTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { publicSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { Milestones } from "@/data/model/UserMilestone";
 
 export default {
   title: "ModsPage/GetStartedView",
@@ -56,20 +54,9 @@ function optionsStore(initialState?: UnknownObject) {
   });
 }
 
-const testRecipe = {
-  metadata: {
-    id: validateRegistryId("@pixiebrix/test-blueprint"),
-    name: "Test Blueprint",
-  },
-  extensionPoints: [],
-  sharing: {
-    public: true,
-    organizations: [],
-  },
-  updated_at: "2022-01-01T00:00:00Z" as Timestamp,
-  kind: DefinitionKinds.MOD,
-  apiVersion: "v3" as ApiVersion,
-} as ModDefinition;
+const testMod = modDefinitionFactory({
+  sharing: publicSharingDefinitionFactory(),
+});
 
 const Template: ComponentStory<typeof GetStartedView> = (args) => (
   <Provider
@@ -77,12 +64,12 @@ const Template: ComponentStory<typeof GetStartedView> = (args) => (
       auth: {
         milestones: [
           {
-            key: "first_time_public_blueprint_install",
-            metadata: { blueprintId: testRecipe.metadata.id },
+            key: Milestones.FIRST_TIME_PUBLIC_MOD_ACTIVATION,
+            metadata: { blueprintId: testMod.metadata.id },
           },
         ],
       },
-      recipes: valueToAsyncCacheState([testRecipe]),
+      recipes: valueToAsyncCacheState([testMod]),
     })}
   >
     <GetStartedView {...args} />
@@ -95,13 +82,13 @@ Default.args = {
   height: 500,
 };
 
-export const ActivateBlueprint = Template.bind({});
-ActivateBlueprint.args = {
+export const ActivateMod = Template.bind({});
+ActivateMod.args = {
   width: 800,
   height: 500,
 };
 
-ActivateBlueprint.parameters = {
+ActivateMod.parameters = {
   msw: {
     handlers: [
       rest.get(
@@ -111,8 +98,8 @@ ActivateBlueprint.parameters = {
             context.json([
               {
                 package: {
-                  name: testRecipe.metadata.id,
-                  verbose_name: testRecipe.metadata.name,
+                  name: testMod.metadata.id,
+                  verbose_name: testMod.metadata.name,
                 },
               },
             ]),

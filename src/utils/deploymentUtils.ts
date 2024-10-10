@@ -93,8 +93,7 @@ export const makeUpdatedFilter =
     if (
       packageMatch &&
       gte(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- version is present for persisted mods
-        packageMatch.definition.metadata.version!,
+        packageMatch.definition.metadata.version,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- deployment package is checked above
         deployment.package.version!,
       )

@@ -8144,7 +8144,7 @@ exports[`Storyshots Layout/Page Toolbar 1`] = `
 </div>
 `;
 
-exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
+exports[`Storyshots ModsPage/GetStartedView Activate Mod 1`] = `
 <div
   className="root card"
   style={
