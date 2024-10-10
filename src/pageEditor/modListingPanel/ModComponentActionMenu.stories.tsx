@@ -18,6 +18,8 @@
 import React from "react";
 import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
+import { editorStore } from "@/testUtils/storyUtils";
+import { Provider } from "react-redux";
 
 export default {
   title: "Sidebar/ActionMenu",
@@ -32,7 +34,9 @@ export default {
 
 const Template: ComponentStory<typeof ModComponentActionMenu> = (args) => (
   <div className="d-flex">
-    <ModComponentActionMenu {...args} />
+    <Provider store={editorStore()}>
+      <ModComponentActionMenu {...args} />
+    </Provider>
   </div>
 );
 
