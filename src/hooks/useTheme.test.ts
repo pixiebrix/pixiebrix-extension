@@ -93,16 +93,16 @@ describe("useTheme", () => {
 
   it("calls activateTheme after loading is done and it hasn't been called recently", async () => {
     jest.useFakeTimers();
-    let result = renderHook(() => useTheme());
-    await result.waitForNextUpdate();
+    const { rerender, waitForNextUpdate } = renderHook(() => useTheme());
+    await waitForNextUpdate();
 
     expect(activateTheme).not.toHaveBeenCalled();
 
     jest.advanceTimersByTime(125_000);
     resetAsyncExternalStore();
 
-    result = renderHook(() => useTheme());
-    await result.waitForNextUpdate();
+    rerender();
+    await waitForNextUpdate();
 
     expect(activateTheme).toHaveBeenCalledOnce();
   });
