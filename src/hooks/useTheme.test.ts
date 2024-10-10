@@ -111,10 +111,11 @@ describe("useTheme", () => {
   ])(
     "handles showSidebarLogo policy (policy: $policyValue, theme: $themeValue, expected: $expectedValue)",
     async ({ policyValue, themeValue, expectedValue }) => {
+      const lastFetched = Date.now();
       jest.mocked(themeStorage.get).mockResolvedValue({
         ...customTheme,
         showSidebarLogo: themeValue,
-        lastFetched: Date.now(),
+        lastFetched,
       });
 
       jest.mocked(readManagedStorage).mockResolvedValue({
@@ -127,7 +128,7 @@ describe("useTheme", () => {
 
       expect(result.current.activeTheme).toMatchObject({
         ...customTheme,
-        lastFetched: expect.any(Number),
+        lastFetched,
         showSidebarLogo: expectedValue,
       });
     },
