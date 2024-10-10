@@ -35,7 +35,7 @@ export const openExtensionConsoleFromAdmin = async (
       .filter({ hasText: "Open Extension Console" })
       .click();
 
-    const extensionConsolePage = await newPagePromise;
+    extensionConsolePage = await newPagePromise;
     await extensionConsolePage.waitForURL(/\/options\.html#\/$/);
 
     await expect(extensionConsolePage.locator("#container")).toContainText(
