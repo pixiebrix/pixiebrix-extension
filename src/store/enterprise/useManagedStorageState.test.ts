@@ -44,7 +44,8 @@ describe("useManagedStorageState", () => {
   });
 
   it("handles already initialized state", async () => {
-    await browser.storage.managed.set({ partnerId: "foo" });
+    const expectedPolicy = { partnerId: "foo" };
+    await browser.storage.managed.set(expectedPolicy);
 
     const { result, waitForNextUpdate } = renderHook(() =>
       useManagedStorageState(),
@@ -52,22 +53,19 @@ describe("useManagedStorageState", () => {
 
     await waitForNextUpdate();
 
-    expect(result.current).toStrictEqual(
-      valueToAsyncState({ partnerId: "foo" }),
-    );
+    expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
   });
 
-  // Can't test because mock doesn't fire change events: https://github.com/clarkbw/jest-webextension-mock/issues/170
-  it.skip("listens for changes", async () => {
+  it("listens for changes", async () => {
     const { result, waitForNextUpdate } = renderHook(() =>
       useManagedStorageState(),
     );
     expect(result.current.data).toBeUndefined();
-    await browser.storage.managed.set({ partnerId: "taco-bell" });
+
+    const expectedPolicy = { partnerId: "foo" };
+    await browser.storage.managed.set(expectedPolicy);
+
     await waitForNextUpdate();
-    expect(result.current).toStrictEqual({
-      data: { partnerId: "taco-bell" },
-      isLoading: false,
-    });
+    expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
   });
 });
