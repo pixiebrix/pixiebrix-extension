@@ -138,7 +138,9 @@ export async function getSidebarPage(
 
   // The sidebar sometimes requires the user to interact with modal to open the sidebar via a user gesture
   const conditionallyPerformUserGesture = async () => {
-    await page.getByRole("button", { name: "Open Sidebar" }).click();
+    await page
+      .getByRole("button", { name: "Open Sidebar" })
+      .click({ timeout: 5000 });
     return findSidebarPage(page, extensionId);
   };
 
@@ -148,7 +150,7 @@ export async function getSidebarPage(
       findSidebarPage(page, extensionId),
     ]);
     expect(sidebarPage).toBeDefined();
-  }).toPass({ timeout: 5000 });
+  }).toPass({ timeout: DEFAULT_TIMEOUT });
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion  -- checked above
   return sidebarPage!;
