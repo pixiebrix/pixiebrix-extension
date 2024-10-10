@@ -73,7 +73,7 @@ test("authenticate with unaffiliated user", async ({
       );
       await localIntegrationsPage.goto();
 
-      const popupPromise = context.waitForEvent("page", { timeout: 20_000 });
+      const popupPromise = context.waitForEvent("page");
       await localIntegrationsPage.createNewIntegration("Google Drive");
 
       const googleAuthPopup = await popupPromise;

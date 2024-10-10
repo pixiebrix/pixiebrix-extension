@@ -32,6 +32,7 @@ import { type Serializable } from "playwright-core/types/structs";
 import { SERVICE_URL } from "../../env";
 import { ExtensionsShortcutsPage } from "../../pageObjects/extensionsShortcutsPage";
 import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
+import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 test("can activate a mod with no config options", async ({
   page,
@@ -170,7 +171,7 @@ test("can activate a mod with a database", async ({ page, extensionId }) => {
     await expect(sideBarPage.getByTestId("card").getByText(note)).toBeHidden({
       timeout: 5000,
     });
-  }).toPass({ timeout: 20_000 });
+  }).toPass({ timeout: DEFAULT_TIMEOUT });
 });
 
 test("activating a mod when the quickbar shortcut is not configured", async ({

@@ -23,7 +23,11 @@ import {
   type BrowserContext,
 } from "@playwright/test";
 import { TOTP } from "otpauth";
-import { type SupportedChannel, SupportedChannels } from "../playwright.config";
+import {
+  DEFAULT_TIMEOUT,
+  type SupportedChannel,
+  SupportedChannels,
+} from "../playwright.config";
 
 export const PRE_RELEASE_BROWSER_WORKFLOW_NAME = "Pre-release Browsers";
 
@@ -72,7 +76,7 @@ export async function ensureVisibility(
 ) {
   await expect(async () => {
     await expect(locator).toBeVisible({ timeout: 0 }); // Retry handling is done by the outer expect
-  }).toPass({ timeout: 20_000, ...options });
+  }).toPass({ timeout: DEFAULT_TIMEOUT, ...options });
 }
 
 // Run a mod via the Quickbar.

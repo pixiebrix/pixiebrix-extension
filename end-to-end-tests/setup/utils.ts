@@ -16,6 +16,7 @@
  */
 
 import { type BrowserContext, type Page, expect } from "@playwright/test";
+import { DEFAULT_TIMEOUT } from "../../playwright.config";
 
 export const openExtensionConsoleFromAdmin = async (
   adminPage: Page,
@@ -47,7 +48,7 @@ export const openExtensionConsoleFromAdmin = async (
     await expect(extensionConsolePage.getByText(userName)).toBeVisible({
       timeout: 5000,
     });
-  }).toPass({ timeout: 20_000 });
+  }).toPass({ timeout: DEFAULT_TIMEOUT });
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- extensionConsolePage is defined
   return extensionConsolePage!;

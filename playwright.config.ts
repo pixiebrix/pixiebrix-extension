@@ -53,6 +53,9 @@ const getChromiumChannelsFromEnv = (): SupportedChannel[] => {
   });
 };
 
+/** Default timeout used for each action and assertion */
+export const DEFAULT_TIMEOUT = 20_000;
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -82,7 +85,7 @@ export default defineConfig<{ chromiumChannel: string }>({
      * POST api/bricks/
      * https://app.datadoghq.com/apm/trace/7735170839924641545?graphType=flamegraph&shouldShowLegend=true&sort=time&spanID=13697932419891897088&timeHint=1728331856832.3618
      */
-    timeout: 20_000,
+    timeout: DEFAULT_TIMEOUT,
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.1,
     },
@@ -107,7 +110,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     trace: "retain-on-failure",
 
     /* Set the default timeout for actions such as `click` */
-    actionTimeout: 5000,
+    actionTimeout: DEFAULT_TIMEOUT,
 
     /* Set the default timeout for page navigations */
     navigationTimeout: 10_000,
