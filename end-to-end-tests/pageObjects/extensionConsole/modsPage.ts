@@ -20,7 +20,7 @@ import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
 import { ensureVisibility } from "../../utils";
 import { validateRegistryId } from "@/types/helpers";
-import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
+import { UI_PATHS } from "@/data/service/urlPaths";
 
 export class ModTableItem extends BasePageObject {
   dropdownButton = this.getByTestId("ellipsis-menu-button");
@@ -66,16 +66,17 @@ export class ModsPage extends BasePageObject {
     // the table is re-rendered, and any row action dropdowns are closed.
     // To ensure the table is fully loaded, we wait for the registry request to finish before interacting with the table.
     // TODO: remove once fixed: https://github.com/pixiebrix/pixiebrix-extension/issues/8458
-    const registryPromise = this.page
-      .context()
-      .waitForEvent("requestfinished", {
-        predicate: (request) =>
-          request.url().includes(API_PATHS.REGISTRY_BRICKS),
-        timeout: 30_000,
-      });
+    // const registryPromise = this.page
+    //   .context()
+    //   .waitForEvent("requestfinished", {
+    //     predicate: (request) =>
+    //       request.url().includes(API_PATHS.REGISTRY_BRICKS),
+    //     timeout: 30_000,
+    //   });
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.getByText("Extension Console")).toBeVisible();
-    await registryPromise;
+    // See if we can remove this line
+    // await registryPromise;
 
     // Check that the content has finished loading
     const contentLoadedLocator = this.getByText("Welcome to PixieBrix!").or(
