@@ -26,8 +26,10 @@ import { deactivateMod } from "@/store/deactivateUtils";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import {
+  appApi,
   useCreateDatabaseMutation,
   useCreateUserDeploymentMutation,
+  useDeleteUserDeploymentMutation,
 } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
@@ -86,6 +88,8 @@ function useActivateMod(
 
   const [createDatabase] = useCreateDatabaseMutation();
   const [createUserDeployment] = useCreateUserDeploymentMutation();
+  const [deleteUserDeployment] = useDeleteUserDeploymentMutation();
+  const [getUserDeployment] = appApi.endpoints.getUserDeployment.useLazyQuery();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -155,15 +159,18 @@ function useActivateMod(
           dispatch,
         );
 
-        // TODO: handle updating a deployment from a previous version to the new version and
-        //  handle deleting a deployment if the user turns off personal deployment
-        //  https://github.com/pixiebrix/pixiebrix-extension/issues/9092
-        let createdUserDeployment: Deployment | undefined;
-        if (
-          formValues.personalDeployment &&
-          // Avoid creating a personal deployment if the mod is already associated with one
-          !getIsPersonalDeployment(modInstance)
-        ) {
+        let userDeployment: Deployment | undefined;
+        if (getIsPersonalDeployment(modInstance)) {
+          if (formValues.personalDeployment) {
+            userDeployment = await getUserDeployment({
+              id: modInstance.deploymentMetadata.id,
+            }).unwrap();
+          } else {
+            await deleteUserDeployment({
+              id: modInstance.deploymentMetadata.id,
+            });
+          }
+        } else if (formValues.personalDeployment) {
           const data: DeploymentPayload = {
             name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
             services: integrationDependencies.flatMap(
@@ -187,7 +194,7 @@ function useActivateMod(
               error: result.error,
             });
           } else {
-            createdUserDeployment = result.data;
+            userDeployment = result.data;
           }
         }
 
@@ -198,7 +205,7 @@ function useActivateMod(
             optionsArgs,
             screen: source,
             isReactivate,
-            deployment: createdUserDeployment,
+            deployment: userDeployment,
           }),
         );
 
@@ -226,6 +233,8 @@ function useActivateMod(
       checkPermissions,
       dispatch,
       createDatabase,
+      getUserDeployment,
+      deleteUserDeployment,
       createUserDeployment,
     ],
   );
