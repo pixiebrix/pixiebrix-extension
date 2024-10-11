@@ -18,6 +18,7 @@
 .root {
   display: flex;
   height: inherit;
+  overflow: hidden;
 
   & > * {
     height: auto !important;
