@@ -101,7 +101,7 @@ const IsolatedDocumentView: React.FC<
     // TODO: The parent node should instead make sure that the children fill
     // the sidebar vertically (via a simple `.d-flex`), but this this requires
     // verifying that other components aren't broken by this.
-    style={{ height: "100%" }}
+    style={{ height: "100%", display: "flex" }}
   />
 );
 

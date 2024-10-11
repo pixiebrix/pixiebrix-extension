@@ -17,3 +17,8 @@ body {
 :host::selection {
   background: initial;
 }
+
+:host > div {
+  display: flex;
+  flex-direction: column;
+}
