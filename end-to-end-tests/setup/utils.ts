@@ -35,7 +35,8 @@ export const openExtensionConsoleFromAdmin = async (
     try {
       await expect(openExtensionConsoleButton).toBeEnabled({ timeout: 5000 });
     } catch (error) {
-      // If the button is not enabled, reload the page and try again
+      // Sometimes the app fails to link with the extension and the button remains disabled.
+      // In this case, reload the page to force the app to retry linking.
       await adminPage.reload();
       throw error;
     }

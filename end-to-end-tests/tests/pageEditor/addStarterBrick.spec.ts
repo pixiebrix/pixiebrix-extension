@@ -25,7 +25,7 @@ import {
   PRE_RELEASE_BROWSER_WORKFLOW_NAME,
 } from "../../utils";
 
-test.only("Add new mod with different starter brick components", async ({
+test("Add new mod with different starter brick components", async ({
   page,
   newPageEditorPage,
   extensionId,
