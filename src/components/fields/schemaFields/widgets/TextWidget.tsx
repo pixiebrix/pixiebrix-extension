@@ -125,13 +125,6 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     (inputRef as MutableRefObject<HTMLTextAreaElement>) ?? defaultTextAreaRef;
 
   useEffect(() => {
-    // Resize the textarea to fit the new value
-    if (textAreaRef.current) {
-      textAreaRef.current.style.fieldSizing = 'content';
-    }
-  }, [textAreaRef]);
-
-  useEffect(() => {
     if (focusInput) {
       // We need to use a setTimeout here in order to override the default
       // behavior of Bootstrap DropdownButton in the field type toggle.
@@ -243,6 +236,8 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     <Form.Control
       as="textarea"
       rows="1"
+      // Resize the textarea to fit the new value
+      style={{fieldSizing: 'content'}}
       {...restInputProps}
       {...formControlProps}
       value={fieldInputValue}
