@@ -16,12 +16,6 @@ exports[`customizeManifest release builds beta 1`] = `
     "service_worker": "background.worker.js",
     "type": "module",
   },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "extension@pixiebrix.com",
-      "strict_min_version": "91.0",
-    },
-  },
   "commands": {
     "toggle-quick-bar": {
       "description": "Toggle Quick Bar",
@@ -90,7 +84,7 @@ exports[`customizeManifest release builds beta 1`] = `
     "48": "icons/beta/logo48.png",
   },
   "manifest_version": 3,
-  "minimum_chrome_version": "116.0",
+  "minimum_chrome_version": "123.0",
   "name": "PixieBrix BETA",
   "optional_permissions": [
     "clipboardWrite",
@@ -168,12 +162,6 @@ exports[`customizeManifest release builds stable 1`] = `
     "service_worker": "background.worker.js",
     "type": "module",
   },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "extension@pixiebrix.com",
-      "strict_min_version": "91.0",
-    },
-  },
   "commands": {
     "toggle-quick-bar": {
       "description": "Toggle Quick Bar",
@@ -242,7 +230,7 @@ exports[`customizeManifest release builds stable 1`] = `
     "48": "icons/logo48.png",
   },
   "manifest_version": 3,
-  "minimum_chrome_version": "116.0",
+  "minimum_chrome_version": "123.0",
   "name": "PixieBrix",
   "optional_permissions": [
     "clipboardWrite",

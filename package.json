@@ -80,7 +80,6 @@
     "export-to-csv": "^1.4.0",
     "filenamify": "^6.0.0",
     "filter-altered-clicks": "^2.1.1",
-    "fit-textarea": "^3.0.0",
     "formik": "^2.4.6",
     "fuse.js": "^7.0.0",
     "handlebars": "^4.7.8",

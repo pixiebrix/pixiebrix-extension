@@ -28,7 +28,6 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import { useField } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
-import fitTextarea from "fit-textarea";
 import { trim } from "lodash";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
@@ -124,12 +123,6 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   const defaultTextAreaRef = useRef<HTMLTextAreaElement>();
   const textAreaRef: MutableRefObject<HTMLTextAreaElement> =
     (inputRef as MutableRefObject<HTMLTextAreaElement>) ?? defaultTextAreaRef;
-
-  useEffect(() => {
-    if (textAreaRef.current) {
-      fitTextarea.watch(textAreaRef.current);
-    }
-  }, [textAreaRef]);
 
   useEffect(() => {
     if (focusInput) {
@@ -243,6 +236,8 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     <Form.Control
       as="textarea"
       rows="1"
+      // Resize the textarea to fit the new value
+      style={{fieldSizing: "content"}}
       {...restInputProps}
       {...formControlProps}
       value={fieldInputValue}

@@ -36,6 +36,11 @@ exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
           onChange={[Function]}
           onKeyDown={[Function]}
           rows="1"
+          style={
+            {
+              "fieldSizing": "content",
+            }
+          }
           value=""
         />
       </div>
@@ -4045,6 +4050,11 @@ exports[`Storyshots Fields/RemoteSchemaObjectField Primitive Value 1`] = `
                     onChange={[Function]}
                     onKeyDown={[Function]}
                     rows="1"
+                    style={
+                      {
+                        "fieldSizing": "content",
+                      }
+                    }
                     value=""
                   />
                 </div>
@@ -4675,6 +4685,11 @@ exports[`Storyshots Fields/SchemaField Normal Text 1`] = `
             onChange={[Function]}
             onKeyDown={[Function]}
             rows="1"
+            style={
+              {
+                "fieldSizing": "content",
+              }
+            }
             value=""
           />
         </div>
@@ -4755,6 +4770,11 @@ exports[`Storyshots Fields/SchemaField Not Required Text 1`] = `
             onChange={[Function]}
             onKeyDown={[Function]}
             rows="1"
+            style={
+              {
+                "fieldSizing": "content",
+              }
+            }
             value=""
           />
         </div>
@@ -5594,6 +5614,11 @@ exports[`Storyshots Fields/SchemaField Text Area 1`] = `
             onChange={[Function]}
             onKeyDown={[Function]}
             rows="1"
+            style={
+              {
+                "fieldSizing": "content",
+              }
+            }
             value=""
           />
         </div>
@@ -5888,6 +5913,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 onChange={[Function]}
                 onKeyDown={[Function]}
                 rows="1"
+                style={
+                  {
+                    "fieldSizing": "content",
+                  }
+                }
                 value="A form"
               />
             </div>
@@ -5962,6 +5992,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 onChange={[Function]}
                 onKeyDown={[Function]}
                 rows="1"
+                style={
+                  {
+                    "fieldSizing": "content",
+                  }
+                }
                 value="A form example with _(you can use markdown)_"
               />
             </div>
@@ -6142,6 +6177,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onChange={[Function]}
                   onKeyDown={[Function]}
                   rows="1"
+                  style={
+                    {
+                      "fieldSizing": "content",
+                    }
+                  }
                   value="First name"
                 />
               </div>
@@ -6216,6 +6256,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onChange={[Function]}
                   onKeyDown={[Function]}
                   rows="1"
+                  style={
+                    {
+                      "fieldSizing": "content",
+                    }
+                  }
                   value="Your first name"
                 />
               </div>
@@ -6435,6 +6480,11 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   onChange={[Function]}
                   onKeyDown={[Function]}
                   rows="1"
+                  style={
+                    {
+                      "fieldSizing": "content",
+                    }
+                  }
                   value="Chuck"
                 />
               </div>
@@ -10100,6 +10150,11 @@ exports[`Storyshots Widgets/CssClassWidget Blank Expression 1`] = `
               onChange={[Function]}
               onKeyDown={[Function]}
               rows="1"
+              style={
+                {
+                  "fieldSizing": "content",
+                }
+              }
               value=""
             />
           </div>
@@ -10445,6 +10500,11 @@ exports[`Storyshots Widgets/CssClassWidget Blank Literal 1`] = `
               onChange={[Function]}
               onKeyDown={[Function]}
               rows="1"
+              style={
+                {
+                  "fieldSizing": "content",
+                }
+              }
               value=""
             />
           </div>
@@ -10790,6 +10850,11 @@ exports[`Storyshots Widgets/CssClassWidget Omitted 1`] = `
               onChange={[Function]}
               onKeyDown={[Function]}
               rows="1"
+              style={
+                {
+                  "fieldSizing": "content",
+                }
+              }
               value=""
             />
           </div>
@@ -11133,6 +11198,11 @@ exports[`Storyshots Widgets/CssClassWidget Variable Expression 1`] = `
               onChange={[Function]}
               onKeyDown={[Function]}
               rows="1"
+              style={
+                {
+                  "fieldSizing": "content",
+                }
+              }
               value="@cssClasses"
             />
           </div>
@@ -11759,6 +11829,11 @@ exports[`Storyshots Widgets/TextWidget Empty 1`] = `
     onChange={[Function]}
     onKeyDown={[Function]}
     rows="1"
+    style={
+      {
+        "fieldSizing": "content",
+      }
+    }
     value=""
   />
 </form>
@@ -11777,6 +11852,11 @@ exports[`Storyshots Widgets/TextWidget Long Line 1`] = `
     onChange={[Function]}
     onKeyDown={[Function]}
     rows="1"
+    style={
+      {
+        "fieldSizing": "content",
+      }
+    }
     value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, magna vel viverra rutrum, mi nisi venenatis arcu, at tincidunt orci sapien a ante. Donec ac massa a urna dictum mollis. Ut feugiat accumsan ipsum eget vehicula. Sed ultricies, lorem sit amet aliquam lobortis, sem erat dictum elit, laoreet rhoncus nulla felis id purus. Etiam consequat tincidunt ipsum vitae pulvinar. Nam at turpis elementum, dignissim nulla ut, eleifend est. Nullam rutrum justo quis sapien semper pretium."
   />
 </form>
@@ -11795,6 +11875,11 @@ exports[`Storyshots Widgets/TextWidget Nunjucks Expression 1`] = `
     onChange={[Function]}
     onKeyDown={[Function]}
     rows="1"
+    style={
+      {
+        "fieldSizing": "content",
+      }
+    }
     value="Hello, {{ @input.name }}!"
   />
 </form>
@@ -11813,6 +11898,11 @@ exports[`Storyshots Widgets/TextWidget Nunjucks Tags 1`] = `
     onChange={[Function]}
     onKeyDown={[Function]}
     rows="1"
+    style={
+      {
+        "fieldSizing": "content",
+      }
+    }
     value="My favorite color is {% if @input.day == "Monday" %}red{% else %}blue{% endif %}"
   />
 </form>
@@ -11831,6 +11921,11 @@ exports[`Storyshots Widgets/TextWidget Raw Text 1`] = `
     onChange={[Function]}
     onKeyDown={[Function]}
     rows="1"
+    style={
+      {
+        "fieldSizing": "content",
+      }
+    }
     value="The quick brown fox jumps over the lazy dog"
   />
 </form>
@@ -11849,6 +11944,11 @@ exports[`Storyshots Widgets/TextWidget Single Line 1`] = `
     onChange={[Function]}
     onKeyDown={[Function]}
     rows="1"
+    style={
+      {
+        "fieldSizing": "content",
+      }
+    }
     value="The quick brown fox jumps over the lazy dog"
   />
 </form>
