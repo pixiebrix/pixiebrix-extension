@@ -104,7 +104,8 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
           textElement.setSelectionRange(newCursorPosition, newCursorPosition);
 
           // Resize the textarea to fit the new value
-          textElement.style.fieldSizing = 'content';
+          // @ts-expect-error Missing from TS library, can be removed once they add it
+          textElement.style.fieldSizing = "content";
           break;
         }
 
