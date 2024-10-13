@@ -125,7 +125,10 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     (inputRef as MutableRefObject<HTMLTextAreaElement>) ?? defaultTextAreaRef;
 
   useEffect(() => {
-    textAreaRef.current?.style.fieldSizing = 'content';
+    // Resize the textarea to fit the new value
+    if (textAreaRef.current) {
+      textAreaRef.current.style.fieldSizing = 'content';
+    }
   }, [textAreaRef]);
 
   useEffect(() => {
