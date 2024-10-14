@@ -90,6 +90,7 @@ import {
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -658,6 +659,18 @@ export const editorSlice = createSlice({
     removeModData(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
       removeModData(state, modId);
+    },
+    /**
+     * Remove all editor state associated with a given mod instance.
+     */
+    removeMod(state, action: PayloadAction<ModInstance>) {
+      const modInstance = action.payload;
+
+      removeModData(state, modInstance.definition.metadata.id);
+
+      for (const modComponentId of modInstance.modComponentIds) {
+        removeModComponentFormState(state, modComponentId);
+      }
     },
     showCreateModModal(
       state,

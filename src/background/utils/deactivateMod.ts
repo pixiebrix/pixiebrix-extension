@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import deactivateModComponent from "@/background/utils/deactivateModComponent";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 import { type ModInstance } from "@/types/modInstanceTypes";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 
 /**
  * Returns the Redux state that excludes the mod. NOTE: does not remove the mod UI from existing tabs.
@@ -41,25 +42,17 @@ function deactivateMod(
   modComponentState: ModComponentState;
   editorState: EditorState | undefined;
 } {
-  let _nextModComponentState = modComponentState;
-  let _nextEditorState = editorState;
-
-  for (const modComponentId of modInstance.modComponentIds) {
-    const {
-      modComponentState: nextModComponentState,
-      editorState: nextEditorState,
-    } = deactivateModComponent(modComponentId, {
-      modComponentState: _nextModComponentState,
-      editorState: _nextEditorState,
-    });
-
-    _nextModComponentState = nextModComponentState;
-    _nextEditorState = nextEditorState;
-  }
+  const { id: modId } = modInstance.definition.metadata;
 
   return {
-    modComponentState: _nextModComponentState,
-    editorState: _nextEditorState,
+    modComponentState: modComponentSlice.reducer(
+      modComponentState,
+      modComponentSlice.actions.removeModById(modId),
+    ),
+    editorState: editorSlice.reducer(
+      editorState,
+      editorSlice.actions.removeMod(modInstance),
+    ),
   };
 }
 
