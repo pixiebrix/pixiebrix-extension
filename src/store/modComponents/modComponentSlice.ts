@@ -22,7 +22,6 @@ import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { cloneDeep, partition } from "lodash";
-import reportError from "@/telemetry/reportError";
 import { type Except } from "type-fest";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
@@ -83,28 +82,6 @@ const modComponentSlice = createSlice({
       { payload }: PayloadAction<ActivatedModComponent[]>,
     ) {
       state.activatedModComponents = cloneDeep(payload);
-    },
-
-    /**
-     * Set the mod metadata associated with the given activated mod component id.
-     */
-    setModComponentMetadata(
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        modComponentId: UUID;
-        modMetadata: ModComponentBase["modMetadata"];
-      }>,
-    ) {
-      const { modComponentId, modMetadata } = payload;
-      const modComponent = state.activatedModComponents.find(
-        (x) => x.id === modComponentId,
-      );
-
-      if (modComponent != null) {
-        modComponent.modMetadata = modMetadata;
-      }
     },
 
     activateMod(
@@ -248,32 +225,6 @@ const modComponentSlice = createSlice({
     },
 
     /**
-     * Update an activated mod component.
-     */
-    updateModComponent(
-      state,
-      action: PayloadAction<{ id: UUID } & Partial<ActivatedModComponent>>,
-    ) {
-      const { id, ...modComponentUpdate } = action.payload;
-      const index = state.activatedModComponents.findIndex((x) => x.id === id);
-
-      if (index === -1) {
-        reportError(
-          new Error(
-            `Can't find mod component in optionsSlice to update. Target mod component id: ${id}.`,
-          ),
-        );
-        return;
-      }
-
-      // eslint-disable-next-line security/detect-object-injection -- index is number
-      state.activatedModComponents[index] = {
-        ...state.activatedModComponents.at(index),
-        ...modComponentUpdate,
-      } as ActivatedModComponent;
-    },
-
-    /**
      * Update the mod metadata of all mod components associated with the given mod id.
      */
     updateModMetadata(
@@ -281,11 +232,10 @@ const modComponentSlice = createSlice({
       action: PayloadAction<ModComponentBase["modMetadata"]>,
     ) {
       const metadata = action.payload;
-      const modComponents = state.activatedModComponents.filter(
-        (extension) => extension.modMetadata.id === metadata?.id,
-      );
-      for (const modComponent of modComponents) {
-        modComponent.modMetadata = metadata;
+      for (const modComponent of state.activatedModComponents) {
+        if (modComponent.modMetadata.id === metadata?.id) {
+          modComponent.modMetadata = metadata;
+        }
       }
     },
 
@@ -293,33 +243,17 @@ const modComponentSlice = createSlice({
      * Deactivate mod components associated with the given mod id
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
-      const [, extensions] = partition(
+      const [, modComponents] = partition(
         state.activatedModComponents,
         (x) => x.modMetadata.id === modId,
       );
 
-      state.activatedModComponents = extensions;
+      state.activatedModComponents = modComponents;
     },
 
     /**
-     * Deactivate the given mod components by id.
-     */
-    removeModComponents(
-      state,
-      {
-        payload: { modComponentIds },
-      }: PayloadAction<{ modComponentIds: UUID[] }>,
-    ) {
-      // NOTE: We aren't deleting the mod components on the server.
-      // The user must do that separately from the mods screen
-      state.activatedModComponents = state.activatedModComponents.filter(
-        (x) => !modComponentIds.includes(x.id),
-      );
-    },
-
-    /**
-     * Deactivate a single mod component by id.
-     * @see removeModComponents
+     * Deactivate a single mod component by id. Prefer using removeModById instead
+     * @see removeModById
      */
     removeModComponent(
       state,
