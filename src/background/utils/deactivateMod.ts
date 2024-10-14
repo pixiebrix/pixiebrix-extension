@@ -21,8 +21,14 @@ import { type ModInstance } from "@/types/modInstanceTypes";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 
+type State = {
+  modComponentState: ModComponentState;
+  editorState: EditorState | undefined;
+};
+
 /**
- * Returns the Redux state that excludes the mod. NOTE: does not remove the mod UI from existing tabs.
+ * Returns the Redux state that excludes the mod. NOTE: does not persist the state or remove the mod UI from
+ * existing tabs.
  *
  * @param modInstance the active mod to deactivate
  * @param reduxState the current state of the modComponent and editor redux stores
@@ -31,17 +37,8 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
  */
 function deactivateMod(
   modInstance: ModInstance,
-  {
-    editorState,
-    modComponentState,
-  }: {
-    modComponentState: ModComponentState;
-    editorState: EditorState | undefined;
-  },
-): {
-  modComponentState: ModComponentState;
-  editorState: EditorState | undefined;
-} {
+  { editorState, modComponentState }: State,
+): State {
   const { id: modId } = modInstance.definition.metadata;
 
   return {

@@ -60,6 +60,7 @@ async function deactivateModInstancesAndSaveState(
     // Always queue deactivation to not interfere with running mods
     reloadMode: "queue",
   });
+
   await saveEditorState(_editorState);
 }
 
