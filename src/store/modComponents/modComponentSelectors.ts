@@ -17,6 +17,7 @@
 
 import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
+import { createSelector } from "@reduxjs/toolkit";
 
 /**
  * Select all activated mod components. Includes activated components associated with paused deployments.
@@ -38,3 +39,19 @@ export function selectActivatedModComponents({
   // See https://www.notion.so/pixiebrix/Simplify-data-representation-of-activated-mods-to-simplify-code-and-eliminate-common-bugs-10b43b21a25380eaac05d286ca2acb88?pvs=4
   return options.activatedModComponents;
 }
+
+/**
+ * Selects a map of activated mod components by their mod component id.
+ * Prefer selectModInstanceMap where possible.
+ * @see selectModInstanceMap
+ */
+export const selectActivatedModComponentsMap = createSelector(
+  selectActivatedModComponents,
+  (activatedModComponents) =>
+    new Map(
+      activatedModComponents.map((modComponent) => [
+        modComponent.id,
+        modComponent,
+      ]),
+    ),
+);

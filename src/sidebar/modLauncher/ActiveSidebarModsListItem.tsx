@@ -24,7 +24,6 @@ import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import reportEvent from "@/telemetry/reportEvent";
-import { selectModComponentForEventKey } from "@/sidebar/sidebarSelectors";
 import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
@@ -34,6 +33,7 @@ import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { selectModComponentFromEventKey } from "@/sidebar/sidebarSelectors";
 
 /**
  * Returns the emoji icon and title for a given heading
@@ -54,9 +54,11 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
 }> = ({ panel }) => {
   const dispatch = useDispatch();
   const eventKey = eventKeyForEntry(panel);
-  const modComponent: ActivatedModComponent | undefined = useSelector(
-    selectModComponentForEventKey(eventKey),
+  const getModComponentFromEventKey = useSelector(
+    selectModComponentFromEventKey,
   );
+  const modComponent: ActivatedModComponent | undefined =
+    getModComponentFromEventKey(eventKey);
   const { heading: originalHeading } = panel;
   const { title, emojiIcon } = useSplitEmojiIcon(originalHeading);
 

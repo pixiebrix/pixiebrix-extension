@@ -38,8 +38,6 @@ sessionChangesListenerMiddleware.startListening({
     actions.removeModData,
 
     modComponentSlice.actions.removeModComponent,
-    modComponentSlice.actions.removeModComponents,
-    modComponentSlice.actions.setModComponentMetadata,
     modComponentSlice.actions.activateMod,
     modComponentSlice.actions.removeModById,
   ),
