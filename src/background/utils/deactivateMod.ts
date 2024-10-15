@@ -21,7 +21,7 @@ import { type ModInstance } from "@/types/modInstanceTypes";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 
-type State = {
+type ReduxSliceState = {
   modComponentState: ModComponentState;
   editorState: EditorState | undefined;
 };
@@ -37,8 +37,8 @@ type State = {
  */
 function deactivateMod(
   modInstance: ModInstance,
-  { editorState, modComponentState }: State,
-): State {
+  { editorState, modComponentState }: ReduxSliceState,
+): ReduxSliceState {
   const { id: modId } = modInstance.definition.metadata;
 
   return {
