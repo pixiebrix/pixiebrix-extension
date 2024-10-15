@@ -110,6 +110,12 @@ export const lexicon: LexiconMap = {
       "Reported when Clear Changes is clicked in 3-dot action action menu for a mod/mod component in the Page Editor",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  DATA_PANEL_TAB_VIEW: {
+    description:
+      "Reported when a Data Panel tab is shown in the Page Editor, including when the Data Panel first renders " +
+      "and when a user switches between data panel tabs by clicking on the tab.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
 };
 
 /**
