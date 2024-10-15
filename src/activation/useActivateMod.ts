@@ -25,21 +25,15 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { deactivateMod } from "@/store/deactivateUtils";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
-import {
-  appApi,
-  useCreateDatabaseMutation,
-  useCreateUserDeploymentMutation,
-  useDeleteUserDeploymentMutation,
-} from "@/data/service/api";
+import { useCreateDatabaseMutation } from "@/data/service/api";
 import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { autoCreateDatabaseOptionsArgsInPlace } from "@/activation/modOptionsHelpers";
+import {
+  autoCreateDatabaseOptionsArgsInPlace,
+  useHandlePersonalDeploymentOption,
+} from "@/activation/modOptionsHelpers";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
-import { type Deployment, type DeploymentPayload } from "@/types/contract";
-import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import notify from "@/utils/notify";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
-import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
 
 export type ActivateResult = {
   success: boolean;
@@ -87,9 +81,7 @@ function useActivateMod(
   const modInstanceMap = useSelector(selectModInstanceMap);
 
   const [createDatabase] = useCreateDatabaseMutation();
-  const [createUserDeployment] = useCreateUserDeploymentMutation();
-  const [deleteUserDeployment] = useDeleteUserDeploymentMutation();
-  const [getUserDeployment] = appApi.endpoints.getUserDeployment.useLazyQuery();
+  const handleUserDeployment = useHandlePersonalDeploymentOption();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {
@@ -159,44 +151,11 @@ function useActivateMod(
           dispatch,
         );
 
-        let userDeployment: Deployment | undefined;
-        if (getIsPersonalDeployment(modInstance)) {
-          if (formValues.personalDeployment) {
-            userDeployment = await getUserDeployment({
-              id: modInstance.deploymentMetadata.id,
-            }).unwrap();
-          } else {
-            await deleteUserDeployment({
-              id: modInstance.deploymentMetadata.id,
-            });
-          }
-        } else if (formValues.personalDeployment) {
-          const data: DeploymentPayload = {
-            name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
-            services: integrationDependencies.flatMap(
-              (integrationDependency) =>
-                integrationDependency.integrationId ===
-                  PIXIEBRIX_INTEGRATION_ID ||
-                integrationDependency.configId == null
-                  ? []
-                  : [{ auth: integrationDependency.configId }],
-            ),
-            options_config: optionsArgs,
-          };
-          const result = await createUserDeployment({
-            modDefinition,
-            data,
-          });
-
-          if ("error" in result) {
-            notify.error({
-              message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
-              error: result.error,
-            });
-          } else {
-            userDeployment = result.data;
-          }
-        }
+        const userDeployment = await handleUserDeployment(
+          modInstance,
+          modDefinition,
+          formValues,
+        );
 
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -233,9 +192,7 @@ function useActivateMod(
       checkPermissions,
       dispatch,
       createDatabase,
-      getUserDeployment,
-      deleteUserDeployment,
-      createUserDeployment,
+      handleUserDeployment,
     ],
   );
 }

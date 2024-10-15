@@ -529,5 +529,59 @@ describe("useActivateMod", () => {
         }),
       });
     });
+
+    it("handles personal deployment deletion successfully", async () => {
+      appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
+      appApiMock
+        .onGet(API_PATHS.BRICK_VERSIONS(editablePackage.id))
+        .reply(200, [
+          { id: packageVersionId, version: modDefinition.metadata.version },
+        ]);
+      appApiMock
+        .onDelete(API_PATHS.USER_DEPLOYMENT(testDeployment.id))
+        .reply(204);
+
+      const { result, getReduxStore } = renderHook(
+        () => useActivateMod("marketplace"),
+        {
+          setupRedux(dispatch, { store }) {
+            dispatch(
+              modComponentSlice.actions.activateMod({
+                modDefinition,
+                screen: "extensionConsole",
+                deployment: {
+                  name: package_version,
+                  services,
+                },
+                isReactivate: false,
+              }),
+            );
+            jest.spyOn(store, "dispatch");
+          },
+        },
+      );
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: false },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      const { dispatch } = getReduxStore();
+
+      expect(dispatch).toHaveBeenCalledWith(
+        modComponentSlice.actions.activateMod({
+          modDefinition,
+          configuredDependencies: [],
+          optionsArgs: formValues.optionsArgs,
+          screen: "marketplace",
+          isReactivate: false,
+        }),
+      );
+
+      expect(appApiMock.history.post).toHaveLength(1);
+    });
   });
 });
