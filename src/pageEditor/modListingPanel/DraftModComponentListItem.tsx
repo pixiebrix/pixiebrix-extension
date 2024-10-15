@@ -44,11 +44,6 @@ import {
   selectModComponentIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
-import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
-import {
-  useRemoveModComponentFromStorage,
-  DELETE_STARTER_BRICK_MODAL_PROPS,
-} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
@@ -85,7 +80,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   const isDirty = useSelector(
     selectModComponentIsDirty(modComponentFormState.uuid),
   );
-  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const isButton =
     modComponentFormState.starterBrick.definition.type ===
     StarterBrickTypes.BUTTON;
@@ -97,17 +91,6 @@ const DraftModComponentListItem: React.FunctionComponent<
   const hideOverlay = useCallback(async () => {
     await disableOverlay(inspectedTab);
   }, []);
-
-  const clearModComponentChanges = useClearModComponentChanges();
-
-  const deleteModComponent = async () =>
-    removeModComponentFromStorage({
-      modComponentId: modComponentFormState.uuid,
-      showConfirmationModal: DELETE_STARTER_BRICK_MODAL_PROPS,
-    });
-
-  const onClearChanges = async () =>
-    clearModComponentChanges({ modComponentId: modComponentFormState.uuid });
 
   return (
     <ListGroup.Item
@@ -166,27 +149,12 @@ const DraftModComponentListItem: React.FunctionComponent<
           <UnsavedChangesIcon />
         </span>
       )}
-      <ModComponentActionMenu
-        isActive={isActive}
-        isDirty={isDirty}
-        labelRoot={getLabel(modComponentFormState)}
-        onDelete={deleteModComponent}
-        onDuplicate={async () => {
-          dispatch(
-            // Duplicate the mod component in the same mod
-            actions.duplicateActiveModComponent(),
-          );
-        }}
-        onClearChanges={
-          modComponentFormState.installed ? onClearChanges : undefined
-        }
-        onMoveToMod={async () => {
-          dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
-        }}
-        onCopyToMod={async () => {
-          dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
-        }}
-      />
+      {isActive && (
+        <ModComponentActionMenu
+          modComponentFormState={modComponentFormState}
+          labelRoot={getLabel(modComponentFormState)}
+        />
+      )}
     </ListGroup.Item>
   );
 };

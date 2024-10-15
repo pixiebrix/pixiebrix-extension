@@ -28,6 +28,19 @@ export const openExtensionConsoleFromAdmin = async (
   // initialized to be able to receive messages via the external messenger api, which happens when the Extension
   // reloads after linking. Thus, we wrap the following with an `expect.toPass` retry.
   await expect(async () => {
+    const openExtensionConsoleButton = adminPage
+      .locator("button")
+      .filter({ hasText: "Open Extension Console" });
+
+    try {
+      await expect(openExtensionConsoleButton).toBeEnabled({ timeout: 5000 });
+    } catch (error) {
+      // Sometimes the app fails to link with the extension and the button remains disabled.
+      // In this case, reload the page to force the app to retry linking.
+      await adminPage.reload();
+      throw error;
+    }
+
     await adminPage
       .locator("button")
       .filter({ hasText: "Open Extension Console" })

@@ -98,7 +98,7 @@ export default defineConfig<{ chromiumChannel: string }>({
     ["json", { outputFile: "./end-to-end-tests/.report/report.json" }],
   ],
   // /* Repeat each test N times. Useful for catching flaky test. */
-  // repeatEach: 3,
+  // repeatEach: 6,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
