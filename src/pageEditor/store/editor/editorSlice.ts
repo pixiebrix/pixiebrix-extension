@@ -326,9 +326,6 @@ export const editorSlice = createSlice({
     resetEditor() {
       return initialState;
     },
-    markEditable(state, action: PayloadAction<RegistryId>) {
-      state.knownEditableBrickIds.push(action.payload);
-    },
     addModComponentFormState(
       state,
       action: PayloadAction<ModComponentFormState>,
@@ -475,27 +472,6 @@ export const editorSlice = createSlice({
 
       syncBrickConfigurationUIStates(state, modComponentFormState);
     },
-    partialUpdateModComponentFormState(
-      state,
-      action: PayloadAction<{ uuid: UUID } & Partial<ModComponentFormState>>,
-    ) {
-      const { uuid, ...propertiesToUpdate } = action.payload;
-      const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === uuid,
-      );
-      if (index < 0) {
-        throw new Error(`Unknown draft mod component: ${uuid}`);
-      }
-
-      // @ts-expect-error -- Concrete variants of FromState are not mutually assignable.
-      state.modComponentFormStates[index] = {
-        ...state.modComponentFormStates.at(index),
-        ...propertiesToUpdate,
-      };
-
-      // Force reload of Formik state
-      state.selectionSeq++;
-    },
     removeModComponentFormState(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
       removeModComponentFormState(state, modComponentId);
@@ -503,9 +479,6 @@ export const editorSlice = createSlice({
     setActiveModId(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
       setActiveModId(state, modId);
-    },
-    setBetaUIEnabled(state, action: PayloadAction<boolean>) {
-      state.isBetaUI = action.payload;
     },
     setActiveNodeId(state, action: PayloadAction<UUID>) {
       setActiveNodeId(state, action.payload);
