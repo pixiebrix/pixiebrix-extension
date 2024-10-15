@@ -121,7 +121,7 @@ describe("baseQuery", () => {
 
     await waitForEffect();
 
-    expect(appApiMock.history.get![0]!.params).toStrictEqual({
+    expect(appApiMock.history.get[0]!.params).toStrictEqual({
       package__name: "bar",
     });
   });

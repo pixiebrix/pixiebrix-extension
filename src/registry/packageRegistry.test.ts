@@ -45,7 +45,7 @@ describe("localRegistry", () => {
     await syncPackages();
     const recipes = await getByKinds(["recipe"]);
     expect(recipes).toHaveLength(1);
-    expect(appApiMock.history.get![0]!.url).toBe(API_PATHS.REGISTRY_BRICKS);
+    expect(appApiMock.history.get[0]!.url).toBe(API_PATHS.REGISTRY_BRICKS);
   });
 
   it("should sync packages", async () => {
@@ -85,7 +85,7 @@ describe("localRegistry", () => {
   });
 
   it("should await sync on getByKinds", async () => {
-    const deferred = pDefer<unknown[]>();
+    const deferred = pDefer<[number, unknown]>();
 
     appApiMock
       .onGet(API_PATHS.REGISTRY_BRICKS)
@@ -103,7 +103,7 @@ describe("localRegistry", () => {
   });
 
   it("should await sync on lookup", async () => {
-    const deferred = pDefer<unknown[]>();
+    const deferred = pDefer<[number, unknown]>();
 
     appApiMock
       .onGet(API_PATHS.REGISTRY_BRICKS)
