@@ -259,6 +259,6 @@ export const withIdbErrorHandling =
 
       throw error;
     } finally {
-      (db as IDBDatabase | null)?.close();
+      (db as IDBPDatabase<DBType> | null)?.close();
     }
   };
