@@ -29,6 +29,7 @@ import {
 
 jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
 jest.mock("@/hooks/useTheme");
+jest.mock("@/components/teamTrials/useTeamTrialStatus");
 jest.mock("@/contentScript/messenger/api", () => ({
   ensureStarterBricksInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({

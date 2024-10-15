@@ -22,6 +22,10 @@ import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
 import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
+import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
+import useTeamTrialStatus, {
+  TeamTrialStatus,
+} from "@/components/teamTrials/useTeamTrialStatus";
 
 const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
   const restricted = getRestrictedReasonByUrl(url);
@@ -37,9 +41,12 @@ const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
 // navigation in the SidebarApp
 function SidebarBody() {
   const url = useConnectedTargetUrl();
+  const trialStatus = useTeamTrialStatus();
+
   return (
     <>
       <Header />
+      {trialStatus === TeamTrialStatus.EXPIRED && <TeamTrialBanner />}
       <DatabaseUnresponsiveBanner />
       <div className="full-height">{url && <SidebarReady url={url} />}</div>
     </>
