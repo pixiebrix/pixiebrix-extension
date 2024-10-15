@@ -74,7 +74,7 @@ test("load mod definitions and save one", async () => {
   await localRegistry.syncPackages();
 
   // Sanity check that localRegistry.syncPackages fetches from server
-  expect(appApiMock.history.get!).toHaveLength(1);
+  expect(appApiMock.history.get).toHaveLength(1);
 
   // Skip the messenger, and use the IDB registry directly
   jest
@@ -149,7 +149,7 @@ test("load mod definitions and save one", async () => {
   // Let the registry and the RTK Query to load and update a mod definition
   await act(async () => fetchingSavingPromise.promise);
 
-  expect(appApiMock.history.get!.map((x) => x.url)).toEqual([
+  expect(appApiMock.history.get.map((x) => x.url)).toEqual([
     API_PATHS.REGISTRY_BRICKS,
     API_PATHS.BRICKS,
     API_PATHS.REGISTRY_BRICKS,

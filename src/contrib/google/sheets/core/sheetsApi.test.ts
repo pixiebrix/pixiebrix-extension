@@ -195,7 +195,7 @@ describe("error handling", () => {
       );
 
       expect(
-        axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
+        axiosMock.history.get.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
       ).toHaveLength(2);
       expect(axiosMock.history.post).toHaveLength(0);
     },
@@ -241,7 +241,7 @@ describe("error handling", () => {
       expect(deleteCachedAuthDataSpy).toHaveBeenCalledOnce();
 
       expect(
-        axiosMock.history.get!.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
+        axiosMock.history.get.filter((x) => x.url!.startsWith(DRIVE_BASE_URL)),
       ).toHaveLength(2);
       expect(axiosMock.history.post).toHaveLength(1);
     },
@@ -279,7 +279,7 @@ describe("error handling", () => {
       });
       expect(deleteCachedAuthDataSpy).not.toHaveBeenCalled();
 
-      const googleGetRequests = axiosMock.history.get!.filter((x) =>
+      const googleGetRequests = axiosMock.history.get.filter((x) =>
         x.url!.startsWith(DRIVE_BASE_URL),
       );
       expect(googleGetRequests).toHaveLength(2);

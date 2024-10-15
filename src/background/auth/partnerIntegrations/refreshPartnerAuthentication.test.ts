@@ -84,7 +84,7 @@ describe("refreshPartnerAuthentication", () => {
     });
     await refreshPartnerAuthentication();
     expect(axiosMock.history.post).toBeArrayOfSize(1);
-    const axiosRequestConfig = axiosMock.history.post![0];
+    const axiosRequestConfig = axiosMock.history.post[0];
     expect(axiosRequestConfig).toMatchObject({
       method: "post",
       url: "https://my.testrefreshurl.com",

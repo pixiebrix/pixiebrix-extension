@@ -174,7 +174,7 @@ describe("launchAuthIntegration", () => {
     await launchAuthIntegration({ integrationId });
 
     expect(appApiMock.history.get).toBeArrayOfSize(1);
-    expect(appApiMock.history.get![0]!.url).toBe(API_PATHS.ME);
+    expect(appApiMock.history.get[0]!.url).toBe(API_PATHS.ME);
   });
 
   it("when the token check fails with an auth error, clears the oauth2 token and throws rejected error", async () => {
