@@ -164,6 +164,9 @@ function useActivateMod(
             optionsArgs,
             screen: source,
             isReactivate,
+            // FIXME: Team deployment metadata gets reset here when reactivating. This makes the mod
+            //  not accurately display that it comes from a deployment (until the next time it is activated from the deployment).
+            //  We need to do a similar check and fetch the deployment metadata for the mod instance if it exists
             deployment: userDeployment,
           }),
         );

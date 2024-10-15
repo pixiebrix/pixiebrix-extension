@@ -103,6 +103,7 @@ export async function autoCreateDatabaseOptionsArgsInPlace(
  * (a new deployment is created, and we return it)
  * - The mod instance is not a personal deployment and the user does not want to create one
  * (no action is taken, and we return undefined)
+ * TODO: Handle activating a mod that is updating to a newer version and update the personal deployment to point to the new mod version
  */
 export function useHandlePersonalDeploymentOption() {
   const [createUserDeployment] = useCreateUserDeploymentMutation();
