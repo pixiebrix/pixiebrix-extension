@@ -23,10 +23,8 @@ import { isEmpty, memoize } from "lodash";
 import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { getVisiblePanelCount } from "@/store/sidebar/sidebarUtils";
 import { createSelector } from "@reduxjs/toolkit";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { selectActivatedModComponentsMap } from "@/store/modComponents/modComponentSelectors";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
@@ -62,51 +60,29 @@ export const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
   sidebar.modActivationPanel,
 ];
 
-// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
-const modComponentForEventKeySelector = createSelector(
+const selectEventKeyEntryMap = createSelector(
   selectSidebarEntries,
-  selectActivatedModComponents,
-  (_state: SidebarRootState, eventKey: string) => eventKey,
-  (entries, modComponents, eventKey): ActivatedModComponent | undefined => {
-    // Get sidebar entry by event key
-    const sidebarEntry = entries.find(
-      (entry) => eventKeyForEntry(entry) === eventKey,
-    );
-
-    if (!isBaseModComponentPanelEntry(sidebarEntry)) {
-      return;
-    }
-
-    return modComponents.find(
-      (modComponent) =>
-        modComponent.id === sidebarEntry.modComponentRef.modComponentId,
-    );
-  },
+  (entries) =>
+    new Map(entries.map((entry) => [eventKeyForEntry(entry), entry])),
 );
 
-// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
-export const selectModComponentForEventKey =
-  (eventKey: string) => (state: SidebarRootState) =>
-    modComponentForEventKeySelector(state, eventKey);
-
-// TODO: reconcile similar selectors https://github.com/pixiebrix/pixiebrix-extension/issues/9263
 export const selectModComponentFromEventKey = createSelector(
-  selectSidebarEntries,
-  selectActivatedModComponents,
-  (sidebarEntries, modComponents) =>
+  selectEventKeyEntryMap,
+  selectActivatedModComponentsMap,
+  (entryMap, modComponentsMap) =>
     memoize((eventKey: Nullishable<string>) => {
+      if (eventKey == null) {
+        return;
+      }
+
       // Get sidebar entry by event key
-      const sidebarEntry = sidebarEntries.find(
-        (entry) => eventKeyForEntry(entry) === eventKey,
-      );
+      const sidebarEntry = entryMap.get(eventKey);
 
       if (!isBaseModComponentPanelEntry(sidebarEntry)) {
         return;
       }
 
-      return modComponents.find(
-        (x) => x.id === sidebarEntry.modComponentRef.modComponentId,
-      );
+      return modComponentsMap.get(sidebarEntry.modComponentRef.modComponentId);
     }),
 );
 

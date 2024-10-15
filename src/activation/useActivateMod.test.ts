@@ -404,7 +404,7 @@ describe("useActivateMod", () => {
 
       expect(
         JSON.parse(
-          appApiMock.history.post!.find(
+          appApiMock.history.post.find(
             (request) => request.url === API_PATHS.USER_DEPLOYMENTS,
           )!.data,
         ),

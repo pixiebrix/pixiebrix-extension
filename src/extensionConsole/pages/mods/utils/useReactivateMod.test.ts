@@ -21,6 +21,7 @@ import { actions as modComponentActions } from "@/store/modComponents/modCompone
 import { deactivateMod } from "@/store/deactivateUtils";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -45,15 +46,15 @@ test("deactivates mod components", async () => {
     },
   });
 
-  const expectedExtension = (
-    getReduxStore().getState() as ModComponentsRootState
-  ).options.activatedModComponents[0];
+  const expectedModComponent = selectActivatedModComponents(
+    getReduxStore().getState() as ModComponentsRootState,
+  )[0];
 
   await act(async () => reactivate(modDefinition));
 
   expect(deactivateMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
-    [expectedExtension!.id],
+    [expectedModComponent!.id],
     expect.any(Function),
   );
 });

@@ -111,9 +111,6 @@ exports[`DraftModComponentListItem renders not active element 1`] = `
       >
         Element 1
       </span>
-      <div
-        class="root"
-      />
     </div>
     <button
       type="submit"

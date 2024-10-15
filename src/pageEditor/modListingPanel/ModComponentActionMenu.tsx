@@ -27,43 +27,51 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
+import {
+  DELETE_STARTER_BRICK_MODAL_PROPS,
+  useRemoveModComponentFromStorage,
+} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
+import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 
-type OptionalAction = (() => Promise<void>) | undefined;
-
-type ActionMenuProps = {
+const ModComponentActionMenu: React.FC<{
+  modComponentFormState: ModComponentFormState;
   labelRoot: string;
-  isDirty: boolean;
-  isActive: boolean;
-  onDelete: () => Promise<void>;
-  onDuplicate: () => Promise<void>;
-  onClearChanges: OptionalAction;
-  onMoveToMod: () => Promise<void>;
-  onCopyToMod: () => Promise<void>;
-};
+}> = ({ modComponentFormState, labelRoot }) => {
+  const dispatch = useDispatch();
 
-const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
-  isActive,
-  labelRoot,
-  isDirty,
-  onDelete,
-  onDuplicate,
-  onClearChanges = null,
-  onMoveToMod,
-  onCopyToMod,
-}) => {
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const clearModComponentChanges = useClearModComponentChanges();
+
+  const isDirty = useSelector(
+    selectModComponentIsDirty(modComponentFormState.uuid),
+  );
+
   const menuItems: EllipsisMenuItem[] = [
     {
       title: "Clear Changes",
       icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
-      action: onClearChanges,
+      action: async () =>
+        clearModComponentChanges({
+          modComponentId: modComponentFormState.uuid,
+        }),
       // Always show Clear Changes button, even if there are no changes so the UI is more consistent / the user doesn't
       // wonder why the menu item is missing
-      disabled: !isDirty || !onClearChanges,
+      disabled: !isDirty,
+      hide: !modComponentFormState.installed,
     },
     {
       title: "Duplicate",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
-      action: onDuplicate,
+      async action() {
+        dispatch(
+          // Duplicate the mod component within the current mod
+          actions.duplicateActiveModComponent(),
+        );
+      },
     },
     {
       title: "Move to mod",
@@ -74,7 +82,9 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
           className={styles.moveIcon}
         />
       ),
-      action: onMoveToMod,
+      async action() {
+        dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
+      },
     },
     {
       title: "Copy to mod",
@@ -85,25 +95,29 @@ const ModComponentActionMenu: React.FC<ActionMenuProps> = ({
           className={styles.moveIcon}
         />
       ),
-      action: onCopyToMod,
+      async action() {
+        dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "copy" }));
+      },
     },
     {
       title: "Delete",
       icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
-      action: onDelete,
+      action: async () =>
+        removeModComponentFromStorage({
+          modComponentId: modComponentFormState.uuid,
+          showConfirmationModal: DELETE_STARTER_BRICK_MODAL_PROPS,
+        }),
     },
   ];
 
   return (
     <div className={styles.root}>
-      {isActive && (
-        <EllipsisMenu
-          portal
-          ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
-          items={menuItems}
-          classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
-        />
-      )}
+      <EllipsisMenu
+        portal
+        ariaLabel={labelRoot ? `${labelRoot} - Ellipsis` : undefined}
+        items={menuItems}
+        classNames={{ menu: styles.menu, menuButton: styles.ellipsisMenu }}
+      />
     </div>
   );
 };

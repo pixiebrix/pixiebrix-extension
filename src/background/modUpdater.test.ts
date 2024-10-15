@@ -175,7 +175,7 @@ describe("fetchModUpdates function", () => {
     await fetchModUpdates();
 
     expect(axiosMock.history.post).toHaveLength(1);
-    const payload = JSON.parse(String(axiosMock.history.post![0]!.data));
+    const payload = JSON.parse(String(axiosMock.history.post[0]!.data));
 
     expect(payload).toEqual({
       versions: [
