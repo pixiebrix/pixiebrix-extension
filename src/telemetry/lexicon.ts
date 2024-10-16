@@ -24,8 +24,8 @@ const LexiconTags = {
   MOD_ACTIVATION: "mod activation",
   EXTENSION_CONSOLE: "extension console",
   MOD_RUNTIME: "mod runtime",
-  DEPLOYMENTS: "deployments",
   ENTERPRISE: "enterprise",
+  TEAM: "team",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -120,9 +120,11 @@ export const lexicon: LexiconMap = {
   },
   DEPLOYMENT_ACTIVATE: {
     description:
-      "Reported when a deployed mod is auto-activated in the background of the PixieBrix Extension, " +
-      "including when a deployment specifies an update to a mod that is currently active.",
-    tags: [LexiconTags.DEPLOYMENTS],
+      "Triggered when when a user successfully activates a team deployment via the Extension Console by clicking the " +
+      '"Activate" button in the team deployment banner, OR when a deployed mod is auto-activated in the background ' +
+      "of the PixieBrix Extension (including when a deployment specifies an update to a mod that is currently active). " +
+      "See event properties for information on how the mod was activated (e.g. 'manual' or 'auto').",
+    tags: [LexiconTags.TEAM, LexiconTags.MOD_ACTIVATION],
   },
   DEPLOYMENT_DEACTIVATE_ALL: {
     description:
@@ -130,26 +132,26 @@ export const lexicon: LexiconMap = {
       "This should only happen if the user is no longer part of any team, e.g. if the user is removed from " +
       "their only team, or the user links the PixieBrix Extension to a different account with no team " +
       "affiliation.",
-    tags: [LexiconTags.DEPLOYMENTS],
+    tags: [LexiconTags.TEAM],
   },
   DEPLOYMENT_DEACTIVATE_UNASSIGNED: {
     description:
       "Reported in the background of the PixieBrix Extension or automatically on the Mods Page in the" +
       "Extension Console when a mod is deactivated because it is no longer specified by a deployment.",
-    tags: [LexiconTags.DEPLOYMENTS],
+    tags: [LexiconTags.TEAM],
   },
   DEPLOYMENT_REJECT_VERSION: {
     description:
       "Reported on the Mods Page in the Extension Console when a user is prompted to update the Extension " +
       "in order to activate a deployed mod. The event is triggered after the user clicks 'Activate' on the deployment " +
       "activation modal.",
-    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.EXTENSION_CONSOLE],
+    tags: [LexiconTags.TEAM, LexiconTags.EXTENSION_CONSOLE],
   },
   DEPLOYMENT_REJECT_PERMISSIONS: {
     description:
       "Reported on the Mods Page in the Extension Console when a user declines the permissions " +
       "required to activate a deployed mod by clicking 'Cancel' or 'Deny' on the browser permissions prompt.",
-    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.EXTENSION_CONSOLE],
+    tags: [LexiconTags.TEAM, LexiconTags.EXTENSION_CONSOLE],
   },
   DEPLOYMENT_SYNC: {
     description:
@@ -158,7 +160,7 @@ export const lexicon: LexiconMap = {
       "to activate deployed mods that can't be auto-activated in the background). This event is only reported for " +
       "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
       "of users with this flag).",
-    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.ENTERPRISE],
+    tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
   },
   DEPLOYMENT_LIST: {
     description:
@@ -166,7 +168,7 @@ export const lexicon: LexiconMap = {
       "that belong to a team, with a list of all deployment ids for that user. This event is only reported for " +
       "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
       "of users with this flag).",
-    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.ENTERPRISE],
+    tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
   },
   DEPLOYMENT_UPDATE_LIST: {
     description:
@@ -174,7 +176,7 @@ export const lexicon: LexiconMap = {
       "that belong to a team, with a list of deployments for that user that have updates available. This event is only " +
       "reported for certain teams as specified by the `report-background-deployments` feature flag (see the Django " +
       "Admin for a list of users with this flag).",
-    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.ENTERPRISE],
+    tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
   },
 };
 
