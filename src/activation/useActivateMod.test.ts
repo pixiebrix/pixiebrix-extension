@@ -405,7 +405,7 @@ describe("useActivateMod", () => {
 
       expect(
         JSON.parse(
-          appApiMock.history.post!.find(
+          appApiMock.history.post.find(
             (request) => request.url === API_PATHS.USER_DEPLOYMENTS,
           )!.data,
         ),
@@ -581,7 +581,7 @@ describe("useActivateMod", () => {
       );
 
       expect(appApiMock.history.delete).toHaveLength(1);
-      expect(appApiMock.history.delete![0]!.url).toBe(
+      expect(appApiMock.history.delete[0]!.url).toBe(
         API_PATHS.USER_DEPLOYMENT(testDeployment.id),
       );
     });
@@ -636,7 +636,7 @@ describe("useActivateMod", () => {
       );
 
       expect(appApiMock.history.get).toHaveLength(1);
-      expect(appApiMock.history.get![0]!.url).toBe(
+      expect(appApiMock.history.get[0]!.url).toBe(
         API_PATHS.USER_DEPLOYMENT(testDeployment.id),
       );
     });

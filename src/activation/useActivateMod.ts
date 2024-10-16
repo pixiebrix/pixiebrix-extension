@@ -30,7 +30,7 @@ import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import {
   autoCreateDatabaseOptionsArgsInPlace,
-  useHandlePersonalDeploymentOption,
+  useManagePersonalDeployment,
 } from "@/activation/modOptionsHelpers";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
@@ -81,7 +81,7 @@ function useActivateMod(
   const modInstanceMap = useSelector(selectModInstanceMap);
 
   const [createDatabase] = useCreateDatabaseMutation();
-  const handleUserDeployment = useHandlePersonalDeploymentOption();
+  const handleUserDeployment = useManagePersonalDeployment();
 
   return useCallback(
     async (formValues: WizardValues, modDefinition: ModDefinition) => {

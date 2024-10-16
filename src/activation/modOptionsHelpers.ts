@@ -105,7 +105,7 @@ export async function autoCreateDatabaseOptionsArgsInPlace(
  * (no action is taken, and we return undefined)
  * TODO: Handle activating a mod that is updating to a newer version and update the personal deployment to point to the new mod version
  */
-export function useHandlePersonalDeploymentOption() {
+export function useManagePersonalDeployment() {
   const [createUserDeployment] = useCreateUserDeploymentMutation();
   const [deleteUserDeployment] = useDeleteUserDeploymentMutation();
   const [getUserDeployment] = appApi.endpoints.getUserDeployment.useLazyQuery();
