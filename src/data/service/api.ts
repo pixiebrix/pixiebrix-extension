@@ -528,7 +528,6 @@ export const {
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
   useGetDeploymentsQuery,
-  useGetUserDeploymentQuery,
   useCreateUserDeploymentMutation,
   useDeleteUserDeploymentMutation,
   util,
