@@ -16,7 +16,7 @@
  */
 
 import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { clamp, compact, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { isUUID } from "@/types/helpers";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { UUID } from "@/types/stringTypes";
