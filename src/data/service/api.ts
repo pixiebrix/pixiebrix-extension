@@ -488,6 +488,17 @@ export const appApi = createApi({
       },
       invalidatesTags: ["Deployments"],
     }),
+    getUserDeployment: builder.query<Deployment, { id: UUID }>({
+      query({ id }) {
+        return { url: API_PATHS.USER_DEPLOYMENT(id), method: "get" };
+      },
+    }),
+    deleteUserDeployment: builder.mutation<void, { id: UUID }>({
+      query({ id }) {
+        return { url: API_PATHS.USER_DEPLOYMENT(id), method: "delete" };
+      },
+      invalidatesTags: ["Deployments"],
+    }),
   }),
 });
 
@@ -518,5 +529,6 @@ export const {
   useCreateMilestoneMutation,
   useGetDeploymentsQuery,
   useCreateUserDeploymentMutation,
+  useDeleteUserDeploymentMutation,
   util,
 } = appApi;
