@@ -16,7 +16,7 @@
  */
 
 import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isEmpty } from "lodash";
+import { clamp, compact, isEmpty } from "lodash";
 import { isUUID } from "@/types/helpers";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { UUID } from "@/types/stringTypes";
@@ -135,14 +135,17 @@ export function useManagePersonalDeployment() {
         } else if (nextIsPersonalDeployment) {
           const data: DeploymentPayload = {
             name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
-            services: integrationDependencies.flatMap(
-              (integrationDependency) =>
-                integrationDependency.integrationId ===
-                  PIXIEBRIX_INTEGRATION_ID ||
-                integrationDependency.configId == null
-                  ? []
-                  : [{ auth: integrationDependency.configId }],
-            ),
+            services: integrationDependencies
+              .map((integrationDependency) =>
+                integrationDependency.integrationId !==
+                  PIXIEBRIX_INTEGRATION_ID &&
+                integrationDependency.configId != null
+                  ? {
+                      auth: integrationDependency.configId,
+                    }
+                  : null,
+              )
+              .filter((x) => x != null),
             options_config: optionsArgs,
           };
           userDeployment = await createUserDeployment({
