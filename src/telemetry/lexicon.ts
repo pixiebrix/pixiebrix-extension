@@ -24,6 +24,8 @@ const LexiconTags = {
   MOD_ACTIVATION: "mod activation",
   EXTENSION_CONSOLE: "extension console",
   MOD_RUNTIME: "mod runtime",
+  DEPLOYMENTS: "deployments",
+  ENTERPRISE: "enterprise",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -115,6 +117,64 @@ export const lexicon: LexiconMap = {
       "Reported when a Data Panel tab is shown in the Page Editor, including when the Data Panel first renders " +
       "and when a user switches between data panel tabs by clicking on the tab.",
     tags: [LexiconTags.PAGE_EDITOR],
+  },
+  DEPLOYMENT_ACTIVATE: {
+    description:
+      "Reported when a deployed mod is auto-activated in the background of the PixieBrix Extension, " +
+      "including when a deployment specifies an update to a mod that is currently active.",
+    tags: [LexiconTags.DEPLOYMENTS],
+  },
+  DEPLOYMENT_DEACTIVATE_ALL: {
+    description:
+      "Reported when all deployed mods are auto-deactivated at once in the background of the PixieBrix Extension. " +
+      "This should only happen if the user is no longer part of any team, e.g. if the user is removed from " +
+      "their only team, or the user links the PixieBrix Extension to a different account with no team " +
+      "affiliation.",
+    tags: [LexiconTags.DEPLOYMENTS],
+  },
+  DEPLOYMENT_DEACTIVATE_UNASSIGNED: {
+    description:
+      "Reported in the background of the PixieBrix Extension or automatically on the Mods Page in the" +
+      "Extension Console when a mod is deactivated because it is no longer specified by a deployment.",
+    tags: [LexiconTags.DEPLOYMENTS],
+  },
+  DEPLOYMENT_REJECT_VERSION: {
+    description:
+      "Reported on the Mods Page in the Extension Console when a user is prompted to update the Extension " +
+      "in order to activate a deployed mod. The event is triggered after the user clicks 'Activate' on the deployment " +
+      "activation modal.",
+    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.EXTENSION_CONSOLE],
+  },
+  DEPLOYMENT_REJECT_PERMISSIONS: {
+    description:
+      "Reported on the Mods Page in the Extension Console when a user declines the required permissions " +
+      "required to activate a deployed mod by clicking 'Cancel' or 'Deny' on the browser permissions prompt.",
+    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.EXTENSION_CONSOLE],
+  },
+  DEPLOYMENT_SYNC: {
+    description:
+      "Reported every 5 minutes from the background when the PixieBrix Extension checks for deployment updates for users " +
+      "that belong to a team. See event properties for information on update prompt status (the prompt shown to users " +
+      "to activate deployed mods that can't be auto-activated in the background). This event is only reported for " +
+      "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
+      "of users with this flag).",
+    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.ENTERPRISE],
+  },
+  DEPLOYMENT_LIST: {
+    description:
+      "Reported every 5 minutes from the background when the PixieBrix Extension fetches deployments for users" +
+      "that belong to a team, with a list of all deployment ids for that user. This event is only reported for " +
+      "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
+      "of users with this flag).",
+    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.ENTERPRISE],
+  },
+  DEPLOYMENT_UPDATE_LIST: {
+    description:
+      "Reported every 5 minutes from the background when the PixieBrix Extension fetches deployments for users" +
+      "that belong to a team, with a list of deployments for that user that have updates available. This event is only " +
+      "reported for certain teams as specified by the `report-background-deployments` feature flag (see the Django " +
+      "Admin for a list of users with this flag).",
+    tags: [LexiconTags.DEPLOYMENTS, LexiconTags.ENTERPRISE],
   },
 };
 
