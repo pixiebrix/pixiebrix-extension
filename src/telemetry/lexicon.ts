@@ -147,7 +147,7 @@ export const lexicon: LexiconMap = {
   },
   DEPLOYMENT_REJECT_PERMISSIONS: {
     description:
-      "Reported on the Mods Page in the Extension Console when a user declines the required permissions " +
+      "Reported on the Mods Page in the Extension Console when a user declines the permissions " +
       "required to activate a deployed mod by clicking 'Cancel' or 'Deny' on the browser permissions prompt.",
     tags: [LexiconTags.DEPLOYMENTS, LexiconTags.EXTENSION_CONSOLE],
   },
