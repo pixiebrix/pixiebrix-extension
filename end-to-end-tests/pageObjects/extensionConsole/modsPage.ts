@@ -18,7 +18,6 @@
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
-import { ensureVisibility } from "../../utils";
 import { validateRegistryId } from "@/types/helpers";
 import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 import { DEFAULT_TIMEOUT } from "../../../playwright.config";
@@ -170,11 +169,8 @@ export class ActivateModPage extends BasePageObject {
   async goto() {
     await this.page.goto(this.activateModUrl);
 
-    await expect(
-      this.getByRole("heading", { name: "Activate " }),
-    ).toBeVisible();
-    // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
-    await ensureVisibility(this.getByText(this.modId));
+    await this.getByRole("heading", { name: "Activate " }).waitFor();
+    await this.getByText(this.modId).waitFor();
   }
 
   async getIntegrationConfigField(index: number) {
