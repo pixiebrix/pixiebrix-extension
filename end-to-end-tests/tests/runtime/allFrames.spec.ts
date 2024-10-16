@@ -36,11 +36,11 @@ test("8527: availability allFrames declaration", async ({
 
   // Wait because `all()` doesn't wait and Playwright needs to wait for the triggers to run
   await page.locator("mark").first().waitFor();
-  const markLocators = await page.locator("mark").all();
+  const markLocators = page.locator("mark");
 
-  expect(markLocators).toHaveLength(2);
+  await expect(markLocators).toHaveCount(2);
 
-  for (const markLocator of markLocators) {
+  for (const markLocator of await markLocators.all()) {
     // Expect yellow
     await expect(markLocator).toHaveCSS("background-color", "rgb(255, 255, 0)");
   }

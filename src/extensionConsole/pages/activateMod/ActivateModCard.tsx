@@ -44,7 +44,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { Milestones } from "@/data/model/UserMilestone";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import castError from "@/utils/castError";
-import { TrialAwareButton } from "@/extensionConsole/pages/teamTrials/TrialAwareButton";
+import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 
 const WizardHeader: React.VoidFunctionComponent<{
   mod: ModDefinition;

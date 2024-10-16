@@ -50,7 +50,9 @@ export function onDeferredGet(
   const valuePromise = pDefer<unknown>();
 
   // eslint-disable-next-line promise/prefer-await-to-then -- transform value
-  const responsePromise = valuePromise.promise.then((value) => [200, value]);
+  const responsePromise: Promise<[number, unknown]> = valuePromise.promise.then(
+    (value) => [200, value],
+  );
 
   appApiMock.onGet(matcher).reply(async () => responsePromise);
 

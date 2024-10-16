@@ -253,7 +253,7 @@ describe("ModsPageActions", () => {
     await userEvent.click(screen.getByText("Delete"));
 
     expect(appApiMock.history.delete).toBeArrayOfSize(1);
-    expect(appApiMock.history.delete![0]!.url).toBe(
+    expect(appApiMock.history.delete[0]!.url).toBe(
       API_PATHS.BRICK(String(modViewItem.editablePackageId)),
     );
   });

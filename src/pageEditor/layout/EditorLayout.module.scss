@@ -18,6 +18,8 @@
 .root {
   display: flex;
   height: inherit;
+  // Establishes new formatting context to enable scrolling independent of the outer layout
+  overflow: auto;
 
   & > * {
     height: auto !important;

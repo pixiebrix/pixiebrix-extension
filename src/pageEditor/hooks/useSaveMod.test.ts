@@ -160,7 +160,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put![0]!.data,
+        putMock.history.put[0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 
@@ -242,7 +242,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put![0]!.data,
+        putMock.history.put[0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 
