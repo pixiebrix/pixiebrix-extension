@@ -150,8 +150,9 @@ export const lexicon: LexiconMap = {
   },
   DEPLOYMENT_REJECT_PERMISSIONS: {
     description:
-      "Reported on the Mods Page in the Extension Console when a user declines the permissions " +
-      "required to activate a deployed mod by clicking 'Cancel' or 'Deny' on the browser permissions prompt.",
+      "Triggered when a user declines browser permissions required to activate a deployed mod by clicking 'Cancel' or " +
+      "'Deny' on the browser permissions prompt. Team deployment activation is initiated by clicking \"Activate\" on " +
+      "the team deployment banner in the Extension Console.",
     tags: [LexiconTags.TEAM, LexiconTags.EXTENSION_CONSOLE],
   },
   DEPLOYMENT_SYNC: {
