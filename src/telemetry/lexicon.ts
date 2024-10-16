@@ -128,8 +128,8 @@ export const lexicon: LexiconMap = {
   },
   DEPLOYMENT_DEACTIVATE_ALL: {
     description:
-      "Reported when all deployed mods are auto-deactivated at once in the background of the PixieBrix Extension. " +
-      "This should only happen if the user is no longer part of any team, e.g. if the user is removed from " +
+      "Triggered when the PixieBrix Extension automatically deactivates all deployed mods for a user at once in the" +
+      "background. This should only happen if the user is no longer part of any team, e.g. if the user is removed from " +
       "their only team, or the user links the PixieBrix Extension to a different account with no team " +
       "affiliation.",
     tags: [LexiconTags.TEAM],
