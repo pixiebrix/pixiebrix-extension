@@ -136,8 +136,9 @@ export const lexicon: LexiconMap = {
   },
   DEPLOYMENT_DEACTIVATE_UNASSIGNED: {
     description:
-      "Reported in the background of the PixieBrix Extension or automatically on the Mods Page in the" +
-      "Extension Console when a mod is deactivated because it is no longer specified by a deployment.",
+      "Triggered when the PixieBrix Extension successfully deactivates all deployments that have been unassigned to " +
+      "this user. This is done automatically in the background or on the Mods Page in the Extension Console.\nA user " +
+      "is assigned to a deployment by belonging to a group assigned to the deployment.",
     tags: [LexiconTags.TEAM],
   },
   DEPLOYMENT_REJECT_VERSION: {
