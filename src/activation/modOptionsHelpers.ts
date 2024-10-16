@@ -115,7 +115,7 @@ export function useManagePersonalDeployment() {
       modInstance: ModInstance | undefined,
       modDefinition: ModDefinition,
       {
-        personalDeployment,
+        personalDeployment: nextIsPersonalDeployment,
         integrationDependencies,
         optionsArgs,
       }: WizardValues,
@@ -123,7 +123,7 @@ export function useManagePersonalDeployment() {
       let userDeployment: Deployment | undefined;
       try {
         if (getIsPersonalDeployment(modInstance)) {
-          if (personalDeployment) {
+          if (nextIsPersonalDeployment) {
             userDeployment = await getUserDeployment({
               id: modInstance.deploymentMetadata.id,
             }).unwrap();
@@ -132,7 +132,7 @@ export function useManagePersonalDeployment() {
               id: modInstance.deploymentMetadata.id,
             });
           }
-        } else if (personalDeployment) {
+        } else if (nextIsPersonalDeployment) {
           const data: DeploymentPayload = {
             name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
             services: integrationDependencies.flatMap(
