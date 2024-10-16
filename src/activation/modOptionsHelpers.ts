@@ -121,40 +121,40 @@ export function useManagePersonalDeployment() {
       }: WizardValues,
     ) => {
       let userDeployment: Deployment | undefined;
-      if (getIsPersonalDeployment(modInstance)) {
-        if (personalDeployment) {
-          userDeployment = await getUserDeployment({
-            id: modInstance.deploymentMetadata.id,
+      try {
+        if (getIsPersonalDeployment(modInstance)) {
+          if (personalDeployment) {
+            userDeployment = await getUserDeployment({
+              id: modInstance.deploymentMetadata.id,
+            }).unwrap();
+          } else {
+            await deleteUserDeployment({
+              id: modInstance.deploymentMetadata.id,
+            });
+          }
+        } else if (personalDeployment) {
+          const data: DeploymentPayload = {
+            name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
+            services: integrationDependencies.flatMap(
+              (integrationDependency) =>
+                integrationDependency.integrationId ===
+                  PIXIEBRIX_INTEGRATION_ID ||
+                integrationDependency.configId == null
+                  ? []
+                  : [{ auth: integrationDependency.configId }],
+            ),
+            options_config: optionsArgs,
+          };
+          userDeployment = await createUserDeployment({
+            modDefinition,
+            data,
           }).unwrap();
-        } else {
-          await deleteUserDeployment({
-            id: modInstance.deploymentMetadata.id,
-          });
         }
-      } else if (personalDeployment) {
-        const data: DeploymentPayload = {
-          name: `Personal deployment for ${modDefinition.metadata.name}, version ${modDefinition.metadata.version}`,
-          services: integrationDependencies.flatMap((integrationDependency) =>
-            integrationDependency.integrationId === PIXIEBRIX_INTEGRATION_ID ||
-            integrationDependency.configId == null
-              ? []
-              : [{ auth: integrationDependency.configId }],
-          ),
-          options_config: optionsArgs,
-        };
-        const result = await createUserDeployment({
-          modDefinition,
-          data,
+      } catch (error) {
+        notify.error({
+          message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
+          error,
         });
-
-        if ("error" in result) {
-          notify.error({
-            message: `Error setting up device synchronization for ${modDefinition.metadata.name}. Please try reactivating.`,
-            error: result.error,
-          });
-        } else {
-          userDeployment = result.data;
-        }
       }
 
       return userDeployment;
