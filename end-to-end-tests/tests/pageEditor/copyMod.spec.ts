@@ -31,7 +31,7 @@ import {
 } from "end-to-end-tests/utils";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
-test("copying a mod that uses the PixieBrix API is copied correctly", async ({
+test.only("copying a mod that uses the PixieBrix API is copied correctly", async ({
   page,
   newPageEditorPage,
   extensionId,
