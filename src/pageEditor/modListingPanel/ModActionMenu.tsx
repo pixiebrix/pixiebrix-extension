@@ -104,13 +104,14 @@ const ModActionMenu: React.FC<{
 
   return (
     <div className={styles.root}>
-      <SaveButton
-        ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
-        onClick={async () => {
-          await saveMod(modId);
-        }}
-        disabled={!isDirty}
-      />
+      {isDirty && (
+        <SaveButton
+          ariaLabel={labelRoot ? `${labelRoot} - Save` : undefined}
+          onClick={async () => {
+            await saveMod(modId);
+          }}
+        />
+      )}
       {isActive && (
         <EllipsisMenu
           portal
