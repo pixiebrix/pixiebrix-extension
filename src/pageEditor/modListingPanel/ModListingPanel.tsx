@@ -31,7 +31,7 @@ import { selectIsEditorSidebarExpanded } from "@/pageEditor/store/editor/editorS
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import NewModButton from "./NewModButton";
-import Mods from "./Mods";
+import ModSidebarListItems from "./ModSidebarListItems";
 import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
@@ -131,7 +131,7 @@ const ModListingPanel: React.VFC = () => {
             width: "270px",
           }}
         >
-          <Mods />
+          <ModSidebarListItems />
         </div>
       </CollapsedElement>
     </div>

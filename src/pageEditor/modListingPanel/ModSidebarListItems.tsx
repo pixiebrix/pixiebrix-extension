@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Mods.module.scss";
+import styles from "./ModSidebarListItems.module.scss";
 import React, { useMemo, useState } from "react";
 import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
@@ -37,7 +37,7 @@ import ModComponentListItem from "./ModComponentListItem";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 
-const Mods: React.FunctionComponent = () => {
+const ModSidebarListItems: React.FunctionComponent = () => {
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
@@ -133,4 +133,4 @@ const Mods: React.FunctionComponent = () => {
   );
 };
 
-export default Mods;
+export default ModSidebarListItems;
