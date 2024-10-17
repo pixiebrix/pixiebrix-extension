@@ -221,7 +221,7 @@ const config: ModComponentFormStateAdapter<undefined, TriggerFormState> = {
   starterBrickType: StarterBrickTypes.TRIGGER,
   label: "Trigger",
   baseClass: TriggerStarterBrickABC,
-  EditorNode: TriggerConfiguration,
+  StarterBrickConfiguration: TriggerConfiguration,
   selectNativeElement: undefined,
   icon: faBolt,
   fromNativeElement,

@@ -21,10 +21,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import produce from "immer";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
-import {
-  useCreateModDefinitionMutation,
-  useGetEditablePackagesQuery,
-} from "@/data/service/api";
+import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
@@ -35,22 +32,8 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { type UUID } from "@/types/stringTypes";
-import { getLinkedApiClient } from "@/data/service/apiClient";
-import { objToYaml } from "@/utils/objToYaml";
-import { API_PATHS } from "@/data/service/urlPaths";
-import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import { selectDirtyModOptionsDefinitions } from "@/pageEditor/store/editor/editorSelectors";
-
-async function saveStarterBrickConfig(
-  packageUuid: UUID,
-  config: StarterBrickDefinitionLike,
-): Promise<void> {
-  const client = await getLinkedApiClient();
-  const data = { config: objToYaml(config), kind: "extensionPoint" };
-  await client.put(API_PATHS.BRICK(packageUuid), data);
-}
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -66,7 +49,6 @@ type UseCreateModFromUnsavedModReturn = {
 function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const dispatch = useDispatch();
   const [createMod] = useCreateModDefinitionMutation();
-  const { data: editablePackages } = useGetEditablePackagesQuery();
   const { buildAndValidateMod } = useBuildAndValidateMod();
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -94,7 +76,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         dirtyModComponentFormStates,
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
-        if (!hasPermissions || !editablePackages) {
+        if (!hasPermissions) {
           return;
         }
 
@@ -131,6 +113,8 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
               isInnerDefinitionRegistryId(starterBrickId);
             let newModComponent = selectModComponent(newComponentFormState);
 
+            // The Page Editor only supports editing inline Starter Brick definitions, not Starter Brick packages.
+            // Therefore, no logic is required here for Starter Brick registry packages.
             if (hasInnerStarterBrick) {
               // Starter brick has an inner definition and doesn't exist as a registry item
               const { definition } = selectStarterBrickDefinition(
@@ -140,21 +124,6 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
                 newModComponent,
                 definition,
               );
-            } else {
-              // Handle case where starter brick is a registry item
-              const editablePackage = editablePackages.find(
-                ({ name }) => name === starterBrickId,
-              );
-              if (editablePackage?.id != null) {
-                const starterBrickConfig = selectStarterBrickDefinition(
-                  newComponentFormState,
-                );
-                // eslint-disable-next-line no-await-in-loop -- There aren't that many of these registry starter bricks for now
-                await saveStarterBrickConfig(
-                  editablePackage.id,
-                  starterBrickConfig,
-                );
-              }
             }
 
             dispatch(
@@ -195,7 +164,6 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
     [
       getCleanComponentsAndDirtyFormStatesForMod,
       dirtyModOptionsById,
-      editablePackages,
       buildAndValidateMod,
       createMod,
       dispatch,

@@ -22,42 +22,20 @@ import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { getLinkedApiClient } from "@/data/service/apiClient";
-import { objToYaml } from "@/utils/objToYaml";
 import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
-import { useGetEditablePackagesQuery } from "@/data/service/api";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { type UUID } from "@/types/stringTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { nowTimestamp } from "@/utils/timeUtils";
-import { API_PATHS } from "@/data/service/urlPaths";
 
 const { saveModComponent } = modComponentSlice.actions;
 const { markClean } = editorSlice.actions;
-
-async function upsertPackageConfig(
-  packageUUID: UUID | null,
-  kind: "reader" | "extensionPoint",
-  config: unknown,
-): Promise<void> {
-  const client = await getLinkedApiClient();
-
-  const data = { config: objToYaml(config as UnknownObject), kind };
-
-  if (packageUUID) {
-    await client.put(API_PATHS.BRICK(packageUUID), data);
-  } else {
-    await client.post(API_PATHS.BRICKS, data);
-  }
-}
 
 function selectErrorMessage(error: unknown): string {
   // FIXME: should this logic be in getErrorMessage?
@@ -117,7 +95,6 @@ function useUpsertModComponentFormState(): SaveCallback {
 
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const { data: editablePackages } = useGetEditablePackagesQuery();
 
   const saveModComponentFormState = useCallback(
     async (
@@ -135,44 +112,6 @@ function useUpsertModComponentFormState(): SaveCallback {
       const { selectStarterBrickDefinition, selectModComponent } =
         adapterForComponent(modComponentFormState);
 
-      const starterBrickId = modComponentFormState.starterBrick.metadata.id;
-      const hasInnerStarterBrick = isInnerDefinitionRegistryId(starterBrickId);
-
-      let isEditable = false;
-
-      // Handle the case where the Page Editor is also editing a starter brick that exists as a registry item
-      if (!hasInnerStarterBrick) {
-        assertNotNullish(editablePackages, "Editable packages not loaded");
-        // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
-        // number of bricks implemented and frequency of saves
-        isEditable =
-          editablePackages.some((x) => x.name === starterBrickId) ?? false;
-
-        const isLocked = modComponentFormState.installed && !isEditable;
-
-        if (!isLocked) {
-          try {
-            const starterBrickConfig = selectStarterBrickDefinition(
-              modComponentFormState,
-            );
-            const packageId = modComponentFormState.installed
-              ? editablePackages.find(
-                  // Bricks endpoint uses "name" instead of id
-                  (x) => x.name === starterBrickConfig.metadata?.id,
-                )?.id ?? null
-              : null;
-
-            await upsertPackageConfig(
-              packageId,
-              DefinitionKinds.STARTER_BRICK,
-              starterBrickConfig,
-            );
-          } catch (error) {
-            return onStepError(error, "saving foundation");
-          }
-        }
-      }
-
       reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_UPDATE, {
         sessionId,
         type: modComponentFormState.starterBrick.definition.type,
@@ -183,7 +122,13 @@ function useUpsertModComponentFormState(): SaveCallback {
         let modComponent = selectModComponent(modComponentFormState);
         const updateTimestamp = nowTimestamp();
 
-        if (hasInnerStarterBrick) {
+        // The Page Editor only supports editing inline Starter Brick definitions, not Starter Brick packages
+        // Therefore, no logic is required here for Starter Brick registry packages.
+        if (
+          isInnerDefinitionRegistryId(
+            modComponentFormState.starterBrick.metadata.id,
+          )
+        ) {
           const { definition } = selectStarterBrickDefinition(
             modComponentFormState,
           );
@@ -219,7 +164,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       return null;
     },
-    [dispatch, editablePackages, sessionId],
+    [dispatch, sessionId],
   );
 
   return useCallback(

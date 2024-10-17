@@ -118,11 +118,6 @@ export type EditorStateV1 = {
   readonly elements: BaseFormStateV1[];
 
   /**
-   * Brick ids (not UUIDs) that are known to be editable by the current user
-   */
-  knownEditable: RegistryId[];
-
-  /**
    * True if error is because user does not have access to beta features
    */
   beta?: boolean;
@@ -241,7 +236,6 @@ export type EditorStateV3 = Except<
   | "activeRecipeId"
   | "expandedRecipeId"
   | "elements"
-  | "knownEditable"
   | "elementUIStates"
   | "copiedBlock"
   | "dirtyRecipeOptionsById"
@@ -284,11 +278,6 @@ export type EditorStateV3 = Except<
    * that is, "touched" mod component form states.
    */
   readonly modComponentFormStates: BaseFormStateV2[];
-
-  /**
-   * Brick ids (not UUIDs) that the user has access to edit
-   */
-  knownEditableBrickIds: RegistryId[];
 
   /**
    * The current UI state of each brick pipeline, indexed by mod component id
