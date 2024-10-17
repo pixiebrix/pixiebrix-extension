@@ -167,6 +167,7 @@ export class ActivateModPage extends BasePageObject {
   }
 
   async goto() {
+    await this.page.goto(this.activateModUrl);
     // Wrapped in toPass due to flakiness with the page not loading ex:
     // https://github.com/pixiebrix/pixiebrix-extension/actions/runs/11373118427?pr=9286
     await expect(async () => {
