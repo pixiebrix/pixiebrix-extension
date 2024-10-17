@@ -190,7 +190,7 @@ const config: ModComponentFormStateAdapter<undefined, QuickBarFormState> = {
   starterBrickType: StarterBrickTypes.QUICK_BAR_ACTION,
   label: "Quick Bar Action",
   baseClass: QuickBarStarterBrickABC,
-  EditorNode: QuickBarConfiguration,
+  StarterBrickConfigFields: QuickBarConfiguration,
   selectNativeElement: undefined,
   icon: faThLarge,
   fromNativeElement,

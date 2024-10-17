@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useFlags from "@/hooks/useFlags";
@@ -30,9 +30,7 @@ import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -64,7 +62,7 @@ const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   return null;
 };
 
-const FoundationNodeConfigPanel: React.FC = () => {
+const StarterBrickConfigPanel: React.FC = () => {
   const { flagOn } = useFlags();
   const showVersionField = flagOn(FeatureFlags.PAGE_EDITOR_DEVELOPER);
   const activeModComponentFormState = useSelector(
@@ -72,17 +70,16 @@ const FoundationNodeConfigPanel: React.FC = () => {
   );
   assertNotNullish(
     activeModComponentFormState,
-    "FoundationNodeConfigPanel cannot be rendered when there is no activeModComponentFormState",
+    "Expected an activeModComponentFormState",
   );
   const { starterBrick } = activeModComponentFormState;
 
   // For now, don't allow modifying starter brick packages via the Page Editor.
-  const isLocked = useMemo(
-    () => !isInnerDefinitionRegistryId(starterBrick.metadata.id),
-    [starterBrick.metadata.id],
-  );
+  const isLocked = !isInnerDefinitionRegistryId(starterBrick.metadata.id);
 
-  const { EditorNode } = adapterForComponent(activeModComponentFormState);
+  const { StarterBrickConfigFields } = adapterForComponent(
+    activeModComponentFormState,
+  );
 
   return (
     <>
@@ -98,11 +95,11 @@ const FoundationNodeConfigPanel: React.FC = () => {
               selectActiveModComponentAnalysisAnnotationsForPath,
           }}
         >
-          {EditorNode ? <EditorNode isLocked={isLocked} /> : null}
+          <StarterBrickConfigFields isLocked={isLocked} />
         </AnalysisAnnotationsContext.Provider>
       </SchemaFieldContext.Provider>
     </>
   );
 };
 
-export default FoundationNodeConfigPanel;
+export default StarterBrickConfigPanel;

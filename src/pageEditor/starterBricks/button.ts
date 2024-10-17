@@ -203,7 +203,7 @@ const config: ModComponentFormStateAdapter<
   label: "Button",
   icon: faMousePointer,
   baseClass: ButtonStarterBrickABC,
-  EditorNode: ButtonConfiguration,
+  StarterBrickConfigFields: ButtonConfiguration,
   selectNativeElement: insertButton,
   fromNativeElement,
   asDraftModComponent,
