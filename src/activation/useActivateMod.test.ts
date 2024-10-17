@@ -48,6 +48,7 @@ import {
   type Deployment,
   type EditablePackageMetadata,
 } from "@/types/contract";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/utils/notify");
@@ -343,7 +344,7 @@ describe("useActivateMod", () => {
   });
 
   describe("personal deployment functionality", () => {
-    const packageVersionId = "package-version-id";
+    const packageVersionId = uuidv4();
     const testDeployment = {
       id: uuidv4(),
       name: "test-user-deployment",
@@ -528,6 +529,116 @@ describe("useActivateMod", () => {
           message: "Request failed with status code 500",
         }),
       });
+    });
+
+    it("handles personal deployment deletion successfully", async () => {
+      appApiMock
+        .onDelete(API_PATHS.USER_DEPLOYMENT(testDeployment.id))
+        .reply(204);
+
+      const { result, getReduxStore } = renderHook(
+        () => useActivateMod("marketplace"),
+        {
+          setupRedux(dispatch, { store }) {
+            dispatch(
+              modComponentSlice.actions.activateMod({
+                modDefinition,
+                screen: "extensionConsole",
+                deployment: activatableDeploymentFactory({
+                  modDefinitionOverride: modDefinition,
+                  deploymentOverride: {
+                    name: testDeployment.name,
+                    id: testDeployment.id,
+                  },
+                }).deployment,
+                isReactivate: false,
+              }),
+            );
+            jest.spyOn(store, "dispatch");
+          },
+        },
+      );
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: false },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      const { dispatch } = getReduxStore();
+
+      expect(dispatch).toHaveBeenCalledWith(
+        modComponentSlice.actions.activateMod({
+          modDefinition,
+          deployment: undefined,
+          configuredDependencies: [],
+          optionsArgs: formValues.optionsArgs,
+          screen: "marketplace",
+          isReactivate: true,
+        }),
+      );
+
+      expect(appApiMock.history.delete).toHaveLength(1);
+      expect(appApiMock.history.delete[0]!.url).toBe(
+        API_PATHS.USER_DEPLOYMENT(testDeployment.id),
+      );
+    });
+
+    it("handles reactivating with personal deployment already active", async () => {
+      appApiMock
+        .onGet(API_PATHS.USER_DEPLOYMENT(testDeployment.id))
+        .reply(200, testDeployment);
+
+      const { result, getReduxStore } = renderHook(
+        () => useActivateMod("marketplace"),
+        {
+          setupRedux(dispatch, { store }) {
+            dispatch(
+              modComponentSlice.actions.activateMod({
+                modDefinition,
+                screen: "extensionConsole",
+                deployment: activatableDeploymentFactory({
+                  modDefinitionOverride: modDefinition,
+                  deploymentOverride: {
+                    name: testDeployment.name,
+                    id: testDeployment.id,
+                  },
+                }).deployment,
+                isReactivate: false,
+              }),
+            );
+            jest.spyOn(store, "dispatch");
+          },
+        },
+      );
+
+      const { success, error } = await result.current(
+        { ...formValues, personalDeployment: true },
+        modDefinition,
+      );
+
+      expect(success).toBe(true);
+      expect(error).toBeUndefined();
+
+      const { dispatch } = getReduxStore();
+
+      expect(dispatch).toHaveBeenCalledWith(
+        modComponentSlice.actions.activateMod({
+          modDefinition,
+          deployment: testDeployment,
+          configuredDependencies: [],
+          optionsArgs: formValues.optionsArgs,
+          screen: "marketplace",
+          isReactivate: true,
+        }),
+      );
+
+      expect(appApiMock.history.get).toHaveLength(1);
+      expect(appApiMock.history.get[0]!.url).toBe(
+        API_PATHS.USER_DEPLOYMENT(testDeployment.id),
+      );
     });
   });
 });

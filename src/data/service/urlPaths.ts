@@ -54,6 +54,8 @@ export const API_PATHS = {
     `/api/deployments/${deploymentId}/alerts/`,
 
   USER_DEPLOYMENTS: "/api/me/deployments/",
+  USER_DEPLOYMENT: (deploymentId: string) =>
+    `/api/me/deployments/${deploymentId}/`,
 
   FEATURE_FLAGS: "/api/me/",
 
