@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { hookAct, renderHook } from "@/pageEditor/testHelpers";
-import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { validateRegistryId } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
@@ -36,6 +36,7 @@ import { type UUID } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { isModDefinitionEditable } from "@/pageEditor/utils";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -315,7 +316,7 @@ describe("isModEditable", () => {
       },
     ] as EditablePackageMetadata[];
 
-    expect(isModEditable(editablePackages, mod)).toBe(true);
+    expect(isModDefinitionEditable(editablePackages, mod)).toBe(true);
   });
 
   test("returns false if mod is not in editable packages", () => {
@@ -327,7 +328,7 @@ describe("isModEditable", () => {
       },
     ] as EditablePackageMetadata[];
 
-    expect(isModEditable(editablePackages, mod)).toBe(false);
+    expect(isModDefinitionEditable(editablePackages, mod)).toBe(false);
   });
 
   test("returns false if mod is null", () => {
@@ -339,7 +340,10 @@ describe("isModEditable", () => {
     ] as EditablePackageMetadata[];
 
     expect(
-      isModEditable(editablePackages, null as unknown as ModDefinition),
+      isModDefinitionEditable(
+        editablePackages,
+        null as unknown as ModDefinition,
+      ),
     ).toBe(false);
   });
 });

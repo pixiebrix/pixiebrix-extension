@@ -21,7 +21,7 @@ import {
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
-import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
+import useEscapeHandler from "@/hooks/useEscapeHandler";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 

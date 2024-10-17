@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import {
-  DEACTIVATE_MOD_MODAL_PROPS,
-  DELETE_UNSAVED_MOD_MODAL_PROPS,
-  useRemoveModComponentFromStorage,
-} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { uniq } from "lodash";
-import { useModals } from "@/components/ConfirmationModal";
+import {
+  type ConfirmationModalProps,
+  useModals,
+} from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { clearLog } from "@/background/messenger/api";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
@@ -34,6 +33,32 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 type Config = {
   modId: RegistryId;
   shouldShowConfirmation?: boolean;
+};
+
+export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Deactivate Mod?",
+  message: (
+    <>
+      Any unsaved changes will be lost. You can reactivate or delete mods from
+      the{" "}
+      <a href="/options.html" target="_blank">
+        PixieBrix Extension Console
+      </a>
+      .
+    </>
+  ),
+  submitCaption: "Deactivate",
+};
+
+export const DELETE_UNSAVED_MOD_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Delete Mod?",
+  message: (
+    <>
+      This action cannot be undone. If you&apos;d like to deactivate this mod
+      instead, save the mod first.
+    </>
+  ),
+  submitCaption: "Delete",
 };
 
 /**

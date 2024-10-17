@@ -35,6 +35,8 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -60,8 +62,8 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
 
   const createModFromMod = useCallback(
     // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
-      const modId = modDefinition.metadata.id;
+    (sourceModDefinition: ModDefinition, metadata: ModMetadataFormState) => {
+      const modId = sourceModDefinition.metadata.id;
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
@@ -77,8 +79,8 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         const dirtyModOptionsDefinition = dirtyModOptions[modId];
 
         try {
-          const newModDefinition = await buildAndValidateMod({
-            sourceMod: modDefinition,
+          const unsavedModDefinition = await buildAndValidateMod({
+            sourceMod: sourceModDefinition,
             cleanModComponents,
             dirtyModComponentFormStates,
             dirtyModOptionsDefinition,
@@ -86,19 +88,14 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           });
 
           const upsertResponse = await createMod({
-            modDefinition: newModDefinition,
-            organizations: [],
-            public: false,
+            modDefinition: unsavedModDefinition,
+            ...createPrivateSharing(),
           }).unwrap();
 
-          const savedModDefinition: ModDefinition = {
-            ...newModDefinition,
-            sharing: {
-              public: upsertResponse.public,
-              organizations: upsertResponse.organizations,
-            },
-            updated_at: upsertResponse.updated_at,
-          };
+          const modDefinition = mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          );
 
           if (!keepLocalCopy) {
             await deactivateMod({ modId, shouldShowConfirmation: false });
@@ -109,12 +106,14 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
             ...cleanModComponents,
           ];
 
+          // Don't create the form states explicitly. They'll be created automatically if/when the user starts
+          // editing the cloned mod component.
           dispatch(
             modComponentActions.activateMod({
-              modDefinition: savedModDefinition,
+              modDefinition,
               configuredDependencies:
                 collectExistingConfiguredDependenciesForMod(
-                  savedModDefinition,
+                  modDefinition,
                   modComponents,
                 ),
               optionsArgs: collectModOptions(modComponents),
@@ -122,14 +121,15 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
               isReactivate: false,
             }),
           );
-          dispatch(
-            editorActions.setActiveModId(savedModDefinition.metadata.id),
-          );
+
+          // Select the new mod in the UI
+          dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+
           dispatch(editorActions.checkAvailableActivatedModComponents());
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
             copiedFrom: modId,
-            modId: savedModDefinition.metadata.id,
+            modId: modDefinition.metadata.id,
           });
         } catch (error) {
           if (error instanceof BusinessError) {
