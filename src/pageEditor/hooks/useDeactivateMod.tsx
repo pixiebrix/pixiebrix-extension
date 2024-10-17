@@ -35,7 +35,7 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
-export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
+const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
   title: "Deactivate Mod?",
   message: (
     <>
@@ -50,7 +50,7 @@ export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
   submitCaption: "Deactivate",
 };
 
-export const DELETE_UNSAVED_MOD_MODAL_PROPS: ConfirmationModalProps = {
+const DELETE_UNSAVED_MOD_MODAL_PROPS: ConfirmationModalProps = {
   title: "Delete Mod?",
   message: (
     <>
