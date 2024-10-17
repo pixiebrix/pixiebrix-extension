@@ -181,7 +181,7 @@ const config: ModComponentFormStateAdapter<
   starterBrickType: StarterBrickTypes.DYNAMIC_QUICK_BAR,
   label: "Dynamic Quick Bar",
   baseClass: DynamicQuickBarStarterBrickABC,
-  StarterBrickConfigFields: DynamicQuickBarConfiguration,
+  StarterBrickConfiguration: DynamicQuickBarConfiguration,
   selectNativeElement: undefined,
   icon: faPlusSquare,
   flag: FeatureFlags.PAGE_EDITOR_DYNAMIC_QUICKBAR,

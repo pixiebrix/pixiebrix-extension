@@ -190,7 +190,7 @@ const config: ModComponentFormStateAdapter<undefined, ContextMenuFormState> = {
   starterBrickType: StarterBrickTypes.CONTEXT_MENU,
   label: "Context Menu",
   baseClass: ContextMenuStarterBrickABC,
-  StarterBrickConfigFields: ContextMenuConfiguration,
+  StarterBrickConfiguration: ContextMenuConfiguration,
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,

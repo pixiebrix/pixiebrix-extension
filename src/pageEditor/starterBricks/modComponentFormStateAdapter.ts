@@ -52,7 +52,9 @@ export interface ModComponentFormStateAdapter<
   /**
    * The React component for the Starter Brick configuration fields
    */
-  readonly StarterBrickConfigFields: React.ComponentType<{ isLocked: boolean }>;
+  readonly StarterBrickConfiguration: React.ComponentType<{
+    isLocked: boolean;
+  }>;
 
   /**
    * Order to display the starter brick in the "Add Starter Brick" dropdown in the Page Editor

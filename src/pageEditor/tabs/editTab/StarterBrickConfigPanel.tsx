@@ -77,7 +77,7 @@ const StarterBrickConfigPanel: React.FC = () => {
   // For now, don't allow modifying starter brick packages via the Page Editor.
   const isLocked = !isInnerDefinitionRegistryId(starterBrick.metadata.id);
 
-  const { StarterBrickConfigFields } = adapterForComponent(
+  const { StarterBrickConfiguration } = adapterForComponent(
     activeModComponentFormState,
   );
 
@@ -95,7 +95,7 @@ const StarterBrickConfigPanel: React.FC = () => {
               selectActiveModComponentAnalysisAnnotationsForPath,
           }}
         >
-          <StarterBrickConfigFields isLocked={isLocked} />
+          <StarterBrickConfiguration isLocked={isLocked} />
         </AnalysisAnnotationsContext.Provider>
       </SchemaFieldContext.Provider>
     </>

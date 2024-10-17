@@ -192,7 +192,7 @@ const config: ModComponentFormStateAdapter<never, SidebarFormState> = {
   selectStarterBrickDefinition,
   selectModComponent,
   fromModComponent,
-  StarterBrickConfigFields: SidebarConfiguration,
+  StarterBrickConfiguration: SidebarConfiguration,
 };
 
 export default config;
