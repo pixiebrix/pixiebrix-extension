@@ -20,7 +20,6 @@ import React, { useMemo, useState } from "react";
 import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
   getModComponentItemId,
-  isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/modListingPanel/common";
 import ModListItem from "@/pageEditor/modListingPanel/ModListItem";
@@ -38,7 +37,7 @@ import ModComponentListItem from "./ModComponentListItem";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 
-const ModComponents: React.FunctionComponent = () => {
+const Mods: React.FunctionComponent = () => {
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
@@ -83,33 +82,22 @@ const ModComponents: React.FunctionComponent = () => {
   );
 
   const listItems = filteredSidebarItems.map((sidebarItem) => {
-    if (isModSidebarItem(sidebarItem)) {
-      const { modMetadata, modComponents } = sidebarItem;
-
-      return (
-        <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
-          {modComponents.map((modComponentSidebarItem) => (
-            <ModComponentListItem
-              key={getModComponentItemId(modComponentSidebarItem)}
-              modComponentSidebarItem={modComponentSidebarItem}
-              availableActivatedModComponentIds={
-                availableActivatedModComponentIds
-              }
-              availableDraftModComponentIds={availableDraftModComponentIds}
-              isNested
-            />
-          ))}
-        </ModListItem>
-      );
-    }
+    const { modMetadata, modComponents } = sidebarItem;
 
     return (
-      <ModComponentListItem
-        key={getModComponentItemId(sidebarItem)}
-        modComponentSidebarItem={sidebarItem}
-        availableActivatedModComponentIds={availableActivatedModComponentIds}
-        availableDraftModComponentIds={availableDraftModComponentIds}
-      />
+      <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
+        {modComponents.map((modComponentSidebarItem) => (
+          <ModComponentListItem
+            key={getModComponentItemId(modComponentSidebarItem)}
+            modComponentSidebarItem={modComponentSidebarItem}
+            availableActivatedModComponentIds={
+              availableActivatedModComponentIds
+            }
+            availableDraftModComponentIds={availableDraftModComponentIds}
+            isNested
+          />
+        ))}
+      </ModListItem>
     );
   });
 
@@ -145,4 +133,4 @@ const ModComponents: React.FunctionComponent = () => {
   );
 };
 
-export default ModComponents;
+export default Mods;

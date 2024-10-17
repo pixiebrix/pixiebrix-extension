@@ -20,10 +20,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import {
-  type ModSidebarItem,
-  type SidebarItem,
-} from "@/pageEditor/modListingPanel/common";
+import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
 
 type ArrangeSidebarItemsArgs = {
   modComponentFormStates: ModComponentFormState[];
@@ -34,7 +31,7 @@ function arrangeSidebarItems({
   modComponentFormStates,
   cleanModComponents,
 }: ArrangeSidebarItemsArgs): SidebarItem[] {
-  const modSidebarItems: Record<RegistryId, ModSidebarItem> = {};
+  const modSidebarItems: Record<RegistryId, SidebarItem> = {};
 
   const formStateModComponentIds = new Set<UUID>();
 

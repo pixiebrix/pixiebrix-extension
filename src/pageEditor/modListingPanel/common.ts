@@ -24,12 +24,10 @@ import type { UUID } from "@/types/stringTypes";
 
 export type ModComponentSidebarItem = ModComponentBase | ModComponentFormState;
 
-export type ModSidebarItem = {
+export type SidebarItem = {
   modMetadata: ModMetadata;
   modComponents: ModComponentSidebarItem[];
 };
-
-export type SidebarItem = ModSidebarItem | ModComponentSidebarItem;
 
 export function getLabel(modComponent: ModComponentFormState): string {
   return modComponent.label ?? modComponent.starterBrick.metadata.name;
@@ -43,8 +41,4 @@ export function isModComponentBase(
 
 export function getModComponentItemId(item: ModComponentSidebarItem): UUID {
   return isModComponentBase(item) ? item.id : item.uuid;
-}
-
-export function isModSidebarItem(item: SidebarItem): item is ModSidebarItem {
-  return "modComponents" in item;
 }
