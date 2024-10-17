@@ -15,5 +15,10 @@ body {
 
 // Don't inherit the selection color
 :host::selection {
-  background: initial;
+  // Needs to be revert instead of initial because, per MDN,
+  // "On inherited properties, the initial value may be unexpected"
+  // See https://developer.mozilla.org/en-US/docs/Web/CSS/initial
+  // See https://chromestatus.com/feature/5090853643354112
+  // See https://developer.mozilla.org/en-US/docs/Web/CSS/revert
+  background: revert;
 }
