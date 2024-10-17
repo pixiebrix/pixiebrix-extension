@@ -70,8 +70,6 @@ export const test = pageContextFixture.extend<{
   async _workshopPage({ context, extensionId }, use) {
     const newPage = await context.newPage();
     const workshopPage = new WorkshopPage(newPage, extensionId);
-    await workshopPage.goto();
-    await newPage.waitForLoadState("networkidle");
     await use(workshopPage);
     await newPage.close();
   },
@@ -122,6 +120,8 @@ export const test = pageContextFixture.extend<{
       mode?: "diff" | "current";
       prevModId?: string;
     }) => {
+      // Reload to ensure the latest mod definitions are fetched.
+      await workshopPage.reload();
       await workshopPage.goto();
       const editPage = await workshopPage.findAndSelectMod(modId);
 
