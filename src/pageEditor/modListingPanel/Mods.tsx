@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ModComponents.module.scss";
+import styles from "./Mods.module.scss";
 import React, { useMemo, useState } from "react";
 import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import {
