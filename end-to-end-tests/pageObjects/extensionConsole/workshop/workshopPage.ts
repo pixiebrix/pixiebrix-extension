@@ -34,10 +34,7 @@ export class WorkshopPage extends BasePageObject {
   }
 
   async goto() {
-    await this.page.goto(this.extensionConsoleUrl);
-    await this.getByRole("link", {
-      name: "Workshop",
-    }).click();
+    await this.page.goto(`${this.extensionConsoleUrl}#/workshop`);
     await this.getByRole("heading", { name: "Workshop" }).waitFor();
     await this.getByRole("cell").first().waitFor();
   }
