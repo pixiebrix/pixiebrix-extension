@@ -79,6 +79,9 @@ describe("filterSidebarItems", () => {
   it("returns sidebar items when filter text matches mod label", () => {
     const sidebarItems = [
       modSidebarItemFactory({
+        modMetadata: modMetadataFactory({ name: "foo" }),
+      }),
+      modSidebarItemFactory({
         modMetadata: modMetadataFactory({ name: "Bar" }),
       }),
     ];
