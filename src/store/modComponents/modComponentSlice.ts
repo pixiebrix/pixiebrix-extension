@@ -22,14 +22,10 @@ import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { cloneDeep, partition } from "lodash";
-import { type Except } from "type-fest";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
-import {
-  type ActivatedModComponent,
-  type ModComponentBase,
-} from "@/types/modComponentTypes";
-import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type UUID } from "@/types/stringTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -148,95 +144,6 @@ const modComponentSlice = createSlice({
         screen,
         reinstall: isReactivate,
       });
-    },
-
-    /**
-     * Prefer using `useUpsertModComponentFormState` over calling this action directly.
-     *
-     * @see useUpsertModComponentFormState
-     */
-    saveModComponent(
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        modComponent: (ModComponentBase | ActivatedModComponent) & {
-          updateTimestamp: Timestamp;
-        };
-      }>,
-    ) {
-      const {
-        modComponent: {
-          id,
-          apiVersion,
-          extensionPointId,
-          config,
-          definitions,
-          label,
-          optionsArgs,
-          integrationDependencies,
-          updateTimestamp,
-          modMetadata,
-        },
-      } = payload;
-
-      // Support both extensionId and id to keep the API consistent with the shape of the stored extension
-      if (id == null) {
-        throw new Error("id or extensionId is required");
-      }
-
-      if (extensionPointId == null) {
-        throw new Error("extensionPointId is required");
-      }
-
-      const modComponent: Except<
-        ActivatedModComponent,
-        "_serializedModComponentBrand"
-      > = {
-        id,
-        apiVersion,
-        extensionPointId,
-        modMetadata,
-        deploymentMetadata: undefined,
-        label,
-        definitions,
-        optionsArgs,
-        integrationDependencies,
-        config,
-        // We are unfortunately not rehydrating the createTimestamp properly from the server, so in most cases the
-        // createTimestamp saved in Redux won't match the timestamp on the server. This is OK for now because
-        // we don't use the exact value of createTimestamp for the time being.
-        // See https://github.com/pixiebrix/pixiebrix-extension/pull/7229 for more context
-        createTimestamp: updateTimestamp,
-        updateTimestamp,
-        active: true,
-      };
-
-      assertModComponentNotHydrated(modComponent);
-
-      const index = state.activatedModComponents.findIndex((x) => x.id === id);
-
-      if (index >= 0) {
-        // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.activatedModComponents[index] = modComponent;
-      } else {
-        state.activatedModComponents.push(modComponent);
-      }
-    },
-
-    /**
-     * Update the mod metadata of all mod components associated with the given mod id.
-     */
-    updateModMetadata(
-      state,
-      action: PayloadAction<ModComponentBase["modMetadata"]>,
-    ) {
-      const metadata = action.payload;
-      for (const modComponent of state.activatedModComponents) {
-        if (modComponent.modMetadata.id === metadata?.id) {
-          modComponent.modMetadata = metadata;
-        }
-      }
     },
 
     /**

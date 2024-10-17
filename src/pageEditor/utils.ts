@@ -28,7 +28,6 @@ import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
-import { type ModMetadata } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
@@ -37,17 +36,37 @@ import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
-import { type PackageUpsertResponse } from "@/types/contract";
-import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import {
+  type EditablePackageMetadata,
+  type PackageUpsertResponse,
+} from "@/types/contract";
+import {
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 
-export function mapModDefinitionUpsertResponseToModMetadata(
+/**
+ * Returns true if the user has permission to write permissions for the mod definition on the server.
+ * @see useGetEditablePackagesQuery
+ */
+export function isModDefinitionEditable(
+  editablePackages: EditablePackageMetadata[],
+  modDefinition: ModDefinition,
+): boolean {
+  // The user might lose access to the mod while they were editing it (the mod or a mod component)
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
+  const modId = modDefinition?.metadata?.id;
+  return modId != null && editablePackages.some((x) => x.name === modId);
+}
+
+export function mapModDefinitionUpsertResponseToModDefinition(
   unsavedModDefinition: UnsavedModDefinition,
   response: PackageUpsertResponse,
-): ModMetadata {
+): ModDefinition {
   return {
-    ...unsavedModDefinition.metadata,
+    ...unsavedModDefinition,
     sharing: pick(response, ["public", "organizations"]),
-    ...pick(response, ["updated_at"]),
+    updated_at: response.updated_at,
   };
 }
 

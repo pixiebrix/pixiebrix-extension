@@ -581,6 +581,30 @@ export const editorSlice = createSlice({
       setActiveModComponentId(state, modComponentFormState);
     },
 
+    /**
+     * Sync the Formik mod component form state in the Page Editor with redux.
+     */
+    syncModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
+      const modComponentFormState = action.payload;
+      const index = state.modComponentFormStates.findIndex(
+        (x) => x.uuid === modComponentFormState.uuid,
+      );
+      if (index < 0) {
+        throw new Error(
+          `Unknown draft mod component: ${modComponentFormState.uuid}`,
+        );
+      }
+
+      state.modComponentFormStates[index] =
+        modComponentFormState as Draft<ModComponentFormState>;
+      state.dirty[modComponentFormState.uuid] = true;
+
+      syncBrickConfigurationUIStates(state, modComponentFormState);
+    },
+
     resetActivatedModComponentFormState(
       state,
       actions: PayloadAction<ModComponentFormState>,
@@ -619,30 +643,6 @@ export const editorSlice = createSlice({
       state.dirty[modComponentFormState.uuid] = false;
       // Force a reload so the _new flags are correct on the readers
       state.selectionSeq++;
-    },
-
-    /**
-     * Sync the formik mod component form state in the Page Editor with redux.
-     */
-    syncModComponentFormState(
-      state,
-      action: PayloadAction<ModComponentFormState>,
-    ) {
-      const modComponentFormState = action.payload;
-      const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentFormState.uuid,
-      );
-      if (index < 0) {
-        throw new Error(
-          `Unknown draft mod component: ${modComponentFormState.uuid}`,
-        );
-      }
-
-      state.modComponentFormStates[index] =
-        modComponentFormState as Draft<ModComponentFormState>;
-      state.dirty[modComponentFormState.uuid] = true;
-
-      syncBrickConfigurationUIStates(state, modComponentFormState);
     },
 
     removeModComponentFormState(state, action: PayloadAction<UUID>) {

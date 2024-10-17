@@ -19,10 +19,8 @@ import React from "react";
 import { render, screen } from "@/sidebar/testHelpers";
 import DefaultPanel from "./DefaultPanel";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("renders DefaultPanel", () => {
@@ -40,12 +38,9 @@ describe("renders DefaultPanel", () => {
     render(<DefaultPanel />, {
       setupRedux(dispatch) {
         dispatch(
-          modComponentSlice.actions.saveModComponent({
-            modComponent: {
-              ...(modComponentFactory() as ActivatedModComponent),
-              updateTimestamp: timestampFactory(),
-            },
-          }),
+          modComponentSlice.actions.UNSAFE_setModComponents([
+            activatedModComponentFactory(),
+          ]),
         );
       },
     });

@@ -22,7 +22,7 @@ import {
   type ConfirmationModalProps,
   useModals,
 } from "@/components/ConfirmationModal";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
@@ -41,32 +41,6 @@ type Config = {
 export const DELETE_STARTER_BRICK_MODAL_PROPS: ConfirmationModalProps = {
   title: "Delete starter brick?",
   message: "This action cannot be undone.",
-  submitCaption: "Delete",
-};
-
-export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
-  title: "Deactivate Mod?",
-  message: (
-    <>
-      Any unsaved changes will be lost. You can reactivate or delete mods from
-      the{" "}
-      <a href="/options.html" target="_blank">
-        PixieBrix Extension Console
-      </a>
-      .
-    </>
-  ),
-  submitCaption: "Deactivate",
-};
-
-export const DELETE_UNSAVED_MOD_MODAL_PROPS: ConfirmationModalProps = {
-  title: "Delete Mod?",
-  message: (
-    <>
-      This action cannot be undone. If you&apos;d like to deactivate this mod
-      instead, save the mod first.
-    </>
-  ),
   submitCaption: "Delete",
 };
 
