@@ -71,6 +71,7 @@ export const test = pageContextFixture.extend<{
     const newPage = await context.newPage();
     const workshopPage = new WorkshopPage(newPage, extensionId);
     await workshopPage.goto();
+    await newPage.waitForLoadState("networkidle");
     await use(workshopPage);
     await newPage.close();
   },
