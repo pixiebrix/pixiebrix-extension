@@ -57,7 +57,7 @@ describe("AddBrickModal", () => {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.showAddBlockModal({
+          actions.showAddBrickModal({
             path: "",
             flavor: PipelineFlavor.AllBricks,
             index: 0,
@@ -89,7 +89,7 @@ describe("AddBrickModal", () => {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.showAddBlockModal({
+          actions.showAddBrickModal({
             path: "",
             flavor: PipelineFlavor.AllBricks,
             index: 0,
@@ -115,7 +115,7 @@ describe("AddBrickModal", () => {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
         dispatch(
-          actions.showAddBlockModal({
+          actions.showAddBrickModal({
             path: PIPELINE_BRICKS_FIELD_NAME,
             flavor: PipelineFlavor.AllBricks,
             index: 0,

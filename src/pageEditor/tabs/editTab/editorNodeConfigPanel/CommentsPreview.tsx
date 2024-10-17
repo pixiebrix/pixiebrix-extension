@@ -34,7 +34,7 @@ const CommentsPreview: React.FunctionComponent<{
   const handleClick = () => {
     selectTab(DataPanelTabKey.Comments);
     dispatch(
-      actions.setDataSectionExpanded({
+      actions.setDataPanelExpanded({
         isExpanded: true,
       }),
     );

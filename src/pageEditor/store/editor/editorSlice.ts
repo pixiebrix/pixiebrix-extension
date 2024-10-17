@@ -323,9 +323,234 @@ export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
+    ///
+    /// GENERAL NAVIGATION
+    ///
+
     resetEditor() {
       return initialState;
     },
+
+    showHomePane(state) {
+      state.activeModComponentId = null;
+      state.activeModId = null;
+      state.expandedModId = null;
+      state.error = null;
+      state.beta = false;
+      state.selectionSeq++;
+    },
+
+    hideModal(state) {
+      state.visibleModalKey = null;
+    },
+
+    ///
+    /// ERROR/WARNING HANDLING
+    ///
+
+    betaError(state) {
+      const error = new BusinessError("This feature is in private beta");
+      state.error = serializeError(error);
+      state.beta = true;
+      state.activeModComponentId = null;
+    },
+
+    adapterError(state, action: PayloadAction<{ uuid: UUID; error: unknown }>) {
+      const { uuid, error } = action.payload;
+      state.error = serializeError(error);
+      state.beta = false;
+      state.activeModComponentId = uuid;
+      state.selectionSeq++;
+    },
+
+    dismissDimensionsWarning(state) {
+      state.isDimensionsWarningDismissed = true;
+    },
+
+    showSaveDataIntegrityErrorModal(state) {
+      state.visibleModalKey = ModalKey.SAVE_DATA_INTEGRITY_ERROR;
+    },
+
+    ///
+    /// MOD LISTING PANE NAVIGATION
+    ///
+
+    setActiveModId(state, action: PayloadAction<RegistryId>) {
+      const modId = action.payload;
+      setActiveModId(state, modId);
+    },
+
+    setActiveModComponentId(state, action: PayloadAction<UUID>) {
+      const modComponentId = action.payload;
+      const modComponentFormState = state.modComponentFormStates.find(
+        (x) => x.uuid === modComponentId,
+      );
+
+      assertNotNullish(
+        modComponentFormState,
+        `Unknown draft mod component: ${action.payload}`,
+      );
+
+      setActiveModComponentId(state, modComponentFormState);
+    },
+
+    selectActivatedModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
+      const modComponentFormState =
+        action.payload as Draft<ModComponentFormState>;
+      const index = state.modComponentFormStates.findIndex(
+        (x) => x.uuid === modComponentFormState.uuid,
+      );
+      if (index >= 0) {
+        state.modComponentFormStates[index] = modComponentFormState;
+      } else {
+        state.modComponentFormStates.push(modComponentFormState);
+      }
+
+      setActiveModComponentId(state, modComponentFormState);
+    },
+
+    setModListExpanded(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>,
+    ) {
+      state.isModListExpanded = payload.isExpanded;
+    },
+
+    ///
+    /// MOD LISTING PANE OPERATIONS
+    ///
+
+    showCreateModModal(
+      state,
+      action: PayloadAction<{ keepLocalCopy: boolean }>,
+    ) {
+      state.visibleModalKey = ModalKey.CREATE_MOD;
+      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
+    },
+
+    showSaveAsNewModModal(state) {
+      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
+    },
+
+    showMoveCopyToModModal(
+      state,
+      action: PayloadAction<{ moveOrCopy: "move" | "copy" }>,
+    ) {
+      const { moveOrCopy } = action.payload;
+      state.visibleModalKey = ModalKey.MOVE_COPY_TO_MOD;
+      state.keepLocalCopyOnCreateMod = moveOrCopy === "copy";
+    },
+
+    ///
+    /// MOD OPERATIONS
+    ///
+
+    editModMetadata(state, action: PayloadAction<ModMetadataFormState>) {
+      const { payload: metadata } = action;
+      editModMetadata(state, metadata);
+    },
+
+    editModOptionsDefinitions(
+      state,
+      action: PayloadAction<ModOptionsDefinition>,
+    ) {
+      const { payload: options } = action;
+      editModOptionsDefinitions(state, options);
+    },
+
+    editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
+      const modId = state.activeModId;
+      if (modId == null) {
+        return;
+      }
+
+      const notDeletedFormStates = selectNotDeletedModComponentFormStates({
+        editor: state,
+      });
+      for (const formState of notDeletedFormStates) {
+        formState.optionsArgs = action.payload;
+        state.dirty[formState.uuid] = true;
+      }
+    },
+
+    clearMetadataAndOptionsChangesForMod(
+      state,
+      action: PayloadAction<RegistryId>,
+    ) {
+      const { payload: modId } = action;
+      delete state.dirtyModMetadataById[modId];
+      delete state.dirtyModOptionsById[modId];
+    },
+
+    updateModMetadataOnModComponentFormStates(
+      state,
+      action: PayloadAction<ModMetadata>,
+    ) {
+      const modMetadata = action.payload;
+      const modComponentFormStates = state.modComponentFormStates.filter(
+        (modComponentFormState) =>
+          modComponentFormState.modMetadata.id === modMetadata.id,
+      );
+      // Technically this method should also update the deleted form states. But this reducer method is only called
+      // when the mod is being saved, so those deleted form states will be removed anyway.
+      for (const formState of modComponentFormStates) {
+        formState.modMetadata = modMetadata;
+      }
+    },
+
+    clearDeletedModComponentFormStatesForMod(
+      state,
+      action: PayloadAction<RegistryId>,
+    ) {
+      const modId = action.payload;
+      delete state.deletedModComponentFormStatesByModId[modId];
+    },
+
+    restoreDeletedModComponentFormStatesForMod(
+      state,
+      action: PayloadAction<RegistryId>,
+    ) {
+      const modId = action.payload;
+      const deletedModComponentFormStates =
+        state.deletedModComponentFormStatesByModId[modId];
+      if (deletedModComponentFormStates?.length) {
+        state.modComponentFormStates.push(...deletedModComponentFormStates);
+        for (const formStateId of deletedModComponentFormStates.map(
+          (modComponentFormState) => modComponentFormState.uuid,
+        )) {
+          state.dirty[formStateId] = false;
+          ensureBrickPipelineUIState(state, formStateId);
+        }
+
+        delete state.deletedModComponentFormStatesByModId[modId];
+      }
+    },
+
+    removeModData(state, action: PayloadAction<RegistryId>) {
+      const modId = action.payload;
+      removeModData(state, modId);
+    },
+
+    /**
+     * Remove all editor state associated with a given mod instance.
+     */
+    removeMod(state, action: PayloadAction<ModInstance>) {
+      const modInstance = action.payload;
+
+      removeModData(state, modInstance.definition.metadata.id);
+
+      for (const modComponentId of modInstance.modComponentIds) {
+        removeModComponentFormState(state, modComponentId);
+      }
+    },
+
+    ///
+    /// MOD COMPONENT OPERATIONS
+    ///
+
     addModComponentFormState(
       state,
       action: PayloadAction<ModComponentFormState>,
@@ -356,36 +581,7 @@ export const editorSlice = createSlice({
 
       setActiveModComponentId(state, modComponentFormState);
     },
-    betaError(state) {
-      const error = new BusinessError("This feature is in private beta");
-      state.error = serializeError(error);
-      state.beta = true;
-      state.activeModComponentId = null;
-    },
-    adapterError(state, action: PayloadAction<{ uuid: UUID; error: unknown }>) {
-      const { uuid, error } = action.payload;
-      state.error = serializeError(error);
-      state.beta = false;
-      state.activeModComponentId = uuid;
-      state.selectionSeq++;
-    },
-    selectActivatedModComponentFormState(
-      state,
-      action: PayloadAction<ModComponentFormState>,
-    ) {
-      const modComponentFormState =
-        action.payload as Draft<ModComponentFormState>;
-      const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentFormState.uuid,
-      );
-      if (index >= 0) {
-        state.modComponentFormStates[index] = modComponentFormState;
-      } else {
-        state.modComponentFormStates.push(modComponentFormState);
-      }
 
-      setActiveModComponentId(state, modComponentFormState);
-    },
     resetActivatedModComponentFormState(
       state,
       actions: PayloadAction<ModComponentFormState>,
@@ -411,25 +607,7 @@ export const editorSlice = createSlice({
 
       syncBrickConfigurationUIStates(state, modComponentFormState);
     },
-    showHomePane(state) {
-      state.activeModComponentId = null;
-      state.activeModId = null;
-      state.expandedModId = null;
-      state.error = null;
-      state.beta = false;
-      state.selectionSeq++;
-    },
-    setActiveModComponentId(state, action: PayloadAction<UUID>) {
-      const modComponentId = action.payload;
-      const modComponentFormState = state.modComponentFormStates.find(
-        (x) => x.uuid === modComponentId,
-      );
-      if (!modComponentFormState) {
-        throw new Error(`Unknown draft mod component: ${action.payload}`);
-      }
 
-      setActiveModComponentId(state, modComponentFormState);
-    },
     markClean(state, action: PayloadAction<UUID>) {
       const modComponentFormState = state.modComponentFormStates.find(
         (x) => action.payload === x.uuid,
@@ -449,6 +627,7 @@ export const editorSlice = createSlice({
       // Force a reload so the _new flags are correct on the readers
       state.selectionSeq++;
     },
+
     /**
      * Sync the formik mod component form state in the Page Editor with redux.
      */
@@ -472,186 +651,54 @@ export const editorSlice = createSlice({
 
       syncBrickConfigurationUIStates(state, modComponentFormState);
     },
+
     removeModComponentFormState(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
       removeModComponentFormState(state, modComponentId);
     },
-    setActiveModId(state, action: PayloadAction<RegistryId>) {
-      const modId = action.payload;
-      setActiveModId(state, modId);
-    },
+
+    ///
+    /// OUTLINE PANE NAVIGATION
+    ///
+
     setActiveNodeId(state, action: PayloadAction<UUID>) {
       setActiveNodeId(state, action.payload);
     },
-    setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
+
+    expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
+      const nodeId = action.payload;
+      const brickPipelineUIState = validateBrickPipelineUIState(state);
       const brickConfigurationUIState =
-        validateBrickConfigurationUIState(state);
-      brickConfigurationUIState.dataPanel.activeTabKey = action.payload;
-    },
-
-    /**
-     * Updates the viewMode on a DataPane tab
-     */
-    setNodeDataPanelTabViewMode(
-      state,
-      action: PayloadAction<{ tabKey: DataPanelTabKey; viewMode: string }>,
-    ) {
-      const { tabKey, viewMode } = action.payload;
-
-      const brickConfigurationUIState =
-        validateBrickConfigurationUIState(state);
-
-      brickConfigurationUIState.dataPanel[tabKey].viewMode = viewMode;
-    },
-
-    /**
-     * Updates the query on a DataPane tab with the JsonTree component
-     */
-    setNodeDataPanelTabSearchQuery(
-      state,
-      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>,
-    ) {
-      const { tabKey, query } = action.payload;
-
-      const brickConfigurationUIState =
-        validateBrickConfigurationUIState(state);
-
-      brickConfigurationUIState.dataPanel[tabKey].query = query;
-    },
-
-    /**
-     * Updates the expanded state of the JsonTree component on a DataPanel tab
-     */
-    setNodeDataPanelTabExpandedState(
-      state,
-      action: PayloadAction<{
-        tabKey: DataPanelTabKey;
-        expandedState: TreeExpandedState;
-      }>,
-    ) {
-      const { tabKey, expandedState } = action.payload;
-      const brickConfigurationUIState =
-        validateBrickConfigurationUIState(state);
-      brickConfigurationUIState.dataPanel[tabKey].treeExpandedState =
-        expandedState;
-    },
-    setActiveBuilderPreviewElement(
-      state,
-      action: PayloadAction<string | null>,
-    ) {
-      const activeElement = action.payload;
-      const brickConfigurationUIState =
-        validateBrickConfigurationUIState(state);
-
-      brickConfigurationUIState.dataPanel[
-        DataPanelTabKey.Design
-      ].activeElement = activeElement;
-
-      brickConfigurationUIState.dataPanel[
-        DataPanelTabKey.Outline
-      ].activeElement = activeElement;
-    },
-
-    copyBlockConfig(state, action: PayloadAction<BrickConfig>) {
-      const copy = { ...action.payload };
-      delete copy.instanceId;
-      state.copiedBrick = copy;
-    },
-    clearCopiedBrickConfig(state) {
-      delete state.copiedBrick;
-    },
-    editModOptionsDefinitions(
-      state,
-      action: PayloadAction<ModOptionsDefinition>,
-    ) {
-      const { payload: options } = action;
-      editModOptionsDefinitions(state, options);
-    },
-    editModMetadata(state, action: PayloadAction<ModMetadataFormState>) {
-      const { payload: metadata } = action;
-      editModMetadata(state, metadata);
-    },
-    clearMetadataAndOptionsChangesForMod(
-      state,
-      action: PayloadAction<RegistryId>,
-    ) {
-      const { payload: modId } = action;
-      delete state.dirtyModMetadataById[modId];
-      delete state.dirtyModOptionsById[modId];
-    },
-    updateModMetadataOnModComponentFormStates(
-      state,
-      action: PayloadAction<ModMetadata>,
-    ) {
-      const modMetadata = action.payload;
-      const modComponentFormStates = state.modComponentFormStates.filter(
-        (modComponentFormState) =>
-          modComponentFormState.modMetadata.id === modMetadata.id,
+        brickPipelineUIState.nodeUIStates[nodeId];
+      assertNotNullish(
+        brickConfigurationUIState,
+        `Node UI state not found for id: ${nodeId}`,
       );
-      for (const formState of modComponentFormStates) {
-        formState.modMetadata = modMetadata;
-      }
+      brickConfigurationUIState.collapsed = false;
     },
-    showMoveCopyToModModal(
-      state,
-      action: PayloadAction<{ moveOrCopy: "move" | "copy" }>,
-    ) {
-      const { moveOrCopy } = action.payload;
-      state.visibleModalKey = ModalKey.MOVE_COPY_TO_MOD;
-      state.keepLocalCopyOnCreateMod = moveOrCopy === "copy";
-    },
-    showSaveAsNewModModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
-    },
-    clearDeletedModComponentFormStatesForMod(
-      state,
-      action: PayloadAction<RegistryId>,
-    ) {
-      const modId = action.payload;
-      delete state.deletedModComponentFormStatesByModId[modId];
-    },
-    restoreDeletedModComponentFormStatesForMod(
-      state,
-      action: PayloadAction<RegistryId>,
-    ) {
-      const modId = action.payload;
-      const deletedModComponentFormStates =
-        state.deletedModComponentFormStatesByModId[modId];
-      if (deletedModComponentFormStates?.length) {
-        state.modComponentFormStates.push(...deletedModComponentFormStates);
-        for (const formStateId of deletedModComponentFormStates.map(
-          (modComponentFormState) => modComponentFormState.uuid,
-        )) {
-          state.dirty[formStateId] = false;
-          ensureBrickPipelineUIState(state, formStateId);
-        }
 
-        delete state.deletedModComponentFormStatesByModId[modId];
-      }
+    toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
+      const nodeId = action.payload;
+      const brickPipelineUIState = validateBrickPipelineUIState(state);
+      const brickConfigurationUIState =
+        brickPipelineUIState.nodeUIStates[nodeId];
+      assertNotNullish(
+        brickConfigurationUIState,
+        `Node UI state not found for id: ${nodeId}`,
+      );
+      brickConfigurationUIState.collapsed =
+        !brickConfigurationUIState.collapsed;
     },
-    removeModData(state, action: PayloadAction<RegistryId>) {
-      const modId = action.payload;
-      removeModData(state, modId);
-    },
-    /**
-     * Remove all editor state associated with a given mod instance.
-     */
-    removeMod(state, action: PayloadAction<ModInstance>) {
-      const modInstance = action.payload;
 
-      removeModData(state, modInstance.definition.metadata.id);
+    ///
+    /// OUTLINE PANE OPERATIONS
+    ///
 
-      for (const modComponentId of modInstance.modComponentIds) {
-        removeModComponentFormState(state, modComponentId);
-      }
+    showAddBrickModal(state, action: PayloadAction<AddBrickLocation>) {
+      state.addBrickLocation = action.payload;
+      state.visibleModalKey = ModalKey.ADD_BRICK;
     },
-    showCreateModModal(
-      state,
-      action: PayloadAction<{ keepLocalCopy: boolean }>,
-    ) {
-      state.visibleModalKey = ModalKey.CREATE_MOD;
-      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
-    },
+
     addNode(
       state,
       action: PayloadAction<{
@@ -704,6 +751,7 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
+
     moveNode(
       state,
       action: PayloadAction<{
@@ -752,6 +800,7 @@ export const editorSlice = createSlice({
       const activeModComponentId = validateActiveModComponentId(state);
       state.dirty[activeModComponentId] = true;
     },
+
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
       const activeModComponentFormState = selectActiveModComponentFormState({
@@ -799,27 +848,25 @@ export const editorSlice = createSlice({
       // This change should re-initialize the Page Editor Formik form
       state.selectionSeq++;
     },
-    showAddBlockModal(state, action: PayloadAction<AddBrickLocation>) {
-      state.addBrickLocation = action.payload;
-      state.visibleModalKey = ModalKey.ADD_BRICK;
-    },
-    hideModal(state) {
-      state.visibleModalKey = null;
-    },
-    editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
-      const modId = state.activeModId;
-      if (modId == null) {
-        return;
-      }
 
-      const notDeletedFormStates = selectNotDeletedModComponentFormStates({
-        editor: state,
-      });
-      for (const formState of notDeletedFormStates) {
-        formState.optionsArgs = action.payload;
-        state.dirty[formState.uuid] = true;
-      }
+    ///
+    /// OUTLINE PANE OPERATIONS: COPY/PASTE
+    ///
+
+    copyBrickConfig(state, action: PayloadAction<BrickConfig>) {
+      const copy = { ...action.payload };
+      delete copy.instanceId;
+      state.copiedBrick = copy;
     },
+
+    clearCopiedBrickConfig(state) {
+      delete state.copiedBrick;
+    },
+
+    ///
+    /// BRICK CONFIGURATION PANE NAVIGATION
+    ///
+
     setExpandedFieldSections(
       state,
       { payload }: PayloadAction<{ id: string; isExpanded: boolean }>,
@@ -836,58 +883,108 @@ export const editorSlice = createSlice({
       const { id, isExpanded } = payload;
       uiState.expandedFieldSections[id] = isExpanded;
     },
-    expandBrickPipelineNode(state, action: PayloadAction<UUID>) {
-      const nodeId = action.payload;
-      const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const brickConfigurationUIState =
-        brickPipelineUIState.nodeUIStates[nodeId];
-      assertNotNullish(
-        brickConfigurationUIState,
-        `Node UI state not found for id: ${nodeId}`,
-      );
-      brickConfigurationUIState.collapsed = false;
-    },
-    toggleCollapseBrickPipelineNode(state, action: PayloadAction<UUID>) {
-      const nodeId = action.payload;
-      const brickPipelineUIState = validateBrickPipelineUIState(state);
-      const brickConfigurationUIState =
-        brickPipelineUIState.nodeUIStates[nodeId];
-      assertNotNullish(
-        brickConfigurationUIState,
-        `Node UI state not found for id: ${nodeId}`,
-      );
-      brickConfigurationUIState.collapsed =
-        !brickConfigurationUIState.collapsed;
-    },
-    setDataSectionExpanded(
-      state,
-      { payload }: PayloadAction<{ isExpanded: boolean }>,
-    ) {
-      state.isDataPanelExpanded = payload.isExpanded;
-    },
-    setModListExpanded(
-      state,
-      { payload }: PayloadAction<{ isExpanded: boolean }>,
-    ) {
-      state.isModListExpanded = payload.isExpanded;
-    },
+
+    ///
+    /// VARIABLE POPOVER NAVIGATION
+    ///
+
     /**
      * Mark that the variable popover is showing.
      */
     showVariablePopover(state) {
       state.isVariablePopoverVisible = true;
     },
+
     /**
      * Mark that the variable popover is not showing.
      */
     hideVariablePopover(state) {
       state.isVariablePopoverVisible = false;
     },
-    dismissDimensionsWarning(state) {
-      state.isDimensionsWarningDismissed = true;
+
+    ///
+    /// DATA PANEL NAVIGATION
+    ///
+
+    setDataPanelExpanded(
+      state,
+      { payload }: PayloadAction<{ isExpanded: boolean }>,
+    ) {
+      state.isDataPanelExpanded = payload.isExpanded;
     },
-    showSaveDataIntegrityErrorModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_DATA_INTEGRITY_ERROR;
+
+    setNodeDataPanelTabSelected(state, action: PayloadAction<DataPanelTabKey>) {
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel.activeTabKey = action.payload;
+    },
+
+    /**
+     * Updates the viewMode on a DataPane tab
+     */
+    setNodeDataPanelTabViewMode(
+      state,
+      action: PayloadAction<{ tabKey: DataPanelTabKey; viewMode: string }>,
+    ) {
+      const { tabKey, viewMode } = action.payload;
+
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+
+      brickConfigurationUIState.dataPanel[tabKey].viewMode = viewMode;
+    },
+
+    /**
+     * Updates the query on a DataPane tab with the JsonTree component
+     */
+    setNodeDataPanelTabSearchQuery(
+      state,
+      action: PayloadAction<{ tabKey: DataPanelTabKey; query: string }>,
+    ) {
+      const { tabKey, query } = action.payload;
+
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+
+      brickConfigurationUIState.dataPanel[tabKey].query = query;
+    },
+
+    /**
+     * Updates the expanded state of the JsonTree component on a DataPanel tab
+     */
+    setNodeDataPanelTabExpandedState(
+      state,
+      action: PayloadAction<{
+        tabKey: DataPanelTabKey;
+        expandedState: TreeExpandedState;
+      }>,
+    ) {
+      const { tabKey, expandedState } = action.payload;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+      brickConfigurationUIState.dataPanel[tabKey].treeExpandedState =
+        expandedState;
+    },
+
+    ///
+    /// DESIGN PANE NAVIGATION
+    ///
+
+    setActiveBuilderPreviewElement(
+      state,
+      action: PayloadAction<string | null>,
+    ) {
+      const activeElement = action.payload;
+      const brickConfigurationUIState =
+        validateBrickConfigurationUIState(state);
+
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Design
+      ].activeElement = activeElement;
+
+      brickConfigurationUIState.dataPanel[
+        DataPanelTabKey.Outline
+      ].activeElement = activeElement;
     },
   },
   extraReducers(builder) {
