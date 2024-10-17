@@ -18,11 +18,9 @@
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
-import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
-import RunLocalProcess from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/bricks/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import { RunBot } from "@/contrib/automationanywhere/RunBot";
@@ -66,7 +64,6 @@ import ApiTaskOptions from "@/contrib/automationanywhere/ApiTaskOptions";
 export default function registerEditors() {
   optionsRegistry.set(ZAPIER_ID, PushOptions);
   optionsRegistry.set(UIPATH_ID, ProcessOptions);
-  optionsRegistry.set(RunLocalProcess.BRICK_ID, LocalProcessOptions);
   optionsRegistry.set(GOOGLE_SHEETS_APPEND_ID, AppendSpreadsheetOptions);
   optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
   optionsRegistry.set(RunBot.BRICK_ID, BotOptions);

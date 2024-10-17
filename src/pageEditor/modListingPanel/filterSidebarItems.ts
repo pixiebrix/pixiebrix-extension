@@ -17,7 +17,6 @@
 
 import {
   getModComponentItemId,
-  isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/modListingPanel/common";
 import { type RegistryId } from "@/types/registryTypes";
@@ -44,32 +43,24 @@ export default function filterSidebarItems({
   }
 
   return sidebarItems.filter((sidebarItem) => {
-    if (isModSidebarItem(sidebarItem)) {
-      // Don't filter out mod item if the mod is active, or the name matches the query
+    // Don't filter out mod item if the mod is active, or the name matches the query
+    if (
+      sidebarItem.modMetadata.id === activeModId ||
+      caseInsensitiveIncludes(sidebarItem.modMetadata.name, filterText)
+    ) {
+      return true;
+    }
+
+    // Don't filter out mod item if any mod component is active, or any mod component label matches the query
+    for (const modComponentItem of sidebarItem.modComponents) {
       if (
-        sidebarItem.modMetadata.id === activeModId ||
-        caseInsensitiveIncludes(sidebarItem.modMetadata.name, filterText)
+        getModComponentItemId(modComponentItem) === activeModComponentId ||
+        caseInsensitiveIncludes(modComponentItem.label, filterText)
       ) {
         return true;
       }
-
-      // Don't filter out mod item if any mod component is active, or any mod component label matches the query
-      for (const modComponentItem of sidebarItem.modComponents) {
-        if (
-          getModComponentItemId(modComponentItem) === activeModComponentId ||
-          caseInsensitiveIncludes(modComponentItem.label, filterText)
-        ) {
-          return true;
-        }
-      }
-
-      return false;
     }
 
-    // Don't filter out mod component item if the mod component is active, or the label matches the query
-    return (
-      getModComponentItemId(sidebarItem) === activeModComponentId ||
-      caseInsensitiveIncludes(sidebarItem.label, filterText)
-    );
+    return false;
   });
 }

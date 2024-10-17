@@ -1,5 +1,5 @@
 ---
-name: Specification slice
+name: Specification Slice
 about: Create implementation slices for a Phase Spec
 title: "[Spike] "
 labels: ["spike", "specification required"]
@@ -16,4 +16,4 @@ assignees: ""
 - [ ] Approval Matrix signed off
 - [ ] Slices converted to issues
 - [ ] Issues added to _insert epic name_
-- [ ] Tech Lead notified for prioritization
+- [ ] Tech Lead and PM notified for prioritization
