@@ -38,6 +38,14 @@ function normalizeUUIDs(string: string) {
 
 export const test = pageContextFixture.extend<{
   /**
+   * Returns a function that accepts a callback which is passed in a new workshopPage.
+   * The page is closed after the callback is executed.
+   * @param callback The callback to execute with the workshopPage.
+   */
+  withWorkshopPage: (
+    callback: (workshopPage: WorkshopPage) => Promise<void>,
+  ) => Promise<void>;
+  /**
    * Names of the mod definitions to create and track in the test. These should correspond
    * 1-1 with the mod definition file names in the fixtures/modDefinitions directory.
    */
@@ -64,43 +72,49 @@ export const test = pageContextFixture.extend<{
     prevModId?: string;
   }) => Promise<void>;
 }>({
+  async withWorkshopPage({ extensionId, context }, use) {
+    await use(
+      async (callback: (workshopPage: WorkshopPage) => Promise<void>) => {
+        const newPage = await context.newPage();
+        const workshopPage = new WorkshopPage(newPage, extensionId);
+        await workshopPage.goto();
+        await callback(workshopPage);
+        await newPage.close();
+      },
+    );
+  },
   modDefinitionNames: [],
   modDefinitionsMap: [
-    async ({ modDefinitionNames, context, extensionId }, use) => {
+    async ({ modDefinitionNames, withWorkshopPage }, use) => {
       const createdModDefinitions: ModDefinitions = {};
       if (modDefinitionNames.length > 0) {
         for (const name of modDefinitionNames) {
-          const newPage = await context.newPage();
-          const workshopPage = new WorkshopPage(newPage, extensionId);
-          await workshopPage.goto();
-          const modMetadata =
-            await workshopPage.createNewModFromDefinition(name);
-          createdModDefinitions[name] = { ...modMetadata, autoCleanup: true };
-          await newPage.close();
+          await withWorkshopPage(async (workshopPage) => {
+            const modMetadata =
+              await workshopPage.createNewModFromDefinition(name);
+            createdModDefinitions[name] = { ...modMetadata, autoCleanup: true };
+          });
         }
       }
 
       await use(createdModDefinitions);
 
       if (Object.keys(createdModDefinitions).length > 0) {
-        const newPage = await context.newPage();
-        const workshopPage = new WorkshopPage(newPage, extensionId);
         for (const { id, autoCleanup } of Object.values(
           createdModDefinitions,
         )) {
           if (autoCleanup) {
-            await workshopPage.goto();
-            await workshopPage.deleteModByModId(id);
+            await withWorkshopPage(async (workshopPage) => {
+              await workshopPage.deleteModByModId(id);
+            });
           }
         }
-
-        await newPage.close();
       }
     },
     { auto: true },
   ],
   async verifyModDefinitionSnapshot(
-    { modDefinitionsMap, context, extensionId },
+    { modDefinitionsMap, withWorkshopPage },
     use,
     testInfo,
   ) {
@@ -117,86 +131,83 @@ export const test = pageContextFixture.extend<{
       mode?: "diff" | "current";
       prevModId?: string;
     }) => {
-      const newPage = await context.newPage();
-      const workshopPage = new WorkshopPage(newPage, extensionId);
-      await workshopPage.goto();
-      const editPage = await workshopPage.findAndSelectMod(modId);
-      const currentModDefinitionYaml = await editPage.editor.getValue();
-      // See if this mod is being tracked in modDefinitions.
-      const lastModDefinitionEntry = Object.entries(modDefinitionsMap).find(
-        ([_name, { id }]) => {
-          if (prevModId) {
-            return id === prevModId;
+      await withWorkshopPage(async (workshopPage) => {
+        const editPage = await workshopPage.findAndSelectMod(modId);
+        const currentModDefinitionYaml = await editPage.editor.getValue();
+        // See if this mod is being tracked in modDefinitions.
+        const lastModDefinitionEntry = Object.entries(modDefinitionsMap).find(
+          ([_name, { id }]) => {
+            if (prevModId) {
+              return id === prevModId;
+            }
+
+            return id === modId;
+          },
+        );
+
+        if (mode === "diff") {
+          if (!lastModDefinitionEntry) {
+            throw new Error(
+              `Mod definition for ${
+                prevModId ?? modId
+              } not found in modDefinitions. Cannot verify a diff. Use mode 'current' to get the baseline snapshot.`,
+            );
           }
 
-          return id === modId;
-        },
-      );
+          const [
+            modDefinitionName,
+            { definition: lastModDefinition, autoCleanup },
+          ] = lastModDefinitionEntry;
 
-      if (mode === "diff") {
-        if (!lastModDefinitionEntry) {
-          throw new Error(
-            `Mod definition for ${
-              prevModId ?? modId
-            } not found in modDefinitions. Cannot verify a diff. Use mode 'current' to get the baseline snapshot.`,
+          const parsedCurrentModDefinitionYaml = loadBrickYaml(
+            currentModDefinitionYaml,
           );
+          const parsedLastModDefinitionYaml = loadBrickYaml(lastModDefinition);
+          const yamlDiff = createPatch(
+            snapshotName,
+            normalizeUUIDs(
+              dumpBrickYaml(parsedLastModDefinitionYaml, {
+                indent: 2,
+                sortKeys: true,
+              }),
+            ),
+            normalizeUUIDs(
+              dumpBrickYaml(parsedCurrentModDefinitionYaml, {
+                indent: 2,
+                sortKeys: true,
+              }),
+            ),
+            undefined,
+            undefined,
+            { context: 40 },
+          );
+
+          expect(yamlDiff).toMatchSnapshot(snapshotName + ".diff");
+
+          // Update the mod definition to the last known state
+          modDefinitionsMap[modDefinitionName] = {
+            id: modId,
+            definition: currentModDefinitionYaml,
+            autoCleanup,
+          };
+        } else {
+          const normalizedModDefinitionYaml = normalizeUUIDs(
+            currentModDefinitionYaml,
+          );
+          expect(normalizedModDefinitionYaml).toMatchSnapshot(
+            snapshotName + ".yaml",
+          );
+
+          // Use the mod definition name to update the mod definition if it exists, otherwise fallback to the modId
+          const name = lastModDefinitionEntry?.[0] ?? modId;
+          const autoCleanup = Boolean(modDefinitionsMap[name]?.autoCleanup);
+          modDefinitionsMap[name] = {
+            id: modId,
+            definition: currentModDefinitionYaml,
+            autoCleanup,
+          };
         }
-
-        const [
-          modDefinitionName,
-          { definition: lastModDefinition, autoCleanup },
-        ] = lastModDefinitionEntry;
-
-        const parsedCurrentModDefinitionYaml = loadBrickYaml(
-          currentModDefinitionYaml,
-        );
-        const parsedLastModDefinitionYaml = loadBrickYaml(lastModDefinition);
-        const yamlDiff = createPatch(
-          snapshotName,
-          normalizeUUIDs(
-            dumpBrickYaml(parsedLastModDefinitionYaml, {
-              indent: 2,
-              sortKeys: true,
-            }),
-          ),
-          normalizeUUIDs(
-            dumpBrickYaml(parsedCurrentModDefinitionYaml, {
-              indent: 2,
-              sortKeys: true,
-            }),
-          ),
-          undefined,
-          undefined,
-          { context: 40 },
-        );
-
-        expect(yamlDiff).toMatchSnapshot(snapshotName + ".diff");
-
-        // Update the mod definition to the last known state
-        modDefinitionsMap[modDefinitionName] = {
-          id: modId,
-          definition: currentModDefinitionYaml,
-          autoCleanup,
-        };
-      } else {
-        const normalizedModDefinitionYaml = normalizeUUIDs(
-          currentModDefinitionYaml,
-        );
-        expect(normalizedModDefinitionYaml).toMatchSnapshot(
-          snapshotName + ".yaml",
-        );
-
-        // Use the mod definition name to update the mod definition if it exists, otherwise fallback to the modId
-        const name = lastModDefinitionEntry?.[0] ?? modId;
-        const autoCleanup = Boolean(modDefinitionsMap[name]?.autoCleanup);
-        modDefinitionsMap[name] = {
-          id: modId,
-          definition: currentModDefinitionYaml,
-          autoCleanup,
-        };
-      }
-
-      await newPage.close();
+      });
     };
 
     await use(_verifyModDefinitionSnapshot);
