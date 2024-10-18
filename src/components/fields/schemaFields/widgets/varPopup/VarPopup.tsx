@@ -22,7 +22,6 @@ import {
   replaceLikelyVariable,
 } from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
-import fitTextarea from "fit-textarea";
 import useAttachPopup from "@/components/fields/schemaFields/widgets/varPopup/useAttachPopup";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -105,13 +104,8 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
           textElement.setSelectionRange(newCursorPosition, newCursorPosition);
 
           // Resize the textarea to fit the new value
-          setTimeout(() => {
-            if (textElement == null) {
-              return;
-            }
-
-            fitTextarea(textElement);
-          }, 100);
+          // @ts-expect-error Missing from TS library, can be removed once they add it
+          textElement.style.fieldSizing = "content";
           break;
         }
 
