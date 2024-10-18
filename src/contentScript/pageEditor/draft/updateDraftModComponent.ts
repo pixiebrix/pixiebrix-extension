@@ -70,7 +70,7 @@ export async function updateDraftModComponent(
   const starterBrick = starterBrickFactory(starterBrickDefinition);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
-  // will automatically replace the old panel because the panels are keyed by mod component id
+  // will automatically replace the old panel because the panels are keyed by extension id
   // XXX: can we use preserveSidebar option flag instead?
   if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
     removeDraftModComponents(modComponent.id, { clearTrace: false });
