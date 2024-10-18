@@ -18,7 +18,6 @@
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
-import { ensureVisibility } from "../../utils";
 import { validateRegistryId } from "@/types/helpers";
 import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 import { DEFAULT_TIMEOUT } from "../../../playwright.config";
@@ -169,12 +168,19 @@ export class ActivateModPage extends BasePageObject {
 
   async goto() {
     await this.page.goto(this.activateModUrl);
-
-    await expect(
-      this.getByRole("heading", { name: "Activate " }),
-    ).toBeVisible();
-    // Loading the mod details may take a long time. Using ensureVisibility because the modId may be attached and hidden
-    await ensureVisibility(this.getByText(this.modId));
+    // Wrapped in toPass due to flakiness with the page not loading ex:
+    // https://github.com/pixiebrix/pixiebrix-extension/actions/runs/11373118427?pr=9286
+    await expect(async () => {
+      await this.getByRole("heading", { name: "Activate " }).waitFor({
+        timeout: 10_000,
+      });
+      try {
+        await this.getByText(this.modId).waitFor({ timeout: 10_000 });
+      } catch (error) {
+        await this.page.reload();
+        throw error;
+      }
+    }).toPass({ timeout: 30_000 });
   }
 
   async getIntegrationConfigField(index: number) {

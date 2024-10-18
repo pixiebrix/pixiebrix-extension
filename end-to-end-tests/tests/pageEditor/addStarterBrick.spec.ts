@@ -19,11 +19,7 @@ import { test, expect } from "../../fixtures/testBase";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import {
-  getSidebarPage,
-  isMsEdge,
-  PRE_RELEASE_BROWSER_WORKFLOW_NAME,
-} from "../../utils";
+import { getSidebarPage, isMsEdge } from "../../utils";
 
 test("Add new mod with different starter brick components", async ({
   page,
@@ -95,6 +91,11 @@ test("Add new mod with different starter brick components", async ({
   });
 
   await test.step("Add new Sidebar Panel starter brick", async () => {
+    // eslint-disable-next-line playwright/no-conditional-in-test -- MSedge won't open the sidebar unless the target page is focused
+    if (isMsEdge(chromiumChannel)) {
+      await page.bringToFront();
+    }
+
     const { modComponentNameMatcher } =
       await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Sidebar Panel",
@@ -108,12 +109,8 @@ test("Add new mod with different starter brick components", async ({
       }),
     ).toHaveValue(modComponentNameMatcher);
 
-    /* eslint-disable playwright/no-conditional-in-test, playwright/no-conditional-expect -- Edge bug, see https://github.com/pixiebrix/pixiebrix-extension/issues/9011 */
-    if (!isMsEdge(chromiumChannel)) {
-      const sidebarPage = await getSidebarPage(page, extensionId);
-      await expect(sidebarPage.getByText("Example Document")).toBeVisible();
-    }
-    /* eslint-enable playwright/no-conditional-in-test, playwright/no-conditional-expect */
+    const sidebarPage = await getSidebarPage(page, extensionId);
+    await expect(sidebarPage.getByText("Example Document")).toBeVisible();
   });
 
   await test.step("Add new Trigger starter brick", async () => {
@@ -205,7 +202,7 @@ test("Add starter brick to mod", async ({
     ).toHaveValue("My pbx.vercel.app button");
 
     await modListItem.select();
-    await modListItem.saveButton.click();
+    await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "add-button-starter-brick-to-mod",
@@ -226,7 +223,7 @@ test("Add starter brick to mod", async ({
     ).toHaveValue("Context menu item");
 
     await modListItem.select();
-    await modListItem.saveButton.click();
+    await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "add-context-menu-starter-brick-to-mod",
@@ -247,7 +244,7 @@ test("Add starter brick to mod", async ({
     ).toHaveValue("Quick Bar item");
 
     await modListItem.select();
-    await modListItem.saveButton.click();
+    await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "add-quick-bar-starter-brick-to-mod",
@@ -256,6 +253,11 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Sidebar Panel starter brick to mod", async () => {
+    // eslint-disable-next-line playwright/no-conditional-in-test -- MSedge won't open the sidebar unless the target page is focused
+    if (isMsEdge(chromiumChannel)) {
+      await page.bringToFront();
+    }
+
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Sidebar Panel");
 
@@ -272,7 +274,7 @@ test("Add starter brick to mod", async ({
     await expect(sidebarPage.getByText("Example Document")).toBeVisible();
 
     await modListItem.select();
-    await modListItem.saveButton.click();
+    await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "add-sidebar-panel-starter-brick-to-mod",
@@ -281,12 +283,6 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Trigger starter brick to mod", async () => {
-    test.fixme(
-      process.env.GITHUB_WORKFLOW === PRE_RELEASE_BROWSER_WORKFLOW_NAME &&
-        isMsEdge(chromiumChannel),
-      "Skipping test for MS Edge in pre-release workflow, see https://github.com/pixiebrix/pixiebrix-extension/issues/9125",
-    );
-
     const modActionMenu = await openModActionMenu();
     await modActionMenu.addStarterBrick("Trigger");
 
@@ -299,7 +295,7 @@ test("Add starter brick to mod", async ({
     ).toHaveValue("My pbx.vercel.app trigger");
 
     await modListItem.select();
-    await modListItem.saveButton.click();
+    await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "add-trigger-starter-brick-to-mod",

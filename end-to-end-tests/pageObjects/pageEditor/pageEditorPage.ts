@@ -17,7 +17,6 @@
 
 import { getBasePageEditorUrl } from "../constants";
 import { type Page, expect, type Locator } from "@playwright/test";
-import { ModsPage } from "../extensionConsole/modsPage";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
 import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
@@ -300,8 +299,9 @@ export class PageEditorPage extends BasePageObject {
    * @see newPageEditorPage in fixtures/testBase.ts
    */
   async cleanup() {
-    const modsPage = new ModsPage(this.page, this.extensionId);
-    await modsPage.goto();
+    if (this.savedModIds.length === 0) {
+      return;
+    }
 
     const workshopPage = new WorkshopPage(this.page, this.extensionId);
     await workshopPage.goto();

@@ -70,15 +70,13 @@ export const test = pageContextFixture.extend<{
   async _workshopPage({ context, extensionId }, use) {
     const newPage = await context.newPage();
     const workshopPage = new WorkshopPage(newPage, extensionId);
-    await workshopPage.goto();
     await use(workshopPage);
     await newPage.close();
   },
   modDefinitionsMap: [
-    async ({ modDefinitionNames, page, extensionId }, use) => {
+    async ({ modDefinitionNames, _workshopPage: workshopPage }, use) => {
       const createdModDefinitions: ModDefinitions = {};
       if (modDefinitionNames.length > 0) {
-        const workshopPage = new WorkshopPage(page, extensionId);
         for (const name of modDefinitionNames) {
           await workshopPage.goto();
           const modMetadata =
@@ -90,7 +88,6 @@ export const test = pageContextFixture.extend<{
       await use(createdModDefinitions);
 
       if (Object.keys(createdModDefinitions).length > 0) {
-        const workshopPage = new WorkshopPage(page, extensionId);
         for (const { id, autoCleanup } of Object.values(
           createdModDefinitions,
         )) {
@@ -123,7 +120,6 @@ export const test = pageContextFixture.extend<{
     }) => {
       await workshopPage.goto();
       const editPage = await workshopPage.findAndSelectMod(modId);
-
       const currentModDefinitionYaml = await editPage.editor.getValue();
       // See if this mod is being tracked in modDefinitions.
       const lastModDefinitionEntry = Object.entries(modDefinitionsMap).find(

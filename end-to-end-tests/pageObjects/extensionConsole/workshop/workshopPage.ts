@@ -38,6 +38,8 @@ export class WorkshopPage extends BasePageObject {
     await this.getByRole("link", {
       name: "Workshop",
     }).click();
+    await this.getByRole("heading", { name: "Workshop" }).waitFor();
+    await this.getByRole("cell").first().waitFor();
   }
 
   async findAndSelectMod(modId: string) {

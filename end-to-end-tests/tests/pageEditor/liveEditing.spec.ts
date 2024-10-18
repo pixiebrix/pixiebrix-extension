@@ -20,7 +20,6 @@ import { expect, test } from "../../fixtures/testBase";
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { getSidebarPage, isMsEdge, isSidebarOpen } from "../../utils";
-import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
 
 test("live editing behavior", async ({
   page,
@@ -76,13 +75,11 @@ test("live editing behavior", async ({
     expect(isSidebarOpen(page, extensionId)).toBe(false);
 
     /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
-     * cannot open the sidebar, so we need to open it manually.
+     * cannot open the sidebar, unless the target page is already focused.
      * https://www.loom.com/share/fbad85e901794161960b737b27a13677
      */
     if (isMsEdge(chromiumChannel)) {
       await page.bringToFront();
-      const floatingActionButton = new FloatingActionButton(page);
-      await floatingActionButton.toggleSidebar();
     }
 
     await pageEditor.editorPane.renderPanelButton.click();
