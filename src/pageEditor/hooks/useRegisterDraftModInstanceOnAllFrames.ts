@@ -94,16 +94,16 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
 
   assertNotNullish(modId, "modId is required");
 
-  const modInstance = modId ? modInstanceMap.get(modId) : undefined;
-  const editorState = getCleanComponentsAndDirtyFormStatesForMod(modId);
+  const activatedModInstance = modInstanceMap.get(modId);
+  const editorInstance = getCleanComponentsAndDirtyFormStatesForMod(modId);
 
   useAsyncEffect(async () => {
-    if (modInstance) {
+    if (activatedModInstance) {
       // Remove non-draft mod instance from the page. removeActivatedModInstanceFromTab is safe to call multiple times
       // per mod instance (it's a NOP if the mod instance is registered in a frame).
-      await removeActivatedModInstanceFromTab(modInstance);
+      await removeActivatedModInstanceFromTab(activatedModInstance);
     }
-  }, [modInstance]);
+  }, [activatedModInstance]);
 
   // Replace with the draft mod instance. Updated when the selected mod component changes, because auto-run behavior
   // differs based on whether a mod component is selected or not.
@@ -112,7 +112,7 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
     // unsaved draft mod component that have been deleted since the last injection. The draft mod component
     // deletion code is currently responsible for removing those from the tab
 
-    const { cleanModComponents, dirtyModComponentFormStates } = editorState;
+    const { cleanModComponents, dirtyModComponentFormStates } = editorInstance;
 
     const draftFormStates = [
       ...(await Promise.all(
@@ -125,7 +125,7 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
       const isSelectedInEditor =
         activeModComponentFormState?.uuid === draftFormState.uuid;
 
-      // ReloadToolbar will handle running the draft mod component
+      // ReloadToolbar will handle running the selected draft mod component
       if (!isSelectedInEditor) {
         const draftModComponent = formStateToDraftModComponent(draftFormState);
 
@@ -147,7 +147,7 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
         draftModComponentStateHash.set(draftFormState.uuid, stateHash);
       }
     }
-  }, [activeModComponentFormState, editorState]);
+  }, [activeModComponentFormState, editorInstance]);
 
   useAsyncEffect(async () => {
     await updateDraftModInstance();
@@ -155,9 +155,9 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
 
   useEffect(() => {
     const callback = async () => {
-      if (modInstance) {
+      if (activatedModInstance) {
         // Remove activated mod instance from the page
-        await removeActivatedModInstanceFromTab(modInstance);
+        await removeActivatedModInstanceFromTab(activatedModInstance);
       }
 
       // FIXME: should the navigation handler force runReason to be PAGE_EDITOR_RUN? For SPA navigation, the normal
@@ -172,7 +172,7 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
     return () => {
       navigationEvent.remove(callback);
     };
-  }, [dispatch, updateDraftModInstance, modInstance]);
+  }, [dispatch, updateDraftModInstance, activatedModInstance]);
 }
 
 export default useRegisterDraftModInstanceOnAllFrames;
