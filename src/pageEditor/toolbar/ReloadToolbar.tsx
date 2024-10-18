@@ -29,10 +29,11 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { RunReason } from "@/types/runtimeTypes";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
-function isPanel(modComponentFormState: ModComponentFormState): boolean {
+function isSidebarPanel(modComponentFormState: ModComponentFormState): boolean {
   return (
     modComponentFormState.starterBrick.definition.type ===
     StarterBrickTypes.SIDEBAR_PANEL
@@ -45,10 +46,6 @@ function isPanel(modComponentFormState: ModComponentFormState): boolean {
 function isAutomaticTrigger(
   modComponentFormState: ModComponentFormState,
 ): boolean {
-  if (!modComponentFormState) {
-    return false;
-  }
-
   const automatic = ["load", "appear", "initialize", "interval"];
   const { definition: starterBrickDefinition } =
     modComponentFormState.starterBrick;
@@ -78,16 +75,15 @@ const Controls: React.FunctionComponent<{
 );
 
 /**
- * Return true if the mod component for the mod component form state should be automatically updated on the page.
+ * Return true if the mod component for the mod component form state should be automatically updated on the page
+ * when the form state changes.
  * @param modComponentFormState the form state for the mod component to check
  */
-export function shouldAutoRun(
-  modComponentFormState: ModComponentFormState,
-): boolean {
+function shouldAutoRun(modComponentFormState: ModComponentFormState): boolean {
   const automaticUpdate = !(
     isAutomaticTrigger(modComponentFormState) ||
     // By default, don't automatically trigger (because it might be doing expensive operations such as hitting an API)
-    isPanel(modComponentFormState)
+    isSidebarPanel(modComponentFormState)
   );
 
   return automaticUpdate || (modComponentFormState.autoReload ?? false);
@@ -102,7 +98,6 @@ export function shouldAutoRun(
  * - element appear triggers
  * - panels
  * - sidebar panels
- * - tours
  */
 const ReloadToolbar: React.FunctionComponent<{
   modComponentFormState: ModComponentFormState;
@@ -115,6 +110,7 @@ const ReloadToolbar: React.FunctionComponent<{
     updateDraftModComponent(
       allFramesInInspectedTab,
       asDraftModComponent(modComponentFormState),
+      { isSelectedInEditor: true, runReason: RunReason.PAGE_EDITOR_RUN },
     );
   }, [asDraftModComponent, modComponentFormState]);
 
@@ -146,7 +142,7 @@ const ReloadToolbar: React.FunctionComponent<{
     void debouncedRun();
   }, [debouncedRun, modComponentFormState]);
 
-  if (isPanel(modComponentFormState)) {
+  if (isSidebarPanel(modComponentFormState)) {
     return (
       <Controls
         autoLabel="Auto-Render"

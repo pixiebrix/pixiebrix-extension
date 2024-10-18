@@ -66,7 +66,11 @@ import { type UUID } from "@/types/stringTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type SelectorRoot } from "@/types/runtimeTypes";
+import {
+  type RunArgs,
+  RunReason,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import {
   type StarterBrick,
@@ -88,7 +92,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
@@ -616,7 +620,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private async getRoot(): Promise<JQuery<TriggerTarget> | undefined> {
     const rootSelector = this.triggerSelector;
 
-    // Await for the element(s) to appear on the page so that we can
+    // Await for the element(s) to appear on the page so that we can attach/run the trigger
     const rootPromise = rootSelector
       ? awaitElementOnce(rootSelector, this.observersController.signal)
       : document;
@@ -674,11 +678,19 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  private attachInitializeTrigger($elements: JQuery<TriggerTarget>): void {
+  private attachInitializeTrigger(
+    $elements: JQuery<TriggerTarget>,
+    { runReason }: { runReason: RunReason },
+  ): void {
     this.cancelObservers();
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
+      if (runReason === RunReason.PAGE_EDITOR_REGISTER) {
+        // Skip because the trigger would have already run for a previous registration
+        return;
+      }
+
       void this.debouncedRunTriggersAndNotify([...$elements], {
         nativeEvent: null,
       });
@@ -687,6 +699,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     assertNotNullish(this.triggerSelector, "Trigger selector is required");
 
+    // FIXME: for RunReason.PAGE_EDITOR_REGISTER will this trigger for existing elements?
     const observer = initialize(
       this.triggerSelector,
       (_index, element: HTMLElement) => {
@@ -721,6 +734,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       },
     );
 
+    // FIXME: handle RunReason.PAGE_EDITOR_REGISTER. Should not fire if the elements are already appearing
     for (const element of $elements) {
       appearObserver.observe(element);
     }
@@ -838,7 +852,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async runModComponents(): Promise<void> {
+  async runModComponents({ reason }: RunArgs): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();
@@ -846,9 +860,13 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     switch (this.trigger) {
       case Triggers.LOAD: {
         assertNotNullish($root, "Root is required");
-        await this.debouncedRunTriggersAndNotify([...$root], {
-          nativeEvent: null,
-        });
+
+        if (reason !== RunReason.PAGE_EDITOR_REGISTER) {
+          await this.debouncedRunTriggersAndNotify([...$root], {
+            nativeEvent: null,
+          });
+        }
+
         break;
       }
 
@@ -859,7 +877,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
       case Triggers.INITIALIZE: {
         assertNotNullish($root, "Root is required");
-        this.attachInitializeTrigger($root);
+        this.attachInitializeTrigger($root, { runReason: reason });
         break;
       }
 

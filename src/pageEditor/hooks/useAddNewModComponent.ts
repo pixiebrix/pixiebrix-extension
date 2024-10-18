@@ -41,6 +41,7 @@ import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
+import { RunReason } from "@/types/runtimeTypes";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
@@ -131,6 +132,10 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         updateDraftModComponent(
           allFramesInInspectedTab,
           adapter.asDraftModComponent(initialFormState),
+          {
+            isSelectedInEditor: true,
+            runReason: RunReason.PAGE_EDITOR_REGISTER,
+          },
         );
 
         if (adapter.starterBrickType === StarterBrickTypes.SIDEBAR_PANEL) {

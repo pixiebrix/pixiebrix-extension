@@ -57,6 +57,7 @@ const NoModOptions: React.FC = () => (
 const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
+  assertNotNullish(activeModId, "activeModId is null");
 
   assertNotNullish(activeModId, "activeModId is required");
 
