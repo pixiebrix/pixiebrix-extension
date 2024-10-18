@@ -125,24 +125,27 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
       const isSelectedInEditor =
         activeModComponentFormState?.uuid === draftFormState.uuid;
 
-      const draftModComponent = formStateToDraftModComponent(draftFormState);
+      // ReloadToolbar will handle running the draft mod component
+      if (!isSelectedInEditor) {
+        const draftModComponent = formStateToDraftModComponent(draftFormState);
 
-      // PERFORMANCE: only re-register if the component's state has changed. It would be safe to updateDraftModComponent
-      // on every change to the mod (even for different mod components), but computing the hash is cheaper.
-      // An additional benefit of skipping re-register is that interval triggers won't have their interval reset.
-      const stateHash = hash({
-        draftModComponent,
-        isSelectedInEditor,
-      });
-
-      if (draftModComponentStateHash.get(draftFormState.uuid) !== stateHash) {
-        updateDraftModComponent(allFramesInInspectedTab, draftModComponent, {
+        // PERFORMANCE: only re-register if the component's state has changed. It would be safe to updateDraftModComponent
+        // on every change to the mod (even for different mod components), but computing the hash is cheaper.
+        // An additional benefit of skipping re-register is that interval triggers won't have their interval reset.
+        const stateHash = hash({
+          draftModComponent,
           isSelectedInEditor,
-          runReason: RunReason.PAGE_EDITOR_REGISTER,
         });
-      }
 
-      draftModComponentStateHash.set(draftFormState.uuid, stateHash);
+        if (draftModComponentStateHash.get(draftFormState.uuid) !== stateHash) {
+          updateDraftModComponent(allFramesInInspectedTab, draftModComponent, {
+            isSelectedInEditor,
+            runReason: RunReason.PAGE_EDITOR_REGISTER,
+          });
+        }
+
+        draftModComponentStateHash.set(draftFormState.uuid, stateHash);
+      }
     }
   }, [activeModComponentFormState, editorState]);
 
