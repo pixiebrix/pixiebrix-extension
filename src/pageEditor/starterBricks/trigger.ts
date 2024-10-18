@@ -154,10 +154,10 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.TRIGGER,
-    extension: selectModComponent(triggerFormState, {
+    modComponent: selectModComponent(triggerFormState, {
       includeInstanceIds: true,
     }),
-    extensionPointConfig: selectStarterBrickDefinition(triggerFormState),
+    starterBrickDefinition: selectStarterBrickDefinition(triggerFormState),
   };
 }
 

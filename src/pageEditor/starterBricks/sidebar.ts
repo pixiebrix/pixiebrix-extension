@@ -132,10 +132,10 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.SIDEBAR_PANEL,
-    extension: selectModComponent(sidebarFormState, {
+    modComponent: selectModComponent(sidebarFormState, {
       includeInstanceIds: true,
     }),
-    extensionPointConfig: selectStarterBrickDefinition(sidebarFormState),
+    starterBrickDefinition: selectStarterBrickDefinition(sidebarFormState),
   };
 }
 

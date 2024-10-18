@@ -25,15 +25,15 @@ import { expectContext } from "@/utils/expectContext";
 import { type TriggerDefinition } from "@/starterBricks/trigger/triggerStarterBrick";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import {
-  activateExtensionPanel,
+  activateModComponentPanel,
   showSidebar,
 } from "@/contentScript/sidebarController";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 export async function updateDraftModComponent({
-  extensionPointConfig,
-  extension: extensionConfig,
+  starterBrickDefinition,
+  modComponent: extensionConfig,
 }: DraftModComponent): Promise<void> {
   expectContext("contentScript");
 
@@ -41,23 +41,23 @@ export async function updateDraftModComponent({
   // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
   if (
     isLoadedInIframe() &&
-    extensionPointConfig.definition.type === StarterBrickTypes.SIDEBAR_PANEL
+    starterBrickDefinition.definition.type === StarterBrickTypes.SIDEBAR_PANEL
   ) {
     return;
   }
 
   // HACK: adjust behavior when using the Page Editor
-  if (extensionPointConfig.definition.type === StarterBrickTypes.TRIGGER) {
+  if (starterBrickDefinition.definition.type === StarterBrickTypes.TRIGGER) {
     // Prevent auto-run of interval trigger when using the Page Editor because you lose track of trace across runs
     const triggerDefinition =
-      extensionPointConfig.definition as TriggerDefinition;
+      starterBrickDefinition.definition as TriggerDefinition;
     if (triggerDefinition.trigger === "interval") {
       // OK to assign directly since the object comes from the messenger (so we have a fresh object)
       triggerDefinition.trigger = "load";
     }
   }
 
-  const starterBrick = starterBrickFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(starterBrickDefinition);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
@@ -73,6 +73,6 @@ export async function updateDraftModComponent({
 
   if (starterBrick.kind === StarterBrickTypes.SIDEBAR_PANEL) {
     await showSidebar();
-    await activateExtensionPanel(extensionConfig.id);
+    await activateModComponentPanel(extensionConfig.id);
   }
 }

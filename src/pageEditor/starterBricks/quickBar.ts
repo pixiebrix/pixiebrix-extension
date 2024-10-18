@@ -178,10 +178,10 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.QUICK_BAR_ACTION,
-    extension: selectModComponent(quickBarFormState, {
+    modComponent: selectModComponent(quickBarFormState, {
       includeInstanceIds: true,
     }),
-    extensionPointConfig: selectStarterBrickDefinition(quickBarFormState),
+    starterBrickDefinition: selectStarterBrickDefinition(quickBarFormState),
   };
 }
 

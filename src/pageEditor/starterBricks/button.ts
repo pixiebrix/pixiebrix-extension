@@ -187,10 +187,10 @@ function asDraftModComponent(
 ): DraftButtonModComponent {
   return {
     type: StarterBrickTypes.BUTTON,
-    extension: selectModComponent(actionFormState, {
+    modComponent: selectModComponent(actionFormState, {
       includeInstanceIds: true,
     }),
-    extensionPointConfig: selectStarterBrickDefinition(actionFormState),
+    starterBrickDefinition: selectStarterBrickDefinition(actionFormState),
   };
 }
 

@@ -32,13 +32,13 @@ import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 
 export interface DraftModComponent<
-  TExtensionPoint extends
+  TStarterBrickDefinitionProp extends
     StarterBrickDefinitionProp = StarterBrickDefinitionProp,
-  TExtension extends UnknownObject = UnknownObject,
+  TModComponentConfig extends UnknownObject = UnknownObject,
 > {
   type: StarterBrickType;
-  extensionPointConfig: StarterBrickDefinitionLike<TExtensionPoint>;
-  extension: ModComponentBase<TExtension>;
+  starterBrickDefinition: StarterBrickDefinitionLike<TStarterBrickDefinitionProp>;
+  modComponent: ModComponentBase<TModComponentConfig>;
 }
 
 export type SelectMode = "element" | "container";

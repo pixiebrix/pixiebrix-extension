@@ -39,6 +39,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import { getAllSpreadsheets } from "@/contrib/google/sheets/core/sheetsApi";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 
@@ -77,7 +78,11 @@ describe("ModOptionsValuesEditor", () => {
   test("renders empty options", async () => {
     const modDefinition = defaultModDefinitionFactory();
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValuesEditor />);
+    const { asFragment } = render(<ModOptionsValuesEditor />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+      },
+    });
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -127,7 +132,11 @@ describe("ModOptionsValuesEditor", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValuesEditor />);
+    const { asFragment } = render(<ModOptionsValuesEditor />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+      },
+    });
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -145,7 +154,11 @@ describe("ModOptionsValuesEditor", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValuesEditor />);
+    const { asFragment } = render(<ModOptionsValuesEditor />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+      },
+    });
     await waitForEffect();
     await expect(
       screen.findByText("This mod does not require any configuration"),
@@ -179,7 +192,11 @@ describe("ModOptionsValuesEditor", () => {
       },
     });
     mockModDefinition(modDefinition);
-    render(<ModOptionsValuesEditor />);
+    render(<ModOptionsValuesEditor />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+      },
+    });
 
     await waitForEffect();
 
@@ -221,7 +238,11 @@ describe("ModOptionsValuesEditor", () => {
       files: [],
     });
 
-    render(<ModOptionsValuesEditor />);
+    render(<ModOptionsValuesEditor />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+      },
+    });
 
     const selectInput = await screen.findByRole("combobox", {
       name: "My Sheet",
@@ -282,7 +303,11 @@ describe("ModOptionsValuesEditor", () => {
       ],
     });
 
-    render(<ModOptionsValuesEditor />);
+    render(<ModOptionsValuesEditor />, {
+      setupRedux(dispatch) {
+        dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
+      },
+    });
 
     const selectInput = await screen.findByRole("combobox", {
       name: "My Sheet",
