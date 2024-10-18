@@ -296,7 +296,7 @@ async function _performConfiguredRequest(
             );
 
             if (isTokenRefreshed) {
-              return serializableAxiosRequest(
+              return await serializableAxiosRequest(
                 await authenticate(integrationConfig, requestConfig, {
                   interactive: options.interactiveLogin,
                 }),

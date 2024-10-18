@@ -129,7 +129,7 @@ describe("ReplaceTextEffect", () => {
     const document = getDocument("<div>123-456-7890</div>");
     await brick.run(
       unsafeAssumeValidArg({
-        pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
+        pattern: String.raw`^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}`,
         replacement: "###-###-####",
         isRegex: true,
       }),
@@ -155,7 +155,7 @@ describe("ReplaceTextEffect", () => {
     const document = getDocument("<div>123-456-7890</div>");
     await brick.run(
       unsafeAssumeValidArg({
-        pattern: "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}",
+        pattern: String.raw`^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}`,
         replacement: "###-###-####",
       }),
       brickOptionsFactory({ root: document }),

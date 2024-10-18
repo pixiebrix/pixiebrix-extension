@@ -261,7 +261,7 @@
     "diff": "^7.0.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
-    "eslint-config-pixiebrix": "^0.39.0",
+    "eslint-config-pixiebrix": "^0.40.1",
     "eslint-plugin-local-rules": "^3.0.2",
     "eslint-plugin-playwright": "^1.7.0",
     "fake-indexeddb": "^6.0.0",
@@ -305,7 +305,7 @@
     "yaml-loader": "^0.8.1"
   },
   "overrides": {
-    "@typescript-eslint/eslint-plugin": "7.0.2"
+    "@typescript-eslint/eslint-plugin": "7.16.0"
   },
   "webExt": {
     "sourceDir": "dist",

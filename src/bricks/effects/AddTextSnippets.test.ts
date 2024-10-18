@@ -28,7 +28,7 @@ afterEach(() => {
 });
 
 describe("AddTextSnippets", () => {
-  it.each(["test", "\\test", "/test"])(
+  it.each(["test", String.raw`\test`, "/test"])(
     "add registers snippets: %s",
     async (shortcut) => {
       const options = brickOptionsFactory();

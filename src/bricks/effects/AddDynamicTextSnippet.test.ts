@@ -40,7 +40,7 @@ afterEach(() => {
 });
 
 describe("AddDynamicTextSnippet", () => {
-  it.each(["/echo", "echo", "\\echo"])(
+  it.each(["/echo", "echo", String.raw`\echo`])(
     "registers snippet: %s",
     async (shortcut) => {
       const reduceOptions = reduceOptionsFactory();
