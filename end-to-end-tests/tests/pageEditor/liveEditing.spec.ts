@@ -66,14 +66,6 @@ test("live editing behavior", async ({
   });
 
   await test.step("Verify render panel functionality", async () => {
-    /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
-     * cannot open the sidebar, unless the target page is already focused.
-     * https://www.loom.com/share/fbad85e901794161960b737b27a13677
-     */
-    if (isMsEdge(chromiumChannel)) {
-      await page.bringToFront();
-    }
-
     await pageEditor.modListingPanel
       .getModStarterBrick("Live Editing Test", "Sidebar Panel")
       .select();
@@ -81,6 +73,14 @@ test("live editing behavior", async ({
     await expect(pageEditor.editorPane.renderPanelButton).toBeVisible();
 
     expect(isSidebarOpen(page, extensionId)).toBe(false);
+
+    /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
+     * cannot open the sidebar, unless the target page is already focused.
+     * https://www.loom.com/share/fbad85e901794161960b737b27a13677
+     */
+    if (isMsEdge(chromiumChannel)) {
+      await page.bringToFront();
+    }
 
     await pageEditor.editorPane.renderPanelButton.click();
     const sidebar = await getSidebarPage(page, extensionId);
