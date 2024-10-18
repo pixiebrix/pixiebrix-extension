@@ -16,7 +16,6 @@
  */
 
 import { useCallback, useEffect } from "react";
-import { tabStateActions } from "@/pageEditor/store/tabState/tabStateSlice";
 import {
   formStateToDraftModComponent,
   modComponentToFormState,
@@ -153,8 +152,6 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
 
   useEffect(() => {
     const callback = async () => {
-      dispatch(tabStateActions.connectToContentScript());
-
       if (modInstance) {
         // Remove activated mod instance from the page
         await removeActivatedModInstanceFromTab(modInstance);

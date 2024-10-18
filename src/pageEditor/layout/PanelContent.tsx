@@ -37,15 +37,39 @@ import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import useTeamTrialStatus, {
   TeamTrialStatus,
 } from "@/components/teamTrials/useTeamTrialStatus";
+import { navigationEvent } from "@/pageEditor/events";
+
+/**
+ * Hook to connect to the content script on Page Editor mount and on navigation events.
+ * @see navigationEvent
+ */
+function useConnectToContentScript(): void {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Automatically connect on load
+    dispatch(tabStateActions.connectToContentScript());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const callback = async () => {
+      dispatch(tabStateActions.connectToContentScript());
+    };
+
+    navigationEvent.add(callback);
+    return () => {
+      navigationEvent.remove(callback);
+    };
+  }, [dispatch]);
+}
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
   const trialStatus = useTeamTrialStatus();
 
-  useEffect(() => {
-    // Automatically connect on load
-    dispatch(tabStateActions.connectToContentScript());
+  useConnectToContentScript();
 
+  useEffect(() => {
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
