@@ -68,7 +68,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
   });
 
   await test.step("Verify the add brick modal is hidden after the Page Editor refreshes", async () => {
-    await expect(addBrickModalTitle).toBeVisible();
+    await expect(addBrickModalTitle).toBeHidden();
     await expect(
       pageEditorPage.getByText(
         "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",

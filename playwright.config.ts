@@ -68,7 +68,8 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: Boolean(CI),
   /* Retry on CI only to catch flakiness */
-  retries: CI ? 2 : 0,
+  // retries: CI ? 2 : 0,
+  retries: 0,
   /* Opt out of parallel tests on CI. */
   workers: CI ? 1 : 2,
   /* Timeout for each test, if a test should take longer than this, use `test.slow()` */
