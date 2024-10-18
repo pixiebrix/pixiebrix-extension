@@ -37,6 +37,10 @@ test("should hide add brick modal when Page Editor refreshes", async ({
     pageEditorPage = await newPageEditorPage(page.url());
   });
 
+  const addBrickModalTitle = pageEditorPage!.getByText("Add Brick", {
+    exact: true,
+  });
+
   await test.step("Select the mod's starter brick in the Page Editor", async () => {
     const modListItem = pageEditorPage.modListingPanel.getModListItemByName(
       "Simple Sidebar Panel",
@@ -52,7 +56,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
   const { brickActionsPanel } = pageEditorPage!;
   await test.step("Open the add brick modal", async () => {
     await brickActionsPanel.getAddBrickButton(0).click();
-    await expect(pageEditorPage.getByText("Add Brick")).toBeVisible();
+    await expect(addBrickModalTitle).toBeVisible();
   });
 
   await test.step("Activate another mod to trigger a Page Editor refresh", async () => {
@@ -64,7 +68,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
   });
 
   await test.step("Verify the add brick modal is hidden after the Page Editor refreshes", async () => {
-    await expect(pageEditorPage.getByText("Add Brick")).toBeHidden();
+    await expect(addBrickModalTitle).toBeHidden();
     await expect(
       pageEditorPage.getByText(
         "There were changes made in a different instance of the Page Editor. Reload this Page Editor to sync the changes.",
