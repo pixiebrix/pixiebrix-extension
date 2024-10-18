@@ -52,7 +52,7 @@ function useConnectToContentScript(): void {
     };
 
     // Automatically connect on mount
-    dispatch(tabStateActions.connectToContentScript());
+    connect();
 
     navigationEvent.add(connect);
     return () => {
