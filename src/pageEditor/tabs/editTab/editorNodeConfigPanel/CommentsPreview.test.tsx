@@ -74,7 +74,7 @@ describe("CommentsPreview", () => {
     const { getReduxStore } = renderCommentsPreview(expectedComments);
     const store = getReduxStore();
 
-    store.dispatch(actions.setDataSectionExpanded({ isExpanded: false }));
+    store.dispatch(actions.setDataPanelExpanded({ isExpanded: false }));
 
     expect(getDataPanelExtended(store.getState())).toBeFalse();
 

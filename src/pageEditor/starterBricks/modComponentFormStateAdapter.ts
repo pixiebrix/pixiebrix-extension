@@ -49,7 +49,12 @@ export interface ModComponentFormStateAdapter<
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the starter brick
   readonly baseClass: Function;
 
-  readonly EditorNode?: React.ComponentType<{ isLocked: boolean }>;
+  /**
+   * The React component for the Starter Brick configuration fields
+   */
+  readonly StarterBrickConfiguration: React.ComponentType<{
+    isLocked: boolean;
+  }>;
 
   /**
    * Order to display the starter brick in the "Add Starter Brick" dropdown in the Page Editor

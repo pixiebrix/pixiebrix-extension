@@ -61,6 +61,8 @@ const ModOptionsValuesContent: React.FC = () => {
 
   assertNotNullish(activeModId, "activeModId is required");
 
+  assertNotNullish(activeModId, "activeModId is required");
+
   const {
     data: mod,
     isFetching: isFetchingMod,

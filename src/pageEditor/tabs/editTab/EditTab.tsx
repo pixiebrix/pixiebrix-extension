@@ -41,7 +41,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
-import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
+import StarterBrickConfigPanel from "./StarterBrickConfigPanel";
 import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -62,15 +62,15 @@ const EditTab: React.FC<{
 
   const isDataPanelExpanded = useSelector(selectIsDataPanelExpanded);
 
-  function copyBlock(instanceId: UUID) {
+  function copyBrick(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    const blockToCopy = pipelineMap[instanceId]?.blockConfig;
-    if (blockToCopy) {
-      dispatch(actions.copyBlockConfig(blockToCopy));
+    const brickToCopy = pipelineMap[instanceId]?.blockConfig;
+    if (brickToCopy) {
+      dispatch(actions.copyBrickConfig(brickToCopy));
     }
   }
 
-  function removeBlock(nodeIdToRemove: UUID) {
+  function removeBrick(nodeIdToRemove: UUID) {
     dispatch(actions.removeNode(nodeIdToRemove));
   }
 
@@ -95,7 +95,7 @@ const EditTab: React.FC<{
                   activeNodeId,
                   "activeNodeId is required to copy a node",
                 );
-                copyBlock(activeNodeId);
+                copyBrick(activeNodeId);
               }}
               tooltipText="Copy Brick"
               buttonClassName={styles.copyButton}
@@ -109,7 +109,7 @@ const EditTab: React.FC<{
                   activeNodeId,
                   "activeNodeId is required to remove a node",
                 );
-                removeBlock(activeNodeId);
+                removeBrick(activeNodeId);
               }}
               tooltipText="Remove Brick"
               buttonClassName={styles.removeButton}
@@ -134,7 +134,7 @@ const EditTab: React.FC<{
           >
             {isRuntimeVersionSupported ? (
               activeNodeId === FOUNDATION_NODE_ID ? (
-                <FoundationNodeConfigPanel />
+                <StarterBrickConfigPanel />
               ) : (
                 <EditorNodeConfigPanel />
               )
@@ -151,7 +151,7 @@ const EditTab: React.FC<{
             type="button"
             onClick={() => {
               dispatch(
-                actions.setDataSectionExpanded({
+                actions.setDataPanelExpanded({
                   isExpanded: !isDataPanelExpanded,
                 }),
               );

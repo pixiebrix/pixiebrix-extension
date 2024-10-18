@@ -387,7 +387,7 @@ const usePipelineNodes = (): {
         tooltipText: "Add a brick",
         onClick() {
           dispatch(
-            actions.showAddBlockModal({
+            actions.showAddBrickModal({
               path: pipelinePath,
               flavor,
               index: index + 1,
@@ -499,7 +499,7 @@ const usePipelineNodes = (): {
             tooltipText: "Add a brick",
             onClick() {
               dispatch(
-                actions.showAddBlockModal({
+                actions.showAddBrickModal({
                   path: fullSubPath,
                   flavor,
                   index: 0,
@@ -702,7 +702,7 @@ const usePipelineNodes = (): {
         tooltipText: "Add a brick",
         onClick() {
           dispatch(
-            actions.showAddBlockModal({
+            actions.showAddBrickModal({
               path: PIPELINE_BRICKS_FIELD_NAME,
               flavor: pipelineFlavor,
               index: 0,

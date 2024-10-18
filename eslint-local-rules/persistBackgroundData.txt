@@ -111,9 +111,7 @@
 ./src/contrib/salesforce/lead.ts
 ./src/contrib/salesforce/navigation.ts
 ./src/contrib/slack/message.ts
-./src/contrib/uipath/localProcess.ts
 ./src/contrib/uipath/process.ts
-./src/contrib/uipath/UiPathRobot.ts
 ./src/contrib/zapier/contract.ts
 ./src/contrib/zapier/push.ts
 ./src/data/service/api.ts
