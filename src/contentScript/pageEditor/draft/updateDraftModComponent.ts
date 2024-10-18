@@ -25,54 +25,52 @@ import { expectContext } from "@/utils/expectContext";
 import { type TriggerDefinition } from "@/starterBricks/trigger/triggerStarterBrick";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import {
-  activateExtensionPanel,
+  activateModComponentPanel,
   showSidebar,
 } from "@/contentScript/sidebarController";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 export async function updateDraftModComponent({
-  extensionPointConfig,
-  extension: extensionConfig,
+  type,
+  starterBrickDefinition,
+  modComponent,
 }: DraftModComponent): Promise<void> {
   expectContext("contentScript");
 
   // Iframes should not attempt to control the sidebar
   // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
-  if (
-    isLoadedInIframe() &&
-    extensionPointConfig.definition.type === StarterBrickTypes.SIDEBAR_PANEL
-  ) {
+  if (isLoadedInIframe() && type === StarterBrickTypes.SIDEBAR_PANEL) {
     return;
   }
 
   // HACK: adjust behavior when using the Page Editor
-  if (extensionPointConfig.definition.type === StarterBrickTypes.TRIGGER) {
+  if (type === StarterBrickTypes.TRIGGER) {
     // Prevent auto-run of interval trigger when using the Page Editor because you lose track of trace across runs
     const triggerDefinition =
-      extensionPointConfig.definition as TriggerDefinition;
+      starterBrickDefinition.definition as TriggerDefinition;
     if (triggerDefinition.trigger === "interval") {
       // OK to assign directly since the object comes from the messenger (so we have a fresh object)
       triggerDefinition.trigger = "load";
     }
   }
 
-  const starterBrick = starterBrickFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(starterBrickDefinition);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
-  if (starterBrick.kind !== StarterBrickTypes.SIDEBAR_PANEL) {
-    removeDraftModComponents(extensionConfig.id, { clearTrace: false });
+  if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
+    removeDraftModComponents(modComponent.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
-  const resolved = await hydrateModComponentInnerDefinitions(extensionConfig);
+  const resolved = await hydrateModComponentInnerDefinitions(modComponent);
 
   starterBrick.registerModComponent(resolved);
-  await runDraftModComponent(extensionConfig.id, starterBrick);
+  await runDraftModComponent(modComponent.id, starterBrick);
 
-  if (starterBrick.kind === StarterBrickTypes.SIDEBAR_PANEL) {
+  if (type === StarterBrickTypes.SIDEBAR_PANEL) {
     await showSidebar();
-    await activateExtensionPanel(extensionConfig.id);
+    await activateModComponentPanel(modComponent.id);
   }
 }

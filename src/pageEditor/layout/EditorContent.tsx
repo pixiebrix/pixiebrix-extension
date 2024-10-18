@@ -23,7 +23,7 @@ import { Events } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
-import EditorPane from "@/pageEditor/panes/EditorPane";
+import ModComponentEditorPane from "@/pageEditor/panes/ModComponentEditorPane";
 import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
 import HomePane from "@/pageEditor/panes/HomePane";
 import {
@@ -99,7 +99,7 @@ const EditorContent: React.FC = () => {
   }
 
   if (activeModComponentId) {
-    return <EditorPane />;
+    return <ModComponentEditorPane />;
   }
 
   if (activeModId) {

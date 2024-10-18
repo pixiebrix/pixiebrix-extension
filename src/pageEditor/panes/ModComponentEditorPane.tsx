@@ -80,13 +80,13 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   );
 };
 
-const EditorPane: React.VFC = () => {
+const ModComponentEditorPane: React.VFC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
   assertNotNullish(
     activeModComponentFormState,
-    "Editor Pane requires activeModComponentFormState",
+    "ModComponentEditorPane requires activeModComponentFormState",
   );
   const editorUpdateKey = useSelector(selectEditorUpdateKey);
   // Key to force reload of component when user selects a different mod component from the sidebar
@@ -113,4 +113,4 @@ const EditorPane: React.VFC = () => {
   );
 };
 
-export default EditorPane;
+export default ModComponentEditorPane;

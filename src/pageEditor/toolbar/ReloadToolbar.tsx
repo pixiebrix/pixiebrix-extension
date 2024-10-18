@@ -32,11 +32,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
-function isPanel(modComponentFormState: ModComponentFormState | null): boolean {
-  if (!modComponentFormState) {
-    return false;
-  }
-
+function isPanel(modComponentFormState: ModComponentFormState): boolean {
   return (
     modComponentFormState.starterBrick.definition.type ===
     StarterBrickTypes.SIDEBAR_PANEL

@@ -178,10 +178,10 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.CONTEXT_MENU,
-    extension: selectModComponent(contextMenuFormState, {
+    modComponent: selectModComponent(contextMenuFormState, {
       includeInstanceIds: true,
     }),
-    extensionPointConfig: selectStarterBrickDefinition(contextMenuFormState),
+    starterBrickDefinition: selectStarterBrickDefinition(contextMenuFormState),
   };
 }
 
