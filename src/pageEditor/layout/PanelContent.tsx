@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { navigationEvent } from "@/pageEditor/events";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { tabStateActions } from "@/pageEditor/store/tabState/tabStateSlice";
 import { persistor } from "@/pageEditor/store/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
@@ -28,100 +27,50 @@ import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/layout/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
-import {
-  updateDraftModComponent,
-  removeActivatedModComponent,
-} from "@/contentScript/messenger/api";
-import { selectActiveModComponentFormState } from "../store/editor/editorSelectors";
-import { formStateToDraftModComponent } from "../starterBricks/adapter";
-import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
-import {
-  type StarterBrickType,
-  StarterBrickTypes,
-} from "@/types/starterBrickTypes";
-import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
-import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import { InsertPaneProvider } from "@/pageEditor/panes/insert/InsertPane";
 import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import useTeamTrialStatus, {
   TeamTrialStatus,
 } from "@/components/teamTrials/useTeamTrialStatus";
+import { navigationEvent } from "@/pageEditor/events";
 
-const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
-  StarterBrickTypes.SIDEBAR_PANEL,
-];
+/**
+ * Hook to connect to the content script on Page Editor mount and on navigation events.
+ * @see navigationEvent
+ */
+function useConnectToContentScript(): void {
+  const dispatch = useDispatch();
 
-// When selecting a starter brick in the Page Editor, remove any existing starter bricks
-// to avoid adding duplicate starter bricks to the page.
-// Issue doesn't apply to certain starter bricks, e.g. sidebar panels
-// See https://github.com/pixiebrix/pixiebrix-extension/pull/5047
-// and https://github.com/pixiebrix/pixiebrix-extension/pull/6372
-const cleanUpStarterBrickForModComponentFormState = (
-  modComponentFormState: EditorState["modComponentFormStates"][number],
-) => {
-  if (
-    STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP.includes(
-      modComponentFormState.starterBrick.definition.type,
-    )
-  ) {
-    return;
-  }
+  useEffect(() => {
+    const connect = () => {
+      dispatch(tabStateActions.connectToContentScript());
+    };
 
-  removeActivatedModComponent(
-    allFramesInInspectedTab,
-    modComponentFormState.uuid,
-  );
-};
+    // Automatically connect on mount
+    connect();
+
+    navigationEvent.add(connect);
+    return () => {
+      navigationEvent.remove(connect);
+    };
+  }, [dispatch]);
+}
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
   const trialStatus = useTeamTrialStatus();
 
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
-
-  const onNavigation = useCallback(() => {
-    dispatch(tabStateActions.connectToContentScript());
-
-    if (
-      activeModComponentFormState != null &&
-      shouldAutoRun(activeModComponentFormState)
-    ) {
-      const draftModComponent = formStateToDraftModComponent(
-        activeModComponentFormState,
-      );
-      updateDraftModComponent(allFramesInInspectedTab, draftModComponent);
-    }
-  }, [dispatch, activeModComponentFormState]);
+  useConnectToContentScript();
 
   useEffect(() => {
-    navigationEvent.add(onNavigation);
-    return () => {
-      navigationEvent.remove(onNavigation);
-    };
-  }, [onNavigation]);
-
-  useEffect(() => {
-    // Automatically connect on load
-    dispatch(tabStateActions.connectToContentScript());
-
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (!activeModComponentFormState) {
-      return;
-    }
-
-    cleanUpStarterBrickForModComponentFormState(activeModComponentFormState);
-  }, [activeModComponentFormState]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {
     async flush() {
