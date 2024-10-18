@@ -24,7 +24,7 @@ describe("getErrorDetails", () => {
   test("No elements found error", () => {
     const error: ErrorObject = {
       name: "NoElementsFoundError",
-      selector: "#hnmain [href='https\\:\\/\\/pixiebrix\\.com\\/']",
+      selector: String.raw`#hnmain [href='https\:\/\/pixiebrix\.com\/']`,
       message: "No elements found for selector",
       stack: "NoElementsFoundError: No elements found for selector",
     };
@@ -43,7 +43,9 @@ describe("getErrorDetails", () => {
       screen.getByRole("heading", { level: 5, name: "Selector" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("#hnmain [href='https\\:\\/\\/pixiebrix\\.com\\/']"),
+      screen.getByText(
+        String.raw`#hnmain [href='https\:\/\/pixiebrix\.com\/']`,
+      ),
     ).toBeInTheDocument();
   });
 

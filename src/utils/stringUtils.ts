@@ -107,7 +107,7 @@ export function matchesAnyPattern(
 
 export function escapeSingleQuotes(str: string): string {
   // https://gist.github.com/getify/3667624
-  return str.replaceAll(/\\([\S\s])|(')/g, "\\$1$2");
+  return str.replaceAll(/\\([\S\s])|(')/g, String.raw`\$1$2`);
 }
 
 /** Extracts a label and URL from a string ending with a Markdown link. It also returns the original text without the trailing link. */

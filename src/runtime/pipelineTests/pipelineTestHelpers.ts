@@ -13,7 +13,6 @@ import { BrickABC } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
-import { type JsonValue } from "type-fest";
 import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
 import { UNSAFE_assumeFeatureFlag } from "@/testUtils/factories/featureFlagFactories";
 
@@ -59,9 +58,9 @@ export class OptionsBrick extends BrickABC {
 
   inputSchema = propertiesToSchema({}, []);
 
-  async run(_arg: BrickArgs, options: BrickOptions): Promise<JsonValue> {
+  async run(_arg: BrickArgs, options: BrickOptions): Promise<BrickOptions> {
     OptionsBrick.options.push(options);
-    return JSON.parse(JSON.stringify(options));
+    return structuredClone(options);
   }
 }
 

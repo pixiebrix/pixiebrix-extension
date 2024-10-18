@@ -26,8 +26,7 @@ document.execCommand = jest.fn().mockReturnValue(true);
 // Can only do very limited testing due to lack of jsdom support for execCommand and selection/focus
 describe("replaceAtCommandKey", () => {
   it("inserts in normal text field", async () => {
-    document.body.innerHTML =
-      '<input type="text" value="\\hello world" id="input" />';
+    document.body.innerHTML = String.raw`<input type="text" value="\hello world" id="input" />`;
 
     await replaceAtCommandKey({
       element: document.querySelector("#input")!,
