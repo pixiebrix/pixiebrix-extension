@@ -47,18 +47,16 @@ function useConnectToContentScript(): void {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Automatically connect on load
-    dispatch(tabStateActions.connectToContentScript());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const callback = async () => {
+    const connect = () => {
       dispatch(tabStateActions.connectToContentScript());
     };
 
-    navigationEvent.add(callback);
+    // Automatically connect on mount
+    dispatch(tabStateActions.connectToContentScript());
+
+    navigationEvent.add(connect);
     return () => {
-      navigationEvent.remove(callback);
+      navigationEvent.remove(connect);
     };
   }, [dispatch]);
 }
