@@ -42,8 +42,6 @@ export const test = pageContextFixture.extend<{
    * 1-1 with the mod definition file names in the fixtures/modDefinitions directory.
    */
   modDefinitionNames: string[];
-  // Used for verifying mod definition snapshots in a separate tab.
-  _workshopPage: WorkshopPage;
   /**
    * A map of mod names to their test metadata. This is used to track the mod definitions for
    * snapshot verifying them. These are updated each time a mod definition snapshot is verified.
@@ -67,27 +65,26 @@ export const test = pageContextFixture.extend<{
   }) => Promise<void>;
 }>({
   modDefinitionNames: [],
-  async _workshopPage({ context, extensionId }, use) {
-    const newPage = await context.newPage();
-    const workshopPage = new WorkshopPage(newPage, extensionId);
-    await use(workshopPage);
-    await newPage.close();
-  },
   modDefinitionsMap: [
-    async ({ modDefinitionNames, _workshopPage: workshopPage }, use) => {
+    async ({ modDefinitionNames, context, extensionId }, use) => {
       const createdModDefinitions: ModDefinitions = {};
       if (modDefinitionNames.length > 0) {
         for (const name of modDefinitionNames) {
+          const newPage = await context.newPage();
+          const workshopPage = new WorkshopPage(newPage, extensionId);
           await workshopPage.goto();
           const modMetadata =
             await workshopPage.createNewModFromDefinition(name);
           createdModDefinitions[name] = { ...modMetadata, autoCleanup: true };
+          await newPage.close();
         }
       }
 
       await use(createdModDefinitions);
 
       if (Object.keys(createdModDefinitions).length > 0) {
+        const newPage = await context.newPage();
+        const workshopPage = new WorkshopPage(newPage, extensionId);
         for (const { id, autoCleanup } of Object.values(
           createdModDefinitions,
         )) {
@@ -96,12 +93,14 @@ export const test = pageContextFixture.extend<{
             await workshopPage.deleteModByModId(id);
           }
         }
+
+        await newPage.close();
       }
     },
     { auto: true },
   ],
   async verifyModDefinitionSnapshot(
-    { _workshopPage: workshopPage, modDefinitionsMap },
+    { modDefinitionsMap, context, extensionId },
     use,
     testInfo,
   ) {
@@ -118,6 +117,8 @@ export const test = pageContextFixture.extend<{
       mode?: "diff" | "current";
       prevModId?: string;
     }) => {
+      const newPage = await context.newPage();
+      const workshopPage = new WorkshopPage(newPage, extensionId);
       await workshopPage.goto();
       const editPage = await workshopPage.findAndSelectMod(modId);
       const currentModDefinitionYaml = await editPage.editor.getValue();
@@ -194,6 +195,8 @@ export const test = pageContextFixture.extend<{
           autoCleanup,
         };
       }
+
+      await newPage.close();
     };
 
     await use(_verifyModDefinitionSnapshot);
