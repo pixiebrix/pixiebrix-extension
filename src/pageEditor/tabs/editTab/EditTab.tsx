@@ -41,7 +41,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
-import FoundationNodeConfigPanel from "./FoundationNodeConfigPanel";
+import StarterBrickConfigPanel from "./StarterBrickConfigPanel";
 import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -134,7 +134,7 @@ const EditTab: React.FC<{
           >
             {isRuntimeVersionSupported ? (
               activeNodeId === FOUNDATION_NODE_ID ? (
-                <FoundationNodeConfigPanel />
+                <StarterBrickConfigPanel />
               ) : (
                 <EditorNodeConfigPanel />
               )

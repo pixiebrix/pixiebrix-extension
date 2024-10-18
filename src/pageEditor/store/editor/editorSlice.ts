@@ -100,7 +100,6 @@ export const initialState: EditorState = {
   error: null,
   beta: false,
   modComponentFormStates: [],
-  knownEditableBrickIds: [],
   dirty: {},
   isBetaUI: false,
   brickPipelineUIStateById: {},
@@ -614,12 +613,6 @@ export const editorSlice = createSlice({
       );
       if (!modComponentFormState) {
         throw new Error(`Unknown draft mod component: ${action.payload}`);
-      }
-
-      if (!modComponentFormState.installed) {
-        state.knownEditableBrickIds.push(
-          modComponentFormState.starterBrick.metadata.id,
-        );
       }
 
       modComponentFormState.installed = true;
