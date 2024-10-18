@@ -30,7 +30,6 @@ import {
   resolveForm,
   cancelForm,
 } from "@/platform/forms/formController";
-import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
 import {
@@ -89,8 +88,6 @@ declare global {
     REMOVE_SIDEBARS: typeof removeSidebars;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
-    UIPATH_INIT: typeof initRobot;
-    UIPATH_GET_PROCESSES: typeof getProcesses;
     CHECK_AVAILABLE: typeof checkAvailable;
     GET_PAGE_STATE: typeof getState;
     SET_PAGE_STATE: typeof setState;
@@ -143,8 +140,6 @@ export default function registerMessenger(): void {
     REMOVE_SIDEBARS: removeSidebars,
     HANDLE_MENU_ACTION: handleMenuAction,
     GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
-    UIPATH_INIT: initRobot,
-    UIPATH_GET_PROCESSES: getProcesses,
     CHECK_AVAILABLE: checkAvailable,
     GET_PAGE_STATE: getState,
     SET_PAGE_STATE: setState,
