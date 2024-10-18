@@ -46,12 +46,7 @@ describe("filterSidebarItems", () => {
   });
 
   it("returns sidebar items when filter text is empty", () => {
-    const sidebarItems = [
-      modSidebarItemFactory(),
-      modSidebarItemFactory(),
-      formStateFactory(),
-      modComponentFactory(),
-    ];
+    const sidebarItems = [modSidebarItemFactory(), modSidebarItemFactory()];
     expect(
       filterSidebarItems({
         sidebarItems,
@@ -83,7 +78,9 @@ describe("filterSidebarItems", () => {
 
   it("returns sidebar items when filter text matches mod label", () => {
     const sidebarItems = [
-      modComponentFactory({ label: "fOo" }),
+      modSidebarItemFactory({
+        modMetadata: modMetadataFactory({ name: "foo" }),
+      }),
       modSidebarItemFactory({
         modMetadata: modMetadataFactory({ name: "Bar" }),
       }),

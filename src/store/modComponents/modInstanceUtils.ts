@@ -58,7 +58,10 @@ export function generateModInstanceId(): ModInstanceId {
  */
 export function getIsPersonalDeployment(
   modInstance: ModInstance | undefined,
-): boolean {
+): modInstance is ModInstance & {
+  deploymentMetadata: DeploymentMetadata;
+  isPersonalDeployment: true;
+} {
   return Boolean(modInstance?.deploymentMetadata?.isPersonalDeployment);
 }
 

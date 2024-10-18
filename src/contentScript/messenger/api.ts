@@ -62,9 +62,6 @@ export const updateSidebar = getNotifier("UPDATE_SIDEBAR");
 export const sidebarWasLoaded = getNotifier("SIDEBAR_WAS_LOADED");
 export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 
-export const initRobot = getMethod("UIPATH_INIT");
-export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
-
 export const closeWalkthroughModal = getNotifier("WALKTHROUGH_MODAL_CLOSE");
 export const showWalkthroughModal = getNotifier("WALKTHROUGH_MODAL_SHOW");
 
