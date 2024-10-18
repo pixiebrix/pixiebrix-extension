@@ -32,22 +32,20 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 export async function updateDraftModComponent({
+  type,
   starterBrickDefinition,
-  modComponent: extensionConfig,
+  modComponent,
 }: DraftModComponent): Promise<void> {
   expectContext("contentScript");
 
   // Iframes should not attempt to control the sidebar
   // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
-  if (
-    isLoadedInIframe() &&
-    starterBrickDefinition.definition.type === StarterBrickTypes.SIDEBAR_PANEL
-  ) {
+  if (isLoadedInIframe() && type === StarterBrickTypes.SIDEBAR_PANEL) {
     return;
   }
 
   // HACK: adjust behavior when using the Page Editor
-  if (starterBrickDefinition.definition.type === StarterBrickTypes.TRIGGER) {
+  if (type === StarterBrickTypes.TRIGGER) {
     // Prevent auto-run of interval trigger when using the Page Editor because you lose track of trace across runs
     const triggerDefinition =
       starterBrickDefinition.definition as TriggerDefinition;
@@ -61,18 +59,18 @@ export async function updateDraftModComponent({
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
   // will automatically replace the old panel because the panels are keyed by extension id
-  if (starterBrick.kind !== StarterBrickTypes.SIDEBAR_PANEL) {
-    removeDraftModComponents(extensionConfig.id, { clearTrace: false });
+  if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
+    removeDraftModComponents(modComponent.id, { clearTrace: false });
   }
 
   // In practice, should be a no-op because the Page Editor handles the extensionPoint
-  const resolved = await hydrateModComponentInnerDefinitions(extensionConfig);
+  const resolved = await hydrateModComponentInnerDefinitions(modComponent);
 
   starterBrick.registerModComponent(resolved);
-  await runDraftModComponent(extensionConfig.id, starterBrick);
+  await runDraftModComponent(modComponent.id, starterBrick);
 
-  if (starterBrick.kind === StarterBrickTypes.SIDEBAR_PANEL) {
+  if (type === StarterBrickTypes.SIDEBAR_PANEL) {
     await showSidebar();
-    await activateModComponentPanel(extensionConfig.id);
+    await activateModComponentPanel(modComponent.id);
   }
 }
