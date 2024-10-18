@@ -32,10 +32,9 @@ export async function calculatePermissionsForModComponentFormState(
 ): Promise<{ hasPermissions: boolean; permissions: Permissions.Permissions }> {
   const { asDraftModComponent } = adapterForComponent(modComponentFormState);
 
-  const {
-    extension: modComponent,
-    extensionPointConfig: starterBrickDefinition,
-  } = asDraftModComponent(modComponentFormState);
+  const { modComponent, starterBrickDefinition } = asDraftModComponent(
+    modComponentFormState,
+  );
 
   const starterBrick = starterBrickFactory(starterBrickDefinition);
 

@@ -192,7 +192,7 @@ export async function showSidebar(): Promise<void> {
  * Force-show the panel for the given mod component id
  * @param modComponentId the mod component UUID
  */
-export async function activateExtensionPanel(
+export async function activateModComponentPanel(
   modComponentId: UUID,
 ): Promise<void> {
   expectContext("contentScript");
