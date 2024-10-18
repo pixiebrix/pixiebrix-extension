@@ -43,6 +43,7 @@ import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -56,6 +57,8 @@ const NoModOptions: React.FC = () => (
 const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
+
+  assertNotNullish(activeModId, "activeModId is required");
 
   const {
     data: mod,

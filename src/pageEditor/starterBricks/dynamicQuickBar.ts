@@ -164,10 +164,10 @@ function asDraftModComponent(
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
-    extension: selectModComponent(dynamicQuickBarFormState, {
+    modComponent: selectModComponent(dynamicQuickBarFormState, {
       includeInstanceIds: true,
     }),
-    extensionPointConfig: selectStarterBrickDefinition(
+    starterBrickDefinition: selectStarterBrickDefinition(
       dynamicQuickBarFormState,
     ),
   };

@@ -27,7 +27,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
  * Returns a preview of the output of the reader for a DraftModComponent.
  */
 export async function runStarterBrickReaderPreview(
-  { extensionPointConfig }: Pick<DraftModComponent, "extensionPointConfig">,
+  { starterBrickDefinition }: Pick<DraftModComponent, "starterBrickDefinition">,
   rootSelector: Nullishable<string>,
 ): Promise<JsonObject> {
   expectContext("contentScript");
@@ -61,7 +61,7 @@ export async function runStarterBrickReaderPreview(
     }
   }
 
-  const starterBrick = starterBrickFactory(extensionPointConfig);
+  const starterBrick = starterBrickFactory(starterBrickDefinition);
 
   const reader = await starterBrick.previewReader();
 

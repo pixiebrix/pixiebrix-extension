@@ -22,13 +22,15 @@ import {
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors";
+import { memoize } from "lodash";
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
   selectNotDeletedModComponentFormStates,
   selectIsModComponentDirtyById,
   (activatedModComponents, formStates, isDirtyByComponentId) =>
-    (modId: RegistryId | null) => {
+    // Memoize because method constructs a fresh object reference
+    memoize((modId: RegistryId) => {
       const dirtyModComponentFormStates = formStates.filter(
         (formState) =>
           formState.modMetadata.id === modId &&
@@ -47,5 +49,5 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
         cleanModComponents,
         dirtyModComponentFormStates,
       };
-    },
+    }),
 );

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render, screen, within } from "@/pageEditor/testHelpers";
-import EditorPane from "./EditorPane";
+import ModComponentEditorPane from "./ModComponentEditorPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import brickRegistry from "@/bricks/registry";
@@ -270,7 +270,7 @@ describe("renders", () => {
   test("the first selected node", async () => {
     const formState = getSidebarPanelPlainFormState();
     const { instanceId } = formState.modComponent.brickPipeline[0]!;
-    const { asFragment } = render(<EditorPane />, {
+    const { asFragment } = render(<ModComponentEditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
@@ -285,7 +285,7 @@ describe("renders", () => {
 
   test("a mod component with sub pipeline", async () => {
     const formState = getSidebarFormStateWithSubPipelines();
-    const { asFragment } = render(<EditorPane />, {
+    const { asFragment } = render(<ModComponentEditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
@@ -303,7 +303,7 @@ describe("can add a node", () => {
     const formState = getPlainFormState();
     render(
       <>
-        <EditorPane />
+        <ModComponentEditorPane />
         <AddBrickModal />
       </>,
       {
@@ -339,7 +339,7 @@ describe("can add a node", () => {
     });
     render(
       <>
-        <EditorPane />
+        <ModComponentEditorPane />
         <AddBrickModal />
       </>,
       {
@@ -372,7 +372,7 @@ describe("can add a node", () => {
     const modComponentFormState = getFormStateWithSubPipelines();
     const { getReduxStore } = render(
       <div>
-        <EditorPane />
+        <ModComponentEditorPane />
         <AddBrickModal />
       </div>,
       {
@@ -435,7 +435,7 @@ async function renderEditorPaneWithBasicFormState() {
     modComponentFormState.modComponent.brickPipeline[0]!.instanceId;
   const utils = render(
     <div>
-      <EditorPane />
+      <ModComponentEditorPane />
       <AddBrickModal />
     </div>,
     {
@@ -688,7 +688,7 @@ describe("validation", () => {
     const subEchoNode = (
       formState.modComponent.brickPipeline[1]!.config.body as PipelineExpression
     ).__value__[0]!;
-    const { container } = render(<EditorPane />, {
+    const { container } = render(<ModComponentEditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
@@ -729,7 +729,7 @@ describe("validation", () => {
       modComponent1.modComponent.brickPipeline[0]!;
     const { container, getReduxStore } = render(
       <>
-        <EditorPane />
+        <ModComponentEditorPane />
         <AddBrickModal />
       </>,
       {
@@ -822,7 +822,7 @@ describe("validation", () => {
     );
     const { container } = render(
       <>
-        <EditorPane />
+        <ModComponentEditorPane />
         <AddBrickModal />
       </>,
       {
@@ -860,7 +860,7 @@ describe("validation", () => {
 
     // Selecting the last node (renderer)
     const { instanceId } = formState.modComponent.brickPipeline[2]!;
-    const { container } = render(<EditorPane />, {
+    const { container } = render(<ModComponentEditorPane />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(formState));
         dispatch(editorActions.setActiveModComponentId(formState.uuid));
@@ -910,7 +910,7 @@ describe("validation", () => {
         config: defaultBrickConfig(disallowedBlock.inputSchema),
       });
 
-      const { container } = render(<EditorPane />, {
+      const { container } = render(<ModComponentEditorPane />, {
         setupRedux(dispatch) {
           dispatch(editorActions.addModComponentFormState(formState));
           dispatch(editorActions.setActiveModComponentId(formState.uuid));
@@ -966,7 +966,7 @@ describe("brick validation in Add Brick Modal UI", () => {
       const formState = formFactory();
       render(
         <>
-          <EditorPane />
+          <ModComponentEditorPane />
           <AddBrickModal />
         </>,
         {
@@ -1008,7 +1008,7 @@ describe("brick validation in Add Brick Modal UI", () => {
     const formState = formStateFactory();
     render(
       <>
-        <EditorPane />
+        <ModComponentEditorPane />
         <AddBrickModal />
       </>,
       {
