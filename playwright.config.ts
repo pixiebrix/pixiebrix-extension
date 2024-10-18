@@ -68,8 +68,7 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: Boolean(CI),
   /* Retry on CI only to catch flakiness */
-  // retries: CI ? 2 : 0,
-  retries: 0,
+  retries: CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: CI ? 1 : 2,
   /* Timeout for each test, if a test should take longer than this, use `test.slow()` */
@@ -99,15 +98,14 @@ export default defineConfig<{ chromiumChannel: string }>({
     ["json", { outputFile: "./end-to-end-tests/.report/report.json" }],
   ],
   // /* Repeat each test N times. Useful for catching flaky test. */
-  repeatEach: 2,
+  // repeatEach: 3,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: "https://pbx.vercel.app",
 
     /* Collect trace when retrying the failed test in CI, and always on failure when running locally. See https://playwright.dev/docs/trace-viewer */
-    // trace: CI ? "on-first-retry" : "retain-on-failure",
-    trace: "retain-on-failure",
+    trace: CI ? "on-first-retry" : "retain-on-failure",
 
     /* Set the default timeout for actions such as `click` */
     actionTimeout: DEFAULT_TIMEOUT,
