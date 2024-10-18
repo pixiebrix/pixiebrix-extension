@@ -15,6 +15,7 @@ import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
 import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
 import { UNSAFE_assumeFeatureFlag } from "@/testUtils/factories/featureFlagFactories";
+import { cloneDeep } from "lodash";
 
 /**
  * A test helper brick that returns and stores the BrickOptions.context.
@@ -60,7 +61,7 @@ export class OptionsBrick extends BrickABC {
 
   async run(_arg: BrickArgs, options: BrickOptions): Promise<BrickOptions> {
     OptionsBrick.options.push(options);
-    return structuredClone(options);
+    return cloneDeep(options);
   }
 }
 
