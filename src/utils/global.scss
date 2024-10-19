@@ -24,3 +24,11 @@ html {
   /* https://github.com/pixiebrix/pixiebrix-extension/issues/3597 */
   overflow-wrap: anywhere;
 }
+
+// Automatically grow textareas to fit their content
+textarea {
+  field-sizing: content;
+
+  // This keeps the textarea from growing horizontally
+  overflow-wrap: anywhere;
+}

@@ -236,8 +236,6 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
     <Form.Control
       as="textarea"
       rows="1"
-      // Resize the textarea to fit the new value
-      style={{fieldSizing: "content"}}
       {...restInputProps}
       {...formControlProps}
       value={fieldInputValue}
