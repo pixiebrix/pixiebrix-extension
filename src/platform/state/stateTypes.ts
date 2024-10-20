@@ -50,7 +50,7 @@ export type SyncPolicy = ValueOf<typeof SyncPolicies>;
 /**
  * JavaScript event name fired for state change events.
  */
-export const STATE_CHANGE_JS_EVENT_TYPE = "statechange" as const;
+export const STATE_CHANGE_JS_EVENT_TYPE = "statechange";
 
 /**
  * Event detail fired when mod state changes.

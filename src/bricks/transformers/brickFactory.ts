@@ -148,7 +148,6 @@ class UserDefinedBrick extends BrickABC {
     super(id, name, description);
     // Fall back to v1 for backward compatability
     this.apiVersion = component.apiVersion ?? "v1";
-    this.component = component;
     this.inputSchema = this.component.inputSchema;
     this.uiSchema = this.component.uiSchema;
     this.outputSchema = this.component.outputSchema;

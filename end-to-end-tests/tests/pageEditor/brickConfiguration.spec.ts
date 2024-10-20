@@ -84,7 +84,9 @@ test("brick configuration", async ({
 
     // TODO: better locators / pom helpers for filling one input of a multi input field.
     await brickConfigurationPanel
-      .locator('[id="starterBrick\\.definition\\.documentUrlPatterns\\.5"]')
+      .locator(
+        String.raw`[id="starterBrick\.definition\.documentUrlPatterns\.5"]`,
+      )
       .fill("https://somePattern.com");
     await brickConfigurationPanel.waitForModFormStateToUpdate();
 

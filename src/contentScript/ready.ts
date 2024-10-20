@@ -84,13 +84,16 @@ export function setContentScriptState(newState: "installed" | "ready"): void {
 export async function isTargetReady(target: Target): Promise<boolean> {
   forbidContext("contentScript");
   try {
-    const response = (await browser.tabs.sendMessage(
+    const response = await browser.tabs.sendMessage<
+      Record<"type", string>,
+      true | undefined
+    >(
       target.tabId,
       {
         type: CONTENT_SCRIPT_READINESS_CHECK,
       },
       { frameId: target.frameId },
-    )) as true | undefined;
+    );
     // `undefined` means `chrome.runtime.onMessage.addListener` was called in that context, but no one answered this specific message
     return response ?? false;
   } catch {

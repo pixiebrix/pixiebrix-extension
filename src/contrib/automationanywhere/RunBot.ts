@@ -58,7 +58,7 @@ export const COMMON_PROPERTIES: SchemaProperties = {
   fileId: {
     type: "string",
     description: "The file id of the bot",
-    format: "\\d+",
+    format: String.raw`\d+`,
   },
   data: {
     type: "object",
@@ -71,7 +71,7 @@ const COMMUNITY_EDITION_PROPERTIES: SchemaProperties = {
   deviceId: {
     type: "string",
     description: "The device to run the bot",
-    format: "\\d+",
+    format: String.raw`\d+`,
   },
 };
 

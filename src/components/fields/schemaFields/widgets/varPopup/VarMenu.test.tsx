@@ -182,7 +182,7 @@ describe("VarMenu", () => {
     // @inp matches @input
     expect(screen.getByText("@input")).toBeInTheDocument();
 
-    // eslint-disable-next-line @shopify/jest/no-snapshots -- verifies the menu is rendered as expected
+    // eslint-disable-next-line @shopify/jest-no-snapshots -- verifies the menu is rendered as expected
     expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -49,7 +49,7 @@ export const RUN_API_TASK_INPUT_SCHEMA: SetRequired<Schema, "properties"> = {
       type: "string",
       title: "Automation ID",
       description: "The id of the API Task to deploy",
-      format: "\\d+",
+      format: String.raw`\d+`,
     },
     sharedRunAsUserId: {
       type: "number",

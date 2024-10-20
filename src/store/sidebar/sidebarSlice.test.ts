@@ -112,7 +112,7 @@ describe("sidebarSlice.addTemporaryPanel", () => {
       temporaryPanels: [existingPanel, otherExistingPanel],
     };
 
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment -- Flaky error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Flaky error
     // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite"
     const store = configureStore({
       reducer: { sidebar: sidebarSlice.reducer },
@@ -558,7 +558,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as Draft<SidebarState>;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- Flaky error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Flaky error
     // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite"
     fixActiveTabOnRemoveInPlace(state, newPanel);
 

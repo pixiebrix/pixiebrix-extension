@@ -74,20 +74,22 @@ describe("generateSelector", () => {
 describe("getAttributeSelector", () => {
   test("find ID selectors", () => {
     expect(getAttributeSelector("id", "hello")).toBe("#hello");
-    expect(getAttributeSelector("id", "example.com")).toBe("#example\\.com");
+    expect(getAttributeSelector("id", "example.com")).toBe(
+      String.raw`#example\.com`,
+    );
   });
   test("find title selectors", () => {
     expect(getAttributeSelector("title", "Book")).toBe("[title='Book']");
     expect(getAttributeSelector("title", "Book name")).toBe(
-      "[title='Book\\ name']",
+      String.raw`[title='Book\ name']`,
     );
     expect(getAttributeSelector("title", 'The "Great" Gatsby')).toBe(
-      "[title='The\\ \\\"Great\\\"\\ Gatsby']",
+      String.raw`[title='The\ \"Great\"\ Gatsby']`,
     );
   });
   test("find aria attribute selectors", () => {
     expect(getAttributeSelector("aria-title", "Your email")).toBe(
-      "[aria-title='Your\\ email']",
+      String.raw`[aria-title='Your\ email']`,
     );
   });
   test("exclude non-unique selectors", () => {
@@ -170,7 +172,7 @@ describe("safeCssSelector", () => {
 
   test("infer title attribute", () => {
     expectSelector(
-      "[title='The\\ \\\"Great\\\"\\ Gatsby']",
+      String.raw`[title='The\ \"Great\"\ Gatsby']`,
       html`
         <ul>
           <li><a title='The "Great" Gatsby' href="/about">About</a></li>
@@ -210,7 +212,7 @@ describe("safeCssSelector", () => {
 
   test("skip unstable attributes IDs", () => {
     expectSelector(
-      "[aria-label='The\\ link']",
+      String.raw`[aria-label='The\ link']`,
       html`
         <ul>
           <li>

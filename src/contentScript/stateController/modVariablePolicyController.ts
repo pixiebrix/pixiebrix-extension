@@ -85,10 +85,7 @@ function mapModVariablesToModSyncPolicy(
             );
           }
 
-          return [
-            key,
-            variablePolicy as Exclude<SyncPolicy, typeof SyncPolicies.NONE>,
-          ];
+          return [key, variablePolicy];
         }
 
         return null;
