@@ -203,6 +203,7 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/chrome": "^0.0.277",
     "@types/diff": "^5.2.3",
+    "@types/dom-chromium-ai": "^0.0.2",
     "@types/dom-navigation": "^1.0.4",
     "@types/dompurify": "^3.0.5",
     "@types/downloadjs": "^1.4.6",
