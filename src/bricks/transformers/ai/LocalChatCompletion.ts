@@ -53,7 +53,7 @@ class LocalChatCompletionTransformer extends TransformerABC {
     super(
       LocalChatCompletionTransformer.BRICK_ID,
       "[Experimental] Local AI Chat Completion",
-      "Run a AI chat completion locally using Gemini Nano",
+      "Run an AI chat completion locally using Gemini Nano",
     );
   }
 
@@ -95,11 +95,14 @@ class LocalChatCompletionTransformer extends TransformerABC {
       },
       temperature: {
         type: "number",
-        description: "The temperature for the AI",
+        description:
+          "The temperature for the language model, typically between 0 and 1",
+        minimum: 0,
       },
       topK: {
-        type: "number",
-        description: "The topK for the AI",
+        type: "integer",
+        description: "The topK for the language model",
+        minimum: 0,
       },
     },
     ["messages"],

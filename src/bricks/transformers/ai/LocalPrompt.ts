@@ -45,7 +45,7 @@ class LocalPromptTransformer extends TransformerABC {
     super(
       LocalPromptTransformer.BRICK_ID,
       "[Experimental] Local AI Prompt",
-      "Run a AI prompt locally using Gemini Nano",
+      "Run an AI prompt locally using Gemini Nano",
     );
   }
 
@@ -75,11 +75,14 @@ class LocalPromptTransformer extends TransformerABC {
       },
       temperature: {
         type: "number",
-        description: "The temperature for the language model",
+        description:
+          "The temperature for the language model, typically between 0 and 1",
+        minimum: 0,
       },
       topK: {
-        type: "number",
+        type: "integer",
         description: "The topK for the language model",
+        minimum: 0,
       },
     },
     ["prompt"],
