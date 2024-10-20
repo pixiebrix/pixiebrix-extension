@@ -32,7 +32,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import type { RunReason } from "@/types/runtimeTypes";
 
-// Iframes should not attempt to control top-level frame elements, i.e., the sidebar or quick bar
+// Iframes should not attempt to control top-level frame page elements, i.e., the sidebar or quick bar
 // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
 const TopFrameStarterBricks = [
   StarterBrickTypes.SIDEBAR_PANEL,
@@ -70,8 +70,7 @@ export async function updateDraftModComponent(
   const starterBrick = starterBrickFactory(starterBrickDefinition);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
-  // will automatically replace the old panel because the panels are keyed by extension id
-  // XXX: can we use preserveSidebar option flag instead?
+  // will automatically replace the old panel because the panels are keyed by mod component id
   if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
     removeDraftModComponents(modComponent.id, { clearTrace: false });
   }

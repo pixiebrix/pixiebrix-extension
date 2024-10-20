@@ -30,7 +30,7 @@ import { navigationEvent } from "@/pageEditor/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
-  selectExpandedModId,
+  selectCurrentModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
@@ -104,10 +104,11 @@ function useOnSelectModComponent(
  * Hook to register/inject selected mod draft to the current page, and re-register on top-level frame navigation.
  *
  * Mod components within the selected mod draft are registered:
- * - On initial load, to ensure the draft mod instance is always present
- * - On page navigation, to ensure the draft mod instance is always present
- * - On select, to prevent interval triggers from running when selected
- * - When a non-selected mod component is updated (selected mod component is updated by ReloadToolbar)
+ * 1. On initial mount, to ensure the draft mod instance is always present
+ * 2. On select, to prevent interval triggers from running when selected
+ * 3. On page navigation, to ensure the draft mod instance is always present
+ * 4. When a non-selected mod component is updated. E.g., mod option values are updated. (Updating the selected mod
+ * component is updated by ReloadToolbar.)
  *
  * @see ReloadToolbar
  * @see RunReason.PAGE_EDITOR_REGISTER
@@ -116,19 +117,19 @@ function useOnSelectModComponent(
 function useRegisterDraftModInstanceOnAllFrames(): void {
   const dispatch = useDispatch();
 
-  const modId = useSelector(selectExpandedModId);
+  const modId = useSelector(selectCurrentModId);
   assertNotNullish(modId, "modId is required");
 
   const modInstanceMap = useSelector(selectModInstanceMap);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+  const getEditorInstance = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
 
   const activatedModInstance = modInstanceMap.get(modId);
-  const editorInstance = getCleanComponentsAndDirtyFormStatesForMod(modId);
+  const editorInstance = getEditorInstance(modId);
 
   useAsyncEffect(async () => {
     if (activatedModInstance) {
@@ -162,9 +163,10 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
       if (!isSelectedInEditor) {
         const draftModComponent = formStateToDraftModComponent(draftFormState);
 
-        // PERFORMANCE: only re-register if the component's state has changed. It would be safe to updateDraftModComponent
-        // on every change to the mod (even for different mod components), but computing the hash is cheaper.
-        // An additional benefit of skipping re-register is that interval triggers won't have their interval reset.
+        // PERFORMANCE: only re-register if the component's state has changed. It would technically be safe to
+        // updateDraftModComponent on every change to the mod (even for different mod components), but computing the
+        // hash is cheaper. An additional benefit of skipping re-register is that interval triggers won't
+        // have their interval reset.
         const stateHash = hash({
           draftModComponent,
           isSelectedInEditor,
@@ -204,7 +206,7 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
         await removeActivatedModInstanceFromTab(activatedModInstance);
       }
 
-      // FIXME: should the navigation handler force runReason to be PAGE_EDITOR_RUN? For SPA navigation, the normal
+      // XXX: should the navigation handler force runReason to be PAGE_EDITOR_RUN? For SPA navigation, the normal
       //  page lifecycle will handle. For full navigation, there's a race between the lifecycle running the activated
       //  mod components and the Page Editor removing the activated mod components. Ideally, the draft mod instance
       //  would take precedence.
