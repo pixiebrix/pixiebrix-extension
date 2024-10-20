@@ -611,9 +611,11 @@ export const editorSlice = createSlice({
       const modComponentFormState = state.modComponentFormStates.find(
         (x) => action.payload === x.uuid,
       );
-      if (!modComponentFormState) {
-        throw new Error(`Unknown draft mod component: ${action.payload}`);
-      }
+
+      assertNotNullish(
+        modComponentFormState,
+        `Unknown draft mod component: ${action.payload}`,
+      );
 
       modComponentFormState.installed = true;
       state.dirty[modComponentFormState.uuid] = false;

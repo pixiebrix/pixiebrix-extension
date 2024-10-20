@@ -42,6 +42,8 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { RunReason } from "@/types/runtimeTypes";
 import type { UUID } from "@/types/stringTypes";
 import hash from "object-hash";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
+import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 /**
  * Map from draft mod component UUID to object-hash of updated draft. Used to avoid unnecessary re-injection.
@@ -75,24 +77,55 @@ async function removeActivatedModInstanceFromTab(
   );
 }
 
+function useOnSelectModComponent(
+  callback: (formState: ModComponentFormState) => void,
+): void {
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+
+  // Watching for value seems a bit hacky (e.g. as opposed to watching for editorSlice actions that could impact the
+  // activeModComponentFormState). But it's a simple method that does not require maintaining the list of actions that
+  // *might* impact the selected mod component form state.
+  const previousActiveModComponentFormState = usePreviousValue(
+    activeModComponentFormState,
+  );
+
+  if (
+    activeModComponentFormState?.uuid &&
+    activeModComponentFormState.uuid !==
+      previousActiveModComponentFormState?.uuid
+  ) {
+    callback(activeModComponentFormState);
+  }
+}
+
 /**
  * Hook to register/inject selected mod draft to the current page, and re-register on top-level frame navigation.
+ *
+ * Mod components within the selected mod draft are registered:
+ * - On initial load, to ensure the draft mod instance is always present
+ * - On page navigation, to ensure the draft mod instance is always present
+ * - On select, to prevent interval triggers from running when selected
+ * - When a non-selected mod component is updated (selected mod component is updated by ReloadToolbar)
+ *
  * @see ReloadToolbar
  * @see RunReason.PAGE_EDITOR_REGISTER
  * @since 2.1.6
  */
 function useRegisterDraftModInstanceOnAllFrames(): void {
   const dispatch = useDispatch();
+
   const modId = useSelector(selectExpandedModId);
+  assertNotNullish(modId, "modId is required");
+
+  const modInstanceMap = useSelector(selectModInstanceMap);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
-  const modInstanceMap = useSelector(selectModInstanceMap);
-
-  assertNotNullish(modId, "modId is required");
 
   const activatedModInstance = modInstanceMap.get(modId);
   const editorInstance = getCleanComponentsAndDirtyFormStatesForMod(modId);
@@ -149,9 +182,20 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
     }
   }, [activeModComponentFormState, editorInstance]);
 
+  // Run updateDraftModInstance whenever the mod instance configuration changes
   useAsyncEffect(async () => {
     await updateDraftModInstance();
   }, [updateDraftModInstance]);
+
+  // Register draft mod component on select. From there, ReloadToolbar will control re-running the mod component.
+  // Currently, registering on select is to stop interval triggers from running when selected.
+  useOnSelectModComponent(async (draftFormState) => {
+    const draftModComponent = formStateToDraftModComponent(draftFormState);
+    updateDraftModComponent(allFramesInInspectedTab, draftModComponent, {
+      isSelectedInEditor: true,
+      runReason: RunReason.PAGE_EDITOR_REGISTER,
+    });
+  });
 
   useEffect(() => {
     const callback = async () => {
