@@ -47,8 +47,6 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { appApi } from "@/data/service/api";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
-import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -92,26 +90,6 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
 
         const modComponentFormState =
           await modComponentToFormState(modComponent);
-
-        // Initialize mod options schema if needed
-        const { data: modDefinition } = await getModDefinition(
-          { modId: modComponent.modMetadata.id },
-          true,
-        );
-        if (modDefinition) {
-          modComponentFormState.optionsDefinition =
-            modDefinition.options == null
-              ? emptyModOptionsDefinitionFactory()
-              : {
-                  schema: modDefinition.options.schema.properties
-                    ? modDefinition.options.schema
-                    : ({
-                        type: "object",
-                        properties: modDefinition.options.schema,
-                      } as Schema),
-                  uiSchema: modDefinition.options.uiSchema,
-                };
-        }
 
         dispatch(
           actions.selectActivatedModComponentFormState(modComponentFormState),

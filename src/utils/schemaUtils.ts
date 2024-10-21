@@ -55,7 +55,7 @@ export function missingProperties(
  */
 export function propertiesToSchema(
   properties: SchemaProperties,
-  required: string[],
+  required: Array<keyof SchemaProperties>,
 ): Schema {
   return {
     $schema: "https://json-schema.org/draft/2019-09/schema#",

@@ -43,7 +43,7 @@ export function normalizeStarterBrickDefinitionProp(
 /**
  * Return true if the two starter brick definitions are equal modulo normalization.
  */
-export function isStarterBrickDefinitionPropEqual(
+function isStarterBrickDefinitionPropEqual(
   lhs: unknown,
   rhs: unknown,
 ): boolean {

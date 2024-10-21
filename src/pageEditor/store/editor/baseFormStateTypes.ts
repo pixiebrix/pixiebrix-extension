@@ -30,10 +30,7 @@ import {
   type ModComponentBaseV3,
   type ModMetadata,
 } from "@/types/modComponentTypes";
-import {
-  type ModOptionsDefinition,
-  type ModVariablesDefinition,
-} from "@/types/modDefinitionTypes";
+import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type NormalizedAvailability } from "@/types/availabilityTypes";
@@ -140,13 +137,6 @@ export interface BaseFormStateV1<
    * @see ModComponentBase.metadata
    */
   recipe: ModComponentBaseV3["_recipe"] | undefined;
-
-  /**
-   * Information about the mod options or `undefined`
-   * if the mod component is not part of a mod.
-   * @see ModDefinition.options
-   */
-  optionsDefinition?: ModOptionsDefinition;
 }
 
 /**
