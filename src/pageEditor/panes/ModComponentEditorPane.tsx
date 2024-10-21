@@ -35,6 +35,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -81,6 +82,9 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 };
 
 const ModComponentEditorPane: React.VFC = () => {
+  // Inject the draft mod instance into the page while editing
+  useRegisterDraftModInstanceOnAllFrames();
+
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

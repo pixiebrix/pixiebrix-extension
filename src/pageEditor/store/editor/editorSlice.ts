@@ -379,6 +379,12 @@ export const editorSlice = createSlice({
       setActiveModId(state, modId);
     },
 
+    /**
+     * Select the mod component with the given ID. NOTE: this action is only navigational. The form state must have
+     * already been added to the Page Editor using addModComponentFormState
+     * @see addModComponentFormState
+     * @see selectActivatedModComponentFormState
+     */
     setActiveModComponentId(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
       const modComponentFormState = state.modComponentFormStates.find(
@@ -389,24 +395,6 @@ export const editorSlice = createSlice({
         modComponentFormState,
         `Unknown draft mod component: ${action.payload}`,
       );
-
-      setActiveModComponentId(state, modComponentFormState);
-    },
-
-    selectActivatedModComponentFormState(
-      state,
-      action: PayloadAction<ModComponentFormState>,
-    ) {
-      const modComponentFormState =
-        action.payload as Draft<ModComponentFormState>;
-      const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentFormState.uuid,
-      );
-      if (index >= 0) {
-        state.modComponentFormStates[index] = modComponentFormState;
-      } else {
-        state.modComponentFormStates.push(modComponentFormState);
-      }
 
       setActiveModComponentId(state, modComponentFormState);
     },
@@ -550,6 +538,7 @@ export const editorSlice = createSlice({
     /// MOD COMPONENT OPERATIONS
     ///
 
+    // XXX: reconcile with selectActivatedModComponentFormState
     addModComponentFormState(
       state,
       action: PayloadAction<ModComponentFormState>,
@@ -577,6 +566,25 @@ export const editorSlice = createSlice({
         modComponentFormState as Draft<ModComponentFormState>,
       );
       state.dirty[modComponentFormState.uuid] = true;
+
+      setActiveModComponentId(state, modComponentFormState);
+    },
+
+    // XXX: reconcile with addModComponentFormState
+    selectActivatedModComponentFormState(
+      state,
+      action: PayloadAction<ModComponentFormState>,
+    ) {
+      const modComponentFormState =
+        action.payload as Draft<ModComponentFormState>;
+      const index = state.modComponentFormStates.findIndex(
+        (x) => x.uuid === modComponentFormState.uuid,
+      );
+      if (index >= 0) {
+        state.modComponentFormStates[index] = modComponentFormState;
+      } else {
+        state.modComponentFormStates.push(modComponentFormState);
+      }
 
       setActiveModComponentId(state, modComponentFormState);
     },
@@ -611,9 +619,11 @@ export const editorSlice = createSlice({
       const modComponentFormState = state.modComponentFormStates.find(
         (x) => action.payload === x.uuid,
       );
-      if (!modComponentFormState) {
-        throw new Error(`Unknown draft mod component: ${action.payload}`);
-      }
+
+      assertNotNullish(
+        modComponentFormState,
+        `Unknown draft mod component: ${action.payload}`,
+      );
 
       modComponentFormState.installed = true;
       state.dirty[modComponentFormState.uuid] = false;

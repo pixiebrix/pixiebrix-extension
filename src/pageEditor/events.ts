@@ -20,6 +20,10 @@ import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
 
+/**
+ * Navigation event fired when the inspected tab navigates, or the extension gains access to the tab.
+ * @see browser.webNavigation
+ */
 export const navigationEvent = new SimpleEventTarget<NavigationDetails>();
 
 export function updatePageEditor() {

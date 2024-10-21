@@ -1,4 +1,4 @@
-import { type JsonValue, type Promisable } from "type-fest";
+import { type Promisable } from "type-fest";
 
 /** Attach a MutationObserver specifically for a selector */
 const initialize: (

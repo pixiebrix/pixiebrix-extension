@@ -381,7 +381,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       [
         RunReason.MANUAL,
         RunReason.INITIAL_LOAD,
-        RunReason.PAGE_EDITOR,
+        RunReason.PAGE_EDITOR_RUN,
       ].includes(reason)
     ) {
       void this.debouncedRefreshPanels(this.modComponents);
