@@ -27,7 +27,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { navigationEvent } from "@/pageEditor/events";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectCurrentModId,
@@ -115,8 +115,6 @@ function useOnSelectModComponent(
  * @since 2.1.6
  */
 function useRegisterDraftModInstanceOnAllFrames(): void {
-  const dispatch = useDispatch();
-
   const modId = useSelector(selectCurrentModId);
   assertNotNullish(modId, "modId is required");
 
@@ -218,7 +216,7 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
     return () => {
       navigationEvent.remove(callback);
     };
-  }, [dispatch, updateDraftModInstance, activatedModInstance]);
+  }, [updateDraftModInstance, activatedModInstance]);
 }
 
 export default useRegisterDraftModInstanceOnAllFrames;
