@@ -40,10 +40,10 @@ async function getStarterBrickType(
     const definition: StarterBrickDefinitionProp = modDefinition.definitions[
       modComponentDefinition.id
     ]!.definition as StarterBrickDefinitionProp;
-    const extensionPointType = definition?.type;
+    const starterBrickType = definition?.type;
 
-    if (extensionPointType) {
-      return extensionPointType;
+    if (starterBrickType) {
+      return starterBrickType;
     }
   }
 
@@ -85,10 +85,10 @@ export async function getContainedStarterBrickTypes(
 export async function includesQuickBarStarterBrick(
   modDefinition?: ModDefinition,
 ): Promise<boolean> {
-  const resolvedExtensionDefinitions =
+  const resolvedInnerDefinitions =
     (await hydrateModInnerDefinitions(modDefinition)) ?? [];
 
-  for (const { id } of resolvedExtensionDefinitions) {
+  for (const { id } of resolvedInnerDefinitions) {
     // eslint-disable-next-line no-await-in-loop -- can break when we find one
     const starterBrick = await starterBrickRegistry.lookup(id);
     if (

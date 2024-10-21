@@ -271,7 +271,7 @@ export function TEST_getDraftModComponentStarterBrickMap(): Map<
 }
 
 /**
- * Remove a mod component on the page if a activated mod component (i.e. in modComponentSlice).
+ * Remove a mod component on the page if an activated mod component (i.e. in modComponentSlice).
  *
  * @see removeDraftModComponents
  */
@@ -286,10 +286,10 @@ export function removeActivatedModComponent(modComponentId: UUID): void {
 /**
  * Remove draft mod components(s) from the frame.
  *
- * NOTE: if the draft mod component was taking the place of a activated mod component, call `reloadFrame` or a similar
- * method for the mod component to be reloaded.
+ * NOTE: if the draft mod component was taking the place of an activated mod component, call `reloadFrameMods` or a
+ * similar method for the mod component to be reloaded.
  *
- * NOTE: this works by removing all mod components attached to the starter brick. Call `reloadFrame` or a similar
+ * NOTE: this works by removing all mod components attached to the starter brick. Call `reloadFrameMods` or a similar
  * method to re-install/run the activated mod components.
  *
  * @param modComponentId an optional draft mod component id, or undefined to remove all draft mod components
@@ -367,6 +367,7 @@ function notifyNavigationListeners(): void {
 export async function runDraftModComponent(
   modComponentId: UUID,
   starterBrick: StarterBrick,
+  { runReason }: { runReason: RunReason },
 ): Promise<void> {
   // Uninstall the activated mod component instance in favor of the draft mod component
   if (_activatedModComponentStarterBrickMap.has(modComponentId)) {
@@ -385,8 +386,7 @@ export async function runDraftModComponent(
   _draftModComponentStarterBrickMap.set(modComponentId, starterBrick);
 
   await runStarterBrick(starterBrick, {
-    // The Page Editor is the only caller for runDynamic
-    reason: RunReason.PAGE_EDITOR,
+    reason: runReason,
     modComponentIds: [modComponentId],
     abortSignal: navigationListeners.signal,
   });

@@ -30,22 +30,34 @@ import {
 } from "@/contentScript/sidebarController";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import type { RunReason } from "@/types/runtimeTypes";
 
-export async function updateDraftModComponent({
-  type,
-  starterBrickDefinition,
-  modComponent,
-}: DraftModComponent): Promise<void> {
+// Iframes should not attempt to control top-level frame page elements, i.e., the sidebar or quick bar
+// https://github.com/pixiebrix/pixiebrix-extension/pull/8226
+const TopFrameStarterBricks = [
+  StarterBrickTypes.SIDEBAR_PANEL,
+  StarterBrickTypes.QUICK_BAR_ACTION,
+  StarterBrickTypes.DYNAMIC_QUICK_BAR,
+];
+
+export async function updateDraftModComponent(
+  { type, starterBrickDefinition, modComponent }: DraftModComponent,
+  {
+    isSelectedInEditor,
+    runReason,
+  }: {
+    isSelectedInEditor: boolean;
+    runReason: RunReason;
+  },
+): Promise<void> {
   expectContext("contentScript");
 
-  // Iframes should not attempt to control the sidebar
-  // https://github.com/pixiebrix/pixiebrix-extension/pull/8226
-  if (isLoadedInIframe() && type === StarterBrickTypes.SIDEBAR_PANEL) {
+  if (isLoadedInIframe() && !TopFrameStarterBricks.includes(type)) {
     return;
   }
 
-  // HACK: adjust behavior when using the Page Editor
-  if (type === StarterBrickTypes.TRIGGER) {
+  // HACK: adjust behavior when editing the mod component using the Page Editor
+  if (type === StarterBrickTypes.TRIGGER && isSelectedInEditor) {
     // Prevent auto-run of interval trigger when using the Page Editor because you lose track of trace across runs
     const triggerDefinition =
       starterBrickDefinition.definition as TriggerDefinition;
@@ -58,18 +70,18 @@ export async function updateDraftModComponent({
   const starterBrick = starterBrickFactory(starterBrickDefinition);
 
   // Don't clear actionPanel because it causes flicking between the tabs in the sidebar. The updated draft mod component
-  // will automatically replace the old panel because the panels are keyed by extension id
+  // will automatically replace the old panel because the panels are keyed by mod component id
   if (type !== StarterBrickTypes.SIDEBAR_PANEL) {
     removeDraftModComponents(modComponent.id, { clearTrace: false });
   }
 
-  // In practice, should be a no-op because the Page Editor handles the extensionPoint
+  // In practice, should be a no-op because the Page Editor handles hydrating the starterBrick
   const resolved = await hydrateModComponentInnerDefinitions(modComponent);
 
   starterBrick.registerModComponent(resolved);
-  await runDraftModComponent(modComponent.id, starterBrick);
+  await runDraftModComponent(modComponent.id, starterBrick, { runReason });
 
-  if (type === StarterBrickTypes.SIDEBAR_PANEL) {
+  if (type === StarterBrickTypes.SIDEBAR_PANEL && isSelectedInEditor) {
     await showSidebar();
     await activateModComponentPanel(modComponent.id);
   }

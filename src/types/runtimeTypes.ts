@@ -197,10 +197,20 @@ export enum RunReason {
    */
   MUTATION = 4,
   /**
-   * Page Editor updated the ModComponent
+   * Page Editor ran the ModComponent either because:
+   * - The user clicked the "Run" button, or
+   * - The user turned on auto-reload for the ModComponent and made a change
    * @since 1.7.19
+   * @see ReloadToolbar
    */
-  PAGE_EDITOR = 5,
+  PAGE_EDITOR_RUN = 5,
+  /**
+   * Page Editor registered/re-register the ModComponent instance. Intended to re-attach buttons/triggers without
+   * re-running attached bricks immediately.
+   * @since 2.1.6
+   * @see useRegisterDraftModInstanceOnAllFrames
+   */
+  PAGE_EDITOR_REGISTER = 6,
 }
 
 /**
