@@ -59,7 +59,7 @@ type InnerDefinition = StarterBrickInnerDefinition | BrickInnerDefinition;
 /**
  * Calculate the unique id for an inner definition. Definitions with the same structure will produce the same id.
  */
-export function calculateInnerRegistryId(obj: UnknownObject): RegistryId {
+function calculateInnerRegistryId(obj: UnknownObject): RegistryId {
   const hash = objectHash(obj);
   return `${INNER_SCOPE}/${hash}` as RegistryId;
 }
