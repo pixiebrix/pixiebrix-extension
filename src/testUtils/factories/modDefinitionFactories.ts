@@ -183,7 +183,7 @@ type InnerStarterBrickParams = {
 /**
  * Factory to create a factory that creates a ModDefinition that contains inner definitions
  */
-export const innerStarterBrickModDefinitionFactory = ({
+const innerStarterBrickModDefinitionFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
 }: InnerStarterBrickParams = {}) =>
   extend<ModDefinition, ModDefinition>(modDefinitionFactory, {
