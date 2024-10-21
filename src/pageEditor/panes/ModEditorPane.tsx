@@ -34,12 +34,15 @@ import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor";
+import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const activeModId = useSelector(selectActiveModId);
+  // Inject the draft mod instance into the page while editing
+  useRegisterDraftModInstanceOnAllFrames();
 
+  const activeModId = useSelector(selectActiveModId);
   const editorUpdateKey = useSelector(selectEditorUpdateKey);
   const layoutKey = `${activeModId}-${editorUpdateKey}`;
 

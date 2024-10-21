@@ -72,18 +72,34 @@ export const selectActiveModComponentFormState = createSelector(
 );
 
 /**
- * Select the id of the mod being edited. Is null when editing a mod component within the mod.
- * @see selectExpandedModId
+ * Select the id of the mod being edited. NOTE: is null when editing a mod component within the mod.
+ * @see selectModId
+ * @see selectCurrentModId
  */
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;
 
 /**
- * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane.
+ * Select the id of the "expanded" mod in the accordian layout in the Mod Listing Pane. NOTE: is null if the
+ * user has collapsed item for the mod.
  * @see selectActiveModId
+ * @see selectModId
  */
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
   editor.expandedModId;
+
+/**
+ * Select the mod id associated with the selected mod package or mod component. Should be used if the caller doesn't
+ * need to know if the mod item or one of its components is selected.
+ * @see selectActiveModId
+ * @see selectExpandedModId
+ */
+export const selectCurrentModId = createSelector(
+  selectActiveModId,
+  selectActiveModComponentFormState,
+  (activeModId, activeModComponentFormState) =>
+    activeModId ?? activeModComponentFormState?.modMetadata.id,
+);
 
 /**
  * Select a runtime ModComponentRef for the mod component being edited

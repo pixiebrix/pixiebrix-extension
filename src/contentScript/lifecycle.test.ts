@@ -37,6 +37,7 @@ import { type getModComponentState } from "@/store/modComponents/modComponentSto
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { RunReason } from "@/types/runtimeTypes";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;
@@ -172,7 +173,9 @@ describe("lifecycle", () => {
       await hydrateModComponentInnerDefinitions(modComponent),
     );
 
-    await lifecycleModule.runDraftModComponent(modComponent.id, starterBrick);
+    await lifecycleModule.runDraftModComponent(modComponent.id, starterBrick, {
+      runReason: RunReason.PAGE_EDITOR_RUN,
+    });
 
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
     expect(
@@ -217,7 +220,9 @@ describe("lifecycle", () => {
       await hydrateModComponentInnerDefinitions(modComponent),
     );
 
-    await lifecycleModule.runDraftModComponent(modComponent.id, starterBrick);
+    await lifecycleModule.runDraftModComponent(modComponent.id, starterBrick, {
+      runReason: RunReason.PAGE_EDITOR_RUN,
+    });
 
     // Still only a single starter brick
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);

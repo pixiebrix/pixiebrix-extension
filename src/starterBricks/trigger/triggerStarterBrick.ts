@@ -66,7 +66,11 @@ import { type UUID } from "@/types/stringTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type SelectorRoot } from "@/types/runtimeTypes";
+import {
+  type RunArgs,
+  RunReason,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 import {
   type StarterBrick,
@@ -80,6 +84,7 @@ import {
 import { sleep } from "@/utils/timeUtils";
 import {
   $safeFind,
+  isInViewport,
   runOnDocumentVisible,
   waitAnimationFrame,
 } from "@/utils/domUtils";
@@ -88,7 +93,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
@@ -616,7 +621,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private async getRoot(): Promise<JQuery<TriggerTarget> | undefined> {
     const rootSelector = this.triggerSelector;
 
-    // Await for the element(s) to appear on the page so that we can
+    // Await for the element(s) to appear on the page so that we can attach/run the trigger
     const rootPromise = rootSelector
       ? awaitElementOnce(rootSelector, this.observersController.signal)
       : document;
@@ -674,11 +679,19 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  private attachInitializeTrigger($elements: JQuery<TriggerTarget>): void {
+  private attachInitializeTrigger(
+    $elements: JQuery<TriggerTarget>,
+    { runReason }: { runReason: RunReason },
+  ): void {
     this.cancelObservers();
 
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
+      if (runReason === RunReason.PAGE_EDITOR_REGISTER) {
+        // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
+        return;
+      }
+
       void this.debouncedRunTriggersAndNotify([...$elements], {
         nativeEvent: null,
       });
@@ -687,9 +700,20 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     assertNotNullish(this.triggerSelector, "Trigger selector is required");
 
+    // Set of elements that were already on the page when the trigger was added
+    const existingInitializedElements = new WeakSet($elements.toArray());
+
     const observer = initialize(
       this.triggerSelector,
       (_index, element: HTMLElement) => {
+        // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
+        if (
+          runReason === RunReason.PAGE_EDITOR_REGISTER &&
+          existingInitializedElements.has(element)
+        ) {
+          return;
+        }
+
         void this.debouncedRunTriggersAndNotify([element], {
           nativeEvent: null,
         });
@@ -703,20 +727,35 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     });
   }
 
-  private attachAppearTrigger($elements: JQuery): void {
+  private attachAppearTrigger(
+    $elements: JQuery,
+    { runReason }: { runReason: RunReason },
+  ): void {
     this.cancelObservers();
+
+    // Set of elements that were already on the page when the trigger was added
+    const existingVisibleElements = new WeakSet<Element>(
+      [...$elements.toArray()].filter((x) => isInViewport(x)),
+    );
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     const appearObserver = new IntersectionObserver(
       (entries) => {
         const roots = entries
-          .filter((x) => x.isIntersecting)
+          .filter(
+            (entry) =>
+              entry.isIntersecting &&
+              // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
+              (runReason !== RunReason.PAGE_EDITOR_REGISTER ||
+                !existingVisibleElements.has(entry.target)),
+          )
+          // Will be HTMLElement because it's from a CSS selector
           .map((x) => x.target as HTMLElement);
+
         void this.debouncedRunTriggersAndNotify(roots, { nativeEvent: null });
       },
       {
         root: null,
-        // RootMargin: "0px",
         threshold: 0.2,
       },
     );
@@ -838,7 +877,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async runModComponents(): Promise<void> {
+  async runModComponents({ reason: runReason }: RunArgs): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();
@@ -846,27 +885,32 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     switch (this.trigger) {
       case Triggers.LOAD: {
         assertNotNullish($root, "Root is required");
-        await this.debouncedRunTriggersAndNotify([...$root], {
-          nativeEvent: null,
-        });
-        break;
-      }
 
-      case Triggers.INTERVAL: {
-        this.attachInterval();
+        // Don't run on PAGE_EDITOR_REGISTER because the trigger would have already run on page/page editor load
+        if (runReason !== RunReason.PAGE_EDITOR_REGISTER) {
+          await this.debouncedRunTriggersAndNotify([...$root], {
+            nativeEvent: null,
+          });
+        }
+
         break;
       }
 
       case Triggers.INITIALIZE: {
         assertNotNullish($root, "Root is required");
-        this.attachInitializeTrigger($root);
+        this.attachInitializeTrigger($root, { runReason });
         break;
       }
 
       case Triggers.APPEAR: {
         assertNotNullish($root, "Root is required");
         this.assertElement($root);
-        this.attachAppearTrigger($root);
+        this.attachAppearTrigger($root, { runReason });
+        break;
+      }
+
+      case Triggers.INTERVAL: {
+        this.attachInterval();
         break;
       }
 
