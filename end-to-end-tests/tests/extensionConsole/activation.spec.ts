@@ -25,7 +25,6 @@ import {
   runModViaQuickBar,
   getBrowserOs,
   isChrome,
-  isMsEdge,
 } from "../../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
@@ -184,7 +183,7 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   const shortcutsPage = new ExtensionsShortcutsPage(firstTab, chromiumChannel);
   await shortcutsPage.goto();
 
-  await test.step("Clear the quickbar shortcut before activing a quickbar mod", async () => {
+  await test.step("Clear the quickbar shortcut before activating a quickbar mod", async () => {
     const os = await getBrowserOs(firstTab);
     // See https://github.com/pixiebrix/pixiebrix-extension/issues/6268
     /* eslint-disable playwright/no-conditional-in-test -- Existing bug where shortcut isn't set on Edge in Windows/Linux */
@@ -252,30 +251,22 @@ test("can activate a mod via url", async ({
   let activationPage: Page | undefined = page;
   await activationPage.goto(activationLink);
 
-  // eslint-disable-next-line playwright/no-conditional-in-test -- browser conditional behavior
-  if (isMsEdge(chromiumChannel)) {
-    // MS Edge will sometimes throw this error if we use `waitForURL`:
-    // Error: page.waitForURL: net::ERR_ABORTED; maybe frame was detached?
-    // This is a workaround to ensure a page is loaded with the expected URL
-    // eslint-disable-next-line playwright/no-conditional-expect -- see above
-    await expect(() => {
-      activationPage = context
-        .pages()
-        .find(
-          (page) =>
-            page.url() ===
-            `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
-        );
+  // Browsers sometimes throw this error if we use `waitForURL` for this redirect behavior:
+  // "Error: page.waitForURL: net::ERR_ABORTED; maybe frame was detached?"
+  // This is a workaround to ensure a page is loaded with the expected URL
+  await expect(() => {
+    activationPage = context
+      .pages()
+      .find(
+        (page) =>
+          page.url() ===
+          `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+      );
 
-      if (!activationPage) {
-        throw new Error("Extension console page not found");
-      }
-    }).toPass({ timeout: 20_000 });
-  } else {
-    await activationPage.waitForURL(
-      `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
-    );
-  }
+    if (!activationPage) {
+      throw new Error("Extension console page not found");
+    }
+  }).toPass({ timeout: 20_000 });
 
   await expect(activationPage.getByRole("code")).toContainText(modId);
 

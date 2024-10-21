@@ -87,8 +87,8 @@ export class ExtensionsShortcutsPage extends BasePageObject {
       await this.locator("extensions-keyboard-shortcuts #container").click();
 
       await expect(
-        this.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/, {
-          exact: true,
+        this.getByRole("textbox", {
+          name: "Shortcut Toggle Quick Bar for PixieBrix",
         }),
       ).toBeEmpty();
     } else {

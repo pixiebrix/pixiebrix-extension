@@ -157,7 +157,7 @@ async function checkUnavailibilityForNavigationMethod(
   await page.goto("/advanced-fields");
   await runModViaQuickBar(page, "Open form");
 
-  const sideBarPage = await getSidebarPage(page, extensionId); // Sidebar is a separate page
+  const sideBarPage = await getSidebarPage(page, extensionId);
   // Set up close listener for sidebar page
   let sideBarPageClosed = false;
   sideBarPage.on("close", () => {

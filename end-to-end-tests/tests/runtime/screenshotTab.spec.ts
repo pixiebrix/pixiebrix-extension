@@ -29,7 +29,7 @@ test("screenshot tab brick functionality", async ({ page, extensionId }) => {
 
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await page.goto("/advanced-fields/");
+  await page.goto("/");
 
   await runModViaQuickBar(page, "Screenshot");
 
