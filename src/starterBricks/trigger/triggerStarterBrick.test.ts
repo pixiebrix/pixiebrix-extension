@@ -49,7 +49,7 @@ import { showNotification } from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import {
   ReportModes,
   type Trigger,
@@ -839,6 +839,8 @@ describe("page editor run reasons", () => {
         ...document.querySelectorAll("input"),
       ]);
 
+      await tick();
+      await tick();
       expect(rootReader.readCount).toBe(0);
 
       await starterBrick.runModComponents({
@@ -850,18 +852,17 @@ describe("page editor run reasons", () => {
         ...document.querySelectorAll("input"),
       ]);
 
-      await tick();
-      await tick();
-
-      expect(rootReader.readCount).toBe(1);
+      await waitFor(() => {
+        expect(rootReader.readCount).toBe(1);
+      });
 
       starterBrick.uninstall();
     },
   );
 
   it.each([Triggers.INITIALIZE, Triggers.APPEAR])(
-    "doesn't run initialize trigger existing element for PAGE_EDITOR_REGISTER for attachMode: watch",
-    async () => {
+    "doesn't run %s trigger existing element for PAGE_EDITOR_REGISTER for attachMode: watch",
+    async (trigger) => {
       document.body.innerHTML = getDocument(
         "<div><input type='text' /></div>",
       ).body.innerHTML;
@@ -869,7 +870,7 @@ describe("page editor run reasons", () => {
       const starterBrick = fromJS(
         getPlatform(),
         starterBrickFactory({
-          trigger: Triggers.INITIALIZE,
+          trigger,
           rootSelector: "input",
           attachMode: "watch",
         })(),
@@ -891,22 +892,25 @@ describe("page editor run reasons", () => {
         ...document.querySelectorAll("input"),
       ]);
 
-      // Ticks required for initialize callback to have a chance to run (it uses setTimeout)
+      // Ticks required for initialize callback to have a chance to run (it uses setTimeout).
       await tick();
       await tick();
       expect(rootReader.readCount).toBe(0);
 
       $(document.body).append("<input id='#new-element' type='text' />");
 
+      // Ticks required for initialize callback to have a chance to run (it uses setTimeout)
+      await tick();
+      await tick();
+
       intersectionObserverMock.enterNodes([
         // eslint-disable-next-line testing-library/no-node-access -- non-React test
         ...document.querySelectorAll("input"),
       ]);
 
-      // Ticks required for initialize callback to have a chance to run (it uses setTimeout)
-      await tick();
-      await tick();
-      expect(rootReader.readCount).toBe(1);
+      await waitFor(() => {
+        expect(rootReader.readCount).toBe(1);
+      });
 
       starterBrick.uninstall();
     },
