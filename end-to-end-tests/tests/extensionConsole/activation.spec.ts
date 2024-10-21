@@ -18,13 +18,14 @@
 import { test, expect } from "../../fixtures/testBase";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
-import { test as base } from "@playwright/test";
+import { type Page, test as base } from "@playwright/test";
 import {
   getSidebarPage,
   clickAndWaitForNewPage,
   runModViaQuickBar,
   getBrowserOs,
   isChrome,
+  isMsEdge,
 } from "../../utils";
 import path from "node:path";
 import { VALID_UUID_REGEX } from "@/types/stringTypes";
@@ -238,23 +239,55 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
   });
 });
 
-test("can activate a mod via url", async ({ page, extensionId }) => {
+test("can activate a mod via url", async ({
+  page,
+  context,
+  extensionId,
+  chromiumChannel,
+}) => {
   const modId = "@e2e-testing/show-alert";
   const modIdUrlEncoded = encodeURIComponent(modId);
   const activationLink = `${SERVICE_URL}/activate?id=${modIdUrlEncoded}`;
 
-  await page.goto(activationLink);
+  let activationPage: Page | undefined = page;
+  await activationPage.goto(activationLink);
 
-  await page.waitForURL(
-    `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+  // eslint-disable-next-line playwright/no-conditional-in-test -- browser conditional behavior
+  if (isMsEdge(chromiumChannel)) {
+    // MS Edge will sometimes throw this error if we use `waitForURL`:
+    // Error: page.waitForURL: net::ERR_ABORTED; maybe frame was detached?
+    // This is a workaround to ensure a page is loaded with the expected URL
+    // eslint-disable-next-line playwright/no-conditional-expect -- see above
+    await expect(() => {
+      activationPage = context
+        .pages()
+        .find(
+          (page) =>
+            page.url() ===
+            `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+        );
+
+      if (!activationPage) {
+        throw new Error("Extension console page not found");
+      }
+    }).toPass({ timeout: 20_000 });
+  } else {
+    await activationPage.waitForURL(
+      `chrome-extension://${extensionId}/options.html#/marketplace/activate/${modIdUrlEncoded}`,
+    );
+  }
+
+  await expect(activationPage.getByRole("code")).toContainText(modId);
+
+  const modActivationPage = new ActivateModPage(
+    activationPage,
+    extensionId,
+    modId,
   );
-  await expect(page.getByRole("code")).toContainText(modId);
-
-  const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await page.goto("/");
+  await activationPage.goto("/");
 
-  await runModViaQuickBar(page, "Show Alert");
-  await expect(page.getByText("Quick Bar Action ran")).toBeVisible();
+  await runModViaQuickBar(activationPage, "Show Alert");
+  await expect(activationPage.getByText("Quick Bar Action ran")).toBeVisible();
 });
