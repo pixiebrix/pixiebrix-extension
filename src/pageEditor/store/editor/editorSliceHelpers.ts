@@ -33,6 +33,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { clearModComponentTraces } from "@/telemetry/trace";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { remove } from "lodash";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -122,34 +123,42 @@ export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
 /**
  * Remove a mod component form state from the Page Editor.
  * @param state The redux state (slice)
- * @param uuid The id for the mod component to remove
+ * @param formStateId The id for the mod component to remove
  */
 export function removeModComponentFormState(
   state: Draft<EditorState>,
-  uuid: UUID,
+  formStateId: UUID,
 ) {
-  if (state.activeModComponentId === uuid) {
+  if (state.activeModComponentId === formStateId) {
     state.activeModComponentId = null;
   }
 
-  // Some mod components in a mod may not have a corresponding mod component form state due to having never been selected
-  // by the user in the UI. In this case, the mod component form state will not be in redux.
-  const index = state.modComponentFormStates.findIndex((x) => x.uuid === uuid);
-  if (index > -1) {
-    state.modComponentFormStates.splice(index, 1);
+  // Some mod components in a mod may not have a corresponding mod component form state due to having never been
+  // selected by the user in the UI. In this case, the mod component form state will not be in Redux.
+  // In practice, the in the Page Editor UI, the user must select a mod component to remove it, so there will be
+  // a mod component form state
+  const formStateIndex = state.modComponentFormStates.findIndex(
+    (x) => x.uuid === formStateId,
+  );
+  const formState = state.modComponentFormStates[formStateIndex];
+  if (formStateIndex > -1) {
+    state.modComponentFormStates.splice(formStateIndex, 1);
   }
 
-  delete state.dirty[uuid];
-  delete state.brickPipelineUIStateById[uuid];
+  delete state.dirty[formStateId];
+  delete state.brickPipelineUIStateById[formStateId];
 
-  const draftIndex = state.availableDraftModComponentIds.indexOf(uuid);
-  if (draftIndex > -1) {
-    // Mod component is available, remove from list of available ids
-    state.availableDraftModComponentIds.splice(draftIndex, 1);
+  // Remove from list mod components available on the page, if available
+  remove(state.availableDraftModComponentIds, formStateId);
+
+  if (formState) {
+    // FIXME: should this only mark as deleted if the component corresponds to a component on the activate mod instance?
+    const modId = formState?.modMetadata.id;
+    (state.deletedModComponentFormStatesByModId[modId] ??= []).push(formState);
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions
-  void clearModComponentTraces(uuid);
+  void clearModComponentTraces(formStateId);
 }
 
 /**

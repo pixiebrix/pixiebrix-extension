@@ -57,7 +57,7 @@ function useClearModChanges(): (modId: RegistryId) => Promise<void> {
       );
 
       dispatch(actions.clearMetadataAndOptionsChangesForMod(modId));
-      dispatch(actions.restoreDeletedModComponentFormStatesForMod(modId));
+      dispatch(actions.clearDeletedModComponentFormStatesForMod(modId));
       dispatch(actions.setActiveModId(modId));
     },
     [

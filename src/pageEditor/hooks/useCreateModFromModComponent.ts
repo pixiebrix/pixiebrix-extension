@@ -29,7 +29,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
 import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
-import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -48,7 +48,7 @@ function useCreateModFromModComponent(
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const [createMod] = useCreateModDefinitionMutation();
   const upsertModComponentFormState = useUpsertModComponentFormState();
-  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const deleteModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromComponent = useCallback(
@@ -106,20 +106,10 @@ function useCreateModFromModComponent(
           });
 
           if (!keepLocalCopy) {
-            console.debug(
-              "createModFromComponent - removing standalone component",
-              {
-                activeModComponent,
-              },
-            );
-
-            const removePromises: Array<Promise<unknown>> = [
-              removeModComponentFromStorage({
-                modComponentId: activeModComponent.uuid,
-              }),
-            ];
-
-            await Promise.all(removePromises);
+            // Delete the mod component from the source mod
+            await deleteModComponent({
+              modComponentId: activeModComponent.uuid,
+            });
           }
 
           // Check the new component availability, so it's added to available components if needed
@@ -143,7 +133,7 @@ function useCreateModFromModComponent(
       dispatch,
       upsertModComponentFormState,
       keepLocalCopy,
-      removeModComponentFromStorage,
+      deleteModComponent,
     ],
   );
 

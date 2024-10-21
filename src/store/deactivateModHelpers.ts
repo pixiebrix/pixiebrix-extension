@@ -19,47 +19,68 @@ import { type Dispatch } from "react";
 import { removeDraftModComponentsForMod } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import {
+  clearLog,
   deleteSynchronizedModVariables,
   removeModComponentForEveryTab,
 } from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { forbidContext } from "@/utils/expectContext";
 
 /**
  * @file utility methods to deactivate mods/mod components and remove from the existing tabs.
  *
- * Mocked in src/__mocks__/@/store/deactivateUtils.ts.
+ * Mocked in src/__mocks__/@/store/deactivateModHelpers.ts.
  */
 
 /**
- * Use this helper outside the Page Editor context to deactivate a mod and all of its mod components.
+ * Use this helper outside the Page Editor context to deactivate a mod and all of its mod components. In the Page
+ * Editor, use useDeactivateMod instead.
  *
  * Removes from:
  * - Extension Options slice
  * - Draft mod components slice (i.e., Page Editor state)
  * - Notifies all tabs to remove the mod components
  * - browser.storage.session synchronized mod variables
+ *
+ * @see useDeactivateMod
  */
 export async function deactivateMod(
   modId: RegistryId,
   modComponentIds: UUID[],
   dispatch: Dispatch<unknown>,
 ): Promise<void> {
+  forbidContext("pageEditor");
+
   const removedDraftModComponentIds =
     await removeDraftModComponentsForMod(modId);
 
   dispatch(modComponentActions.removeModById(modId));
 
-  removeModComponentsFromAllTabs(
+  await removeModDataAndInterfaceFromAllTabs(
+    modId,
     uniq([...modComponentIds, ...removedDraftModComponentIds]),
   );
-
-  await deleteSynchronizedModVariables(modId);
 }
 
-export function removeModComponentsFromAllTabs(modComponentIds: UUID[]): void {
-  for (const modComponentId of modComponentIds) {
+/**
+ * Utility to remove a mod from all tabs/frames and clear its associated data.
+ * @param modId the mod registry id
+ * @param modComponentIds the mod component ids
+ */
+// Currently requires passing modComponentIds explicitly because some runtime features, e.g., context menus,
+// are registered solely using the mod component id
+export async function removeModDataAndInterfaceFromAllTabs(
+  modId: RegistryId,
+  modComponentIds: UUID[],
+): Promise<void> {
+  for (const modComponentId of uniq(modComponentIds)) {
     removeModComponentForEveryTab(modComponentId);
   }
+
+  await Promise.all([
+    deleteSynchronizedModVariables(modId),
+    clearLog({ modId }),
+  ]);
 }

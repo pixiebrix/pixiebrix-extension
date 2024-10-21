@@ -16,10 +16,8 @@
  */
 
 import { renderHook } from "@/pageEditor/testHelpers";
-import { removeModComponentsFromAllTabs } from "@/store/deactivateUtils";
-import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
+import useDeleteDraftModComponent from "./useDeleteDraftModComponent";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
@@ -28,19 +26,19 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("useRemoveModComponentFromStorage", async () => {
+test("useDeleteModComponent", async () => {
   const modComponentId = autoUUIDSequence();
 
   const {
-    result: { current: removeModComponent },
+    result: { current: deleteDraftModComponent },
     getReduxStore,
-  } = renderHook(() => useRemoveModComponentFromStorage(), {
-    setupRedux(dispatch, { store }) {
+  } = renderHook(() => useDeleteDraftModComponent(), {
+    setupRedux(_dispatch, { store }) {
       jest.spyOn(store, "dispatch");
     },
   });
 
-  await removeModComponent({
+  await deleteDraftModComponent({
     modComponentId,
   });
 
@@ -49,12 +47,9 @@ test("useRemoveModComponentFromStorage", async () => {
   expect(dispatch).toHaveBeenCalledWith(
     editorActions.removeModComponentFormState(modComponentId),
   );
-  expect(dispatch).toHaveBeenCalledWith(
-    modComponentActions.removeModComponent({ modComponentId }),
-  );
+
   expect(removeDraftModComponents).toHaveBeenCalledWith(
     expect.any(Object),
     modComponentId,
   );
-  expect(removeModComponentsFromAllTabs).toHaveBeenCalledWith([modComponentId]);
 });

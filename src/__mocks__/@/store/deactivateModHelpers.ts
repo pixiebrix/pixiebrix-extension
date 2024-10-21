@@ -16,5 +16,4 @@
  */
 
 export const deactivateMod = jest.fn();
-export const deactivateModComponents = jest.fn();
-export const removeModComponentsFromAllTabs = jest.fn();
+export const removeModDataAndInterfaceFromAllTabs = jest.fn();

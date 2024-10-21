@@ -66,35 +66,10 @@ export async function saveEditorState(
 }
 
 /**
- * Remove a list of mod components by id from persisted redux storage.
+ * Remove all mod components for a given mod from persisted Page Editor Redux storage.
  *
- * Note: this does not trigger a change even in any current redux instances
- * @param modComponentIds the mod components to remove from persisted redux storage
- */
-export async function removeDraftModComponents(
-  modComponentIds: UUID[],
-): Promise<void> {
-  const state = await getEditorState();
-
-  // If this is called from a page where the page editor has not been opened yet,
-  // then the persisted editor state will be undefined, so we need to check for that
-  if (state == null) {
-    return;
-  }
-
-  const newState = produce(state, (draft) => {
-    for (const id of modComponentIds) {
-      removeModComponentFormState(draft, id);
-    }
-  });
-
-  await saveEditorState(newState);
-}
-
-/**
- * Remove all mod components for a given mod from persisted redux storage.
+ * Note: this does not trigger a change event in any current redux instances
  *
- * Note: this does not trigger a change even in any current redux instances
  * @param modId The mod to remove
  * @returns The UUIDs of removed mod components
  */
@@ -104,7 +79,7 @@ export async function removeDraftModComponentsForMod(
   const removedDraftModComponents: UUID[] = [];
   const state = await getEditorState();
 
-  // If this is called from a page where the page editor has not been opened yet,
+  // If this is called from a page where the Page Editor has not been opened yet,
   // then the persisted editor state will be undefined, so we need to check for that
   if (state == null) {
     return [] as UUID[];

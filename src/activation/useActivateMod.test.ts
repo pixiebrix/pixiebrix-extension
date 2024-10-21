@@ -21,7 +21,7 @@ import useActivateMod from "./useActivateMod";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
-import { deactivateMod } from "@/store/deactivateUtils";
+import { deactivateMod } from "@/store/deactivateModHelpers";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";

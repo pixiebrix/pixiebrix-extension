@@ -36,7 +36,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { deactivateMod } from "@/store/deactivateUtils";
+import { deactivateMod } from "@/store/deactivateModHelpers";
 import useUserAction from "@/hooks/useUserAction";
 import { useDeletePackageMutation } from "@/data/service/api";
 import { useModals } from "@/components/ConfirmationModal";

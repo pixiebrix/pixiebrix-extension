@@ -51,7 +51,6 @@ import {
   setActiveModComponentId,
   editModMetadata,
   editModOptionsDefinitions,
-  ensureBrickPipelineUIState,
   removeModComponentFormState,
   removeModData,
   setActiveModId,
@@ -90,7 +89,6 @@ import {
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { collectModOptions } from "@/store/modComponents/modComponentUtils";
-import type { ModInstance } from "@/types/modInstanceTypes";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -496,42 +494,22 @@ export const editorSlice = createSlice({
       delete state.deletedModComponentFormStatesByModId[modId];
     },
 
-    restoreDeletedModComponentFormStatesForMod(
-      state,
-      action: PayloadAction<RegistryId>,
-    ) {
-      const modId = action.payload;
-      const deletedModComponentFormStates =
-        state.deletedModComponentFormStatesByModId[modId];
-      if (deletedModComponentFormStates?.length) {
-        state.modComponentFormStates.push(...deletedModComponentFormStates);
-        for (const formStateId of deletedModComponentFormStates.map(
-          (modComponentFormState) => modComponentFormState.uuid,
-        )) {
-          state.dirty[formStateId] = false;
-          ensureBrickPipelineUIState(state, formStateId);
-        }
-
-        delete state.deletedModComponentFormStatesByModId[modId];
-      }
-    },
-
-    removeModData(state, action: PayloadAction<RegistryId>) {
-      const modId = action.payload;
-      removeModData(state, modId);
-    },
-
     /**
-     * Remove all editor state associated with a given mod instance.
+     * Remove all editor state associated with a given mod id.
      */
-    removeMod(state, action: PayloadAction<ModInstance>) {
-      const modInstance = action.payload;
+    removeModById(state, action: PayloadAction<RegistryId>) {
+      const modId = action.payload;
 
-      removeModData(state, modInstance.definition.metadata.id);
+      const modComponentIds = state.modComponentFormStates
+        .filter((x) => x.modMetadata.id === modId)
+        .map((x) => x.uuid);
 
-      for (const modComponentId of modInstance.modComponentIds) {
+      for (const modComponentId of modComponentIds) {
         removeModComponentFormState(state, modComponentId);
       }
+
+      // Call last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
+      removeModData(state, modId);
     },
 
     ///

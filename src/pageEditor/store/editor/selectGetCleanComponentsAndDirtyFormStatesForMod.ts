@@ -51,3 +51,17 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
       };
     }),
 );
+
+export const selectGetDraftModComponentIds = createSelector(
+  selectGetCleanComponentsAndDirtyFormStatesForMod,
+  (getCleanComponentsAndDirtyFormStatesForMod) =>
+    // Memoize because method constructs a fresh object reference
+    memoize((modId: RegistryId) => {
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
+      return [
+        ...cleanModComponents.map((modComponent) => modComponent.id),
+        ...dirtyModComponentFormStates.map((formState) => formState.uuid),
+      ];
+    }),
+);
