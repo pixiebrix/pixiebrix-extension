@@ -62,6 +62,9 @@ import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransform
 import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";
 import RunMetadataTransformer from "@/bricks/transformers/RunMetadataTransformer";
 import { WithCache } from "@/bricks/transformers/controlFlow/WithCache";
+import LocalPrompt from "@/bricks/transformers/ai/LocalPrompt";
+import LocalChatCompletionTransformer from "@/bricks/transformers/ai/LocalChatCompletion";
+import LocalSummarization from "@/bricks/transformers/ai/LocalSummarization";
 
 function getAllTransformers(
   registry: RegistryProtocol<RegistryId, Brick>,
@@ -120,6 +123,11 @@ function getAllTransformers(
 
     // Render Pipelines
     new DisplayTemporaryInfo(),
+
+    // Experimental Chrome AI
+    new LocalPrompt(),
+    new LocalChatCompletionTransformer(),
+    new LocalSummarization(),
   ];
 }
 
