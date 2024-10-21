@@ -180,6 +180,18 @@ export const lexicon: LexiconMap = {
       "Admin for a list of users with this flag).",
     tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
   },
+  DEVTOOLS_OPEN: {
+    description:
+      "Reported when the a user opens the DevTools on any modifiable web page (e.g. this event is not reported when opening the " +
+      "DevTools in the Extension Console or on internal chrome pages).",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  DEVTOOLS_CLOSE: {
+    description:
+      "Reported when the DevTools are closed on any modifiable web page (e.g. this event is not reported when opening the " +
+      "DevTools in the Extension Console or on internal chrome pages).",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
 };
 
 /**
