@@ -33,7 +33,7 @@ test("live editing behavior", async ({
     await activationPage.goto();
     await activationPage.clickActivateAndWaitForModsPageRedirect();
 
-    await page.goto("/advanced-fields/");
+    await page.goto("/");
   });
 
   const pageEditor = await newPageEditorPage(page.url());

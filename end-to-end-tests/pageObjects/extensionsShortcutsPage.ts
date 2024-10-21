@@ -116,7 +116,9 @@ export class ExtensionsShortcutsPage extends BasePageObject {
 
     if (isChrome(this.chromiumChannel)) {
       await expect(
-        this.getByLabel(/Shortcut Toggle Quick Bar for PixieBrix/),
+        this.getByRole("textbox", {
+          name: "Shortcut Toggle Quick Bar for PixieBrix",
+        }),
       ).toBeEmpty();
 
       await this.getByLabel("Edit shortcut Toggle Quick").click();

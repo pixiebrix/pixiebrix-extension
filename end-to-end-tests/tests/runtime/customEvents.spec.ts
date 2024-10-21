@@ -28,9 +28,9 @@ test("custom event brick functionality", async ({ page, extensionId }) => {
 
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await page.goto("/advanced-fields/");
+  await page.goto("/");
 
-  await page.getByRole("heading", { name: "Advanced Fields" }).click();
+  await page.getByRole("heading", { name: "Index of" }).click();
 
   await expect(
     page.getByRole("status").filter({ hasText: "Custom Event Triggered" }),
