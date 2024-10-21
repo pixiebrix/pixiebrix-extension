@@ -48,7 +48,7 @@ function useCreateModFromModComponent(
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const [createMod] = useCreateModDefinitionMutation();
   const upsertModComponentFormState = useUpsertModComponentFormState();
-  const deleteModComponent = useDeleteDraftModComponent();
+  const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromComponent = useCallback(
@@ -107,7 +107,7 @@ function useCreateModFromModComponent(
 
           if (!keepLocalCopy) {
             // Delete the mod component from the source mod
-            await deleteModComponent({
+            await deleteDraftModComponent({
               modComponentId: activeModComponent.uuid,
             });
           }
@@ -133,7 +133,7 @@ function useCreateModFromModComponent(
       dispatch,
       upsertModComponentFormState,
       keepLocalCopy,
-      deleteModComponent,
+      deleteDraftModComponent,
     ],
   );
 
