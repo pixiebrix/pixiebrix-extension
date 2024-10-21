@@ -20,7 +20,6 @@ import {
   type InnerDefinitionRef,
   type InnerDefinitions,
   type RegistryId,
-  type VersionedMetadata,
 } from "@/types/registryTypes";
 import {
   isInnerDefinitionRegistryId,
@@ -28,14 +27,13 @@ import {
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
-import { compact, pick, sortBy } from "lodash";
+import { compact, sortBy } from "lodash";
 import { produce } from "immer";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_STARTER_BRICK_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
 } from "@/pageEditor/starterBricks/base";
-import { type Except } from "type-fest";
 import {
   type ModComponentDefinition,
   type ModDefinition,
@@ -57,13 +55,8 @@ import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
-import {
-  isInnerDefinitionEqual,
-  isStarterBrickDefinitionPropEqual,
-} from "@/starterBricks/starterBrickUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
-import { selectModComponentIntegrations } from "@/store/modComponents/modComponentUtils";
 import { mapModComponentBaseToModComponentDefinition } from "@/store/modComponents/modInstanceUtils";
 
 /**
@@ -84,51 +77,6 @@ export function generateScopeBrickId(
 }
 
 /**
- * Return the index of the mod component in the mod. Throws an error if a match isn't found.
- *
- * There are a couple corner cases in the mod specification and version handling:
- * - A user modified the mod in the workshop but didn't change the version number
- * - Labels in a mod aren't guaranteed to be unique. However, they generally will be in practice
- *
- * For now, we'll just handle the normal case and send people to the workshop for the corner cases.
- */
-function findModComponentIndex(
-  modDefinition: ModDefinition,
-  modComponent: ModComponentBase,
-): number {
-  if (modDefinition.metadata.version !== modComponent.modMetadata.version) {
-    console.warn(
-      "Mod component was activated using a different version of the mod",
-      {
-        modDefinitionVersion: modDefinition.metadata.version,
-        modComponentModVersion: modComponent.modMetadata.version,
-      },
-    );
-  }
-
-  // Labels in the mod aren't guaranteed to be unique
-  const labelMatches = modDefinition.extensionPoints.filter(
-    (x) => x.label === modComponent.label,
-  );
-
-  if (labelMatches.length === 0) {
-    throw new Error(
-      `There are no starter bricks in the mod with label "${modComponent.label}". You must edit the mod in the Workshop`,
-    );
-  }
-
-  if (labelMatches.length > 1) {
-    throw new Error(
-      `There are multiple starter bricks in the mod with label "${modComponent.label}". You must edit the mod in the Workshop`,
-    );
-  }
-
-  return modDefinition.extensionPoints.findIndex(
-    (x) => x.label === modComponent.label,
-  );
-}
-
-/**
  * Deleted unreferenced inner starter brick definitions. Stopgap for logic errors causing unmatched inner definitions
  * in `buildNewMod` and `replaceModComponent`
  */
@@ -145,153 +93,6 @@ function deleteUnusedStarterBrickDefinitions(
       delete innerDefinitions![id];
     }
   }
-}
-
-/**
- * Create a copy of `sourceMod` with `modMetadata` and `modComponent`.
- *
- * NOTE: the caller is responsible for updating a starter brick package (i.e., that has its own version). This method
- * only handles the starter brick if it's an inner definition
- *
- * @param sourceMod the original mod definition
- * @param modMetadata the metadata for the new mod
- * @param activatedModComponents the user's locally activated mod components (i.e., from modComponentsSlice). Used to
- * locate the mod component's position in sourceMod
- * @param newModComponent the new mod component state (i.e., submitted via Formik)
- */
-export function replaceModComponent(
-  sourceMod: ModDefinition,
-  modMetadata: VersionedMetadata,
-  activatedModComponents: ModComponentBase[],
-  newModComponent: ModComponentFormState,
-): UnsavedModDefinition {
-  const activatedModComponent = activatedModComponents.find(
-    (x) => x.id === newModComponent.uuid,
-  );
-
-  if (activatedModComponent == null) {
-    throw new Error(
-      `Could not find local copy of starter brick: ${newModComponent.uuid}`,
-    );
-  }
-
-  return produce(sourceMod, (draft: ModDefinition) => {
-    draft.metadata = modMetadata;
-    draft.options = newModComponent.optionsDefinition;
-    draft.variables = newModComponent.variablesDefinition;
-
-    if (sourceMod.apiVersion !== newModComponent.apiVersion) {
-      const canUpdateModApiVersion = sourceMod.extensionPoints.length <= 1;
-      if (canUpdateModApiVersion) {
-        draft.apiVersion = newModComponent.apiVersion;
-
-        const starterBrickId = sourceMod.extensionPoints[0]?.id;
-
-        assertNotNullish(
-          starterBrickId,
-          "First mod component in mod definition has no starter brick",
-        );
-
-        // eslint-disable-next-line security/detect-object-injection -- getting a property by mod component id
-        const starterBrickDefinition = draft.definitions?.[starterBrickId];
-
-        if (starterBrickDefinition?.apiVersion != null) {
-          starterBrickDefinition.apiVersion = newModComponent.apiVersion;
-        }
-      } else {
-        throw new Error(
-          `Mod component's API Version (${newModComponent.apiVersion}) does not match mod's API Version (${sourceMod.apiVersion}) and mod's API Version cannot be updated`,
-        );
-      }
-    }
-
-    const modComponentIndex = findModComponentIndex(
-      sourceMod,
-      activatedModComponent,
-    );
-
-    const { selectModComponent, selectStarterBrickDefinition } =
-      adapterForComponent(newModComponent);
-    const rawModComponent = selectModComponent(newModComponent);
-    const starterBrickId = newModComponent.starterBrick.metadata.id;
-    const hasInnerDefinition = isInnerDefinitionRegistryId(starterBrickId);
-
-    const commonModComponentDefinition: Except<ModComponentDefinition, "id"> = {
-      ...pick(rawModComponent, [
-        "label",
-        "config",
-        "permissions",
-        "templateEngine",
-      ]),
-      services: selectModComponentIntegrations(rawModComponent),
-    };
-
-    if (hasInnerDefinition) {
-      const starterBrickDefinition =
-        selectStarterBrickDefinition(newModComponent);
-
-      const originalInnerId =
-        sourceMod.extensionPoints.at(modComponentIndex)?.id;
-      assertNotNullish(originalInnerId, "Original inner id not found");
-      let newInnerId = originalInnerId;
-
-      assertNotNullish(draft.definitions, "Definitions not found");
-
-      if (
-        sourceMod.extensionPoints.filter((x) => x.id === originalInnerId)
-          .length > 1
-      ) {
-        // Multiple mod components share the same inner starter brick definition. If the inner starter brick
-        // definition was modified, the behavior we want (at least for now) is to create new starter brick definition
-        // instead of modifying the shared entry. If it wasn't modified, we don't have to make any changes.
-        if (
-          !isStarterBrickDefinitionPropEqual(
-            // eslint-disable-next-line security/detect-object-injection -- existing id
-            draft.definitions?.[originalInnerId]?.definition,
-            starterBrickDefinition.definition,
-          )
-        ) {
-          newInnerId = freshIdentifier(
-            "extensionPoint" as SafeString,
-            Object.keys(sourceMod?.definitions ?? {}),
-          ) as InnerDefinitionRef;
-          // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
-          draft.definitions[newInnerId] = {
-            kind: DefinitionKinds.STARTER_BRICK,
-            definition: starterBrickDefinition.definition,
-          } satisfies StarterBrickDefinitionLike;
-        }
-      } else {
-        // There's only one, can re-use without breaking the other definition
-        // eslint-disable-next-line security/detect-object-injection -- existing id
-        draft.definitions[originalInnerId] = {
-          kind: DefinitionKinds.STARTER_BRICK,
-          definition: starterBrickDefinition.definition,
-        } satisfies StarterBrickDefinitionLike;
-      }
-
-      // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      draft.extensionPoints[modComponentIndex] = {
-        id: newInnerId,
-        ...commonModComponentDefinition,
-      };
-    } else {
-      // It's not currently possible to switch from using an starter brick package to an inner starter brick
-      // definition in the Page Editor. So, we can just use the rawModComponent.extensionPointId directly here.
-      // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      draft.extensionPoints[modComponentIndex] = {
-        id: rawModComponent.extensionPointId,
-        ...commonModComponentDefinition,
-      };
-    }
-
-    deleteUnusedStarterBrickDefinitions(
-      draft.definitions,
-      draft.extensionPoints,
-    );
-
-    return draft;
-  });
 }
 
 export type ModParts = {
