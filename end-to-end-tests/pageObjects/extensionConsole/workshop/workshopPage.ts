@@ -22,7 +22,7 @@ import { CreateWorkshopModPage } from "./createWorkshopModPage";
 import { BasePageObject } from "../../basePageObject";
 
 export class WorkshopPage extends BasePageObject {
-  private readonly extensionConsoleUrl: string;
+  private readonly workshopUrl: string;
 
   createNewPackageButton = this.getByRole("button", {
     name: "Create New Package",
@@ -30,16 +30,11 @@ export class WorkshopPage extends BasePageObject {
 
   constructor(page: Page, extensionId: string) {
     super(page);
-    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+    this.workshopUrl = `${getBaseExtensionConsoleUrl(extensionId)}#/workshop`;
   }
 
   async goto() {
-    await this.page.goto(this.extensionConsoleUrl);
-    await this.getByRole("link", {
-      name: "Workshop",
-    }).click();
-    await this.getByRole("heading", { name: "Workshop" }).waitFor();
-    await this.getByRole("cell").first().waitFor();
+    await this.page.goto(this.workshopUrl);
   }
 
   async findAndSelectMod(modId: string) {
