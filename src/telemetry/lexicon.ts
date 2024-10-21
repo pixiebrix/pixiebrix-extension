@@ -182,7 +182,7 @@ export const lexicon: LexiconMap = {
   },
   DEVTOOLS_OPEN: {
     description:
-      "Reported when the a user opens the DevTools are opened on any modifiable web page.",
+      "Reported when the a user opens the DevTools on any modifiable web page.",
     tags: [LexiconTags.PAGE_EDITOR],
   },
   DEVTOOLS_CLOSE: {
