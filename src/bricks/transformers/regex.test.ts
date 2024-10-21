@@ -86,7 +86,7 @@ test("invalid regex is business error", async () => {
   await expect(promise).rejects.toThrow(BusinessError);
   await expect(promise).rejects.toThrow(
     new BusinessError(
-      "Invalid regular expression: /BOOM\\/: \\ at end of pattern",
+      String.raw`Invalid regular expression: /BOOM\/: \ at end of pattern`,
     ),
   );
 });

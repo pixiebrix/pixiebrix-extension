@@ -27,7 +27,7 @@ describe("Shortcut Snippet Menu", () => {
       handler: jest.fn(),
     });
 
-    document.body.innerHTML = '<input type="text" value="\\f" id="input" />';
+    document.body.innerHTML = String.raw`<input type="text" value="\f" id="input" />`;
 
     const element: HTMLInputElement = screen.getByRole("textbox");
 
@@ -48,7 +48,7 @@ describe("Shortcut Snippet Menu", () => {
 
   it("renders no matches message for empty state", async () => {
     const registry = new SnippetRegistry();
-    document.body.innerHTML = '<input type="text" value="\\" id="input" />';
+    document.body.innerHTML = String.raw`<input type="text" value="\" id="input" />`;
 
     const element: HTMLInputElement = screen.getByRole("textbox");
 

@@ -60,7 +60,7 @@ module.exports = {
         ignorePropertyModificationsFor: ["draft", "state"],
       },
     ],
-    "eslint-comments/require-description": [
+    "@eslint-community/eslint-comments/require-description": [
       "error",
       { ignore: ["eslint-enable"] },
     ],

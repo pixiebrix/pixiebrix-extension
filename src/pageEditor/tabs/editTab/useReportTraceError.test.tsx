@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- Flaky error */
+/* eslint-disable @typescript-eslint/ban-ts-comment -- Flaky error */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
