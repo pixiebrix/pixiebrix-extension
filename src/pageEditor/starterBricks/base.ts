@@ -16,9 +16,9 @@
  */
 
 import {
+  DefinitionKinds,
   INNER_SCOPE,
   type Metadata,
-  DefinitionKinds,
   type RegistryId,
 } from "@/types/registryTypes";
 import { castArray, cloneDeep, isEmpty } from "lodash";
@@ -36,12 +36,11 @@ import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
 import {
   isInnerDefinitionRegistryId,
+  normalizeSemVerString,
   uuidv4,
   validateRegistryId,
-  normalizeSemVerString,
 } from "@/types/helpers";
 import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -50,21 +49,17 @@ import {
   type ModComponentBase,
   type ModMetadata,
 } from "@/types/modComponentTypes";
-import { type Schema } from "@/types/schemaTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { deepPickBy, freeze } from "@/utils/objectUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
-  type BaseModComponentState,
   type BaseFormState,
+  type BaseModComponentState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
-import {
-  emptyModOptionsDefinitionFactory,
-  emptyModVariablesDefinitionFactory,
-} from "@/utils/modUtils";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 import {
   type Availability,
   type NormalizedAvailability,
@@ -146,35 +141,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
     type,
     modMetadata: config.modMetadata,
   };
-}
-
-/**
- * Add the mod options to the form state if the mod component is a part of a mod
- */
-export function initModOptionsIfNeeded<TFormState extends BaseFormState>(
-  modComponentFormState: TFormState,
-  modDefinitions: ModDefinition[],
-) {
-  if (modComponentFormState.modMetadata.id) {
-    const mod = modDefinitions?.find(
-      (x) => x.metadata.id === modComponentFormState.modMetadata.id,
-    );
-
-    if (mod?.options == null) {
-      modComponentFormState.optionsDefinition =
-        emptyModOptionsDefinitionFactory();
-    } else {
-      modComponentFormState.optionsDefinition = {
-        schema: mod.options.schema.properties
-          ? mod.options.schema
-          : ({
-              type: "object",
-              properties: mod.options.schema,
-            } as Schema),
-        uiSchema: mod.options.uiSchema,
-      };
-    }
-  }
 }
 
 export function baseSelectModComponent({

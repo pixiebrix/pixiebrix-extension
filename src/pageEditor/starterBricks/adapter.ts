@@ -122,12 +122,7 @@ export async function modComponentToFormState(
   modComponent: ModComponentBase,
 ): Promise<ModComponentFormState> {
   const starterBrickType = await selectType(modComponent);
-  const { fromModComponent } = ADAPTERS.get(starterBrickType) ?? {};
-  if (!fromModComponent) {
-    throw new Error(
-      `Editing existing mod components not implemented for starter brick type: '${starterBrickType}'`,
-    );
-  }
+  const { fromModComponent } = adapter(starterBrickType);
 
   // FormState is the sum type of all the modComponent form states, so OK to cast
   return fromModComponent(modComponent) as Promise<ModComponentFormState>;

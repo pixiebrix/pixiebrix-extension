@@ -21,13 +21,11 @@ import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import reportError from "@/telemetry/reportError";
-import { initModOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { compact } from "lodash";
 
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
@@ -79,7 +77,6 @@ function useClearModComponentChanges(): (
           const formState = await modComponentToFormState(
             activatedModComponent,
           );
-          initModOptionsIfNeeded(formState, compact(mods));
           dispatch(actions.resetActivatedModComponentFormState(formState));
         }
       } catch (error) {
