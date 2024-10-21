@@ -734,7 +734,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.cancelObservers();
 
     // Set of elements that were already on the page when the trigger was added
-    const existingVisibleElements = new WeakSet(
+    const existingVisibleElements = new WeakSet<Element>(
       [...$elements.toArray()].filter((x) => isInViewport(x)),
     );
 
@@ -742,14 +742,15 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const appearObserver = new IntersectionObserver(
       (entries) => {
         const roots = entries
-          .filter((x) => x.isIntersecting)
-          .map((x) => x.target as HTMLElement)
           .filter(
-            (x) =>
+            (entry) =>
+              entry.isIntersecting &&
               // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
-              runReason !== RunReason.PAGE_EDITOR_REGISTER ||
-              !existingVisibleElements.has(x),
-          );
+              (runReason !== RunReason.PAGE_EDITOR_REGISTER ||
+                !existingVisibleElements.has(entry.target)),
+          )
+          // Will be HTMLElement because it's from a CSS selector
+          .map((x) => x.target as HTMLElement);
 
         void this.debouncedRunTriggersAndNotify(roots, { nativeEvent: null });
       },
