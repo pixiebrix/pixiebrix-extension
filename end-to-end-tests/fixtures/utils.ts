@@ -41,7 +41,7 @@ export const launchPersistentContextWithExtension = async (
       ...(CI || SLOWMO || PWDEBUG ? [] : ["--headless=new"]),
     ],
     slowMo: SLOWMO ? 3000 : undefined,
-    permissions: ["clipboard-read", "clipboard-write", "accessibility-events"],
+    permissions: ["clipboard-read", "clipboard-write"],
   });
 };
 
