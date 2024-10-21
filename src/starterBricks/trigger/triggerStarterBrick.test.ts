@@ -18,7 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { define, derive } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
-import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import {
   getDocument,
@@ -58,6 +58,10 @@ import {
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { mockIntersectionObserver } from "jsdom-testing-mocks";
+
+const intersectionObserverMock = mockIntersectionObserver();
 
 let hidden = false;
 
@@ -88,11 +92,7 @@ const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickDefinitionLike<TriggerDefinition>>({
     apiVersion: "v3",
     kind: DefinitionKinds.STARTER_BRICK,
-    metadata: (n: number) =>
-      ({
-        id: validateRegistryId(`test/starter-brick-${n}`),
-        name: "Test Starter Brick",
-      }) as Metadata,
+    metadata: metadataFactory,
     definition: define<TriggerDefinition>({
       type: StarterBrickTypes.TRIGGER,
       background: derive<TriggerDefinition, boolean>((x) =>
@@ -358,7 +358,7 @@ describe("triggerStarterBrick", () => {
 
   it("runs keypress trigger", async () => {
     document.body.innerHTML = getDocument(
-      "<div><input type='text'></input></div>",
+      "<div><input type='text' /></div>",
     ).body.innerHTML;
 
     const starterBrick = fromJS(
@@ -777,4 +777,138 @@ describe("defaults", () => {
       },
     );
   });
+});
+
+describe("page editor run reasons", () => {
+  it("doesn't run LOAD trigger for PAGE_EDITOR_REGISTER", async () => {
+    const starterBrick = fromJS(
+      getPlatform(),
+      starterBrickFactory({
+        trigger: Triggers.LOAD,
+      })(),
+    );
+
+    starterBrick.registerModComponent(
+      modComponentFactory({
+        extensionPointId: starterBrick.id,
+      }),
+    );
+
+    await starterBrick.install();
+    await starterBrick.runModComponents({
+      reason: RunReason.PAGE_EDITOR_REGISTER,
+    });
+
+    expect(rootReader.readCount).toBe(0);
+
+    await starterBrick.runModComponents({ reason: RunReason.PAGE_EDITOR_RUN });
+    expect(rootReader.readCount).toBe(1);
+
+    starterBrick.uninstall();
+  });
+
+  it.each([Triggers.INITIALIZE, Triggers.APPEAR])(
+    "doesn't run %s trigger for PAGE_EDITOR_REGISTER for attachMode: once",
+    async (trigger) => {
+      document.body.innerHTML = getDocument(
+        "<div><input type='text' /></div>",
+      ).body.innerHTML;
+
+      const starterBrick = fromJS(
+        getPlatform(),
+        starterBrickFactory({
+          trigger,
+          rootSelector: "input",
+          attachMode: "once",
+        })(),
+      );
+
+      starterBrick.registerModComponent(
+        modComponentFactory({
+          extensionPointId: starterBrick.id,
+        }),
+      );
+
+      await starterBrick.install();
+      await starterBrick.runModComponents({
+        reason: RunReason.PAGE_EDITOR_REGISTER,
+      });
+
+      intersectionObserverMock.enterNodes([
+        // eslint-disable-next-line testing-library/no-node-access -- non-React test
+        ...document.querySelectorAll("input"),
+      ]);
+
+      expect(rootReader.readCount).toBe(0);
+
+      await starterBrick.runModComponents({
+        reason: RunReason.PAGE_EDITOR_RUN,
+      });
+
+      intersectionObserverMock.enterNodes([
+        // eslint-disable-next-line testing-library/no-node-access -- non-React test
+        ...document.querySelectorAll("input"),
+      ]);
+
+      await tick();
+      await tick();
+
+      expect(rootReader.readCount).toBe(1);
+
+      starterBrick.uninstall();
+    },
+  );
+
+  it.each([Triggers.INITIALIZE, Triggers.APPEAR])(
+    "doesn't run initialize trigger existing element for PAGE_EDITOR_REGISTER for attachMode: watch",
+    async () => {
+      document.body.innerHTML = getDocument(
+        "<div><input type='text' /></div>",
+      ).body.innerHTML;
+
+      const starterBrick = fromJS(
+        getPlatform(),
+        starterBrickFactory({
+          trigger: Triggers.INITIALIZE,
+          rootSelector: "input",
+          attachMode: "watch",
+        })(),
+      );
+
+      starterBrick.registerModComponent(
+        modComponentFactory({
+          extensionPointId: starterBrick.id,
+        }),
+      );
+
+      await starterBrick.install();
+      await starterBrick.runModComponents({
+        reason: RunReason.PAGE_EDITOR_REGISTER,
+      });
+
+      intersectionObserverMock.enterNodes([
+        // eslint-disable-next-line testing-library/no-node-access -- non-React test
+        ...document.querySelectorAll("input"),
+      ]);
+
+      // Ticks required for initialize callback to have a chance to run (it uses setTimeout)
+      await tick();
+      await tick();
+      expect(rootReader.readCount).toBe(0);
+
+      $(document.body).append("<input id='#new-element' type='text' />");
+
+      intersectionObserverMock.enterNodes([
+        // eslint-disable-next-line testing-library/no-node-access -- non-React test
+        ...document.querySelectorAll("input"),
+      ]);
+
+      // Ticks required for initialize callback to have a chance to run (it uses setTimeout)
+      await tick();
+      await tick();
+      expect(rootReader.readCount).toBe(1);
+
+      starterBrick.uninstall();
+    },
+  );
 });

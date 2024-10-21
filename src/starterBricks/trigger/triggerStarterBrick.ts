@@ -84,6 +84,7 @@ import {
 import { sleep } from "@/utils/timeUtils";
 import {
   $safeFind,
+  isInViewport,
   runOnDocumentVisible,
   waitAnimationFrame,
 } from "@/utils/domUtils";
@@ -687,7 +688,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // The caller will have already waited for the element. So $element will contain at least one element
     if (this.attachMode === "once") {
       if (runReason === RunReason.PAGE_EDITOR_REGISTER) {
-        // Skip because the trigger would have already run for a previous registration
+        // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
         return;
       }
 
@@ -699,10 +700,20 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     assertNotNullish(this.triggerSelector, "Trigger selector is required");
 
-    // FIXME: for RunReason.PAGE_EDITOR_REGISTER will this trigger for existing elements?
+    // Set of elements that were already on the page when the trigger was added
+    const existingInitializedElements = new WeakSet($elements.toArray());
+
     const observer = initialize(
       this.triggerSelector,
       (_index, element: HTMLElement) => {
+        // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
+        if (
+          runReason === RunReason.PAGE_EDITOR_REGISTER &&
+          existingInitializedElements.has(element)
+        ) {
+          return;
+        }
+
         void this.debouncedRunTriggersAndNotify([element], {
           nativeEvent: null,
         });
@@ -716,25 +727,38 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     });
   }
 
-  private attachAppearTrigger($elements: JQuery): void {
+  private attachAppearTrigger(
+    $elements: JQuery,
+    { runReason }: { runReason: RunReason },
+  ): void {
     this.cancelObservers();
+
+    // Set of elements that were already on the page when the trigger was added
+    const existingVisibleElements = new WeakSet(
+      [...$elements.toArray()].filter((x) => isInViewport(x)),
+    );
 
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
     const appearObserver = new IntersectionObserver(
       (entries) => {
         const roots = entries
           .filter((x) => x.isIntersecting)
-          .map((x) => x.target as HTMLElement);
+          .map((x) => x.target as HTMLElement)
+          .filter(
+            (x) =>
+              // Skip on PAGE_EDITOR_REGISTER because the activated mod component's trigger would have already run
+              runReason !== RunReason.PAGE_EDITOR_REGISTER ||
+              !existingVisibleElements.has(x),
+          );
+
         void this.debouncedRunTriggersAndNotify(roots, { nativeEvent: null });
       },
       {
         root: null,
-        // RootMargin: "0px",
         threshold: 0.2,
       },
     );
 
-    // FIXME: handle RunReason.PAGE_EDITOR_REGISTER. Should not fire if the elements are already appearing
     for (const element of $elements) {
       appearObserver.observe(element);
     }
@@ -852,7 +876,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  async runModComponents({ reason }: RunArgs): Promise<void> {
+  async runModComponents({ reason: runReason }: RunArgs): Promise<void> {
     this.cancelObservers();
 
     const $root = await this.getRoot();
@@ -861,7 +885,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       case Triggers.LOAD: {
         assertNotNullish($root, "Root is required");
 
-        if (reason !== RunReason.PAGE_EDITOR_REGISTER) {
+        // Don't run on PAGE_EDITOR_REGISTER because the trigger would have already run on page/page editor load
+        if (runReason !== RunReason.PAGE_EDITOR_REGISTER) {
           await this.debouncedRunTriggersAndNotify([...$root], {
             nativeEvent: null,
           });
@@ -870,21 +895,21 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         break;
       }
 
-      case Triggers.INTERVAL: {
-        this.attachInterval();
-        break;
-      }
-
       case Triggers.INITIALIZE: {
         assertNotNullish($root, "Root is required");
-        this.attachInitializeTrigger($root, { runReason: reason });
+        this.attachInitializeTrigger($root, { runReason });
         break;
       }
 
       case Triggers.APPEAR: {
         assertNotNullish($root, "Root is required");
         this.assertElement($root);
-        this.attachAppearTrigger($root);
+        this.attachAppearTrigger($root, { runReason });
+        break;
+      }
+
+      case Triggers.INTERVAL: {
+        this.attachInterval();
         break;
       }
 
