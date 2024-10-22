@@ -29,7 +29,7 @@ import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import FormBuilder from "./FormBuilder";
+import FormBuilderDemo from "./FormBuilderDemo";
 import { type RJSFSchema } from "../formBuilderTypes";
 import userEvent from "@testing-library/user-event";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
@@ -60,7 +60,7 @@ function renderFormBuilder(
   const FormikTemplate = createFormikTemplate(initialValues);
   return render(
     <FormikTemplate>
-      <FormBuilder name="form" initialActiveField={activeField} />
+      <FormBuilderDemo name="form" initialActiveField={activeField} />
     </FormikTemplate>,
   );
 }
@@ -380,7 +380,7 @@ describe("rename a field", () => {
 
     const { container } = render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
 
@@ -407,7 +407,7 @@ describe("rename a field", () => {
 
     const { container } = render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
 
@@ -441,7 +441,7 @@ describe("rename a field", () => {
 
     const { container } = render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
 
@@ -466,7 +466,7 @@ describe("rename a field", () => {
 
     render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
     await waitForEffect();

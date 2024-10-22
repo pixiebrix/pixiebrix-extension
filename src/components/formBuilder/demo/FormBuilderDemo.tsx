@@ -25,7 +25,12 @@ import { useField } from "formik";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 
-const FormBuilder: React.FC<{
+/**
+ * Demo component that shows the form editor and preview side by side, for use with Storybook and
+ * unit testing. In practice, these two components (the editor and preview components) are separated into different
+ * views in the Page Editor (the Brick Configuration pane and the Data Panel respectively).
+ */
+const FormBuilderDemo: React.FC<{
   name: string;
   initialActiveField?: string;
 }> = ({ name, initialActiveField = null }) => {
@@ -56,4 +61,4 @@ const FormBuilder: React.FC<{
   );
 };
 
-export default FormBuilder;
+export default FormBuilderDemo;
