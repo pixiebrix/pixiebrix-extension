@@ -5,6 +5,8 @@ const config = configFactory(process.env, {});
 /**
  * https://knip.dev/overview/configuration#customize
  * @type {import("knip").KnipConfig}
+ *
+ * Production mode: https://knip.dev/features/production-mode
  */
 const knipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
