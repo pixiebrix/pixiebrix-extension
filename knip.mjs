@@ -58,8 +58,7 @@ const knipConfig = {
     "**/__mocks__/**",
     // Development/debugging helpers
     "src/development/hooks/**",
-    "knip.production.mjs",
-
+    // Including end-to-end tests for dependency check but not dead code
     "end-to-end-tests/**",
 
     // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
