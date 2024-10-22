@@ -38,7 +38,7 @@ function isTimestamp(value: string): value is Timestamp {
   }
 }
 
-/** @knip test and factory helper */
+/** @internal */
 export function validateTimestamp(value: string): Timestamp {
   if (isTimestamp(value)) {
     return value;

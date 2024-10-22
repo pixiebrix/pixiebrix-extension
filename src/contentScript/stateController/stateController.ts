@@ -252,6 +252,7 @@ export async function getState({
   }
 }
 
+/** @internal */
 export async function TEST_resetStateController(): Promise<void> {
   framePrivateState.clear();
   frameModState.clear();

@@ -26,6 +26,7 @@ const suspiciousRegex = /[a-z]\d+[a-z]|^\.?[_-]|[_-]$/i;
 // Excludes numbers and symbols
 const nonLetters = /[^a-z]/gi;
 
+/** @internal */
 export function selectorTypes(selector: string): string[] {
   try {
     const tokens = $.find.tokenize(selector);

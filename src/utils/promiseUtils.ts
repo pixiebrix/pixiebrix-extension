@@ -211,7 +211,7 @@ export async function resolveObj<T>(
 
 /**
  * Partition an array of promise results into fulfilled values and rejected errors.\
- * @knip exported for testing
+ * @internal
  */
 export function groupPromisesByStatus<T>(
   results: Array<PromiseSettledResult<T>>,

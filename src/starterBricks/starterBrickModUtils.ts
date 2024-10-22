@@ -67,18 +67,6 @@ export function getAllModComponentDefinitionsWithType(
   });
 }
 
-export async function getContainedStarterBrickTypes(
-  modDefinition: ModDefinition,
-): Promise<StarterBrickType[]> {
-  const extensionPointTypes = await Promise.all(
-    modDefinition.extensionPoints.map(async (extensionPoint) =>
-      getStarterBrickType(extensionPoint, modDefinition),
-    ),
-  );
-
-  return uniq(compact(extensionPointTypes));
-}
-
 /**
  * Returns true if the recipe includes a static or dynamic Quick Bar entries.
  */

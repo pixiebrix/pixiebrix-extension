@@ -46,6 +46,7 @@ type ExtendedContext<T extends UnknownObject = UnknownObject> = T & {
 
 /**
  * Test helper to spread the mod variable into the context if the runtime version supports it.
+ * @internal
  */
 export function extraEmptyModStateContext(version: ApiVersion): UnknownObject {
   if (apiVersionOptions(version).extendModVariable) {

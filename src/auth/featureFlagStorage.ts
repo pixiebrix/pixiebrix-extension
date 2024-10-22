@@ -76,6 +76,7 @@ export async function TEST_deleteFeatureFlagsCache(): Promise<void> {
 /**
  * Test utility to directly set the flags cache. NOTE: in tests, the manual mock `__mocks__` implementation is
  * automatically used, not this file.
+ * @internal
  */
 export async function TEST_overrideFeatureFlags(
   flags: FeatureFlag[],

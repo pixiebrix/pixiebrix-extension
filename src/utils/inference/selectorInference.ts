@@ -162,6 +162,7 @@ export function sortBySelector<Item = string>(
  *  1  'a'
  *
  * @see sortBySelector
+ * @internal
  */
 export function getSelectorPreference(selector: string): number {
   const tokenized = $.find.tokenize(selector);
@@ -458,6 +459,7 @@ export function inferSelectorsIncludingStableAncestors(
 
 /**
  * Generate some CSS selector variants for an element.
+ * @internal
  */
 export function inferSelectors(
   element: HTMLElement,
@@ -667,6 +669,7 @@ export function findContainer(elements: HTMLElement[]): {
  * @param name Like "id", "data-test"
  * @param value Like "main-nav", "user-sidebar"
  * @returns Like "#main-nav", "[data-test='user-sidebar']"
+ * @internal
  */
 export function getAttributeSelector(
   name: string,
@@ -689,68 +692,4 @@ export function getAttributeSelector(
     //  Must use single quotes to match `css-selector-generator`
     return `[${name}='${CSS.escape(value)}']`;
   }
-}
-
-function getClassSelector(className: string): string | undefined {
-  if (!isRandomString(className)) {
-    return "." + CSS.escape(className);
-  }
-}
-
-/**
- * Get an array of "simple selectors" for the target element
- * https://www.w3.org/TR/selectors-4/#grammar
- * @example ["h1", ".bold", ".italic", "[aria-label=Title]"]
- */
-function getElementSelectors(target: Element): string[] {
-  const attributeSelectors = [...target.attributes].map(({ name, value }) =>
-    getAttributeSelector(name, value),
-  );
-  const classSelectors = [...target.classList].map((className) =>
-    getClassSelector(className),
-  );
-
-  return compact([
-    target.tagName.toLowerCase(),
-    ...attributeSelectors,
-    ...classSelectors,
-  ]);
-}
-
-/**
- * Get a single "compound selector" for the target element
- * https://www.w3.org/TR/selectors-4/#grammar
- * @example "h1.bold.italic[aria-label=Title]"
- */
-function getElementSelector(target: Element): string {
-  return getElementSelectors(target).join("");
-}
-
-/**
- * Get an array of unfiltered selectors for each parent of the target
- *
- * @example ["main", "div", "div.content", "p[title='Your project']", "span.title"]
- */
-function getSelectorTree(target: HTMLElement): string[] {
-  return $(target)
-    .parentsUntil("body")
-    .addBack()
-    .get()
-    .map((ancestor: Element) => getElementSelector(ancestor));
-}
-
-/**
- * Generate a selector for the target element
- *
- * @example "main div.content > p[title='Your project'] > span.title"
- */
-export function generateSelector(target: HTMLElement): string {
-  // Merge tree, but
-  return (
-    getSelectorTree(target)
-      .join(" > ")
-      // Avoid bland selectors
-      .replace(/^(div > )+/, "")
-      .replaceAll(" > div > ", " ")
-  );
 }

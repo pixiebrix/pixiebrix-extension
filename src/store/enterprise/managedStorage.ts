@@ -320,6 +320,7 @@ export function isInitialized(): boolean {
 
 /**
  * Helper method for resetting the module for testing.
+ * @internal
  */
 export async function INTERNAL_reset(): Promise<void> {
   controller.abortAndReset(new PromiseCancelled("Internal test cleanup"));

@@ -475,39 +475,6 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
   return outerHTML(common);
 }
 
-function inferSinglePanelHTML(
-  container: HTMLElement,
-  selected: HTMLElement,
-): string {
-  const $container = $(container);
-  const child = containerChildren($container, [selected])[0];
-
-  assertNotNullish(child, "Unable to find direct children of the container");
-
-  const [$panel] = buildSinglePanelElement(child);
-  return outerHTML($panel);
-}
-
-export function inferPanelHTML(
-  container: HTMLElement,
-  selected: HTMLElement[],
-): string {
-  if (selected.length === 0) {
-    throw new Error("No selected element");
-  }
-
-  const $container = $(container);
-
-  if (selected.length > 1) {
-    const children = containerChildren($container, selected);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
-    return commonPanelHTML(selected[0]!.tagName, $(children));
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check above
-  return inferSinglePanelHTML(container, selected[0]!);
-}
-
 export function inferButtonHTML(
   container: HTMLElement,
   selected: HTMLElement[],

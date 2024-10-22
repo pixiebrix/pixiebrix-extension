@@ -64,14 +64,17 @@ function triggerListeners(
   authChanges.emit(auth);
 }
 
+/** @internal */
 export function TEST_triggerListeners(auth?: Partial<TokenAuthData>): void {
   triggerListeners(auth);
 }
 
+/** @internal */
 export function TEST_clearListeners(): void {
   controller.abortAndReset();
 }
 
+/** @internal */
 export async function TEST_setAuthData(
   data: Partial<TokenAuthData>,
 ): Promise<void> {

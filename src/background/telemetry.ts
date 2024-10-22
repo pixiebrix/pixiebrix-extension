@@ -275,6 +275,7 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   maxWait: EVENT_BUFFER_MAX_MS,
 });
 
+/** @internal */
 export async function TEST_flushAll(): Promise<void> {
   return debouncedFlush.flush();
 }

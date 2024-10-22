@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inferButtonHTML, inferPanelHTML } from "./markupInference";
+import { inferButtonHTML } from "./markupInference";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -197,59 +197,4 @@ test("infer list item from inside div", () => {
   const inferred = inferButtonHTML($("ul").get(0)!, $("li div").get());
 
   expect(inferred).toBe("<li><div>{{{ caption }}}</div></li>");
-});
-
-test("infer single panel", () => {
-  document.body.innerHTML =
-    "<div>" +
-    "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
-    "</div>";
-
-  const inferred = inferPanelHTML($("div").get(0)!, $("section").get());
-
-  expect(inferred).toBe(
-    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>",
-  );
-});
-
-test("infer basic panel structure with header", () => {
-  document.body.innerHTML =
-    "<div>" +
-    "<section><header><h2>Foo</h2></header><div><p>This is some text</p></div></section>" +
-    "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
-    "</div>";
-
-  const inferred = inferPanelHTML($("div").get(0)!, $("section").get());
-
-  expect(inferred).toBe(
-    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>",
-  );
-});
-
-test("infer basic panel structure with div header", () => {
-  document.body.innerHTML =
-    "<div>" +
-    "<section><div><h2>Foo</h2></div><div><p>This is some text</p></div></section>" +
-    "<section><div><h2>Bar</h2></div><div><p>This is some other text</p></div></section>" +
-    "</div>";
-
-  const inferred = inferPanelHTML($("div").get(0)!, $("section").get());
-
-  expect(inferred).toBe(
-    "<section><div><h2>{{{ heading }}}</h2></div><div>{{{ body }}}</div></section>",
-  );
-});
-
-test("infer header structure mismatch", () => {
-  document.body.innerHTML =
-    "<div>" +
-    "<section><h2>Foo</h2><div><p>This is some text</p></div></section>" +
-    "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
-    "</div>";
-
-  const inferred = inferPanelHTML($("div").get(0)!, $("section").get());
-
-  expect(inferred).toBe(
-    "<section><h2>{{{ heading }}}</h2><div>{{{ body }}}</div></section>",
-  );
 });
