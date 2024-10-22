@@ -25,7 +25,6 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
@@ -44,7 +43,6 @@ function useClearModComponentChanges(): (
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activatedModComponents = useSelector(selectActivatedModComponents);
-  const { data: mods } = useAllModDefinitions();
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -84,7 +82,7 @@ function useClearModComponentChanges(): (
         dispatch(actions.adapterError({ uuid: modComponentId, error }));
       }
     },
-    [dispatch, mods, sessionId, activatedModComponents, showConfirmation],
+    [dispatch, sessionId, activatedModComponents, showConfirmation],
   );
 }
 

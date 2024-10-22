@@ -17,7 +17,7 @@
 
 import React from "react";
 import { useHistory } from "react-router";
-import { deactivateMod } from "@/store/deactivateUtils";
+import { deactivateMod } from "@/store/deactivateModHelpers";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
 import { modViewItemFactory } from "@/testUtils/factories/modViewItemFactory";
@@ -41,7 +41,7 @@ jest.mock("react-router", () => {
   };
 });
 
-jest.mock("@/store/deactivateUtils", () => ({
+jest.mock("@/store/deactivateModHelpers", () => ({
   deactivateMod: jest.fn(),
 }));
 

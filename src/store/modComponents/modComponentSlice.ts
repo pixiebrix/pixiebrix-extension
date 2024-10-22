@@ -252,15 +252,14 @@ const modComponentSlice = createSlice({
     },
 
     /**
-     * Deactivate a single mod component by id. Prefer using removeModById instead
+     * Deactivate a single mod component by id. Prefer removeModById
      * @see removeModById
      */
     removeModComponent(
       state,
       { payload: { modComponentId } }: PayloadAction<{ modComponentId: UUID }>,
     ) {
-      // NOTE: We aren't deleting the mod component/definition on the server.
-      // The user must do that separately from the dashboard
+      // NOTE: removeModComponent doesn't delete the mod component/definition on the server.
       state.activatedModComponents = state.activatedModComponents.filter(
         (x) => x.id !== modComponentId,
       );

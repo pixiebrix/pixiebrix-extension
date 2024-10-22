@@ -19,7 +19,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
-import { deactivateMod } from "@/store/deactivateUtils";
+import { deactivateMod } from "@/store/deactivateModHelpers";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 

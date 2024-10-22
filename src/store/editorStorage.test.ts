@@ -16,24 +16,20 @@
  */
 
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { initialState } from "@/pageEditor/store/editor/editorSlice";
-import { type UUID } from "@/types/stringTypes";
-import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
-import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import {
   getEditorState,
-  removeDraftModComponents,
-  removeDraftModComponentsForMod,
+  removeDraftModComponentsByModId,
   saveEditorState,
 } from "@/store/editorStorage";
-import { validateRegistryId } from "@/types/helpers";
-
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import { migrations } from "@/store/editorMigrations";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { range } from "lodash";
+import type { Nullish } from "@/utils/nullishUtils";
 
 jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
@@ -50,332 +46,56 @@ const setReduxStorageMock = jest.mocked(setReduxStorage);
 
 const currentPersistenceVersion = getMaxMigrationsVersion(migrations);
 
-describe("draftModComponentStorage", () => {
+describe("editorStorage", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  test("removes one active form state", async () => {
-    const formState = formStateFactory();
-    const brickConfigurationUIStates: Record<UUID, BrickConfigurationUIState> =
-      {
-        [formState.uuid]: {
-          nodeId: formState.modComponent.brickPipeline[0]!.instanceId,
-          dataPanel: {
-            activeTabKey: null,
-          },
-        } as BrickConfigurationUIState,
-      };
-    const state: EditorState = {
-      ...initialState,
-      activeModComponentId: formState.uuid,
-      modComponentFormStates: [formState],
-      dirty: {
-        [formState.uuid]: true,
-      },
-      brickPipelineUIStateById: {
-        [formState.uuid]: {
-          pipelineMap: getPipelineMap(formState.modComponent.brickPipeline),
-          activeNodeId: formState.modComponent.brickPipeline[0]!.instanceId!,
-          nodeUIStates: brickConfigurationUIStates,
+  test("removes mod but keeps other form states", async () => {
+    const otherFormState = formStateFactory();
+
+    const targetEditorState = editorSlice.reducer(
+      undefined,
+      editorSlice.actions.addModComponentFormState(otherFormState),
+    );
+
+    const modMetadata = modMetadataFactory();
+
+    const modFormStates = range(2).map(() =>
+      formStateFactory({
+        formStateConfig: {
+          modMetadata,
         },
-      },
-      availableDraftModComponentIds: [formState.uuid],
-    };
+      }),
+    );
+
+    let state = targetEditorState;
+    for (const formState of modFormStates) {
+      state = editorSlice.reducer(
+        state,
+        editorSlice.actions.addModComponentFormState(formState),
+      );
+    }
+
     readReduxStorageMock.mockResolvedValue(state);
 
-    await removeDraftModComponents([formState.uuid]);
-
-    expect(setReduxStorage).toHaveBeenCalledWith(
-      "persist:editor",
-      initialState,
-      currentPersistenceVersion,
+    const actualModComponentIds = await removeDraftModComponentsByModId(
+      modMetadata.id,
     );
-  });
 
-  test("removes inactive formState", async () => {
-    const inactiveFormState = formStateFactory();
-    const inactiveBrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [inactiveFormState.uuid]: {
-        nodeId: inactiveFormState.modComponent.brickPipeline[1]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const activeFormState = formStateFactory();
-    const activeBrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [activeFormState.uuid]: {
-        nodeId: activeFormState.modComponent.brickPipeline[0]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const baseState: EditorState = {
-      ...initialState,
-      activeModComponentId: activeFormState.uuid,
-      modComponentFormStates: [activeFormState],
-      dirty: {
-        [activeFormState.uuid]: true,
-      },
-      brickPipelineUIStateById: {
-        [activeFormState.uuid]: {
-          pipelineMap: getPipelineMap(
-            activeFormState.modComponent.brickPipeline,
-          ),
-          activeNodeId:
-            activeFormState.modComponent.brickPipeline[0]!.instanceId!,
-          nodeUIStates: activeBrickConfigurationUIStates,
-        },
-      },
-      availableDraftModComponentIds: [activeFormState.uuid],
-    };
-    const stateWithInactive: EditorState = {
-      ...baseState,
-      modComponentFormStates: [
-        ...baseState.modComponentFormStates,
-        inactiveFormState,
-      ],
-      brickPipelineUIStateById: {
-        ...baseState.brickPipelineUIStateById,
-        [inactiveFormState.uuid]: {
-          pipelineMap: getPipelineMap(
-            inactiveFormState.modComponent.brickPipeline,
-          ),
-          activeNodeId:
-            inactiveFormState.modComponent.brickPipeline[0]!.instanceId,
-          nodeUIStates: inactiveBrickConfigurationUIStates,
-        },
-      },
-      availableDraftModComponentIds: [
-        ...baseState.availableDraftModComponentIds,
-        inactiveFormState.uuid,
-      ],
-    };
-    readReduxStorageMock.mockResolvedValue(stateWithInactive);
-
-    await removeDraftModComponents([inactiveFormState.uuid]);
-
-    expect(setReduxStorage).toHaveBeenCalledWith(
-      "persist:editor",
-      baseState,
-      currentPersistenceVersion,
+    expect(new Set(actualModComponentIds)).toStrictEqual(
+      new Set(modFormStates.map((x) => x.uuid)),
     );
-  });
-
-  test("removes active recipe", async () => {
-    const mod = modMetadataFactory();
-    const formState1 = formStateFactory({
-      formStateConfig: {
-        modMetadata: mod,
-      },
-    });
-    const formState1BrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [formState1.uuid]: {
-        nodeId: formState1.modComponent.brickPipeline[0]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const formState2 = formStateFactory({
-      formStateConfig: {
-        modMetadata: mod,
-      },
-    });
-    const formState2BrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [formState2.uuid]: {
-        nodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const formState3 = formStateFactory();
-    const formState3BrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [formState3.uuid]: {
-        nodeId: formState3.modComponent.brickPipeline[1]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const baseState: EditorState = {
-      ...initialState,
-      modComponentFormStates: [formState3],
-      brickPipelineUIStateById: {
-        [formState3.uuid]: {
-          pipelineMap: getPipelineMap(formState3.modComponent.brickPipeline),
-          activeNodeId: formState3.modComponent.brickPipeline[0]!.instanceId!,
-          nodeUIStates: formState3BrickConfigurationUIStates,
-        },
-      },
-      availableDraftModComponentIds: [formState3.uuid],
-    };
-    const stateWithRecipe: EditorState = {
-      ...baseState,
-      activeModId: mod.id,
-      modComponentFormStates: [
-        ...baseState.modComponentFormStates,
-        formState1,
-        formState2,
-      ],
-      dirty: {
-        [formState1.uuid]: true,
-      },
-      dirtyModMetadataById: {
-        [mod.id]: {
-          ...mod,
-          description: "new description",
-        },
-      },
-      brickPipelineUIStateById: {
-        ...baseState.brickPipelineUIStateById,
-        [formState1.uuid]: {
-          pipelineMap: getPipelineMap(formState1.modComponent.brickPipeline),
-          activeNodeId: formState1.modComponent.brickPipeline[1]!.instanceId,
-          nodeUIStates: formState1BrickConfigurationUIStates,
-        },
-        [formState2.uuid]: {
-          pipelineMap: getPipelineMap(formState2.modComponent.brickPipeline),
-          activeNodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
-          nodeUIStates: formState2BrickConfigurationUIStates,
-        },
-      },
-      availableDraftModComponentIds: [
-        ...baseState.availableDraftModComponentIds,
-        formState1.uuid,
-        formState2.uuid,
-      ],
-    };
-    readReduxStorageMock.mockResolvedValue(stateWithRecipe);
-
-    await removeDraftModComponentsForMod(mod.id);
 
     expect(setReduxStorage).toHaveBeenCalledWith(
       "persist:editor",
-      baseState,
-      currentPersistenceVersion,
-    );
-  });
-
-  test("removes inactive recipe", async () => {
-    const mod = modMetadataFactory();
-    const formState1 = formStateFactory({
-      formStateConfig: {
-        modMetadata: mod,
+      {
+        ...targetEditorState,
+        // When the mod's form states are added, they become active. On remove the active/expanded props are reset
+        activeModComponentId: null,
+        expandedModId: null,
+        selectionSeq: expect.toBeNumber(),
       },
-    });
-    const formState1BrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [formState1.uuid]: {
-        nodeId: formState1.modComponent.brickPipeline[0]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const formState2 = formStateFactory({
-      formStateConfig: {
-        modMetadata: mod,
-      },
-    });
-    const formState2BrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [formState2.uuid]: {
-        nodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const formState3 = formStateFactory();
-    const formState3BrickConfigurationUIStates: Record<
-      UUID,
-      BrickConfigurationUIState
-    > = {
-      [formState3.uuid]: {
-        nodeId: formState3.modComponent.brickPipeline[1]!.instanceId,
-        dataPanel: {
-          activeTabKey: null,
-        },
-      } as BrickConfigurationUIState,
-    };
-    const baseState: EditorState = {
-      ...initialState,
-      activeModComponentId: formState3.uuid,
-      modComponentFormStates: [formState3],
-      brickPipelineUIStateById: {
-        [formState3.uuid]: {
-          pipelineMap: getPipelineMap(formState3.modComponent.brickPipeline),
-          activeNodeId: formState3.modComponent.brickPipeline[0]!.instanceId!,
-          nodeUIStates: formState3BrickConfigurationUIStates,
-        },
-      },
-      availableDraftModComponentIds: [formState3.uuid],
-    };
-    const stateWithRecipe: EditorState = {
-      ...baseState,
-      modComponentFormStates: [
-        ...baseState.modComponentFormStates,
-        formState1,
-        formState2,
-      ],
-      dirty: {
-        [formState1.uuid]: true,
-      },
-      dirtyModMetadataById: {
-        [mod.id]: {
-          ...mod,
-          description: "new description",
-        },
-      },
-      brickPipelineUIStateById: {
-        ...baseState.brickPipelineUIStateById,
-        [formState1.uuid]: {
-          pipelineMap: getPipelineMap(formState1.modComponent.brickPipeline),
-          activeNodeId: formState1.modComponent.brickPipeline[1]!.instanceId,
-          nodeUIStates: formState1BrickConfigurationUIStates,
-        },
-        [formState2.uuid]: {
-          pipelineMap: getPipelineMap(formState2.modComponent.brickPipeline),
-          activeNodeId: formState2.modComponent.brickPipeline[0]!.instanceId,
-          nodeUIStates: formState2BrickConfigurationUIStates,
-        },
-      },
-      availableDraftModComponentIds: [
-        ...baseState.availableDraftModComponentIds,
-        formState1.uuid,
-        formState2.uuid,
-      ],
-    };
-    readReduxStorageMock.mockResolvedValue(stateWithRecipe);
-
-    await removeDraftModComponentsForMod(mod.id);
-
-    expect(setReduxStorage).toHaveBeenCalledWith(
-      "persist:editor",
-      baseState,
       currentPersistenceVersion,
     );
   });
@@ -393,17 +113,14 @@ describe("draftModComponentStorage when no state is persisted", () => {
 
   test.each([undefined, null])(
     "setEditorState is NOP for: %s",
-    async (state?: null) => {
+    async (state: Nullish) => {
       await saveEditorState(state as unknown as EditorState);
       expect(setReduxStorageMock).not.toHaveBeenCalled();
     },
   );
 
   test("removeDraftModComponentsForMod doesn't crash when readReduxStorage returns undefined", async () => {
-    await removeDraftModComponentsForMod(validateRegistryId("@test/recipe"));
-  });
-
-  test("removeDraftModComponents doesn't crash when readReduxStorage returns undefined", async () => {
-    await removeDraftModComponents([uuidSequence(0), uuidSequence(1)]);
+    await removeDraftModComponentsByModId(registryIdFactory());
+    expect.pass("No crash");
   });
 });

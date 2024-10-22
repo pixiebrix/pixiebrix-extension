@@ -18,11 +18,6 @@
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { produce } from "immer";
-import {
-  removeModComponentFormState,
-  removeModData,
-} from "@/pageEditor/store/editor/editorSliceHelpers";
 import {
   readReduxStorage,
   setReduxStorage,
@@ -30,6 +25,8 @@ import {
 } from "@/utils/storageUtils";
 import { migrations } from "@/store/editorMigrations";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 
@@ -66,62 +63,40 @@ export async function saveEditorState(
 }
 
 /**
- * Remove a list of mod components by id from persisted redux storage.
+ * Remove all mod components for a given mod from persisted Page Editor Redux storage.
  *
- * Note: this does not trigger a change even in any current redux instances
- * @param modComponentIds the mod components to remove from persisted redux storage
- */
-export async function removeDraftModComponents(
-  modComponentIds: UUID[],
-): Promise<void> {
-  const state = await getEditorState();
-
-  // If this is called from a page where the page editor has not been opened yet,
-  // then the persisted editor state will be undefined, so we need to check for that
-  if (state == null) {
-    return;
-  }
-
-  const newState = produce(state, (draft) => {
-    for (const id of modComponentIds) {
-      removeModComponentFormState(draft, id);
-    }
-  });
-
-  await saveEditorState(newState);
-}
-
-/**
- * Remove all mod components for a given mod from persisted redux storage.
+ * NOTE: this does not trigger a change event in any current redux instances because no actions are dispatched.
  *
- * Note: this does not trigger a change even in any current redux instances
+ * In the Page Editor, use useDeactivateMod instead.
+ *
  * @param modId The mod to remove
- * @returns The UUIDs of removed mod components
+ * @returns the UUIDs of removed mod components. Does NOT include 1) mod components from the activated mod instance
+ * without an associated Page Editor form state, 2) deleted draft mod components
+ * @see useDeactivateMod
  */
-export async function removeDraftModComponentsForMod(
+export async function removeDraftModComponentsByModId(
   modId: RegistryId,
 ): Promise<UUID[]> {
-  const removedDraftModComponents: UUID[] = [];
-  const state = await getEditorState();
+  const editorState = await getEditorState();
 
-  // If this is called from a page where the page editor has not been opened yet,
+  // If this is called from a page where the Page Editor has not been opened yet,
   // then the persisted editor state will be undefined, so we need to check for that
-  if (state == null) {
-    return [] as UUID[];
+  if (editorState == null) {
+    return [];
   }
 
-  const newState = produce(state, (draft) => {
-    removeModData(draft, modId);
-
-    for (const modComponentFormState of state.modComponentFormStates) {
-      if (modComponentFormState.modMetadata.id === modId) {
-        removedDraftModComponents.push(modComponentFormState.uuid);
-        removeModComponentFormState(draft, modComponentFormState.uuid);
-      }
-    }
+  // This method returns the removed mod component UUIDs so that it's in 1 atomic operation with the state update.
+  // Otherwise, the set of draft mod ids might change between getEditorState calls.
+  const modComponentFormStates = selectModComponentFormStates({
+    editor: editorState,
   });
+  const draftModComponentIds = modComponentFormStates
+    .filter((x) => x.modMetadata.id === modId)
+    .map((x) => x.uuid);
 
-  await saveEditorState(newState);
+  await saveEditorState(
+    editorSlice.reducer(editorState, editorSlice.actions.removeModById(modId)),
+  );
 
-  return removedDraftModComponents;
+  return draftModComponentIds;
 }

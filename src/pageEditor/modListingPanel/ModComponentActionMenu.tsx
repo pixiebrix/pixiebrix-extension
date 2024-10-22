@@ -27,10 +27,7 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import {
-  DELETE_STARTER_BRICK_MODAL_PROPS,
-  useRemoveModComponentFromStorage,
-} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
@@ -43,7 +40,7 @@ const ModComponentActionMenu: React.FC<{
 }> = ({ modComponentFormState, labelRoot }) => {
   const dispatch = useDispatch();
 
-  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const deleteDraftModComponent = useDeleteDraftModComponent();
   const clearModComponentChanges = useClearModComponentChanges();
 
   const isDirty = useSelector(
@@ -102,11 +99,12 @@ const ModComponentActionMenu: React.FC<{
     {
       title: "Delete",
       icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
-      action: async () =>
-        removeModComponentFromStorage({
+      async action() {
+        await deleteDraftModComponent({
           modComponentId: modComponentFormState.uuid,
-          showConfirmationModal: DELETE_STARTER_BRICK_MODAL_PROPS,
-        }),
+          shouldShowConfirmation: true,
+        });
+      },
     },
   ];
 
