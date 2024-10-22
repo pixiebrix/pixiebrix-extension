@@ -67,9 +67,12 @@ export async function saveEditorState(
  *
  * NOTE: this does not trigger a change event in any current redux instances because no actions are dispatched.
  *
+ * In the Page Editor, use useDeactivateMod instead.
+ *
  * @param modId The mod to remove
  * @returns the UUIDs of removed mod components. Does NOT include 1) mod components from the activated mod instance
  * without an associated Page Editor form state, 2) deleted draft mod components
+ * @see useDeactivateMod
  */
 export async function removeDraftModComponentsByModId(
   modId: RegistryId,
