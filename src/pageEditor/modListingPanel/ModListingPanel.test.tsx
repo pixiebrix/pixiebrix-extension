@@ -90,6 +90,7 @@ describe("ModListingPanel", () => {
     await clickEllipsesMenu(modDefinition.metadata.name);
 
     // "Clear Changes" is disabled because there's no dirty state
+    expect(screen.getByText("Clear Changes")).toBeInTheDocument();
     expect(screen.getByText("Clear Changes")).toHaveAttribute(
       "aria-disabled",
       "true",
@@ -124,6 +125,7 @@ describe("ModListingPanel", () => {
     await clickEllipsesMenu(modName);
 
     // "Clear Changes" is disabled because the mod's never been saved
+    expect(screen.getByText("Clear Changes")).toBeInTheDocument();
     expect(screen.getByText("Clear Changes")).toHaveAttribute(
       "aria-disabled",
       "true",

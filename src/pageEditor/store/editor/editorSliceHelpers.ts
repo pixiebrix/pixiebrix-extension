@@ -152,9 +152,13 @@ export function removeModComponentFormState(
   remove(state.availableDraftModComponentIds, formStateId);
 
   if (formState) {
-    // FIXME: should this only mark as deleted if the component corresponds to a component on the activate mod instance?
-    const modId = formState?.modMetadata.id;
-    (state.deletedModComponentFormStatesByModId[modId] ??= []).push(formState);
+    // XXX: ideally this would only mark if the form state corresponds to an activated mod component. However,
+    // there's currently not way to determine if there's an activated mod component solely from the form state.
+    // The effect of adding the draft to deletedModComponentFormStatesByModId is benign - the mod will show as dirty
+    // even if the only change is that you added/removed a draft mod component.
+    // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/9320
+    (state.deletedModComponentFormStatesByModId[formState.modMetadata.id] ??=
+      []).push(formState);
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions

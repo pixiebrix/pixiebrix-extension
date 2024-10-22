@@ -39,13 +39,13 @@ type DeleteConfig = {
   shouldShowConfirmation?: boolean;
 };
 
-const DELETE_DRAFT_MOD_COMPONENT_PROPS: ConfirmationModalProps = {
+const DELETE_DRAFT_MOD_COMPONENT_PERMANENT_PROPS: ConfirmationModalProps = {
   title: "Delete starter brick?",
   message: "This action cannot be undone.",
   submitCaption: "Delete",
 };
 
-const DELETE_ACTIVATED_MOD_COMPONENT_PROPS: ConfirmationModalProps = {
+const DELETE_DRAFT_MOD_COMPONENT_RECOVERABLE_PROPS: ConfirmationModalProps = {
   title: "Delete starter brick?",
   message:
     "To recover the starter brick, select the Mod and click Clear Changes.",
@@ -73,8 +73,8 @@ function useDeleteDraftModComponent(): (
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation(
           activatedModComponentsMap.get(modComponentId)
-            ? DELETE_ACTIVATED_MOD_COMPONENT_PROPS
-            : DELETE_DRAFT_MOD_COMPONENT_PROPS,
+            ? DELETE_DRAFT_MOD_COMPONENT_RECOVERABLE_PROPS
+            : DELETE_DRAFT_MOD_COMPONENT_PERMANENT_PROPS,
         );
 
         if (!confirm) {
