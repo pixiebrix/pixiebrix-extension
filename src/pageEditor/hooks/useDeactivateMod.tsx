@@ -27,7 +27,7 @@ import { actions as modComponentActions } from "@/store/modComponents/modCompone
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { removeModDataAndInterfaceFromAllTabs } from "@/store/deactivateModHelpers";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
-import { selectGetDraftModComponentIds } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { selectGetDraftModComponentIdsForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 type Config = {
   modId: RegistryId;
@@ -70,7 +70,9 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const { showConfirmation } = useModals();
   const modInstanceMap = useSelector(selectModInstanceMap);
-  const getDraftModComponentIds = useSelector(selectGetDraftModComponentIds);
+  const getDraftModComponentIds = useSelector(
+    selectGetDraftModComponentIdsForMod,
+  );
 
   return useCallback(
     async ({ modId, shouldShowConfirmation = true }) => {

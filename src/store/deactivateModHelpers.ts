@@ -16,7 +16,7 @@
  */
 
 import { type Dispatch } from "react";
-import { removeDraftModComponentsForMod } from "@/store/editorStorage";
+import { removeDraftModComponentsByModId } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import {
   clearLog,
@@ -38,13 +38,8 @@ import { forbidContext } from "@/utils/expectContext";
  * Use this helper outside the Page Editor context to deactivate a mod and all of its mod components. In the Page
  * Editor, use useDeactivateMod instead.
  *
- * Removes from:
- * - Extension Options slice
- * - Draft mod components slice (i.e., Page Editor state)
- * - Notifies all tabs to remove the mod components
- * - browser.storage.session synchronized mod variables
- *
  * @see useDeactivateMod
+ * @see removeModDataAndInterfaceFromAllTabs
  */
 export async function deactivateMod(
   modId: RegistryId,
@@ -54,7 +49,7 @@ export async function deactivateMod(
   forbidContext("pageEditor");
 
   const removedDraftModComponentIds =
-    await removeDraftModComponentsForMod(modId);
+    await removeDraftModComponentsByModId(modId);
 
   dispatch(modComponentActions.removeModById(modId));
 
@@ -66,6 +61,12 @@ export async function deactivateMod(
 
 /**
  * Utility to remove a mod from all tabs/frames and clear its associated data.
+ *
+ * Removes from:
+ * - Notifies all tabs to remove the mod components
+ * - browser.storage.session synchronized mod variables
+ * - PixieBrix mod logs
+ *
  * @param modId the mod registry id
  * @param modComponentIds the mod component ids
  */

@@ -52,7 +52,7 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
     }),
 );
 
-export const selectGetDraftModComponentIds = createSelector(
+export const selectGetDraftModComponentIdsForMod = createSelector(
   selectGetCleanComponentsAndDirtyFormStatesForMod,
   (getCleanComponentsAndDirtyFormStatesForMod) =>
     // Memoize because method constructs a fresh object reference
