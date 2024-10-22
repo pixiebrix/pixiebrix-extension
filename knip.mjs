@@ -12,7 +12,6 @@ const knipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
   entry: [
     // ! suffix files are included in production mode
-    // ! suffix files are included in production mode
     ...Object.values(config.entry).map((x) =>
       `${x}.{ts,tsx,js,jsx}!`.replace("./", ""),
     ),
@@ -20,17 +19,8 @@ const knipConfig = {
     "src/background/messenger/external/api.ts!",
     "src/store/browserExtensionIdStorage.ts!",
 
-    // App messenger and common storage
-    "src/background/messenger/external/api.ts!",
-    "src/store/browserExtensionIdStorage.ts!",
-
     // Loaded via .eslintrc
     "eslint-local-rules/*",
-
-    // Include in default run only
-    "end-to-end-tests/fixtures/*.ts",
-    "end-to-end-tests/setup/*.setup.ts",
-    "end-to-end-tests/utils.ts",
 
     // Include in default run only
     "end-to-end-tests/fixtures/*.ts",
