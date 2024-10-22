@@ -72,6 +72,7 @@ type PendingMessageMetadata = {
   timestamp: number;
 };
 
+/** @internal */
 export const pendingMessageMetadataMap = new Map<
   string,
   PendingMessageMetadata

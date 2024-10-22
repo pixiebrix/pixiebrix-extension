@@ -43,6 +43,7 @@ import AssignModVariable from "@/bricks/effects/assignModVariable";
  * Get an example brick config for a given brick id.
  * @param brickId the block id to add
  * @param parentBrickId the parent brick id, or null if in the root pipeline
+ * @internal
  */
 export function getExampleBrickConfig(
   brickId: RegistryId,

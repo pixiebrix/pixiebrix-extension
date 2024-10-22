@@ -111,6 +111,7 @@ function findNextActiveKey(
 
 /**
  * Updates activeKey in place based on a removed entry. Mutates the state object.
+ * @internal
  */
 export function fixActiveTabOnRemoveInPlace(
   state: SidebarState,

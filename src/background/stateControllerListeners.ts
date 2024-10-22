@@ -20,6 +20,7 @@ import type { RegistryId } from "@/types/registryTypes";
 
 /**
  * Delete synchronized mod variables for the given tab id to free up memory.
+ * @internal
  */
 export async function deleteSynchronizedModVariablesForTab(
   tabId: number,

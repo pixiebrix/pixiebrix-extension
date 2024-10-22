@@ -57,6 +57,7 @@ const controller = new ReusableAbortController();
  *
  * @see initManagedStorageOncePerSession
  * @since 1.8.10
+ * @internal
  */
 export const initializationTimestamp = new StorageItem<Timestamp>(
   "managedStorageInitTimestamp",
@@ -320,6 +321,7 @@ export function isInitialized(): boolean {
 
 /**
  * Helper method for resetting the module for testing.
+ * @internal
  */
 export async function INTERNAL_reset(): Promise<void> {
   controller.abortAndReset(new PromiseCancelled("Internal test cleanup"));

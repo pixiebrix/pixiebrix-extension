@@ -48,6 +48,7 @@ type ModInstanceActivatedModComponent = SetRequired<
 
 /**
  * Generate a tagged UUID for a mod instance.
+ * @internal
  */
 export function generateModInstanceId(): ModInstanceId {
   return uuidv4() as ModInstanceId;

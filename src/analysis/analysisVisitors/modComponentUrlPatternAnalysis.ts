@@ -45,10 +45,14 @@ type PushAnnotationArgs = {
   detail: unknown;
 };
 
+/** @internal */
 export const REQUIRED_MESSAGE = "This field is required.";
+/** @internal */
 export const INVALID_URL_MESSAGE = "Invalid URL.";
+/** @internal */
 export const INVALID_SCHEME_MESSAGE =
   "Invalid pattern for scheme. Scheme should be one of '*', 'http', or 'https'.";
+/** @internal */
 export const INVALID_HOST_MESSAGE =
   "Invalid pattern for host. Host name should match '*' | '*.' <any char except '/' and '*'>+.";
 

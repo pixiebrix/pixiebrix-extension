@@ -115,6 +115,7 @@ export function isSpecificError<
   return isErrorObject(error) && error.name === errorType.name;
 }
 
+/** @internal */
 export function isCustomAggregateError(
   error: unknown,
 ): error is ErrorObject & { errors: unknown[] } {
@@ -190,6 +191,7 @@ function isBusinessError(error: unknown): boolean {
   return isErrorObject(error) && BUSINESS_ERROR_NAMES.has(error.name);
 }
 
+/** @internal */
 export function formatSchemaValidationMessage(
   error: SetOptional<
     SchemaValidationError["errors"][number],
@@ -311,6 +313,7 @@ function getErrorCauseList(error: unknown): unknown[] {
 /**
  * Extracts or generates error from ErrorEvent
  * @deprecated use the generic `selectErrorFromEvent`
+ * @internal
  */
 export function selectErrorFromErrorEvent(event: ErrorEvent): Error {
   // https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror
@@ -350,6 +353,7 @@ export function selectErrorFromErrorEvent(event: ErrorEvent): Error {
 /**
  * Extracts error from PromiseRejectionEvent
  * @deprecated use the generic `selectErrorFromEvent`
+ * @internal
  */
 export function selectErrorFromRejectionEvent(
   event: PromiseRejectionEvent,
@@ -432,6 +436,7 @@ export type SimpleErrorObject = {
  * @param error the error to swap
  * @param ErrorConstructor the new error constructor, it only works if it doesn't
  * have additional required properties and logic in the constructor
+ * @internal
  */
 export function replaceErrorType(
   error: unknown,
@@ -455,6 +460,7 @@ export function replaceErrorType(
  * @param ErrorConstructor the new error constructor, it only works if it doesn't
  * have additional required properties and logic in the constructor
  * @param fn the function to call and replace any thrown errors
+ * @internal
  */
 export function replaceThrownErrors<T>(
   ErrorConstructor: new (message: string) => Error,

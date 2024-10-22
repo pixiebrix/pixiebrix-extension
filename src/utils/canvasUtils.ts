@@ -31,6 +31,7 @@ export async function loadImageData(
  * Converts a blob into ImageData.
  *
  * You can specify the desired width and height of the resulting ImageData, the aspect ratio will be preserved
+ * @internal
  */
 export async function blobToImageData(
   blob: Blob,

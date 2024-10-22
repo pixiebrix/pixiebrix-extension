@@ -93,6 +93,7 @@ function migrateFormStateV1(state: BaseFormStateV1): BaseFormStateV2 {
   };
 }
 
+/** @internal */
 export function migrateEditorStateV1(
   state: EditorStateV1 & PersistedState,
 ): EditorStateV2 & PersistedState {
@@ -107,6 +108,7 @@ export function migrateEditorStateV1(
   };
 }
 
+/** @internal */
 export function migrateEditorStateV2({
   activeElementId,
   activeRecipeId,
@@ -162,6 +164,7 @@ function migrateFormStateV2(state: BaseFormStateV2): BaseFormStateV3 {
   };
 }
 
+/** @internal */
 export function migrateEditorStateV3({
   modComponentFormStates,
   deletedModComponentFormStatesByModId,
@@ -186,6 +189,7 @@ function migrateFormStateV3({
   return rest;
 }
 
+/** @internal */
 export function migrateEditorStateV4({
   inserting,
   modComponentFormStates,
@@ -205,6 +209,7 @@ export function migrateEditorStateV4({
   };
 }
 
+/** @internal */
 export function migrateEditorStateV5({
   insertingStarterBrickType,
   ...rest
@@ -212,6 +217,7 @@ export function migrateEditorStateV5({
   return rest;
 }
 
+/** @internal */
 export function migrateEditorStateV6(
   state: EditorStateV6 & PersistedState,
 ): EditorStateV7 & PersistedState {
@@ -233,6 +239,7 @@ export function migrateEditorStateV6(
   });
 }
 
+/** @internal */
 export function migrateEditorStateV7(
   state: EditorStateV7 & PersistedState,
 ): EditorStateV8 & PersistedState {
@@ -254,6 +261,7 @@ export function migrateEditorStateV7(
   }) as EditorState & PersistedState;
 }
 
+/** @internal */
 export function migrateEditorStateV8(
   state: EditorStateV8 & PersistedState,
 ): EditorStateV9 & PersistedState {

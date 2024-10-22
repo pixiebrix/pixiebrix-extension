@@ -17,6 +17,7 @@
 
 /**
  * Capabilities a platform may provide to extensions/plug-ins/add-ins/userscripts.
+ * @internal
  */
 export const platformCapabilities = [
   // Access to a DOM - but not necessarily visible to a user
