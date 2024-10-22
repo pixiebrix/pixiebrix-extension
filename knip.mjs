@@ -42,7 +42,10 @@ const knipConfig = {
     // Include in production mode and default run
     "src/**/*.ts!",
 
-    // Exclude from production runs
+    /**
+     * Exclude from production runs (`!` prefix and suffix)
+     * @see https://knip.dev/guides/configuring-project-files#production-mode
+     */
     "!end-to-end-tests/**!",
     "!src/__mocks__/**!",
     "!src/**/testHelpers.{ts,tsx}!",
