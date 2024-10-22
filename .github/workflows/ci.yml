@@ -177,6 +177,8 @@ jobs:
       - run: npm ci
       # Detect dead code with enforced rules
       - run: npm run dead-code
+      # Detect dead code that is only used by tests
+      - run: npm run dead-code:prod
       # Also run the remaining "warn" rules
       - run: npm run dead-code:base -- --no-exit-code
 
