@@ -66,7 +66,7 @@ const knipConfig = {
     // Including end-to-end tests for dependency check but not dead code
     "end-to-end-tests/**",
 
-    // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
+    //
     // Instead of adding files to this list, prefer adding a @knip JSDoc comment with explanation, like:
 
     // /** @knip We want to use this later */
