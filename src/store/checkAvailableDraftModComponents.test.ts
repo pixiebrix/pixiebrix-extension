@@ -93,7 +93,7 @@ describe("checkAvailableDraftModComponents", () => {
       actions.addModComponentFormState(unavailableDraftModComponent),
     );
     store.dispatch(
-      actions.selectActivatedModComponentFormState(availableDraftModComponent),
+      actions.addModComponentFormState(availableDraftModComponent),
     );
 
     jest

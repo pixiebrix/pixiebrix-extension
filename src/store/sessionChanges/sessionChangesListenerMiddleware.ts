@@ -24,23 +24,22 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
   matcher: isAnyOf(
-    actions.syncModComponentFormState,
+    actions.setModComponentFormState,
+    actions.markModComponentFormStateAsClean,
+    actions.markModComponentFormStateAsDeleted,
     actions.addNode,
     actions.moveNode,
     actions.removeNode,
-    actions.resetActivatedModComponentFormState,
-    actions.removeModComponentFormState,
     actions.editModMetadata,
     actions.editModOptionsDefinitions,
     actions.editModOptionsValues,
     actions.clearMetadataAndOptionsChangesForMod,
-    actions.addModComponentFormState,
     actions.removeModById,
 
     modComponentSlice.actions.activateMod,
     modComponentSlice.actions.removeModById,
   ),
-  effect(action, { dispatch, getState }) {
+  effect(_action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;
     dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
   },

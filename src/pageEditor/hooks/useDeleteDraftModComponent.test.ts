@@ -45,7 +45,7 @@ test("useDeleteModComponent", async () => {
   const { dispatch } = getReduxStore();
 
   expect(dispatch).toHaveBeenCalledWith(
-    editorActions.removeModComponentFormState(modComponentId),
+    editorActions.markModComponentFormStateAsDeleted(modComponentId),
   );
 
   expect(removeDraftModComponents).toHaveBeenCalledWith(

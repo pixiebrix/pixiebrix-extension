@@ -93,7 +93,7 @@ describe("checkActiveModComponentAvailability", () => {
       actions.addModComponentFormState(unavailableDraftModComponent),
     );
     store.dispatch(
-      actions.selectActivatedModComponentFormState(availableDraftModComponent),
+      actions.addModComponentFormState(availableDraftModComponent),
     );
 
     jest
@@ -120,7 +120,12 @@ describe("checkActiveModComponentAvailability", () => {
     const available = produce(availableDraftModComponent, (draft) => {
       draft.starterBrick.definition.isAvailable.matchPatterns = [testUrl];
     });
-    store.dispatch(actions.syncModComponentFormState(available));
+    store.dispatch(
+      actions.setModComponentFormState({
+        modComponentFormState: available,
+        dirty: true,
+      }),
+    );
 
     await store.dispatch(actions.checkActiveModComponentAvailability());
 

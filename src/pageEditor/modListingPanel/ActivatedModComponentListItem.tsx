@@ -88,12 +88,13 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           modComponentId: modComponent.id,
         });
 
-        const modComponentFormState =
-          await modComponentToFormState(modComponent);
-
         dispatch(
-          actions.selectActivatedModComponentFormState(modComponentFormState),
+          actions.addModComponentFormState({
+            modComponentFormState: await modComponentToFormState(modComponent),
+            dirty: false,
+          }),
         );
+
         dispatch(actions.checkActiveModComponentAvailability());
 
         if (type === StarterBrickTypes.SIDEBAR_PANEL) {

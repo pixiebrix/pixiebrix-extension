@@ -82,7 +82,7 @@ describe("DataPanel state", () => {
   beforeEach(() => {
     state = editorSlice.reducer(
       initialState,
-      actions.selectActivatedModComponentFormState(formStateFactory()),
+      actions.addModComponentFormState(formStateFactory()),
     );
   });
 
@@ -153,7 +153,7 @@ describe("Add/Remove Bricks", () => {
 
     editor = editorSlice.reducer(
       initialState,
-      actions.selectActivatedModComponentFormState(source),
+      actions.addModComponentFormState(source),
     );
   });
 
@@ -335,7 +335,7 @@ describe("Mod Options editing", () => {
       // Need the object to be extensible
       ...editorSlice.reducer(
         stateAfterAddition,
-        actions.removeModComponentFormState(additionalComponentId),
+        actions.markModComponentFormStateAsDeleted(additionalComponentId),
       ),
     };
 

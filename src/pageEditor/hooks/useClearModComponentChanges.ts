@@ -27,6 +27,7 @@ import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
 
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { clearModComponentTraces } from "@/telemetry/trace";
 
 type Config = {
   modComponentId: UUID;
@@ -65,17 +66,23 @@ function useClearModComponentChanges(): (
         modComponentId,
       });
 
+      void clearModComponentTraces(modComponentId);
+
       try {
         const activatedModComponent = activatedModComponents.find(
           (x) => x.id === modComponentId,
         );
         if (activatedModComponent == null) {
-          dispatch(actions.removeModComponentFormState(modComponentId));
+          dispatch(actions.markModComponentFormStateAsDeleted(modComponentId));
         } else {
-          const formState = await modComponentToFormState(
-            activatedModComponent,
+          dispatch(
+            actions.setModComponentFormState({
+              modComponentFormState: await modComponentToFormState(
+                activatedModComponent,
+              ),
+              dirty: false,
+            }),
           );
-          dispatch(actions.resetActivatedModComponentFormState(formState));
         }
       } catch (error) {
         reportError(error);

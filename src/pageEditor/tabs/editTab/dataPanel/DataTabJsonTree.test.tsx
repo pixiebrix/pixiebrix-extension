@@ -42,9 +42,7 @@ const data = {
 const renderJsonTree = () =>
   render(<DataTabJsonTree data={data} tabKey={DataPanelTabKey.Input} />, {
     setupRedux(dispatch) {
-      dispatch(
-        actions.selectActivatedModComponentFormState(formStateFactory()),
-      );
+      dispatch(actions.addModComponentFormState(formStateFactory()));
     },
   });
 

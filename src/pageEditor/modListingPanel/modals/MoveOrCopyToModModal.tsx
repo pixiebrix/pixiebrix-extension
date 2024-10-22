@@ -96,7 +96,7 @@ const MoveOrCopyToModModal: React.FC = () => {
     if (!isCopyAction) {
       // Remove the original mod component to complete the move action
       dispatch(
-        editorActions.removeModComponentFormState(
+        editorActions.markModComponentFormStateAsDeleted(
           activeModComponentFormState.uuid,
         ),
       );
