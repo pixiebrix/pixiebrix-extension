@@ -17,7 +17,7 @@
 
 import React from "react";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { ContextBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { ContextBrick } from "@/runtime/pipelineTests/testHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeFieldActionForAnnotationAction } from "@/components/form/makeFieldActionForAnnotationAction";

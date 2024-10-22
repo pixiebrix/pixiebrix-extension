@@ -22,7 +22,7 @@ import {
   echoBrick,
   simpleInput,
   throwBrick,
-} from "./pipelineTestHelpers";
+} from "./testHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";

@@ -5,46 +5,65 @@ const config = configFactory(process.env, {});
 /**
  * https://knip.dev/overview/configuration#customize
  * @type {import("knip").KnipConfig}
+ *
+ * Production mode: https://knip.dev/features/production-mode
  */
 const knipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
   entry: [
+    // ! suffix files are included in production mode
     ...Object.values(config.entry).map((x) =>
-      `${x}.{ts,tsx,js,jsx}`.replace("./", ""),
+      `${x}.{ts,tsx,js,jsx}!`.replace("./", ""),
     ),
+    // App messenger and common storage
+    "src/background/messenger/external/api.ts!",
+    "src/store/browserExtensionIdStorage.ts!",
+
     // Loaded via .eslintrc
     "eslint-local-rules/*",
+
+    // Include in default run only
+    "end-to-end-tests/fixtures/*.ts",
+    "end-to-end-tests/setup/*.setup.ts",
+    "end-to-end-tests/utils.ts",
 
     // Imported via .html files and manifest.json
     "static/*",
 
-    // App messenger and common storage
-    "src/background/messenger/external/api.ts",
-    "src/store/browserExtensionIdStorage.ts",
-
     // Scripting/config entry points that are not being picked up
     "src/testUtils/FixJsdomEnvironment.js",
-    "end-to-end-tests/fixtures/authentication.ts",
-    "end-to-end-tests/setup/affiliated.setup.ts",
-    "end-to-end-tests/setup/unaffiliated.setup.ts",
-    "end-to-end-tests/setup/utils.ts",
-    "scripts/DiscardFilePlugin.mjs",
-    "scripts/uploadMixpanelLexicon.ts",
+    "scripts/*.{mjs,ts}",
     "src/telemetry/lexicon.ts",
+
+    "webpack.sharedConfig.js",
+    ".storybook/main.js",
+  ],
+  project: [
+    // Include in production mode and default run
+    "src/**/*.ts!",
+
+    /**
+     * Exclude from production runs (`!` prefix and suffix)
+     * @see https://knip.dev/guides/configuring-project-files#production-mode
+     */
+    "!end-to-end-tests/**!",
+    "!src/__mocks__/**!",
+    "!src/**/testHelpers.{ts,tsx}!",
+    "!src/testUtils/**!",
+    "!src/telemetry/lexicon.ts!",
+    "!src/development/hooks/**!",
+    "!src/vendors/reactPerformanceTesting/**!",
+    "!scripts/**!",
+    "!webpack.sharedConfig.js!",
+    "!.storybook/main.js!",
   ],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
   ignore: [
-    "@contrib/**",
     // Test Mocks
     "**/__mocks__/**",
-    // Dummy file to test lint rules
-    "eslint-local-rules/noRestrictedSyntax.tsx",
-    // Polyfills
-    "src/vendors/process.js",
-    // Aliases defined in tsconfig.json
-    "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
+    // Including end-to-end tests for dependency check but not dead code
     "end-to-end-tests/**",
 
     // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
@@ -54,6 +73,33 @@ const knipConfig = {
     // export const someValue = 0;
   ],
   ignoreDependencies: [
+    // TODO: These are used by production files, shouldn't need to ignore them?
+    "@fortawesome/free-brands-svg-icons",
+    "@fortawesome/free-regular-svg-icons",
+    "@szhsin/react-menu",
+    "ace-builds",
+    "bootstrap-icons",
+    "fit-textarea",
+    "holderjs",
+    "jquery",
+    "jszip",
+    "lodash-es",
+    "react-ace",
+    "react-autosuggest",
+    "react-hot-toast",
+    "react-hotkeys",
+    "react-image-crop",
+    "react-outside-click-handler",
+    "react-router-dom",
+    "react-select-virtualized",
+    "react-spinners",
+    "react-virtualized-auto-sizer",
+    "react-window",
+    "simple-icons",
+
+    // PeerDependency of react-select-virtualized
+    "react-virtualized",
+
     // Browser environment types
     "@types/chrome",
     "@types/dom-navigation",
@@ -73,12 +119,13 @@ const knipConfig = {
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
-    // Not getting detected by webpack plugin for webpack.sharedConfig.js
-    "@svgr/webpack",
-    "css-loader",
-    "sass-loader",
-    "ts-loader",
-    "yaml-loader",
+
+    // Used but not detected
+    "@types/holderjs",
+    "@types/react-autosuggest",
+    "@types/react-outside-click-handler",
+    "@types/react-virtualized-auto-sizer",
+    "@types/react-window",
   ],
   // False positive for PackageInstance.featureFlag
   ignoreMembers: ["featureFlag"],

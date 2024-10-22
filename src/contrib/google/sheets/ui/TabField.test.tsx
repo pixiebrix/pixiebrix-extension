@@ -19,7 +19,7 @@
 -- TODO: replace with native expect and it.each */
 
 import React from "react";
-import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { waitForEffect } from "@/testUtils/testHelpers";

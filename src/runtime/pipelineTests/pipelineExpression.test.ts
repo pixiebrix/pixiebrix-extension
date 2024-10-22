@@ -17,11 +17,7 @@
 
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import {
-  identityBrick,
-  pipelineBrick,
-  simpleInput,
-} from "./pipelineTestHelpers";
+import { identityBrick, pipelineBrick, simpleInput } from "./testHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";

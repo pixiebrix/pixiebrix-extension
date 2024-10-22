@@ -22,10 +22,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import brickRegistry from "@/bricks/registry";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import {
-  echoBrick,
-  teapotBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
 import { defaultBrickConfig } from "@/bricks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";

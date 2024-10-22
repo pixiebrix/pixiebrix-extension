@@ -16,10 +16,7 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import {
-  echoBrick,
-  simpleInput,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick, simpleInput } from "@/runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { toExpression } from "@/utils/expressionUtils";

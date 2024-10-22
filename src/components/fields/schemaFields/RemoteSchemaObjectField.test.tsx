@@ -21,7 +21,7 @@ import React from "react";
 import { type Schema } from "@/types/schemaTypes";
 import { render, screen } from "@/pageEditor/testHelpers";
 import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
-import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import {
   errorToAsyncState,
