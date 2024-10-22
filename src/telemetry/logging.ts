@@ -180,6 +180,7 @@ const withLoggingDB = withIdbErrorHandling(openLoggingDB, DATABASE_NAME.LOG);
 /**
  * Add a log entry to the database.
  * @param entry the log entry to add
+ * @internal
  */
 export async function appendEntry(entry: LogEntry): Promise<void> {
   if (await flagOn(FeatureFlags.DISABLE_IDB_LOGGING)) {
@@ -538,6 +539,7 @@ async function _sweepLogs(): Promise<void> {
 
 /**
  * Free up space in the log database.
+ * @internal
  */
 export const sweepLogs = memoizeUntilSettled(_sweepLogs);
 

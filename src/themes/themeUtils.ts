@@ -43,6 +43,7 @@ type ThemeLogoMap = {
   [key in ThemeName]: ThemeLogo;
 };
 
+/** @internal */
 export const THEME_LOGOS: ThemeLogoMap = {
   beta: {
     regular: betaLogo,

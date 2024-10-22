@@ -76,11 +76,14 @@ const knipConfig = {
     // Including end-to-end tests for dependency check but not dead code
     "end-to-end-tests/**",
 
-    // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
+    //
     // Instead of adding files to this list, prefer adding a @knip JSDoc comment with explanation, like:
 
     // /** @knip We want to use this later */
     // export const someValue = 0;
+
+    // Prefer adding `@internal` JSDoc comment if only used by tests, factories, etc.
+    // `@internal` only ignores during production runs so it will still flag unused exports during full runs
   ],
   ignoreDependencies: [
     // TODO: These are used by production files, shouldn't need to ignore them?
