@@ -193,6 +193,7 @@ export function toExpression<
   };
 }
 
+/** @internal */
 export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
   toExpression("pipeline", [] as BrickPipeline),
 );

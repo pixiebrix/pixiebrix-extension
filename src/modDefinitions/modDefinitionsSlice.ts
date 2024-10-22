@@ -26,6 +26,7 @@ import { revertAll } from "@/store/commonActions";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
+/** @internal */
 export const initialState: ModDefinitionsState = Object.freeze({
   // Standard async state
   data: undefined,

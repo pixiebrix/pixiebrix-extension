@@ -126,6 +126,7 @@ async function serializableAxiosRequest<T>(
 /**
  * Get cached auth data for OAuth2, or login if no data found. Memoize so that multiple logins
  * are not kicked off at once.
+ * @internal
  */
 export const getOAuth2AuthData = memoizeUntilSettled(
   async (

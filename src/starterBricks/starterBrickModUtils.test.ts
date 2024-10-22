@@ -17,91 +17,16 @@
 
 import {
   getAllModComponentDefinitionsWithType,
-  getContainedStarterBrickTypes,
   getModComponentIdsForModComponentDefinitions,
 } from "@/starterBricks/starterBrickModUtils";
 import {
   defaultModDefinitionFactory,
   modComponentDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
-import starterBrickRegistry from "@/starterBricks/registry";
-import {
-  type StarterBrick,
-  StarterBrickTypes,
-} from "@/types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
-starterBrickRegistry.lookup = jest.fn();
-
-const starterBrickRegistryLookupMock = jest.mocked(starterBrickRegistry.lookup);
-
 describe("starterBrickModUtils", () => {
-  describe("getContainedStarterBrickTypes", () => {
-    test("gets types with inner definitions", async () => {
-      const result = await getContainedStarterBrickTypes(
-        defaultModDefinitionFactory(),
-      );
-      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
-    });
-
-    test("returns only unique types", async () => {
-      const result = await getContainedStarterBrickTypes(
-        defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory(),
-            modComponentDefinitionFactory(),
-          ],
-        }),
-      );
-      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
-    });
-
-    test("gets types without inner definitions", async () => {
-      starterBrickRegistryLookupMock.mockResolvedValue({
-        kind: StarterBrickTypes.BUTTON,
-      } as StarterBrick);
-
-      const result = await getContainedStarterBrickTypes(
-        defaultModDefinitionFactory({
-          extensionPoints: [modComponentDefinitionFactory()],
-          definitions: undefined,
-        }),
-      );
-
-      expect(result).toStrictEqual([StarterBrickTypes.BUTTON]);
-    });
-
-    test("returns non-null values", async () => {
-      starterBrickRegistryLookupMock.mockResolvedValue(
-        null as unknown as StarterBrick,
-      );
-
-      const result = await getContainedStarterBrickTypes(
-        defaultModDefinitionFactory({
-          extensionPoints: [modComponentDefinitionFactory()],
-          definitions: undefined,
-        }),
-      );
-
-      expect(result).toStrictEqual([]);
-    });
-
-    test("inner definition not found", async () => {
-      starterBrickRegistryLookupMock.mockResolvedValue(
-        null as unknown as StarterBrick,
-      );
-
-      const result = await getContainedStarterBrickTypes(
-        defaultModDefinitionFactory({
-          extensionPoints: [modComponentDefinitionFactory()],
-          definitions: {},
-        }),
-      );
-
-      expect(result).toStrictEqual([]);
-    });
-  });
-
   describe("getAllModComponenetDefinitionsWithType", () => {
     test("returns definitions with type", () => {
       const button = modComponentDefinitionFactory();

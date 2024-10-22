@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
+import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
 import { render, screen } from "@/sidebar/testHelpers";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import userEvent from "@testing-library/user-event";

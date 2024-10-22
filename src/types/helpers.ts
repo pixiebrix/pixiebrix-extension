@@ -42,6 +42,7 @@ export function getTimedSequence(): TimedSequence {
   );
 }
 
+/** @internal */
 export function validateTimedSequence(string: string): TimedSequence {
   // Timestamps between 2001 and 2287 have 13 digits. We're covered.
   if (!/^\d{13}:\d{8}$/.test(string)) {

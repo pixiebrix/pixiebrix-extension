@@ -22,38 +22,11 @@ import {
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import starterBrickRegistry from "@/starterBricks/registry";
-import { type RegistryId } from "@/types/registryTypes";
-import { compact, uniq } from "lodash";
 import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { DynamicQuickBarStarterBrickABC } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
-
-async function getStarterBrickType(
-  modComponentDefinition: ModComponentDefinition,
-  modDefinition: ModDefinition,
-): Promise<StarterBrickType | null> {
-  // Look up the extension point in recipe inner definitions first
-  if (modDefinition.definitions?.[modComponentDefinition.id]) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-    const definition: StarterBrickDefinitionProp = modDefinition.definitions[
-      modComponentDefinition.id
-    ]!.definition as StarterBrickDefinitionProp;
-    const starterBrickType = definition?.type;
-
-    if (starterBrickType) {
-      return starterBrickType;
-    }
-  }
-
-  // If no inner definitions, look up the extension point in the registry
-  const extensionPointFromRegistry = await starterBrickRegistry.lookup(
-    modComponentDefinition.id as RegistryId,
-  );
-
-  return extensionPointFromRegistry?.kind ?? null;
-}
 
 export function getAllModComponentDefinitionsWithType(
   modDefinition: ModDefinition,
@@ -65,18 +38,6 @@ export function getAllModComponentDefinitionsWithType(
     ]?.definition as StarterBrickDefinitionProp;
     return definition?.type === type;
   });
-}
-
-export async function getContainedStarterBrickTypes(
-  modDefinition: ModDefinition,
-): Promise<StarterBrickType[]> {
-  const extensionPointTypes = await Promise.all(
-    modDefinition.extensionPoints.map(async (extensionPoint) =>
-      getStarterBrickType(extensionPoint, modDefinition),
-    ),
-  );
-
-  return uniq(compact(extensionPointTypes));
 }
 
 /**

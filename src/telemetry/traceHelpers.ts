@@ -23,6 +23,7 @@ import { type Branch } from "@/types/runtimeTypes";
 /**
  * Given records for a single runId and blockInstanceId, return the latest call to a given blockInstanceId.
  * @param records the trace records
+ * @internal
  */
 export function getLatestCall(records: TraceRecord[]): TraceRecord | undefined {
   const ascending = sortBy(records, (x) =>
@@ -50,6 +51,7 @@ export function getLatestBrickCall(
 
 /**
  * Returns true if a trace record matches the given branch prefix
+ * @internal
  */
 export function hasBranchPrefix(
   prefix: Branch[],

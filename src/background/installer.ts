@@ -81,6 +81,7 @@ async function isLikelyEndUserInstall(): Promise<boolean> {
 
 /**
  * Install handler to complete authentication configuration for the extension.
+ * @internal
  */
 export async function openInstallPage() {
   expectContext("background");
@@ -181,6 +182,7 @@ export async function openInstallPage() {
  * to continue the partner authentication onboarding flow.
  *
  * @see useRequiredPartnerAuth
+ * @internal
  */
 export async function requirePartnerAuth(): Promise<void> {
   expectContext("background");
@@ -223,7 +225,7 @@ export async function requirePartnerAuth(): Promise<void> {
   }
 }
 
-// Exported for testing
+/** @internal */
 export async function showInstallPage({
   reason,
   previousVersion,
@@ -302,6 +304,7 @@ export async function showInstallPage({
   }
 }
 
+/** @internal */
 export function setAvailableVersion({
   version,
 }: Runtime.OnUpdateAvailableDetailsType): void {

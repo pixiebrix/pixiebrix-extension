@@ -47,6 +47,7 @@ interface Match {
 
 /**
  * Stem each word and create a map of start index in the stemmed text to the original text
+ * @internal
  */
 export function createStemMap(haystack: string) {
   const stemMap = new Map<number, number>();

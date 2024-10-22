@@ -131,6 +131,7 @@ export async function reloadActivationEnhancements(): Promise<void> {
 
 /**
  * Unset loaded state. For use in test cleanup.
+ * @internal
  */
 export function TEST_unloadActivationEnhancements(): void {
   enhancementsLoaded = false;

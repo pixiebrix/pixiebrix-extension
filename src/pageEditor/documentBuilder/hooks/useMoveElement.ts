@@ -28,7 +28,10 @@ import useReduxState from "@/hooks/useReduxState";
 import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
-// https://stackoverflow.com/a/6470794/402560
+/**
+ * @see https://stackoverflow.com/a/6470794/402560
+ * @internal
+ */
 export function arrayMove(
   array: unknown[],
   fromIndex: number,
@@ -48,6 +51,7 @@ export function acceptDrop(
   );
 }
 
+/** @internal */
 export function moveElement(
   body: DocumentBuilderElement[],
   source: TreeSourcePosition,

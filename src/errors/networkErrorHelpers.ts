@@ -103,6 +103,7 @@ type ClientErrorData = {
   detail: string;
 };
 
+/** @internal */
 export function isBadRequestObjectData(
   data: unknown,
 ): data is BadRequestObjectData {

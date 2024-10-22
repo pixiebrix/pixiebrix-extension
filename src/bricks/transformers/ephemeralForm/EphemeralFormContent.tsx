@@ -27,10 +27,10 @@ import { cloneDeep } from "lodash";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
-import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
-import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
-import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
+import RjsfSelectWidget from "@/components/formBuilder/widgets/RjsfSelectWidget";
+import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
 import { Stylesheets } from "@/components/Stylesheets";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 

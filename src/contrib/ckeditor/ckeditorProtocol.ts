@@ -91,6 +91,7 @@ interface CKEditor5Instance {
 /**
  * Returns true if the element is a CKEditor instance. Can only be called from the web/pageScript context.
  * @see hasCKEditorClass
+ * @internal
  */
 export function isCKEditorElement(
   element: HTMLElement,

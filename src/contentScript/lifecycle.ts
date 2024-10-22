@@ -250,7 +250,7 @@ export function getRunningStarterBricks(): StarterBrick[] {
 
 /**
  * Test helper to get internal activated mod component state
- * @knip used in tests, see lifecycle.test.ts
+ * @internal
  */
 export function TEST_getActivatedModComponentStarterBrickMap(): Map<
   UUID,
@@ -261,7 +261,7 @@ export function TEST_getActivatedModComponentStarterBrickMap(): Map<
 
 /**
  * Test helper to get internal draft mod component state
- * @knip used in tests, see lifecycle.test.ts
+ * @internal
  */
 export function TEST_getDraftModComponentStarterBrickMap(): Map<
   UUID,
@@ -599,7 +599,7 @@ function decideRunReason({ force }: { force?: boolean }): RunReason {
 
 /**
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
- * @knip export used in tests, see lifecycle.test.ts
+ * @internal
  */
 export async function handleNavigate({
   force,

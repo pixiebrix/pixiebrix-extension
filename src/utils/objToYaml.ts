@@ -19,6 +19,7 @@ import { sortBy } from "lodash";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { removeUndefined } from "@/utils/objectUtils";
 
+/** @internal */
 // eslint-disable-next-line @typescript-eslint/ban-types -- don't need/want index signature
 export const objToYaml = (obj: object) =>
   dumpBrickYaml(removeUndefined(obj), {

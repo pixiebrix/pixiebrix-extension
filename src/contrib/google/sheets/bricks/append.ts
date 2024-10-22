@@ -176,6 +176,7 @@ export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
   "@pixiebrix/google/sheets-append",
 );
 
+/** @internal */
 export function detectShape(rowValues: RowValues): KnownShape {
   if (Array.isArray(rowValues)) {
     const entryKeys = new Set(["header", "value"]);
@@ -246,6 +247,7 @@ const rowEntries = (row: Record<string, CellValue>) =>
     value,
   }));
 
+/** @internal */
 export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
   const knownShape = shape === "infer" ? detectShape(rowValues) : shape;
   validateShape(knownShape, rowValues);
@@ -272,7 +274,7 @@ export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
   }
 }
 
-// Exported for testing
+/** @internal */
 export function checkForBlankIntermediateColumns(currentHeaders: string[]) {
   let foundNonBlankHeader = false;
   for (const header of currentHeaders) {
@@ -286,7 +288,7 @@ export function checkForBlankIntermediateColumns(currentHeaders: string[]) {
   }
 }
 
-// Exported for testing
+/** @internal */
 export function checkForMissingValueHeaders(
   currentSheetHeaders: string[],
   valueHeaders: string[],
@@ -303,7 +305,7 @@ export function checkForMissingValueHeaders(
   }
 }
 
-// Exported for testing
+/** @internal */
 export function checkAllValueHeadersExist(
   currentSheetHeaders: string[],
   valueHeaders: string[],

@@ -71,9 +71,13 @@ const knipConfig = {
 
     // /** @knip We want to use this later */
     // export const someValue = 0;
+
+    // Prefer adding `@internal` JSDoc comment if only used by tests, factories, etc.
+    // `@internal` only ignores during production runs so it will still flag unused exports during full runs
   ],
   ignoreDependencies: [
     // TODO: These are used by production files, shouldn't need to ignore them?
+    // Most appear to be dynamic imports, maybe there's a plugin we need
     "@fortawesome/free-brands-svg-icons",
     "@fortawesome/free-regular-svg-icons",
     "@szhsin/react-menu",

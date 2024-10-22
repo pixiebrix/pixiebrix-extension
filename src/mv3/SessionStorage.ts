@@ -45,6 +45,10 @@ export class SessionMap<Value extends JsonValue> {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
   }
 
+  /**
+   * Currently only used by tests, but provides a consistent API
+   * @internal
+   */
   async has(secondaryKey: string): Promise<boolean> {
     this.validateContext();
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
@@ -104,6 +108,7 @@ export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
     return this.map.get("#value");
   }
 
+  /** @internal */
   async unset(): Promise<void> {
     await this.map.delete("#value");
   }
