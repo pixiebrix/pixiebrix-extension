@@ -32,6 +32,8 @@ import { getPlatform } from "@/platform/platformContext";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
+
+/** @internal */
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
 
 export type SpreadsheetTarget = {

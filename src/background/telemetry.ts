@@ -212,6 +212,7 @@ async function addEvent(event: UserTelemetryEvent): Promise<void> {
   );
 }
 
+/** @internal */
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   return withTelemetryDB(
     async (db) => {

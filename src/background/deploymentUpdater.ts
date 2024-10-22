@@ -95,8 +95,8 @@ const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
  * See https://github.com/pixiebrix/pixiebrix-extension/issues/8753 for customer context
  *
  * @since 2.0.5
+ * @internal
  */
-// Exported for testing
 export const startupDeploymentUpdateLoaded = new SessionValue<boolean | null>(
   "startupDeploymentUpdateLoaded",
   import.meta.url,
@@ -104,6 +104,7 @@ export const startupDeploymentUpdateLoaded = new SessionValue<boolean | null>(
 
 /**
  * Deactivate all deployed mods by deactivating all mod components associated with a deployment
+ * @internal
  */
 export async function deactivateAllDeployedMods(): Promise<void> {
   const [modComponentState, editorState] = await Promise.all([
@@ -337,6 +338,7 @@ async function selectUpdatedDeployments(
  *
  * WARNING: Partially duplicated code with DeploymentsProvider
  * @see DeploymentsProvider
+ * @internal
  */
 export async function syncDeployments(): Promise<void> {
   expectContext("background");

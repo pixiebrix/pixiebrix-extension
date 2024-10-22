@@ -37,6 +37,7 @@ import { remove } from "lodash";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
+/** @internal */
 export function ensureBrickPipelineUIState(
   state: Draft<EditorState>,
   modComponentId: UUID,
@@ -58,6 +59,7 @@ export function ensureBrickPipelineUIState(
   }
 }
 
+/** @internal */
 export function ensureBrickConfigurationUIState(
   state: Draft<BrickPipelineUIState>,
   nodeId: UUID,

@@ -87,6 +87,7 @@ export function collectConfiguredIntegrationDependencies(
  * @param integrationDependencies mod integration dependencies
  * @since 1.7.37
  * @note This function is just for safety, there's currently no way for a mod to end up with "mixed" integration api versions.
+ * @internal
  */
 export function findMaxIntegrationDependencyApiVersion(
   integrationDependencies: Array<Pick<IntegrationDependency, "apiVersion">>,

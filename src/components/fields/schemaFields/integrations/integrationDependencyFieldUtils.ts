@@ -70,6 +70,7 @@ function deepFindIntegrationDependencyVariables(
 /**
  * Return set of integration dependency variables referenced by the mod component,
  * including the `@`-prefixes
+ * @internal
  */
 export function selectIntegrationDependencyVariables(
   state: Pick<ModComponentFormState, "modComponent">,

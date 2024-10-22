@@ -139,12 +139,14 @@ export async function validateIntegrationConfig(integration: Integration) {
   };
 }
 
+/** @internal */
 export function convertInstanceLocationToFormikPath(
   instanceLocation: string,
 ): string {
   return instanceLocation.replace("#/", "").replaceAll("/", ".");
 }
 
+/** @internal */
 export function convertSchemaErrorsToFormikErrors(
   schemaErrors: OutputUnit[],
 ): FormikErrors<IntegrationConfig> {

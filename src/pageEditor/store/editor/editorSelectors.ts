@@ -131,6 +131,7 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
 export const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
   editor.dirty;
 
+/** @internal */
 export const selectDeletedComponentFormStatesByModId = ({
   editor,
 }: EditorRootState) => editor.deletedModComponentFormStatesByModId;

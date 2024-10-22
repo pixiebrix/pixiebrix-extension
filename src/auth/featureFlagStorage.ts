@@ -68,6 +68,7 @@ export async function resetFeatureFlagsCache(): Promise<void> {
  * Test utility to clear the feature flags cache. Use this in afterEach() in your tests. NOTE: in tests, the
  * manual mock `__mocks__` implementation is automatically used, not this file.
  * @see resetFeatureFlagsCache
+ * @internal
  */
 export async function TEST_deleteFeatureFlagsCache(): Promise<void> {
   await featureFlags.delete();

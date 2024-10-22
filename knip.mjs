@@ -87,6 +87,7 @@ const knipConfig = {
   ],
   ignoreDependencies: [
     // TODO: These are used by production files, shouldn't need to ignore them?
+    // Most appear to be dynamic imports, maybe there's a plugin we need
     "@fortawesome/free-brands-svg-icons",
     "@fortawesome/free-regular-svg-icons",
     "@szhsin/react-menu",

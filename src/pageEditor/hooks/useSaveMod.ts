@@ -46,7 +46,7 @@ import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils"
 
 const { actions: modComponentActions } = modComponentSlice;
 
-// Exported for testing
+/** @internal */
 export function isModEditable(
   editablePackages: EditablePackageMetadata[],
   modDefinition: ModDefinition,

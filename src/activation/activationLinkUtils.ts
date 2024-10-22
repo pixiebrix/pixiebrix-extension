@@ -55,6 +55,7 @@ export function createActivationUrl(
  * Returns a relative URL for activating mods.
  * @param mods the mods to activate
  * @param nextUrl an optional redirect URL
+ * @internal
  */
 export function createActivationRelativeUrl(
   mods: ModActivationConfig[],

@@ -57,6 +57,7 @@ const controller = new ReusableAbortController();
  *
  * @see initManagedStorageOncePerSession
  * @since 1.8.10
+ * @internal
  */
 export const initializationTimestamp = new StorageItem<Timestamp>(
   "managedStorageInitTimestamp",

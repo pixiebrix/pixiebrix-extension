@@ -149,6 +149,7 @@ function migrateModComponentStateV2toV3(
  * Exported for testing only
  *
  * @see mapStandaloneModDefinitionToModDefinition - similar functionality
+ * @internal
  */
 export function createModMetadataForStandaloneComponent(
   modComponent: ActivatedModComponentV2,
@@ -173,7 +174,8 @@ export function createModMetadataForStandaloneComponent(
 }
 
 /**
- * Exported for testing only
+ * Exported for testing only\
+ * @internal
  */
 export function migrateStandaloneComponentsToMods(
   modComponents: ActivatedModComponentV2[],

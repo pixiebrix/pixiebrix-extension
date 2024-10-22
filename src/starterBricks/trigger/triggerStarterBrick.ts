@@ -122,6 +122,7 @@ export function getDefaultReportModeForTrigger(
  * @param trigger the trigger type
  *
  * @see TriggerStarterBrickABC.allowInactiveFrames
+ * @internal
  */
 export function getDefaultAllowInactiveFramesForTrigger(
   trigger: Trigger,

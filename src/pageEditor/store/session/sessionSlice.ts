@@ -19,6 +19,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { uuidv4 } from "@/types/helpers";
 import { type SessionState } from "@/pageEditor/store/session/sessionSliceTypes";
 
+/** @internal */
 export const initialState: SessionState = {
   sessionId: uuidv4(),
   sessionStart: Date.now(),

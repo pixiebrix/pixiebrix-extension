@@ -39,6 +39,7 @@ export type Args = string | UnknownObject | UnknownObject[];
 /**
  * Recursively render values
  * @since 1.5.0
+ * @internal
  */
 export async function renderExplicit(
   config: Args,
@@ -115,6 +116,7 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
   return Mustache.render(config, ctxt);
 }
 
+/** @internal */
 export async function renderImplicit(
   config: Args,
   ctxt: UnknownObject,
