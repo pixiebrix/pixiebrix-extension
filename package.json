@@ -24,7 +24,7 @@
     "build-storybook": "storybook build",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
-    "dead-code:prod": "npm run dead-code -- --production --config knip.production.mjs"
+    "dead-code:prod": "npm run dead-code -- --production"
   },
   "engine-strict": true,
   "engines": {
