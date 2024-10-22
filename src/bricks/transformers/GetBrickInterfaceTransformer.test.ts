@@ -16,7 +16,7 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";

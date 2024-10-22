@@ -20,7 +20,7 @@ import {
   echoBrick,
   simpleInput,
   throwBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Retry from "@/bricks/transformers/controlFlow/Retry";
 import { toExpression } from "@/utils/expressionUtils";

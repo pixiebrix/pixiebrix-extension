@@ -16,7 +16,7 @@
  */
 
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { ContextBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { ContextBrick } from "@/runtime/pipelineTests/testHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";

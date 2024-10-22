@@ -21,7 +21,7 @@ import {
   simpleInput,
   teapotBrick,
   throwBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { validateOutputKey } from "@/runtime/runtimeTypes";

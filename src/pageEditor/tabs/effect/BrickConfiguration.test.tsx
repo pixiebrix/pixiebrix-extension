@@ -18,7 +18,7 @@
 import React from "react";
 import BrickConfiguration from "./BrickConfiguration";
 import brickRegistry from "@/bricks/registry";
-import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";

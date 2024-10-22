@@ -20,11 +20,11 @@ import {
   DeferredEchoBrick,
   simpleInput,
   throwBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { tick } from "@/starterBricks/starterBrickTestUtils";
+import { tick } from "@/starterBricks/testHelpers";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";

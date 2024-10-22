@@ -46,6 +46,7 @@ const knipConfig = {
     // Development/debugging helpers
     "src/development/hooks/**",
     "end-to-end-tests/**",
+    "knip.production.mjs",
 
     // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
     // Instead of adding files to this list, prefer adding a @knip JSDoc comment with explanation, like:
@@ -73,12 +74,6 @@ const knipConfig = {
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
-    // Not getting detected by webpack plugin for webpack.sharedConfig.js
-    "@svgr/webpack",
-    "css-loader",
-    "sass-loader",
-    "ts-loader",
-    "yaml-loader",
   ],
   // False positive for PackageInstance.featureFlag
   ignoreMembers: ["featureFlag"],

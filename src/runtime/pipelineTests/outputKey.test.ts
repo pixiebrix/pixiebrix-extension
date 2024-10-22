@@ -21,7 +21,7 @@ import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import CommentEffect from "@/bricks/effects/comment";

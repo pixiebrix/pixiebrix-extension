@@ -18,7 +18,7 @@
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import brickRegistry from "@/bricks/registry";
-import { simpleInput } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { simpleInput } from "@/runtime/pipelineTests/testHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { validateRegistryId } from "@/types/helpers";

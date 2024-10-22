@@ -16,10 +16,7 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import {
-  echoBrick,
-  simpleInput,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick, simpleInput } from "@/runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { ReaderABC } from "@/types/bricks/readerTypes";

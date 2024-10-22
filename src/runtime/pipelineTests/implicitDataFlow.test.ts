@@ -26,7 +26,7 @@ import {
   identityBrick,
   simpleInput,
   teapotBrick,
-} from "./pipelineTestHelpers";
+} from "./testHelpers";
 import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";

@@ -16,10 +16,7 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import {
-  echoBrick,
-  throwBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick, throwBrick } from "@/runtime/pipelineTests/testHelpers";
 import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransformer";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
