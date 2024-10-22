@@ -41,7 +41,7 @@ import {
   initAddingFieldCases,
   initOneFieldSchemaCase,
   initRenamingCases,
-} from "@/components/formBuilder/formEditor.testCases";
+} from "@/components/formBuilder/edit/formEditor.testCases";
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
