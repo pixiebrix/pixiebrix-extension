@@ -20,7 +20,7 @@ import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
+import { hookAct, renderHook } from "@/pageEditor/testHelpers";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
@@ -79,12 +79,6 @@ describe("useCreateModFromMod", () => {
     });
 
     expect(appApiMock.history.post).toHaveLength(1);
-    await waitFor(() => {
-      expect(reportEventMock).toHaveBeenCalledWith(
-        Events.STARTER_BRICK_ACTIVATE,
-        expect.any(Object),
-      );
-    });
 
     expect(reportEventMock).toHaveBeenCalledWith(
       Events.MOD_ACTIVATE,

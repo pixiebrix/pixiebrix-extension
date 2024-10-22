@@ -29,7 +29,6 @@ import {
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
@@ -43,6 +42,7 @@ import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
+import useReactivateMod from "@/extensionConsole/pages/mods/utils/useReactivateMod";
 
 const { actions: modComponentActions } = modComponentSlice;
 
@@ -67,7 +67,6 @@ const EMPTY_EDITABLE_PACKAGES: EditablePackageMetadata[] = [];
  */
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const dispatch = useDispatch();
-  const upsertModComponentFormState = useUpsertModComponentFormState();
   const {
     data: modDefinitions = EMPTY_MOD_DEFINITIONS,
     isLoading: isModDefinitionsLoading,
@@ -88,6 +87,8 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
     selectDirtyModOptionsDefinitions,
   );
   const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
+
+  const reactivateMod = useReactivateMod();
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const save = useCallback(
@@ -154,36 +155,13 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         upsertResponse,
       );
 
-      // Don't push to cloud since we're saving it with the mod
-      await Promise.all(
-        dirtyModComponentFormStates.map(async (modComponentFormState) =>
-          upsertModComponentFormState({
-            modComponentFormState,
-            options: {
-              // Permissions were already checked earlier in the save function here
-              checkPermissions: false,
-              // Notified and reactivated once in safeSave below
-              notifySuccess: false,
-              reactivateEveryTab: false,
-            },
-            modId: newModMetadata.id,
-          }),
-        ),
-      );
+      // TODO: reactivate the the mod
+      dispatch(modComponentActions.removeModById(newModMetadata.id));
 
-      // Update the mod metadata on mod components in the options slice
-      dispatch(modComponentActions.updateModMetadata(newModMetadata));
-
+      // Update the mod metadata on mod components in editorSlice and clear the dirty state
       dispatch(
         editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
       );
-
-      // Remove any deleted mod component form states from the mod components slice
-      for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
-        dispatch(modComponentActions.removeModComponent({ modComponentId }));
-      }
-
-      // Clear the dirty states
       dispatch(
         editorActions.clearMetadataAndOptionsChangesForMod(newModMetadata.id),
       );
@@ -206,10 +184,10 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       dispatch,
       editablePackages,
       getCleanComponentsAndDirtyFormStatesForMod,
+      reactivateMod,
       getDeletedComponentIdsForMod,
       modDefinitions,
       updateMod,
-      upsertModComponentFormState,
     ],
   );
 

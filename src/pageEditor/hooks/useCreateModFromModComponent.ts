@@ -26,7 +26,6 @@ import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
 import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
@@ -47,7 +46,6 @@ function useCreateModFromModComponent(
   const dispatch = useDispatch();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const [createMod] = useCreateModDefinitionMutation();
-  const upsertModComponentFormState = useUpsertModComponentFormState();
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -93,17 +91,7 @@ function useCreateModFromModComponent(
 
           dispatch(editorActions.addModComponentFormState(newModComponent));
 
-          await upsertModComponentFormState({
-            modComponentFormState: newModComponent,
-            options: {
-              // Permissions are already checked above
-              checkPermissions: false,
-              // Need to provide user feedback
-              notifySuccess: true,
-              reactivateEveryTab: true,
-            },
-            modId: newModDefinition.metadata.id,
-          });
+          // TODO: update modComponentsSlice
 
           if (!keepLocalCopy) {
             // Delete the mod component from the source mod
@@ -131,7 +119,6 @@ function useCreateModFromModComponent(
       buildAndValidateMod,
       createMod,
       dispatch,
-      upsertModComponentFormState,
       keepLocalCopy,
       deleteDraftModComponent,
     ],

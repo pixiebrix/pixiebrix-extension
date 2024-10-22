@@ -22,7 +22,7 @@ import {
   ModalKey,
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
+import { flatMap, isEmpty, memoize, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
@@ -63,6 +63,14 @@ export const selectModComponentFormStates = ({
   editor,
 }: EditorRootState): EditorState["modComponentFormStates"] =>
   editor.modComponentFormStates;
+
+export const selectGetModComponentFormStatesByModId = createSelector(
+  selectModComponentFormStates,
+  (formStates) =>
+    memoize((modId: RegistryId) =>
+      formStates.filter((formState) => formState.modMetadata.id === modId),
+    ),
+);
 
 export const selectActiveModComponentFormState = createSelector(
   selectActiveModComponentId,

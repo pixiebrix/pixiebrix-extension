@@ -30,7 +30,6 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
-import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import { selectDirtyModOptionsDefinitions } from "@/pageEditor/store/editor/editorSelectors";
@@ -104,6 +103,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
               }),
           );
 
+          // TODO: build mod definition and save
           for (const newComponentFormState of newComponentFormStates) {
             const { selectModComponent, selectStarterBrickDefinition } =
               adapterForComponent(newComponentFormState);
@@ -126,14 +126,15 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
               );
             }
 
-            dispatch(
-              modComponentActions.saveModComponent({
-                modComponent: {
-                  ...newModComponent,
-                  updateTimestamp: createResponse.updated_at,
-                },
-              }),
-            );
+            // TODO: remove use of setModComponentFormState: https://github.com/pixiebrix/pixiebrix-extension/issues/9323
+            // dispatch(
+            //   modComponentActions.saveModComponent({
+            //     modComponent: {
+            //       ...newModComponent,
+            //       updateTimestamp: createResponse.updated_at,
+            //     },
+            //   }),
+            // );
 
             // TODO: remove use of setModComponentFormState: https://github.com/pixiebrix/pixiebrix-extension/issues/9323
             dispatch(
