@@ -33,8 +33,7 @@ export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
   visibility: "hidden",
 } as const;
 
-export type LoadedFrame = HTMLIFrameElement & {
-  contentDocument: Document;
+type LoadedFrame = HTMLIFrameElement & {
   contentWindow: Window;
 };
 
@@ -84,6 +83,12 @@ async function _injectIframe(
   if (result === "removed") {
     throw new IframeInjectionError(
       `The host page removed the iframe for ${url} before it could be loaded.`,
+    );
+  }
+
+  if (iframe.contentWindow == null) {
+    throw new IframeInjectionError(
+      `The iframe triggered the load event, but did not load a contentWindow ${url}`,
     );
   }
 
