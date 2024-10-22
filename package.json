@@ -285,7 +285,6 @@
     "react-beautiful-dnd-next": "^11.0.5",
     "react-refresh-typescript": "^2.0.9",
     "react-select-event": "^5.3.0",
-    "react-virtualized": "^9.22.5",
     "sass-loader": "^16.0.2",
     "shadow-dom-testing-library": "^1.11.3",
     "storybook": "^7.6.17",
