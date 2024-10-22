@@ -20,7 +20,7 @@ import styles from "./FormBuilder.module.scss";
 import React, { useState } from "react";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
-import FormPreview from "./preview/FormPreview";
+import FormPreview from "../preview/FormPreview";
 import { useField } from "formik";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";

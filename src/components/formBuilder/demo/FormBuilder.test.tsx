@@ -1,4 +1,3 @@
-/* eslint-disable testing-library/no-node-access -- TODO: refactor to use better locator methods */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -16,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable testing-library/no-node-access -- TODO: refactor to use better locator methods */
 import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import {
   createFormikTemplate,
@@ -30,7 +30,7 @@ import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FormBuilder from "./FormBuilder";
-import { type RJSFSchema } from "./formBuilderTypes";
+import { type RJSFSchema } from "../formBuilderTypes";
 import userEvent from "@testing-library/user-event";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
