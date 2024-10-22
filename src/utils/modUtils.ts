@@ -32,7 +32,7 @@ import {
   INNER_SCOPE,
   type RegistryId,
 } from "@/types/registryTypes";
-import { assertNotNullish, type Nullishable } from "./nullishUtils";
+import { type Nullishable } from "./nullishUtils";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,

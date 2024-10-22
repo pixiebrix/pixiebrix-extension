@@ -22,7 +22,7 @@ import type {
   CssSelectorType,
 } from "css-selector-generator/types/types.js";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
-import { guessUsefulness, isRandomString } from "@/utils/detectRandomString";
+import { guessUsefulness } from "@/utils/detectRandomString";
 import {
   getSiteSelectorHint,
   SELECTOR_HINTS,
