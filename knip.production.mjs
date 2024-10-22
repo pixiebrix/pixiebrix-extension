@@ -51,6 +51,9 @@ const knipConfig = {
     "react-virtualized-auto-sizer",
     "react-window",
     "simple-icons",
+
+    // PeerDependency of react-select-virtualized
+    "react-virtualized",
   ],
   // False positive for PackageInstance.featureFlag
   ignoreMembers: ["featureFlag"],
