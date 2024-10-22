@@ -57,7 +57,3 @@ export function guessUsefulness(selector: string) {
     isRandom,
   };
 }
-
-export function isRandomString(string: string): boolean {
-  return guessUsefulness(string).isRandom;
-}

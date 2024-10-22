@@ -208,7 +208,7 @@ export function getModActivationInstructions(
 
 /**
  * Normalize the shape of a mod definition (e.g., for roundtrip test assertions).
- * @knip test utility
+ * @internal
  */
 export function normalizeModDefinition<
   T extends UnsavedModDefinition = UnsavedModDefinition,
