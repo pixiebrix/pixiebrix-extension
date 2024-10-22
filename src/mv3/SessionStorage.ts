@@ -45,6 +45,7 @@ export class SessionMap<Value extends JsonValue> {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
   }
 
+  /** @knip currently only used by tests, but provides a consistent API */
   async has(secondaryKey: string): Promise<boolean> {
     this.validateContext();
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
@@ -104,6 +105,7 @@ export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
     return this.map.get("#value");
   }
 
+  /** @knip used in tests to reset storage state */
   async unset(): Promise<void> {
     await this.map.delete("#value");
   }

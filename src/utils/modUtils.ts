@@ -109,35 +109,6 @@ export function mapModComponentRefToMessageContext(
 }
 
 /**
- * Returns the ModComponentRef for a given Logger MessageContext. Only call from running bricks with an associated
- * mod component and starter brick in the context.
- *
- * @see getModComponentRef
- * @see mapModComponentToMessageContext
- * @throws TypeError if the modComponentId or starterBrickId is missing
- */
-export function mapMessageContextToModComponentRef(
-  context: MessageContext,
-): ModComponentRef {
-  assertNotNullish(context.modId, "modId is required for ModComponentRef");
-  assertNotNullish(
-    context.modComponentId,
-    "modComponentId is required for ModComponentRef",
-  );
-  assertNotNullish(
-    context.starterBrickId,
-    "starterBrickId is required for ModComponentRef",
-  );
-
-  // Can't use "pick" because it doesn't pick up assertNotNullish checks above
-  return {
-    modComponentId: context.modComponentId,
-    modId: context.modId,
-    starterBrickId: context.starterBrickId,
-  };
-}
-
-/**
  * Returns true if the mod is an UnavailableMod, i.e., a mod the user no longer has access to.
  * @see UnavailableMod
  */
@@ -237,6 +208,7 @@ export function getModActivationInstructions(
 
 /**
  * Normalize the shape of a mod definition (e.g., for roundtrip test assertions).
+ * @knip test utility
  */
 export function normalizeModDefinition<
   T extends UnsavedModDefinition = UnsavedModDefinition,
