@@ -80,6 +80,7 @@ function useClearModComponentChanges(): (
               modComponentFormState: await modComponentToFormState(
                 activatedModComponent,
               ),
+              includesNonFormikChanges: true,
               dirty: false,
             }),
           );

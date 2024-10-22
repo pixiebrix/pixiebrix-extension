@@ -124,6 +124,8 @@ describe("checkActiveModComponentAvailability", () => {
       actions.setModComponentFormState({
         modComponentFormState: available,
         dirty: true,
+        // Pretend that this is the update from Formik pushing state to Redux
+        includesNonFormikChanges: false,
       }),
     );
 

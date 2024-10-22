@@ -139,6 +139,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
             dispatch(
               editorActions.setModComponentFormState({
                 modComponentFormState: newComponentFormState,
+                includesNonFormikChanges: true,
                 dirty: false,
               }),
             );

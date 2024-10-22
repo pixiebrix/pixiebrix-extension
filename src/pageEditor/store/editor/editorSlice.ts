@@ -578,9 +578,15 @@ export const editorSlice = createSlice({
       action: PayloadAction<{
         modComponentFormState: ModComponentFormState;
         dirty: boolean;
+        /**
+         * Force the Page Editor to remount the Formik form because there are changes in the ModComponentFormState that
+         * are not reflected in the Formik form.
+         */
+        includesNonFormikChanges: boolean;
       }>,
     ) {
-      const { modComponentFormState, dirty } = action.payload;
+      const { modComponentFormState, dirty, includesNonFormikChanges } =
+        action.payload;
       const { uuid: modComponentId } = modComponentFormState;
 
       const index = state.modComponentFormStates.findIndex(
@@ -592,6 +598,10 @@ export const editorSlice = createSlice({
 
       state.modComponentFormStates[index] = modComponentFormState;
       state.dirty[modComponentId] = dirty;
+
+      if (includesNonFormikChanges) {
+        state.selectionSeq++;
+      }
 
       syncBrickConfigurationUIStates(state, modComponentFormState);
     },

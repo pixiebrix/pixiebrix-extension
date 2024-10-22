@@ -53,6 +53,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
       dispatch(
         editorActions.setModComponentFormState({
           modComponentFormState: values,
+          includesNonFormikChanges: false,
           dirty: true,
         }),
       );
