@@ -18,7 +18,7 @@
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
-import FormBuilder from "./FormBuilder";
+import FormBuilderDemo from "./FormBuilderDemo";
 import { action } from "@storybook/addon-actions";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -53,9 +53,9 @@ const schema: Schema = {
 };
 const uiSchema: UiSchema = {};
 
-const componentMeta: ComponentMeta<typeof FormBuilder> = {
+const componentMeta: ComponentMeta<typeof FormBuilderDemo> = {
   title: "Forms/Form builder",
-  component: FormBuilder,
+  component: FormBuilderDemo,
 };
 
 const schemaShape = yup.object().shape({
@@ -77,7 +77,7 @@ const FormBuilderTemplate: ComponentStory<typeof Formik> = (args) => (
     >
       {({ handleSubmit }) => (
         <BootstrapForm noValidate onSubmit={handleSubmit}>
-          <FormBuilder name="dynamicForm" />
+          <FormBuilderDemo name="dynamicForm" />
           <Button type="submit">Submit</Button>
         </BootstrapForm>
       )}

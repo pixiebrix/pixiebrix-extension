@@ -34,7 +34,7 @@ import { produce } from "immer";
 import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
-import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
+import RjsfSelectWidget from "@/components/formBuilder/widgets/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
