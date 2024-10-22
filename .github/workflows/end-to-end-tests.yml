@@ -22,6 +22,9 @@ jobs:
         project: ${{ fromJson(inputs.projects) }}
         shardIndex: [1, 2, 3]
         shardTotal: [3]
+      # Set to 6 so we run at most 2 browser projects in parallel across 3 shards. This reduces flakiness associated with
+      # loading the "pbx.vercel.app/advanced-fields" site under heavier traffic
+      max-parallel: 6
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
