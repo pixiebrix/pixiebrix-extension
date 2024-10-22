@@ -22,7 +22,7 @@ import {
   echoBrick,
   simpleInput,
   throwBrick,
-} from "./pipelineTestHelpers";
+} from "./testHelpers";
 import { uuidv4 } from "@/types/helpers";
 import { traces } from "@/background/messenger/api";
 import {

@@ -20,7 +20,7 @@ import {
   contextBrick,
   echoBrick,
   simpleInput,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { toExpression } from "@/utils/expressionUtils";

@@ -23,7 +23,7 @@ import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import bricksRegistry from "@/bricks/registry";
-import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";

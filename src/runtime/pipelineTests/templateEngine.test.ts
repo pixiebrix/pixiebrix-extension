@@ -18,7 +18,7 @@
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickConfig } from "@/bricks/types";
-import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { selectSpecificError } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { toExpression } from "@/utils/expressionUtils";

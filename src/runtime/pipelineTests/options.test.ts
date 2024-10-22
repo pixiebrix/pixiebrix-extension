@@ -18,7 +18,7 @@
 import { type ApiVersion } from "@/types/runtimeTypes";
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 

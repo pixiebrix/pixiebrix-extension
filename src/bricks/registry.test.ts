@@ -17,7 +17,7 @@
 
 import bricksRegistry from "@/bricks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
-import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { type PackageVersion, parsePackage } from "@/registry/packageRegistry";
 import {
   brickDefinitionFactory,

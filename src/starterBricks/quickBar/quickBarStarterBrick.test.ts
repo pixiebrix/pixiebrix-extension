@@ -20,11 +20,7 @@ import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  getDocument,
-  RootReader,
-  tick,
-} from "@/starterBricks/starterBrickTestUtils";
+import { getDocument, RootReader, tick } from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { type Menus } from "webextension-polyfill";

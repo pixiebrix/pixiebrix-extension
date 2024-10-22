@@ -20,11 +20,7 @@ import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { define } from "cooky-cutter";
 import { fromJS } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import { type BrickPipeline } from "@/bricks/types";
-import {
-  getDocument,
-  RootReader,
-  tick,
-} from "@/starterBricks/starterBrickTestUtils";
+import { getDocument, RootReader, tick } from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";

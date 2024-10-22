@@ -22,11 +22,7 @@ import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import brickRegistry from "@/bricks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import {
-  getDocument,
-  RootReader,
-  tick,
-} from "@/starterBricks/starterBrickTestUtils";
+import { getDocument, RootReader, tick } from "@/starterBricks/testHelpers";
 import { type BrickPipeline } from "@/bricks/types";
 import { reduceModComponentPipeline } from "@/runtime/reducePipeline";
 import { type HydratedModComponent } from "@/types/modComponentTypes";

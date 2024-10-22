@@ -18,7 +18,7 @@
 import { showModActivationInSidebar } from "@/contentScript/sidebarController";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { getActivatedModIds } from "@/store/modComponents/modComponentStorage";
-import { getDocument } from "@/starterBricks/starterBrickTestUtils";
+import { getDocument } from "@/starterBricks/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { getActivatingMods } from "@/background/messenger/external/_implementation";

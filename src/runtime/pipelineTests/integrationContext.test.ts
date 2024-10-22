@@ -22,7 +22,7 @@ import {
   echoBrick,
   identityBrick,
   simpleInput,
-} from "./pipelineTestHelpers";
+} from "./testHelpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";

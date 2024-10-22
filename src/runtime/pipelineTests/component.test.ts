@@ -18,7 +18,7 @@
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
-import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { normalizeSemVerString } from "@/types/helpers";

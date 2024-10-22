@@ -24,7 +24,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { BrickTypes, validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { EchoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import modRegistry from "@/modDefinitions/registry";
 import brickRegistry from "@/bricks/registry";

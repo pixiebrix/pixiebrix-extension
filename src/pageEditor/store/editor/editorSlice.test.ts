@@ -28,10 +28,7 @@ import {
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import brickRegistry from "@/bricks/registry";
-import {
-  echoBrick,
-  teapotBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBrickConfig } from "@/bricks/util";
 import { validateRegistryId } from "@/types/helpers";

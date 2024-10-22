@@ -23,7 +23,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type BrickPipeline } from "@/bricks/types";
 import { fromJS } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { RunReason } from "@/types/runtimeTypes";
-import { RootReader, tick } from "@/starterBricks/starterBrickTestUtils";
+import { RootReader, tick } from "@/starterBricks/testHelpers";
 import {
   getReservedPanelEntries,
   isSidePanelOpen,
