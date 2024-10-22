@@ -35,21 +35,14 @@ import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import type {
-  EditablePackageMetadata,
-  PackageUpsertResponse,
-} from "@/types/contract";
-import type {
-  ModDefinition,
-  UnsavedModDefinition,
-} from "@/types/modDefinitionTypes";
+import type { EditablePackageMetadata } from "@/types/contract";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import type { ModComponentBase } from "@/types/modComponentTypes";
-import { pick } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
 
 const { actions: modComponentActions } = modComponentSlice;
 
@@ -62,17 +55,6 @@ export function isModEditable(
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
   const modId = modDefinition?.metadata?.id;
   return modId != null && editablePackages.some((x) => x.name === modId);
-}
-
-function selectModMetadata(
-  unsavedModDefinition: UnsavedModDefinition,
-  response: PackageUpsertResponse,
-): ModComponentBase["modMetadata"] {
-  return {
-    ...unsavedModDefinition.metadata,
-    sharing: pick(response, ["public", "organizations"]),
-    ...pick(response, ["updated_at"]),
-  };
 }
 
 const EMPTY_MOD_DEFINITIONS: ModDefinition[] = [];
@@ -167,9 +149,10 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         modDefinition: newMod,
       }).unwrap();
 
-      const newModMetadata = selectModMetadata(newMod, upsertResponse);
-
-      assertNotNullish(newModMetadata, "New mod metadata is required");
+      const newModMetadata = mapModDefinitionUpsertResponseToModMetadata(
+        newMod,
+        upsertResponse,
+      );
 
       // Don't push to cloud since we're saving it with the mod
       await Promise.all(

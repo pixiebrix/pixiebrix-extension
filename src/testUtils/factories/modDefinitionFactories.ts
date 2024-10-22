@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { array, define, extend } from "cooky-cutter";
+import { array, define, derive, extend } from "cooky-cutter";
 import {
   type ModComponentDefinition,
   type ModDefinition,
@@ -27,11 +27,10 @@ import {
   type RegistryId,
 } from "@/types/registryTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { type Permissions } from "webextension-polyfill";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type BrickPipeline } from "@/bricks/types";
 import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { validateRegistryId } from "@/types/helpers";
+import { isRegistryId, validateRegistryId } from "@/types/helpers";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
@@ -50,17 +49,31 @@ import { validateTimestamp } from "@/utils/timeUtils";
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,
-  label: (n: number) => `Test Mod ${n}`,
+  label: (n: number) => `Test Mod Component ${n}`,
   services(): Record<OutputKey, RegistryId> {
     return {};
   },
-  permissions(): Permissions.Permissions {
-    return emptyPermissionsFactory();
-  },
+  permissions: emptyPermissionsFactory,
   config: () => ({
     caption: "Button",
     action: [] as BrickPipeline,
   }),
+});
+
+// Return as UnknownObject to match InnerDefinitions type. Otherwise, Typescript complains about a missing string
+// index signature when assigning the value to InnerDefinitions.
+export const starterBrickInnerDefinitionFactory = define<UnknownObject>({
+  kind: DefinitionKinds.STARTER_BRICK,
+  definition(n: number) {
+    const definition: StarterBrickDefinitionProp = {
+      type: StarterBrickTypes.BUTTON,
+      isAvailable: {
+        matchPatterns: [`https://www.mySite${n}.com/*`],
+      },
+      reader: validateRegistryId("@pixiebrix/document-context"),
+    };
+    return definition;
+  },
 });
 
 export const modDefinitionFactory = define<ModDefinition>({
@@ -70,6 +83,19 @@ export const modDefinitionFactory = define<ModDefinition>({
   sharing: personalSharingDefinitionFactory,
   updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
   extensionPoints: array(modComponentDefinitionFactory, 1),
+  // Automatically generate fake inner definitions for any component definition that refer to an inner definition
+  definitions: derive<ModDefinition, ModDefinition["definitions"]>(
+    ({ extensionPoints }) =>
+      Object.fromEntries(
+        (extensionPoints ?? [])
+          .filter((x) => !isRegistryId(x.id))
+          .map(({ id: innerDefinitionId }) => [
+            innerDefinitionId,
+            starterBrickInnerDefinitionFactory(),
+          ]),
+      ),
+    "extensionPoints",
+  ),
 });
 
 export const starterBrickDefinitionPropFactory =
@@ -95,22 +121,6 @@ export const starterBrickDefinitionFactory = define<StarterBrickDefinitionLike>(
     definition: starterBrickDefinitionPropFactory,
   },
 );
-
-// Return as UnknownObject to match InnerDefinitions type. Otherwise, Typescript complains about a missing string
-// index signature when assigning the value to InnerDefinitions.
-export const starterBrickInnerDefinitionFactory = define<UnknownObject>({
-  kind: DefinitionKinds.STARTER_BRICK,
-  definition(n: number) {
-    const definition: StarterBrickDefinitionProp = {
-      type: StarterBrickTypes.BUTTON,
-      isAvailable: {
-        matchPatterns: [`https://www.mySite${n}.com/*`],
-      },
-      reader: validateRegistryId("@pixiebrix/document-context"),
-    };
-    return definition;
-  },
-});
 
 type ExternalStarterBrickParams = {
   extensionPointId?: RegistryId;

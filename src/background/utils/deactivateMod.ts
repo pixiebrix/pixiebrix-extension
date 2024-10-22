@@ -27,7 +27,7 @@ type ReduxSliceState = {
 };
 
 /**
- * Returns the Redux state that excludes the mod. NOTE: does not persist the state or remove the mod UI from
+ * Returns the Redux state that excludes the mod. NOTE: does not persist the state, or remove the mod UI from
  * existing tabs.
  *
  * @param modInstance the active mod to deactivate
@@ -48,7 +48,7 @@ function deactivateMod(
     ),
     editorState: editorSlice.reducer(
       editorState,
-      editorSlice.actions.removeMod(modInstance),
+      editorSlice.actions.removeModById(modId),
     ),
   };
 }
