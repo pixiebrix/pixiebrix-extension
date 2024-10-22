@@ -25,8 +25,7 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
-
-import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { selectActivatedModComponentsMap } from "@/store/modComponents/modComponentSelectors";
 import { clearModComponentTraces } from "@/telemetry/trace";
 
 type Config = {
@@ -43,7 +42,7 @@ function useClearModComponentChanges(): (
 ) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const activatedModComponents = useSelector(selectActivatedModComponents);
+  const activatedModComponentMap = useSelector(selectActivatedModComponentsMap);
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -69,9 +68,8 @@ function useClearModComponentChanges(): (
       void clearModComponentTraces(modComponentId);
 
       try {
-        const activatedModComponent = activatedModComponents.find(
-          (x) => x.id === modComponentId,
-        );
+        const activatedModComponent =
+          activatedModComponentMap.get(modComponentId);
         if (activatedModComponent == null) {
           dispatch(actions.markModComponentFormStateAsDeleted(modComponentId));
         } else {
@@ -90,7 +88,7 @@ function useClearModComponentChanges(): (
         dispatch(actions.adapterError({ uuid: modComponentId, error }));
       }
     },
-    [dispatch, sessionId, activatedModComponents, showConfirmation],
+    [dispatch, sessionId, activatedModComponentMap, showConfirmation],
   );
 }
 
