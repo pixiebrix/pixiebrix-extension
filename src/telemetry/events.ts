@@ -49,8 +49,6 @@ export const Events = {
   FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE: "FloatingQuickBarButtonOnScreenHide",
   FLOATING_ACTION_BUTTON_TOGGLE_SETTING: "ToggleFloatingQuickBarButtonSetting",
 
-  GOOGLE_FILE_PICKER_EVENT: "GoogleFilePickerEvent",
-
   HANDLE_CONTEXT_MENU: "HandleContextMenu",
   HANDLE_QUICK_BAR: "HandleQuickBar",
 
