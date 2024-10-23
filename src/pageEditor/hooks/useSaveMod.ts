@@ -204,6 +204,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       } catch (error) {
         if (isSpecificError(error, DataIntegrityError)) {
           dispatch(editorActions.showSaveDataIntegrityErrorModal());
+          return;
         }
 
         notify.error({
@@ -213,6 +214,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       }
     },
     [
+      dispatch,
       isEditablePackagesLoading,
       isModDefinitionsLoading,
       modDefinitionsError,
