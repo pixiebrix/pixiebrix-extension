@@ -127,7 +127,7 @@ export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
  * @param state The redux state (slice)
  * @param formStateId The id for the mod component to remove
  */
-export function removeModComponentFormState(
+export function markModComponentFormStateAsDeleted(
   state: Draft<EditorState>,
   formStateId: UUID,
 ) {

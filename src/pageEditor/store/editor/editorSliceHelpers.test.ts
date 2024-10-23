@@ -26,7 +26,7 @@ import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureBrickPipelineUIState,
   ensureBrickConfigurationUIState,
-  removeModComponentFormState,
+  markModComponentFormStateAsDeleted,
   removeModData,
   setActiveModId,
   setActiveNodeId,
@@ -286,7 +286,7 @@ describe("removeModComponentFormState", () => {
     };
 
     const newState = produce(state, (draft) => {
-      removeModComponentFormState(draft, formState.uuid);
+      markModComponentFormStateAsDeleted(draft, formState.uuid);
     });
     expect(selectActiveModComponentId({ editor: newState })).toBeNull();
     expect(selectModComponentFormStates({ editor: newState })).not.toContain(
@@ -334,7 +334,10 @@ describe("removeModComponentFormState", () => {
     };
 
     const newState = produce(state, (draft) => {
-      removeModComponentFormState(draft, unavailableModComponentFormState.uuid);
+      markModComponentFormStateAsDeleted(
+        draft,
+        unavailableModComponentFormState.uuid,
+      );
     });
     expect(selectActiveModComponentId({ editor: newState })).toEqual(
       availableModComponentFormState.uuid,
@@ -433,8 +436,8 @@ describe("removeModData", () => {
     };
 
     const newState = produce(state, (draft) => {
-      removeModComponentFormState(draft, modComponentFormState1.uuid);
-      removeModComponentFormState(draft, modComponentFormState2.uuid);
+      markModComponentFormStateAsDeleted(draft, modComponentFormState1.uuid);
+      markModComponentFormStateAsDeleted(draft, modComponentFormState2.uuid);
       removeModData(draft, modMetadata.id);
     });
     expect(selectActiveModId({ editor: newState })).toBeNull();

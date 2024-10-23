@@ -219,10 +219,7 @@ describe("useCheckModStarterBrickInvariants", () => {
           }
 
           for (const formState of activatedFormStates) {
-            dispatch(
-              editorActions.selectActivatedModComponentFormState(formState),
-            );
-            dispatch(editorActions.syncModComponentFormState(formState));
+            dispatch(editorActions.addModComponentFormState(formState));
           }
 
           for (const formState of newFormStates) {

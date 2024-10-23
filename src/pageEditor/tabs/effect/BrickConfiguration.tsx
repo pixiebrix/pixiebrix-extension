@@ -55,13 +55,19 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
  * This originally happened during the extension -> modComponent form state migration.
  * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
  */
-function useResetBrickPipeline(name: string) {
+function useRecoverFormStateIntegrityError(name: string) {
   const context = useFormikContext<ModComponentFormState>();
   const [config] = useField<BrickConfig | undefined>(name);
   const dispatch = useDispatch();
 
   if (!config.value) {
-    dispatch(editorActions.resetActivatedModComponentFormState(context.values));
+    dispatch(
+      editorActions.setModComponentFormState({
+        modComponentFormState: context.values,
+        includesNonFormikChanges: true,
+        dirty: true,
+      }),
+    );
   }
 
   return { context, config };
@@ -73,7 +79,7 @@ const BrickConfiguration: React.FunctionComponent<{
 }> = ({ name, brickId }) => {
   const configName = partial(joinName, name);
 
-  const { context, config } = useResetBrickPipeline(name);
+  const { context, config } = useRecoverFormStateIntegrityError(name);
 
   const [_rootField, _rootFieldMeta, rootFieldHelpers] =
     useField<BrickConfig | null>(configName("root"));

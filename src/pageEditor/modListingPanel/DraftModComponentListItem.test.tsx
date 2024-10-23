@@ -64,7 +64,9 @@ describe("DraftModComponentListItem", () => {
             // Add new element to deactivate the previous one
             dispatch(editorActions.addModComponentFormState(formState));
             // Remove the active element and stay with one inactive item
-            dispatch(editorActions.removeModComponentFormState(formState.uuid));
+            dispatch(
+              editorActions.markModComponentFormStateAsDeleted(formState.uuid),
+            );
           },
         },
       ).asFragment(),

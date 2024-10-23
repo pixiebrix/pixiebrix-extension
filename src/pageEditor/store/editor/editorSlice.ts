@@ -20,7 +20,6 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { clearModComponentTraces } from "@/telemetry/trace";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfig } from "@/bricks/types";
 import {
@@ -51,7 +50,7 @@ import {
   setActiveModComponentId,
   editModMetadata,
   editModOptionsDefinitions,
-  removeModComponentFormState,
+  markModComponentFormStateAsDeleted,
   removeModData,
   setActiveModId,
   setActiveNodeId,
@@ -506,7 +505,7 @@ export const editorSlice = createSlice({
         .map((x) => x.uuid);
 
       for (const modComponentId of modComponentIds) {
-        removeModComponentFormState(state, modComponentId);
+        markModComponentFormStateAsDeleted(state, modComponentId);
       }
 
       // Call last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
@@ -517,126 +516,121 @@ export const editorSlice = createSlice({
     /// MOD COMPONENT OPERATIONS
     ///
 
-    // XXX: reconcile with selectActivatedModComponentFormState
+    /**
+     * Add a new form state corresponding to a draft mod component that does not have an associated activated
+     * mod instance. Sets as selected.
+     *
+     * Sets the form state as dirty by default.
+     */
     addModComponentFormState(
       state,
-      action: PayloadAction<ModComponentFormState>,
+      // Expose simpler payload type for most common use cases
+      action: PayloadAction<
+        | ModComponentFormState
+        | { modComponentFormState: ModComponentFormState; dirty: boolean }
+      >,
     ) {
       // Ensure the form state is writeable for normalization
-      const modComponentFormState = cloneDeep(action.payload);
+      const { modComponentFormState, dirty } = cloneDeep(
+        "modComponentFormState" in action.payload
+          ? action.payload
+          : // Default dirty to true
+            { modComponentFormState: action.payload, dirty: true },
+      );
+
+      const modComponentId = modComponentFormState.uuid;
+
+      if (state.modComponentFormStates.some((x) => x.uuid === modComponentId)) {
+        throw new Error("Form state already exists for mod component");
+      }
 
       const modId = modComponentFormState.modMetadata.id;
 
       // Find existing activated mod components with the same mod id
-      const existingModComponents = state.modComponentFormStates.filter(
+      const existingModFormStates = state.modComponentFormStates.filter(
         (formState) => formState.modMetadata.id === modId,
       );
 
       // If there are existing components, collect their option arguments, and assign.
       // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
       // are stored/owned at the mod-level in the Page Editor
-      if (existingModComponents.length > 0) {
+      if (existingModFormStates.length > 0) {
         modComponentFormState.optionsArgs = collectModOptions(
-          existingModComponents,
+          existingModFormStates,
         );
       }
 
-      state.modComponentFormStates.push(
-        modComponentFormState as Draft<ModComponentFormState>,
-      );
-      state.dirty[modComponentFormState.uuid] = true;
+      state.modComponentFormStates.push(modComponentFormState);
+      state.dirty[modComponentId] = dirty;
 
       setActiveModComponentId(state, modComponentFormState);
     },
 
-    // XXX: reconcile with addModComponentFormState
-    selectActivatedModComponentFormState(
+    /**
+     * Set/replace an existing draft form state. For use in:
+     * - Synchronizing the Formik state with the Redux state
+     * - Clearing/reverting changes to a form state
+     * - Jest tests that don't render a configuration editor UI
+     *
+     * @throws Error if a form state with a matching id does not exist
+     */
+    setModComponentFormState(
       state,
-      action: PayloadAction<ModComponentFormState>,
+      action: PayloadAction<{
+        modComponentFormState: ModComponentFormState;
+        dirty: boolean;
+        /**
+         * Force the Page Editor to remount the Formik form because there are changes in the ModComponentFormState that
+         * are not reflected in the Formik form.
+         */
+        includesNonFormikChanges: boolean;
+      }>,
     ) {
-      const modComponentFormState =
-        action.payload as Draft<ModComponentFormState>;
+      const { modComponentFormState, dirty, includesNonFormikChanges } =
+        action.payload;
+      const { uuid: modComponentId } = modComponentFormState;
+
       const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentFormState.uuid,
+        (x) => x.uuid === modComponentId,
       );
-      if (index >= 0) {
-        state.modComponentFormStates[index] = modComponentFormState;
-      } else {
-        state.modComponentFormStates.push(modComponentFormState);
+      if (index < 0) {
+        throw new Error(`Unknown draft mod component: ${modComponentId}`);
       }
 
-      setActiveModComponentId(state, modComponentFormState);
-    },
+      state.modComponentFormStates[index] = modComponentFormState;
+      state.dirty[modComponentId] = dirty;
 
-    resetActivatedModComponentFormState(
-      state,
-      actions: PayloadAction<ModComponentFormState>,
-    ) {
-      const modComponentFormState =
-        actions.payload as Draft<ModComponentFormState>;
-      const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentFormState.uuid,
-      );
-      if (index >= 0) {
-        state.modComponentFormStates[index] = modComponentFormState;
-      } else {
-        state.modComponentFormStates.push(modComponentFormState);
+      if (includesNonFormikChanges) {
+        state.selectionSeq++;
       }
-
-      state.dirty[modComponentFormState.uuid] = false;
-      state.error = null;
-      state.beta = false;
-      state.selectionSeq++;
-
-      // Make sure we're not keeping any private data around from Page Editor sessions
-      void clearModComponentTraces(modComponentFormState.uuid);
 
       syncBrickConfigurationUIStates(state, modComponentFormState);
     },
 
-    markClean(state, action: PayloadAction<UUID>) {
+    /**
+     * Marks the form state as clean, i.e., it has no unsaved changes.
+     */
+    markModComponentFormStateAsClean(state, action: PayloadAction<UUID>) {
+      const modComponentId = action.payload;
+
       const modComponentFormState = state.modComponentFormStates.find(
-        (x) => action.payload === x.uuid,
+        (x) => modComponentId === x.uuid,
       );
 
       assertNotNullish(
         modComponentFormState,
-        `Unknown draft mod component: ${action.payload}`,
+        `Unknown draft mod component: ${modComponentId}`,
       );
 
       modComponentFormState.installed = true;
-      state.dirty[modComponentFormState.uuid] = false;
-      // Force a reload so the _new flags are correct on the readers
-      state.selectionSeq++;
+      state.dirty[modComponentId] = false;
     },
 
     /**
-     * Sync the formik mod component form state in the Page Editor with redux.
+     * Mark the form state as deleted from the mod.
      */
-    syncModComponentFormState(
-      state,
-      action: PayloadAction<ModComponentFormState>,
-    ) {
-      const modComponentFormState = action.payload;
-      const index = state.modComponentFormStates.findIndex(
-        (x) => x.uuid === modComponentFormState.uuid,
-      );
-      if (index < 0) {
-        throw new Error(
-          `Unknown draft mod component: ${modComponentFormState.uuid}`,
-        );
-      }
-
-      state.modComponentFormStates[index] =
-        modComponentFormState as Draft<ModComponentFormState>;
-      state.dirty[modComponentFormState.uuid] = true;
-
-      syncBrickConfigurationUIStates(state, modComponentFormState);
-    },
-
-    removeModComponentFormState(state, action: PayloadAction<UUID>) {
-      const modComponentId = action.payload;
-      removeModComponentFormState(state, modComponentId);
+    markModComponentFormStateAsDeleted(state, action: PayloadAction<UUID>) {
+      markModComponentFormStateAsDeleted(state, action.payload);
     },
 
     ///

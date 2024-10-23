@@ -89,7 +89,9 @@ function useDeleteDraftModComponent(): (
 
       try {
         // Remove the mod component form state from the Page Editor
-        dispatch(editorActions.removeModComponentFormState(modComponentId));
+        dispatch(
+          editorActions.markModComponentFormStateAsDeleted(modComponentId),
+        );
 
         // Stop running the draft on the page
         removeDraftModComponents(allFramesInInspectedTab, modComponentId);
