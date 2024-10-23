@@ -38,7 +38,10 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
-import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 
 export function mapModDefinitionUpsertResponseToModMetadata(
   unsavedModDefinition: UnsavedModDefinition,
@@ -48,6 +51,20 @@ export function mapModDefinitionUpsertResponseToModMetadata(
     ...unsavedModDefinition.metadata,
     sharing: pick(response, ["public", "organizations"]),
     ...pick(response, ["updated_at"]),
+  };
+}
+
+export function mapModDefinitionUpsertResponseToModDefinition(
+  unsavedModDefinition: UnsavedModDefinition,
+  response: PackageUpsertResponse,
+): ModDefinition {
+  return {
+    ...unsavedModDefinition,
+    sharing: {
+      public: response.public,
+      organizations: response.organizations,
+    },
+    updated_at: response.updated_at,
   };
 }
 

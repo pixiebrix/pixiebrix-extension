@@ -24,7 +24,7 @@ import {
   selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
@@ -35,6 +35,8 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -49,7 +51,7 @@ type UseCreateModFromModReturn = {
  */
 function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
-  const [createMod] = useCreateModDefinitionMutation();
+  const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -59,11 +61,20 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
-    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
-      const modId = modDefinition.metadata.id;
+    async (
+      sourceModDefinition: ModDefinition,
+      newModMetadata: ModMetadataFormState,
+    ) => {
+      const sourceModId = sourceModDefinition.metadata.id;
+
+      if (sourceModId === newModMetadata.id) {
+        throw new Error(
+          "Expected new mod ID to be different from source mod ID",
+        );
+      }
+
       const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(modId);
+        getCleanComponentsAndDirtyFormStatesForMod(sourceModId);
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
         dirtyModComponentFormStates,
@@ -74,39 +85,33 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         }
 
         // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-        const dirtyModOptionsDefinition = dirtyModOptions[modId];
+        const dirtyModOptionsDefinition = dirtyModOptions[sourceModId];
 
         try {
-          const newModDefinition = await buildAndValidateMod({
-            sourceMod: modDefinition,
+          const modId = newModMetadata.id;
+
+          const unsavedModDefinition = await buildAndValidateMod({
+            sourceModDefinition,
             cleanModComponents,
             dirtyModComponentFormStates,
             dirtyModOptionsDefinition,
-            dirtyModMetadata: metadata,
+            dirtyModMetadata: newModMetadata,
           });
 
-          const upsertResponse = await createMod({
-            modDefinition: newModDefinition,
-            organizations: [],
-            public: false,
+          const upsertResponse = await createModDefinitionOnServer({
+            modDefinition: unsavedModDefinition,
+            ...createPrivateSharing(),
           }).unwrap();
 
-          const savedModDefinition: ModDefinition = {
-            ...newModDefinition,
-            sharing: {
-              public: upsertResponse.public,
-              organizations: upsertResponse.organizations,
-            },
-            updated_at: upsertResponse.updated_at,
-          };
-
-          if (!keepLocalCopy) {
-            await deactivateMod({ modId, shouldShowConfirmation: false });
-          }
+          const savedModDefinition =
+            mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            );
 
           const modComponents = [
-            ...dirtyModComponentFormStates,
             ...cleanModComponents,
+            ...dirtyModComponentFormStates,
           ];
 
           dispatch(
@@ -117,14 +122,21 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
                   savedModDefinition,
                   modComponents,
                 ),
-              optionsArgs: collectModOptions(modComponents),
+              optionsArgs: collectModOptionsArgs(modComponents),
               screen: "pageEditor",
               isReactivate: false,
             }),
           );
-          dispatch(
-            editorActions.setActiveModId(savedModDefinition.metadata.id),
-          );
+
+          if (!keepLocalCopy) {
+            await deactivateMod({
+              modId: sourceModDefinition.metadata.id,
+              shouldShowConfirmation: false,
+            });
+          }
+
+          dispatch(editorActions.setActiveModId(modId));
+
           dispatch(editorActions.checkAvailableActivatedModComponents());
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
@@ -144,7 +156,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
       getCleanComponentsAndDirtyFormStatesForMod,
       dirtyModOptions,
       buildAndValidateMod,
-      createMod,
+      createModDefinitionOnServer,
       keepLocalCopy,
       dispatch,
       deactivateMod,

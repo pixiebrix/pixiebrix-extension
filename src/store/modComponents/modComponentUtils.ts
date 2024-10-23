@@ -33,7 +33,7 @@ import type { Schema } from "@/types/schemaTypes";
  * Infer options from existing mod-component-like instances for reactivating a mod
  * @see activateMod
  */
-export function collectModOptions(
+export function collectModOptionsArgs(
   modComponents: Array<Pick<ModComponentBase, "optionsArgs">>,
 ): OptionsArgs {
   // For a given mod, all the components receive the same options during the

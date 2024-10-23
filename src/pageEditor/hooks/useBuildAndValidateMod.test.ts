@@ -149,7 +149,7 @@ describe("useBuildAndValidateMod", () => {
 
       await hookAct(async () => {
         const newMod = await result.current.buildAndValidateMod({
-          sourceMod: modDefinition,
+          sourceModDefinition: modDefinition,
           // Only pass in the unchanged clean mod components
           cleanModComponents: state.activatedModComponents.slice(
             dirtyModComponentCount,
@@ -208,7 +208,7 @@ describe("useBuildAndValidateMod", () => {
     await hookAct(async () => {
       await expect(
         result.current.buildAndValidateMod({
-          sourceMod: activatedModDefinition,
+          sourceModDefinition: activatedModDefinition,
           cleanModComponents: state.activatedModComponents.slice(1),
           dirtyModComponentFormStates: [dirtyFormState1],
         }),

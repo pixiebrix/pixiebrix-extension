@@ -96,7 +96,7 @@ function deleteUnusedStarterBrickDefinitions(
 }
 
 export type ModParts = {
-  sourceMod?: ModDefinition;
+  sourceModDefinition?: ModDefinition;
   cleanModComponents: SerializedModComponent[];
   dirtyModComponentFormStates: ModComponentFormState[];
   /**
@@ -132,11 +132,11 @@ const emptyModDefinition: UnsavedModDefinition = {
  * @param sourceMod the original mod definition, or undefined for new mods
  * @param cleanModComponents the mod's unchanged, activated mod components
  * @param dirtyModComponentFormStates the mod's component form states (i.e., submitted via Formik)
- * @param dirtyModOptions the mod's options form state, or nullish if there are no dirty options
+ * @param dirtyModOptionsDefinition the mod's option definition form state, or nullish if there are no dirty options
  * @param dirtyModMetadata the mod's metadata form state, or nullish if there is no dirty mod metadata
  */
 export function buildNewMod({
-  sourceMod,
+  sourceModDefinition,
   cleanModComponents,
   dirtyModComponentFormStates,
   dirtyModOptionsDefinition,
@@ -145,7 +145,7 @@ export function buildNewMod({
   // If there's no source mod, then we're creating a new one, so we
   // start with an empty mod definition that will be filled in
   const unsavedModDefinition: UnsavedModDefinition =
-    sourceMod ?? emptyModDefinition;
+    sourceModDefinition ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
     if (dirtyModOptionsDefinition) {

@@ -24,15 +24,20 @@ import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
+import {
+  mapModDefinitionUpsertResponseToModDefinition,
+  mapModDefinitionUpsertResponseToModMetadata,
+} from "@/pageEditor/utils";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
-import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { modComponentWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import { selectDirtyModOptionsDefinitions } from "@/pageEditor/store/editor/editorSelectors";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
+import { getModComponentItemId } from "@/pageEditor/modListingPanel/common";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -47,7 +52,7 @@ type UseCreateModFromUnsavedModReturn = {
  */
 function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const dispatch = useDispatch();
-  const [createMod] = useCreateModDefinitionMutation();
+  const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -63,7 +68,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const createModFromUnsavedMod = useCallback(
     (
       unsavedModId: RegistryId,
-      modMetadata: ModMetadataFormState,
+      newModMetadata: ModMetadataFormState,
       // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     ) => {
       const { cleanModComponents, dirtyModComponentFormStates } =
@@ -80,88 +85,87 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         }
 
         try {
-          const newModDefinition = await buildAndValidateMod({
+          const newModId = unsavedModId;
+
+          const unsavedModDefinition = await buildAndValidateMod({
             dirtyModComponentFormStates,
             cleanModComponents,
-            dirtyModMetadata: modMetadata,
+            dirtyModMetadata: newModMetadata,
             dirtyModOptionsDefinition,
           });
 
-          const createResponse = await createMod({
-            modDefinition: newModDefinition,
-            organizations: [],
-            public: false,
+          const upsertResponse = await createModDefinitionOnServer({
+            modDefinition: unsavedModDefinition,
+            ...createPrivateSharing(),
           }).unwrap();
 
-          const newComponentFormStates = dirtyModComponentFormStates.map(
-            (dirtyModComponentFormState) =>
-              produce(dirtyModComponentFormState, (draft) => {
-                draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
-                  newModDefinition,
-                  createResponse,
-                );
-              }),
+          const modDefinition = mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
           );
 
-          // TODO: build mod definition and save
-          for (const newComponentFormState of newComponentFormStates) {
-            const { selectModComponent, selectStarterBrickDefinition } =
-              adapterForComponent(newComponentFormState);
-            const starterBrickId =
-              newComponentFormState.starterBrick.metadata.id;
-            const hasInnerStarterBrick =
-              isInnerDefinitionRegistryId(starterBrickId);
-            let newModComponent = selectModComponent(newComponentFormState);
+          const modMetadata = mapModDefinitionUpsertResponseToModMetadata(
+            unsavedModDefinition,
+            upsertResponse,
+          );
 
-            // The Page Editor only supports editing inline Starter Brick definitions, not Starter Brick packages.
-            // Therefore, no logic is required here for Starter Brick registry packages.
-            if (hasInnerStarterBrick) {
-              // Starter brick has an inner definition and doesn't exist as a registry item
-              const { definition } = selectStarterBrickDefinition(
-                newComponentFormState,
-              );
-              newModComponent = modComponentWithInnerDefinitions(
-                newModComponent,
-                definition,
-              );
-            }
+          // Match the order that's in buildNewMod
+          const modComponents = [
+            ...cleanModComponents,
+            ...dirtyModComponentFormStates,
+          ];
 
-            // TODO: remove use of setModComponentFormState: https://github.com/pixiebrix/pixiebrix-extension/issues/9323
-            // dispatch(
-            //   modComponentActions.saveModComponent({
-            //     modComponent: {
-            //       ...newModComponent,
-            //       updateTimestamp: createResponse.updated_at,
-            //     },
-            //   }),
-            // );
+          dispatch(
+            modComponentActions.activateMod({
+              modDefinition,
+              modComponentIds: modComponents.map((x) =>
+                getModComponentItemId(x),
+              ),
+              configuredDependencies:
+                collectExistingConfiguredDependenciesForMod(
+                  modDefinition,
+                  modComponents,
+                ),
+              optionsArgs: collectModOptionsArgs(modComponents),
+              screen: "pageEditor",
+              isReactivate: false,
+            }),
+          );
 
-            // TODO: remove use of setModComponentFormState: https://github.com/pixiebrix/pixiebrix-extension/issues/9323
+          // Mod component cleanup
+          for (const formStateToUpdate of dirtyModComponentFormStates) {
+            // Can't use updateModMetadataOnModComponentFormStates because the mod id changed from the temporary
+            // id to the new id of the package
             dispatch(
               editorActions.setModComponentFormState({
-                modComponentFormState: newComponentFormState,
-                includesNonFormikChanges: true,
+                modComponentFormState: produce(formStateToUpdate, (draft) => {
+                  draft.modMetadata = modMetadata;
+                }),
                 dirty: false,
+                includesNonFormikChanges: true,
               }),
             );
+
             dispatch(
               editorActions.markModComponentFormStateAsClean(
-                newComponentFormState.uuid,
+                formStateToUpdate.uuid,
               ),
             );
           }
 
-          const newModId = newModDefinition.metadata.id;
+          // Mod cleanup
           dispatch(
             editorActions.clearMetadataAndOptionsChangesForMod(newModId),
           );
           dispatch(
             editorActions.clearDeletedModComponentFormStatesForMod(newModId),
           );
+
+          // Navigation Cleanup
           dispatch(editorActions.setActiveModId(newModId));
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newModDefinition.metadata.id,
+            modId: unsavedModDefinition.metadata.id,
           });
         } catch (error) {
           if (error instanceof BusinessError) {
@@ -176,7 +180,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       getCleanComponentsAndDirtyFormStatesForMod,
       dirtyModOptionsById,
       buildAndValidateMod,
-      createMod,
+      createModDefinitionOnServer,
       dispatch,
     ],
   );

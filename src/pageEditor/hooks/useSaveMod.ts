@@ -20,7 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectDirtyModMetadata,
   selectDirtyModOptionsDefinitions,
-  selectGetDeletedComponentIdsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import {
   useGetEditablePackagesQuery,
@@ -42,7 +41,9 @@ import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
-import useReactivateMod from "@/extensionConsole/pages/mods/utils/useReactivateMod";
+import { getModComponentItemId } from "@/pageEditor/modListingPanel/common";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
 const { actions: modComponentActions } = modComponentSlice;
 
@@ -57,9 +58,6 @@ export function isModEditable(
   return modId != null && editablePackages.some((x) => x.name === modId);
 }
 
-const EMPTY_MOD_DEFINITIONS: ModDefinition[] = [];
-const EMPTY_EDITABLE_PACKAGES: EditablePackageMetadata[] = [];
-
 /**
  * Returns a callback to save a mod by id, accounting for changed components,
  * activation options definitions, and mod metadata. Also validates the saved
@@ -68,35 +66,38 @@ const EMPTY_EDITABLE_PACKAGES: EditablePackageMetadata[] = [];
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const dispatch = useDispatch();
   const {
-    data: modDefinitions = EMPTY_MOD_DEFINITIONS,
+    data: modDefinitions,
     isLoading: isModDefinitionsLoading,
     error: modDefinitionsError,
   } = useAllModDefinitions();
-  const {
-    data: editablePackages = EMPTY_EDITABLE_PACKAGES,
-    isLoading: isEditablePackagesLoading,
-  } = useGetEditablePackagesQuery();
-  const [updateMod] = useUpdateModDefinitionMutation();
+  const { data: editablePackages, isLoading: isEditablePackagesLoading } =
+    useGetEditablePackagesQuery();
+  const [updateModDefinitionOnServer] = useUpdateModDefinitionMutation();
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
-  );
-  const getDeletedComponentIdsForMod = useSelector(
-    selectGetDeletedComponentIdsForMod,
   );
   const allDirtyModOptionsDefinitions = useSelector(
     selectDirtyModOptionsDefinitions,
   );
   const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
 
-  const reactivateMod = useReactivateMod();
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
-  const save = useCallback(
+  const saveMod = useCallback(
     async (modId: RegistryId): Promise<boolean> => {
       if (isInnerDefinitionRegistryId(modId)) {
         dispatch(editorActions.showCreateModModal({ keepLocalCopy: false }));
         return false;
       }
+
+      assertNotNullish(
+        modDefinitions,
+        "saveMod called without modDefinitions loaded",
+      );
+      assertNotNullish(
+        editablePackages,
+        "saveMod called without editablePackages loaded",
+      );
 
       const modDefinition = modDefinitions.find(
         (mod) => mod.metadata.id === modId,
@@ -131,7 +132,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       const dirtyModMetadata = allDirtyModMetadatas[modId];
 
       const newMod = await buildAndValidateMod({
-        sourceMod: modDefinition,
+        sourceModDefinition: modDefinition,
         cleanModComponents,
         dirtyModComponentFormStates,
         dirtyModOptionsDefinition,
@@ -145,7 +146,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       assertNotNullish(packageId, "Package ID is required to upsert a mod");
 
-      const upsertResponse = await updateMod({
+      const upsertResponse = await updateModDefinitionOnServer({
         packageId,
         modDefinition: newMod,
       }).unwrap();
@@ -155,8 +156,28 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         upsertResponse,
       );
 
-      // TODO: reactivate the the mod
+      // Reactivate the Mod
       dispatch(modComponentActions.removeModById(newModMetadata.id));
+
+      // Match the order that's in buildNewMod
+      const modComponents = [
+        ...cleanModComponents,
+        ...dirtyModComponentFormStates,
+      ];
+
+      dispatch(
+        modComponentActions.activateMod({
+          modDefinition,
+          modComponentIds: modComponents.map((x) => getModComponentItemId(x)),
+          configuredDependencies: collectExistingConfiguredDependenciesForMod(
+            modDefinition,
+            modComponents,
+          ),
+          optionsArgs: collectModOptionsArgs(modComponents),
+          screen: "pageEditor",
+          isReactivate: false,
+        }),
+      );
 
       // Update the mod metadata on mod components in editorSlice and clear the dirty state
       dispatch(
@@ -180,14 +201,12 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
     [
       allDirtyModMetadatas,
       allDirtyModOptionsDefinitions,
+      getCleanComponentsAndDirtyFormStatesForMod,
       buildAndValidateMod,
       dispatch,
       editablePackages,
-      getCleanComponentsAndDirtyFormStatesForMod,
-      reactivateMod,
-      getDeletedComponentIdsForMod,
       modDefinitions,
-      updateMod,
+      updateModDefinitionOnServer,
     ],
   );
 
@@ -203,11 +222,15 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       }
 
       if (isModDefinitionsLoading || isEditablePackagesLoading) {
+        notify.error({
+          message: "Mod definitions not loaded yet. Try again.",
+        });
+
         return;
       }
 
       try {
-        const success = await save(modId);
+        const success = await saveMod(modId);
         if (success) {
           notify.success("Saved mod");
           reloadModsEveryTab();
@@ -223,7 +246,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       isEditablePackagesLoading,
       isModDefinitionsLoading,
       modDefinitionsError,
-      save,
+      saveMod,
     ],
   );
 }

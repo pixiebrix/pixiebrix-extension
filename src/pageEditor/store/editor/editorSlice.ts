@@ -87,7 +87,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -554,7 +554,7 @@ export const editorSlice = createSlice({
       // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
       // are stored/owned at the mod-level in the Page Editor
       if (existingModFormStates.length > 0) {
-        modComponentFormState.optionsArgs = collectModOptions(
+        modComponentFormState.optionsArgs = collectModOptionsArgs(
           existingModFormStates,
         );
       }

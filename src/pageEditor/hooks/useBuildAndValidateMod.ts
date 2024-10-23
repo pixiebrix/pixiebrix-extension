@@ -45,7 +45,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
 
   const buildAndValidateMod = useCallback(
     async ({
-      sourceMod,
+      sourceModDefinition,
       cleanModComponents = [],
       dirtyModComponentFormStates: existingDirtyModComponentFormStates = [],
       dirtyModOptionsDefinition,
@@ -62,23 +62,26 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         ...existingDirtyModComponentFormStates,
       ];
 
-      const newMod = buildNewMod({
-        sourceMod,
+      const newModDefinition = buildNewMod({
+        sourceModDefinition,
         cleanModComponents,
         dirtyModComponentFormStates,
         dirtyModOptionsDefinition,
         dirtyModMetadata,
       });
 
-      if (sourceMod) {
+      if (sourceModDefinition) {
         const modComponentDefinitionCountsMatch =
           compareModComponentCountsToModDefinition(
-            newMod,
-            sourceMod.metadata.id,
+            newModDefinition,
+            sourceModDefinition.metadata.id,
           );
 
         const modComponentStarterBricksMatch =
-          await checkModStarterBrickInvariants(newMod, sourceMod.metadata.id);
+          await checkModStarterBrickInvariants(
+            newModDefinition,
+            sourceModDefinition.metadata.id,
+          );
 
         if (
           !modComponentDefinitionCountsMatch ||
@@ -88,7 +91,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
           // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
           reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
             // Metadata is an object, but doesn't extend JsonObject so typescript doesn't like it
-            modMetadata: newMod.metadata as unknown as JsonObject,
+            modMetadata: newModDefinition.metadata as unknown as JsonObject,
             modComponentDefinitionCountsMatch,
             modComponentStarterBricksMatch,
           });
@@ -100,7 +103,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         }
       }
 
-      return newMod;
+      return newModDefinition;
     },
     [
       checkModStarterBrickInvariants,

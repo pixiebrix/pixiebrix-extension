@@ -95,7 +95,7 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: undefined,
+      sourceModDefinition: undefined,
       cleanModComponents: [modComponent],
       dirtyModComponentFormStates: [],
     });
@@ -131,7 +131,7 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: undefined,
+      sourceModDefinition: undefined,
       cleanModComponents: [],
       dirtyModComponentFormStates: [modComponentFormState],
     });
@@ -169,7 +169,7 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: undefined,
+      sourceModDefinition: undefined,
       cleanModComponents: modComponents,
       dirtyModComponentFormStates: [],
     });
@@ -208,7 +208,7 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: undefined,
+      sourceModDefinition: undefined,
       cleanModComponents: modComponents,
       dirtyModComponentFormStates: [],
     });
@@ -242,7 +242,7 @@ describe("buildNewMod", () => {
 
     // Call the function under test
     const newMod = buildNewMod({
-      sourceMod: undefined,
+      sourceModDefinition: undefined,
       cleanModComponents: modComponents,
       dirtyModComponentFormStates: [],
     });
@@ -325,7 +325,7 @@ describe("buildNewMod", () => {
 
       // Call the function under test
       const newMod = buildNewMod({
-        sourceMod: modDefinition,
+        sourceModDefinition: modDefinition,
         // Only pass in the unchanged clean mod components
         cleanModComponents: state.activatedModComponents.slice(
           dirtyModComponentCount,

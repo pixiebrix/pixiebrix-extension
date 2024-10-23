@@ -104,6 +104,16 @@ const modComponentSlice = createSlice({
         );
       }
 
+      if (
+        state.activatedModComponents.some(
+          (x) => x.modMetadata.id === modDefinition.metadata.id,
+        )
+      ) {
+        throw new Error(
+          "Mod is already activated. Dispatch removeModById first.",
+        );
+      }
+
       for (const [
         index,
         modComponentDefinition,

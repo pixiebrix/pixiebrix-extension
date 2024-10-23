@@ -33,7 +33,7 @@ import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 import useAsyncModOptionsValidationSchema from "@/hooks/useAsyncModOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
@@ -104,7 +104,7 @@ const ModOptionsValuesContent: React.FC = () => {
   const initialValues = useMemo(
     () =>
       modifiedOptionValues ??
-      collectModOptions([
+      collectModOptionsArgs([
         ...cleanModComponents,
         ...dirtyModComponentFormStates,
       ]),

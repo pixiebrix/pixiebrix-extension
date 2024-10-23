@@ -42,11 +42,11 @@ const modId = validateRegistryId("@test/mod");
 jest.mock("@/utils/notify");
 jest.mock("@/contentScript/messenger/api");
 
-describe("useSaveMod", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
+describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {
     appApiMock.reset();
 
@@ -274,13 +274,15 @@ describe("useSaveMod", () => {
         setupRedux(dispatch, { store }) {
           jest.spyOn(store, "dispatch");
 
-          const formState = formStateFactory({
-            formStateConfig: {
-              modMetadata: temporaryModMetadata,
-            },
-          });
-
-          dispatch(editorActions.addModComponentFormState(formState));
+          dispatch(
+            editorActions.addModComponentFormState(
+              formStateFactory({
+                formStateConfig: {
+                  modMetadata: temporaryModMetadata,
+                },
+              }),
+            ),
+          );
         },
       },
     );

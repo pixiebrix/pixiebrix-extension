@@ -25,7 +25,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { uuidv4 } from "@/types/helpers";
 import {
   collectIntegrationDependencies,
-  collectModOptions,
+  collectModOptionsArgs,
   selectModComponentIntegrations,
 } from "@/store/modComponents/modComponentUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
@@ -171,7 +171,7 @@ export function mapActivatedModComponentsToModInstance(
     deploymentMetadata: firstComponent.deploymentMetadata
       ? migrateDeploymentMetadata(firstComponent.deploymentMetadata)
       : undefined,
-    optionsArgs: collectModOptions(modComponents),
+    optionsArgs: collectModOptionsArgs(modComponents),
     integrationsArgs: collectIntegrationDependencies(modComponents),
     updatedAt: firstComponent.updateTimestamp,
     definition: {
