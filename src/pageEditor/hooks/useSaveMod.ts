@@ -101,7 +101,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       if (modDefinition == null) {
         notify.error({
           message:
-            "You no longer have edit permissions for the mod. Please reload the Page Editor.",
+            "You no longer have access to the mod definition. Please reload the Page Editor.",
         });
         return false;
       }
