@@ -26,6 +26,7 @@ const LexiconTags = {
   MOD_RUNTIME: "mod runtime",
   ENTERPRISE: "enterprise",
   TEAM: "team",
+  OBSOLETE: "obsolete",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -47,6 +48,7 @@ interface LexiconEventEntry {
    * Tags to categorize the event in the Mixpanel interface. Typically used to group related events together.
    */
   tags?: LexiconTag[];
+  hidden?: boolean;
 }
 
 /**
@@ -192,6 +194,11 @@ export const lexicon: LexiconMap = {
       "DevTools in the Extension Console or on internal chrome pages).",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  GOOGLE_FILE_PICKER_EVENT: {
+    description: "[OBSOLETE] This event is no longer in use.",
+    hidden: true,
+    tags: [LexiconTags.OBSOLETE],
+  },
 };
 
 /**
@@ -245,7 +252,7 @@ export function transformLexiconMapToRequestSchema(
           "com.mixpanel": {
             tags: entry.tags,
             displayName: getDisplayName(eventKey),
-            hidden: false,
+            hidden: entry.hidden ?? false,
             dropped: false,
           },
         },
