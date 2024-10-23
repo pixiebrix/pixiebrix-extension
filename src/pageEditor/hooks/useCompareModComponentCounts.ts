@@ -18,8 +18,8 @@
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useSelector } from "react-redux";
 import { useCallback } from "react";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { type RegistryId } from "@/types/registryTypes";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * @returns A function that compares the number of mod components in the redux state and the mod definition

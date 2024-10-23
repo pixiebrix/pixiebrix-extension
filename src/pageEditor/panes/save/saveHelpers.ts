@@ -27,7 +27,7 @@ import {
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
-import { compact, sortBy } from "lodash";
+import { compact, uniqBy } from "lodash";
 import { produce } from "immer";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
@@ -58,6 +58,10 @@ import {
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { mapModComponentBaseToModComponentDefinition } from "@/store/modComponents/modInstanceUtils";
+import {
+  getDraftModComponentId,
+  isModComponentFormState,
+} from "@/pageEditor/utils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -96,9 +100,14 @@ function deleteUnusedStarterBrickDefinitions(
 }
 
 export type ModParts = {
-  sourceMod?: ModDefinition;
-  cleanModComponents: SerializedModComponent[];
-  dirtyModComponentFormStates: ModComponentFormState[];
+  /**
+   * Mod components to save. These can be dirty or clean.
+   */
+  draftModComponents: Array<SerializedModComponent | ModComponentFormState>;
+  /**
+   * The original mod definition, if it exists. Undefined if this is a new mod.
+   */
+  sourceModDefinition?: ModDefinition;
   /**
    * Dirty/new options to save. Undefined if there are no changes.
    */
@@ -123,6 +132,29 @@ const emptyModDefinition: UnsavedModDefinition = {
   variables: emptyModVariablesDefinitionFactory(),
 };
 
+function mapModComponentFormStateToModComponentBase(
+  modComponentFormState: ModComponentFormState,
+): ModComponentBase {
+  const { selectModComponent, selectStarterBrickDefinition } =
+    adapterForComponent(modComponentFormState);
+
+  const unsavedModComponent = selectModComponent(modComponentFormState);
+
+  if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
+    const starterBrickConfig = selectStarterBrickDefinition(
+      modComponentFormState,
+    );
+    unsavedModComponent.definitions = {
+      [unsavedModComponent.extensionPointId]: {
+        kind: DefinitionKinds.STARTER_BRICK,
+        definition: starterBrickConfig.definition,
+      } satisfies StarterBrickDefinitionLike,
+    };
+  }
+
+  return unsavedModComponent;
+}
+
 /**
  * Create a copy of `sourceMod` (if provided) with given mod metadata, mod options, and mod components.
  *
@@ -130,24 +162,45 @@ const emptyModDefinition: UnsavedModDefinition = {
  * only handles the starter brick if it's an inner definition
  *
  * @param sourceMod the original mod definition, or undefined for new mods
- * @param cleanModComponents the mod's unchanged, activated mod components
- * @param dirtyModComponentFormStates the mod's component form states (i.e., submitted via Formik)
- * @param dirtyModOptions the mod's options form state, or nullish if there are no dirty options
+ * @param draftModComponents the activated mod components/form states to save. Must exclude deleted components
+ * @param dirtyModOptionsDefinition the mod's option definition form state, or nullish if there are no dirty options
  * @param dirtyModMetadata the mod's metadata form state, or nullish if there is no dirty mod metadata
  */
 export function buildNewMod({
-  sourceMod,
-  cleanModComponents,
-  dirtyModComponentFormStates,
+  sourceModDefinition,
+  draftModComponents,
   dirtyModOptionsDefinition,
   dirtyModMetadata,
 }: ModParts): UnsavedModDefinition {
   // If there's no source mod, then we're creating a new one, so we
   // start with an empty mod definition that will be filled in
   const unsavedModDefinition: UnsavedModDefinition =
-    sourceMod ?? emptyModDefinition;
+    sourceModDefinition ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
+    if (draftModComponents.length === 0) {
+      throw new Error("No mod components to save");
+    }
+
+    if (
+      draftModComponents.some(
+        (x) => x.apiVersion !== unsavedModDefinition.apiVersion,
+      )
+    ) {
+      throw new Error(
+        "Runtime API version mismatch between mod definition and mod component definitions. Edit the mod in the the Workshop.",
+      );
+    }
+
+    if (
+      uniqBy(
+        draftModComponents.map((x) => getDraftModComponentId(x)),
+        (x) => x,
+      ).length !== draftModComponents.length
+    ) {
+      throw new Error("One or more duplicate mod component ids found");
+    }
+
     if (dirtyModOptionsDefinition) {
       draft.options = normalizeModOptionsDefinition(dirtyModOptionsDefinition);
     }
@@ -156,60 +209,16 @@ export function buildNewMod({
       draft.metadata = dirtyModMetadata;
     }
 
-    const versionedItems = [
-      ...cleanModComponents,
-      ...dirtyModComponentFormStates,
-    ];
-    // We need to handle the unlikely edge-case of zero mod components here, hence the null-coalesce
-    const itemsApiVersion =
-      versionedItems[0]?.apiVersion ?? unsavedModDefinition.apiVersion;
-    const badApiVersion = versionedItems.find(
-      (item) => item.apiVersion !== itemsApiVersion,
-    )?.apiVersion;
-
-    if (badApiVersion) {
-      throw new Error(
-        `Mod bricks have inconsistent API Versions (${itemsApiVersion}/${badApiVersion}). All bricks in a mod must have the same API Version.`,
+    const { innerDefinitions, modComponents: extensionPoints } =
+      buildModComponents(
+        draftModComponents.map((draftModComponent) =>
+          isModComponentFormState(draftModComponent)
+            ? mapModComponentFormStateToModComponentBase(draftModComponent)
+            : draftModComponent,
+        ),
       );
-    }
 
-    if (itemsApiVersion !== unsavedModDefinition.apiVersion) {
-      throw new Error(
-        `Mod uses API Version ${unsavedModDefinition.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`,
-      );
-    }
-
-    const unsavedModComponents: ModComponentBase[] =
-      dirtyModComponentFormStates.map((modComponentFormState) => {
-        const { selectModComponent, selectStarterBrickDefinition } =
-          adapterForComponent(modComponentFormState);
-
-        const unsavedModComponent = selectModComponent(modComponentFormState);
-
-        if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
-          const starterBrickConfig = selectStarterBrickDefinition(
-            modComponentFormState,
-          );
-          unsavedModComponent.definitions = {
-            [unsavedModComponent.extensionPointId]: {
-              kind: DefinitionKinds.STARTER_BRICK,
-              definition: starterBrickConfig.definition,
-            } satisfies StarterBrickDefinitionLike,
-          };
-        }
-
-        return unsavedModComponent;
-      });
-
-    const { innerDefinitions, modComponents } = buildModComponents([
-      ...cleanModComponents,
-      ...unsavedModComponents,
-    ]);
-
-    // This sorting is mostly for test ergonomics for easier equality assertions when
-    // things stay in the same order in this array. The clean/dirty mod components
-    // split/recombination logic causes things to get out of order in the result.
-    draft.extensionPoints = sortBy(modComponents, (x) => x.id);
+    draft.extensionPoints = extensionPoints;
     draft.definitions = innerDefinitions;
 
     // Delete any extra starter brick definitions that might have crept in

@@ -16,25 +16,27 @@
  */
 
 import { useCreateModDefinitionMutation } from "@/data/service/api";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   selectDirtyModOptionsDefinitions,
+  selectGetDraftModComponentsForMod,
   selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Events } from "@/telemetry/events";
-import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { BusinessError } from "@/errors/businessErrors";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import {
+  isModComponentFormState,
+  mapModDefinitionUpsertResponseToModDefinition,
+} from "@/pageEditor/utils";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -49,102 +51,87 @@ type UseCreateModFromModReturn = {
  */
 function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
-  const [createMod] = useCreateModDefinitionMutation();
+  const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  const getDraftModComponentsForMod = useSelector(
+    selectGetDraftModComponentsForMod,
   );
-  const dirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
+  const dirtyModOptionsDefinitionsMap = useSelector(
+    selectDirtyModOptionsDefinitions,
+  );
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
-    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
-      const modId = modDefinition.metadata.id;
-      const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(modId);
+    async (
+      sourceModDefinition: ModDefinition,
+      newModMetadata: ModMetadataFormState,
+    ) => {
+      const sourceModId = sourceModDefinition.metadata.id;
+
+      if (sourceModId === newModMetadata.id) {
+        throw new Error(
+          "Expected new mod ID to be different from source mod ID",
+        );
+      }
+
+      const draftModComponents = getDraftModComponentsForMod(sourceModId);
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
-        dirtyModComponentFormStates,
+        draftModComponents.filter((x) => isModComponentFormState(x)),
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
         if (!hasPermissions) {
           return;
         }
 
-        // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-        const dirtyModOptionsDefinition = dirtyModOptions[modId];
+        const newModId = newModMetadata.id;
 
-        try {
-          const newModDefinition = await buildAndValidateMod({
-            sourceMod: modDefinition,
-            cleanModComponents,
-            dirtyModComponentFormStates,
-            dirtyModOptionsDefinition,
-            dirtyModMetadata: metadata,
+        const unsavedModDefinition = await buildAndValidateMod({
+          sourceModDefinition,
+          draftModComponents,
+          // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
+          dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[sourceModId],
+          dirtyModMetadata: newModMetadata,
+        });
+
+        const upsertResponse = await createModDefinitionOnServer({
+          modDefinition: unsavedModDefinition,
+          ...createPrivateSharing(),
+        }).unwrap();
+
+        await updateReduxForSavedModDefinition({
+          // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
+          // Editor navigation state is preserved for the source mod form states
+          modIdToReplace: undefined,
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          draftModComponents,
+          isReactivate: false,
+        })(dispatch);
+
+        dispatch(editorActions.setActiveModId(newModId));
+
+        if (!keepLocalCopy) {
+          await deactivateMod({
+            modId: sourceModDefinition.metadata.id,
+            shouldShowConfirmation: false,
           });
-
-          const upsertResponse = await createMod({
-            modDefinition: newModDefinition,
-            organizations: [],
-            public: false,
-          }).unwrap();
-
-          const savedModDefinition: ModDefinition = {
-            ...newModDefinition,
-            sharing: {
-              public: upsertResponse.public,
-              organizations: upsertResponse.organizations,
-            },
-            updated_at: upsertResponse.updated_at,
-          };
-
-          if (!keepLocalCopy) {
-            await deactivateMod({ modId, shouldShowConfirmation: false });
-          }
-
-          const modComponents = [
-            ...dirtyModComponentFormStates,
-            ...cleanModComponents,
-          ];
-
-          dispatch(
-            modComponentActions.activateMod({
-              modDefinition: savedModDefinition,
-              configuredDependencies:
-                collectExistingConfiguredDependenciesForMod(
-                  savedModDefinition,
-                  modComponents,
-                ),
-              optionsArgs: collectModOptions(modComponents),
-              screen: "pageEditor",
-              isReactivate: false,
-            }),
-          );
-          dispatch(
-            editorActions.setActiveModId(savedModDefinition.metadata.id),
-          );
-          dispatch(editorActions.checkAvailableActivatedModComponents());
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            copiedFrom: modId,
-            modId: savedModDefinition.metadata.id,
-          });
-        } catch (error) {
-          if (error instanceof BusinessError) {
-            // Error is already handled by buildAndValidateMod.
-          } else {
-            throw error;
-          } // Other errors can be thrown during mod activation
         }
+
+        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+          copiedFrom: sourceModId,
+          modId: newModId,
+        });
       });
     },
     [
-      getCleanComponentsAndDirtyFormStatesForMod,
-      dirtyModOptions,
+      getDraftModComponentsForMod,
+      dirtyModOptionsDefinitionsMap,
       buildAndValidateMod,
-      createMod,
+      createModDefinitionOnServer,
       keepLocalCopy,
       dispatch,
       deactivateMod,

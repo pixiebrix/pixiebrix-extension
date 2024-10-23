@@ -19,7 +19,6 @@ import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
@@ -33,6 +32,7 @@ import {
 import produce from "immer";
 import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 function useCheckModStarterBrickInvariants(): (
   unsavedModDefinition: UnsavedModDefinition,

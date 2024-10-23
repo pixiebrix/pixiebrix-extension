@@ -28,7 +28,7 @@ sessionChangesListenerMiddleware.startListening({
     editorActions.editModMetadata,
     editorActions.editModOptionsDefinitions,
     editorActions.editModOptionsValues,
-    editorActions.clearMetadataAndOptionsChangesForMod,
+    editorActions.markModAsCleanById,
     editorActions.removeModById,
 
     // Page Editor mod component actions

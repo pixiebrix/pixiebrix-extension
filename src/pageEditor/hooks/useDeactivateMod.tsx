@@ -27,7 +27,8 @@ import { actions as modComponentActions } from "@/store/modComponents/modCompone
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { removeModDataAndInterfaceFromAllTabs } from "@/store/deactivateModHelpers";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
-import { selectGetDraftModComponentIdsForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { getDraftModComponentId } from "@/pageEditor/utils";
+import { selectGetDraftModComponentsForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 type Config = {
   modId: RegistryId;
@@ -70,8 +71,8 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const { showConfirmation } = useModals();
   const modInstanceMap = useSelector(selectModInstanceMap);
-  const getDraftModComponentIds = useSelector(
-    selectGetDraftModComponentIdsForMod,
+  const getDraftModComponentsForMod = useSelector(
+    selectGetDraftModComponentsForMod,
   );
 
   return useCallback(
@@ -93,7 +94,9 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       dispatch(editorActions.removeModById(modId));
       await removeModDataAndInterfaceFromAllTabs(
         modId,
-        getDraftModComponentIds(modId),
+        getDraftModComponentsForMod(modId).map((x) =>
+          getDraftModComponentId(x),
+        ),
       );
 
       // Remove the activated mod instance from all tabs, if one exists
@@ -106,7 +109,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
         );
       }
     },
-    [dispatch, showConfirmation, modInstanceMap, getDraftModComponentIds],
+    [dispatch, showConfirmation, modInstanceMap, getDraftModComponentsForMod],
   );
 }
 

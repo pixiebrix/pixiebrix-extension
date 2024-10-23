@@ -24,14 +24,14 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  jest.clearAllMocks();
 });
 
 test("deactivates mod components", async () => {
   const modDefinition = defaultModDefinitionFactory();
 
   const {
-    result: { current: reactivate },
+    result: { current: reactivateMod },
     act,
     getReduxStore,
   } = renderHook(() => useReactivateMod(), {
@@ -50,7 +50,7 @@ test("deactivates mod components", async () => {
     getReduxStore().getState() as ModComponentsRootState,
   )[0];
 
-  await act(async () => reactivate(modDefinition));
+  await act(async () => reactivateMod(modDefinition));
 
   expect(deactivateMod).toHaveBeenCalledWith(
     modDefinition.metadata.id,
@@ -65,7 +65,7 @@ test("dispatches activate mod action", async () => {
   const modDefinition = defaultModDefinitionFactory();
 
   const {
-    result: { current: reactivate },
+    result: { current: reactivateMod },
     act,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
@@ -79,7 +79,7 @@ test("dispatches activate mod action", async () => {
     },
   });
 
-  await act(async () => reactivate(modDefinition));
+  await act(async () => reactivateMod(modDefinition));
 
   expect(modComponentActions.activateMod).toHaveBeenCalled();
 });

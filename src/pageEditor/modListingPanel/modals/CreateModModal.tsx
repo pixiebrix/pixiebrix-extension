@@ -63,6 +63,8 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "@/hooks/useIsMounted";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.
@@ -215,6 +217,11 @@ const CreateModModalBody: React.FC = () => {
 
       hideModal();
     } catch (error) {
+      if (isSpecificError(error, DataIntegrityError)) {
+        dispatch(editorActions.showSaveDataIntegrityErrorModal());
+        return;
+      }
+
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);
         return;

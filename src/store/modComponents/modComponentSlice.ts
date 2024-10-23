@@ -19,17 +19,11 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Deployment } from "@/types/contract";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
-import { cloneDeep, partition } from "lodash";
-import { type Except } from "type-fest";
+import { cloneDeep, isEmpty, remove } from "lodash";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
-import {
-  type ActivatedModComponent,
-  type ModComponentBase,
-} from "@/types/modComponentTypes";
-import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -37,12 +31,19 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ActivateModPayload = {
   /**
    * The mod definition to activate.
    */
   modDefinition: ModDefinition;
+  /**
+   * If provided, use the provided the mod component ids instead of generating ids. For use in the Page Editor to
+   * maintain the same ids across saves.
+   */
+  modComponentIds?: UUID[];
   /**
    * Mod integration dependencies with configs filled in
    */
@@ -89,6 +90,7 @@ const modComponentSlice = createSlice({
       {
         payload: {
           modDefinition,
+          modComponentIds,
           configuredDependencies,
           optionsArgs,
           deployment,
@@ -103,21 +105,49 @@ const modComponentSlice = createSlice({
         );
       }
 
-      for (const modComponentDefinition of modDefinition.extensionPoints) {
+      if (
+        state.activatedModComponents.some(
+          (x) => x.modMetadata.id === modDefinition.metadata.id,
+        )
+      ) {
+        throw new Error(
+          "Mod is already activated. Dispatch removeModById first.",
+        );
+      }
+
+      // Defensive checks against malformed information from the server
+      // Since 1.4.6 we're tracking the sharing information of mods
+      assertNotNullish(
+        modDefinition.sharing,
+        "modDefinition.sharing is required",
+      );
+      assertNotNullish(
+        modDefinition.updated_at,
+        "modDefinition.updated_at is required",
+      );
+
+      if (isEmpty(modDefinition.extensionPoints)) {
+        throw new Error("modDefinition has no components");
+      }
+
+      if (
+        modComponentIds != null &&
+        modComponentIds.length !== modDefinition.extensionPoints.length
+      ) {
+        throw new Error(
+          "Mismatch between modDefinition component and modComponentIds count",
+        );
+      }
+
+      for (const [
+        index,
+        modComponentDefinition,
+      ] of modDefinition.extensionPoints.entries()) {
         // May be null from bad Workshop edit?
-        if (modComponentDefinition.id == null) {
-          throw new Error("modComponentDefinition.id is required");
-        }
-
-        if (modDefinition.updated_at == null) {
-          // Since 1.4.8 we're tracking the updated_at timestamp of mods
-          throw new Error("updated_at is required");
-        }
-
-        if (modDefinition.sharing == null) {
-          // Since 1.4.6 we're tracking the sharing information of mods
-          throw new Error("sharing is required");
-        }
+        assertNotNullish(
+          modComponentDefinition.id,
+          "modComponentDefinition.id is required",
+        );
 
         const activatedModComponent: ActivatedModComponent =
           mapModComponentDefinitionToActivatedModComponent({
@@ -128,12 +158,12 @@ const modComponentSlice = createSlice({
             integrationDependencies: configuredDependencies ?? [],
           });
 
-        assertModComponentNotHydrated(activatedModComponent);
+        // Force the mod component id as necessary
+        activatedModComponent.id =
+          // eslint-disable-next-line security/detect-object-injection -- number
+          modComponentIds?.[index] ?? activatedModComponent.id;
 
-        reportEvent(
-          Events.STARTER_BRICK_ACTIVATE,
-          selectEventData(activatedModComponent),
-        );
+        assertModComponentNotHydrated(activatedModComponent);
 
         state.activatedModComponents.push(activatedModComponent);
 
@@ -151,118 +181,10 @@ const modComponentSlice = createSlice({
     },
 
     /**
-     * Prefer using `useUpsertModComponentFormState` over calling this action directly.
-     *
-     * @see useUpsertModComponentFormState
-     */
-    saveModComponent(
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        modComponent: (ModComponentBase | ActivatedModComponent) & {
-          updateTimestamp: Timestamp;
-        };
-      }>,
-    ) {
-      const {
-        modComponent: {
-          id,
-          apiVersion,
-          extensionPointId,
-          config,
-          definitions,
-          label,
-          optionsArgs,
-          integrationDependencies,
-          updateTimestamp,
-          modMetadata,
-        },
-      } = payload;
-
-      // Support both extensionId and id to keep the API consistent with the shape of the stored extension
-      if (id == null) {
-        throw new Error("id or extensionId is required");
-      }
-
-      if (extensionPointId == null) {
-        throw new Error("extensionPointId is required");
-      }
-
-      const modComponent: Except<
-        ActivatedModComponent,
-        "_serializedModComponentBrand"
-      > = {
-        id,
-        apiVersion,
-        extensionPointId,
-        modMetadata,
-        deploymentMetadata: undefined,
-        label,
-        definitions,
-        optionsArgs,
-        integrationDependencies,
-        config,
-        // We are unfortunately not rehydrating the createTimestamp properly from the server, so in most cases the
-        // createTimestamp saved in Redux won't match the timestamp on the server. This is OK for now because
-        // we don't use the exact value of createTimestamp for the time being.
-        // See https://github.com/pixiebrix/pixiebrix-extension/pull/7229 for more context
-        createTimestamp: updateTimestamp,
-        updateTimestamp,
-        active: true,
-      };
-
-      assertModComponentNotHydrated(modComponent);
-
-      const index = state.activatedModComponents.findIndex((x) => x.id === id);
-
-      if (index >= 0) {
-        // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.activatedModComponents[index] = modComponent;
-      } else {
-        state.activatedModComponents.push(modComponent);
-      }
-    },
-
-    /**
-     * Update the mod metadata of all mod components associated with the given mod id.
-     */
-    updateModMetadata(
-      state,
-      action: PayloadAction<ModComponentBase["modMetadata"]>,
-    ) {
-      const metadata = action.payload;
-      for (const modComponent of state.activatedModComponents) {
-        if (modComponent.modMetadata.id === metadata?.id) {
-          modComponent.modMetadata = metadata;
-        }
-      }
-    },
-
-    /**
-     * Deactivate mod components associated with the given mod id
+     * Deactivate mod components associated with the given mod id, if any. Safe to call even if the mod is not activated.
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
-      const [, modComponents] = partition(
-        state.activatedModComponents,
-        (x) => x.modMetadata.id === modId,
-      );
-
-      state.activatedModComponents = modComponents;
-    },
-
-    /**
-     * Deactivate a single mod component by id. Prefer removeModById
-     * @see removeModById
-     */
-    removeModComponent(
-      state,
-      { payload: { modComponentId } }: PayloadAction<{ modComponentId: UUID }>,
-    ) {
-      // NOTE: removeModComponent doesn't delete the mod component/definition on the server.
-      state.activatedModComponents = state.activatedModComponents.filter(
-        (x) => x.id !== modComponentId,
-      );
+      remove(state.activatedModComponents, (x) => x.modMetadata.id === modId);
     },
   },
   extraReducers(builder) {

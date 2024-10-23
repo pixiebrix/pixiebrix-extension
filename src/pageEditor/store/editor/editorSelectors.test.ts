@@ -26,12 +26,12 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import {
   type InnerDefinitionRef,
   DefinitionKinds,
 } from "@/types/registryTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 let starterBrickCount = 0;
 function newStarterBrickId(): InnerDefinitionRef {

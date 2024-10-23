@@ -17,11 +17,11 @@
 
 import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
-import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
+import { selectGetModComponentFormStatesByModId } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Hook that returns a callback to clear unsaved mod changes for a given mod id.
@@ -31,7 +31,9 @@ function useClearModChanges(): (modId: RegistryId) => Promise<void> {
   const { showConfirmation } = useModals();
   const dispatch = useDispatch();
   const clearModComponentChanges = useClearModComponentChanges();
-  const modComponentFormStates = useSelector(selectModComponentFormStates);
+  const getModComponentFormStatesByModId = useSelector(
+    selectGetModComponentFormStatesByModId,
+  );
 
   return useCallback(
     async (modId: RegistryId) => {
@@ -46,23 +48,22 @@ function useClearModChanges(): (modId: RegistryId) => Promise<void> {
       }
 
       await Promise.all(
-        modComponentFormStates
-          .filter((x) => x.modMetadata.id === modId)
-          .map(async (modComponentFormState) =>
+        getModComponentFormStatesByModId(modId).map(
+          async (modComponentFormState) =>
             clearModComponentChanges({
               modComponentId: modComponentFormState.uuid,
               shouldShowConfirmation: false,
             }),
-          ),
+        ),
       );
 
-      dispatch(actions.clearMetadataAndOptionsChangesForMod(modId));
-      dispatch(actions.clearDeletedModComponentFormStatesForMod(modId));
-      dispatch(actions.setActiveModId(modId));
+      dispatch(editorActions.markModAsCleanById(modId));
+
+      dispatch(editorActions.setActiveModId(modId));
     },
     [
       dispatch,
-      modComponentFormStates,
+      getModComponentFormStatesByModId,
       clearModComponentChanges,
       showConfirmation,
     ],

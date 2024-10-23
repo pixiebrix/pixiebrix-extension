@@ -142,8 +142,6 @@ export const Events = {
 
   START_MOD_ACTIVATE: "StartInstallBlueprint",
 
-  STARTER_BRICK_ACTIVATE: "ExtensionActivate",
-
   TOUR_START: "TourStart",
   TOUR_STEP: "TourStep",
   TOUR_END: "TourEnd",

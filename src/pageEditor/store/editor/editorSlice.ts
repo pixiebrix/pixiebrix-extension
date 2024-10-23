@@ -87,7 +87,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { collectModOptions } from "@/store/modComponents/modComponentUtils";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
 /** @internal */
 export const initialState: EditorState = {
@@ -461,23 +461,14 @@ export const editorSlice = createSlice({
       }
     },
 
-    clearMetadataAndOptionsChangesForMod(
-      state,
-      action: PayloadAction<RegistryId>,
-    ) {
-      const { payload: modId } = action;
-      delete state.dirtyModMetadataById[modId];
-      delete state.dirtyModOptionsById[modId];
-    },
-
     updateModMetadataOnModComponentFormStates(
       state,
-      action: PayloadAction<ModMetadata>,
+      action: PayloadAction<{ modId: RegistryId; modMetadata: ModMetadata }>,
     ) {
-      const modMetadata = action.payload;
+      const { modId, modMetadata } = action.payload;
       const modComponentFormStates = state.modComponentFormStates.filter(
         (modComponentFormState) =>
-          modComponentFormState.modMetadata.id === modMetadata.id,
+          modComponentFormState.modMetadata.id === modId,
       );
       // Technically this method should also update the deleted form states. But this reducer method is only called
       // when the mod is being saved, so those deleted form states will be removed anyway.
@@ -486,12 +477,21 @@ export const editorSlice = createSlice({
       }
     },
 
-    clearDeletedModComponentFormStatesForMod(
-      state,
-      action: PayloadAction<RegistryId>,
-    ) {
+    /**
+     * Mark a mod and all of its associated form states as clean.
+     * @see markModComponentFormStateAsClean
+     */
+    markModAsCleanById(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
+
+      for (const modComponentFormState of state.modComponentFormStates) {
+        modComponentFormState.installed = true;
+        state.dirty[modComponentFormState.uuid] = false;
+      }
+
       delete state.deletedModComponentFormStatesByModId[modId];
+      delete state.dirtyModMetadataById[modId];
+      delete state.dirtyModOptionsById[modId];
     },
 
     /**
@@ -555,7 +555,7 @@ export const editorSlice = createSlice({
       // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
       // are stored/owned at the mod-level in the Page Editor
       if (existingModFormStates.length > 0) {
-        modComponentFormState.optionsArgs = collectModOptions(
+        modComponentFormState.optionsArgs = collectModOptionsArgs(
           existingModFormStates,
         );
       }
@@ -608,7 +608,8 @@ export const editorSlice = createSlice({
     },
 
     /**
-     * Marks the form state as clean, i.e., it has no unsaved changes.
+     * Marks the form state as clean and corresponding to an activated mod component, i.e., it has no unsaved changes.
+     * @see markModAsCleanById
      */
     markModComponentFormStateAsClean(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
