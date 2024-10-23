@@ -198,6 +198,11 @@ export const lexicon: LexiconMap = {
       "the Extension Console settings page. This event is triggered after the user confirms the factory reset action.",
     tags: [LexiconTags.EXTENSION_CONSOLE],
   },
+  FLOATING_ACTION_BUTTON_CLICK: {
+    description:
+      "Reported when a user clicks the floating action button on any web page for which it is shown.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
 };
 
 /**
