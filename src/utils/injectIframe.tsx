@@ -33,8 +33,7 @@ export const hiddenIframeStyle: Partial<CSSStyleDeclaration> = {
   visibility: "hidden",
 } as const;
 
-export type LoadedFrame = HTMLIFrameElement & {
-  contentDocument: Document;
+type LoadedFrame = HTMLIFrameElement & {
   contentWindow: Window;
 };
 
@@ -61,7 +60,7 @@ async function _injectIframe(
   shadowRootId?: string,
 ): Promise<LoadedFrame> {
   const iframe = document.createElement("iframe");
-  const { promise: iframeLoad, resolve } = pDefer();
+  const { promise: iframeLoadPromise, resolve } = pDefer();
   iframe.addEventListener("load", resolve);
   iframe.src = url;
   Object.assign(iframe.style, style);
@@ -77,13 +76,21 @@ async function _injectIframe(
   }
 
   const result = await Promise.race([
-    iframeLoad,
+    iframeLoadPromise,
     elementRemoved(shadowElement),
   ]);
 
   if (result === "removed") {
     throw new IframeInjectionError(
       `The host page removed the iframe for ${url} before it could be loaded.`,
+    );
+  }
+
+  // Iframe contentWindow should be available even for cross-origin, just with much more limited access.
+  // https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#cross-origin_script_api_access
+  if (iframe.contentWindow == null) {
+    throw new IframeInjectionError(
+      `The iframe triggered the load event, but did not load a contentWindow ${url}`,
     );
   }
 
