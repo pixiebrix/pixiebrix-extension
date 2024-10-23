@@ -248,6 +248,7 @@ export function errorToAsyncState<Value>(error: unknown): AsyncState<Value> {
 /**
  * Lift a known value to a UseCachedQueryResult.
  * @see UseCachedQueryResult
+ * @internal
  */
 export function valueToAsyncCacheState<Value>(
   value: Value,
@@ -271,6 +272,7 @@ type LoadingOverride = {
   isRemoteUninitialized?: boolean;
 };
 
+/** @internal */
 export function loadingAsyncCacheStateFactory<Value>(
   loadingOverride?: LoadingOverride,
 ): UseCachedQueryResult<Value> {
@@ -285,6 +287,7 @@ export function loadingAsyncCacheStateFactory<Value>(
   };
 }
 
+/** @internal */
 export function errorToAsyncCacheState<Value>(
   error: unknown,
 ): UseCachedQueryResult<Value> {

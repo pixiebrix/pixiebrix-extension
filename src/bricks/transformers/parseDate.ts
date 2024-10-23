@@ -22,6 +22,7 @@ import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
+/** @internal */
 export function getLocalISOString(date: Date): string {
   let offsetInMinutes = date.getTimezoneOffset();
   const offsetMillis = offsetInMinutes * 60 * 1000;

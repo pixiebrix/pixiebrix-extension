@@ -71,6 +71,7 @@ type GetPropOptions = {
 
 /**
  * Error indicating input elements to a block did not match the schema.
+ * @internal
  */
 export class InvalidPathError extends Error {
   override name = "InvalidPathError";

@@ -27,7 +27,7 @@ import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   featureFlagBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {

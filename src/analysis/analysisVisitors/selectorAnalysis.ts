@@ -68,6 +68,7 @@ const jQueryExtensions = new Set([
 
 /**
  * Returns all jQuery extensions in the given selector.
+ * @internal
  */
 export function findJQueryExtensions(selector: string): string[] {
   // Could try to use $.find.tokenize, but IMO it's not worth figuring out how to recursively parse/tokenize.

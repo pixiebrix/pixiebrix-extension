@@ -23,7 +23,7 @@ import { render, screen, within } from "@/pageEditor/testHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";

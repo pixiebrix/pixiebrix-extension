@@ -26,6 +26,7 @@ export const SPREADSHEET_FIELD_DESCRIPTION =
 /**
  * `$ref` schema for a Google Sheet input. In general, use SHEET_FIELD_SCHEMA directly instead.
  * @see SHEET_FIELD_SCHEMA
+ * @internal
  */
 export const SHEET_FIELD_REF_SCHEMA: Schema = {
   $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",

@@ -20,7 +20,7 @@ import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { RootReader } from "@/starterBricks/starterBrickTestUtils";
+import { RootReader } from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { type HydratedModComponent } from "@/types/modComponentTypes";

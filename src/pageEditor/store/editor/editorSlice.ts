@@ -89,6 +89,7 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
+/** @internal */
 export const initialState: EditorState = {
   selectionSeq: 0,
   activeModComponentId: null,

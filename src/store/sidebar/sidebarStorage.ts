@@ -25,6 +25,7 @@ import {
 } from "@/utils/storageUtils";
 import { initialSidebarState } from "@/store/sidebar/initialState";
 
+/** @internal */
 export const STORAGE_KEY = validateReduxStorageKey("persist:sidebar");
 
 // The subset of the sidebar state that we persist

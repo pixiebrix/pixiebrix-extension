@@ -100,6 +100,7 @@ const stateControllerMap = new Map<Subscribe, StateController>();
 
 /**
  * Test helper method to reset the state of all useAsyncExternalStore hooks.
+ * @internal
  */
 export function INTERNAL_reset(): void {
   stateControllerMap.clear();

@@ -17,7 +17,7 @@
 
 import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { deferBrick, simpleInput } from "./pipelineTestHelpers";
+import { deferBrick, simpleInput } from "./testHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 

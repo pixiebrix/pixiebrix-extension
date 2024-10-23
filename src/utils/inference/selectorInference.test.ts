@@ -20,7 +20,6 @@
 
 import {
   expandedCssSelector,
-  generateSelector,
   getAttributeSelector,
   getSelectorPreference,
   inferSelectors,
@@ -28,7 +27,6 @@ import {
   safeCssSelector,
   sortBySelector,
 } from "./selectorInference";
-import { JSDOM } from "jsdom";
 import { uniq } from "lodash";
 import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { html } from "code-tag";
@@ -41,35 +39,6 @@ declare global {
     }
   }
 }
-
-function getDocument(html: string): Document {
-  return new JSDOM(html).window.document;
-}
-
-expect.extend({
-  toFindSelector(receivedHTML: string, selector: string) {
-    const document = getDocument(receivedHTML);
-    const element = document.querySelector<HTMLElement>(selector);
-    const generatedSelector = generateSelector(element!);
-
-    return {
-      pass: generatedSelector === selector,
-      message: () =>
-        `Expected \`${selector}\` but generated \`${generatedSelector}\``,
-    };
-  },
-});
-
-describe("generateSelector", () => {
-  test("find simple selectors", () => {
-    expect(html`<h1><span>Text</span></h1>`).toFindSelector("h1 > span");
-    expect(html`
-      <div>
-        <div><h1></h1></div>
-      </div>
-    `).toFindSelector("h1");
-  });
-});
 
 describe("getAttributeSelector", () => {
   test("find ID selectors", () => {

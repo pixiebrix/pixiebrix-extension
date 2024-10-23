@@ -48,7 +48,7 @@ import {
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
 
-// Exported for testing
+/** @internal */
 export function isModEditable(
   editablePackages: EditablePackageMetadata[],
   modDefinition: ModDefinition,

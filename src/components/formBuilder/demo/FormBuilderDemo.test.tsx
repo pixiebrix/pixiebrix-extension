@@ -1,4 +1,3 @@
-/* eslint-disable testing-library/no-node-access -- TODO: refactor to use better locator methods */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -16,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable testing-library/no-node-access -- TODO: refactor to use better locator methods */
 import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import {
   createFormikTemplate,
@@ -29,8 +29,8 @@ import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import FormBuilder from "./FormBuilder";
-import { type RJSFSchema } from "./formBuilderTypes";
+import FormBuilderDemo from "./FormBuilderDemo";
+import { type RJSFSchema } from "../formBuilderTypes";
 import userEvent from "@testing-library/user-event";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -60,7 +60,7 @@ function renderFormBuilder(
   const FormikTemplate = createFormikTemplate(initialValues);
   return render(
     <FormikTemplate>
-      <FormBuilder name="form" initialActiveField={activeField} />
+      <FormBuilderDemo name="form" initialActiveField={activeField} />
     </FormikTemplate>,
   );
 }
@@ -380,7 +380,7 @@ describe("rename a field", () => {
 
     const { container } = render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
 
@@ -407,7 +407,7 @@ describe("rename a field", () => {
 
     const { container } = render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
 
@@ -441,7 +441,7 @@ describe("rename a field", () => {
 
     const { container } = render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
 
@@ -466,7 +466,7 @@ describe("rename a field", () => {
 
     render(
       <FormikTemplate>
-        <FormBuilder name={RJSF_SCHEMA_PROPERTY_NAME} />
+        <FormBuilderDemo name={RJSF_SCHEMA_PROPERTY_NAME} />
       </FormikTemplate>,
     );
     await waitForEffect();

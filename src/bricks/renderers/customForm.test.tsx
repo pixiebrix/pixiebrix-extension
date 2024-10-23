@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { screen } from "shadow-dom-testing-library";
-import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
+import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@/validators/formValidator";

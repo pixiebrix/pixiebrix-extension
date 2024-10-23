@@ -25,7 +25,7 @@ import {
   brickConfigFactory,
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
-import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { EchoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";

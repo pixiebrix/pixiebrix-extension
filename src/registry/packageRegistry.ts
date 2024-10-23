@@ -268,6 +268,7 @@ async function replaceAll(packages: PackageVersion[]): Promise<void> {
   );
 }
 
+/** @internal */
 export function parsePackage(
   item: RegistryPackage,
 ): Except<PackageVersion, "timestamp"> {

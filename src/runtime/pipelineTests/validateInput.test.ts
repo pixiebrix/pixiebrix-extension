@@ -20,7 +20,7 @@ import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/bricks/errors";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { contextBrick, echoBrick, simpleInput } from "./pipelineTestHelpers";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { BrickABC } from "@/types/brickTypes";
 import { validateRegistryId } from "@/types/helpers";

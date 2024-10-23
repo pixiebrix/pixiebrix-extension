@@ -30,6 +30,7 @@ import { castDraft } from "immer";
 
 const REFRESH_INTERVAL = 750;
 
+/** @internal */
 export const initialLogState: LogState = {
   activeContext: null,
   availableEntries: [],

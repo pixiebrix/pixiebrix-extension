@@ -19,10 +19,7 @@ import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import { type BrickConfig } from "@/bricks/types";
-import {
-  echoBrick,
-  teapotBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,

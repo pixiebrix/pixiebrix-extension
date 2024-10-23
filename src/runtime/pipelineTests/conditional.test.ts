@@ -24,7 +24,7 @@ import {
   contextBrick,
   echoBrick,
   simpleInput,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 

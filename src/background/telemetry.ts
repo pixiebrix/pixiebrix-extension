@@ -212,6 +212,7 @@ async function addEvent(event: UserTelemetryEvent): Promise<void> {
   );
 }
 
+/** @internal */
 export async function flushEvents(): Promise<UserTelemetryEvent[]> {
   return withTelemetryDB(
     async (db) => {
@@ -275,6 +276,7 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   maxWait: EVENT_BUFFER_MAX_MS,
 });
 
+/** @internal */
 export async function TEST_flushAll(): Promise<void> {
   return debouncedFlush.flush();
 }

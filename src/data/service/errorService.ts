@@ -113,6 +113,7 @@ export async function selectExtraContext(
 
 /**
  * Returns true if the error should be ignored for error telemetry purposes.
+ * @internal
  */
 export function shouldIgnoreError(error: Error): boolean {
   // Cannot rely on subclassing due to serialization/deserialization across messenger boundaries

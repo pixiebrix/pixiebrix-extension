@@ -25,7 +25,7 @@ import { Formik } from "formik";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
-import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
 import { type Schema } from "@/types/schemaTypes";

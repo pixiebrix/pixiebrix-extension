@@ -91,6 +91,7 @@ export async function deferLogin(
   return deferredPromise.promise;
 }
 
+/** @internal */
 export function clearDeferredLogins(): void {
   for (const deferredLogin of deferredLogins.values()) {
     deferredLogin.reject(new CancelError("Context invalidated"));
@@ -100,6 +101,7 @@ export function clearDeferredLogins(): void {
   hideAllLoginBanners();
 }
 
+/** @internal */
 export function dismissDeferredLogin(id: UUID): void {
   const deferredLogin = deferredLogins.get(id);
   if (deferredLogin) {

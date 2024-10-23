@@ -788,6 +788,7 @@ export abstract class ButtonStarterBrickABC extends StarterBrickABC<ButtonStarte
   }
 }
 
+/** @internal */
 export class RemoteButtonStarterBrick extends ButtonStarterBrickABC {
   private readonly _definition: ButtonDefinition;
 

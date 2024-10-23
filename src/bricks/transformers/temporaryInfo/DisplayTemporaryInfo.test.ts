@@ -24,7 +24,7 @@ import {
   simpleInput,
   teapotBrick,
   throwBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -44,7 +44,7 @@ import {
   waitForTemporaryPanel,
 } from "@/platform/panels/panelController";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { tick } from "@/starterBricks/starterBrickTestUtils";
+import { tick } from "@/starterBricks/testHelpers";
 import pDefer from "p-defer";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";

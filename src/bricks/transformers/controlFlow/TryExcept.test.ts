@@ -20,7 +20,7 @@ import {
   simpleInput,
   teapotBrick,
   throwBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 

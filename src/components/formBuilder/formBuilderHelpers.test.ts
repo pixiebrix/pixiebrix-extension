@@ -27,7 +27,7 @@ import {
   validateNextPropertyName,
 } from "./formBuilderHelpers";
 import { type RJSFSchema } from "./formBuilderTypes";
-import { initRenamingCases } from "./formEditor.testCases";
+import { initRenamingCases } from "./testHelpers";
 import { UI_WIDGET } from "./schemaFieldNames";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";

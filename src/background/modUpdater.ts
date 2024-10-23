@@ -59,6 +59,7 @@ type PackageVersionPair = { name: RegistryId; version: SemVerString };
  * Produces an array of activated Marketplace mods by registry id and currently activated versions. For use
  * with the payload of the `api/registry/updates` endpoint.
  * @returns a unique list of mod registry ids and their versions
+ * @internal
  */
 export async function getActivatedMarketplaceModVersions(): Promise<
   PackageVersionPair[]
@@ -83,6 +84,7 @@ export async function getActivatedMarketplaceModVersions(): Promise<
 /**
  * Fetches information about backwards compatible "force updates" for Marketplace mods that are currently activated.
  * @returns a list of mods with backwards compatible updates
+ * @internal
  */
 export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
   const client = await maybeGetLinkedApiClient();
@@ -130,6 +132,7 @@ export async function fetchModUpdates(): Promise<BackwardsCompatibleUpdate[]> {
  * @param newModDefinition the mod to update
  * @param reduxState the current state of the modComponent and editor redux stores
  * @returns new redux state with the mod updated
+ * @internal
  */
 export function updateMod(
   newModDefinition: ModDefinition,
@@ -203,6 +206,7 @@ async function updateMods(modUpdates: BackwardsCompatibleUpdate[]) {
   queueReloadModEveryTab();
 }
 
+/** @internal */
 export async function updateModsIfForceUpdatesAvailable() {
   const autoModUpdatesEnabled = await flagOn(
     FeatureFlags.AUTOMATIC_MOD_UPDATES,

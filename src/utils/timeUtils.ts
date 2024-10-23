@@ -38,13 +38,8 @@ function isTimestamp(value: string): value is Timestamp {
   }
 }
 
+/** @internal */
 export function validateTimestamp(value: string): Timestamp {
-  if (value == null) {
-    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
-    // we can remove this check as strictNullChecks will check the call site
-    return value as Timestamp;
-  }
-
   if (isTimestamp(value)) {
     return value;
   }

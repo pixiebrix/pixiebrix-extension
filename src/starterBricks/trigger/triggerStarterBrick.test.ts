@@ -25,7 +25,7 @@ import {
   InvalidContextReader,
   RootReader,
   tick,
-} from "@/starterBricks/starterBrickTestUtils";
+} from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import {
   fromJS,
@@ -44,7 +44,7 @@ import {
   throwBrick,
   ThrowBrick,
   ThrowTwiceBrick,
-} from "@/runtime/pipelineTests/pipelineTestHelpers";
+} from "@/runtime/pipelineTests/testHelpers";
 import { showNotification } from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";

@@ -59,10 +59,13 @@ import { BusinessError } from "@/errors/businessErrors";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
+/** @internal */
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
 
+/** @internal */
 export const NO_VARIABLE_PROVIDED_MESSAGE = "Variable is blank";
 
+/** @internal */
 export const VARIABLE_SHOULD_START_WITH_AT_MESSAGE =
   "Variable name should start with @";
 

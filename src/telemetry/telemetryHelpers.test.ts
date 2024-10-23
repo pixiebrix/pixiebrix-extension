@@ -17,10 +17,7 @@
 
 import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
 import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
-import {
-  mapMessageContextToModComponentRef,
-  mapModComponentRefToMessageContext,
-} from "@/utils/modUtils";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/telemetry/telemetryHelpers", () =>
@@ -49,14 +46,5 @@ describe("mapModComponentRefToEventData", () => {
       modId: value.modId,
       starterBrickId: value.starterBrickId,
     });
-  });
-
-  it("round trips mod component reference", () => {
-    const value = modComponentRefFactory();
-    expect(
-      mapMessageContextToModComponentRef(
-        mapModComponentRefToMessageContext(value),
-      ),
-    ).toStrictEqual(value);
   });
 });
