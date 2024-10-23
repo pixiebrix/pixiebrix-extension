@@ -209,6 +209,13 @@ export const lexicon: LexiconMap = {
       "the button to a new location. Only reported once per page load.",
     tags: [LexiconTags.MOD_RUNTIME],
   },
+  FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE: {
+    description:
+      "Reported when the floating action button is hidden by clicking the 'Hide Button' button " +
+      "that appears when hovering over the floating action button. Sets the Floating Action Button setting to 'disabled' " +
+      "in the Extension Console settings.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
 };
 
 /**
