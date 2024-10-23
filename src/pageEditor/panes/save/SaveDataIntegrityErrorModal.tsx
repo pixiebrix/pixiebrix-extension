@@ -18,7 +18,6 @@
 import React, { useCallback } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
@@ -27,6 +26,7 @@ import JSZip from "jszip";
 import download from "downloadjs";
 
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
 
 const DiagnosticDataButton: React.FC = () => {
   const activatedModComponents = useSelector(selectActivatedModComponents);

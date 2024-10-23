@@ -25,8 +25,8 @@ import {
 } from "@/utils/storageUtils";
 import { migrations } from "@/store/editorMigrations";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
-import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 

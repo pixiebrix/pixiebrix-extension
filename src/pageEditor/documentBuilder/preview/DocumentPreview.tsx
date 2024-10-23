@@ -33,10 +33,6 @@ import cx from "classnames";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
 import useDocumentPreviewRunBlock from "@/pageEditor/tabs/effect/useDocumentPreviewRunBlock";
 import { useSelector } from "react-redux";
-import {
-  selectActiveNodeId,
-  selectParentNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -46,6 +42,10 @@ import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTem
 import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectActiveNodeId,
+  selectParentNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 type DocumentPreviewProps = {
   /**

@@ -28,11 +28,6 @@ import {
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { navigationEvent } from "@/pageEditor/events";
 import { useSelector } from "react-redux";
-import {
-  selectActiveModComponentFormState,
-  selectCurrentModId,
-  selectGetCleanComponentsAndDirtyFormStatesForMod,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "@/types/modInstanceTypes";
@@ -44,6 +39,11 @@ import type { UUID } from "@/types/stringTypes";
 import hash from "object-hash";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import {
+  selectGetCleanComponentsAndDirtyFormStatesForMod,
+  selectCurrentModId,
+  selectActiveModComponentFormState,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Map from draft mod component UUID to object-hash of updated draft. Used to avoid unnecessary re-injection.

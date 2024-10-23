@@ -2,7 +2,6 @@ import React, { type ChangeEventHandler } from "react";
 import { FormCheck } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import styles from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField.module.scss";
@@ -10,6 +9,7 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import FieldTemplate, {
   type CustomFieldWidget,
 } from "@/components/form/FieldTemplate";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 
 export type ViewModeOption<T extends string = string> = {
   /**

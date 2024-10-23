@@ -23,11 +23,6 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModComponentFormState,
-  selectAddBlockLocation,
-  selectPipelineMap,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { type BrickConfig } from "@/bricks/types";
@@ -40,6 +35,11 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectActiveModComponentFormState,
+  selectAddBrickLocation,
+  selectPipelineMap,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 type TestAddBrickResult = {
   error?: React.ReactNode;
@@ -63,7 +63,7 @@ function useAddBrick(): AddBrick {
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
-  const addBrickLocation = useSelector(selectAddBlockLocation);
+  const addBrickLocation = useSelector(selectAddBrickLocation);
 
   const makeNewBrick = useCallback(
     async (brick: Brick): Promise<BrickConfig> => {

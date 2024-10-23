@@ -35,13 +35,6 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
-  selectActiveModComponentFormState,
-  selectActiveBrickPipelineUIState,
-  selectActiveBrickConfigurationUIState,
-  selectNotDeletedModComponentFormStates,
-  selectNotDeletedActivatedModComponents,
-} from "./editorSelectors";
-import {
   isQuickBarStarterBrick,
   type ModComponentFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
@@ -88,6 +81,13 @@ import {
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
+import {
+  selectActiveModComponentFormState,
+  selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
+  selectActiveBrickConfigurationUIState,
+  selectActiveBrickPipelineUIState,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /** @internal */
 export const initialState: EditorState = {

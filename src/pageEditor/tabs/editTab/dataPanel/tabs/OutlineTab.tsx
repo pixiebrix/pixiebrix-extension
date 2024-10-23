@@ -20,15 +20,15 @@ import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import React from "react";
 import DocumentOutline from "@/pageEditor/documentBuilder/outline/DocumentOutline";
 import useReduxState from "@/hooks/useReduxState";
-import {
-  selectActiveBuilderPreviewElement,
-  selectActiveNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
 import useIsSidebarPanelStale from "@/pageEditor/tabs/editTab/dataPanel/tabs/useIsSidebarPanelStale";
 import { staleSidePanelAlertElement } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
+import {
+  selectActiveBuilderPreviewElement,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Document Builder Outline tab. Introduced to support re-ordering Document Builder elements.

@@ -18,11 +18,6 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDirtyModMetadata,
-  selectDirtyModOptionsDefinitions,
-  selectGetDraftModComponentsForMod,
-} from "@/pageEditor/store/editor/editorSelectors";
-import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
@@ -47,6 +42,11 @@ import {
 } from "@/pageEditor/utils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
+import {
+  selectDirtyModMetadata,
+  selectDirtyModOptionsDefinitions,
+  selectGetDraftModComponentsForMod,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /** @internal */
 export function isModEditable(

@@ -28,6 +28,7 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { removeModDataAndInterfaceFromAllTabs } from "@/store/deactivateModHelpers";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import { getDraftModComponentId } from "@/pageEditor/utils";
+
 import { selectGetDraftModComponentsForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 type Config = {

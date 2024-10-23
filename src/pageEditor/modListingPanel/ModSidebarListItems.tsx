@@ -21,19 +21,19 @@ import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
 import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
 import ModListItem from "@/pageEditor/modListingPanel/ModListItem";
 import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
-import {
-  selectActiveModComponentId,
-  selectActiveModId,
-  selectExpandedModId,
-  selectModComponentAvailability,
-  selectNotDeletedModComponentFormStates,
-  selectNotDeletedActivatedModComponents,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { useSelector } from "react-redux";
 import ModComponentListItem from "./ModComponentListItem";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
 import { getDraftModComponentId } from "@/pageEditor/utils";
+import {
+  selectActiveModComponentId,
+  selectActiveModId,
+  selectExpandedModId,
+  selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
+  selectModComponentAvailability,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const ModSidebarListItems: React.FunctionComponent = () => {
   const activeModComponentId = useSelector(selectActiveModComponentId);

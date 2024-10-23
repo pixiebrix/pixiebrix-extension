@@ -17,7 +17,6 @@
 
 import React from "react";
 import { useWindowSize } from "@/hooks/useWindowSize";
-import { selectIsDimensionsWarningDismissed } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Col, Row } from "react-bootstrap";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
@@ -26,6 +25,7 @@ import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
+import { selectIsDimensionsWarningDismissed } from "@/pageEditor/store/editor/editorSelectors";
 
 export const GatePanel: React.FunctionComponent = () => {
   const dispatch = useDispatch();

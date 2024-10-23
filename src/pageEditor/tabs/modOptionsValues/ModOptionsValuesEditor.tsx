@@ -17,12 +17,6 @@
 
 import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModId,
-  selectDirtyOptionsDefinitionsForModId,
-  selectDirtyOptionValuesForModId,
-  selectGetDraftModComponentsForMod,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
@@ -44,6 +38,12 @@ import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectDirtyOptionsDefinitionsForModId,
+  selectDirtyOptionArgsForModId,
+  selectGetDraftModComponentsForMod,
+  selectActiveModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -69,7 +69,7 @@ const ModOptionsValuesContent: React.FC = () => {
     selectDirtyOptionsDefinitionsForModId(activeModId),
   );
   const modifiedOptionValues = useSelector(
-    selectDirtyOptionValuesForModId(activeModId),
+    selectDirtyOptionArgsForModId(activeModId),
   );
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,

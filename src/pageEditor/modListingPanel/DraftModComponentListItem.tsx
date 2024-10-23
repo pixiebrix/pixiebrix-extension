@@ -38,14 +38,14 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModId,
-  selectModComponentIsDirty,
-} from "@/pageEditor/store/editor/editorSelectors";
 import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import {
+  selectActiveModId,
+  selectActiveModComponentFormState,
+  selectModComponentIsDirty,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 type DraftModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;

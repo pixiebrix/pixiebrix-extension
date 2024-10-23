@@ -20,9 +20,9 @@ import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/Com
 import React from "react";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { selectNodeDataPanelTabSelected } from "@/pageEditor/store/editor/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectNodeDataPanelTabSelected } from "@/pageEditor/store/editor/editorSelectors";
 
 const renderCommentsPreview = (comments: string) => {
   const formState = formStateFactory();

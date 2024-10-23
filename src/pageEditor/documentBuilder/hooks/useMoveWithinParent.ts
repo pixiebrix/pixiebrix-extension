@@ -16,7 +16,6 @@
  */
 
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useField } from "formik";
 import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
@@ -24,6 +23,7 @@ import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getEleme
 
 import { joinPathParts } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 type MoveWithinParent = {
   canMoveUp: boolean;

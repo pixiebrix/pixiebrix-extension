@@ -16,13 +16,13 @@
  */
 
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import {
-  selectActiveNodeInfo,
-  selectActiveModComponentAnalysisAnnotationsForPath,
-} from "@/pageEditor/store/editor/editorSelectors";
 import React from "react";
 
 import { useSelector } from "react-redux";
+import {
+  selectActiveModComponentAnalysisAnnotationsForPath,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const AnalysisResult: React.FunctionComponent<{ className?: string }> = ({
   className,

@@ -43,12 +43,12 @@ import {
 import useAsyncEffect from "use-async-effect";
 import CommentEffect from "@/bricks/effects/comment";
 import useAsyncState from "@/hooks/useAsyncState";
-import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { useDispatch } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Handles possible NPE from `config.value` being undefined.

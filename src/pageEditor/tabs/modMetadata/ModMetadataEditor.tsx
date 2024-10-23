@@ -17,11 +17,6 @@
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModId,
-  selectDirtyMetadataForModId,
-  selectFirstModComponentFormStateForActiveMod,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -49,6 +44,11 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import {
+  selectActiveModId,
+  selectDirtyMetadataForModId,
+  selectFirstModComponentFormStateForActiveMod,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432

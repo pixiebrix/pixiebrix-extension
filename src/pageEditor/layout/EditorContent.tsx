@@ -27,18 +27,18 @@ import ModComponentEditorPane from "@/pageEditor/panes/ModComponentEditorPane";
 import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
 import HomePane from "@/pageEditor/panes/HomePane";
 import {
-  selectActiveModComponentId,
-  selectActiveModId,
-  selectErrorState,
-  selectModComponentAvailability,
-} from "@/pageEditor/store/editor/editorSelectors";
-import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/store/tabState/tabStateSelectors";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectPageEditorDimensions } from "@/pageEditor/utils";
 import { DefaultErrorComponent } from "@/components/ErrorBoundary";
+import {
+  selectActiveModComponentId,
+  selectActiveModId,
+  selectErrorState,
+  selectModComponentAvailability,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);

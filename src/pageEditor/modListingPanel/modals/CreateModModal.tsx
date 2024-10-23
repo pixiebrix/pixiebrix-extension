@@ -24,13 +24,6 @@ import {
   isInnerDefinitionRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModId,
-  selectDirtyMetadataForModId,
-  selectEditorModalVisibilities,
-  selectFirstModComponentFormStateForActiveMod,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import { selectScope } from "@/auth/authSelectors";
@@ -65,6 +58,13 @@ import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsav
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
+import {
+  selectActiveModId,
+  selectActiveModComponentFormState,
+  selectDirtyMetadataForModId,
+  selectFirstModComponentFormStateForActiveMod,
+  selectEditorModalVisibilities,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.

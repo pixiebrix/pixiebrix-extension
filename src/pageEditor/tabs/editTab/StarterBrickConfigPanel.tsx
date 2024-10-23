@@ -22,10 +22,6 @@ import useFlags from "@/hooks/useFlags";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { useSelector } from "react-redux";
-import {
-  selectActiveModComponentAnalysisAnnotationsForPath,
-  selectActiveModComponentFormState,
-} from "@/pageEditor/store/editor/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,6 +33,10 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { FeatureFlags } from "@/auth/featureFlags";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentAnalysisAnnotationsForPath,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {
   const { isConfigured } = useQuickbarShortcut();

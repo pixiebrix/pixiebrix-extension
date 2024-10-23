@@ -24,12 +24,12 @@ import brickRegistry from "@/bricks/registry";
 import getType from "@/runtime/getType";
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
-import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import useAsyncState from "@/hooks/useAsyncState";
 import OutputVariableField from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/OutputVariableField";
+import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {

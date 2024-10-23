@@ -23,11 +23,11 @@ import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeCo
 import { type Schema } from "@/types/schemaTypes";
 import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import { useSelector } from "react-redux";
+import { joinPathParts } from "@/utils/formUtils";
 import {
   selectActiveNodeEventData,
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { joinPathParts } from "@/utils/formUtils";
 
 const commentsSchema: Schema = { type: "string" };
 

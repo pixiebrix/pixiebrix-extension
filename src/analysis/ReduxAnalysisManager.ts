@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import {
   type AnyAction,
   type ListenerEffect,
@@ -35,6 +34,7 @@ import { type UUID } from "@/types/stringTypes";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";
 import { serializeError } from "serialize-error";
 import { ReusableAbortController } from "abort-utils";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,

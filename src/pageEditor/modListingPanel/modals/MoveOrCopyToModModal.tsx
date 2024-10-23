@@ -20,12 +20,6 @@ import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import {
-  selectActiveModComponentFormState,
-  selectEditorModalVisibilities,
-  selectKeepLocalCopyOnCreateMod,
-  selectModMetadataMap,
-} from "@/pageEditor/store/editor/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import Form, {
   type OnSubmit,
@@ -35,6 +29,12 @@ import Form, {
 import { object, string } from "yup";
 import { type RegistryId } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectModMetadataMap,
+  selectActiveModComponentFormState,
+  selectEditorModalVisibilities,
+  selectKeepCopyOnCreateMod,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 type FormState = {
   modId: RegistryId | null;
@@ -52,14 +52,14 @@ const formStateSchema = object({
 
 /**
  * Modal to move or copy a mod component to an existing or new mod.
- * @see selectKeepLocalCopyOnCreateMod
+ * @see selectKeepCopyOnCreateMod
  */
 const MoveOrCopyToModModal: React.FC = () => {
   const { isMoveCopyToModVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
   const modMetadataMap = useSelector(selectModMetadataMap);
-  const isCopyAction = useSelector(selectKeepLocalCopyOnCreateMod);
+  const isCopyAction = useSelector(selectKeepCopyOnCreateMod);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

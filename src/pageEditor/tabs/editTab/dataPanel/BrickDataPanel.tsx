@@ -23,10 +23,6 @@ import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDat
 import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
-import {
-  selectActiveNodeEventData,
-  selectActiveNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import NodeFormStateTab from "./tabs/NodeFormStateTab";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
@@ -40,6 +36,10 @@ import DesignTab, {
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
 import OutlineTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/OutlineTab";
 import { FeatureFlags } from "@/auth/featureFlags";
+import {
+  selectActiveNodeEventData,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 export const NavItem: React.FC<{
   eventKey: DataPanelTabKey;

@@ -31,10 +31,6 @@ import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModId,
-  selectDirtyOptionsDefinitionsForModId,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -48,6 +44,10 @@ import { type Schema } from "@/types/schemaTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import {
+  selectDirtyOptionsDefinitionsForModId,
+  selectActiveModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(

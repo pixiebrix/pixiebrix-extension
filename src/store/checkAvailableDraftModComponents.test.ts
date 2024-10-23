@@ -20,7 +20,6 @@ import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes"
 import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import {
   checkAvailable as backgroundCheckAvailable,
@@ -34,6 +33,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 
 jest.mock("@/contentScript/messenger/api");
 

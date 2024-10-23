@@ -29,13 +29,13 @@ import Effect from "@/components/Effect";
 import ModComponentFormStateWizard from "@/pageEditor/layout/ModComponentFormStateWizard";
 import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import {
-  selectActiveModComponentFormState,
-  selectEditorUpdateKey,
-} from "@/pageEditor/store/editor/editorSelectors";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
+import {
+  selectEditorUpdateKey,
+  selectActiveModComponentFormState,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor

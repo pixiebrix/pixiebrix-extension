@@ -32,8 +32,8 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { useAsyncEffect } from "use-async-effect";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
 type PreviewState = {
   isRunning: boolean;

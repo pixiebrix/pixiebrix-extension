@@ -18,11 +18,6 @@
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
-import {
-  selectDirtyModOptionsDefinitions,
-  selectGetDraftModComponentsForMod,
-  selectKeepLocalCopyOnCreateMod,
-} from "@/pageEditor/store/editor/editorSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
@@ -37,6 +32,11 @@ import {
 } from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import {
+  selectDirtyModOptionsDefinitions,
+  selectGetDraftModComponentsForMod,
+  selectKeepCopyOnCreateMod,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -59,7 +59,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const dirtyModOptionsDefinitionsMap = useSelector(
     selectDirtyModOptionsDefinitions,
   );
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
+  const keepLocalCopy = useSelector(selectKeepCopyOnCreateMod);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(

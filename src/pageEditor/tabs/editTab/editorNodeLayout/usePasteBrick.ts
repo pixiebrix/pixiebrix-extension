@@ -16,12 +16,12 @@
  */
 
 import { useDispatch, useSelector } from "react-redux";
-import { selectCopiedBrick } from "@/pageEditor/store/editor/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectCopiedBrick } from "@/pageEditor/store/editor/editorSelectors";
 
 function usePasteBrick():
   | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)

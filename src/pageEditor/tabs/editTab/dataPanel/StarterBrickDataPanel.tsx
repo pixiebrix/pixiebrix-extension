@@ -24,12 +24,12 @@ import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import NodeFormStateTab from "./tabs/NodeFormStateTab";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import StarterBrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickInputTab";
 import StarterBrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickOutputTab";
 import { FeatureFlags } from "@/auth/featureFlags";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * @see DataPanel

@@ -28,16 +28,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModId,
-  selectDirtyMetadataForModId,
-  selectExpandedModId,
-} from "@/pageEditor/store/editor/editorSelectors";
 import * as semver from "semver";
 import { useGetModDefinitionQuery } from "@/data/service/api";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
+import {
+  selectActiveModId,
+  selectExpandedModId,
+  selectActiveModComponentFormState,
+  selectDirtyMetadataForModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const ModListItem: React.FC<{
   modMetadata: ModMetadata;

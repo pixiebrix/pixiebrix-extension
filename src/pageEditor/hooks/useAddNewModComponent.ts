@@ -40,8 +40,8 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
-import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
 import { RunReason } from "@/types/runtimeTypes";
+import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,

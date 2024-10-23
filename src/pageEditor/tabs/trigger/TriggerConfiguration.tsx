@@ -35,9 +35,9 @@ import {
   Triggers,
 } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { useSelector } from "react-redux";
-import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "@/utils/formUtils";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 
 function supportsSelector(trigger: Trigger) {
   return ![

@@ -29,12 +29,12 @@ import {
 } from "@/pageEditor/utils";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { type RegistryId } from "@/types/registryTypes";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import {
   selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { createPrivateSharing } from "@/utils/registryUtils";
-import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (

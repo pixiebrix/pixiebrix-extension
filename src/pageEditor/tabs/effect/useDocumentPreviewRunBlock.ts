@@ -19,12 +19,6 @@ import { useEffect, useReducer } from "react";
 import { usePreviewInfo } from "@/pageEditor/tabs/effect/BrickPreview";
 import { isTriggerStarterBrick } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModComponentNodeInfo,
-  selectActiveModComponentRef,
-  selectParentNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
@@ -39,6 +33,12 @@ import makeIntegrationContextFromDependencies from "@/integrations/util/makeInte
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentRef,
+  selectActiveModComponentNodeInfo,
+  selectParentNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 type Location = "modal" | "panel";
 

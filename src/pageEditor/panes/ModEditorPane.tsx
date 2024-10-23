@@ -18,10 +18,6 @@
 import styles from "./ModEditorPane.module.scss";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModId,
-  selectEditorUpdateKey,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { Alert } from "react-bootstrap";
 import Centered from "@/components/Centered";
 import EditorTabLayout, {
@@ -35,6 +31,10 @@ import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
+import {
+  selectActiveModId,
+  selectEditorUpdateKey,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();

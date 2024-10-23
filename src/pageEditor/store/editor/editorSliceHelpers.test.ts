@@ -38,18 +38,18 @@ import {
   type BrickConfigurationUIState,
 } from "@/pageEditor/store/editor/uiStateTypes";
 import { uuidv4 } from "@/types/helpers";
-import {
-  selectActiveModComponentId,
-  selectActiveNodeId,
-  selectActiveModId,
-  selectDeletedComponentFormStatesByModId,
-  selectDirtyMetadataForModId,
-  selectDirtyOptionsDefinitionsForModId,
-  selectModComponentFormStates,
-  selectExpandedModId,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  selectDirtyMetadataForModId,
+  selectDirtyOptionsDefinitionsForModId,
+  selectActiveModComponentId,
+  selectActiveModId,
+  selectExpandedModId,
+  selectDeletedComponentFormStatesByModId,
+  selectModComponentFormStates,
+  selectActiveNodeId,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 describe("ensureBrickPipelineUIState", () => {
   test("does not affect existing ui state", () => {

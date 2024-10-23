@@ -19,7 +19,6 @@ import JsonTree, {
   type JsonTreeProps,
   type TreeExpandedState,
 } from "@/components/jsonTree/JsonTree";
-import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { type Except } from "type-fest";
@@ -28,6 +27,7 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import cx from "classnames";
 import styles from "./DataTabJsonTree.module.scss";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 
 type DataTabJsonTreeProps = Except<
   JsonTreeProps,

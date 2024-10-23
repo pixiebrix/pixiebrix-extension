@@ -10,11 +10,6 @@ import BrickPreview, {
   usePreviewInfo,
 } from "@/pageEditor/tabs/effect/BrickPreview";
 import { useSelector } from "react-redux";
-import {
-  selectActiveModComponentFormState,
-  selectActiveNodeInfo,
-  selectNodeDataPanelTabState,
-} from "@/pageEditor/store/editor/editorSelectors";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import ViewModeField, {
   type ViewModeOption,
@@ -26,6 +21,11 @@ import { isTraceError } from "@/telemetry/trace";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectActiveModComponentFormState,
+  selectNodeDataPanelTabState,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const OutputViewModes = {
   Actual: "actual",

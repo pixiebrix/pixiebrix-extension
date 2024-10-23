@@ -16,15 +16,15 @@
  */
 
 import { useSelector } from "react-redux";
-import {
-  selectActiveModComponentFormState,
-  selectActiveNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
 import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { useMemo } from "react";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { isEqual, omit } from "lodash";
+import {
+  selectActiveModComponentFormState,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Return true if the rendered Sidebar Panel might be out of sync with the configuration.

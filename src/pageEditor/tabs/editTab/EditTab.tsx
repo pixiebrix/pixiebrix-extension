@@ -26,11 +26,6 @@ import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
 import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { useDispatch, useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
-import {
-  selectActiveNodeId,
-  selectIsDataPanelExpanded,
-  selectPipelineMap,
-} from "@/pageEditor/store/editor/editorSelectors";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import UnsupportedRuntimeVersion from "@/pageEditor/tabs/editTab/UnsupportedRuntimeVersion";
 import TooltipIconButton from "@/components/TooltipIconButton";
@@ -46,6 +41,11 @@ import { type UUID } from "@/types/stringTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectActiveNodeId,
+  selectPipelineMap,
+  selectIsDataPanelExpanded,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const EditTab: React.FC<{
   eventKey: string;

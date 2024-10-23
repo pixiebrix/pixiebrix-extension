@@ -21,8 +21,8 @@ import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { getLatestBrickCall } from "@/telemetry/traceHelpers";
-import { selectActiveNodeId } from "../editor/editorSelectors";
 import { freeze } from "@/utils/objectUtils";
+import { selectActiveNodeId } from "@/pageEditor/store/editor/editorSelectors";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 

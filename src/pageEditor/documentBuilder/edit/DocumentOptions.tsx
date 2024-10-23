@@ -22,7 +22,6 @@ import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import ElementEditor from "@/pageEditor/documentBuilder/edit/ElementEditor";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
@@ -30,6 +29,7 @@ import { DOCUMENT_SCHEMA } from "@/bricks/renderers/document";
 import { type Schema } from "@/types/schemaTypes";
 import { UncollapsibleFieldSection } from "@/pageEditor/fields/CollapsibleFieldSection";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 const DocumentOptions: React.FC<{
   name: string;

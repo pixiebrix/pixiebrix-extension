@@ -16,11 +16,11 @@
  */
 
 import { selectKnownVars } from "@/analysis/analysisSelectors";
+import { createSelector } from "@reduxjs/toolkit";
 import {
   selectActiveModComponentId,
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { createSelector } from "@reduxjs/toolkit";
 
 export const selectKnownVarsForActiveNode = createSelector(
   selectActiveModComponentId,

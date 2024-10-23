@@ -23,11 +23,11 @@ import MoveElement from "./MoveElement";
 import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import useElementOptions from "@/pageEditor/documentBuilder/edit/useElementOptions";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { getProperty } from "@/utils/objectUtils";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 type ElementEditorProps = {
   documentBodyName: string;

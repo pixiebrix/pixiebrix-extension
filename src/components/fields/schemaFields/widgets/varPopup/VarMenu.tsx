@@ -20,11 +20,6 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "./VarMenu.module.scss";
 import { selectKnownVarsForActiveNode } from "./varSelectors";
 import VariablesTree from "./VariablesTree";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModComponentRef,
-  selectPipelineMap,
-} from "@/pageEditor/store/editor/editorSelectors";
 import SourceLabel from "./SourceLabel";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useAsyncEffect } from "use-async-effect";
@@ -48,6 +43,11 @@ import useEventListener from "@/hooks/useEventListener";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { StateNamespaces } from "@/platform/state/stateTypes";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentRef,
+  selectPipelineMap,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const emptyVarMap = new VarMap();
 

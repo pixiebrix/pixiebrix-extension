@@ -25,12 +25,12 @@ import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
-import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { selectKeepCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -43,7 +43,7 @@ function useCreateModFromModComponent(
   activeModComponentFormState: Nullishable<ModComponentFormState>,
 ): UseCreateModFromModReturn {
   const dispatch = useDispatch();
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
+  const keepLocalCopy = useSelector(selectKeepCopyOnCreateMod);
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();

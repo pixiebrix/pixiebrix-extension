@@ -31,7 +31,7 @@ import {
   DefinitionKinds,
 } from "@/types/registryTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors/editorModSelectors";
 
 let starterBrickCount = 0;
 function newStarterBrickId(): InnerDefinitionRef {

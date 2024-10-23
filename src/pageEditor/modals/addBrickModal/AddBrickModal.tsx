@@ -51,7 +51,6 @@ import useBrickSearch from "@/pageEditor/modals/addBrickModal/useBrickSearch";
 import BrickGridItemRenderer from "@/pageEditor/modals/addBrickModal/BrickGridItemRenderer";
 import groupListingsByTag from "@/pageEditor/modals/addBrickModal/groupListingsByTag";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
 import {
   BRICK_RESULT_COLUMN_COUNT,
   TAG_ALL,
@@ -70,6 +69,7 @@ import { type Brick } from "@/types/brickTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import useFlags from "@/hooks/useFlags";
+import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";

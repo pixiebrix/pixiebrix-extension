@@ -60,13 +60,6 @@ import { type Except } from "type-fest";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
-import {
-  selectActiveModComponentFormState,
-  selectActiveNodeId,
-  selectCollapsedNodes,
-  selectActiveBuilderPreviewElement,
-  selectPipelineMap,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type Branch, type OutputKey } from "@/types/runtimeTypes";
@@ -83,6 +76,13 @@ import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNod
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  selectActiveModComponentFormState,
+  selectActiveNodeId,
+  selectCollapsedNodes,
+  selectPipelineMap,
+  selectActiveBuilderPreviewElement,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 

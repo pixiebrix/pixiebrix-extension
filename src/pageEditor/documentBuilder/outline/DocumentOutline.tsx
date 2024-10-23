@@ -26,7 +26,6 @@ import Tree, {
 } from "@atlaskit/tree";
 import { useDispatch, useSelector } from "react-redux";
 import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { selectTreeData } from "@/pageEditor/documentBuilder/outline/outlineHelpers";
@@ -36,6 +35,7 @@ import OutlineItem, {
 import useMoveElement from "@/pageEditor/documentBuilder/hooks/useMoveElement";
 import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 
 type DocumentOutlineProps = {
   /**

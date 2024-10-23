@@ -1,13 +1,13 @@
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { TraceRecord } from "@/telemetry/trace";
 import { useSelector } from "react-redux";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
+import { useMemo } from "react";
+import { isEqual, omit } from "lodash";
 import {
   selectActiveNodeId,
   selectActiveNodeInfo,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
-import { useMemo } from "react";
-import { isEqual, omit } from "lodash";
 
 function useBrickTraceRecord(): {
   /**

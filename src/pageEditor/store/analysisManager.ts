@@ -36,10 +36,6 @@ import analysisSlice from "@/analysis/analysisSlice";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModComponentRef,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
@@ -52,6 +48,10 @@ import { StateNamespaces } from "@/platform/state/stateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
+import {
+  selectActiveModComponentFormState,
+  selectActiveModComponentRef,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const runtimeActions = runtimeSlice.actions;
 

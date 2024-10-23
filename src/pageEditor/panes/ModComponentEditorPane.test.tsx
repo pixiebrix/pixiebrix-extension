@@ -19,7 +19,6 @@ import React from "react";
 import { render, screen, within } from "@/pageEditor/testHelpers";
 import ModComponentEditorPane from "./ModComponentEditorPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import brickRegistry from "@/bricks/registry";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
@@ -64,6 +63,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] -- TODO: replace with native expect and it.each */
 

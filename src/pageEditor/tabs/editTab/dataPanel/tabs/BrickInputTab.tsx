@@ -27,12 +27,12 @@ import { isEmpty, pickBy } from "lodash";
 import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 import ViewModeField, {
   type ViewModeOption,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
 import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 import { type ValueOf } from "type-fest";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
 
 const InputViewModes = {
   Arguments: "arguments",

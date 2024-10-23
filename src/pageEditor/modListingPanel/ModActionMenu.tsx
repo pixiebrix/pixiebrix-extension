@@ -39,8 +39,8 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectActiveModId,
   selectModIsDirty,
+  selectActiveModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 
 const ModActionMenu: React.FC<{

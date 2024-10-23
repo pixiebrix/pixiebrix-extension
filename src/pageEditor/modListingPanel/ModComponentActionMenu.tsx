@@ -30,9 +30,9 @@ import EllipsisMenu, {
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
 
 const ModComponentActionMenu: React.FC<{
   modComponentFormState: ModComponentFormState;

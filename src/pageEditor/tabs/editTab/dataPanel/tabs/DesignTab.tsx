@@ -23,10 +23,6 @@ import type { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
 import React, { type MutableRefObject } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import {
-  selectActiveBuilderPreviewElement,
-  selectActiveNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
@@ -35,6 +31,10 @@ import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransfo
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type RegistryId } from "@/types/registryTypes";
 import useIsSidebarPanelStale from "@/pageEditor/tabs/editTab/dataPanel/tabs/useIsSidebarPanelStale";
+import {
+  selectActiveBuilderPreviewElement,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Return true if the brick uses the Form Builder

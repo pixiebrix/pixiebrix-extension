@@ -25,8 +25,8 @@ import { getIn, useField } from "formik";
 import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import { useCallback } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * @see https://stackoverflow.com/a/6470794/402560

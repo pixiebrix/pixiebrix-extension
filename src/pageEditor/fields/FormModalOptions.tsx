@@ -23,13 +23,13 @@ import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
-import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import { partial } from "lodash";
 import { TEMPORARY_FORM_SCHEMA } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 

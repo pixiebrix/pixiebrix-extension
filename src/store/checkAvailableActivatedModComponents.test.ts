@@ -18,7 +18,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteButtonStarterBrick } from "@/starterBricks/button/buttonStarterBrick";
@@ -40,6 +39,7 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 
 jest.mock("@/contentScript/messenger/api");
 

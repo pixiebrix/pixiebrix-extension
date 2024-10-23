@@ -29,12 +29,12 @@ import {
   checkAvailable as backgroundCheckAvailable,
   normalizeAvailability,
 } from "@/bricks/available";
-import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/pageEditor/context/connection");

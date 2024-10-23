@@ -40,16 +40,16 @@ import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import {
-  selectActiveModComponentFormState,
-  selectActiveModId,
-} from "@/pageEditor/store/editor/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { appApi } from "@/data/service/api";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import {
+  selectActiveModId,
+  selectActiveModComponentFormState,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
