@@ -136,7 +136,7 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
   editorError: editor.error ? deserializeError(editor.error) : null,
 });
 
-export const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
+const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
   editor.dirty;
 
 /** @internal */
