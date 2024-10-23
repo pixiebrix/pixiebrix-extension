@@ -90,7 +90,7 @@ const modComponentSlice = createSlice({
       {
         payload: {
           modDefinition,
-          modComponentIds = [],
+          modComponentIds,
           configuredDependencies,
           optionsArgs,
           deployment,
@@ -127,7 +127,16 @@ const modComponentSlice = createSlice({
       );
 
       if (isEmpty(modDefinition.extensionPoints)) {
-        throw new Error("ModDefinition has no components");
+        throw new Error("modDefinition has no components");
+      }
+
+      if (
+        modComponentIds != null &&
+        modComponentIds.length !== modDefinition.extensionPoints.length
+      ) {
+        throw new Error(
+          "Mismatch between modDefinition component and modComponentIds count",
+        );
       }
 
       for (const [
@@ -150,10 +159,9 @@ const modComponentSlice = createSlice({
           });
 
         // Force the mod component id as necessary
-
         activatedModComponent.id =
           // eslint-disable-next-line security/detect-object-injection -- number
-          modComponentIds[index] ?? activatedModComponent.id;
+          modComponentIds?.[index] ?? activatedModComponent.id;
 
         assertModComponentNotHydrated(activatedModComponent);
 

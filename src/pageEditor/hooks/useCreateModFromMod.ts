@@ -99,9 +99,9 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
 
         await updateReduxForSavedModDefinition({
           dispatch,
-          modIdToReplace: undefined,
           // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
           // Editor navigation state is preserved for the source mod form states
+          modIdToReplace: undefined,
           modDefinition: mapModDefinitionUpsertResponseToModDefinition(
             unsavedModDefinition,
             upsertResponse,
