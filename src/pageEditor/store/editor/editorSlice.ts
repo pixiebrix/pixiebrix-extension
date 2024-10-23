@@ -608,7 +608,7 @@ export const editorSlice = createSlice({
 
     /**
      * Marks the form state as clean and corresponding to an activated mod component, i.e., it has no unsaved changes.
-     * @see markModAsClean
+     * @see markModAsCleanById
      */
     markModComponentFormStateAsClean(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
