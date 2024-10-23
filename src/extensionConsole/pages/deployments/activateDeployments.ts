@@ -26,7 +26,7 @@ import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
-import { persistor } from "@/extensionConsole/store";
+import { type AsyncDispatch, persistor } from "@/extensionConsole/store";
 import type { ModInstance } from "@/types/modInstanceTypes";
 
 const { actions } = modComponentSlice;
@@ -41,88 +41,89 @@ async function flushAndPersist(mode: "queue" | "immediate") {
   }
 }
 
-async function activateDeployment({
-  dispatch,
+function activateDeployment({
   activatableDeployment,
   modInstances,
 }: {
-  dispatch: Dispatch;
   activatableDeployment: ActivatableDeployment;
   modInstances: ModInstance[];
-}): Promise<void> {
-  const { deployment, modDefinition } = activatableDeployment;
-  let isReactivate = false;
+}) {
+  return async (dispatch: AsyncDispatch): Promise<void> => {
+    const { deployment, modDefinition } = activatableDeployment;
+    let isReactivate = false;
 
-  // Clear instances associated activated mod deployments, or packages that would be replaced by a deployment
-  for (const modInstance of modInstances) {
-    const activatedModId = modInstance.definition.metadata.id;
+    // Clear instances associated activated mod deployments, or packages that would be replaced by a deployment
+    for (const modInstance of modInstances) {
+      const activatedModId = modInstance.definition.metadata.id;
 
-    if (
-      modInstance.deploymentMetadata?.id === deployment.id ||
-      activatedModId === deployment.package.package_id
-    ) {
-      dispatch(actions.removeModById(activatedModId));
-      isReactivate = true;
+      if (
+        modInstance.deploymentMetadata?.id === deployment.id ||
+        activatedModId === deployment.package.package_id
+      ) {
+        dispatch(actions.removeModById(activatedModId));
+        isReactivate = true;
+      }
     }
-  }
 
-  // Activate the mod with service definition
-  dispatch(
-    actions.activateMod({
-      modDefinition,
-      deployment,
-      configuredDependencies: await mergeDeploymentIntegrationDependencies(
-        activatableDeployment,
-        integrationConfigLocator.findAllSanitizedConfigsForIntegration,
-      ),
-      // Assume validation on the backend for options
-      optionsArgs: deployment.options_config,
-      screen: "extensionConsole",
-      isReactivate,
-    }),
-  );
+    // Activate the mod with service definition
+    dispatch(
+      actions.activateMod({
+        modDefinition,
+        deployment,
+        configuredDependencies: await mergeDeploymentIntegrationDependencies(
+          activatableDeployment,
+          integrationConfigLocator.findAllSanitizedConfigsForIntegration,
+        ),
+        // Assume validation on the backend for options
+        optionsArgs: deployment.options_config,
+        screen: "extensionConsole",
+        isReactivate,
+      }),
+    );
 
-  reportEvent(Events.DEPLOYMENT_ACTIVATE, {
-    deployment: deployment.id,
-  });
+    reportEvent(Events.DEPLOYMENT_ACTIVATE, {
+      deployment: deployment.id,
+    });
+  };
 }
 
-export async function activateDeployments({
-  dispatch,
+export function activateDeployments({
   activatableDeployments,
   modInstances,
   reloadMode,
 }: {
-  dispatch: Dispatch;
   activatableDeployments: ActivatableDeployment[];
   modInstances: ModInstance[];
   reloadMode: "queue" | "immediate";
-}): Promise<void> {
-  // Activate as many as we can
-  const errors = [];
+}) {
+  return async (dispatch: AsyncDispatch): Promise<void> => {
+    // Activate as many as we can
+    const errors = [];
 
-  for (const activatableDeployment of activatableDeployments) {
-    try {
-      // eslint-disable-next-line no-await-in-loop -- modifies redux state
-      await activateDeployment({
-        dispatch,
-        activatableDeployment,
-        modInstances,
-      });
-    } catch (error) {
-      errors.push(error);
+    for (const activatableDeployment of activatableDeployments) {
+      try {
+        // eslint-disable-next-line no-await-in-loop -- modifies redux state
+        await dispatch(
+          activateDeployment({
+            activatableDeployment,
+            modInstances,
+          }),
+        );
+      } catch (error) {
+        errors.push(error);
+      }
     }
-  }
 
-  if (errors.length > 0) {
-    // XXX: only throwing the first is OK, because the user will see the next error if they fix this error and then
-    // activate deployments again
-    throw errors[0];
-  }
+    if (errors.length > 0) {
+      // XXX: only throwing the first is OK, because the user will see the next error if they fix this error and then
+      // activate deployments again
+      throw errors[0];
+    }
 
-  // Ensure the mod state is persisted before continuing so the content script can immediately pick up the changes
-  // when activating a deployment from the extension console. See: https://github.com/pixiebrix/pixiebrix-extension/issues/8744
-  await flushAndPersist(reloadMode);
+    // Ensure the mod state is persisted before continuing so the content script can immediately pick up the changes
+    // when activating a deployment from the extension console. See: https://github.com/pixiebrix/pixiebrix-extension/issues/8744
+    await flushAndPersist(reloadMode);
+  };
 }
 
 export function deactivateUnassignedModComponents({

@@ -37,6 +37,7 @@ import {
 } from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { type AsyncDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -50,7 +51,7 @@ type UseCreateModFromModReturn = {
  * existing, active mod that HAS been saved on the server before.
  */
 function useCreateModFromMod(): UseCreateModFromModReturn {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AsyncDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
   const getDraftModComponentsForMod = useSelector(
@@ -100,17 +101,19 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           ...createPrivateSharing(),
         }).unwrap();
 
-        await updateReduxForSavedModDefinition({
-          // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
-          // Editor navigation state is preserved for the source mod form states
-          modIdToReplace: undefined,
-          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-            unsavedModDefinition,
-            upsertResponse,
-          ),
-          draftModComponents,
-          isReactivate: false,
-        })(dispatch);
+        await dispatch(
+          updateReduxForSavedModDefinition({
+            // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
+            // Editor navigation state is preserved for the source mod form states
+            modIdToReplace: undefined,
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            ),
+            draftModComponents,
+            isReactivate: false,
+          }),
+        );
 
         dispatch(editorActions.setActiveModId(newModId));
 

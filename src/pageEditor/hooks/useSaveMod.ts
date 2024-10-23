@@ -47,6 +47,7 @@ import {
 } from "@/pageEditor/utils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
+import { type AsyncDispatch } from "@/pageEditor/store/store";
 
 /** @internal */
 export function isModEditable(
@@ -65,7 +66,7 @@ export function isModEditable(
  * mod and shows/notifies errors for various bad data states.
  */
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AsyncDispatch>();
   const {
     data: modDefinitions,
     isLoading: isModDefinitionsLoading,
@@ -149,15 +150,17 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         modDefinition: unsavedModDefinition,
       }).unwrap();
 
-      await updateReduxForSavedModDefinition({
-        modIdToReplace: modId,
-        modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-          unsavedModDefinition,
-          upsertResponse,
-        ),
-        draftModComponents,
-        isReactivate: true,
-      })(dispatch);
+      await dispatch(
+        updateReduxForSavedModDefinition({
+          modIdToReplace: modId,
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          draftModComponents,
+          isReactivate: true,
+        }),
+      );
 
       reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
         modId,

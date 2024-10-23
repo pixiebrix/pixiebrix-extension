@@ -19,7 +19,6 @@ import { activateDeployments } from "@/extensionConsole/pages/deployments/activa
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import notify from "@/utils/notify";
-import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
@@ -27,6 +26,7 @@ import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import type { ModInstance } from "@/types/modInstanceTypes";
+import { type AsyncDispatch } from "@/extensionConsole/store";
 
 type UseAutoDeployReturn = {
   /**
@@ -45,7 +45,7 @@ function useAutoDeploy({
   modInstances: ModInstance[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
-  const dispatch = useDispatch<Dispatch>();
+  const dispatch = useDispatch<AsyncDispatch>();
   // `true` until deployments have been fetched and activated
   const [
     isFetchingAndActivatingDeployments,
@@ -88,12 +88,13 @@ function useAutoDeploy({
       // Attempt to automatically deploy the deployments
       try {
         setIsActivationInProgress(true);
-        await activateDeployments({
-          dispatch,
-          activatableDeployments,
-          modInstances,
-          reloadMode: "queue",
-        });
+        await dispatch(
+          activateDeployments({
+            activatableDeployments,
+            modInstances,
+            reloadMode: "queue",
+          }),
+        );
         notify.success("Updated team deployments");
       } catch (error) {
         notify.error({ message: "Error updating team deployments", error });

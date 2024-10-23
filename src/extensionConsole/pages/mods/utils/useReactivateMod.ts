@@ -36,7 +36,7 @@ function useReactivateMod(): ReactivateMod {
 
       assertNotNullish(modInstance, `Mod is not active: ${modId}`);
 
-      await deactivateMod(modId, modInstance.modComponentIds, dispatch);
+      await dispatch(deactivateMod(modId, modInstance.modComponentIds));
 
       dispatch(
         modComponentActions.activateMod({

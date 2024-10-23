@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, type Middleware } from "@reduxjs/toolkit";
+import {
+  type AnyAction,
+  configureStore,
+  type Dispatch,
+  type ThunkDispatch,
+  type Middleware,
+} from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import {
   editorSlice,
@@ -28,6 +34,7 @@ import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
 import integrationsSlice, {
+  type IntegrationsState,
   persistIntegrationsConfig,
 } from "@/integrations/store/integrationsSlice";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
@@ -49,6 +56,17 @@ import { createStateSyncMiddleware } from "redux-state-sync";
 import { boolean } from "@/utils/typeUtils";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type RuntimeState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
+import { type LogState } from "@/components/logViewer/logViewerTypes";
+import { type AnalysisState } from "@/analysis/analysisTypes";
+import { type TabState } from "@/pageEditor/store/tabState/tabStateTypes";
+import { type AuthState } from "@/auth/authTypes";
+import { type ModDefinitionsState } from "@/modDefinitions/modDefinitionsTypes";
+import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+import { type SessionState } from "node:http2";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -117,6 +135,24 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+type State = {
+  auth: AuthState;
+  options: ModComponentState;
+  integrations: IntegrationsState;
+  settings: SettingsState;
+  editor: EditorState;
+  session: SessionState;
+  sessionChanges: SessionChangesState;
+  runtime: RuntimeState;
+  logs: LogState;
+  analysis: AnalysisState;
+  tabState: TabState;
+  modDefinitions: ModDefinitionsState;
+  [appApi.reducerPath]: ReturnType<typeof appApi.reducer>;
+};
+
+export type AsyncDispatch = Dispatch & ThunkDispatch<State, unknown, AnyAction>;
 
 // https://redux-toolkit.js.org/rtk-query/overview#configure-the-store
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional

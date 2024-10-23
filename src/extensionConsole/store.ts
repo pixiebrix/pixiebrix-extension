@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, type Middleware } from "@reduxjs/toolkit";
+import {
+  type AnyAction,
+  configureStore,
+  type ThunkDispatch,
+  type Middleware,
+} from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
@@ -147,5 +152,7 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+export type AsyncDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
 
 export default store;

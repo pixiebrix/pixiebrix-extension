@@ -145,10 +145,11 @@ function useActivateMod(
           },
         );
 
-        await deactivateMod(
-          modDefinition.metadata.id,
-          modInstance?.modComponentIds ?? [],
-          dispatch,
+        await dispatch(
+          deactivateMod(
+            modDefinition.metadata.id,
+            modInstance?.modComponentIds ?? [],
+          ),
         );
 
         const userDeployment = await handleUserDeployment(

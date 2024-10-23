@@ -78,7 +78,7 @@ const ModsPageActions: React.FunctionComponent<{
       assertNotNullish(modInstance, "Expected mod instance");
 
       reportEvent(Events.MOD_REMOVE, { modId });
-      await deactivateMod(modId, modInstance.modComponentIds, dispatch);
+      await dispatch(deactivateMod(modId, modInstance.modComponentIds));
     },
     {
       successMessage: `Deactivated mod: ${name}`,

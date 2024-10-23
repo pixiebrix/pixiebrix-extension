@@ -23,6 +23,7 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { type AsyncDispatch } from "@/extensionConsole/store";
 
 jest.mock("@/mods/hooks/useModPermissions");
 jest.mock("@/hooks/useFlags");
@@ -31,11 +32,11 @@ jest.mock("@/extensionConsole/pages/deployments/activateDeployments");
 const mockHooks = ({
   restricted = true,
   hasPermissions = true,
-  activateDeploymentsResponse = undefined,
+  activateDeploymentsResponse = jest.fn(),
 }: {
   restricted?: boolean;
   hasPermissions?: boolean;
-  activateDeploymentsResponse?: Promise<void>;
+  activateDeploymentsResponse?: (dispatch: AsyncDispatch) => Promise<void>;
 } = {}) => {
   jest.mocked(useFlags).mockImplementation(() => ({
     ...jest.requireActual("@/hooks/useFlags"),
@@ -47,9 +48,7 @@ const mockHooks = ({
     requestPermissions: jest.fn(),
   }));
 
-  jest
-    .mocked(activateDeployments)
-    .mockResolvedValue(activateDeploymentsResponse);
+  jest.mocked(activateDeployments).mockReturnValue(activateDeploymentsResponse);
 };
 
 describe("useAutoDeploy", () => {
@@ -116,7 +115,6 @@ describe("useAutoDeploy", () => {
 
       expect(result.current.isAutoDeploying).toBe(true);
       expect(activateDeployments).toHaveBeenCalledWith({
-        dispatch: expect.any(Function),
         activatableDeployments,
         modInstances,
         reloadMode: "queue",
@@ -157,7 +155,11 @@ describe("useAutoDeploy", () => {
         }, 1000);
       });
 
-      mockHooks({ activateDeploymentsResponse: promise });
+      mockHooks({
+        async activateDeploymentsResponse() {
+          await promise;
+        },
+      });
 
       const activatableDeployment: ActivatableDeployment =
         activatableDeploymentFactory();

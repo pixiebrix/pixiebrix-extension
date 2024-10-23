@@ -31,6 +31,7 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { type AsyncDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -42,7 +43,7 @@ type UseCreateModFromModReturn = {
 function useCreateModFromModComponent(
   activeModComponentFormState: Nullishable<ModComponentFormState>,
 ): UseCreateModFromModReturn {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AsyncDispatch>();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();
@@ -80,16 +81,18 @@ function useCreateModFromModComponent(
           ...createPrivateSharing(),
         }).unwrap();
 
-        await updateReduxForSavedModDefinition({
-          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-            unsavedModDefinition,
-            upsertResponse,
-          ),
-          // Safe to pass form state that has the old mod component ID because the form states are only used
-          // to determine mod option args and integration dependencies
-          draftModComponents,
-          isReactivate: false,
-        })(dispatch);
+        await dispatch(
+          updateReduxForSavedModDefinition({
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            ),
+            // Safe to pass form state that has the old mod component ID because the form states are only used
+            // to determine mod option args and integration dependencies
+            draftModComponents,
+            isReactivate: false,
+          }),
+        );
 
         dispatch(editorActions.setActiveModId(modId));
 

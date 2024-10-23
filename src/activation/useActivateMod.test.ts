@@ -200,7 +200,6 @@ describe("useActivateMod", () => {
     expect(deactivateModMock).toHaveBeenCalledWith(
       modDefinition.metadata.id,
       expect.toBeArray(),
-      dispatch,
     );
 
     expect(dispatch).toHaveBeenCalledWith(
