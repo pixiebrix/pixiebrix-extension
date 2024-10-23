@@ -192,6 +192,12 @@ export const lexicon: LexiconMap = {
       "DevTools in the Extension Console or on internal chrome pages).",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  FACTORY_RESET: {
+    description:
+      "Reported when a user performs a factory reset of the PixieBrix Extension, which is available via " +
+      "the Extension Console settings page. This event is triggered after the user confirms the factory reset action.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
 };
 
 /**
