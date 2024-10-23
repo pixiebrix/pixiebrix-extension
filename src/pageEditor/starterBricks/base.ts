@@ -19,9 +19,8 @@ import {
   DefinitionKinds,
   INNER_SCOPE,
   type Metadata,
-  type RegistryId,
 } from "@/types/registryTypes";
-import { castArray, cloneDeep, isEmpty } from "lodash";
+import { castArray, isEmpty } from "lodash";
 import {
   assertStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
@@ -35,7 +34,6 @@ import type React from "react";
 import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
 import {
-  isInnerDefinitionRegistryId,
   normalizeSemVerString,
   uuidv4,
   validateRegistryId,
@@ -49,11 +47,10 @@ import {
   type ModComponentBase,
   type ModMetadata,
 } from "@/types/modComponentTypes";
-import { type SafeString, type UUID } from "@/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { deepPickBy, freeze } from "@/utils/objectUtils";
-import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type BaseFormState,
   type BaseModComponentState,
@@ -321,34 +318,6 @@ export function baseSelectStarterBrick(
       description: metadata.description ?? "Created using the Page Editor",
     },
   };
-}
-
-export function modComponentWithInnerDefinitions(
-  modComponent: ModComponentBase,
-  starterBrickDefinition: StarterBrickDefinitionProp,
-): ModComponentBase {
-  if (isInnerDefinitionRegistryId(modComponent.extensionPointId)) {
-    const starterBrick = freshIdentifier(
-      DEFAULT_STARTER_BRICK_VAR as SafeString,
-      Object.keys(modComponent.definitions ?? {}),
-    );
-
-    const result = cloneDeep(modComponent);
-    result.definitions = {
-      ...result.definitions,
-      [starterBrick]: {
-        kind: DefinitionKinds.STARTER_BRICK,
-        definition: starterBrickDefinition,
-      },
-    };
-
-    // XXX: we need to fix the type of ModComponentBase.extensionPointId to support variable names
-    result.extensionPointId = starterBrick as RegistryId;
-
-    return result;
-  }
-
-  return modComponent;
 }
 
 /**

@@ -143,14 +143,6 @@ export const selectDeletedComponentFormStatesByModId = ({
   editor,
 }: EditorRootState) => editor.deletedModComponentFormStatesByModId;
 
-export const selectGetDeletedComponentIdsForMod =
-  ({ editor }: EditorRootState) =>
-  (modId: RegistryId) =>
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId
-    (editor.deletedModComponentFormStatesByModId[modId] ?? []).map(
-      (formState) => formState.uuid,
-    );
-
 const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedModComponentFormStatesByModId).map(
