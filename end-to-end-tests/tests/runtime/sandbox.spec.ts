@@ -20,11 +20,12 @@ import { test, expect } from "../../fixtures/testBase";
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 
-test("verify nunjucks is executed successfully in sandbox", async ({
+test("nunjucks template execution in sandbox", async ({
   page,
   extensionId,
 }) => {
-  // This is a simple mod that window alerts the rendered nunjucks template - {{ @input.title + " has loaded" }}
+  // This is a simple mod that window alerts the rendered nunjucks template - {{ @input.title + " has loaded" }} on load
+  // and window alerts {{ @input.title + "h1 has been clicked" }} when the h1 element is clicked
   const modId = "@e2e-testing/sandbox-execution-test";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
@@ -32,11 +33,58 @@ test("verify nunjucks is executed successfully in sandbox", async ({
 
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await page.goto("/");
+  await test.step("Navigate to test site, and verify the nunjucks template is rendered for window alert", async () => {
+    await page.goto("/");
 
-  await expect(
-    page
-      .getByRole("status")
-      .filter({ hasText: "Files within / is done loading" }),
-  ).toBeVisible();
+    await expect(
+      page
+        .getByRole("status")
+        .filter({ hasText: "Files within / is done loading" }),
+    ).toBeVisible();
+  });
+
+  await test.step("Verify that the iframe is re-injected if it is removed", async () => {
+    await page.evaluate(() => {
+      const pbSandbox = document.querySelector("#pixiebrix-sandbox");
+      pbSandbox?.remove();
+    });
+
+    await page.getByRole("heading").click();
+
+    await expect(
+      page
+        .getByRole("status")
+        .filter({ hasText: "Files within / h1 has been clicked" }),
+    ).toBeVisible();
+  });
+
+  await test.step("Verify that we display an error if we continue to fail to inject iframe", async () => {
+    await page.evaluate(() => {
+      // Remove the sandbox again
+      const pbSandbox = document.querySelector("#pixiebrix-sandbox");
+      pbSandbox?.remove();
+      // And set up Observer to watch for sandbox injection to remove it every time it is injected
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (
+              node instanceof HTMLElement &&
+              node.id === "pixiebrix-sandbox"
+            ) {
+              node.remove();
+            }
+          }
+        }
+      });
+      observer.observe(document, { childList: true, subtree: true });
+    });
+
+    await page.getByRole("heading").click();
+
+    await expect(
+      page.getByRole("status").filter({
+        hasText: "Failed to send message RENDER_NUNJUCKS to sandbox.",
+      }),
+    ).toBeVisible();
+  });
 });
