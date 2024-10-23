@@ -148,6 +148,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       await updateReduxForSavedModDefinition({
         dispatch,
+        modIdToReplace: modId,
         modDefinition: mapModDefinitionUpsertResponseToModDefinition(
           unsavedModDefinition,
           upsertResponse,
