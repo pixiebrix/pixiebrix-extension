@@ -20,7 +20,7 @@ import { type Deployment } from "@/types/contract";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { contextMenus } from "@/background/messenger/api";
-import { cloneDeep, partition } from "lodash";
+import { cloneDeep, remove } from "lodash";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
@@ -32,6 +32,7 @@ import { initialState } from "@/store/modComponents/modComponentSliceInitialStat
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ActivateModPayload = {
   /**
@@ -114,24 +115,26 @@ const modComponentSlice = createSlice({
         );
       }
 
+      // Defensive checks against malformed information from the server
+      // Since 1.4.6 we're tracking the sharing information of mods
+      assertNotNullish(
+        modDefinition.sharing,
+        "modDefinition.sharing is required",
+      );
+      assertNotNullish(
+        modDefinition.updated_at,
+        "modDefinition.updated_at is required",
+      );
+
       for (const [
         index,
         modComponentDefinition,
       ] of modDefinition.extensionPoints.entries()) {
         // May be null from bad Workshop edit?
-        if (modComponentDefinition.id == null) {
-          throw new Error("modComponentDefinition.id is required");
-        }
-
-        if (modDefinition.updated_at == null) {
-          // Since 1.4.8 we're tracking the updated_at timestamp of mods
-          throw new Error("updated_at is required");
-        }
-
-        if (modDefinition.sharing == null) {
-          // Since 1.4.6 we're tracking the sharing information of mods
-          throw new Error("sharing is required");
-        }
+        assertNotNullish(
+          modComponentDefinition.id,
+          "modComponentDefinition.id is required",
+        );
 
         const activatedModComponent: ActivatedModComponent =
           mapModComponentDefinitionToActivatedModComponent({
@@ -145,6 +148,7 @@ const modComponentSlice = createSlice({
         // Force the mod component id as necessary
 
         activatedModComponent.id =
+          // eslint-disable-next-line security/detect-object-injection -- number
           modComponentIds[index] ?? activatedModComponent.id;
 
         assertModComponentNotHydrated(activatedModComponent);
@@ -165,15 +169,10 @@ const modComponentSlice = createSlice({
     },
 
     /**
-     * Deactivate mod components associated with the given mod id
+     * Deactivate mod components associated with the given mod id, if any. Safe to call even if the mod is not activated.
      */
     removeModById(state, { payload: modId }: PayloadAction<RegistryId>) {
-      const [, modComponents] = partition(
-        state.activatedModComponents,
-        (x) => x.modMetadata.id === modId,
-      );
-
-      state.activatedModComponents = modComponents;
+      remove(state.activatedModComponents, (x) => x.modMetadata.id === modId);
     },
   },
   extraReducers(builder) {

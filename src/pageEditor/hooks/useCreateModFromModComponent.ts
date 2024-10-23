@@ -31,7 +31,7 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
-import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -81,10 +81,20 @@ function useCreateModFromModComponent(
             ...createPrivateSharing(),
           }).unwrap();
 
-          const modDefinition = mapModDefinitionUpsertResponseToModDefinition(
-            unsavedModDefinition,
-            upsertResponse,
-          );
+          await updateReduxAndRuntimeForSavedModDefinition({
+            dispatch,
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            ),
+            // Safe to pass form state that has the old mod component ID because the form states are only used
+            // to determine mod option args and integration dependencies
+            dirtyModComponentFormStates: [activeModComponentFormState],
+            cleanModComponents: [],
+            isReactivate: false,
+          });
+
+          dispatch(editorActions.setActiveModId(modId));
 
           if (!keepLocalCopy) {
             // Delete the mod component from the source mod
@@ -92,23 +102,6 @@ function useCreateModFromModComponent(
               modComponentId: modComponentFormState.uuid,
             });
           }
-
-          // FIXME: register the mod in other tabs
-          dispatch(
-            modComponentActions.activateMod({
-              modDefinition,
-              configuredDependencies:
-                activeModComponentFormState.integrationDependencies,
-              optionsArgs: activeModComponentFormState.optionsArgs,
-              screen: "pageEditor",
-              isReactivate: false,
-            }),
-          );
-
-          dispatch(editorActions.setActiveModId(modId));
-
-          // Check the new component availability, so it's added to available components if needed
-          dispatch(editorActions.checkActiveModComponentAvailability());
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
             modId,

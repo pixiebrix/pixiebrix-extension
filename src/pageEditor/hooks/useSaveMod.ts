@@ -27,7 +27,6 @@ import {
 } from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
@@ -40,12 +39,8 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
-import { getModComponentItemId } from "@/pageEditor/modListingPanel/common";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
-
-const { actions: modComponentActions } = modComponentSlice;
+import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
 
 // Exported for testing
 export function isModEditable(
@@ -99,9 +94,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         "saveMod called without editablePackages loaded",
       );
 
-      const modDefinition = modDefinitions.find(
-        (mod) => mod.metadata.id === modId,
-      );
+      const modDefinition = modDefinitions.find((x) => x.metadata.id === modId);
       if (modDefinition == null) {
         notify.error({
           message:
@@ -131,7 +124,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
       const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-      const newMod = await buildAndValidateMod({
+      const unsavedModDefinition = await buildAndValidateMod({
         sourceModDefinition: modDefinition,
         cleanModComponents,
         dirtyModComponentFormStates,
@@ -141,59 +134,32 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       const packageId = editablePackages.find(
         // Bricks endpoint uses "name" instead of id
-        (x) => x.name === newMod.metadata.id,
+        (x) => x.name === modId,
       )?.id;
 
-      assertNotNullish(packageId, "Package ID is required to upsert a mod");
+      assertNotNullish(
+        packageId,
+        "Package ID is required to upsert a mod definition",
+      );
 
       const upsertResponse = await updateModDefinitionOnServer({
         packageId,
-        modDefinition: newMod,
+        modDefinition: unsavedModDefinition,
       }).unwrap();
 
-      const newModMetadata = mapModDefinitionUpsertResponseToModMetadata(
-        newMod,
-        upsertResponse,
-      );
-
-      // Reactivate the Mod
-      dispatch(modComponentActions.removeModById(newModMetadata.id));
-
-      // Match the order that's in buildNewMod
-      const modComponents = [
-        ...cleanModComponents,
-        ...dirtyModComponentFormStates,
-      ];
-
-      dispatch(
-        modComponentActions.activateMod({
-          modDefinition,
-          modComponentIds: modComponents.map((x) => getModComponentItemId(x)),
-          configuredDependencies: collectExistingConfiguredDependenciesForMod(
-            modDefinition,
-            modComponents,
-          ),
-          optionsArgs: collectModOptionsArgs(modComponents),
-          screen: "pageEditor",
-          isReactivate: false,
-        }),
-      );
-
-      // Update the mod metadata on mod components in editorSlice and clear the dirty state
-      dispatch(
-        editorActions.updateModMetadataOnModComponentFormStates(newModMetadata),
-      );
-      dispatch(
-        editorActions.clearMetadataAndOptionsChangesForMod(newModMetadata.id),
-      );
-      dispatch(
-        editorActions.clearDeletedModComponentFormStatesForMod(
-          newModMetadata.id,
+      await updateReduxAndRuntimeForSavedModDefinition({
+        dispatch,
+        modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+          unsavedModDefinition,
+          upsertResponse,
         ),
-      );
+        cleanModComponents,
+        dirtyModComponentFormStates,
+        isReactivate: true,
+      });
 
       reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-        modId: newMod.metadata.id,
+        modId,
       });
 
       return true;

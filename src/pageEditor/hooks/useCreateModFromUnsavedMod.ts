@@ -18,26 +18,19 @@
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import reportEvent from "@/telemetry/reportEvent";
-import produce from "immer";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import {
-  mapModDefinitionUpsertResponseToModDefinition,
-  mapModDefinitionUpsertResponseToModMetadata,
-} from "@/pageEditor/utils";
+import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { selectDirtyModOptionsDefinitions } from "@/pageEditor/store/editor/editorSelectors";
 import { createPrivateSharing } from "@/utils/registryUtils";
-import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
-import { getModComponentItemId } from "@/pageEditor/modListingPanel/common";
+import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -85,7 +78,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         }
 
         try {
-          const newModId = unsavedModId;
+          const newModId = newModMetadata.id;
 
           const unsavedModDefinition = await buildAndValidateMod({
             dirtyModComponentFormStates,
@@ -99,73 +92,22 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
             ...createPrivateSharing(),
           }).unwrap();
 
-          const modDefinition = mapModDefinitionUpsertResponseToModDefinition(
-            unsavedModDefinition,
-            upsertResponse,
-          );
+          await updateReduxAndRuntimeForSavedModDefinition({
+            dispatch,
+            modIdToReplace: unsavedModId,
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            ),
+            dirtyModComponentFormStates,
+            cleanModComponents,
+            isReactivate: false,
+          });
 
-          const modMetadata = mapModDefinitionUpsertResponseToModMetadata(
-            unsavedModDefinition,
-            upsertResponse,
-          );
-
-          // Match the order that's in buildNewMod
-          const modComponents = [
-            ...cleanModComponents,
-            ...dirtyModComponentFormStates,
-          ];
-
-          dispatch(
-            modComponentActions.activateMod({
-              modDefinition,
-              modComponentIds: modComponents.map((x) =>
-                getModComponentItemId(x),
-              ),
-              configuredDependencies:
-                collectExistingConfiguredDependenciesForMod(
-                  modDefinition,
-                  modComponents,
-                ),
-              optionsArgs: collectModOptionsArgs(modComponents),
-              screen: "pageEditor",
-              isReactivate: false,
-            }),
-          );
-
-          // Mod component cleanup
-          for (const formStateToUpdate of dirtyModComponentFormStates) {
-            // Can't use updateModMetadataOnModComponentFormStates because the mod id changed from the temporary
-            // id to the new id of the package
-            dispatch(
-              editorActions.setModComponentFormState({
-                modComponentFormState: produce(formStateToUpdate, (draft) => {
-                  draft.modMetadata = modMetadata;
-                }),
-                dirty: false,
-                includesNonFormikChanges: true,
-              }),
-            );
-
-            dispatch(
-              editorActions.markModComponentFormStateAsClean(
-                formStateToUpdate.uuid,
-              ),
-            );
-          }
-
-          // Mod cleanup
-          dispatch(
-            editorActions.clearMetadataAndOptionsChangesForMod(newModId),
-          );
-          dispatch(
-            editorActions.clearDeletedModComponentFormStatesForMod(newModId),
-          );
-
-          // Navigation Cleanup
           dispatch(editorActions.setActiveModId(newModId));
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: unsavedModDefinition.metadata.id,
+            modId: newModId,
           });
         } catch (error) {
           if (error instanceof BusinessError) {

@@ -16,7 +16,6 @@
  */
 
 import { useCreateModDefinitionMutation } from "@/data/service/api";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
@@ -24,19 +23,18 @@ import {
   selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Events } from "@/telemetry/events";
-import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
+import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -84,17 +82,15 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           return;
         }
 
-        // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-        const dirtyModOptionsDefinition = dirtyModOptions[sourceModId];
-
         try {
-          const modId = newModMetadata.id;
+          const newModId = newModMetadata.id;
 
           const unsavedModDefinition = await buildAndValidateMod({
             sourceModDefinition,
             cleanModComponents,
             dirtyModComponentFormStates,
-            dirtyModOptionsDefinition,
+            // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
+            dirtyModOptionsDefinition: dirtyModOptions[sourceModId],
             dirtyModMetadata: newModMetadata,
           });
 
@@ -103,30 +99,21 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
             ...createPrivateSharing(),
           }).unwrap();
 
-          const savedModDefinition =
-            mapModDefinitionUpsertResponseToModDefinition(
+          await updateReduxAndRuntimeForSavedModDefinition({
+            dispatch,
+            modIdToReplace: undefined,
+            // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
+            // Editor navigation state is preserved for the source mod form states
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
               unsavedModDefinition,
               upsertResponse,
-            );
+            ),
+            dirtyModComponentFormStates,
+            cleanModComponents,
+            isReactivate: false,
+          });
 
-          const modComponents = [
-            ...cleanModComponents,
-            ...dirtyModComponentFormStates,
-          ];
-
-          dispatch(
-            modComponentActions.activateMod({
-              modDefinition: savedModDefinition,
-              configuredDependencies:
-                collectExistingConfiguredDependenciesForMod(
-                  savedModDefinition,
-                  modComponents,
-                ),
-              optionsArgs: collectModOptionsArgs(modComponents),
-              screen: "pageEditor",
-              isReactivate: false,
-            }),
-          );
+          dispatch(editorActions.setActiveModId(newModId));
 
           if (!keepLocalCopy) {
             await deactivateMod({
@@ -135,13 +122,9 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
             });
           }
 
-          dispatch(editorActions.setActiveModId(modId));
-
-          dispatch(editorActions.checkAvailableActivatedModComponents());
-
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            copiedFrom: modId,
-            modId: savedModDefinition.metadata.id,
+            copiedFrom: sourceModId,
+            modId: newModId,
           });
         } catch (error) {
           if (error instanceof BusinessError) {
