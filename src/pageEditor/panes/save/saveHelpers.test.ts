@@ -288,10 +288,10 @@ describe("buildNewMod", () => {
         }),
       );
 
-      // Collect the dirty form states for any changed mod components
-      const modComponentFormStates: ModComponentFormState[] = [];
-
       const starterBricks = selectStarterBricks(modDefinition);
+
+      // Collect the dirty form states for any changed mod components
+      const dirtyModComponentFormStates: ModComponentFormState[] = [];
 
       for (let i = 0; i < dirtyModComponentCount; i++) {
         const starterBrick = starterBricks[i]!;
@@ -313,21 +313,20 @@ describe("buildNewMod", () => {
         // Edit the label
         modComponentFormState.label = `New Label ${i}`;
 
-        modComponentFormStates.push(modComponentFormState);
+        dirtyModComponentFormStates.push(modComponentFormState);
       }
 
-      // Call the function under test
-      const newMod = buildNewMod({
+      const actualModDefinition = buildNewMod({
         sourceModDefinition: modDefinition,
         // Only pass in the unchanged clean mod components
         draftModComponents: [
+          ...dirtyModComponentFormStates,
           ...state.activatedModComponents.slice(dirtyModComponentCount),
-          ...modComponentFormStates,
         ],
       });
 
-      // Update the source mod with the expected label changes
-      const updatedMod = produce(modDefinition, (draft) => {
+      // Directly update the source mod with the expected label changes
+      const expectedModDefinition = produce(modDefinition, (draft) => {
         for (const [index, starterBrick] of draft.extensionPoints
           .slice(0, dirtyModComponentCount)
           .entries()) {
@@ -336,8 +335,8 @@ describe("buildNewMod", () => {
       });
 
       // Compare results
-      expect(normalizeModDefinition(newMod)).toStrictEqual(
-        normalizeModDefinition(updatedMod),
+      expect(normalizeModDefinition(actualModDefinition)).toStrictEqual(
+        normalizeModDefinition(expectedModDefinition),
       );
     },
   );

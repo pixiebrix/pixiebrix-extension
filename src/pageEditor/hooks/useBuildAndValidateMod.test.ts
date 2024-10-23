@@ -105,34 +105,32 @@ describe("useBuildAndValidateMod", () => {
         }),
       );
 
+      const starterBricks = selectStarterBricks(modDefinition);
+
       // Collect the dirty form states for any changed mod components
-      const modComponentFormStates: ModComponentFormState[] = [];
+      const dirtyModComponentFormStates: ModComponentFormState[] = [];
 
-      if (dirtyModComponentCount > 0) {
-        const starterBricks = selectStarterBricks(modDefinition);
+      for (let i = 0; i < dirtyModComponentCount; i++) {
+        const starterBrick = starterBricks[i]!;
+        // Mock this lookup for the adapter call that follows
+        jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-        for (let i = 0; i < dirtyModComponentCount; i++) {
-          const starterBrick = starterBricks[i]!;
-          // Mock this lookup for the adapter call that follows
-          jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
+        // Mod was activated, so get the mod component from state
+        const modComponent = state.activatedModComponents[i]!;
 
-          // Mod was activated, so get the mod component from state
-          const modComponent = state.activatedModComponents[i]!;
+        // Load the adapter for this mod component
+        const { fromModComponent } = adapter(starterBrick.definition.type);
 
-          // Load the adapter for this mod component
-          const { fromModComponent } = adapter(starterBrick.definition.type);
+        // Use the adapter to convert to FormState
+        // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
+        const modComponentFormState = (await fromModComponent(
+          modComponent,
+        )) as ModComponentFormState;
 
-          // Use the adapter to convert to FormState
-          // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await fromModComponent(
-            modComponent,
-          )) as ModComponentFormState;
+        // Edit the label
+        modComponentFormState.label = `New Label ${i}`;
 
-          // Edit the label
-          modComponentFormState.label = `New Label ${i}`;
-
-          modComponentFormStates.push(modComponentFormState);
-        }
+        dirtyModComponentFormStates.push(modComponentFormState);
       }
 
       const { result } = renderHook(() => useBuildAndValidateMod(), {
@@ -148,17 +146,17 @@ describe("useBuildAndValidateMod", () => {
       });
 
       await hookAct(async () => {
-        const newMod = await result.current.buildAndValidateMod({
+        const actualModDefinition = await result.current.buildAndValidateMod({
           sourceModDefinition: modDefinition,
           // Only pass in the unchanged clean mod components
           draftModComponents: [
+            ...dirtyModComponentFormStates,
             ...state.activatedModComponents.slice(dirtyModComponentCount),
-            ...modComponentFormStates,
           ],
         });
 
         // Update the source mod with the expected label changes
-        const updatedMod = produce(modDefinition, (draft) => {
+        const expectedModDefinition = produce(modDefinition, (draft) => {
           for (const [index, starterBrick] of draft.extensionPoints
             .slice(0, dirtyModComponentCount)
             .entries()) {
@@ -167,8 +165,8 @@ describe("useBuildAndValidateMod", () => {
         });
 
         // Compare results
-        expect(normalizeModDefinition(newMod)).toStrictEqual(
-          normalizeModDefinition(updatedMod),
+        expect(normalizeModDefinition(actualModDefinition)).toStrictEqual(
+          normalizeModDefinition(expectedModDefinition),
         );
       });
     },

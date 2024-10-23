@@ -58,8 +58,10 @@ import {
 import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { mapModComponentBaseToModComponentDefinition } from "@/store/modComponents/modInstanceUtils";
-
-import { getDraftModComponentId, isModComponentBase } from "@/pageEditor/utils";
+import {
+  getDraftModComponentId,
+  isModComponentFormState,
+} from "@/pageEditor/utils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -160,7 +162,7 @@ function mapModComponentFormStateToModComponentBase(
  * only handles the starter brick if it's an inner definition
  *
  * @param sourceMod the original mod definition, or undefined for new mods
- * @param modComponents the activated mod components/form states to save
+ * @param draftModComponents the activated mod components/form states to save. Must exclude deleted components
  * @param dirtyModOptionsDefinition the mod's option definition form state, or nullish if there are no dirty options
  * @param dirtyModMetadata the mod's metadata form state, or nullish if there is no dirty mod metadata
  */
@@ -196,7 +198,7 @@ export function buildNewMod({
         (x) => x,
       ).length !== draftModComponents.length
     ) {
-      throw new Error("One or more duplicate mod component IDs found");
+      throw new Error("One or more duplicate mod component ids found");
     }
 
     if (dirtyModOptionsDefinition) {
@@ -209,10 +211,10 @@ export function buildNewMod({
 
     const { innerDefinitions, modComponents: extensionPoints } =
       buildModComponents(
-        draftModComponents.map((x) =>
-          isModComponentBase(x)
-            ? x
-            : mapModComponentFormStateToModComponentBase(x),
+        draftModComponents.map((draftModComponent) =>
+          isModComponentFormState(draftModComponent)
+            ? mapModComponentFormStateToModComponentBase(draftModComponent)
+            : draftModComponent,
         ),
       );
 
