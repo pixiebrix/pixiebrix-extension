@@ -24,7 +24,7 @@ test("verify nunjucks is executed successfully in sandbox", async ({
   page,
   extensionId,
 }) => {
-  // This is a simple mod that window alerts the rendered nunjucks template - {{ @input.title + " has loaded"}
+  // This is a simple mod that window alerts the rendered nunjucks template - {{ @input.title + " has loaded" }}
   const modId = "@e2e-testing/sandbox-execution-test";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
