@@ -17,7 +17,7 @@
 
 import {
   collectConfiguredIntegrationDependencies,
-  collectModOptions,
+  collectModOptionsArgs,
   findMaxIntegrationDependencyApiVersion,
   selectModComponentIntegrations,
 } from "@/store/modComponents/modComponentUtils";
@@ -34,13 +34,17 @@ import type { ModComponentBase } from "@/types/modComponentTypes";
 
 describe("collectModOptions", () => {
   it("returns first option", () => {
-    expect(collectModOptions([{ optionsArgs: { foo: 42 } }])).toStrictEqual({
-      foo: 42,
-    });
+    expect(collectModOptionsArgs([{ optionsArgs: { foo: 42 } }])).toStrictEqual(
+      {
+        foo: 42,
+      },
+    );
   });
 
   it("return blank object if not set", () => {
-    expect(collectModOptions([{ optionsArgs: undefined }])).toStrictEqual({});
+    expect(collectModOptionsArgs([{ optionsArgs: undefined }])).toStrictEqual(
+      {},
+    );
   });
 });
 

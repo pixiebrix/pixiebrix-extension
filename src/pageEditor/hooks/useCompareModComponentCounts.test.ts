@@ -266,68 +266,6 @@ describe("useCompareModComponentCounts", () => {
     expect(result.current(unsavedModDefinition, modMetadata.id)).toBe(false);
   });
 
-  it("should return false for 0 clean and 1 unmatching form state and 0 in definition", () => {
-    const modMetadata = modMetadataFactory();
-    const modDefinition = modDefinitionFactory({
-      metadata: modMetadata,
-      extensionPoints: [],
-    });
-
-    const formState = formStateFactory({
-      formStateConfig: {
-        modMetadata,
-      },
-    });
-
-    const { result } = renderHook(() => useCompareModComponentCounts(), {
-      setupRedux(dispatch) {
-        dispatch(
-          modComponentActions.activateMod({
-            modDefinition,
-            screen: "extensionConsole",
-            isReactivate: false,
-          }),
-        );
-        dispatch(editorActions.addModComponentFormState(formState));
-      },
-    });
-
-    expect(result.current(modDefinition, modMetadata.id)).toBe(false);
-  });
-
-  it("should return false for 0 clean and 1 unmatching form state and 2 in definition", () => {
-    const modMetadata = modMetadataFactory();
-    const activatedModDefinition = modDefinitionFactory({
-      metadata: modMetadata,
-      extensionPoints: [],
-    });
-    const unsavedModDefinition = modDefinitionFactory({
-      metadata: modMetadata,
-      extensionPoints: array(modComponentDefinitionFactory, 2),
-    });
-
-    const formState = formStateFactory({
-      formStateConfig: {
-        modMetadata,
-      },
-    });
-
-    const { result } = renderHook(() => useCompareModComponentCounts(), {
-      setupRedux(dispatch) {
-        dispatch(
-          modComponentActions.activateMod({
-            modDefinition: activatedModDefinition,
-            screen: "extensionConsole",
-            isReactivate: false,
-          }),
-        );
-        dispatch(editorActions.addModComponentFormState(formState));
-      },
-    });
-
-    expect(result.current(unsavedModDefinition, modMetadata.id)).toBe(false);
-  });
-
   it("should return false for 3 clean and 1 unmatching form state and 3 in definition", () => {
     const modMetadata = modMetadataFactory();
     const modDefinition = modDefinitionFactory({

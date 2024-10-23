@@ -19,20 +19,18 @@ import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEdi
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
-import { uuidv4 } from "@/types/helpers";
-import produce from "immer";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
-import { mapModDefinitionUpsertResponseToModMetadata } from "@/pageEditor/utils";
+import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
 import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { BusinessError } from "@/errors/businessErrors";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -42,96 +40,75 @@ type UseCreateModFromModReturn = {
 };
 
 function useCreateModFromModComponent(
-  activeModComponent: Nullishable<ModComponentFormState>,
+  activeModComponentFormState: Nullishable<ModComponentFormState>,
 ): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
-  const [createMod] = useCreateModDefinitionMutation();
-  const upsertModComponentFormState = useUpsertModComponentFormState();
+  const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromComponent = useCallback(
     (
       modComponentFormState: ModComponentFormState,
-      modMetadata: ModMetadataFormState,
+      newModMetadata: ModMetadataFormState,
       // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     ) =>
       ensureModComponentFormStatePermissionsFromUserGesture(
         modComponentFormState,
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
-        if (!hasPermissions || !activeModComponent) {
+        assertNotNullish(
+          activeModComponentFormState,
+          "Expected mod component to be selected",
+        );
+
+        if (!hasPermissions) {
           return;
         }
 
-        const newModComponentFormState = produce(
-          activeModComponent,
-          (draft) => {
-            draft.uuid = uuidv4();
-          },
-        );
+        const modId = newModMetadata.id;
+        const draftModComponents = [activeModComponentFormState];
 
-        try {
-          const newModDefinition = await buildAndValidateMod({
-            dirtyModComponentFormStates: [newModComponentFormState],
-            dirtyModMetadata: modMetadata,
+        const unsavedModDefinition = await buildAndValidateMod({
+          draftModComponents,
+          dirtyModMetadata: newModMetadata,
+        });
+
+        const upsertResponse = await createModDefinitionOnServer({
+          modDefinition: unsavedModDefinition,
+          ...createPrivateSharing(),
+        }).unwrap();
+
+        await updateReduxForSavedModDefinition({
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          // Safe to pass form state that has the old mod component ID because the form states are only used
+          // to determine mod option args and integration dependencies
+          draftModComponents,
+          isReactivate: false,
+        })(dispatch);
+
+        dispatch(editorActions.setActiveModId(modId));
+
+        if (!keepLocalCopy) {
+          // Delete the mod component from the source mod
+          await deleteDraftModComponent({
+            modComponentId: modComponentFormState.uuid,
           });
-
-          const upsertResponse = await createMod({
-            modDefinition: newModDefinition,
-            organizations: [],
-            public: false,
-          }).unwrap();
-
-          const newModComponent = produce(newModComponentFormState, (draft) => {
-            draft.modMetadata = mapModDefinitionUpsertResponseToModMetadata(
-              newModDefinition,
-              upsertResponse,
-            );
-          });
-
-          dispatch(editorActions.addModComponentFormState(newModComponent));
-
-          await upsertModComponentFormState({
-            modComponentFormState: newModComponent,
-            options: {
-              // Permissions are already checked above
-              checkPermissions: false,
-              // Need to provide user feedback
-              notifySuccess: true,
-              reactivateEveryTab: true,
-            },
-            modId: newModDefinition.metadata.id,
-          });
-
-          if (!keepLocalCopy) {
-            // Delete the mod component from the source mod
-            await deleteDraftModComponent({
-              modComponentId: activeModComponent.uuid,
-            });
-          }
-
-          // Check the new component availability, so it's added to available components if needed
-          dispatch(editorActions.checkActiveModComponentAvailability());
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newModDefinition.metadata.id,
-          });
-        } catch (error) {
-          if (error instanceof BusinessError) {
-            // Error is already handled by buildAndValidateMod.
-          } else {
-            throw error;
-          } // Other errors can be thrown during mod activation
         }
+
+        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+          modId,
+        });
       }),
     [
-      activeModComponent,
+      activeModComponentFormState,
       buildAndValidateMod,
-      createMod,
+      createModDefinitionOnServer,
       dispatch,
-      upsertModComponentFormState,
       keepLocalCopy,
       deleteDraftModComponent,
     ],

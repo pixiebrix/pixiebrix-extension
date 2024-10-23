@@ -22,7 +22,7 @@ import {
   ModalKey,
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
+import { flatMap, isEmpty, memoize, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
   type BrickPipelineUIState,
@@ -63,6 +63,14 @@ export const selectModComponentFormStates = ({
   editor,
 }: EditorRootState): EditorState["modComponentFormStates"] =>
   editor.modComponentFormStates;
+
+export const selectGetModComponentFormStatesByModId = createSelector(
+  selectModComponentFormStates,
+  (formStates) =>
+    memoize((modId: RegistryId) =>
+      formStates.filter((formState) => formState.modMetadata.id === modId),
+    ),
+);
 
 export const selectActiveModComponentFormState = createSelector(
   selectActiveModComponentId,
@@ -128,21 +136,13 @@ export const selectErrorState = ({ editor }: EditorRootState) => ({
   editorError: editor.error ? deserializeError(editor.error) : null,
 });
 
-export const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
+const selectIsModComponentDirtyById = ({ editor }: EditorRootState) =>
   editor.dirty;
 
 /** @internal */
 export const selectDeletedComponentFormStatesByModId = ({
   editor,
 }: EditorRootState) => editor.deletedModComponentFormStatesByModId;
-
-export const selectGetDeletedComponentIdsForMod =
-  ({ editor }: EditorRootState) =>
-  (modId: RegistryId) =>
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId
-    (editor.deletedModComponentFormStatesByModId[modId] ?? []).map(
-      (formState) => formState.uuid,
-    );
 
 const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
   new Set(
@@ -580,4 +580,48 @@ export const selectFirstModComponentFormStateForActiveMod = createSelector(
   selectActiveModId,
   (formState, activeModId) =>
     formState.find((x) => x.modMetadata.id === activeModId),
+);
+
+export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
+  selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
+  selectIsModComponentDirtyById,
+  (activatedModComponents, formStates, isDirtyByComponentId) =>
+    // Memoize because method constructs a fresh object reference
+    memoize((modId: RegistryId) => {
+      const dirtyModComponentFormStates = formStates.filter(
+        (formState) =>
+          formState.modMetadata.id === modId &&
+          isDirtyByComponentId[formState.uuid],
+      );
+
+      const cleanModComponents = activatedModComponents.filter(
+        (modComponent) =>
+          modComponent.modMetadata.id === modId &&
+          !dirtyModComponentFormStates.some(
+            (formState) => formState.uuid === modComponent.id,
+          ),
+      );
+
+      return {
+        cleanModComponents,
+        dirtyModComponentFormStates,
+      };
+    }),
+);
+
+export const selectGetDraftModComponentsForMod = createSelector(
+  selectGetCleanComponentsAndDirtyFormStatesForMod,
+  (getCleanComponentsAndDirtyFormStatesForMod) =>
+    // Memoize because method constructs a fresh object reference
+    memoize((modId: RegistryId) => {
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
+
+      // Return a consistent order so mod component order is stable on save
+      return sortBy(
+        [...cleanModComponents, ...dirtyModComponentFormStates],
+        (x) => x.label,
+      );
+    }),
 );

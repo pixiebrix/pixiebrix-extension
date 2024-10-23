@@ -20,7 +20,7 @@ import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
+import { hookAct, renderHook } from "@/pageEditor/testHelpers";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
@@ -30,6 +30,8 @@ import { array } from "cooky-cutter";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -53,20 +55,20 @@ describe("useCreateModFromMod", () => {
   });
 
   it("saves with no dirty changes", async () => {
-    const metadata = modMetadataFactory();
-    const definition = modDefinitionFactory({
-      metadata,
+    const sourceMetadata = modMetadataFactory();
+    const sourceDefinition = modDefinitionFactory({
+      metadata: sourceMetadata,
     });
 
     appApiMock
       .onPost(API_PATHS.BRICKS)
-      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
+      .reply(200, { updated_at: timestampFactory() });
 
-    const { result } = renderHook(() => useCreateModFromMod(), {
+    const { result, act } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentActions.activateMod({
-            modDefinition: definition,
+            modDefinition: sourceDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -74,17 +76,14 @@ describe("useCreateModFromMod", () => {
       },
     });
 
-    await hookAct(async () => {
-      await result.current.createModFromMod(definition, metadata);
+    await act(async () => {
+      await result.current.createModFromMod(
+        sourceDefinition,
+        modMetadataFactory(),
+      );
     });
 
     expect(appApiMock.history.post).toHaveLength(1);
-    await waitFor(() => {
-      expect(reportEventMock).toHaveBeenCalledWith(
-        Events.STARTER_BRICK_ACTIVATE,
-        expect.any(Object),
-      );
-    });
 
     expect(reportEventMock).toHaveBeenCalledWith(
       Events.MOD_ACTIVATE,
@@ -92,11 +91,11 @@ describe("useCreateModFromMod", () => {
     );
   });
 
-  it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
+  it("throws DataIntegrityError if mod fails the compareModComponentCounts check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
-    const modMetadata = modMetadataFactory();
-    const activatedModDefinition = modDefinitionFactory({
-      metadata: modMetadata,
+    const sourceMetadata = modMetadataFactory();
+    const sourceModDefinition = modDefinitionFactory({
+      metadata: sourceMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 2),
     });
 
@@ -108,7 +107,7 @@ describe("useCreateModFromMod", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentActions.activateMod({
-            modDefinition: activatedModDefinition,
+            modDefinition: sourceModDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -117,20 +116,22 @@ describe("useCreateModFromMod", () => {
     });
 
     await hookAct(async () => {
-      await result.current.createModFromMod(
-        activatedModDefinition,
-        modMetadata,
-      );
+      await expect(
+        result.current.createModFromMod(
+          sourceModDefinition,
+          modMetadataFactory(),
+        ),
+      ).rejects.toThrow(DataIntegrityError);
     });
 
     expect(appApiMock.history.post).toHaveLength(0);
   });
 
-  it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
+  it("throws DataIntegrityError if mod fails the checkModStarterBrickInvariants check", async () => {
     checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
-    const modMetadata = modMetadataFactory();
-    const activatedModDefinition = modDefinitionFactory({
-      metadata: modMetadata,
+    const sourceModMetadata = modMetadataFactory();
+    const sourceModDefinition = modDefinitionFactory({
+      metadata: sourceModMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 2),
     });
 
@@ -142,7 +143,7 @@ describe("useCreateModFromMod", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentActions.activateMod({
-            modDefinition: activatedModDefinition,
+            modDefinition: sourceModDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -151,10 +152,12 @@ describe("useCreateModFromMod", () => {
     });
 
     await hookAct(async () => {
-      await result.current.createModFromMod(
-        activatedModDefinition,
-        modMetadata,
-      );
+      await expect(
+        result.current.createModFromMod(
+          sourceModDefinition,
+          modMetadataFactory(),
+        ),
+      ).rejects.toThrow(DataIntegrityError);
     });
 
     expect(appApiMock.history.post).toHaveLength(0);

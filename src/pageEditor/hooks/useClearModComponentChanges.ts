@@ -65,6 +65,7 @@ function useClearModComponentChanges(): (
         modComponentId,
       });
 
+      // Avoid showing stale traces
       void clearModComponentTraces(modComponentId);
 
       try {

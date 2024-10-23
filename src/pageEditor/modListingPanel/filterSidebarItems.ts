@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  getModComponentItemId,
-  type SidebarItem,
-} from "@/pageEditor/modListingPanel/common";
+import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
+import { getDraftModComponentId } from "@/pageEditor/utils";
 
 type FilterSidebarItemsArgs = {
   sidebarItems: SidebarItem[];
@@ -54,7 +52,7 @@ export default function filterSidebarItems({
     // Don't filter out mod item if any mod component is active, or any mod component label matches the query
     for (const modComponentItem of sidebarItem.modComponents) {
       if (
-        getModComponentItemId(modComponentItem) === activeModComponentId ||
+        getDraftModComponentId(modComponentItem) === activeModComponentId ||
         caseInsensitiveIncludes(modComponentItem.label, filterText)
       ) {
         return true;
