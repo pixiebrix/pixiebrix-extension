@@ -52,14 +52,6 @@ export const selectCurrentModId = createSelector(
 export const selectDirtyModMetadata = ({ editor }: EditorRootState) =>
   editor.dirtyModMetadataById;
 
-export const dirtyMetadataForModIdSelector = createSelector(
-  selectDirtyModMetadata,
-  (_state: EditorRootState, modId: RegistryId) => modId,
-  (dirtyModMetadataById, modId) =>
-    // eslint-disable-next-line security/detect-object-injection -- modId is a controlled string
-    dirtyModMetadataById[modId],
-);
-
 export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
   selectModInstances,
@@ -100,6 +92,14 @@ export const selectModMetadataMap = createSelector(
 
     return metadataMap;
   },
+);
+
+const dirtyMetadataForModIdSelector = createSelector(
+  selectDirtyModMetadata,
+  (_state: EditorRootState, modId: RegistryId) => modId,
+  (dirtyModMetadataById, modId) =>
+    // eslint-disable-next-line security/detect-object-injection -- modId is a controlled string
+    dirtyModMetadataById[modId],
 );
 
 export const selectDirtyMetadataForModId =
