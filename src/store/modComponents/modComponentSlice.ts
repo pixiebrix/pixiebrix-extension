@@ -20,7 +20,7 @@ import { type Deployment } from "@/types/contract";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { contextMenus } from "@/background/messenger/api";
-import { cloneDeep, remove } from "lodash";
+import { cloneDeep, isEmpty, remove } from "lodash";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import { revertAll } from "@/store/commonActions";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
@@ -125,6 +125,10 @@ const modComponentSlice = createSlice({
         modDefinition.updated_at,
         "modDefinition.updated_at is required",
       );
+
+      if (isEmpty(modDefinition.extensionPoints)) {
+        throw new Error("ModDefinition has no components");
+      }
 
       for (const [
         index,

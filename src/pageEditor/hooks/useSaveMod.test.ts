@@ -30,12 +30,17 @@ import {
   actions as editorActions,
   editorSlice,
 } from "@/pageEditor/store/editor/editorSlice";
-import type { EditablePackageMetadata } from "@/types/contract";
+import type {
+  EditablePackageMetadata,
+  PackageUpsertResponse,
+} from "@/types/contract";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type UUID } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -46,6 +51,18 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+function packageUpsertResponseFactory(
+  editablePackage: EditablePackageMetadata,
+): PackageUpsertResponse {
+  return {
+    ...editablePackage,
+    ...createPrivateSharing(),
+    updated_at: timestampFactory(),
+    // OK to pass empty string because it's not relevant to the tests
+    config: "",
+  };
+}
+
 describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {
     appApiMock.reset();
@@ -54,7 +71,7 @@ describe("useSaveMod", () => {
       name: modId,
     });
 
-    const definition = defaultModDefinitionFactory({
+    const modDefinition = defaultModDefinitionFactory({
       metadata: {
         id: editablePackage.name,
         name: editablePackage.verbose_name!,
@@ -66,20 +83,21 @@ describe("useSaveMod", () => {
     modDefinitionRegistry.register([
       {
         id: modId,
-        ...definition,
+        ...modDefinition,
       },
     ]);
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
-    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
-    appApiMock.onPut(API_PATHS.BRICK(editablePackage.id)).reply(200, {});
+    appApiMock
+      .onPut(API_PATHS.BRICK(editablePackage.id))
+      .reply(200, packageUpsertResponseFactory(editablePackage));
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
-            modDefinition: definition,
+            modDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -93,8 +111,9 @@ describe("useSaveMod", () => {
       await result.current(modId);
     });
 
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
+    // Assert error first to assist with debugging failures
     expect(notify.error).not.toHaveBeenCalled();
+    expect(notify.success).toHaveBeenCalledWith("Saved mod");
   });
 
   it("preserves original options if no dirty options", async () => {
@@ -136,7 +155,7 @@ describe("useSaveMod", () => {
 
     const putMock = appApiMock
       .onPut(API_PATHS.BRICK(editablePackage.id))
-      .reply(200, {});
+      .reply(201, packageUpsertResponseFactory(editablePackage));
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -156,6 +175,8 @@ describe("useSaveMod", () => {
       await result.current(modId);
     });
 
+    // Assert error first to assist with debugging failures
+    expect(notify.error).not.toHaveBeenCalled();
     expect(notify.success).toHaveBeenCalledWith("Saved mod");
 
     const yamlConfig = (
@@ -205,7 +226,7 @@ describe("useSaveMod", () => {
 
     const putMock = appApiMock
       .onPut(API_PATHS.BRICK(editablePackage.id))
-      .reply(200, {});
+      .reply(200, packageUpsertResponseFactory(editablePackage));
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -238,6 +259,8 @@ describe("useSaveMod", () => {
       await result.current(modId);
     });
 
+    // Assert error first to assist with debugging failures
+    expect(notify.error).not.toHaveBeenCalled();
     expect(notify.success).toHaveBeenCalledWith("Saved mod");
 
     const yamlConfig = (
