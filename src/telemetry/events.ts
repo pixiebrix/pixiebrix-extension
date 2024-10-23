@@ -45,7 +45,7 @@ export const Events = {
   FACTORY_RESET: "FactoryReset",
 
   FLOATING_ACTION_BUTTON_CLICK: "FloatingQuickBarButtonClick",
-  FLOATING_ACTION_BUTTON_REPOSITIONED: "FloatingQuickBarButtonRepositioned",
+  FLOATING_ACTION_BUTTON_REPOSITION: "FloatingQuickBarButtonRepositioned",
   FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE: "FloatingQuickBarButtonOnScreenHide",
   FLOATING_ACTION_BUTTON_TOGGLE_SETTING: "ToggleFloatingQuickBarButtonSetting",
 

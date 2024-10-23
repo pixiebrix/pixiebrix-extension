@@ -203,6 +203,12 @@ export const lexicon: LexiconMap = {
       "Reported when a user clicks the floating action button on any web page for which it is shown.",
     tags: [LexiconTags.MOD_RUNTIME],
   },
+  FLOATING_ACTION_BUTTON_REPOSITION: {
+    description:
+      "Reported when the floating action button is repositioned on the page by clicking the drag handle and moving " +
+      "the button to a new location. Only reported once per page load.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
 };
 
 /**

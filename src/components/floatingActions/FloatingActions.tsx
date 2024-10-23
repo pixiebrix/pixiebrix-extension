@@ -39,7 +39,7 @@ function reportReposition() {
   // Check here to prevent reporting the event twice on the same page. We just want to know
   // whether users are repositioning on the page at all.
   if (!dragReported) {
-    reportEvent(Events.FLOATING_ACTION_BUTTON_REPOSITIONED);
+    reportEvent(Events.FLOATING_ACTION_BUTTON_REPOSITION);
     dragReported = true;
   }
 }
