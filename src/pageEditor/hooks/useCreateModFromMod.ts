@@ -101,7 +101,6 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         }).unwrap();
 
         await updateReduxForSavedModDefinition({
-          dispatch,
           // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
           // Editor navigation state is preserved for the source mod form states
           modIdToReplace: undefined,
@@ -111,7 +110,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           ),
           draftModComponents,
           isReactivate: false,
-        });
+        })(dispatch);
 
         dispatch(editorActions.setActiveModId(newModId));
 

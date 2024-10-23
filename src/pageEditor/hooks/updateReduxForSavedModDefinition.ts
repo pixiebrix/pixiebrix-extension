@@ -29,60 +29,59 @@ import { getDraftModComponentId } from "@/pageEditor/utils";
 
 /**
  * Update Redux for a saved mod definition.
- * @param dispatch Redux dispatch function
  * @param modIdToReplace if provided, the mod to replace in the Page Editor.
  * @param modDefinition the mod definition to save
  * @param draftModComponents mod components for determining options args and configured dependencies. If
  * modIdToReplace is provided, the component ids must correspond to the mod ids for the new mod instance.
  * @param isReactivate true if an activated mod is being reactivated
  */
-async function updateReduxForSavedModDefinition({
-  dispatch,
+function updateReduxForSavedModDefinition({
   modIdToReplace,
   modDefinition,
   draftModComponents,
   isReactivate,
 }: {
-  dispatch: Dispatch;
   modIdToReplace?: RegistryId;
   modDefinition: ModDefinition;
   draftModComponents: Array<ModComponentBase | ModComponentFormState>;
   isReactivate: boolean;
 }) {
-  const modMetadata = mapModDefinitionToModMetadata(modDefinition);
-
-  // Activate/re-activate the mod
-  dispatch(modComponentActions.removeModById(modDefinition.metadata.id));
-
-  dispatch(
-    modComponentActions.activateMod({
-      modDefinition,
-      modComponentIds: modIdToReplace
-        ? draftModComponents.map((x) => getDraftModComponentId(x))
-        : undefined,
-      configuredDependencies: collectExistingConfiguredDependenciesForMod(
-        modDefinition,
-        draftModComponents,
-      ),
-      optionsArgs: collectModOptionsArgs(draftModComponents),
-      screen: "pageEditor",
-      isReactivate,
-    }),
-  );
-
-  // Must dispatch updateModMetadataOnModComponentFormStates first to so the form states are associated with the new
-  // mod id. Otherwise, the other actions won't be able to find the form states.
-  dispatch(
-    editorActions.updateModMetadataOnModComponentFormStates({
-      modId: modIdToReplace ?? modMetadata.id,
-      modMetadata,
-    }),
-  );
-
-  dispatch(editorActions.markModAsCleanById(modMetadata.id));
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- thunk action doesn't match AnyAction
-  dispatch(editorActions.checkAvailableActivatedModComponents() as any);
+  return async (dispatch: Dispatch<any>): Promise<void> => {
+    const modMetadata = mapModDefinitionToModMetadata(modDefinition);
+
+    // Activate/re-activate the mod
+    dispatch(modComponentActions.removeModById(modDefinition.metadata.id));
+
+    dispatch(
+      modComponentActions.activateMod({
+        modDefinition,
+        modComponentIds: modIdToReplace
+          ? draftModComponents.map((x) => getDraftModComponentId(x))
+          : undefined,
+        configuredDependencies: collectExistingConfiguredDependenciesForMod(
+          modDefinition,
+          draftModComponents,
+        ),
+        optionsArgs: collectModOptionsArgs(draftModComponents),
+        screen: "pageEditor",
+        isReactivate,
+      }),
+    );
+
+    // Must dispatch updateModMetadataOnModComponentFormStates first to so the form states are associated with the new
+    // mod id. Otherwise, the other actions won't be able to find the form states.
+    dispatch(
+      editorActions.updateModMetadataOnModComponentFormStates({
+        modId: modIdToReplace ?? modMetadata.id,
+        modMetadata,
+      }),
+    );
+
+    dispatch(editorActions.markModAsCleanById(modMetadata.id));
+
+    dispatch(editorActions.checkAvailableActivatedModComponents());
+  };
 }
 
 export default updateReduxForSavedModDefinition;

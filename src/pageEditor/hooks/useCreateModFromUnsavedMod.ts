@@ -97,7 +97,6 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         }).unwrap();
 
         await updateReduxForSavedModDefinition({
-          dispatch,
           modIdToReplace: unsavedModId,
           modDefinition: mapModDefinitionUpsertResponseToModDefinition(
             unsavedModDefinition,
@@ -105,7 +104,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
           ),
           draftModComponents,
           isReactivate: false,
-        });
+        })(dispatch);
 
         dispatch(editorActions.setActiveModId(newModId));
 

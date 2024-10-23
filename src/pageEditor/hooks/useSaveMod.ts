@@ -150,7 +150,6 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       }).unwrap();
 
       await updateReduxForSavedModDefinition({
-        dispatch,
         modIdToReplace: modId,
         modDefinition: mapModDefinitionUpsertResponseToModDefinition(
           unsavedModDefinition,
@@ -158,7 +157,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         ),
         draftModComponents,
         isReactivate: true,
-      });
+      })(dispatch);
 
       reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
         modId,

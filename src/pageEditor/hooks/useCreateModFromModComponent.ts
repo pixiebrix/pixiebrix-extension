@@ -81,7 +81,6 @@ function useCreateModFromModComponent(
         }).unwrap();
 
         await updateReduxForSavedModDefinition({
-          dispatch,
           modDefinition: mapModDefinitionUpsertResponseToModDefinition(
             unsavedModDefinition,
             upsertResponse,
@@ -90,7 +89,7 @@ function useCreateModFromModComponent(
           // to determine mod option args and integration dependencies
           draftModComponents,
           isReactivate: false,
-        });
+        })(dispatch);
 
         dispatch(editorActions.setActiveModId(modId));
 
