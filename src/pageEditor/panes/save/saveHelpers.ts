@@ -156,6 +156,7 @@ export function buildNewMod({
       draft.metadata = dirtyModMetadata;
     }
 
+    // Must match order in updateReduxForSavedModDefinition otherwise modComponentIds will be mismatched
     const versionedItems = [
       ...cleanModComponents,
       ...dirtyModComponentFormStates,

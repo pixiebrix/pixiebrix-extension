@@ -31,6 +31,7 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -90,10 +91,10 @@ describe("useCreateModFromMod", () => {
     );
   });
 
-  it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
+  it("throws DataIntegrityError if mod fails the compareModComponentCounts check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
     const sourceMetadata = modMetadataFactory();
-    const sourceDefinition = modDefinitionFactory({
+    const sourceModDefinition = modDefinitionFactory({
       metadata: sourceMetadata,
       extensionPoints: array(modComponentDefinitionFactory, 2),
     });
@@ -106,7 +107,7 @@ describe("useCreateModFromMod", () => {
       setupRedux(dispatch) {
         dispatch(
           modComponentActions.activateMod({
-            modDefinition: sourceDefinition,
+            modDefinition: sourceModDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -115,16 +116,18 @@ describe("useCreateModFromMod", () => {
     });
 
     await hookAct(async () => {
-      await result.current.createModFromMod(
-        sourceDefinition,
-        modMetadataFactory(),
-      );
+      await expect(
+        result.current.createModFromMod(
+          sourceModDefinition,
+          modMetadataFactory(),
+        ),
+      ).rejects.toThrow(DataIntegrityError);
     });
 
     expect(appApiMock.history.post).toHaveLength(0);
   });
 
-  it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
+  it("throws DataIntegrityError if mod fails the checkModStarterBrickInvariants check", async () => {
     checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
     const sourceModMetadata = modMetadataFactory();
     const sourceModDefinition = modDefinitionFactory({
@@ -149,10 +152,12 @@ describe("useCreateModFromMod", () => {
     });
 
     await hookAct(async () => {
-      await result.current.createModFromMod(
-        sourceModDefinition,
-        modMetadataFactory(),
-      );
+      await expect(
+        result.current.createModFromMod(
+          sourceModDefinition,
+          modMetadataFactory(),
+        ),
+      ).rejects.toThrow(DataIntegrityError);
     });
 
     expect(appApiMock.history.post).toHaveLength(0);

@@ -23,10 +23,8 @@ import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
 import { BusinessError } from "@/errors/businessErrors";
-import { useDispatch } from "react-redux";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
-import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { isEmpty } from "lodash";
@@ -37,8 +35,18 @@ type UseBuildAndValidateModReturn = {
   ) => Promise<UnsavedModDefinition>;
 };
 
+/**
+ * Error that a mod save failed due to data integrity check failures.
+ */
+export class DataIntegrityError extends BusinessError {
+  override name = "DataIntegrityError";
+
+  constructor() {
+    super("Mod save failed due to data integrity error");
+  }
+}
+
 function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
-  const dispatch = useDispatch();
   const compareModComponentCountsToModDefinition =
     useCompareModComponentCounts();
   const checkModStarterBrickInvariants = useCheckModStarterBrickInvariants();
@@ -55,7 +63,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         isEmpty(cleanModComponents) &&
         isEmpty(existingDirtyModComponentFormStates)
       ) {
-        throw new Error("Error saving mod - no mod components found to save");
+        throw new Error("Expected mod components to save");
       }
 
       const dirtyModComponentFormStates = [
@@ -95,21 +103,14 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
             modComponentDefinitionCountsMatch,
             modComponentStarterBricksMatch,
           });
-          dispatch(editorActions.showSaveDataIntegrityErrorModal());
 
-          throw new BusinessError(
-            "Mod save failed due to data integrity error",
-          );
+          throw new DataIntegrityError();
         }
       }
 
       return newModDefinition;
     },
-    [
-      checkModStarterBrickInvariants,
-      compareModComponentCountsToModDefinition,
-      dispatch,
-    ],
+    [checkModStarterBrickInvariants, compareModComponentCountsToModDefinition],
   );
 
   return { buildAndValidateMod };

@@ -28,7 +28,7 @@ import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitio
 import type { RegistryId } from "@/types/registryTypes";
 
 /**
- * Update Redux and runtime state for a saved mod definition.
+ * Update Redux for a saved mod definition.
  * @param dispatch Redux dispatch function
  * @param modIdToReplace if provided, the mod to replace in the Page Editor.
  * @param modDefinition the mod definition to save
@@ -38,7 +38,7 @@ import type { RegistryId } from "@/types/registryTypes";
  * modIdToReplace is provided, the component ids must correspond to the mod ids for the new mod instance.
  * @param isReactivate true if an activated mod is being reactivated
  */
-async function updateReduxAndRuntimeForSavedModDefinition({
+async function updateReduxForSavedModDefinition({
   dispatch,
   modIdToReplace,
   modDefinition,
@@ -59,7 +59,6 @@ async function updateReduxAndRuntimeForSavedModDefinition({
   const modComponents = [...cleanModComponents, ...dirtyModComponentFormStates];
 
   // Activate/re-activate the mod
-
   dispatch(modComponentActions.removeModById(modDefinition.metadata.id));
 
   dispatch(
@@ -93,4 +92,4 @@ async function updateReduxAndRuntimeForSavedModDefinition({
   dispatch(editorActions.checkAvailableActivatedModComponents() as any);
 }
 
-export default updateReduxAndRuntimeForSavedModDefinition;
+export default updateReduxForSavedModDefinition;

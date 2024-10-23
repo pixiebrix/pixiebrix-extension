@@ -25,12 +25,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { selectDirtyModOptionsDefinitions } from "@/pageEditor/store/editor/editorSelectors";
 import { createPrivateSharing } from "@/utils/registryUtils";
-import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -77,45 +76,37 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
           return;
         }
 
-        try {
-          const newModId = newModMetadata.id;
+        const newModId = newModMetadata.id;
 
-          const unsavedModDefinition = await buildAndValidateMod({
-            dirtyModComponentFormStates,
-            cleanModComponents,
-            dirtyModMetadata: newModMetadata,
-            dirtyModOptionsDefinition,
-          });
+        const unsavedModDefinition = await buildAndValidateMod({
+          dirtyModComponentFormStates,
+          cleanModComponents,
+          dirtyModMetadata: newModMetadata,
+          dirtyModOptionsDefinition,
+        });
 
-          const upsertResponse = await createModDefinitionOnServer({
-            modDefinition: unsavedModDefinition,
-            ...createPrivateSharing(),
-          }).unwrap();
+        const upsertResponse = await createModDefinitionOnServer({
+          modDefinition: unsavedModDefinition,
+          ...createPrivateSharing(),
+        }).unwrap();
 
-          await updateReduxAndRuntimeForSavedModDefinition({
-            dispatch,
-            modIdToReplace: unsavedModId,
-            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-              unsavedModDefinition,
-              upsertResponse,
-            ),
-            dirtyModComponentFormStates,
-            cleanModComponents,
-            isReactivate: false,
-          });
+        await updateReduxForSavedModDefinition({
+          dispatch,
+          modIdToReplace: unsavedModId,
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          dirtyModComponentFormStates,
+          cleanModComponents,
+          isReactivate: false,
+        });
 
-          dispatch(editorActions.setActiveModId(newModId));
+        dispatch(editorActions.setActiveModId(newModId));
 
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newModId,
-          });
-        } catch (error) {
-          if (error instanceof BusinessError) {
-            // Error is already handled by buildAndValidateMod.
-          } else {
-            throw error;
-          } // Other errors can be thrown during mod activation
-        }
+        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+          modId: newModId,
+        });
       });
     },
     [

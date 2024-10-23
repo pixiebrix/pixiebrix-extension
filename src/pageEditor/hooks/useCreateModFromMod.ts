@@ -30,11 +30,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Events } from "@/telemetry/events";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { BusinessError } from "@/errors/businessErrors";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
-import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -82,57 +81,49 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           return;
         }
 
-        try {
-          const newModId = newModMetadata.id;
+        const newModId = newModMetadata.id;
 
-          const unsavedModDefinition = await buildAndValidateMod({
-            sourceModDefinition,
-            cleanModComponents,
-            dirtyModComponentFormStates,
-            // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-            dirtyModOptionsDefinition: dirtyModOptions[sourceModId],
-            dirtyModMetadata: newModMetadata,
+        const unsavedModDefinition = await buildAndValidateMod({
+          sourceModDefinition,
+          cleanModComponents,
+          dirtyModComponentFormStates,
+          // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
+          dirtyModOptionsDefinition: dirtyModOptions[sourceModId],
+          dirtyModMetadata: newModMetadata,
+        });
+
+        const upsertResponse = await createModDefinitionOnServer({
+          modDefinition: unsavedModDefinition,
+          ...createPrivateSharing(),
+        }).unwrap();
+
+        await updateReduxForSavedModDefinition({
+          dispatch,
+          modIdToReplace: undefined,
+          // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
+          // Editor navigation state is preserved for the source mod form states
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          dirtyModComponentFormStates,
+          cleanModComponents,
+          isReactivate: false,
+        });
+
+        dispatch(editorActions.setActiveModId(newModId));
+
+        if (!keepLocalCopy) {
+          await deactivateMod({
+            modId: sourceModDefinition.metadata.id,
+            shouldShowConfirmation: false,
           });
-
-          const upsertResponse = await createModDefinitionOnServer({
-            modDefinition: unsavedModDefinition,
-            ...createPrivateSharing(),
-          }).unwrap();
-
-          await updateReduxAndRuntimeForSavedModDefinition({
-            dispatch,
-            modIdToReplace: undefined,
-            // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
-            // Editor navigation state is preserved for the source mod form states
-            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-              unsavedModDefinition,
-              upsertResponse,
-            ),
-            dirtyModComponentFormStates,
-            cleanModComponents,
-            isReactivate: false,
-          });
-
-          dispatch(editorActions.setActiveModId(newModId));
-
-          if (!keepLocalCopy) {
-            await deactivateMod({
-              modId: sourceModDefinition.metadata.id,
-              shouldShowConfirmation: false,
-            });
-          }
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            copiedFrom: sourceModId,
-            modId: newModId,
-          });
-        } catch (error) {
-          if (error instanceof BusinessError) {
-            // Error is already handled by buildAndValidateMod.
-          } else {
-            throw error;
-          } // Other errors can be thrown during mod activation
         }
+
+        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+          copiedFrom: sourceModId,
+          modId: newModId,
+        });
       });
     },
     [

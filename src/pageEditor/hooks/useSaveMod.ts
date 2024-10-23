@@ -35,12 +35,15 @@ import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import useBuildAndValidateMod, {
+  DataIntegrityError,
+} from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
-import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 // Exported for testing
 export function isModEditable(
@@ -118,18 +121,14 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         dirtyModComponentFormStates,
       );
 
-      // Dirty options/metadata or null if there are no staged changes.
-      // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-      const dirtyModOptionsDefinition = allDirtyModOptionsDefinitions[modId];
-      // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-      const dirtyModMetadata = allDirtyModMetadatas[modId];
-
       const unsavedModDefinition = await buildAndValidateMod({
         sourceModDefinition: modDefinition,
         cleanModComponents,
         dirtyModComponentFormStates,
-        dirtyModOptionsDefinition,
-        dirtyModMetadata,
+        // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
+        dirtyModOptionsDefinition: allDirtyModOptionsDefinitions[modId],
+        // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
+        dirtyModMetadata: allDirtyModMetadatas[modId],
       });
 
       const packageId = editablePackages.find(
@@ -147,7 +146,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         modDefinition: unsavedModDefinition,
       }).unwrap();
 
-      await updateReduxAndRuntimeForSavedModDefinition({
+      await updateReduxForSavedModDefinition({
         dispatch,
         modDefinition: mapModDefinitionUpsertResponseToModDefinition(
           unsavedModDefinition,
@@ -202,6 +201,10 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
           reloadModsEveryTab();
         }
       } catch (error) {
+        if (isSpecificError(error, DataIntegrityError)) {
+          dispatch(editorActions.showSaveDataIntegrityErrorModal());
+        }
+
         notify.error({
           message: "Failed saving mod",
           error,

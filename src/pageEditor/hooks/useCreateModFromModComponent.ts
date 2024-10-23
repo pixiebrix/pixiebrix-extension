@@ -28,10 +28,9 @@ import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/util
 import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { BusinessError } from "@/errors/businessErrors";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
-import updateReduxAndRuntimeForSavedModDefinition from "@/pageEditor/hooks/updateReduxAndRuntimeForSavedModDefinition";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -68,51 +67,43 @@ function useCreateModFromModComponent(
           return;
         }
 
-        try {
-          const modId = newModMetadata.id;
+        const modId = newModMetadata.id;
 
-          const unsavedModDefinition = await buildAndValidateMod({
-            dirtyModComponentFormStates: [activeModComponentFormState],
-            dirtyModMetadata: newModMetadata,
+        const unsavedModDefinition = await buildAndValidateMod({
+          dirtyModComponentFormStates: [activeModComponentFormState],
+          dirtyModMetadata: newModMetadata,
+        });
+
+        const upsertResponse = await createModDefinitionOnServer({
+          modDefinition: unsavedModDefinition,
+          ...createPrivateSharing(),
+        }).unwrap();
+
+        await updateReduxForSavedModDefinition({
+          dispatch,
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          // Safe to pass form state that has the old mod component ID because the form states are only used
+          // to determine mod option args and integration dependencies
+          dirtyModComponentFormStates: [activeModComponentFormState],
+          cleanModComponents: [],
+          isReactivate: false,
+        });
+
+        dispatch(editorActions.setActiveModId(modId));
+
+        if (!keepLocalCopy) {
+          // Delete the mod component from the source mod
+          await deleteDraftModComponent({
+            modComponentId: modComponentFormState.uuid,
           });
-
-          const upsertResponse = await createModDefinitionOnServer({
-            modDefinition: unsavedModDefinition,
-            ...createPrivateSharing(),
-          }).unwrap();
-
-          await updateReduxAndRuntimeForSavedModDefinition({
-            dispatch,
-            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-              unsavedModDefinition,
-              upsertResponse,
-            ),
-            // Safe to pass form state that has the old mod component ID because the form states are only used
-            // to determine mod option args and integration dependencies
-            dirtyModComponentFormStates: [activeModComponentFormState],
-            cleanModComponents: [],
-            isReactivate: false,
-          });
-
-          dispatch(editorActions.setActiveModId(modId));
-
-          if (!keepLocalCopy) {
-            // Delete the mod component from the source mod
-            await deleteDraftModComponent({
-              modComponentId: modComponentFormState.uuid,
-            });
-          }
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId,
-          });
-        } catch (error) {
-          if (error instanceof BusinessError) {
-            // Error is already handled by buildAndValidateMod.
-          } else {
-            throw error;
-          } // Other errors can be thrown during mod activation
         }
+
+        reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+          modId,
+        });
       }),
     [
       activeModComponentFormState,
