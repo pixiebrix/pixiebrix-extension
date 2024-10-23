@@ -151,10 +151,10 @@ describe("useBuildAndValidateMod", () => {
         const newMod = await result.current.buildAndValidateMod({
           sourceModDefinition: modDefinition,
           // Only pass in the unchanged clean mod components
-          cleanModComponents: state.activatedModComponents.slice(
-            dirtyModComponentCount,
-          ),
-          dirtyModComponentFormStates: modComponentFormStates,
+          draftModComponents: [
+            ...state.activatedModComponents.slice(dirtyModComponentCount),
+            ...modComponentFormStates,
+          ],
         });
 
         // Update the source mod with the expected label changes
@@ -209,8 +209,10 @@ describe("useBuildAndValidateMod", () => {
       await expect(
         result.current.buildAndValidateMod({
           sourceModDefinition: activatedModDefinition,
-          cleanModComponents: state.activatedModComponents.slice(1),
-          dirtyModComponentFormStates: [dirtyFormState1],
+          draftModComponents: [
+            ...state.activatedModComponents.slice(1),
+            dirtyFormState1,
+          ],
         }),
       ).rejects.toThrow("Mod save failed due to data integrity error");
     });

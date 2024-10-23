@@ -68,9 +68,10 @@ function useCreateModFromModComponent(
         }
 
         const modId = newModMetadata.id;
+        const draftModComponents = [activeModComponentFormState];
 
         const unsavedModDefinition = await buildAndValidateMod({
-          dirtyModComponentFormStates: [activeModComponentFormState],
+          draftModComponents,
           dirtyModMetadata: newModMetadata,
         });
 
@@ -87,8 +88,7 @@ function useCreateModFromModComponent(
           ),
           // Safe to pass form state that has the old mod component ID because the form states are only used
           // to determine mod option args and integration dependencies
-          dirtyModComponentFormStates: [activeModComponentFormState],
-          cleanModComponents: [],
+          draftModComponents,
           isReactivate: false,
         });
 

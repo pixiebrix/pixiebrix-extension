@@ -23,18 +23,16 @@ import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 import type { Dispatch } from "@reduxjs/toolkit";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { getModComponentItemId } from "@/pageEditor/modListingPanel/common";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import type { RegistryId } from "@/types/registryTypes";
+import { getDraftModComponentId } from "@/pageEditor/utils";
 
 /**
  * Update Redux for a saved mod definition.
  * @param dispatch Redux dispatch function
  * @param modIdToReplace if provided, the mod to replace in the Page Editor.
  * @param modDefinition the mod definition to save
- * @param cleanModComponents clean mod components for determining options args and configured dependencies. If
- * modIdToReplace is provided, the component ids must correspond to the mod ids for the new mod instance.
- * @param dirtyModComponentFormStates form states for determining options args and configured dependencies. If
+ * @param draftModComponents mod components for determining options args and configured dependencies. If
  * modIdToReplace is provided, the component ids must correspond to the mod ids for the new mod instance.
  * @param isReactivate true if an activated mod is being reactivated
  */
@@ -42,21 +40,16 @@ async function updateReduxForSavedModDefinition({
   dispatch,
   modIdToReplace,
   modDefinition,
-  cleanModComponents,
-  dirtyModComponentFormStates,
+  draftModComponents,
   isReactivate,
 }: {
   dispatch: Dispatch;
   modIdToReplace?: RegistryId;
   modDefinition: ModDefinition;
-  cleanModComponents: ModComponentBase[];
-  dirtyModComponentFormStates: ModComponentFormState[];
+  draftModComponents: Array<ModComponentBase | ModComponentFormState>;
   isReactivate: boolean;
 }) {
   const modMetadata = mapModDefinitionToModMetadata(modDefinition);
-
-  // Must match the order in buildNewMod, otherwise modComponentIds will be mismatched
-  const modComponents = [...cleanModComponents, ...dirtyModComponentFormStates];
 
   // Activate/re-activate the mod
   dispatch(modComponentActions.removeModById(modDefinition.metadata.id));
@@ -65,13 +58,13 @@ async function updateReduxForSavedModDefinition({
     modComponentActions.activateMod({
       modDefinition,
       modComponentIds: modIdToReplace
-        ? modComponents.map((x) => getModComponentItemId(x))
+        ? draftModComponents.map((x) => getDraftModComponentId(x))
         : undefined,
       configuredDependencies: collectExistingConfiguredDependenciesForMod(
         modDefinition,
-        modComponents,
+        draftModComponents,
       ),
-      optionsArgs: collectModOptionsArgs(modComponents),
+      optionsArgs: collectModOptionsArgs(draftModComponents),
       screen: "pageEditor",
       isReactivate,
     }),

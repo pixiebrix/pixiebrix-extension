@@ -31,9 +31,9 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectCurrentModId,
+  selectGetCleanComponentsAndDirtyFormStatesForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "@/types/modInstanceTypes";
 import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";

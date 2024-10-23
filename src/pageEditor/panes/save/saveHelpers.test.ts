@@ -96,8 +96,7 @@ describe("buildNewMod", () => {
     // Call the function under test
     const newMod = buildNewMod({
       sourceModDefinition: undefined,
-      cleanModComponents: [modComponent],
-      dirtyModComponentFormStates: [],
+      draftModComponents: [modComponent],
     });
 
     expect(newMod.extensionPoints).toHaveLength(1);
@@ -132,8 +131,7 @@ describe("buildNewMod", () => {
     // Call the function under test
     const newMod = buildNewMod({
       sourceModDefinition: undefined,
-      cleanModComponents: [],
-      dirtyModComponentFormStates: [modComponentFormState],
+      draftModComponents: [modComponentFormState],
     });
 
     expect(newMod.extensionPoints).toHaveLength(1);
@@ -170,8 +168,7 @@ describe("buildNewMod", () => {
     // Call the function under test
     const newMod = buildNewMod({
       sourceModDefinition: undefined,
-      cleanModComponents: modComponents,
-      dirtyModComponentFormStates: [],
+      draftModComponents: modComponents,
     });
 
     expect(Object.keys(newMod.definitions!)).toStrictEqual([
@@ -209,8 +206,7 @@ describe("buildNewMod", () => {
     // Call the function under test
     const newMod = buildNewMod({
       sourceModDefinition: undefined,
-      cleanModComponents: modComponents,
-      dirtyModComponentFormStates: [],
+      draftModComponents: modComponents,
     });
 
     expect(Object.keys(newMod.definitions!)).toStrictEqual([
@@ -243,8 +239,7 @@ describe("buildNewMod", () => {
     // Call the function under test
     const newMod = buildNewMod({
       sourceModDefinition: undefined,
-      cleanModComponents: modComponents,
-      dirtyModComponentFormStates: [],
+      draftModComponents: modComponents,
     });
 
     expect(Object.keys(newMod.definitions!)).toStrictEqual(["extensionPoint"]);
@@ -296,41 +291,39 @@ describe("buildNewMod", () => {
       // Collect the dirty form states for any changed mod components
       const modComponentFormStates: ModComponentFormState[] = [];
 
-      if (dirtyModComponentCount > 0) {
-        const starterBricks = selectStarterBricks(modDefinition);
+      const starterBricks = selectStarterBricks(modDefinition);
 
-        for (let i = 0; i < dirtyModComponentCount; i++) {
-          const starterBrick = starterBricks[i]!;
-          // Mock this lookup for the adapter call that follows
-          jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
+      for (let i = 0; i < dirtyModComponentCount; i++) {
+        const starterBrick = starterBricks[i]!;
+        // Mock this lookup for the adapter call that follows
+        jest.mocked(lookupStarterBrick).mockResolvedValue(starterBrick);
 
-          // Mod was activated, so get the mod component from state
-          const modComponent = state.activatedModComponents[i]!;
+        // Mod was activated, so get the mod component from state
+        const modComponent = state.activatedModComponents[i]!;
 
-          // Load the adapter for this mod component
-          const { fromModComponent } = adapter(starterBrick.definition.type);
+        // Load the adapter for this mod component
+        const { fromModComponent } = adapter(starterBrick.definition.type);
 
-          // Use the adapter to convert to FormState
-          // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const modComponentFormState = (await fromModComponent(
-            modComponent,
-          )) as ModComponentFormState;
+        // Use the adapter to convert to FormState
+        // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
+        const modComponentFormState = (await fromModComponent(
+          modComponent,
+        )) as ModComponentFormState;
 
-          // Edit the label
-          modComponentFormState.label = `New Label ${i}`;
+        // Edit the label
+        modComponentFormState.label = `New Label ${i}`;
 
-          modComponentFormStates.push(modComponentFormState);
-        }
+        modComponentFormStates.push(modComponentFormState);
       }
 
       // Call the function under test
       const newMod = buildNewMod({
         sourceModDefinition: modDefinition,
         // Only pass in the unchanged clean mod components
-        cleanModComponents: state.activatedModComponents.slice(
-          dirtyModComponentCount,
-        ),
-        dirtyModComponentFormStates: modComponentFormStates,
+        draftModComponents: [
+          ...state.activatedModComponents.slice(dirtyModComponentCount),
+          ...modComponentFormStates,
+        ],
       });
 
       // Update the source mod with the expected label changes

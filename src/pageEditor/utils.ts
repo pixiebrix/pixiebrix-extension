@@ -25,10 +25,9 @@ import {
   isPipelineElement,
 } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
-import { castArray, pick, pickBy } from "lodash";
+import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
-import { type ModMetadata } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
@@ -42,17 +41,9 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-
-export function mapModDefinitionUpsertResponseToModMetadata(
-  unsavedModDefinition: UnsavedModDefinition,
-  response: PackageUpsertResponse,
-): ModMetadata {
-  return {
-    ...unsavedModDefinition.metadata,
-    sharing: pick(response, ["public", "organizations"]),
-    ...pick(response, ["updated_at"]),
-  };
-}
+import type { ModComponentBase } from "@/types/modComponentTypes";
+import type { UUID } from "@/types/stringTypes";
+import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export function mapModDefinitionUpsertResponseToModDefinition(
   unsavedModDefinition: UnsavedModDefinition,
@@ -261,4 +252,22 @@ export function selectPageEditorDimensions() {
     pageEditorOrientation:
       window.innerWidth > window.innerHeight ? "landscape" : "portrait",
   };
+}
+
+export function isModComponentBase(
+  value: ModComponentBase | ModComponentFormState,
+): value is ModComponentBase {
+  return "extensionPointId" in value;
+}
+
+export function isModComponentFormState(
+  value: ModComponentBase | ModComponentFormState,
+): value is ModComponentFormState {
+  return !isModComponentBase(value);
+}
+
+export function getDraftModComponentId(
+  item: ModComponentBase | ModComponentFormState,
+): UUID {
+  return isModComponentBase(item) ? item.id : item.uuid;
 }

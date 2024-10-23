@@ -21,6 +21,7 @@ import {
   selectActiveModId,
   selectDirtyOptionsDefinitionsForModId,
   selectDirtyOptionValuesForModId,
+  selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -42,7 +43,6 @@ import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
@@ -71,11 +71,10 @@ const ModOptionsValuesContent: React.FC = () => {
   const modifiedOptionValues = useSelector(
     selectDirtyOptionValuesForModId(activeModId),
   );
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  const getDraftModComponentsForMod = useSelector(
+    selectGetDraftModComponentsForMod,
   );
-  const { cleanModComponents, dirtyModComponentFormStates } =
-    getCleanComponentsAndDirtyFormStatesForMod(activeModId);
+  const draftModComponents = getDraftModComponentsForMod(activeModId);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyModOptions) {
@@ -102,24 +101,19 @@ const ModOptionsValuesContent: React.FC = () => {
   );
 
   const initialValues = useMemo(
-    () =>
-      modifiedOptionValues ??
-      collectModOptionsArgs([
-        ...cleanModComponents,
-        ...dirtyModComponentFormStates,
-      ]),
-    [cleanModComponents, dirtyModComponentFormStates, modifiedOptionValues],
+    () => modifiedOptionValues ?? collectModOptionsArgs(draftModComponents),
+    [draftModComponents, modifiedOptionValues],
   );
 
   const integrationDependencies = useMemo(
     () =>
       uniqBy(
-        [...cleanModComponents, ...dirtyModComponentFormStates].flatMap(
+        draftModComponents.flatMap(
           ({ integrationDependencies }) => integrationDependencies ?? [],
         ),
         ({ integrationId }) => integrationId,
       ),
-    [cleanModComponents, dirtyModComponentFormStates],
+    [draftModComponents],
   );
 
   const updateRedux = useCallback(

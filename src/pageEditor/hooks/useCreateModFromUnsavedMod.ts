@@ -23,11 +23,16 @@ import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import {
+  isModComponentFormState,
+  mapModDefinitionUpsertResponseToModDefinition,
+} from "@/pageEditor/utils";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { type RegistryId } from "@/types/registryTypes";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import { selectDirtyModOptionsDefinitions } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectDirtyModOptionsDefinitions,
+  selectGetDraftModComponentsForMod,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
@@ -46,10 +51,12 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const dispatch = useDispatch();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  const getDraftModComponentsForMod = useSelector(
+    selectGetDraftModComponentsForMod,
   );
-  const dirtyModOptionsById = useSelector(selectDirtyModOptionsDefinitions);
+  const dirtyModOptionsDefinitionMap = useSelector(
+    selectDirtyModOptionsDefinitions,
+  );
 
   /**
    * Save a new, unsaved mod to the server.
@@ -63,13 +70,13 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       newModMetadata: ModMetadataFormState,
       // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     ) => {
-      const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(unsavedModId);
-      // eslint-disable-next-line security/detect-object-injection -- RegistryId
-      const dirtyModOptionsDefinition = dirtyModOptionsById[unsavedModId];
+      const draftModComponents = getDraftModComponentsForMod(unsavedModId);
+
+      const dirtyModOptionsDefinition =
+        dirtyModOptionsDefinitionMap[unsavedModId];
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
-        dirtyModComponentFormStates,
+        draftModComponents.filter((x) => isModComponentFormState(x)),
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
         if (!hasPermissions) {
@@ -79,8 +86,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         const newModId = newModMetadata.id;
 
         const unsavedModDefinition = await buildAndValidateMod({
-          dirtyModComponentFormStates,
-          cleanModComponents,
+          draftModComponents,
           dirtyModMetadata: newModMetadata,
           dirtyModOptionsDefinition,
         });
@@ -97,8 +103,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
             unsavedModDefinition,
             upsertResponse,
           ),
-          dirtyModComponentFormStates,
-          cleanModComponents,
+          draftModComponents,
           isReactivate: false,
         });
 
@@ -110,8 +115,8 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       });
     },
     [
-      getCleanComponentsAndDirtyFormStatesForMod,
-      dirtyModOptionsById,
+      getDraftModComponentsForMod,
+      dirtyModOptionsDefinitionMap,
       buildAndValidateMod,
       createModDefinitionOnServer,
       dispatch,

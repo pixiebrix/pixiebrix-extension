@@ -580,3 +580,47 @@ export const selectFirstModComponentFormStateForActiveMod = createSelector(
   (formState, activeModId) =>
     formState.find((x) => x.modMetadata.id === activeModId),
 );
+
+export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
+  selectNotDeletedActivatedModComponents,
+  selectNotDeletedModComponentFormStates,
+  selectIsModComponentDirtyById,
+  (activatedModComponents, formStates, isDirtyByComponentId) =>
+    // Memoize because method constructs a fresh object reference
+    memoize((modId: RegistryId) => {
+      const dirtyModComponentFormStates = formStates.filter(
+        (formState) =>
+          formState.modMetadata.id === modId &&
+          isDirtyByComponentId[formState.uuid],
+      );
+
+      const cleanModComponents = activatedModComponents.filter(
+        (modComponent) =>
+          modComponent.modMetadata.id === modId &&
+          !dirtyModComponentFormStates.some(
+            (formState) => formState.uuid === modComponent.id,
+          ),
+      );
+
+      return {
+        cleanModComponents,
+        dirtyModComponentFormStates,
+      };
+    }),
+);
+
+export const selectGetDraftModComponentsForMod = createSelector(
+  selectGetCleanComponentsAndDirtyFormStatesForMod,
+  (getCleanComponentsAndDirtyFormStatesForMod) =>
+    // Memoize because method constructs a fresh object reference
+    memoize((modId: RegistryId) => {
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
+
+      // Return a consistent order so mod component order is stable on save
+      return sortBy(
+        [...cleanModComponents, ...dirtyModComponentFormStates],
+        (x) => x.label,
+      );
+    }),
+);

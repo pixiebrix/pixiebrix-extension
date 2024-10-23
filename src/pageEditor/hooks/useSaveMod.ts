@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectDirtyModMetadata,
   selectDirtyModOptionsDefinitions,
+  selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import {
   useGetEditablePackagesQuery,
@@ -34,14 +35,16 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod, {
   DataIntegrityError,
 } from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import {
+  isModComponentFormState,
+  mapModDefinitionUpsertResponseToModDefinition,
+} from "@/pageEditor/utils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
 
@@ -71,13 +74,13 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateModDefinitionOnServer] = useUpdateModDefinitionMutation();
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  const getDraftModComponentsForMod = useSelector(
+    selectGetDraftModComponentsForMod,
   );
-  const allDirtyModOptionsDefinitions = useSelector(
+  const dirtyModOptionsDefinitionsMap = useSelector(
     selectDirtyModOptionsDefinitions,
   );
-  const allDirtyModMetadatas = useSelector(selectDirtyModMetadata);
+  const dirtyModMetadataMap = useSelector(selectDirtyModMetadata);
 
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -97,38 +100,38 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         "saveMod called without editablePackages loaded",
       );
 
-      const modDefinition = modDefinitions.find((x) => x.metadata.id === modId);
-      if (modDefinition == null) {
+      const sourceModDefinition = modDefinitions.find(
+        (x) => x.metadata.id === modId,
+      );
+      if (sourceModDefinition == null) {
         notify.error({
           message:
-            "You no longer have access to the mod definition. Please reload the Page Editor.",
+            "You no longer have access to this mod package. Please reload the Page Editor.",
         });
         return false;
       }
 
-      if (!isModEditable(editablePackages, modDefinition)) {
+      if (!isModEditable(editablePackages, sourceModDefinition)) {
         dispatch(editorActions.showSaveAsNewModModal());
         return false;
       }
 
-      const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(modId);
+      const draftModComponents = getDraftModComponentsForMod(modId);
 
       // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
       // long to confirm?
       // Check permissions as early as possible
       void ensureModComponentFormStatePermissionsFromUserGesture(
-        dirtyModComponentFormStates,
+        draftModComponents.filter((x) => isModComponentFormState(x)),
       );
 
       const unsavedModDefinition = await buildAndValidateMod({
-        sourceModDefinition: modDefinition,
-        cleanModComponents,
-        dirtyModComponentFormStates,
+        sourceModDefinition,
+        draftModComponents,
         // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModOptionsDefinition: allDirtyModOptionsDefinitions[modId],
+        dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[modId],
         // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModMetadata: allDirtyModMetadatas[modId],
+        dirtyModMetadata: dirtyModMetadataMap[modId],
       });
 
       const packageId = editablePackages.find(
@@ -153,8 +156,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
           unsavedModDefinition,
           upsertResponse,
         ),
-        cleanModComponents,
-        dirtyModComponentFormStates,
+        draftModComponents,
         isReactivate: true,
       });
 
@@ -165,9 +167,9 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       return true;
     },
     [
-      allDirtyModMetadatas,
-      allDirtyModOptionsDefinitions,
-      getCleanComponentsAndDirtyFormStatesForMod,
+      dirtyModMetadataMap,
+      dirtyModOptionsDefinitionsMap,
+      getDraftModComponentsForMod,
       buildAndValidateMod,
       dispatch,
       editablePackages,
@@ -180,7 +182,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
     async (modId: RegistryId) => {
       if (modDefinitionsError) {
         notify.error({
-          message: "Error fetching mod definitions",
+          message: "Error loading mod definitions",
           error: modDefinitionsError,
         });
 
@@ -208,7 +210,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         }
 
         notify.error({
-          message: "Failed saving mod",
+          message: "Error saving mod",
           error,
         });
       }

@@ -20,9 +20,9 @@ import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   selectDirtyModOptionsDefinitions,
+  selectGetDraftModComponentsForMod,
   selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
@@ -31,7 +31,10 @@ import { Events } from "@/telemetry/events";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import {
+  isModComponentFormState,
+  mapModDefinitionUpsertResponseToModDefinition,
+} from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 
@@ -50,10 +53,12 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  const getDraftModComponentsForMod = useSelector(
+    selectGetDraftModComponentsForMod,
   );
-  const dirtyModOptions = useSelector(selectDirtyModOptionsDefinitions);
+  const dirtyModOptionsDefinitionsMap = useSelector(
+    selectDirtyModOptionsDefinitions,
+  );
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -70,11 +75,10 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         );
       }
 
-      const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(sourceModId);
+      const draftModComponents = getDraftModComponentsForMod(sourceModId);
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
-        dirtyModComponentFormStates,
+        draftModComponents.filter((x) => isModComponentFormState(x)),
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
         if (!hasPermissions) {
@@ -85,10 +89,9 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
 
         const unsavedModDefinition = await buildAndValidateMod({
           sourceModDefinition,
-          cleanModComponents,
-          dirtyModComponentFormStates,
+          draftModComponents,
           // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-          dirtyModOptionsDefinition: dirtyModOptions[sourceModId],
+          dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[sourceModId],
           dirtyModMetadata: newModMetadata,
         });
 
@@ -106,8 +109,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
             unsavedModDefinition,
             upsertResponse,
           ),
-          dirtyModComponentFormStates,
-          cleanModComponents,
+          draftModComponents,
           isReactivate: false,
         });
 
@@ -127,8 +129,8 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
       });
     },
     [
-      getCleanComponentsAndDirtyFormStatesForMod,
-      dirtyModOptions,
+      getDraftModComponentsForMod,
+      dirtyModOptionsDefinitionsMap,
       buildAndValidateMod,
       createModDefinitionOnServer,
       keepLocalCopy,

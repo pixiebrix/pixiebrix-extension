@@ -16,10 +16,11 @@
  */
 
 import React from "react";
-import { isModComponentBase, type ModComponentSidebarItem } from "./common";
+import { type ModComponentSidebarItem } from "./common";
 import DraftModComponentListItem from "./DraftModComponentListItem";
 import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 import { type UUID } from "@/types/stringTypes";
+import { isModComponentBase } from "@/pageEditor/utils";
 
 type ModComponentListItemProps = {
   modComponentSidebarItem: ModComponentSidebarItem;

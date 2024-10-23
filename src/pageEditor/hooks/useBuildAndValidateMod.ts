@@ -27,12 +27,9 @@ import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModSta
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
-import { isEmpty } from "lodash";
 
 type UseBuildAndValidateModReturn = {
-  buildAndValidateMod: (
-    modParts: Partial<ModParts>,
-  ) => Promise<UnsavedModDefinition>;
+  buildAndValidateMod: (modParts: ModParts) => Promise<UnsavedModDefinition>;
 };
 
 /**
@@ -54,26 +51,17 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
   const buildAndValidateMod = useCallback(
     async ({
       sourceModDefinition,
-      cleanModComponents = [],
-      dirtyModComponentFormStates: existingDirtyModComponentFormStates = [],
+      draftModComponents,
       dirtyModOptionsDefinition,
       dirtyModMetadata,
-    }: Partial<ModParts>) => {
-      if (
-        isEmpty(cleanModComponents) &&
-        isEmpty(existingDirtyModComponentFormStates)
-      ) {
+    }: ModParts) => {
+      if (draftModComponents.length === 0) {
         throw new Error("Expected mod components to save");
       }
 
-      const dirtyModComponentFormStates = [
-        ...existingDirtyModComponentFormStates,
-      ];
-
       const newModDefinition = buildNewMod({
         sourceModDefinition,
-        cleanModComponents,
-        dirtyModComponentFormStates,
+        draftModComponents,
         dirtyModOptionsDefinition,
         dirtyModMetadata,
       });
