@@ -18,29 +18,34 @@
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
 import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
 import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
-import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({
   matcher: isAnyOf(
-    actions.syncModComponentFormState,
-    actions.addNode,
-    actions.moveNode,
-    actions.removeNode,
-    actions.resetActivatedModComponentFormState,
-    actions.removeModComponentFormState,
-    actions.editModMetadata,
-    actions.editModOptionsDefinitions,
-    actions.editModOptionsValues,
-    actions.clearMetadataAndOptionsChangesForMod,
-    actions.addModComponentFormState,
-    actions.removeModById,
+    // Page Editor mod actions
+    editorActions.editModMetadata,
+    editorActions.editModOptionsDefinitions,
+    editorActions.editModOptionsValues,
+    editorActions.clearMetadataAndOptionsChangesForMod,
+    editorActions.removeModById,
 
-    modComponentSlice.actions.activateMod,
-    modComponentSlice.actions.removeModById,
+    // Page Editor mod component actions
+    editorActions.addModComponentFormState,
+    editorActions.setModComponentFormState,
+    editorActions.markModComponentFormStateAsClean,
+    editorActions.markModComponentFormStateAsDeleted,
+
+    // Page Editor brick outline actions
+    editorActions.addNode,
+    editorActions.moveNode,
+    editorActions.removeNode,
+
+    modComponentActions.activateMod,
+    modComponentActions.removeModById,
   ),
-  effect(action, { dispatch, getState }) {
+  effect(_action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;
     dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
   },

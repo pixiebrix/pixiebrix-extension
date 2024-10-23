@@ -152,12 +152,12 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new SelectorAnalysis(), {
   // Slow Selector Analysis currently checks the starter brick definition
-  matcher: isAnyOf(editorActions.syncModComponentFormState),
+  matcher: isAnyOf(editorActions.setModComponentFormState),
 });
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   matcher: isAnyOf(
-    editorActions.syncModComponentFormState,
+    editorActions.setModComponentFormState,
     ...nodeListMutationActions,
   ),
 });
@@ -166,7 +166,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new PageStateAnalysis(),
   {
     matcher: isAnyOf(
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -176,7 +176,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ModComponentUrlPatternAnalysis(),
   {
     matcher: isAnyOf(
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -186,7 +186,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new RequestPermissionAnalysis(),
   {
     matcher: isAnyOf(
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -194,7 +194,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new RegexAnalysis(), {
   matcher: isAnyOf(
-    editorActions.syncModComponentFormState,
+    editorActions.setModComponentFormState,
     ...nodeListMutationActions,
   ),
 });
@@ -203,7 +203,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new HttpRequestAnalysis(),
   {
     matcher: isAnyOf(
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -242,7 +242,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new ConditionAnalysis(),
   {
     matcher: isAnyOf(
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -253,7 +253,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
   () => new OutputKeyAnalysis(),
   {
     matcher: isAnyOf(
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -269,7 +269,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     matcher: isAnyOf(
       // Must run whenever the active mod component changes in order to see changes from other mod components.
       editorActions.setActiveModComponentId,
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       ...nodeListMutationActions,
     ),
   },
@@ -293,7 +293,7 @@ pageEditorAnalysisManager.registerAnalysisEffect(
       editorActions.showVariablePopover,
       // Include setActiveModComponentId so that variable analysis is ready when user first types
       editorActions.setActiveModComponentId,
-      editorActions.syncModComponentFormState,
+      editorActions.setModComponentFormState,
       runtimeActions.setModComponentTrace,
       ...nodeListMutationActions,
     ),

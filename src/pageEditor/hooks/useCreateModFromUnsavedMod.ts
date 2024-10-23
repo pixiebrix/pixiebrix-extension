@@ -127,9 +127,6 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
             }
 
             dispatch(
-              editorActions.syncModComponentFormState(newComponentFormState),
-            );
-            dispatch(
               modComponentActions.saveModComponent({
                 modComponent: {
                   ...newModComponent,
@@ -137,7 +134,20 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
                 },
               }),
             );
-            dispatch(editorActions.markClean(newComponentFormState.uuid));
+
+            // TODO: remove use of setModComponentFormState: https://github.com/pixiebrix/pixiebrix-extension/issues/9323
+            dispatch(
+              editorActions.setModComponentFormState({
+                modComponentFormState: newComponentFormState,
+                includesNonFormikChanges: true,
+                dirty: false,
+              }),
+            );
+            dispatch(
+              editorActions.markModComponentFormStateAsClean(
+                newComponentFormState.uuid,
+              ),
+            );
           }
 
           const newModId = newModDefinition.metadata.id;

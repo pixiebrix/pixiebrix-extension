@@ -35,7 +35,7 @@ import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { nowTimestamp } from "@/utils/timeUtils";
 
 const { saveModComponent } = modComponentSlice.actions;
-const { markClean } = editorSlice.actions;
+const { markModComponentFormStateAsClean } = editorSlice.actions;
 
 function selectErrorMessage(error: unknown): string {
   // FIXME: should this logic be in getErrorMessage?
@@ -149,7 +149,7 @@ function useUpsertModComponentFormState(): SaveCallback {
           }),
         );
 
-        dispatch(markClean(modComponentFormState.uuid));
+        dispatch(markModComponentFormStateAsClean(modComponentFormState.uuid));
       } catch (error) {
         return onStepError(error, "saving mod");
       }

@@ -50,7 +50,13 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
     (values: ModComponentFormState) => {
-      dispatch(editorActions.syncModComponentFormState(values));
+      dispatch(
+        editorActions.setModComponentFormState({
+          modComponentFormState: values,
+          includesNonFormikChanges: false,
+          dirty: true,
+        }),
+      );
       dispatch(actions.checkActiveModComponentAvailability());
     },
     REDUX_SYNC_WAIT_MILLIS,
