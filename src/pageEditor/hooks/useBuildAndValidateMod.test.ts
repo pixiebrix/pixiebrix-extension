@@ -148,9 +148,11 @@ describe("useBuildAndValidateMod", () => {
       await hookAct(async () => {
         const actualModDefinition = await result.current.buildAndValidateMod({
           sourceModDefinition: modDefinition,
-          // Only pass in the unchanged clean mod components
           draftModComponents: [
+            // `buildAndValidate` now preserves mod component order. So order of dirty vs. clean must match the
+            // construction for expectedModDefinition
             ...dirtyModComponentFormStates,
+            // Only pass in the unchanged clean mod components
             ...state.activatedModComponents.slice(dirtyModComponentCount),
           ],
         });
