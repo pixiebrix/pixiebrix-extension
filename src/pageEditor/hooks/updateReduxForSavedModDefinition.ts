@@ -20,12 +20,14 @@ import type { ModComponentBase } from "@/types/modComponentTypes";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
-import type { Dispatch } from "@reduxjs/toolkit";
+import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import type { RegistryId } from "@/types/registryTypes";
 import { getDraftModComponentId } from "@/pageEditor/utils";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 
 /**
  * Update Redux for a saved mod definition.
@@ -46,8 +48,13 @@ function updateReduxForSavedModDefinition({
   draftModComponents: Array<ModComponentBase | ModComponentFormState>;
   isReactivate: boolean;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- thunk action doesn't match AnyAction
-  return async (dispatch: Dispatch<any>): Promise<void> => {
+  return async (
+    dispatch: ThunkDispatch<
+      EditorRootState & ModComponentsRootState,
+      unknown,
+      AnyAction
+    >,
+  ): Promise<void> => {
     const modMetadata = mapModDefinitionToModMetadata(modDefinition);
 
     // Activate/re-activate the mod
@@ -70,7 +77,7 @@ function updateReduxForSavedModDefinition({
     );
 
     // Must dispatch updateModMetadataOnModComponentFormStates first to so the form states are associated with the new
-    // mod id. Otherwise, the other actions won't be able to find the form states.
+    // mod id. Otherwise, any other actions won't be able to find the form states.
     dispatch(
       editorActions.updateModMetadataOnModComponentFormStates({
         modId: modIdToReplace ?? modMetadata.id,
@@ -80,7 +87,8 @@ function updateReduxForSavedModDefinition({
 
     dispatch(editorActions.markModAsCleanById(modMetadata.id));
 
-    dispatch(editorActions.checkAvailableActivatedModComponents());
+    // Refresh mod availability on page, but don't await because it's not required for save flow
+    void dispatch(editorActions.checkAvailableActivatedModComponents());
   };
 }
 
