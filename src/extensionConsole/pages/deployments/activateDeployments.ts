@@ -26,7 +26,7 @@ import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
-import { type AsyncDispatch, persistor } from "@/extensionConsole/store";
+import { type AppDispatch, persistor } from "@/extensionConsole/store";
 import type { ModInstance } from "@/types/modInstanceTypes";
 
 const { actions } = modComponentSlice;
@@ -48,7 +48,7 @@ function activateDeployment({
   activatableDeployment: ActivatableDeployment;
   modInstances: ModInstance[];
 }) {
-  return async (dispatch: AsyncDispatch): Promise<void> => {
+  return async (dispatch: AppDispatch): Promise<void> => {
     const { deployment, modDefinition } = activatableDeployment;
     let isReactivate = false;
 
@@ -96,7 +96,7 @@ export function activateDeployments({
   modInstances: ModInstance[];
   reloadMode: "queue" | "immediate";
 }) {
-  return async (dispatch: AsyncDispatch): Promise<void> => {
+  return async (dispatch: AppDispatch): Promise<void> => {
     // Activate as many as we can
     const errors = [];
 

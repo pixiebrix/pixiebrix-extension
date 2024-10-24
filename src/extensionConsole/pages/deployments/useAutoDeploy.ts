@@ -26,7 +26,7 @@ import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import type { ModInstance } from "@/types/modInstanceTypes";
-import { type AsyncDispatch } from "@/extensionConsole/store";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 type UseAutoDeployReturn = {
   /**
@@ -45,7 +45,7 @@ function useAutoDeploy({
   modInstances: ModInstance[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   // `true` until deployments have been fetched and activated
   const [
     isFetchingAndActivatingDeployments,

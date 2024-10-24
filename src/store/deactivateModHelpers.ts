@@ -28,6 +28,7 @@ import { type UUID } from "@/types/stringTypes";
 import { forbidContext } from "@/utils/expectContext";
 import { type AnyAction, type ThunkDispatch } from "@reduxjs/toolkit";
 import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 /**
  * @file utility methods to deactivate mods/mod components and remove from the existing tabs.
@@ -42,13 +43,8 @@ import { type ModComponentState } from "@/store/modComponents/modComponentTypes"
  * @see useDeactivateMod
  * @see removeModDataAndInterfaceFromAllTabs
  */
-export async function deactivateMod(
-  modId: RegistryId,
-  modComponentIds: UUID[],
-) {
-  return async (
-    dispatch: ThunkDispatch<ModComponentState, unknown, AnyAction>,
-  ): Promise<void> => {
+export function deactivateMod(modId: RegistryId, modComponentIds: UUID[]) {
+  return async (dispatch: AppDispatch) => {
     forbidContext("pageEditor");
 
     const removedDraftModComponentIds =

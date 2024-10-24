@@ -34,6 +34,7 @@ import {
 } from "@/activation/modOptionsHelpers";
 import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 export type ActivateResult = {
   success: boolean;
@@ -77,7 +78,7 @@ function useActivateMod(
   source: ActivationSource,
   { checkPermissions = true }: { checkPermissions?: boolean } = {},
 ): ActivateModFormCallback {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const modInstanceMap = useSelector(selectModInstanceMap);
 
   const [createDatabase] = useCreateDatabaseMutation();

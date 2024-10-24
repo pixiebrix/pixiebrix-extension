@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AsyncDispatch } from "@/extensionConsole/store";
+import { AppDispatch } from "@/extensionConsole/store";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import type { RegistryId } from "@/types/registryTypes";
 import type { UUID } from "@/types/stringTypes";
 
 export const deactivateMod = jest.fn(
   (modId: RegistryId, _modComponentIds: UUID[]) =>
-    async (dispatch: AsyncDispatch) => {
+    async (dispatch: AppDispatch) => {
       // Keep the call to dispatch, but leave off reading/writing to the Page Editor storage and runtime side effects
       dispatch(modComponentActions.removeModById(modId));
     },

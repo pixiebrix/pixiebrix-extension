@@ -55,7 +55,7 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "@/types/modInstanceTypes";
-import { type AsyncDispatch } from "@/extensionConsole/store";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 export type DeploymentsState = {
   /**
@@ -95,7 +95,7 @@ export type DeploymentsState = {
 };
 
 function useDeployments(): DeploymentsState {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const { data: browserIdentifier } = useBrowserIdentifier();
   const modInstances = useSelector(selectModInstances);
   const { state: flagsState } = useFlags();

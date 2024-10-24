@@ -23,7 +23,7 @@ import useModPermissions from "@/mods/hooks/useModPermissions";
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
-import { type AsyncDispatch } from "@/extensionConsole/store";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 jest.mock("@/mods/hooks/useModPermissions");
 jest.mock("@/hooks/useFlags");
@@ -36,7 +36,7 @@ const mockHooks = ({
 }: {
   restricted?: boolean;
   hasPermissions?: boolean;
-  activateDeploymentsResponse?: (dispatch: AsyncDispatch) => Promise<void>;
+  activateDeploymentsResponse?: (dispatch: AppDispatch) => Promise<void>;
 } = {}) => {
   jest.mocked(useFlags).mockImplementation(() => ({
     ...jest.requireActual("@/hooks/useFlags"),
