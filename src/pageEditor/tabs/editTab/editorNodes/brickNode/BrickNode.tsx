@@ -55,8 +55,9 @@ function useScrollIntoViewEffect({
       // :shrug: requestAnimationFrame seems to be necessary even when using useLayoutEffect to ensure the scroll works
       // That might be due to loading states in usePipelineNodes
       // XXX: there's a slight flicker due to scroll position when the Formik form is remounted. In the future, we could
-      // attempt to how to pass down a ref to the containing scroll container to set the scroll before the first paint.
-      // Alternatively, we could move more actions brick outline actions to Formik to avoid form remount
+      // attempt to pass a ref to the containing scroll container to set the scroll before the first paint
+      // XXX: there's also a quirky behavior/buggy behavior when moving a brick that's not selected and the selected
+      // brick is not in view. The scroll will reset to the position of the select brick
       const timeout = requestAnimationFrame(() => {
         nodeRef.current?.scrollIntoView({
           block: "center",
