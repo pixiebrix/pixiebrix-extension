@@ -372,15 +372,15 @@ const usePipelineNodes = (): {
       }));
     };
 
-    const showAddBlock = isApiAtLeastV2 && (index < lastIndex || showAppend);
+    const showAddBrick = isApiAtLeastV2 && (index < lastIndex || showAppend);
     const showBiggerActions = index === lastIndex && isRootPipeline;
-    const showAddMessage = showAddBlock && showBiggerActions;
+    const showAddMessage = showAddBrick && showBiggerActions;
 
     const brickNodeActions: NodeAction[] = [];
     const nodeId = instanceId;
 
     // TODO: Refactoring - remove code duplication in the node actions here
-    if (showAddBlock) {
+    if (showAddBrick) {
       brickNodeActions.push({
         name: `${nodeId}-add-brick`,
         icon: faPlusCircle,
@@ -415,7 +415,7 @@ const usePipelineNodes = (): {
     };
 
     if (block) {
-      assertNotNullish(nodeId, "nodeId is required to get block annotations");
+      assertNotNullish(nodeId, "nodeId is required to get brick annotations");
       // Handle race condition on pipelineMap updates
       // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
       const blockPath = maybePipelineMap?.[nodeId]?.path;
