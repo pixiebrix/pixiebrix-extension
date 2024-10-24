@@ -210,8 +210,15 @@ export const lexicon: LexiconMap = {
     description:
       "Triggered by running a Context Menu starter brick, as a result of a user clicking a PixieBrix context menu item on a modified web page.\n" +
       "\n" +
-      "Does not necessarily indicate a successful brick run.",
+      "Does not necessarily indicate a successful mod run.",
     tags: [LexiconTags.MOD_RUNTIME],
+  },
+  HANDLE_QUICK_BAR: {
+    description:
+      "Triggered by running a Quickbar mod, as a result of opening the Quickbar on a modified web page and selecting " +
+      "a mod to run by clicking on the mod or pressing 'enter' on the keyboard with the mod highlighted." +
+      "\n" +
+      "Does not necessarily indicate a successful mod run.",
   },
 };
 
