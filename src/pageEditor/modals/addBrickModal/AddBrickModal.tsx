@@ -46,7 +46,7 @@ import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Draft, produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import useAllBricks from "@/bricks/hooks/useAllBricks";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import useBrickSearch from "@/pageEditor/modals/addBrickModal/useBrickSearch";
 import BrickGridItemRenderer from "@/pageEditor/modals/addBrickModal/BrickGridItemRenderer";
 import groupListingsByTag from "@/pageEditor/modals/addBrickModal/groupListingsByTag";
@@ -70,6 +70,8 @@ import { type Brick } from "@/types/brickTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import useFlags from "@/hooks/useFlags";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { type TypedBrickMap } from "@/bricks/registry";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -125,6 +127,8 @@ const slice = createSlice({
   },
 });
 
+const EMPTY_BRICKS: TypedBrickMap = new Map();
+
 const AddBrickModal: React.FC = () => {
   const { flagOn } = useFlags();
   const [state, dispatch] = useReducer(slice.reducer, initialState);
@@ -135,7 +139,7 @@ const AddBrickModal: React.FC = () => {
 
   const gridRef = useRef<LazyGrid>(null);
 
-  const { allBricks, isLoading: isLoadingAllBricks } = useAllBricks();
+  const { data: allBricks } = fallbackValue(useTypedBrickMap(), EMPTY_BRICKS);
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
@@ -217,7 +221,7 @@ const AddBrickModal: React.FC = () => {
   }, [marketplaceTags, themeName]);
 
   const filteredBricks = useMemo<Brick[]>(() => {
-    if (isLoadingAllBricks || isLoadingTags || isEmpty(allBricks)) {
+    if (isLoadingTags || isEmpty(allBricks)) {
       return [];
     }
 
@@ -233,14 +237,7 @@ const AddBrickModal: React.FC = () => {
     }
 
     return typedBricks.map(({ block }) => block);
-  }, [
-    allBricks,
-    isLoadingAllBricks,
-    isLoadingTags,
-    themeName,
-    taggedBrickIds,
-    flagOn,
-  ]);
+  }, [allBricks, isLoadingTags, themeName, taggedBrickIds, flagOn]);
 
   const searchResults = useBrickSearch(
     filteredBricks,
