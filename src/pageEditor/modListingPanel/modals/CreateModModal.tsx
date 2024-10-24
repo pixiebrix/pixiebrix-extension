@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModId,
+  selectCurrentModId,
   selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
   selectFirstModComponentFormStateForActiveMod,
@@ -172,11 +173,10 @@ const CreateModModalBody: React.FC = () => {
 
   // `selectActiveModId` returns the mod id if a mod entry is selected (not a mod component within the mod)
   const directlyActiveModId = useSelector(selectActiveModId);
-  const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.modMetadata.id;
+  const currentModId = useSelector(selectCurrentModId);
 
-  const { data: activeModDefinition, isFetching: isModDefinitionFetching } =
-    useOptionalModDefinition(activeModId);
+  const { data: modDefinition, isFetching: isModDefinitionFetching } =
+    useOptionalModDefinition(currentModId);
 
   const formSchema = useFormSchema();
 
@@ -185,8 +185,8 @@ const CreateModModalBody: React.FC = () => {
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
-    activeModDefinition,
-    activeModId,
+    activeModDefinition: modDefinition,
+    activeModId: currentModId,
     activeModComponentFormState,
   });
 
@@ -197,11 +197,12 @@ const CreateModModalBody: React.FC = () => {
     }
 
     try {
+      // TODO: use the editorSlice modal state to decide which to show
       if (activeModComponentFormState) {
         // Move/Copy a mod component to create a new mod
         await createModFromComponent(activeModComponentFormState, values);
-      } else if (directlyActiveModId && activeModDefinition) {
-        await createModFromMod(activeModDefinition, values);
+      } else if (directlyActiveModId && modDefinition) {
+        await createModFromMod(modDefinition, values);
       } else if (directlyActiveModId) {
         // If the mod is unsaved or there was an error fetching the mod definition from the server
         await createModFromUnsavedMod(directlyActiveModId, values);

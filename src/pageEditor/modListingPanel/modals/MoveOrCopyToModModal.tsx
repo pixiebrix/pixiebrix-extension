@@ -23,7 +23,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import {
   selectActiveModComponentFormState,
   selectEditorModalVisibilities,
-  selectKeepLocalCopyOnCreateMod,
+  getModalDataSelector,
   selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -35,6 +35,7 @@ import Form, {
 import { object, string } from "yup";
 import { type RegistryId } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
 
 type FormState = {
   modId: RegistryId | null;
@@ -59,7 +60,9 @@ const MoveOrCopyToModModal: React.FC = () => {
     selectEditorModalVisibilities,
   );
   const modMetadataMap = useSelector(selectModMetadataMap);
-  const isCopyAction = useSelector(selectKeepLocalCopyOnCreateMod);
+  const { keepLocalCopy: isCopyAction } = useSelector(
+    getModalDataSelector(ModalKey.MOVE_COPY_TO_MOD),
+  );
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

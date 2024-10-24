@@ -201,7 +201,10 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       try {
         const success = await saveMod(modId);
+
         if (success) {
+          notify.success(`Mod created successfully: ${modId}`);
+
           notify.success("Saved mod");
           reloadModsEveryTab();
         }

@@ -33,7 +33,7 @@ import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { type Except } from "type-fest";
+import { type EmptyObject, type Except } from "type-fest";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
@@ -68,6 +68,13 @@ export enum ModalKey {
   ADD_BRICK,
   SAVE_DATA_INTEGRITY_ERROR,
 }
+
+export type ModalDefinition =
+  | { type: ModalKey.SAVE_DATA_INTEGRITY_ERROR; data: EmptyObject }
+  | { type: ModalKey.SAVE_AS_NEW_MOD; data: EmptyObject }
+  | { type: ModalKey.ADD_BRICK; data: { addBrickLocation: AddBrickLocation } }
+  | { type: ModalKey.CREATE_MOD; data: { keepLocalCopy: boolean } }
+  | { type: ModalKey.MOVE_COPY_TO_MOD; data: { keepLocalCopy: boolean } };
 
 export type ModMetadataFormState = Pick<
   VersionedMetadata,
@@ -150,23 +157,7 @@ export type EditorStateV1 = {
   /**
    * Which modal are we showing, if any?
    */
-  visibleModalKey: ModalKey | null;
-
-  /**
-   * The pipeline location where a new brick will be added.
-   *
-   * Note: This will only have a value when visibleModalKey === "addBlock"
-   *
-   * @see AddBrickLocation
-   */
-  addBlockLocation?: AddBrickLocation;
-
-  /**
-   * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
-   */
-  // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
-  keepLocalCopyOnCreateRecipe: boolean;
+  visibleModal: ModalDefinition | null;
 
   /**
    * Unsaved mod components that have been deleted from a mod
@@ -240,8 +231,6 @@ export type EditorStateV3 = Except<
   | "copiedBlock"
   | "dirtyRecipeOptionsById"
   | "dirtyRecipeMetadataById"
-  | "addBlockLocation"
-  | "keepLocalCopyOnCreateRecipe"
   | "deletedElementsByRecipeId"
   | "availableInstalledIds"
   | "isPendingInstalledExtensions"
@@ -298,22 +287,6 @@ export type EditorStateV3 = Except<
    * Unsaved, changed mod metadata
    */
   dirtyModMetadataById: Record<RegistryId, ModMetadataFormState>;
-
-  /**
-   * The pipeline location where a new brick will be added.
-   *
-   * Note: This will only have a value when visibleModalKey === "addBlock"
-   *
-   * @see AddBrickLocation
-   */
-  addBrickLocation?: AddBrickLocation;
-
-  /**
-   * When creating a new mod from an existing mod component, should we keep a separate copy of the mod component?
-   */
-  // XXX: refactor & remove from top-level Redux state. This is a property of the create mod workflow:
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/3264
-  keepLocalCopyOnCreateMod: boolean;
 
   /**
    * Unsaved mod components that have been deleted from a mod

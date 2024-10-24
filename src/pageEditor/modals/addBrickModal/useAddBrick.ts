@@ -24,8 +24,8 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getModalDataSelector,
   selectActiveModComponentFormState,
-  selectAddBlockLocation,
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
@@ -40,6 +40,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
 
 type TestAddBrickResult = {
   error?: React.ReactNode;
@@ -63,7 +64,9 @@ function useAddBrick(): AddBrick {
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
-  const addBrickLocation = useSelector(selectAddBlockLocation);
+  const { addBrickLocation } = useSelector(
+    getModalDataSelector(ModalKey.ADD_BRICK),
+  );
 
   const makeNewBrick = useCallback(
     async (brick: Brick): Promise<BrickConfig> => {

@@ -103,8 +103,7 @@ export const initialState: EditorState = {
   brickPipelineUIStateById: {},
   dirtyModOptionsById: {},
   dirtyModMetadataById: {},
-  visibleModalKey: null,
-  keepLocalCopyOnCreateMod: false,
+  visibleModal: null,
   deletedModComponentFormStatesByModId: {},
   availableActivatedModComponentIds: [],
   isPendingAvailableActivatedModComponents: false,
@@ -338,7 +337,7 @@ export const editorSlice = createSlice({
     },
 
     hideModal(state) {
-      state.visibleModalKey = null;
+      state.visibleModal = null;
     },
 
     ///
@@ -365,7 +364,10 @@ export const editorSlice = createSlice({
     },
 
     showSaveDataIntegrityErrorModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_DATA_INTEGRITY_ERROR;
+      state.visibleModal = {
+        type: ModalKey.SAVE_DATA_INTEGRITY_ERROR,
+        data: {},
+      };
     },
 
     ///
@@ -412,21 +414,31 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{ keepLocalCopy: boolean }>,
     ) {
-      state.visibleModalKey = ModalKey.CREATE_MOD;
-      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
+      state.visibleModal = {
+        type: ModalKey.CREATE_MOD,
+        data: {
+          keepLocalCopy: action.payload.keepLocalCopy,
+        },
+      };
     },
 
     showSaveAsNewModModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
+      state.visibleModal = {
+        type: ModalKey.SAVE_AS_NEW_MOD,
+        data: {},
+      };
     },
 
     showMoveCopyToModModal(
       state,
       action: PayloadAction<{ moveOrCopy: "move" | "copy" }>,
     ) {
-      const { moveOrCopy } = action.payload;
-      state.visibleModalKey = ModalKey.MOVE_COPY_TO_MOD;
-      state.keepLocalCopyOnCreateMod = moveOrCopy === "copy";
+      state.visibleModal = {
+        type: ModalKey.MOVE_COPY_TO_MOD,
+        data: {
+          keepLocalCopy: action.payload.moveOrCopy === "copy",
+        },
+      };
     },
 
     ///
@@ -672,8 +684,10 @@ export const editorSlice = createSlice({
     ///
 
     showAddBrickModal(state, action: PayloadAction<AddBrickLocation>) {
-      state.addBrickLocation = action.payload;
-      state.visibleModalKey = ModalKey.ADD_BRICK;
+      state.visibleModal = {
+        type: ModalKey.ADD_BRICK,
+        data: { addBrickLocation: action.payload },
+      };
     },
 
     addNode(
@@ -1031,12 +1045,7 @@ export const persistEditorConfig = {
   storage: localStorage as StorageInterface,
   version: 9,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: [
-    "inserting",
-    "isVarPopoverVisible",
-    "isSaveDataIntegrityErrorModalVisible",
-    "visibleModalKey",
-  ],
+  blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
 };
 
 function validateActiveModComponentId(state: Draft<EditorState>) {

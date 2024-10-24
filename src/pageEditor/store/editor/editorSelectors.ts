@@ -19,6 +19,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   type EditorRootState,
   type EditorState,
+  type ModalDefinition,
   ModalKey,
   type RootState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
@@ -47,6 +48,7 @@ import { type ReportEventData } from "@/telemetry/telemetryTypes";
 import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import type { Selector } from "react-redux";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -274,15 +276,18 @@ export const selectModIsDirty =
   (modId?: RegistryId) => (state: EditorRootState) =>
     Boolean(modId && modIsDirtySelector(state, modId));
 
-export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
-  isMoveCopyToModVisible: editor.visibleModalKey === ModalKey.MOVE_COPY_TO_MOD,
-  isSaveAsNewModModalVisible:
-    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
-  isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
-  isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BRICK,
-  isSaveDataIntegrityErrorModalVisible:
-    editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
-});
+export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => {
+  const { type } = editor.visibleModal ?? {};
+
+  return {
+    isMoveCopyToModVisible: type === ModalKey.MOVE_COPY_TO_MOD,
+    isSaveAsNewModModalVisible: type === ModalKey.SAVE_AS_NEW_MOD,
+    isCreateModModalVisible: type === ModalKey.CREATE_MOD,
+    isAddBlockModalVisible: type === ModalKey.ADD_BRICK,
+    isSaveDataIntegrityErrorModalVisible:
+      type === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
+  };
+};
 
 export const selectActivatedModMetadatas = createSelector(
   selectModComponentFormStates,
@@ -333,9 +338,6 @@ export const selectIsEditorSidebarExpanded = ({ editor }: EditorRootState) =>
 
 export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;
-
-export const selectKeepLocalCopyOnCreateMod = ({ editor }: EditorRootState) =>
-  editor.keepLocalCopyOnCreateMod;
 
 // UI state
 export function selectActiveBrickPipelineUIState({
@@ -470,8 +472,22 @@ export function selectActiveBuilderPreviewElement(
   );
 }
 
-export const selectAddBlockLocation = ({ editor }: EditorRootState) =>
-  editor.addBrickLocation;
+/**
+ * Returns a selector to get the data for the currently visible modal
+ * @throws Error if the specified modalKey is not visible
+ */
+export function getModalDataSelector<T extends ModalKey>(
+  modalKey: T,
+): Selector<EditorRootState, Extract<ModalDefinition, { type: T }>["data"]> {
+  return ({ editor }: EditorRootState) => {
+    const { visibleModal } = editor;
+    if (visibleModal?.type !== modalKey) {
+      throw new Error(`Modal is not visible: ${modalKey}`);
+    }
+
+    return visibleModal.data;
+  };
+}
 
 const activeModComponentAnalysisAnnotationsForPath = createSelector(
   selectActiveModComponentId,
