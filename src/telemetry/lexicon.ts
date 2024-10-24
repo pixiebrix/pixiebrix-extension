@@ -227,6 +227,12 @@ export const lexicon: LexiconMap = {
       "Console when the user gets a 'Insufficient storage space available to PixieBrix' error.",
     tags: [LexiconTags.EXTENSION_CONSOLE],
   },
+  IDB_RECOVER_CONNECTION: {
+    description:
+      "Reported when a user clicks the 'Recover Connection' button on the IndexedDB (IDB) error display in the Extension " +
+      "Console when the user gets a 'Error connecting to local database' error.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
 };
 
 /**
