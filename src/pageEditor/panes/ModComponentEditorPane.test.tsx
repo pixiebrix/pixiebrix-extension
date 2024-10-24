@@ -430,7 +430,6 @@ async function renderEditorPaneWithBasicFormState() {
   const activeNodeId =
     modComponentFormState.modComponent.brickPipeline[0]!.instanceId;
 
-  console.log({ activeNodeId });
   const utils = render(
     <div>
       <ModComponentEditorPane />
