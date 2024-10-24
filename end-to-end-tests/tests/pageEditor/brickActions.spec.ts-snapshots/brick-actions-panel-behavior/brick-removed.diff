@@ -2,7 +2,7 @@ Index: brick-removed
 ===================================================================
 --- brick-removed
 +++ brick-removed
-@@ -6,85 +6,78 @@
+@@ -6,84 +6,78 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -47,7 +47,6 @@ Index: brick-removed
 -            key: !nunjucks ''
 -          id: '@pixies/util/set-mod-variable'
 -          outputKey: output
--          root: null
 -          rootMode: document
 -        - config:
              value: !nunjucks ''
