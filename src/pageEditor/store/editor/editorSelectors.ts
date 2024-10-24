@@ -472,20 +472,25 @@ export function selectActiveBuilderPreviewElement(
   );
 }
 
+// Typescript-Fu for getModalDataSelector
+type ModalDataMap = {
+  [K in ModalDefinition["type"]]: Extract<ModalDefinition, { type: K }>["data"];
+};
+
 /**
  * Returns a selector to get the data for the currently visible modal
- * @throws Error if the specified modalKey is not visible
+ * @throws Error if the specified modal is not visible
  */
 export function getModalDataSelector<T extends ModalKey>(
   modalKey: T,
-): Selector<EditorRootState, Extract<ModalDefinition, { type: T }>["data"]> {
+): Selector<EditorRootState, ModalDataMap[T]> {
   return ({ editor }: EditorRootState) => {
     const { visibleModal } = editor;
     if (visibleModal?.type !== modalKey) {
       throw new Error(`Modal is not visible: ${modalKey}`);
     }
 
-    return visibleModal.data;
+    return visibleModal.data as ModalDataMap[T];
   };
 }
 
