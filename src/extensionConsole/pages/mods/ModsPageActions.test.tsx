@@ -237,7 +237,6 @@ describe("ModsPageActions", () => {
     expect(deactivateMod).toHaveBeenCalledWith(
       modViewItem.modId,
       expect.toBeArrayOfSize(3),
-      expect.toBeFunction(),
     );
   });
 

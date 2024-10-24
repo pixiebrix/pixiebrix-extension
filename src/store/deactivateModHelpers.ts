@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Dispatch } from "react";
 import { removeDraftModComponentsByModId } from "@/store/editorStorage";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import {
@@ -27,6 +26,7 @@ import { uniq } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { forbidContext } from "@/utils/expectContext";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 /**
  * @file utility methods to deactivate mods/mod components and remove from the existing tabs.
@@ -41,22 +41,20 @@ import { forbidContext } from "@/utils/expectContext";
  * @see useDeactivateMod
  * @see removeModDataAndInterfaceFromAllTabs
  */
-export async function deactivateMod(
-  modId: RegistryId,
-  modComponentIds: UUID[],
-  dispatch: Dispatch<unknown>,
-): Promise<void> {
-  forbidContext("pageEditor");
+export function deactivateMod(modId: RegistryId, modComponentIds: UUID[]) {
+  return async (dispatch: AppDispatch) => {
+    forbidContext("pageEditor");
 
-  const removedDraftModComponentIds =
-    await removeDraftModComponentsByModId(modId);
+    const removedDraftModComponentIds =
+      await removeDraftModComponentsByModId(modId);
 
-  dispatch(modComponentActions.removeModById(modId));
+    dispatch(modComponentActions.removeModById(modId));
 
-  await removeModDataAndInterfaceFromAllTabs(
-    modId,
-    uniq([...modComponentIds, ...removedDraftModComponentIds]),
-  );
+    await removeModDataAndInterfaceFromAllTabs(
+      modId,
+      uniq([...modComponentIds, ...removedDraftModComponentIds]),
+    );
+  };
 }
 
 /**

@@ -36,6 +36,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -49,7 +50,7 @@ type UseCreateModFromUnsavedModReturn = {
  * that has never been saved to the server.
  */
 function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
   const activeModId = useSelector(selectActiveModId);
@@ -98,15 +99,17 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
           ...createPrivateSharing(),
         }).unwrap();
 
-        await updateReduxForSavedModDefinition({
-          modIdToReplace: unsavedModId,
-          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-            unsavedModDefinition,
-            upsertResponse,
-          ),
-          draftModComponents,
-          isReactivate: false,
-        })(dispatch);
+        await dispatch(
+          updateReduxForSavedModDefinition({
+            modIdToReplace: unsavedModId,
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            ),
+            draftModComponents,
+            isReactivate: false,
+          }),
+        );
 
         if (activeModId === unsavedModId) {
           // If the mod list item was selected, reselect the mod item using the new ID. Otherwise, keep the

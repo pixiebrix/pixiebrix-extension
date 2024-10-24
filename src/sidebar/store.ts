@@ -17,7 +17,6 @@
 
 import {
   configureStore,
-  type Dispatch,
   type ThunkDispatch,
   type Middleware,
   type AnyAction,
@@ -112,7 +111,7 @@ export const persistor = persistStore(store);
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
 
-type State = {
+type RootState = {
   auth: AuthState;
   options: ReturnType<typeof modComponentSlice.reducer>;
   sidebar: SidebarState;
@@ -124,7 +123,6 @@ type State = {
   [appApi.reducerPath]: ReturnType<typeof appApi.reducer>;
 };
 
-export type AsyncDispatch = Dispatch &
-  ThunkDispatch<State, undefined, AnyAction>;
+export type AppDispatch = ThunkDispatch<RootState, undefined, AnyAction>;
 
 export default store;

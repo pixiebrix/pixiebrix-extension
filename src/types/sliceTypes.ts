@@ -55,6 +55,8 @@ export type AsyncState<TData = unknown> = {
 
   /**
    * When true, indicates that the query has data from a successful request.
+   *
+   * @see Success
    */
   isSuccess: boolean;
 
@@ -70,9 +72,29 @@ export type AsyncState<TData = unknown> = {
 };
 
 /**
+ * Type refinement for successful/fulfilled AsyncState requests.
+ */
+// Ideally AsyncState would be a sum type of the uninitialized, loading, success, and error states. However, RTK Query's
+// types are not designed that way so an RTK Query state would not be assignable to our AsyncState
+export type Success<
+  Data = unknown,
+  State extends AsyncState<Data> = AsyncState<Data>,
+> = State & {
+  isSuccess: true;
+  isError: false;
+  isUninitialized: false;
+  isLoading: false;
+  data: Data;
+  error: undefined;
+};
+
+/**
  * AsyncState that can be re-fetched/re-calculated.
  */
-export type FetchableAsyncState<Data = unknown> = AsyncState<Data> & {
+export type FetchableAsyncState<
+  Data = unknown,
+  State extends AsyncState<Data> = AsyncState<Data>,
+> = State & {
   /**
    * A function to force refetch the query
    */
