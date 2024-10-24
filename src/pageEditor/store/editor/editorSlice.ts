@@ -26,6 +26,7 @@ import {
   type AddBrickLocation,
   type EditorRootState,
   type EditorState,
+  type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
@@ -413,10 +414,7 @@ export const editorSlice = createSlice({
     showCreateModModal(
       state,
       action: PayloadAction<
-        { keepLocalCopy: boolean } & (
-          | { sourceModComponentId: UUID }
-          | { sourceModId: RegistryId }
-        )
+        Extract<ModalDefinition, { type: ModalKey.CREATE_MOD }>["data"]
       >,
     ) {
       state.visibleModal = {

@@ -76,6 +76,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       const draftModComponents = getDraftModComponentsForMod(unsavedModId);
 
       const dirtyModOptionsDefinition =
+        // eslint-disable-next-line security/detect-object-injection -- inner definition id
         dirtyModOptionsDefinitionMap[unsavedModId];
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
