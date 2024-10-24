@@ -71,20 +71,32 @@ export const lexicon: LexiconMap = {
     description:
       "Reported on the mod activation page in the Extension Console when a user selects an option in the dropdown menu " +
       "to configure an integration for the mod. This includes when a new integration is auto-filled after creating " +
-      "the integration via the '+ Add new' option.",
+      "the integration via the '+ Add new' option." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_SELECT",
+      )} event, which is reported in the Page Editor.`,
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   ACTIVATION_INTEGRATION_REFRESH: {
     description:
       "Reported on the mod activation page in the Extension Console when a user clicks the integration 'Refresh' button to " +
-      "refresh the list of available integrations.",
+      "refresh the list of available integrations." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_REFRESH",
+      )} event, which is reported in the Page Editor.`,
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   ACTIVATION_INTEGRATION_ADD_NEW_CLICK: {
     description:
       "Reported on the mod activation page in the Extension Console when a user selects the '+ Add new' option to " +
       "create a new integration configuration for the mod. A modal should appear for the user to create the configuration, " +
-      "but this event is triggered specifically when '+ Add new' option is clicked.",
+      "but this event is triggered specifically when '+ Add new' option is clicked." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK",
+      )} event, which is reported in the Page Editor.`,
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   ACTIVATION_INTEGRATION_ADD_NEW_CLOSE: {
