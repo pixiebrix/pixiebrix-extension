@@ -233,6 +233,12 @@ export const lexicon: LexiconMap = {
       "Console when the user gets a 'Error connecting to local database' error.",
     tags: [LexiconTags.EXTENSION_CONSOLE],
   },
+  IDB_UNRESPONSIVE_BANNER: {
+    description:
+      "Reported when the error banner containing the 'We're having trouble connecting to your browser's local database, please restart " +
+      "your browser.' error for IndexedDB (IDB) issues is shown in the Extension Console",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
 };
 
 /**
