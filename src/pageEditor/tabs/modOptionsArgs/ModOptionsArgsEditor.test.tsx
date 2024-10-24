@@ -18,7 +18,7 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor";
+import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArgsEditor";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import {
@@ -74,11 +74,11 @@ beforeEach(() => {
   registerDefaultWidgets();
 });
 
-describe("ModOptionsValuesEditor", () => {
+describe("ModOptionsArgsEditor", () => {
   test("renders empty options", async () => {
     const modDefinition = defaultModDefinitionFactory();
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValuesEditor />, {
+    const { asFragment } = render(<ModOptionsArgsEditor />, {
       setupRedux(dispatch) {
         dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
       },
@@ -132,7 +132,7 @@ describe("ModOptionsValuesEditor", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValuesEditor />, {
+    const { asFragment } = render(<ModOptionsArgsEditor />, {
       setupRedux(dispatch) {
         dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
       },
@@ -154,7 +154,7 @@ describe("ModOptionsValuesEditor", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValuesEditor />, {
+    const { asFragment } = render(<ModOptionsArgsEditor />, {
       setupRedux(dispatch) {
         dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
       },
@@ -192,7 +192,7 @@ describe("ModOptionsValuesEditor", () => {
       },
     });
     mockModDefinition(modDefinition);
-    render(<ModOptionsValuesEditor />, {
+    render(<ModOptionsArgsEditor />, {
       setupRedux(dispatch) {
         dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
       },
@@ -238,7 +238,7 @@ describe("ModOptionsValuesEditor", () => {
       files: [],
     });
 
-    render(<ModOptionsValuesEditor />, {
+    render(<ModOptionsArgsEditor />, {
       setupRedux(dispatch) {
         dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
       },
@@ -303,7 +303,7 @@ describe("ModOptionsValuesEditor", () => {
       ],
     });
 
-    render(<ModOptionsValuesEditor />, {
+    render(<ModOptionsArgsEditor />, {
       setupRedux(dispatch) {
         dispatch(editorActions.setActiveModId(modDefinition.metadata.id));
       },

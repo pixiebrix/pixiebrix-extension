@@ -144,7 +144,10 @@ function useAddBrick(): AddBrick {
   const addBrick = useCallback(
     async (brick: Brick) => {
       assertNotNullish(modalData, "Expected modal data");
-      assertNotNullish(activeModComponent, "Expected active mod component");
+      assertNotNullish(
+        activeModComponent?.uuid,
+        "Expected active mod component",
+      );
 
       const { addBrickLocation } = modalData;
 
