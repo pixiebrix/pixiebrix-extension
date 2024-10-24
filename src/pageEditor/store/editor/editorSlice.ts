@@ -334,8 +334,8 @@ export const editorSlice = createSlice({
       state.expandedModId = null;
       state.error = null;
       state.beta = false;
-      // Technically not required because the mod component Formik form will be unmounted to show the panel. But,
-      // increment to reflect the change in selection.
+      // Incrementing selectionSeq is not required in practice because the mod component Formik form will be unmounted
+      // to show the home panel. But, increment anyway for consistency
       state.selectionSeq++;
     },
 
