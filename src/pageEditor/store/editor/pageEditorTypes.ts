@@ -75,8 +75,8 @@ export type ModalDefinition =
   | {
       type: ModalKey.CREATE_MOD;
       data: { keepLocalCopy: boolean } & (
-        | { modComponentId: UUID }
-        | { modId: RegistryId }
+        | { sourceModComponentId: UUID }
+        | { sourceModId: RegistryId }
       );
     }
   | { type: ModalKey.MOVE_COPY_TO_MOD; data: { keepLocalCopy: boolean } }

@@ -483,11 +483,12 @@ type ModalDataMap = {
  */
 export function getModalDataSelector<T extends ModalKey>(
   modalKey: T,
-): Selector<EditorRootState, ModalDataMap[T]> {
+): Selector<EditorRootState, ModalDataMap[T] | undefined> {
   return ({ editor }: EditorRootState) => {
     const { visibleModal } = editor;
     if (visibleModal?.type !== modalKey) {
-      throw new Error(`Modal is not visible: ${modalKey}`);
+      // Ideally this selector would throw, but the modals are written in a way that the selector is always called
+      return;
     }
 
     return visibleModal.data as ModalDataMap[T];

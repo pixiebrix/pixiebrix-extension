@@ -17,12 +17,8 @@
 
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
-  ModalKey,
-  type ModMetadataFormState,
-} from "@/pageEditor/store/editor/pageEditorTypes";
-import {
-  getModalDataSelector,
   selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -46,6 +42,7 @@ type UseCreateModFromModReturn = {
   createModFromMod: (
     modDefinition: ModDefinition,
     metadata: ModMetadataFormState,
+    options: { keepLocalCopy: boolean },
   ) => Promise<void>;
 };
 
@@ -63,15 +60,13 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const dirtyModOptionsDefinitionsMap = useSelector(
     selectDirtyModOptionsDefinitions,
   );
-  const { keepLocalCopy } = useSelector(
-    getModalDataSelector(ModalKey.CREATE_MOD),
-  );
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
     async (
       sourceModDefinition: ModDefinition,
       newModMetadata: ModMetadataFormState,
+      { keepLocalCopy }: { keepLocalCopy: boolean },
     ) => {
       const sourceModId = sourceModDefinition.metadata.id;
 
@@ -140,7 +135,6 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
       dirtyModOptionsDefinitionsMap,
       buildAndValidateMod,
       createModDefinitionOnServer,
-      keepLocalCopy,
       dispatch,
       deactivateMod,
     ],

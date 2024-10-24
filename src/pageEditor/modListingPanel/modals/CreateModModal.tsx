@@ -164,6 +164,8 @@ function useFormSchema() {
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
+
+  const currentModId = useSelector(selectCurrentModId);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -171,11 +173,7 @@ const CreateModModalBody: React.FC = () => {
 
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
-  const { createModFromComponent } = useCreateModFromModComponent(
-    activeModComponentFormState,
-  );
-
-  const currentModId = useSelector(selectCurrentModId);
+  const { createModFromComponent } = useCreateModFromModComponent();
 
   const { data: modDefinition, isFetching: isModDefinitionFetching } =
     useOptionalModDefinition(currentModId);
@@ -198,16 +196,23 @@ const CreateModModalBody: React.FC = () => {
       return;
     }
 
+    assertNotNullish(modalData, "Expected modal data to be defined");
+
     try {
-      if ("modComponent" in modalData) {
+      if ("sourceModComponentId" in modalData) {
         assertNotNullish(
           activeModComponentFormState,
           "Expected active mod component form state",
         );
-        await createModFromComponent(activeModComponentFormState, values);
+        await createModFromComponent(
+          activeModComponentFormState,
+          values,
+          modalData,
+        );
       } else if (
         "modId" in modalData &&
-        (isInnerDefinitionRegistryId(modalData.modId) || modDefinition == null)
+        (isInnerDefinitionRegistryId(modalData.sourceModId) ||
+          modDefinition == null)
       ) {
         assertNotNullish(
           currentModId,
@@ -221,7 +226,7 @@ const CreateModModalBody: React.FC = () => {
           modDefinition,
           "Expected mod to be selected in the editor",
         );
-        await createModFromMod(modDefinition, values);
+        await createModFromMod(modDefinition, values, modalData);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS

@@ -60,7 +60,7 @@ const MoveOrCopyToModModal: React.FC = () => {
     selectEditorModalVisibilities,
   );
   const modMetadataMap = useSelector(selectModMetadataMap);
-  const { keepLocalCopy: isCopyAction } = useSelector(
+  const modalData = useSelector(
     getModalDataSelector(ModalKey.MOVE_COPY_TO_MOD),
   );
   const activeModComponentFormState = useSelector(
@@ -76,12 +76,15 @@ const MoveOrCopyToModModal: React.FC = () => {
   const onSubmit: OnSubmit<FormState> = async ({ modId }) => {
     assertNotNullish(modId, "Invalid form state: modId is null");
     assertNotNullish(activeModComponentFormState, "No active mod component");
+    assertNotNullish(modalData, "Expected modal data to be defined");
+
+    const { keepLocalCopy: isCopyAction } = modalData;
 
     if (modId === NEW_MOD_ID) {
       dispatch(
         editorActions.showCreateModModal({
           keepLocalCopy: isCopyAction,
-          modComponentId: activeModComponentFormState.uuid,
+          sourceModComponentId: activeModComponentFormState.uuid,
         }),
       );
       return;
@@ -148,18 +151,18 @@ const MoveOrCopyToModModal: React.FC = () => {
           type="submit"
           disabled={!isValid || isSubmitting}
         >
-          {isCopyAction ? "Copy" : "Move"}
+          {modalData?.keepLocalCopy ? "Copy" : "Move"}
         </Button>
       </Modal.Footer>
     ),
-    [isCopyAction, hideModal],
+    [modalData?.keepLocalCopy, hideModal],
   );
 
   return (
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {isCopyAction ? "Copy" : "Move"}{" "}
+          {modalData?.keepLocalCopy ? "Copy" : "Move"}{" "}
           <em>{activeModComponentFormState?.label}</em>
         </Modal.Title>
       </Modal.Header>

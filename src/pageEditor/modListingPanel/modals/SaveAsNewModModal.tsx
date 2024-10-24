@@ -57,10 +57,13 @@ const SaveAsNewModModal: React.FC = () => {
           variant="primary"
           disabled={isFetching}
           onClick={() => {
-            // Don't keep the old mod active
             assertNotNullish(modId, "Expected selected mod");
             dispatch(
-              actions.showCreateModModal({ keepLocalCopy: false, modId }),
+              // Don't keep the old mod actived
+              actions.showCreateModModal({
+                keepLocalCopy: false,
+                sourceModId: modId,
+              }),
             );
           }}
         >

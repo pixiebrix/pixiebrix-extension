@@ -86,10 +86,13 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const saveMod = useCallback(
-    async (modId: RegistryId): Promise<boolean> => {
-      if (isInnerDefinitionRegistryId(modId)) {
+    async (sourceModId: RegistryId): Promise<boolean> => {
+      if (isInnerDefinitionRegistryId(sourceModId)) {
         dispatch(
-          editorActions.showCreateModModal({ keepLocalCopy: false, modId }),
+          editorActions.showCreateModModal({
+            keepLocalCopy: false,
+            sourceModId,
+          }),
         );
         return false;
       }
@@ -104,7 +107,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       );
 
       const sourceModDefinition = modDefinitions.find(
-        (x) => x.metadata.id === modId,
+        (x) => x.metadata.id === sourceModId,
       );
       if (sourceModDefinition == null) {
         notify.error({
@@ -119,7 +122,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         return false;
       }
 
-      const draftModComponents = getDraftModComponentsForMod(modId);
+      const draftModComponents = getDraftModComponentsForMod(sourceModId);
 
       // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
       // long to confirm?
@@ -132,14 +135,14 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         sourceModDefinition,
         draftModComponents,
         // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[modId],
+        dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[sourceModId],
         // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModMetadata: dirtyModMetadataMap[modId],
+        dirtyModMetadata: dirtyModMetadataMap[sourceModId],
       });
 
       const packageId = editablePackages.find(
         // Bricks endpoint uses "name" instead of id
-        (x) => x.name === modId,
+        (x) => x.name === sourceModId,
       )?.id;
 
       assertNotNullish(
@@ -154,7 +157,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       await dispatch(
         updateReduxForSavedModDefinition({
-          modIdToReplace: modId,
+          modIdToReplace: sourceModId,
           modDefinition: mapModDefinitionUpsertResponseToModDefinition(
             unsavedModDefinition,
             upsertResponse,
@@ -165,7 +168,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       );
 
       reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-        modId,
+        modId: sourceModId,
       });
 
       return true;

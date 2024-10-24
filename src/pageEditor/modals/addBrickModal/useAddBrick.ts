@@ -64,9 +64,7 @@ function useAddBrick(): AddBrick {
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
-  const { addBrickLocation } = useSelector(
-    getModalDataSelector(ModalKey.ADD_BRICK),
-  );
+  const modalData = useSelector(getModalDataSelector(ModalKey.ADD_BRICK));
 
   const makeNewBrick = useCallback(
     async (brick: Brick): Promise<BrickConfig> => {
@@ -96,9 +94,10 @@ function useAddBrick(): AddBrick {
    */
   const testAddBrick = useCallback(
     async (brick: Brick): Promise<TestAddBrickResult> => {
-      if (!addBrickLocation || !activeModComponent) {
-        return {};
-      }
+      assertNotNullish(modalData, "Expected modal data");
+      assertNotNullish(activeModComponent, "Expected active mod component");
+
+      const { addBrickLocation } = modalData;
 
       // Add the brick to a copy of the mod component
       const newBrick = await makeNewBrick(brick);
@@ -139,14 +138,15 @@ function useAddBrick(): AddBrick {
 
       return {};
     },
-    [activeModComponent, addBrickLocation, makeNewBrick],
+    [activeModComponent, modalData, makeNewBrick],
   );
 
   const addBrick = useCallback(
     async (brick: Brick) => {
-      if (!addBrickLocation || !activeModComponent) {
-        return;
-      }
+      assertNotNullish(modalData, "Expected modal data");
+      assertNotNullish(activeModComponent, "Expected active mod component");
+
+      const { addBrickLocation } = modalData;
 
       const newBrick = await makeNewBrick(brick);
 
@@ -165,13 +165,7 @@ function useAddBrick(): AddBrick {
         source: "PageEditor-BrickSearchModal",
       });
     },
-    [
-      activeModComponent?.uuid,
-      addBrickLocation,
-      dispatch,
-      makeNewBrick,
-      sessionId,
-    ],
+    [activeModComponent?.uuid, modalData, dispatch, makeNewBrick, sessionId],
   );
 
   return {

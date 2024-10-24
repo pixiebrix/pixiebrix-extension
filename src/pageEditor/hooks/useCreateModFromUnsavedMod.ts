@@ -37,7 +37,6 @@ import {
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { type AppDispatch } from "@/pageEditor/store/store";
-import notify from "@/utils/notify";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -110,10 +109,6 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
             draftModComponents,
             isReactivate: false,
           }),
-        );
-
-        notify.success(
-          `Mod created successfully: ${unsavedModId} -> ${newModId}`,
         );
 
         if (activeModId === unsavedModId) {

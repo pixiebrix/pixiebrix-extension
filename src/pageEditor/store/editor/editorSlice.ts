@@ -414,8 +414,8 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<
         { keepLocalCopy: boolean } & (
-          | { modComponentId: UUID }
-          | { modId: RegistryId }
+          | { sourceModComponentId: UUID }
+          | { sourceModId: RegistryId }
         )
       >,
     ) {
