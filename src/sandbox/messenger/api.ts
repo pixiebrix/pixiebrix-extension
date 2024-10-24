@@ -31,6 +31,7 @@ import pRetry from "p-retry";
 import { type JsonObject } from "type-fest";
 import { TimeoutError } from "p-timeout";
 import { isSpecificError } from "@/errors/errorHelpers";
+import { sendSandboxMessage } from "@/tinyPages/offscreenDocumentController";
 
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
 const MAX_RETRIES = 3;
@@ -148,10 +149,9 @@ export type TemplateValidatePayload = string;
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload,
 ): Promise<string> {
-  return postSandboxMessage({
-    type: "RENDER_NUNJUCKS",
-    payload,
-  });
+  const result = await sendSandboxMessage("RENDER_NUNJUCKS", payload);
+  console.log("renderNunjucksTemplate result:", result);
+  return result;
 }
 
 export async function validateNunjucksTemplate(

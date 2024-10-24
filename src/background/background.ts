@@ -51,6 +51,7 @@ import initTabListener from "./tabs";
 import { initApiClient } from "@/data/service/apiClient";
 import initTeamTrialUpdater from "@/background/teamTrialUpdater";
 import { initStateControllerListeners } from "@/background/stateControllerListeners";
+import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
@@ -88,3 +89,4 @@ initModUpdater();
 initWalkthroughModalTrigger();
 void initRestrictUnauthenticatedUrlAccess();
 initStateControllerListeners();
+void ensureOffscreenDocument();

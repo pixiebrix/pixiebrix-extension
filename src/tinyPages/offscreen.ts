@@ -28,13 +28,17 @@ import { tabCapture } from "@/background/messenger/api";
 import {
   extractRecordingTabId,
   isGetRecordingTabIdMessage,
+  isOffscreenDocumentMessage,
   isRecordErrorMessage,
+  isSandboxMessage,
   isStartAudioCaptureMessage,
   isStopAudioCaptureMessage,
+  processSandboxMessage,
   type RecordErrorMessage,
   type StartAudioCaptureMessage,
 } from "@/tinyPages/offscreenProtocol";
 import { compact } from "lodash";
+import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 
 type MediaClient = {
   liveClient: LiveClient;
@@ -216,27 +220,39 @@ async function stopRecording(): Promise<void> {
 
 // Use optional chaining in case the chrome runtime is not available:
 // https://github.com/pixiebrix/pixiebrix-extension/issues/8397
-chrome.runtime?.onMessage?.addListener(async (message: unknown) => {
-  switch (true) {
-    case isRecordErrorMessage(message): {
-      await sendErrorViaErrorReporter(message.data);
-      break;
-    }
+browser.runtime.onMessage.addListener(async (message: unknown) => {
+  if (isOffscreenDocumentMessage(message)) {
+    switch (true) {
+      case isRecordErrorMessage(message): {
+        await sendErrorViaErrorReporter(message.data);
+        break;
+      }
 
-    case isStartAudioCaptureMessage(message): {
-      await startRecording(message.data);
-      break;
-    }
+      case isStartAudioCaptureMessage(message): {
+        await startRecording(message.data);
+        break;
+      }
 
-    case isStopAudioCaptureMessage(message): {
-      await stopRecording();
-      break;
-    }
+      case isStopAudioCaptureMessage(message): {
+        await stopRecording();
+        break;
+      }
 
-    case isGetRecordingTabIdMessage(message): {
-      return extractRecordingTabId(document.location.href);
-    }
+      case isGetRecordingTabIdMessage(message): {
+        return extractRecordingTabId(document.location.href);
+      }
 
-    default:
+      case isSandboxMessage(message): {
+        return processSandboxMessage(message);
+      }
+
+      default:
+    }
   }
 });
+
+void injectIframe(
+  chrome.runtime.getURL("sandbox.html"),
+  hiddenIframeStyle,
+  "pixiebrix-sandbox",
+);

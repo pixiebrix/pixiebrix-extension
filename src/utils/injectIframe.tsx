@@ -48,21 +48,22 @@ async function _injectIframe(
   const { promise: iframeLoadPromise, resolve } = pDefer();
   iframe.addEventListener("load", resolve);
   iframe.src = url;
+  iframe.id = "pixiebrix-injected-iframe";
   Object.assign(iframe.style, style);
-  const shadowElement = shadowWrap(iframe);
+  // Const shadowElement = shadowWrap(iframe);
 
   // Append to document root (as opposed to e.g. body) to have the best chance of avoiding host page interference with
   // the injected iframe (e.g. by removing it from the DOM)
   // See https://github.com/pixiebrix/pixiebrix-extension/pull/8777
   await waitForDocumentRoot();
-  document.documentElement.append(shadowElement);
-  if (shadowRootId) {
-    shadowElement.id = shadowRootId;
-  }
+  document.documentElement.append(iframe);
+  // If (shadowRootId) {
+  //   shadowElement.id = shadowRootId;
+  // }
 
   // Check if the iframe is removed from the DOM
   const removedPoll = setInterval(() => {
-    if (!document.documentElement.contains(shadowElement)) {
+    if (!document.documentElement.contains(iframe)) {
       clearInterval(removedPoll);
       resolve("removed");
     }
