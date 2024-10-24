@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   actions,
   actions as editorActions,
@@ -36,6 +36,7 @@ import {
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -87,26 +88,49 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   );
 };
 
-const ModComponentEditorPane: React.VFC = () => {
-  // Inject the draft mod instance into the page while editing
-  useRegisterDraftModInstanceOnAllFrames();
-
+function useInitialValues(): ModComponentFormState {
+  const editorUpdateKey = useSelector(selectEditorUpdateKey);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
   assertNotNullish(
     activeModComponentFormState,
     "ModComponentEditorPane requires activeModComponentFormState",
   );
-  const editorUpdateKey = useSelector(selectEditorUpdateKey);
+
   // Key to force reload of component when user selects a different mod component from the sidebar
   const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
+  const prevKey = usePreviousValue(key);
+
+  const prevActiveModComponentFormState = usePreviousValue(
+    activeModComponentFormState,
+  );
+
+  return useMemo(() => {
+    if (key === prevKey && prevActiveModComponentFormState != null) {
+      return prevActiveModComponentFormState;
+    }
+
+    return activeModComponentFormState;
+  }, [
+    key,
+    prevKey,
+    prevActiveModComponentFormState,
+    activeModComponentFormState,
+  ]);
+}
+
+const ModComponentEditorPane: React.VFC = () => {
+  // Inject the draft mod instance into the page while editing
+  useRegisterDraftModInstanceOnAllFrames();
+  const initialValues = useInitialValues();
 
   return (
-    <ErrorBoundary key={key}>
+    <ErrorBoundary>
       <Formik
-        key={key}
-        initialValues={activeModComponentFormState}
+        enableReinitialize
+        initialValues={initialValues}
         onSubmit={() => {
           console.error(
             "Formik's submit should not be called to save a mod component.",
