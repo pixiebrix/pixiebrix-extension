@@ -16,7 +16,11 @@
  */
 
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type GetRecordingTabIdMessage } from "@/tinyPages/offscreenProtocol";
+import {
+  type GetRecordingTabIdMessage,
+  type SandboxMessage,
+} from "@/tinyPages/offscreenProtocol";
+import type { Payload } from "@/sandbox/postMessage";
 
 // Only one offscreen document can be active at a time. We use offscreen documents for error telemetry, so we won't
 // be able to use different documents for different purposes because the error telemetry document needs to be active.
@@ -36,6 +40,24 @@ export async function getRecordingTabId(): Promise<number | null> {
       type: "recording-tab-id",
       target: "offscreen",
     } satisfies GetRecordingTabIdMessage);
+  } catch {
+    return null;
+  }
+}
+
+export async function sendSandboxMessage(
+  type: string,
+  payload: Payload,
+): Promise<string | null> {
+  try {
+    return await chrome.runtime.sendMessage({
+      type: "sandbox",
+      target: "offscreen",
+      data: {
+        type,
+        payload,
+      },
+    } satisfies SandboxMessage);
   } catch {
     return null;
   }

@@ -20,6 +20,13 @@ import type { TelemetryUser } from "@/telemetry/telemetryTypes";
 import type { MessageContext } from "@/types/loggerTypes";
 import type { SemVerString } from "@/types/registryTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
+import postMessage, { type Payload } from "@/sandbox/postMessage";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { IframeInjectionError } from "@/utils/injectIframe";
+
+export type OffscreenDocumentMessage = {
+  target: "offscreen-doc";
+};
 
 export type RecordErrorMessage = {
   target: "offscreen-doc";
@@ -61,6 +68,25 @@ export type GetRecordingTabIdMessage = {
   type: "recording-tab-id";
   target: "offscreen";
 };
+
+export type SandboxMessage = {
+  type: "sandbox";
+  target: "offscreen";
+  data: {
+    type: string;
+    payload: Payload;
+  };
+};
+
+export function isOffscreenDocumentMessage(
+  message: unknown,
+): message is OffscreenDocumentMessage {
+  if (typeof message !== "object" || message == null) {
+    return false;
+  }
+
+  return "target" in message && message.target === "offscreen";
+}
 
 export function extractRecordingTabId(url: string): number | null {
   const offscreenUrl = new URL(url);
@@ -127,4 +153,42 @@ export function isGetRecordingTabIdMessage(
     "type" in message &&
     message.type === "recording-tab-id"
   );
+}
+
+export function isSandboxMessage(message: unknown): message is SandboxMessage {
+  if (typeof message !== "object" || message == null) {
+    return false;
+  }
+
+  return (
+    "target" in message &&
+    message.target === "offscreen" &&
+    "type" in message &&
+    message.type === "sandbox"
+  );
+}
+
+const getSandbox = memoizeUntilSettled(async () => {
+  const iframe = document.querySelector("#pixiebrix-injected-iframe")!;
+
+  if (!iframe) {
+    throw new IframeInjectionError("Sandbox wrapper was removed from the DOM.");
+  }
+
+  await postMessage({
+    recipient: iframe.contentWindow!,
+    payload: "ping",
+    type: "SANDBOX_PING",
+  });
+
+  return iframe.contentWindow!;
+});
+
+export async function processSandboxMessage({
+  data: { payload, type },
+}: SandboxMessage) {
+  const recipient = await getSandbox();
+  const result = await postMessage({ type, payload, recipient });
+  console.log("offscreen sandbox result:", result);
+  return result;
 }
