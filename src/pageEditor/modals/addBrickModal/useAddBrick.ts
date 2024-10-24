@@ -25,7 +25,7 @@ import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
-  selectAddBlockLocation,
+  selectAddBrickLocation,
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
@@ -63,7 +63,7 @@ function useAddBrick(): AddBrick {
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
   const pipelineMap = useSelector(selectPipelineMap);
-  const addBrickLocation = useSelector(selectAddBlockLocation);
+  const addBrickLocation = useSelector(selectAddBrickLocation);
 
   const makeNewBrick = useCallback(
     async (brick: Brick): Promise<BrickConfig> => {
