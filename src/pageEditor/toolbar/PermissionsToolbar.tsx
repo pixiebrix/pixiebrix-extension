@@ -30,7 +30,6 @@ import {
 import { calculatePermissionsForModComponentFormState } from "@/pageEditor/editorPermissionsHelpers";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type Permissions } from "webextension-polyfill";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 const fallbackState = {
   hasPermissions: true,
@@ -61,7 +60,6 @@ const PermissionsToolbar: React.FunctionComponent<{
   );
   const { refetch, data } = fallbackValue(state, fallbackState);
 
-  assertNotNullish(data, "Permissions data is null");
   const { permissions, hasPermissions } = data;
 
   const requestPermissions = async () => {

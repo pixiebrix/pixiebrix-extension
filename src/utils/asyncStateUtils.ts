@@ -22,10 +22,15 @@ import {
   type AsyncValueArray,
   type FetchableAsyncState,
   type UseCachedQueryResult,
+  type Success,
 } from "@/types/sliceTypes";
 import { noop } from "lodash";
 import { serializeError } from "serialize-error";
 import { castDraft, type Draft } from "immer";
+import type { NonUndefined } from "@reduxjs/toolkit/dist/query/tsHelpers";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 /**
  * Merge multiple async states into a single async state using a synchronous merge function.
@@ -44,7 +49,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   const states: AsyncStateArray = args.slice(0, -1);
 
   for (const state of states) {
-    checkAsyncStateInvariants(state);
+    assertAsyncStateInvariants(state);
   }
 
   const isLoading =
@@ -158,13 +163,13 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
  * Helper function that transforms AsyncState to provide a fallback value. Used to provide optimistic defaults for
  * loading and error states.
  * @param state the async state
- * @param fallbackValue the value to use if the state is uninitialized or loading
+ * @param fallbackValue the value to use if the state is uninitialized, loading, or error
  * @see defaultInitialValue
  */
-export function fallbackValue<Value, State extends AsyncState<Value>>(
-  state: State,
-  fallbackValue: Value,
-): State {
+export function fallbackValue<
+  Value extends NonUndefined<unknown>,
+  State extends AsyncState<Value> = AsyncState<Value>,
+>(state: State, fallbackValue: Value): Success<Value, State> {
   if (!state.isSuccess) {
     return {
       // Spread state to get any other inherited properties, e.g., refetch
@@ -175,7 +180,15 @@ export function fallbackValue<Value, State extends AsyncState<Value>>(
     };
   }
 
-  return state;
+  if (DEBUG) {
+    assertAsyncStateInvariants(state);
+
+    if (state.data === undefined) {
+      throw new Error("Expected data to defined for isSuccess: true");
+    }
+  }
+
+  return state as Success<Value, State>;
 }
 
 /**
@@ -213,9 +226,9 @@ export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
 /**
  * Lift a known value to a FetchableAsyncState.
  */
-export function valueToAsyncState<Value>(
+export function valueToAsyncState<Value extends NonUndefined<unknown>>(
   value: Value,
-): FetchableAsyncState<Value> {
+): Success<Value, FetchableAsyncState<Value>> {
   return {
     data: value,
     currentData: value,
@@ -304,8 +317,9 @@ export function errorToAsyncCacheState<Value>(
 
 /**
  * Throw an error if state has invalid status flag combinations.
+ * @throws an error if state has invalid status flag combinations.
  */
-export function checkAsyncStateInvariants(state: AsyncState): void {
+export function assertAsyncStateInvariants(state: AsyncState): void {
   if (
     !(
       state.isUninitialized ||
@@ -330,6 +344,17 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
   if (state.isLoading && (state.isSuccess || state.isError)) {
     throw new Error("Expected only isLoading");
   }
+
+  if (state.isError && state.data !== undefined) {
+    throw new Error("Expected data to be undefined when isError is set");
+  }
+
+  if (state.isSuccess && state.error !== undefined) {
+    throw new Error("Expected error to be undefined when isError is set");
+  }
+
+  // Ideally would check data, error, and currentData is consistent with the flags. There seems to be some quirky
+  // behavior in RTK Query though, e.g., error is defined while the isLoading is set.
 }
 
 export function setValueOnState<T>(
@@ -345,7 +370,7 @@ export function setValueOnState<T>(
   state.isSuccess = true;
   state.error = undefined;
 
-  checkAsyncStateInvariants(state);
+  assertAsyncStateInvariants(state);
 
   return state;
 }
@@ -363,7 +388,7 @@ export function setErrorOnState<T>(
   state.isError = true;
   state.error = serializeError(error, { useToJSON: false });
 
-  checkAsyncStateInvariants(state);
+  assertAsyncStateInvariants(state);
 
   return state;
 }

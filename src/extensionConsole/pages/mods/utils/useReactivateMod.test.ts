@@ -52,11 +52,9 @@ test("deactivates mod components", async () => {
 
   await act(async () => reactivateMod(modDefinition));
 
-  expect(deactivateMod).toHaveBeenCalledWith(
-    modDefinition.metadata.id,
-    [expectedModComponent!.id],
-    expect.any(Function),
-  );
+  expect(deactivateMod).toHaveBeenCalledWith(modDefinition.metadata.id, [
+    expectedModComponent!.id,
+  ]);
 });
 
 test("dispatches activate mod action", async () => {
