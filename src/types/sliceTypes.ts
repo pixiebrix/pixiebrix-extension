@@ -83,7 +83,6 @@ export type Success<
   isSuccess: true;
   isError: false;
   isUninitialized: false;
-  isFetching: boolean;
   isLoading: false;
   data: Data;
   error: undefined;
