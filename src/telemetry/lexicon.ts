@@ -239,6 +239,12 @@ export const lexicon: LexiconMap = {
       "your browser' for IndexedDB (IDB) errors is shown in the Extension Console",
     tags: [LexiconTags.EXTENSION_CONSOLE],
   },
+  INTEGRATION_WIDGET_SELECT: {
+    description:
+      "Reported in the Page Editor when a user selects a configuration from the integration field dropdown for a brick that uses an " +
+      "integration.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
 };
 
 /**
