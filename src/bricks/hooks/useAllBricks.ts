@@ -32,6 +32,8 @@ const subscribe = (callback: () => void) => {
 /**
  * Load the TypedBlockMap from the block registry, and listen for changes in the registry.
  */
+// XXX: refactor to use useAsyncExternalStore and return an AsyncState. Callsites will need to explicitly handle
+// loading/error states (e.g., via fallback value)
 function useAllBricks(): {
   allBricks: TypedBrickMap;
   isLoading: boolean;
@@ -55,7 +57,7 @@ function useAllBricks(): {
           setAllTyped(allTyped);
         }
       } catch (error) {
-        console.debug("Error loading blocks", error);
+        console.debug("Error loading bricks", error);
       }
     },
     [allTypedPromise, setAllTyped],

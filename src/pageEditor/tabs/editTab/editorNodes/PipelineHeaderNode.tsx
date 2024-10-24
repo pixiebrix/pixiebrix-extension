@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { type RefObject, useLayoutEffect, useRef } from "react";
 import NodeActionsView, {
   type NodeAction,
 } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
@@ -44,6 +44,42 @@ export type PipelineHeaderNodeProps = {
   isPipelineLoading: boolean;
 };
 
+function useScrollIntoViewEffect({
+  nodeRef,
+  isPipelineLoading,
+  builderPreviewElement,
+}: {
+  nodeRef: RefObject<HTMLAnchorElement>;
+  isPipelineLoading: boolean;
+  builderPreviewElement: PipelineHeaderNodeProps["builderPreviewElement"];
+}) {
+  useLayoutEffect(() => {
+    if (!builderPreviewElement || isPipelineLoading) {
+      return;
+    }
+
+    const eventName = `${SCROLL_TO_HEADER_NODE_EVENT}-${builderPreviewElement.name}`;
+
+    const scrollIntoView = () => {
+      nodeRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    };
+
+    if (builderPreviewElement?.active) {
+      scrollIntoView();
+    }
+
+    window.addEventListener(eventName, scrollIntoView);
+
+    return () => {
+      window.removeEventListener(eventName, scrollIntoView);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when loading completes to prevent multiple event listeners from being added
+  }, [isPipelineLoading]);
+}
+
 const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   headerLabel,
   nestingLevel,
@@ -55,37 +91,13 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
   builderPreviewElement,
   isPipelineLoading,
 }) => {
-  const nodeRef = useRef<HTMLAnchorElement | null>(null);
+  const nodeRef = useRef<HTMLAnchorElement>(null);
 
-  const scrollIntoView = () => {
-    nodeRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  useEffect(() => {
-    if (!builderPreviewElement || isPipelineLoading) {
-      return;
-    }
-
-    window.addEventListener(
-      `${SCROLL_TO_HEADER_NODE_EVENT}-${builderPreviewElement.name}`,
-      scrollIntoView,
-    );
-
-    if (builderPreviewElement?.active) {
-      scrollIntoView();
-    }
-
-    return () => {
-      window.removeEventListener(
-        `${SCROLL_TO_HEADER_NODE_EVENT}-${builderPreviewElement.name}`,
-        scrollIntoView,
-      );
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when loading completes to prevent multiple event listeners from being added
-  }, [isPipelineLoading]);
+  useScrollIntoViewEffect({
+    nodeRef,
+    isPipelineLoading,
+    builderPreviewElement,
+  });
 
   return (
     <>

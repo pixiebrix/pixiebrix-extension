@@ -17,6 +17,21 @@
 
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
+/**
+ * Select a key indicating that a change occurred in the Redux state that's not reflected in
+ * Formik. Used to force the Formik mod component form to re-mount with the latest values
+ * from Redux.
+ *
+ * Examples of changes that increment this number:
+ * - Changing the selection in the mod listing pane
+ * - Copy/pasting a brick
+ */
+export const selectEditorUpdateKey = ({ editor }: EditorRootState) =>
+  editor.selectionSeq;
+
+/**
+ * Select the id of the selected mod component id, or nullish if no mod component is selected.
+ */
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
     console.warn(
@@ -44,9 +59,6 @@ export const selectActiveModId = ({ editor }: EditorRootState) =>
  */
 export const selectExpandedModId = ({ editor }: EditorRootState) =>
   editor.expandedModId;
-
-export const selectEditorUpdateKey = ({ editor }: EditorRootState) =>
-  editor.selectionSeq;
 
 export const selectIsEditorSidebarExpanded = ({ editor }: EditorRootState) =>
   editor.isModListExpanded;

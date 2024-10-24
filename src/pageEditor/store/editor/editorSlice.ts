@@ -334,6 +334,8 @@ export const editorSlice = createSlice({
       state.expandedModId = null;
       state.error = null;
       state.beta = false;
+      // Technically not required because the mod component Formik form will be unmounted to show the panel. But,
+      // increment to reflect the change in selection.
       state.selectionSeq++;
     },
 
@@ -725,7 +727,7 @@ export const editorSlice = createSlice({
       setActiveNodeId(state, block.instanceId);
       state.dirty[modComponentFormState.uuid] = true;
 
-      // This change should re-initialize the Page Editor Formik form
+      // Force the Formik form to remount because the added node is not in the Formik state
       state.selectionSeq++;
     },
 
@@ -771,11 +773,11 @@ export const editorSlice = createSlice({
 
       // Make sure the pipeline map is updated
       syncBrickConfigurationUIStates(state, activeModComponentFormState);
-
-      // This change should re-initialize the Page Editor Formik form
-      state.selectionSeq++;
       const activeModComponentId = validateActiveModComponentId(state);
       state.dirty[activeModComponentId] = true;
+
+      // Force the Formik form to remount because the node order is not in the Formik state
+      state.selectionSeq++;
     },
 
     removeNode(state, action: PayloadAction<UUID>) {
@@ -822,7 +824,7 @@ export const editorSlice = createSlice({
 
       state.dirty[activeModComponentFormState.uuid] = true;
 
-      // This change should re-initialize the Page Editor Formik form
+      // Force the Formik form to remount because the node order is not in the Formik state
       state.selectionSeq++;
     },
 

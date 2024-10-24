@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { type RefObject, useLayoutEffect, useRef } from "react";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
@@ -32,23 +32,61 @@ import {
 import { useSelector } from "react-redux";
 import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
-const useScrollIntoViewEffect = (
+function useScrollIntoViewEffect({
+  nodeRef,
   active = false,
   isSubPipelineHeaderActive = false,
-) => {
-  const nodeRef = useRef<HTMLDivElement>(null);
+}: {
+  nodeRef: RefObject<HTMLDivElement>;
+  active: boolean | undefined;
+  isSubPipelineHeaderActive: boolean | undefined;
+}) {
+  const isInitialRenderRef = useRef<boolean>(true);
+
   const activeBuilderPreviewElementId = useSelector(
     selectActiveBuilderPreviewElement,
   );
 
-  useEffect(() => {
+  // Scroll into view when the Formik form re-mounted, e.g., brick move/deletion/copy-paste/etc.
+  useLayoutEffect(() => {
+    if (active && isInitialRenderRef.current) {
+      isInitialRenderRef.current = false;
+
+      // :shrug: requestAnimationFrame seems to be necessary even when using useLayoutEffect to ensure the scroll works
+      // That might be due to loading states in usePipelineNodes
+      // XXX: there's a slight flicker due to scroll position when the Formik form is remounted. In the future, we could
+      // attempt to how to pass down a ref to the containing scroll container to set the scroll before the first paint.
+      // Alternatively, we could move more actions brick outline actions to Formik to avoid form remount
+      const timeout = requestAnimationFrame(() => {
+        nodeRef.current?.scrollIntoView({
+          block: "center",
+          // Scroll instantly to simulate maintaining scroll position across Formik remounts
+          behavior: "instant",
+        });
+      });
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+
+    isInitialRenderRef.current = false;
+  }, [isInitialRenderRef, nodeRef, active]);
+
+  // Automatically scroll to node corresponding to element selected in the Document Builder
+  useLayoutEffect(() => {
     if (active && !isSubPipelineHeaderActive && activeBuilderPreviewElementId) {
       nodeRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
-  }, [activeBuilderPreviewElementId, isSubPipelineHeaderActive, active]);
+  }, [
+    nodeRef,
+    activeBuilderPreviewElementId,
+    isSubPipelineHeaderActive,
+    active,
+  ]);
 
   return nodeRef;
-};
+}
 
 const BrickNode: React.VFC<BrickNodeProps> = ({
   onClick,
@@ -70,7 +108,10 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   trailingMessage,
   isSubPipelineHeaderActive,
 }) => {
-  const nodeRef = useScrollIntoViewEffect(active, isSubPipelineHeaderActive);
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  useScrollIntoViewEffect({ nodeRef, active, isSubPipelineHeaderActive });
+
   useAutoFocusConfiguration({ elementRef: nodeRef, focus: active });
 
   return (
