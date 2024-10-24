@@ -57,7 +57,7 @@ import {
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBricks from "@/bricks/hooks/useAllBricks";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import {
@@ -221,7 +221,7 @@ const usePipelineNodes = (): {
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBricks, isLoading } = useAllBricks();
+  const { data: allBricks, isLoading } = useTypedBrickMap();
 
   const pasteBlock = usePasteBrick();
   const showPaste = pasteBlock && isApiAtLeastV2;
@@ -311,7 +311,7 @@ const usePipelineNodes = (): {
     assertNotNullish(instanceId, "instanceId is required");
 
     const nodes: EditorNodeProps[] = [];
-    const block = allBricks.get(blockConfig.id)?.block;
+    const block = allBricks?.get(blockConfig.id)?.block;
     const isNodeActive = instanceId === activeNodeId;
 
     const traceRecord = getLatestBrickCall(
@@ -635,7 +635,7 @@ const usePipelineNodes = (): {
     const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
     const lastBlockId = pipeline.at(lastIndex)?.id;
-    const lastBlock = lastBlockId ? allBricks.get(lastBlockId) : undefined;
+    const lastBlock = lastBlockId ? allBricks?.get(lastBlockId) : undefined;
     const showAppend =
       !lastBlock?.block || lastBlock.type !== BrickTypes.RENDERER;
     const nodes: EditorNodeProps[] = [];

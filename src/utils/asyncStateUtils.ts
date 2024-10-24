@@ -22,10 +22,15 @@ import {
   type AsyncValueArray,
   type FetchableAsyncState,
   type UseCachedQueryResult,
+  type Success,
 } from "@/types/sliceTypes";
 import { noop } from "lodash";
 import { serializeError } from "serialize-error";
 import { castDraft, type Draft } from "immer";
+import type { NonUndefined } from "@reduxjs/toolkit/dist/query/tsHelpers";
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 /**
  * Merge multiple async states into a single async state using a synchronous merge function.
@@ -158,13 +163,13 @@ export function defaultInitialValue<Value, State extends AsyncState<Value>>(
  * Helper function that transforms AsyncState to provide a fallback value. Used to provide optimistic defaults for
  * loading and error states.
  * @param state the async state
- * @param fallbackValue the value to use if the state is uninitialized or loading
+ * @param fallbackValue the value to use if the state is uninitialized, loading, or error
  * @see defaultInitialValue
  */
-export function fallbackValue<Value, State extends AsyncState<Value>>(
-  state: State,
-  fallbackValue: Value,
-): State {
+export function fallbackValue<
+  Value extends NonUndefined<unknown>,
+  State extends AsyncState<Value> = AsyncState<Value>,
+>(state: State, fallbackValue: Value): Success<Value, State> {
   if (!state.isSuccess) {
     return {
       // Spread state to get any other inherited properties, e.g., refetch
@@ -175,7 +180,12 @@ export function fallbackValue<Value, State extends AsyncState<Value>>(
     };
   }
 
-  return state;
+  if (DEBUG) {
+    // Verify the state arg is a valid success state
+    checkAsyncStateInvariants(state);
+  }
+
+  return state as Success<Value, State>;
 }
 
 /**
@@ -213,9 +223,9 @@ export function loadingAsyncStateFactory<Value>(): AsyncState<Value> {
 /**
  * Lift a known value to a FetchableAsyncState.
  */
-export function valueToAsyncState<Value>(
+export function valueToAsyncState<Value extends NonUndefined<unknown>>(
   value: Value,
-): FetchableAsyncState<Value> {
+): Success<Value, FetchableAsyncState<Value>> {
   return {
     data: value,
     currentData: value,
@@ -303,7 +313,7 @@ export function errorToAsyncCacheState<Value>(
 }
 
 /**
- * Throw an error if state has invalid status flag combinations.
+ * Throw an error if state has invalid status flag and data combinations.
  */
 export function checkAsyncStateInvariants(state: AsyncState): void {
   if (
@@ -329,6 +339,25 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
 
   if (state.isLoading && (state.isSuccess || state.isError)) {
     throw new Error("Expected only isLoading");
+  }
+
+  if (state.isError && state.data !== undefined) {
+    throw new Error("Expected data to be undefined when isError is set");
+  }
+
+  if (state.isSuccess && state.error !== undefined) {
+    throw new Error("Expected error to be undefined when isError is set");
+  }
+
+  if (
+    state.isLoading &&
+    (state.error !== undefined ||
+      state.data !== undefined ||
+      state.currentData !== undefined)
+  ) {
+    throw new Error(
+      "Expected data, currentData, and error to be undefined when isLoading is set",
+    );
   }
 }
 
