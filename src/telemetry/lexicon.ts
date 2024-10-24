@@ -250,6 +250,34 @@ export const lexicon: LexiconMap = {
       "in the Extension Console.",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  INTEGRATION_WIDGET_CLEAR: {
+    description:
+      "Reported in the Page Editor when a user clears the integration field for a brick that uses an integration " +
+      "by clicking the 'X' button in the field.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  INTEGRATION_WIDGET_REFRESH: {
+    description:
+      "Reported in the Page Editor when a user clicks the refresh button to the right of the integration field " +
+      "for a brick that uses an integration." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "ACTIVATION_INTEGRATION_REFRESH",
+      )} event, which is reported when activating a mod ` +
+      "in the Extension Console.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK: {
+    description:
+      "Reported in the Page Editor when a user clicks the 'Configure additional integrations here' link included " +
+      "underneath integration fields for bricks that use integrations." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "ACTIVATION_INTEGRATION_ADD_NEW_CLICK",
+      )} event, which is reported when activating a mod ` +
+      "in the Extension Console.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
 };
 
 /**
