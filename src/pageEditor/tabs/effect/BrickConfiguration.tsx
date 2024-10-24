@@ -24,7 +24,7 @@ import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { get, partial } from "lodash";
+import { partial } from "lodash";
 import { type BrickConfig } from "@/bricks/types";
 import AdvancedLinks, {
   DEFAULT_WINDOW_VALUE,
