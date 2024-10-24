@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   actions,
   actions as editorActions,
@@ -105,23 +105,16 @@ function useInitialValues(): ModComponentFormState {
   // Key to force reinitialization of formik when user selects a different mod component from the sidebar
   const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
   const prevKey = usePreviousValue(key);
-
-  const prevActiveModComponentFormState = usePreviousValue(
-    activeModComponentFormState,
-  );
+  const activeModComponentFormStateRef = useRef(activeModComponentFormState);
 
   return useMemo(() => {
-    if (key === prevKey && prevActiveModComponentFormState != null) {
-      return prevActiveModComponentFormState;
+    if (key === prevKey) {
+      return activeModComponentFormStateRef.current;
     }
 
+    activeModComponentFormStateRef.current = activeModComponentFormState;
     return activeModComponentFormState;
-  }, [
-    key,
-    prevKey,
-    prevActiveModComponentFormState,
-    activeModComponentFormState,
-  ]);
+  }, [key, prevKey, activeModComponentFormState]);
 }
 
 const ModComponentEditorPane: React.VFC = () => {

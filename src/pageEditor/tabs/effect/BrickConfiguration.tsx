@@ -60,7 +60,8 @@ function useRecoverFormStateIntegrityError(name: string) {
   const [config] = useField<BrickConfig | undefined>(name);
   const dispatch = useDispatch();
 
-  if (!config.value && !name.includes("modComponent")) {
+  // Verify that the name doesn't still include "extension"
+  if (!name.includes("modComponent")) {
     dispatch(
       editorActions.setModComponentFormState({
         modComponentFormState: context.values,
