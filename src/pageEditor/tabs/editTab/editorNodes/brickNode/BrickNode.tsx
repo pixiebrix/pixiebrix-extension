@@ -56,8 +56,9 @@ function useScrollIntoViewEffect({
       // That might be due to loading states in usePipelineNodes
       // XXX: there's a slight flicker due to scroll position when the Formik form is remounted. In the future, we could
       // attempt to pass a ref to the containing scroll container to set the scroll before the first paint
-      // XXX: there's also a quirky behavior/buggy behavior when moving a brick that's not selected and the selected
-      // brick is not in view. The scroll will reset to the position of the select brick
+      // XXX: there's also a quirky behavior/buggy behavior when deleting/moving a brick that's not selected. The
+      // scroll will reset to the position of the select brick. Arguably this is better than the previous behavior
+      // of resetting to the top
       const timeout = requestAnimationFrame(() => {
         nodeRef.current?.scrollIntoView({
           block: "center",
