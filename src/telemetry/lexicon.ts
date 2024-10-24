@@ -219,6 +219,13 @@ export const lexicon: LexiconMap = {
       "a mod to run by clicking on the mod or pressing 'enter' on the keyboard with the mod highlighted." +
       "\n" +
       "Does not necessarily indicate a successful mod run.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  IDB_RECLAIM_QUOTA: {
+    description:
+      "Reported when a user clicks the 'Reclaim Space' button on the IndexedDB (IDB) error display in the Extension " +
+      "Console when the user gets a 'Insufficient storage space available to PixieBrix' error.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
   },
 };
 
