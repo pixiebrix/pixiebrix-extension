@@ -88,6 +88,9 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   );
 };
 
+/**
+ * Returns the active mod component form state. Responds to updates in the editor state for use with triggering rerenders.
+ */
 function useInitialValues(): ModComponentFormState {
   const editorUpdateKey = useSelector(selectEditorUpdateKey);
   const activeModComponentFormState = useSelector(
@@ -99,7 +102,7 @@ function useInitialValues(): ModComponentFormState {
     "ModComponentEditorPane requires activeModComponentFormState",
   );
 
-  // Key to force reload of component when user selects a different mod component from the sidebar
+  // Key to force reinitialization of formik when user selects a different mod component from the sidebar
   const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
   const prevKey = usePreviousValue(key);
 
