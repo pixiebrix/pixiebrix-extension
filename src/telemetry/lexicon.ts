@@ -206,6 +206,13 @@ export const lexicon: LexiconMap = {
     hidden: true,
     tags: [LexiconTags.OBSOLETE],
   },
+  HANDLE_CONTEXT_MENU: {
+    description:
+      "Triggered by running a Context Menu starter brick, as a result of a user clicking a PixieBrix context menu item on a modified web page.\n" +
+      "\n" +
+      "Does not necessarily indicate a successful brick run.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
 };
 
 /**
