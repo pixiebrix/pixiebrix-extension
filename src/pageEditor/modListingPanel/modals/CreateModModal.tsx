@@ -210,27 +210,17 @@ const CreateModModalBody: React.FC = () => {
           modalData,
         );
       } else if (
-        "modId" in modalData &&
-        (isInnerDefinitionRegistryId(modalData.sourceModId) ||
-          modDefinition == null)
+        isInnerDefinitionRegistryId(modalData.sourceModId) ||
+        modDefinition == null
       ) {
+        // Handle "Save As" case where the mod is unsaved or the user no longer has access to the mod definition
         assertNotNullish(
           currentModId,
           "Expected mod to be selected in the editor",
         );
-        // Handle "save as" case where the mod is unsaved or the user no longer has access to the mod definition
         await createModFromUnsavedMod(currentModId, values);
-      } else if ("modId" in modalData) {
-        // Typescript not smart enough that modDefinition can't be null on this branch
-        assertNotNullish(
-          modDefinition,
-          "Expected mod to be selected in the editor",
-        );
-        await createModFromMod(modDefinition, values, modalData);
       } else {
-        // Should not happen in practice
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error("Expected either active mod component or mod");
+        await createModFromMod(modDefinition, values, modalData);
       }
 
       notify.success({
