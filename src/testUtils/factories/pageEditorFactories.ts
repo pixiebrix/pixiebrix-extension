@@ -37,7 +37,7 @@ import {
   starterBrickDefinitionPropFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { type BrickPipeline } from "@/bricks/types";
+import { type BrickPipeline, PipelineFlavor } from "@/bricks/types";
 import contextMenu from "@/pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "@/types/helpers";
 import menuItem from "@/pageEditor/starterBricks/button";
@@ -60,6 +60,7 @@ import {
   createNewUnsavedModMetadata,
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
+import { type AddBrickLocation } from "@/pageEditor/store/editor/pageEditorTypes";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
@@ -311,4 +312,10 @@ export const formStateWithTraceDataFactory = define<{
       });
     });
   }, "formState"),
+});
+
+export const addBrickLocationFactory = define<AddBrickLocation>({
+  path: "body",
+  flavor: PipelineFlavor.AllBricks,
+  index: 0,
 });

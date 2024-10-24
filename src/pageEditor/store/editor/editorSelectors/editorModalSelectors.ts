@@ -17,23 +17,43 @@
 
 import {
   type EditorRootState,
+  type ModalDefinition,
   ModalKey,
 } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { Selector } from "react-redux";
 
-export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
-  isMoveCopyToModVisible: editor.visibleModalKey === ModalKey.MOVE_COPY_TO_MOD,
-  isSaveAsNewModModalVisible:
-    editor.visibleModalKey === ModalKey.SAVE_AS_NEW_MOD,
-  isCreateModModalVisible: editor.visibleModalKey === ModalKey.CREATE_MOD,
-  isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BRICK,
-  isSaveDataIntegrityErrorModalVisible:
-    editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
-});
+export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => {
+  const { type } = editor.visibleModal ?? {};
+
+  return {
+    isMoveCopyToModVisible: type === ModalKey.MOVE_COPY_TO_MOD,
+    isSaveAsNewModModalVisible: type === ModalKey.SAVE_AS_NEW_MOD,
+    isCreateModModalVisible: type === ModalKey.CREATE_MOD,
+    isAddBlockModalVisible: type === ModalKey.ADD_BRICK,
+    isSaveDataIntegrityErrorModalVisible:
+      type === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
+  };
+};
+
+// Typescript-Fu for getModalDataSelector
+type ModalDataMap = {
+  [K in ModalDefinition["type"]]: Extract<ModalDefinition, { type: K }>["data"];
+};
 
 /**
- * Returns true if the visible mod creation modal/wizard should keep a copy of the source mod on save.
- * - True corresponds to copy behavior
- * - False corresponds to move/rename behavior
+ * Returns a selector to get the data for the currently visible modal
+ * @throws Error if the specified modal is not visible
  */
-export const selectKeepLocalCopyOnCreateMod = ({ editor }: EditorRootState) =>
-  editor.keepLocalCopyOnCreateMod;
+export function getModalDataSelector<T extends ModalKey>(
+  modalKey: T,
+): Selector<EditorRootState, ModalDataMap[T] | undefined> {
+  return ({ editor }: EditorRootState) => {
+    const { visibleModal } = editor;
+    if (visibleModal?.type !== modalKey) {
+      // Ideally this selector would throw, but the modals are written in a way that the selector is always called
+      return;
+    }
+
+    return visibleModal.data as ModalDataMap[T];
+  };
+}

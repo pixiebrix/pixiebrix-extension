@@ -23,7 +23,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import {
   selectActiveModComponentFormState,
   selectEditorModalVisibilities,
-  selectKeepLocalCopyOnCreateMod,
+  getModalDataSelector,
   selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -35,6 +35,7 @@ import Form, {
 import { object, string } from "yup";
 import { type RegistryId } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
 
 type FormState = {
   modId: RegistryId | null;
@@ -59,7 +60,9 @@ const MoveOrCopyToModModal: React.FC = () => {
     selectEditorModalVisibilities,
   );
   const modMetadataMap = useSelector(selectModMetadataMap);
-  const isCopyAction = useSelector(selectKeepLocalCopyOnCreateMod);
+  const modalData = useSelector(
+    getModalDataSelector(ModalKey.MOVE_COPY_TO_MOD),
+  );
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -73,10 +76,16 @@ const MoveOrCopyToModModal: React.FC = () => {
   const onSubmit: OnSubmit<FormState> = async ({ modId }) => {
     assertNotNullish(modId, "Invalid form state: modId is null");
     assertNotNullish(activeModComponentFormState, "No active mod component");
+    assertNotNullish(modalData, "Expected modal data to be defined");
+
+    const { keepLocalCopy: isCopyAction } = modalData;
 
     if (modId === NEW_MOD_ID) {
       dispatch(
-        editorActions.showCreateModModal({ keepLocalCopy: isCopyAction }),
+        editorActions.showCreateModModal({
+          keepLocalCopy: isCopyAction,
+          sourceModComponentId: activeModComponentFormState.uuid,
+        }),
       );
       return;
     }
@@ -142,18 +151,18 @@ const MoveOrCopyToModModal: React.FC = () => {
           type="submit"
           disabled={!isValid || isSubmitting}
         >
-          {isCopyAction ? "Copy" : "Move"}
+          {modalData?.keepLocalCopy ? "Copy" : "Move"}
         </Button>
       </Modal.Footer>
     ),
-    [isCopyAction, hideModal],
+    [modalData?.keepLocalCopy, hideModal],
   );
 
   return (
     <Modal show={show} onHide={hideModal}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {isCopyAction ? "Copy" : "Move"}{" "}
+          {modalData?.keepLocalCopy ? "Copy" : "Move"}{" "}
           <em>{activeModComponentFormState?.label}</em>
         </Modal.Title>
       </Modal.Header>

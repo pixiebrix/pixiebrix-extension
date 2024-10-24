@@ -20,7 +20,6 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
-import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import brickRegistry from "@/bricks/registry";
@@ -29,12 +28,14 @@ import {
   featureFlagBrick,
 } from "@/runtime/pipelineTests/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  addBrickLocationFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
 import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
-import { PipelineFlavor } from "@/bricks/types";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 // Need at least one item so callers see the registry as initialized
@@ -56,13 +57,7 @@ describe("AddBrickModal", () => {
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
-        dispatch(
-          actions.showAddBrickModal({
-            path: "",
-            flavor: PipelineFlavor.AllBricks,
-            index: 0,
-          }),
-        );
+        dispatch(actions.showAddBrickModal(addBrickLocationFactory()));
       },
       // This currently produces a warning, but allows us to snapshot the modal
       //  See: https://github.com/testing-library/react-testing-library/issues/62
@@ -88,13 +83,7 @@ describe("AddBrickModal", () => {
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
-        dispatch(
-          actions.showAddBrickModal({
-            path: "",
-            flavor: PipelineFlavor.AllBricks,
-            index: 0,
-          }),
-        );
+        dispatch(actions.showAddBrickModal(addBrickLocationFactory()));
       },
       // This currently produces a warning, but allows us to snapshot the modal
       //  See: https://github.com/testing-library/react-testing-library/issues/62
@@ -114,13 +103,7 @@ describe("AddBrickModal", () => {
       setupRedux(dispatch) {
         dispatch(actions.addModComponentFormState(formState));
         dispatch(actions.setActiveModComponentId(formState.uuid));
-        dispatch(
-          actions.showAddBrickModal({
-            path: PIPELINE_BRICKS_FIELD_NAME,
-            flavor: PipelineFlavor.AllBricks,
-            index: 0,
-          }),
-        );
+        dispatch(actions.showAddBrickModal(addBrickLocationFactory()));
       },
       container: document.body,
     });

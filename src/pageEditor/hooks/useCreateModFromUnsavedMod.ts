@@ -30,6 +30,7 @@ import {
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { type RegistryId } from "@/types/registryTypes";
 import {
+  selectActiveModId,
   selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -52,6 +53,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const dispatch = useDispatch<AppDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
+  const activeModId = useSelector(selectActiveModId);
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
@@ -74,6 +76,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       const draftModComponents = getDraftModComponentsForMod(unsavedModId);
 
       const dirtyModOptionsDefinition =
+        // eslint-disable-next-line security/detect-object-injection -- inner definition id
         dirtyModOptionsDefinitionMap[unsavedModId];
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
@@ -109,7 +112,11 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
           }),
         );
 
-        dispatch(editorActions.setActiveModId(newModId));
+        if (activeModId === unsavedModId) {
+          // If the mod list item was selected, reselect the mod item using the new ID. Otherwise, keep the
+          // current selection in mod listing pane.
+          dispatch(editorActions.setActiveModId(newModId));
+        }
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
           modId: newModId,
@@ -117,6 +124,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       });
     },
     [
+      activeModId,
       getDraftModComponentsForMod,
       dirtyModOptionsDefinitionMap,
       buildAndValidateMod,

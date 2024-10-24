@@ -145,21 +145,29 @@ export class PageEditorPage extends BasePageObject {
   async saveNewMod({
     currentModName,
     descriptionOverride,
+    selectModItem = true,
   }: {
     currentModName: string;
     descriptionOverride?: string;
+    /**
+     * True to select the mod item before clicking save, or false to click save button directly.
+     */
+    selectModItem?: boolean;
   }): Promise<{
     modId: string;
   }> {
     const modListItem =
       this.modListingPanel.getModListItemByName(currentModName);
-    await modListItem.select();
-    // Expect the mod metadata editor to be showing form for a mod that's never been saved before
-    await expect(
-      this.modEditorPane.editMetadataTabPanel.getByPlaceholder(
-        "Save the mod to assign a Mod ID",
-      ),
-    ).toBeVisible();
+
+    if (selectModItem) {
+      await modListItem.select();
+      // Expect the mod metadata editor to be showing form for a mod that's never been saved before
+      await expect(
+        this.modEditorPane.editMetadataTabPanel.getByPlaceholder(
+          "Save the mod to assign a Mod ID",
+        ),
+      ).toBeVisible();
+    }
 
     const saveNewModModal = this.page.locator(".modal-content");
     // The save button re-mounts several times so we need to retry clicking the saveButton until the modal is visible

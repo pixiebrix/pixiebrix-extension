@@ -50,6 +50,55 @@ test("can save a new trigger mod", async ({
   ).toBeVisible();
 });
 
+test("#9349: can save new mod with multiple components", async ({
+  page,
+  extensionId,
+  newPageEditorPage,
+}) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  await pageEditorPage.modListingPanel.addNewMod({
+    starterBrickName: "Trigger",
+  });
+  await pageEditorPage.brickConfigurationPanel.fillField(
+    "name",
+    "First Trigger",
+  );
+
+  const modName = "New Mod";
+
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName("New Mod");
+  await modListItem.select();
+  await modListItem.menuButton.click();
+  await modListItem.modActionMenu.addStarterBrick("Trigger");
+
+  await pageEditorPage.brickConfigurationPanel.fillField(
+    "name",
+    "Second Trigger",
+  );
+
+  await pageEditorPage.saveNewMod({
+    currentModName: modName,
+    descriptionOverride: "Created by playwright test",
+    // This test is testing that the mod component stays selected on save
+    selectModItem: false,
+  });
+
+  // Mod Component should still be selected because the user never selected the mod item
+  const modComponentItem = pageEditorPage.modListingPanel.getModListItemByName(
+    "Test trigger mod component #2",
+  );
+  await expect(modComponentItem.root).toHaveClass("active");
+
+  const modsPage = new ModsPage(page, extensionId);
+  await modsPage.goto();
+
+  await expect(
+    modsPage.locator(".list-group-item", { hasText: modName }),
+  ).toBeVisible();
+});
+
 test("shows error notification when updating a public mod without incrementing the version", async ({
   page,
   newPageEditorPage,

@@ -16,7 +16,10 @@
  */
 
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
+import {
+  ModalKey,
+  type ModMetadataFormState,
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
@@ -25,10 +28,9 @@ import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
-import { selectKeepLocalCopyOnCreateMod } from "@/pageEditor/store/editor/editorSelectors";
+import { getModalDataSelector } from "@/pageEditor/store/editor/editorSelectors";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { type AppDispatch } from "@/pageEditor/store/store";
@@ -37,14 +39,13 @@ type UseCreateModFromModReturn = {
   createModFromComponent: (
     modComponentFormState: ModComponentFormState,
     modMetadata: ModMetadataFormState,
+    options: { keepLocalCopy: boolean },
   ) => Promise<void>;
 };
 
-function useCreateModFromModComponent(
-  activeModComponentFormState: Nullishable<ModComponentFormState>,
-): UseCreateModFromModReturn {
+function useCreateModFromModComponent(): UseCreateModFromModReturn {
   const dispatch = useDispatch<AppDispatch>();
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
+  const modalData = useSelector(getModalDataSelector(ModalKey.CREATE_MOD));
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
@@ -53,23 +54,19 @@ function useCreateModFromModComponent(
     (
       modComponentFormState: ModComponentFormState,
       newModMetadata: ModMetadataFormState,
+      { keepLocalCopy }: { keepLocalCopy: boolean },
       // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     ) =>
       ensureModComponentFormStatePermissionsFromUserGesture(
         modComponentFormState,
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ).then(async (hasPermissions) => {
-        assertNotNullish(
-          activeModComponentFormState,
-          "Expected mod component to be selected",
-        );
-
         if (!hasPermissions) {
           return;
         }
 
         const modId = newModMetadata.id;
-        const draftModComponents = [activeModComponentFormState];
+        const draftModComponents = [modComponentFormState];
 
         const unsavedModDefinition = await buildAndValidateMod({
           draftModComponents,
@@ -108,11 +105,10 @@ function useCreateModFromModComponent(
         });
       }),
     [
-      activeModComponentFormState,
       buildAndValidateMod,
       createModDefinitionOnServer,
       dispatch,
-      keepLocalCopy,
+      modalData,
       deleteDraftModComponent,
     ],
   );

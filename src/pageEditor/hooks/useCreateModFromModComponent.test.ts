@@ -54,16 +54,16 @@ describe("useCreateModFromModComponent", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
 
-    const { result } = renderHook(() =>
-      useCreateModFromModComponent(menuItemFormState),
-    );
+    const { result } = renderHook(() => useCreateModFromModComponent());
 
     await hookAct(async () => {
       // Wait for editable packages to be created
     });
 
     await hookAct(async () => {
-      await result.current.createModFromComponent(menuItemFormState, metadata);
+      await result.current.createModFromComponent(menuItemFormState, metadata, {
+        keepLocalCopy: false,
+      });
     });
 
     expect(appApiMock.history.post).toHaveLength(1);
