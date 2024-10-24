@@ -79,9 +79,13 @@ export type ModMetadataFormState = Pick<
  */
 export type EditorStateV1 = {
   /**
-   * A sequence number that changes whenever a new element is selected.
+   * A sequence number indicating that a change occurred in the Redux state that's not reflected in
+   * Formik. Used to force the Formik mod component form to re-mount with the latest values
+   * from Redux.
    *
-   * Can use as a React component key to trigger a re-render
+   * Examples of changes that increment this number:
+   * - Changing the selection in the mod listing pane
+   * - Copy/pasting a brick
    */
   selectionSeq: number;
 

@@ -163,7 +163,7 @@ const BrickOutputTab: React.FC = () => {
   const viewMode = selectedViewMode ?? defaultViewMode;
 
   const { allBricks } = useAllBricks();
-  const brick = allBricks.get(brickId);
+  const brick = allBricks?.get(brickId);
   const brickType = brick?.type;
 
   if (brickType === BrickTypes.RENDERER || brickType === BrickTypes.EFFECT) {

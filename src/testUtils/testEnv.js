@@ -67,6 +67,9 @@ Element.prototype.checkVisibility ??= function () {
   return this.isConnected;
 };
 
+// https://github.com/jsdom/jsdom/issues/1695
+Element.prototype.scrollIntoView = jest.fn();
+
 // Waiting for https://github.com/jsdom/jsdom/issues/2154
 HTMLImageElement.prototype.decode = jest.fn();
 
