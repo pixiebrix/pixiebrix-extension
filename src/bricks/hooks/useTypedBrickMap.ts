@@ -19,13 +19,13 @@ import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import type { AsyncState } from "@/types/sliceTypes";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
-const subscribe = (callback: () => void) => {
+function subscribe(callback: () => void) {
   brickRegistry.onChange.add(callback);
 
   return () => {
     brickRegistry.onChange.remove(callback);
   };
-};
+}
 
 // Define module-level snapshot to eliminate possibility of brickRegistry.allTyped being shared across
 // useSyncExternalStore calls.
