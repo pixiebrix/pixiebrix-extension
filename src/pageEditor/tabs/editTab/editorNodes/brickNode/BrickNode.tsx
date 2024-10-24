@@ -66,7 +66,7 @@ function useScrollIntoViewEffect({
       });
 
       return () => {
-        clearTimeout(timeout);
+        cancelAnimationFrame(timeout);
       };
     }
 

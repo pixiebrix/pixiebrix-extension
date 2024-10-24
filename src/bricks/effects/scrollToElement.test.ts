@@ -21,8 +21,6 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ScrollIntoViewEffect();
 
-Element.prototype.scrollIntoView = jest.fn();
-
 const scrollIntoViewMock = jest.mocked(Element.prototype.scrollIntoView);
 
 describe("ScrollToElementEffect", () => {
