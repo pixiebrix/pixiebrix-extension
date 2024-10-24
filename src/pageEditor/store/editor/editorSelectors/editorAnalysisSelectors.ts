@@ -59,8 +59,14 @@ const selectGetActiveModComponentAnalysisAnnotationsForPath = createSelector(
           return 1;
         }
 
+        case AnnotationType.Info: {
+          return 0
+        }
+
         default: {
-          return 0;
+          const exhaustiveCheck: never = annotation.type;
+          throw new Error(`Invalid annotation type: ${exhaustiveCheck}`);
+        }
         }
       }
     });
