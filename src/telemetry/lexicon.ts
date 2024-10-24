@@ -242,7 +242,7 @@ export const lexicon: LexiconMap = {
   INTEGRATION_WIDGET_SELECT: {
     description:
       "Reported in the Page Editor when a user selects a configuration from the integration field dropdown for a brick that uses an " +
-      "integration" +
+      "integration." +
       "\n" +
       `Not to be confused with the ${getDisplayName(
         "ACTIVATION_INTEGRATION_CONFIG_SELECT",
