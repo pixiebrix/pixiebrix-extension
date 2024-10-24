@@ -31,7 +31,7 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
-import { type AsyncDispatch } from "@/pageEditor/store/store";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -43,7 +43,7 @@ type UseCreateModFromModReturn = {
 function useCreateModFromModComponent(
   activeModComponentFormState: Nullishable<ModComponentFormState>,
 ): UseCreateModFromModReturn {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();

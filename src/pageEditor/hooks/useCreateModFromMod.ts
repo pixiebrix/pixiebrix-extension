@@ -37,7 +37,7 @@ import {
 } from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
-import { type AsyncDispatch } from "@/pageEditor/store/store";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
@@ -51,7 +51,7 @@ type UseCreateModFromModReturn = {
  * existing, active mod that HAS been saved on the server before.
  */
 function useCreateModFromMod(): UseCreateModFromModReturn {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
   const getDraftModComponentsForMod = useSelector(

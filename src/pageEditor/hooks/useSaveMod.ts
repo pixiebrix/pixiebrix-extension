@@ -47,7 +47,7 @@ import {
 } from "@/pageEditor/utils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type AsyncDispatch } from "@/pageEditor/store/store";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 /** @internal */
 export function isModEditable(
@@ -66,7 +66,7 @@ export function isModEditable(
  * mod and shows/notifies errors for various bad data states.
  */
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const {
     data: modDefinitions,
     isLoading: isModDefinitionsLoading,

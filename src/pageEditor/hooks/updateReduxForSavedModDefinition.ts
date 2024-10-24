@@ -25,7 +25,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import type { RegistryId } from "@/types/registryTypes";
 import { getDraftModComponentId } from "@/pageEditor/utils";
-import { type AsyncDispatch } from "@/pageEditor/store/store";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 /**
  * Update Redux for a saved mod definition.
@@ -46,7 +46,7 @@ function updateReduxForSavedModDefinition({
   draftModComponents: Array<ModComponentBase | ModComponentFormState>;
   isReactivate: boolean;
 }) {
-  return async (dispatch: AsyncDispatch): Promise<void> => {
+  return async (dispatch: AppDispatch): Promise<void> => {
     const modMetadata = mapModDefinitionToModMetadata(modDefinition);
 
     // Activate/re-activate the mod

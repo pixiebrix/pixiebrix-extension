@@ -153,6 +153,6 @@ export const persistor = persistStore(store);
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
 
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
 
 export default store;

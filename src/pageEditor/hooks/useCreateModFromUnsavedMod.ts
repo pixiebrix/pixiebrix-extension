@@ -35,7 +35,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
-import { type AsyncDispatch } from "@/pageEditor/store/store";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromUnsavedModReturn = {
   createModFromUnsavedMod: (
@@ -49,7 +49,7 @@ type UseCreateModFromUnsavedModReturn = {
  * that has never been saved to the server.
  */
 function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
   const getDraftModComponentsForMod = useSelector(
