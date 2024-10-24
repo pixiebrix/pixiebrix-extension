@@ -49,7 +49,7 @@ export function mergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   const states: AsyncStateArray = args.slice(0, -1);
 
   for (const state of states) {
-    checkAsyncStateInvariants(state);
+    assertAsyncStateInvariants(state);
   }
 
   const isLoading =
@@ -181,8 +181,11 @@ export function fallbackValue<
   }
 
   if (DEBUG) {
-    // Verify the state arg is a valid success state
-    checkAsyncStateInvariants(state);
+    assertAsyncStateInvariants(state);
+
+    if (state.data === undefined) {
+      throw new Error("Expected data to defined for isSuccess: true");
+    }
   }
 
   return state as Success<Value, State>;
@@ -313,9 +316,10 @@ export function errorToAsyncCacheState<Value>(
 }
 
 /**
- * Throw an error if state has invalid status flag and data combinations.
+ * Throw an error if state has invalid status flag combinations.
+ * @throws an error if state has invalid status flag combinations.
  */
-export function checkAsyncStateInvariants(state: AsyncState): void {
+export function assertAsyncStateInvariants(state: AsyncState): void {
   if (
     !(
       state.isUninitialized ||
@@ -349,16 +353,8 @@ export function checkAsyncStateInvariants(state: AsyncState): void {
     throw new Error("Expected error to be undefined when isError is set");
   }
 
-  if (
-    state.isLoading &&
-    (state.error !== undefined ||
-      state.data !== undefined ||
-      state.currentData !== undefined)
-  ) {
-    throw new Error(
-      "Expected data, currentData, and error to be undefined when isLoading is set",
-    );
-  }
+  // Ideally would check data, error, and currentData is consistent with the flags. There seems to be some quirky
+  // behavior in RTK Query though, e.g., error is defined while the isLoading is set.
 }
 
 export function setValueOnState<T>(
@@ -374,7 +370,7 @@ export function setValueOnState<T>(
   state.isSuccess = true;
   state.error = undefined;
 
-  checkAsyncStateInvariants(state);
+  assertAsyncStateInvariants(state);
 
   return state;
 }
@@ -392,7 +388,7 @@ export function setErrorOnState<T>(
   state.isError = true;
   state.error = serializeError(error, { useToJSON: false });
 
-  checkAsyncStateInvariants(state);
+  assertAsyncStateInvariants(state);
 
   return state;
 }

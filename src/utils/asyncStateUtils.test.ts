@@ -16,7 +16,7 @@
  */
 
 import {
-  checkAsyncStateInvariants,
+  assertAsyncStateInvariants,
   errorToAsyncState,
   fallbackValue,
   loadingAsyncStateFactory,
@@ -101,19 +101,19 @@ describe("asyncStateUtils", () => {
 
   it("generates valid uninitialized state", () => {
     expect(() => {
-      checkAsyncStateInvariants(uninitializedAsyncStateFactory());
+      assertAsyncStateInvariants(uninitializedAsyncStateFactory());
     }).not.toThrow();
   });
 
   it("generates valid loaded state", () => {
     expect(() => {
-      checkAsyncStateInvariants(valueToAsyncState(42));
+      assertAsyncStateInvariants(valueToAsyncState(42));
     }).not.toThrow();
   });
 
   it("generates valid error state", () => {
     expect(() => {
-      checkAsyncStateInvariants(errorToAsyncState(new Error("error")));
+      assertAsyncStateInvariants(errorToAsyncState(new Error("error")));
     }).not.toThrow();
   });
 
@@ -123,7 +123,7 @@ describe("asyncStateUtils", () => {
       42,
     );
     expect(() => {
-      checkAsyncStateInvariants(state);
+      assertAsyncStateInvariants(state);
     }).not.toThrow();
     expect(state.data).toBe(42);
   });
@@ -131,14 +131,14 @@ describe("asyncStateUtils", () => {
   it("generates valid fallback for loading state", () => {
     const state = fallbackValue(loadingAsyncStateFactory<number>(), 42);
     expect(() => {
-      checkAsyncStateInvariants(state);
+      assertAsyncStateInvariants(state);
     }).not.toThrow();
     expect(state.data).toBe(42);
   });
 
   it("generates valid loading state", () => {
     expect(() => {
-      checkAsyncStateInvariants(loadingAsyncStateFactory());
+      assertAsyncStateInvariants(loadingAsyncStateFactory());
     }).not.toThrow();
   });
 });
