@@ -412,13 +412,16 @@ export const editorSlice = createSlice({
 
     showCreateModModal(
       state,
-      action: PayloadAction<{ keepLocalCopy: boolean }>,
+      action: PayloadAction<
+        { keepLocalCopy: boolean } & (
+          | { modComponentId: UUID }
+          | { modId: RegistryId }
+        )
+      >,
     ) {
       state.visibleModal = {
         type: ModalKey.CREATE_MOD,
-        data: {
-          keepLocalCopy: action.payload.keepLocalCopy,
-        },
+        data: action.payload,
       };
     },
 

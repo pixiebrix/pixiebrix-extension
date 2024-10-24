@@ -17,16 +17,16 @@
 
 import React, { useCallback } from "react";
 import {
+  isInnerDefinitionRegistryId,
+  normalizeSemVerString,
   PACKAGE_REGEX,
   testIsSemVerString,
   validateRegistryId,
-  normalizeSemVerString,
-  isInnerDefinitionRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getModalDataSelector,
   selectActiveModComponentFormState,
-  selectActiveModId,
   selectCurrentModId,
   selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
@@ -54,7 +54,10 @@ import {
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
+import {
+  ModalKey,
+  type ModMetadataFormState,
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
@@ -164,6 +167,7 @@ const CreateModModalBody: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+  const modalData = useSelector(getModalDataSelector(ModalKey.CREATE_MOD));
 
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
@@ -171,8 +175,6 @@ const CreateModModalBody: React.FC = () => {
     activeModComponentFormState,
   );
 
-  // `selectActiveModId` returns the mod id if a mod entry is selected (not a mod component within the mod)
-  const directlyActiveModId = useSelector(selectActiveModId);
   const currentModId = useSelector(selectCurrentModId);
 
   const { data: modDefinition, isFetching: isModDefinitionFetching } =
@@ -197,15 +199,29 @@ const CreateModModalBody: React.FC = () => {
     }
 
     try {
-      // TODO: use the editorSlice modal state to decide which to show
-      if (activeModComponentFormState) {
-        // Move/Copy a mod component to create a new mod
+      if ("modComponent" in modalData) {
+        assertNotNullish(
+          activeModComponentFormState,
+          "Expected active mod component form state",
+        );
         await createModFromComponent(activeModComponentFormState, values);
-      } else if (directlyActiveModId && modDefinition) {
+      } else if (
+        "modId" in modalData &&
+        (isInnerDefinitionRegistryId(modalData.modId) || modDefinition == null)
+      ) {
+        assertNotNullish(
+          currentModId,
+          "Expected mod to be selected in the editor",
+        );
+        // Handle "save as" case where the mod is unsaved or the user no longer has access to the mod definition
+        await createModFromUnsavedMod(currentModId, values);
+      } else if ("modId" in modalData) {
+        // Typescript not smart enough that modDefinition can't be null on this branch
+        assertNotNullish(
+          modDefinition,
+          "Expected mod to be selected in the editor",
+        );
         await createModFromMod(modDefinition, values);
-      } else if (directlyActiveModId) {
-        // If the mod is unsaved or there was an error fetching the mod definition from the server
-        await createModFromUnsavedMod(directlyActiveModId, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS

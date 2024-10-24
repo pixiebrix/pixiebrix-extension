@@ -79,7 +79,10 @@ const MoveOrCopyToModModal: React.FC = () => {
 
     if (modId === NEW_MOD_ID) {
       dispatch(
-        editorActions.showCreateModModal({ keepLocalCopy: isCopyAction }),
+        editorActions.showCreateModModal({
+          keepLocalCopy: isCopyAction,
+          modComponentId: activeModComponentFormState.uuid,
+        }),
       );
       return;
     }

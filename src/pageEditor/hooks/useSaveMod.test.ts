@@ -319,7 +319,10 @@ describe("useSaveMod", () => {
     });
 
     expect(dispatch).toHaveBeenCalledWith(
-      editorActions.showCreateModModal({ keepLocalCopy: false }),
+      editorActions.showCreateModModal({
+        keepLocalCopy: false,
+        modId: temporaryModMetadata.id,
+      }),
     );
     expect(notify.success).not.toHaveBeenCalled();
     expect(notify.error).not.toHaveBeenCalled();

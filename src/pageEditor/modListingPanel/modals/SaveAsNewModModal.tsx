@@ -20,29 +20,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import {
-  selectActiveModId,
+  selectCurrentModId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const SaveAsNewModModal: React.FC = () => {
+  const dispatch = useDispatch();
   const { isSaveAsNewModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 
-  const modId = useSelector(selectActiveModId);
+  const modId = useSelector(selectCurrentModId);
   const { data: mod, isFetching } = useOptionalModDefinition(modId);
   const modName = mod?.metadata?.name ?? "this mod";
 
-  const dispatch = useDispatch();
-
   const hideModal = () => {
     dispatch(actions.hideModal());
-  };
-
-  const onConfirm = () => {
-    // Don't keep the old mod active
-    dispatch(actions.showCreateModModal({ keepLocalCopy: false }));
   };
 
   return (
@@ -58,7 +53,17 @@ const SaveAsNewModModal: React.FC = () => {
         <Button variant="info" onClick={hideModal}>
           Cancel
         </Button>
-        <Button variant="primary" disabled={isFetching} onClick={onConfirm}>
+        <Button
+          variant="primary"
+          disabled={isFetching}
+          onClick={() => {
+            // Don't keep the old mod active
+            assertNotNullish(modId, "Expected selected mod");
+            dispatch(
+              actions.showCreateModModal({ keepLocalCopy: false, modId }),
+            );
+          }}
+        >
           Save as New
         </Button>
       </Modal.Footer>

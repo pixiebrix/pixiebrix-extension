@@ -70,11 +70,17 @@ export enum ModalKey {
 }
 
 export type ModalDefinition =
-  | { type: ModalKey.SAVE_DATA_INTEGRITY_ERROR; data: EmptyObject }
-  | { type: ModalKey.SAVE_AS_NEW_MOD; data: EmptyObject }
   | { type: ModalKey.ADD_BRICK; data: { addBrickLocation: AddBrickLocation } }
-  | { type: ModalKey.CREATE_MOD; data: { keepLocalCopy: boolean } }
-  | { type: ModalKey.MOVE_COPY_TO_MOD; data: { keepLocalCopy: boolean } };
+  | { type: ModalKey.SAVE_AS_NEW_MOD; data: EmptyObject }
+  | {
+      type: ModalKey.CREATE_MOD;
+      data: { keepLocalCopy: boolean } & (
+        | { modComponentId: UUID }
+        | { modId: RegistryId }
+      );
+    }
+  | { type: ModalKey.MOVE_COPY_TO_MOD; data: { keepLocalCopy: boolean } }
+  | { type: ModalKey.SAVE_DATA_INTEGRITY_ERROR; data: EmptyObject };
 
 export type ModMetadataFormState = Pick<
   VersionedMetadata,

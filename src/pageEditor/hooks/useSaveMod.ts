@@ -88,7 +88,9 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const saveMod = useCallback(
     async (modId: RegistryId): Promise<boolean> => {
       if (isInnerDefinitionRegistryId(modId)) {
-        dispatch(editorActions.showCreateModModal({ keepLocalCopy: false }));
+        dispatch(
+          editorActions.showCreateModModal({ keepLocalCopy: false, modId }),
+        );
         return false;
       }
 

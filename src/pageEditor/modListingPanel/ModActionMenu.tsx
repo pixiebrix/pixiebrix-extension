@@ -88,7 +88,7 @@ const ModActionMenu: React.FC<{
       title: "Make a copy",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
       async action() {
-        dispatch(actions.showCreateModModal({ keepLocalCopy: true }));
+        dispatch(actions.showCreateModModal({ keepLocalCopy: true, modId }));
       },
     },
     {
