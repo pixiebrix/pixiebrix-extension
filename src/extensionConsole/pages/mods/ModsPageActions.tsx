@@ -44,11 +44,12 @@ import { CancelError } from "@/errors/businessErrors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import useFindModInstance from "@/mods/hooks/useFindModInstance";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const history = useHistory();
   const { showConfirmation } = useModals();
   const [deleteModPackage] = useDeletePackageMutation();
