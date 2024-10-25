@@ -18,12 +18,11 @@
 import { type TypedBrickMap } from "@/bricks/registry";
 import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
 import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
-import { type AppDispatch } from "@/pageEditor/store/store";
-import { mapBrickToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/mapBrickToNodes";
 import {
   type MapOutput,
   type EditorNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
+import { type MapBrickToNodesArgs } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
 import { BrickTypes } from "@/runtime/runtimeTypes";
 import { type TraceRecord } from "@/telemetry/trace";
 import {
@@ -32,23 +31,9 @@ import {
 } from "@/telemetry/traceHelpers";
 import { type Branch } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type Dispatch, type SetStateAction } from "react";
+import { useCallback, type Dispatch, type SetStateAction } from "react";
 
-export function mapPipelineToNodes({
-  pipeline,
-  flavor,
-  pipelinePath = PIPELINE_BRICKS_FIELD_NAME,
-  nestingLevel = 0,
-  isParentActive = false,
-  isAncestorActive = false,
-  latestParentCall,
-  traces,
-  allBricks,
-  isLoadingBricks,
-  hoveredState,
-  setHoveredState,
-  isApiAtLeastV2,
-}: {
+type MapPipelineToNodesArgs = {
   pipeline: BrickPipeline;
   flavor: PipelineFlavor;
   pipelinePath?: string;
@@ -68,36 +53,54 @@ export function mapPipelineToNodes({
   hoveredState: Record<UUID, boolean>;
   setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
   isApiAtLeastV2: boolean;
-}) {
-  return (dispatch: AppDispatch) => {
-    const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
-    const lastIndex = pipeline.length - 1;
-    const lastBrickId = pipeline.at(lastIndex)?.id;
-    const lastBrick = lastBrickId ? allBricks?.get(lastBrickId) : undefined;
-    const showAppend =
-      !lastBrick?.block || lastBrick.type !== BrickTypes.RENDERER;
-    const nodes: EditorNodeProps[] = [];
+};
 
-    // Determine which execution of the pipeline to show. Currently, getting the latest execution
-    let latestPipelineCall: Branch[] | undefined;
-    if (pipeline.length > 0) {
-      // Pass [] as default to include all traces
-      const latestTraces = filterTracesByCall(traces, latestParentCall ?? []);
-      // Use first brick in pipeline to determine the latest run
-      latestPipelineCall = getLatestBrickCall(
-        latestTraces,
-        pipeline[0]?.instanceId,
-      )?.branches;
-    }
+export function useMapPipelineToNodes(
+  mapBrickToNodes: (args: MapBrickToNodesArgs) => MapOutput,
+): (args: MapPipelineToNodesArgs) => MapOutput {
+  return useCallback(
+    ({
+      pipeline,
+      flavor,
+      pipelinePath = PIPELINE_BRICKS_FIELD_NAME,
+      nestingLevel = 0,
+      isParentActive = false,
+      isAncestorActive = false,
+      latestParentCall,
+      traces,
+      allBricks,
+      isLoadingBricks,
+      hoveredState,
+      setHoveredState,
+      isApiAtLeastV2,
+    }: MapPipelineToNodesArgs) => {
+      const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
+      const lastIndex = pipeline.length - 1;
+      const lastBrickId = pipeline.at(lastIndex)?.id;
+      const lastBrick = lastBrickId ? allBricks?.get(lastBrickId) : undefined;
+      const showAppend =
+        !lastBrick?.block || lastBrick.type !== BrickTypes.RENDERER;
+      const nodes: EditorNodeProps[] = [];
 
-    let modComponentHasTraces = false;
+      // Determine which execution of the pipeline to show. Currently, getting the latest execution
+      let latestPipelineCall: Branch[] | undefined;
+      if (pipeline.length > 0) {
+        // Pass [] as default to include all traces
+        const latestTraces = filterTracesByCall(traces, latestParentCall ?? []);
+        // Use first brick in pipeline to determine the latest run
+        latestPipelineCall = getLatestBrickCall(
+          latestTraces,
+          pipeline[0]?.instanceId,
+        )?.branches;
+      }
 
-    for (const [index, brickConfig] of pipeline.entries()) {
-      const {
-        nodes: brickNodes,
-        modComponentHasTraces: modComponentHasTracesOut,
-      }: MapOutput = dispatch(
-        mapBrickToNodes({
+      let modComponentHasTraces = false;
+
+      for (const [index, brickConfig] of pipeline.entries()) {
+        const {
+          nodes: brickNodes,
+          modComponentHasTraces: modComponentHasTracesOut,
+        }: MapOutput = mapBrickToNodes({
           index,
           brickConfig,
           latestPipelineCall,
@@ -115,15 +118,17 @@ export function mapPipelineToNodes({
           hoveredState,
           setHoveredState,
           isApiAtLeastV2,
-        }),
-      );
-      nodes.push(...brickNodes);
-      modComponentHasTraces ||= modComponentHasTracesOut;
-    }
+        });
 
-    return {
-      nodes,
-      modComponentHasTraces,
-    };
-  };
+        nodes.push(...brickNodes);
+        modComponentHasTraces ||= modComponentHasTracesOut;
+      }
+
+      return {
+        nodes,
+        modComponentHasTraces,
+      };
+    },
+    [],
+  );
 }

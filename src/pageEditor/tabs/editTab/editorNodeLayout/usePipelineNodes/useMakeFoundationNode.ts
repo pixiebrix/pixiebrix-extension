@@ -37,17 +37,9 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type Dispatch, type SetStateAction } from "react";
 import { ADD_MESSAGE } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
+import { useDispatch, useSelector } from "react-redux";
 
-export function makeFoundationNode({
-  pipelineFlavor,
-  showBiggerActions,
-  starterBrickLabel,
-  starterBrickIcon,
-  modComponentHasTraces,
-  pasteBrick,
-  isApiAtLeastV2,
-  setHoveredState,
-}: {
+type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;
   showBiggerActions: boolean;
   starterBrickLabel: string;
@@ -58,72 +50,82 @@ export function makeFoundationNode({
     | null;
   isApiAtLeastV2: boolean;
   setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
-}) {
-  return (dispatch: AppDispatch, getState: () => RootState): BrickNodeProps => {
-    const showPaste = pasteBrick && isApiAtLeastV2;
-    const state = getState();
+};
 
-    const activeModComponentFormState =
-      selectActiveModComponentFormState(state);
-    assertNotNullish(
-      activeModComponentFormState,
-      "activeModComponentFormState is required",
-    );
-    const annotations = selectModComponentAnnotations(
-      activeModComponentFormState.uuid,
-    )(state);
-    const activeNodeId = selectActiveNodeId(state);
+export function useMakeFoundationNode({
+  pipelineFlavor,
+  showBiggerActions,
+  starterBrickLabel,
+  starterBrickIcon,
+  modComponentHasTraces,
+  pasteBrick,
+  isApiAtLeastV2,
+  setHoveredState,
+}: MakeFoundationNodeArgs) {
+  const dispatch = useDispatch();
+  const showPaste = pasteBrick && isApiAtLeastV2;
 
-    const foundationNodeActions: NodeAction[] = [
-      {
-        name: `${FOUNDATION_NODE_ID}-add-brick`,
-        icon: faPlusCircle,
-        tooltipText: "Add a brick",
-        onClick() {
-          dispatch(
-            actions.showAddBrickModal({
-              path: PIPELINE_BRICKS_FIELD_NAME,
-              flavor: pipelineFlavor,
-              index: 0,
-            }),
-          );
-        },
-      },
-    ];
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
+  assertNotNullish(
+    activeModComponentFormState,
+    "activeModComponentFormState is required",
+  );
+  const annotations = useSelector(
+    selectModComponentAnnotations(activeModComponentFormState.uuid),
+  );
+  const activeNodeId = useSelector(selectActiveNodeId);
 
-    if (showPaste) {
-      foundationNodeActions.push({
-        name: `${FOUNDATION_NODE_ID}-paste-brick`,
-        icon: faPaste,
-        tooltipText: "Paste copied brick",
-        async onClick() {
-          await pasteBrick(PIPELINE_BRICKS_FIELD_NAME, 0);
-        },
-      });
-    }
-
-    return {
-      icon: starterBrickIcon,
-      runStatus: decideFoundationStatus({
-        hasTraces: modComponentHasTraces,
-        brickAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
-      }),
-      brickLabel: starterBrickLabel,
-      outputKey: "input" as OutputKey,
+  const foundationNodeActions: NodeAction[] = [
+    {
+      name: `${FOUNDATION_NODE_ID}-add-brick`,
+      icon: faPlusCircle,
+      tooltipText: "Add a brick",
       onClick() {
-        dispatch(actions.setActiveNodeId(FOUNDATION_NODE_ID));
+        dispatch(
+          actions.showAddBrickModal({
+            path: PIPELINE_BRICKS_FIELD_NAME,
+            flavor: pipelineFlavor,
+            index: 0,
+          }),
+        );
       },
-      active: activeNodeId === FOUNDATION_NODE_ID,
-      onHoverChange(hovered) {
-        setHoveredState((previousState) => ({
-          ...previousState,
-          [FOUNDATION_NODE_ID]: hovered,
-        }));
+    },
+  ];
+
+  if (showPaste) {
+    foundationNodeActions.push({
+      name: `${FOUNDATION_NODE_ID}-paste-brick`,
+      icon: faPaste,
+      tooltipText: "Paste copied brick",
+      async onClick() {
+        await pasteBrick(PIPELINE_BRICKS_FIELD_NAME, 0);
       },
-      nestingLevel: 0,
-      nodeActions: foundationNodeActions,
-      showBiggerActions,
-      trailingMessage: showBiggerActions ? ADD_MESSAGE : undefined,
-    };
+    });
+  }
+
+  return {
+    icon: starterBrickIcon,
+    runStatus: decideFoundationStatus({
+      hasTraces: modComponentHasTraces,
+      brickAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
+    }),
+    brickLabel: starterBrickLabel,
+    outputKey: "input" as OutputKey,
+    onClick() {
+      dispatch(actions.setActiveNodeId(FOUNDATION_NODE_ID));
+    },
+    active: activeNodeId === FOUNDATION_NODE_ID,
+    onHoverChange(hovered: boolean) {
+      setHoveredState((previousState) => ({
+        ...previousState,
+        [FOUNDATION_NODE_ID]: hovered,
+      }));
+    },
+    nestingLevel: 0,
+    nodeActions: foundationNodeActions,
+    showBiggerActions,
+    trailingMessage: showBiggerActions ? ADD_MESSAGE : undefined,
   };
 }

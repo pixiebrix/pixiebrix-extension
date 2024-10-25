@@ -32,9 +32,10 @@ import {
   type MapOutput,
   type EditorNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
-import { mapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/mapPipelineToNodes";
+import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 import { type AppDispatch } from "@/pageEditor/store/store";
-import { makeFoundationNode } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/makeFoundationNode";
+import { useMakeFoundationNode } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMakeFoundationNode";
+import { useMapBrickToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
 
 const usePipelineNodes = (): {
   foundationNodeProps: BrickNodeProps;
@@ -50,11 +51,12 @@ const usePipelineNodes = (): {
   );
   const traces = useSelector(selectActiveModComponentTraces);
 
-  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
-
   const { data: allBricks, isLoading } = useTypedBrickMap();
 
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const pasteBrick = usePasteBrick();
+  const mapBrickToNodes = useMapBrickToNodes();
+  const mapPipelineToNodes = useMapPipelineToNodes(mapBrickToNodes);
 
   const {
     starterBrickType,
@@ -65,31 +67,27 @@ const usePipelineNodes = (): {
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
   const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
-  const { nodes, modComponentHasTraces }: MapOutput = dispatch(
-    mapPipelineToNodes({
-      pipeline: rootPipeline,
-      flavor: rootPipelineFlavor,
-      traces,
-      allBricks,
-      isLoadingBricks: isLoading,
-      hoveredState,
-      setHoveredState,
-      isApiAtLeastV2,
-    }),
-  );
+  const { nodes, modComponentHasTraces }: MapOutput = mapPipelineToNodes({
+    pipeline: rootPipeline,
+    flavor: rootPipelineFlavor,
+    traces,
+    allBricks,
+    isLoadingBricks: isLoading,
+    hoveredState,
+    setHoveredState,
+    isApiAtLeastV2,
+  });
 
-  const foundationNodeProps = dispatch(
-    makeFoundationNode({
-      pipelineFlavor: rootPipelineFlavor,
-      showBiggerActions: isEmpty(rootPipeline),
-      starterBrickLabel,
-      starterBrickIcon,
-      modComponentHasTraces,
-      pasteBrick,
-      isApiAtLeastV2,
-      setHoveredState,
-    }),
-  );
+  const foundationNodeProps = useMakeFoundationNode({
+    pipelineFlavor: rootPipelineFlavor,
+    showBiggerActions: isEmpty(rootPipeline),
+    starterBrickLabel,
+    starterBrickIcon,
+    modComponentHasTraces,
+    pasteBrick,
+    isApiAtLeastV2,
+    setHoveredState,
+  });
 
   return {
     foundationNodeProps,
