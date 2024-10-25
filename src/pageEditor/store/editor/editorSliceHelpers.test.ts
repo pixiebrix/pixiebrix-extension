@@ -28,7 +28,6 @@ import {
   ensureBrickConfigurationUIState,
   markModComponentFormStateAsDeleted,
   removeModData,
-  setActiveModId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
@@ -455,30 +454,5 @@ describe("removeModData", () => {
         modMetadata.id
       ],
     ).toBeUndefined();
-  });
-});
-
-describe("selectActiveModId", () => {
-  test("select unselected mod", () => {
-    const mod = modMetadataFactory();
-    const newState = produce(initialState, (draft) => {
-      setActiveModId(draft, mod.id);
-    });
-    expect(selectActiveModId({ editor: newState })).toEqual(mod.id);
-    expect(selectExpandedModId({ editor: newState })).toEqual(mod.id);
-  });
-
-  test("re-select selected mod", () => {
-    const mod = modMetadataFactory();
-    const state: EditorState = {
-      ...initialState,
-      activeModId: mod.id,
-      expandedModId: mod.id,
-    };
-    const newState = produce(state, (draft) => {
-      setActiveModId(draft, mod.id);
-    });
-    expect(selectActiveModId({ editor: newState })).toEqual(mod.id);
-    expect(selectExpandedModId({ editor: newState })).toBeNull();
   });
 });

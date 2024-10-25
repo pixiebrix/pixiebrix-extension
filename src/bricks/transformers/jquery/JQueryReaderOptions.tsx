@@ -47,7 +47,6 @@ import { joinName } from "@/utils/formUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import { type SetOptional } from "type-fest";
 
 /**
@@ -229,8 +228,6 @@ const SelectorCard: React.FC<{
     }, [selectorDefinition.selector, rootSelector]),
     [] as AttributeExample[],
   );
-
-  assertNotNullish(attributeExamples, "attributeExamples is nullish");
 
   const typeOption = inferActiveTypeOption(selectorDefinition);
   const typeOptions = typeOptionsFactory(attributeExamples, typeOption);

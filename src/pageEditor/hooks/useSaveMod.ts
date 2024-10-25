@@ -47,6 +47,7 @@ import {
 } from "@/pageEditor/utils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 /** @internal */
 export function isModEditable(
@@ -65,7 +66,7 @@ export function isModEditable(
  * mod and shows/notifies errors for various bad data states.
  */
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {
     data: modDefinitions,
     isLoading: isModDefinitionsLoading,
@@ -85,9 +86,14 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const saveMod = useCallback(
-    async (modId: RegistryId): Promise<boolean> => {
-      if (isInnerDefinitionRegistryId(modId)) {
-        dispatch(editorActions.showCreateModModal({ keepLocalCopy: false }));
+    async (sourceModId: RegistryId): Promise<boolean> => {
+      if (isInnerDefinitionRegistryId(sourceModId)) {
+        dispatch(
+          editorActions.showCreateModModal({
+            keepLocalCopy: false,
+            sourceModId,
+          }),
+        );
         return false;
       }
 
@@ -101,7 +107,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       );
 
       const sourceModDefinition = modDefinitions.find(
-        (x) => x.metadata.id === modId,
+        (x) => x.metadata.id === sourceModId,
       );
       if (sourceModDefinition == null) {
         notify.error({
@@ -116,7 +122,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         return false;
       }
 
-      const draftModComponents = getDraftModComponentsForMod(modId);
+      const draftModComponents = getDraftModComponentsForMod(sourceModId);
 
       // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
       // long to confirm?
@@ -129,14 +135,14 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         sourceModDefinition,
         draftModComponents,
         // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[modId],
+        dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[sourceModId],
         // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModMetadata: dirtyModMetadataMap[modId],
+        dirtyModMetadata: dirtyModMetadataMap[sourceModId],
       });
 
       const packageId = editablePackages.find(
         // Bricks endpoint uses "name" instead of id
-        (x) => x.name === modId,
+        (x) => x.name === sourceModId,
       )?.id;
 
       assertNotNullish(
@@ -149,18 +155,20 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         modDefinition: unsavedModDefinition,
       }).unwrap();
 
-      await updateReduxForSavedModDefinition({
-        modIdToReplace: modId,
-        modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-          unsavedModDefinition,
-          upsertResponse,
-        ),
-        draftModComponents,
-        isReactivate: true,
-      })(dispatch);
+      await dispatch(
+        updateReduxForSavedModDefinition({
+          modIdToReplace: sourceModId,
+          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+            unsavedModDefinition,
+            upsertResponse,
+          ),
+          draftModComponents,
+          isReactivate: true,
+        }),
+      );
 
       reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-        modId,
+        modId: sourceModId,
       });
 
       return true;
@@ -198,6 +206,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       try {
         const success = await saveMod(modId);
+
         if (success) {
           notify.success("Saved mod");
           reloadModsEveryTab();

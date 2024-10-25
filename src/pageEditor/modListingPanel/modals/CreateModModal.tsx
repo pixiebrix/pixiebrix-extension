@@ -17,16 +17,17 @@
 
 import React, { useCallback } from "react";
 import {
+  isInnerDefinitionRegistryId,
+  normalizeSemVerString,
   PACKAGE_REGEX,
   testIsSemVerString,
   validateRegistryId,
-  normalizeSemVerString,
-  isInnerDefinitionRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getModalDataSelector,
   selectActiveModComponentFormState,
-  selectActiveModId,
+  selectCurrentModId,
   selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
   selectFirstModComponentFormStateForActiveMod,
@@ -53,7 +54,10 @@ import {
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
+import {
+  ModalKey,
+  type ModMetadataFormState,
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
@@ -160,23 +164,19 @@ function useFormSchema() {
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
+
+  const currentModId = useSelector(selectCurrentModId);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+  const modalData = useSelector(getModalDataSelector(ModalKey.CREATE_MOD));
 
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
-  const { createModFromComponent } = useCreateModFromModComponent(
-    activeModComponentFormState,
-  );
+  const { createModFromComponent } = useCreateModFromModComponent();
 
-  // `selectActiveModId` returns the mod id if a mod entry is selected (not a mod component within the mod)
-  const directlyActiveModId = useSelector(selectActiveModId);
-  const activeModId =
-    directlyActiveModId ?? activeModComponentFormState?.modMetadata.id;
-
-  const { data: activeModDefinition, isFetching: isModDefinitionFetching } =
-    useOptionalModDefinition(activeModId);
+  const { data: modDefinition, isFetching: isModDefinitionFetching } =
+    useOptionalModDefinition(currentModId);
 
   const formSchema = useFormSchema();
 
@@ -185,8 +185,8 @@ const CreateModModalBody: React.FC = () => {
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
-    activeModDefinition,
-    activeModId,
+    activeModDefinition: modDefinition,
+    activeModId: currentModId,
     activeModComponentFormState,
   });
 
@@ -196,19 +196,31 @@ const CreateModModalBody: React.FC = () => {
       return;
     }
 
+    assertNotNullish(modalData, "Expected modal data to be defined");
+
     try {
-      if (activeModComponentFormState) {
-        // Move/Copy a mod component to create a new mod
-        await createModFromComponent(activeModComponentFormState, values);
-      } else if (directlyActiveModId && activeModDefinition) {
-        await createModFromMod(activeModDefinition, values);
-      } else if (directlyActiveModId) {
-        // If the mod is unsaved or there was an error fetching the mod definition from the server
-        await createModFromUnsavedMod(directlyActiveModId, values);
+      if ("sourceModComponentId" in modalData) {
+        assertNotNullish(
+          activeModComponentFormState,
+          "Expected active mod component form state",
+        );
+        await createModFromComponent(
+          activeModComponentFormState,
+          values,
+          modalData,
+        );
+      } else if (
+        isInnerDefinitionRegistryId(modalData.sourceModId) ||
+        modDefinition == null
+      ) {
+        // Handle "Save As" case where the mod is unsaved or the user no longer has access to the mod definition
+        assertNotNullish(
+          currentModId,
+          "Expected mod to be selected in the editor",
+        );
+        await createModFromUnsavedMod(currentModId, values);
       } else {
-        // Should not happen in practice
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error("Expected either active mod component or mod");
+        await createModFromMod(modDefinition, values, modalData);
       }
 
       notify.success({
@@ -243,6 +255,7 @@ const CreateModModalBody: React.FC = () => {
       <ConnectedFieldTemplate
         name="id"
         label="Mod ID"
+        id="create-mod-modal-id"
         description={FieldDescriptions.MOD_ID}
         showUntouchedErrors
         as={RegistryIdWidget}
@@ -250,18 +263,21 @@ const CreateModModalBody: React.FC = () => {
       <ConnectedFieldTemplate
         name="name"
         label="Name"
+        id="create-mod-modal-name"
         description={FieldDescriptions.MOD_NAME}
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="version"
         label="Version"
+        id="create-mod-modal-version"
         description={FieldDescriptions.MOD_VERSION}
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
         name="description"
         label="Description"
+        id="create-mod-modal-description"
         description={FieldDescriptions.MOD_DESCRIPTION}
         showUntouchedErrors
       />

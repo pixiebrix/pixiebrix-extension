@@ -22,23 +22,45 @@ import { uuidv4 } from "@/types/helpers";
 
 export class CreateModModal extends BasePageObject {
   modIdInput = this.getByTestId("registryId-id-id");
-  modNameInput = this.getByLabel("Name", { exact: true });
+  modNameInput = this.getByRole("textbox", { name: "Name" });
+  descriptionInput = this.getByRole("textbox", { name: "Description" });
   saveButton = this.getByRole("button", { name: "Save" });
 
   /**
    * Creates a mod using the Create Mod modal, with the given modId and modName.
    * @param modName the modName to use
-   * @param modUuid an optional UUID to force the modId to be unique, if not provided a random UUID will be generated
+   * @param modNonce an optional UUID to force the modId to be unique, if not provided a random UUID will be generated
+   * @param description an optional description override for the mod
    */
   @ModifiesModFormState
-  async createMod(modName: string, modUuid?: UUID): Promise<string> {
+  async createMod(
+    modName: string,
+    {
+      modNonce,
+      description,
+    }: {
+      modNonce?: UUID;
+      description?: string;
+    } = {},
+  ): Promise<string> {
     const modId = `${modName.split(" ").join("-").toLowerCase()}-${
-      modUuid ?? uuidv4()
+      modNonce ?? uuidv4()
     }`;
 
     await this.modIdInput.fill(modId);
     await this.modNameInput.fill(modName);
+
+    if (description) {
+      await this.descriptionInput.fill(description);
+    }
+
     await this.saveButton.click();
+
+    // Wait for the save confirmation
+    await this.page
+      .getByRole("status")
+      .filter({ hasText: "Mod created successfully" })
+      .waitFor();
 
     return modId;
   }

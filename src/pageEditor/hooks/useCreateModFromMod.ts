@@ -21,7 +21,6 @@ import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorT
 import {
   selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
-  selectKeepLocalCopyOnCreateMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -37,11 +36,13 @@ import {
 } from "@/pageEditor/utils";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (
     modDefinition: ModDefinition,
     metadata: ModMetadataFormState,
+    options: { keepLocalCopy: boolean },
   ) => Promise<void>;
 };
 
@@ -50,7 +51,7 @@ type UseCreateModFromModReturn = {
  * existing, active mod that HAS been saved on the server before.
  */
 function useCreateModFromMod(): UseCreateModFromModReturn {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deactivateMod = useDeactivateMod();
   const getDraftModComponentsForMod = useSelector(
@@ -59,13 +60,13 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const dirtyModOptionsDefinitionsMap = useSelector(
     selectDirtyModOptionsDefinitions,
   );
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateMod);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
     async (
       sourceModDefinition: ModDefinition,
       newModMetadata: ModMetadataFormState,
+      { keepLocalCopy }: { keepLocalCopy: boolean },
     ) => {
       const sourceModId = sourceModDefinition.metadata.id;
 
@@ -100,17 +101,19 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
           ...createPrivateSharing(),
         }).unwrap();
 
-        await updateReduxForSavedModDefinition({
-          // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
-          // Editor navigation state is preserved for the source mod form states
-          modIdToReplace: undefined,
-          modDefinition: mapModDefinitionUpsertResponseToModDefinition(
-            unsavedModDefinition,
-            upsertResponse,
-          ),
-          draftModComponents,
-          isReactivate: false,
-        })(dispatch);
+        await dispatch(
+          updateReduxForSavedModDefinition({
+            // In the future, could consider passing the source mod id here if keepLocalCopy is false so that Page
+            // Editor navigation state is preserved for the source mod form states
+            modIdToReplace: undefined,
+            modDefinition: mapModDefinitionUpsertResponseToModDefinition(
+              unsavedModDefinition,
+              upsertResponse,
+            ),
+            draftModComponents,
+            isReactivate: false,
+          }),
+        );
 
         dispatch(editorActions.setActiveModId(newModId));
 
@@ -132,7 +135,6 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
       dirtyModOptionsDefinitionsMap,
       buildAndValidateMod,
       createModDefinitionOnServer,
-      keepLocalCopy,
       dispatch,
       deactivateMod,
     ],

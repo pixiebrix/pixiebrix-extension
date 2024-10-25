@@ -28,7 +28,6 @@ import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
 import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
-import { uuidv4 } from "@/types/helpers";
 import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 class EditorPane extends BasePageObject {
@@ -139,27 +138,33 @@ export class PageEditorPage extends BasePageObject {
    *
    * @param currentModName the current name (not registry id) of the mod to save
    * @param descriptionOverride the optional description override
+   * @param selectModListItem whether to select the mod list item before saving (default: true)
    * @returns the RegistryId of the saved mod
    */
   @ModifiesModFormState
   async saveNewMod({
     currentModName,
     descriptionOverride,
+    selectModListItem = true,
   }: {
     currentModName: string;
     descriptionOverride?: string;
+    selectModListItem?: boolean;
   }): Promise<{
     modId: string;
   }> {
     const modListItem =
       this.modListingPanel.getModListItemByName(currentModName);
-    await modListItem.select();
-    // Expect the mod metadata editor to be showing form for a mod that's never been saved before
-    await expect(
-      this.modEditorPane.editMetadataTabPanel.getByPlaceholder(
-        "Save the mod to assign a Mod ID",
-      ),
-    ).toBeVisible();
+
+    if (selectModListItem) {
+      await modListItem.select();
+      // Expect the mod metadata editor to be showing form for a mod that's never been saved before
+      await expect(
+        this.modEditorPane.editMetadataTabPanel.getByPlaceholder(
+          "Save the mod to assign a Mod ID",
+        ),
+      ).toBeVisible();
+    }
 
     const saveNewModModal = this.page.locator(".modal-content");
     // The save button re-mounts several times so we need to retry clicking the saveButton until the modal is visible
@@ -170,31 +175,12 @@ export class PageEditorPage extends BasePageObject {
     }).toPass({ timeout: DEFAULT_TIMEOUT });
 
     await expect(saveNewModModal.getByText("Save new mod")).toBeVisible();
-    // // Can't use getByLabel to target because the field is composed of multiple widgets
-    const registryIdInput = saveNewModModal.getByTestId("registryId-id-id");
-    const currentId = await registryIdInput.inputValue();
-    // Add a random uuid to the mod id to prevent test collisions
-    await registryIdInput.fill(`${currentId}-${uuidv4()}`);
 
-    if (descriptionOverride) {
-      // Update the mod description
-      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9238, prefer getByLabel
-      const descriptionInput = saveNewModModal.locator("#description");
-      await descriptionInput.fill(descriptionOverride);
-    }
+    const createModModal = new CreateModModal(this.getByRole("dialog"));
 
-    // Click the Save button in the modal
-    await saveNewModModal.getByRole("button", { name: "Save" }).click();
-
-    // Wait for the save confirmation
-    await expect(
-      this.page
-        .getByRole("status")
-        .filter({ hasText: "Mod created successfully" }),
-    ).toBeVisible();
-
-    const modId =
-      await this.modEditorPane.editMetadataTabPanel.modId.inputValue();
+    const modId = await createModModal.createMod(currentModName, {
+      description: descriptionOverride,
+    });
 
     return { modId };
   }

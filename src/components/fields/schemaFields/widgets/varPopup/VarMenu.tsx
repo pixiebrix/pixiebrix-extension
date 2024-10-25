@@ -26,7 +26,7 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import SourceLabel from "./SourceLabel";
-import useAllBricks from "@/bricks/hooks/useAllBricks";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useAsyncEffect } from "use-async-effect";
 import { computePosition, flip, offset, size } from "@floating-ui/dom";
 import getMenuOptions from "./getMenuOptions";
@@ -48,6 +48,8 @@ import useEventListener from "@/hooks/useEventListener";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { StateNamespaces } from "@/platform/state/stateTypes";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { type TypedBrickMap } from "@/bricks/registry";
 
 const emptyVarMap = new VarMap();
 
@@ -153,6 +155,8 @@ function usePositionVarPopup({
   return { rootElementRef, positioned };
 }
 
+const EMPTY_BRICKS: TypedBrickMap = new Map();
+
 const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   inputElementRef,
   onClose,
@@ -168,7 +172,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const modComponentRef = useSelector(selectActiveModComponentRef);
 
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
-  const { allBricks } = useAllBricks();
+  const { data: allBricks } = fallbackValue(useTypedBrickMap(), EMPTY_BRICKS);
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
   const { rootElementRef, positioned } = usePositionVarPopup({

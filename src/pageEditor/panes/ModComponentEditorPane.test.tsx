@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen, within } from "@/pageEditor/testHelpers";
+import { render, screen, within, userEvent } from "@/pageEditor/testHelpers";
 import ModComponentEditorPane from "./ModComponentEditorPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
@@ -26,7 +26,6 @@ import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
 import { defaultBrickConfig } from "@/bricks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/bricks/transformers/jq";
 import { AlertEffect } from "@/bricks/effects/alert";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
@@ -430,6 +429,7 @@ async function renderEditorPaneWithBasicFormState() {
   const modComponentFormState = getFormStateWithSubPipelines();
   const activeNodeId =
     modComponentFormState.modComponent.brickPipeline[0]!.instanceId;
+
   const utils = render(
     <div>
       <ModComponentEditorPane />
@@ -473,7 +473,7 @@ describe("can remove a node", () => {
     await renderEditorPaneWithBasicFormState();
 
     // Nodes are: Foundation, Echo, ForEach: [Echo]
-    // Select the second Echo block
+    // Select the second Echo brick
     await immediateUserEvent.click(screen.getAllByText(/echo brick/i)[1]!);
 
     // Click the remove button
@@ -655,6 +655,7 @@ describe("can copy and paste a node", () => {
     // There should be 5 paste buttons
     const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
     expect(pasteButtons).toHaveLength(5);
+
     // Click the last one
     await immediateUserEvent.click(pasteButtons[4]!);
 
@@ -671,7 +672,6 @@ describe("can copy and paste a node", () => {
 
 describe("validation", () => {
   function expectEditorError(container: HTMLElement, errorMessage: string) {
-    // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
     const errorBadge = container.querySelector(
       '.active[data-testid="editor-node"] span.badge',
     );
@@ -764,7 +764,7 @@ describe("validation", () => {
 
     // Ensure 2 nodes have error badges
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
+      // eslint-disable-next-line testing-library/no-container -- TODO: use a better selector
       container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
@@ -773,7 +773,7 @@ describe("validation", () => {
     store.dispatch(editorActions.setActiveModComponentId(modComponent2.uuid));
 
     // Ensure no error is displayed
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
+    // eslint-disable-next-line testing-library/no-container -- TODO: use a better selector
     const errorBadgesOfAnotherModComponent = container.querySelectorAll(
       '[data-testid="editor-node"] span.badge',
     );
@@ -787,7 +787,7 @@ describe("validation", () => {
 
     // Should show 2 error in the Node Layout
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
+      // eslint-disable-next-line testing-library/no-container -- TODO: use a better selector
       container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
@@ -992,9 +992,8 @@ describe("brick validation in Add Brick Modal UI", () => {
       await tickAsyncEffects();
 
       // Check for the alert on hover
-      const firstResult =
-        // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
-        screen.getAllByRole("button", { name: /add/i })[0]!.parentElement!;
+      const firstResult = screen.getAllByRole("button", { name: /add/i })[0]!
+        .parentElement!;
       await immediateUserEvent.hover(firstResult);
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
     },
@@ -1037,7 +1036,6 @@ describe("brick validation in Add Brick Modal UI", () => {
 
     // Assert that no UiPath bricks are available
     for (const button of addButtons) {
-      // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
       const brick = button.parentElement;
       expect(brick).not.toHaveTextContent("uipath");
     }

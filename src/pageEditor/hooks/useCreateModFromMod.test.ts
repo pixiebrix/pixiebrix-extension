@@ -80,6 +80,7 @@ describe("useCreateModFromMod", () => {
       await result.current.createModFromMod(
         sourceDefinition,
         modMetadataFactory(),
+        { keepLocalCopy: false },
       );
     });
 
@@ -120,6 +121,7 @@ describe("useCreateModFromMod", () => {
         result.current.createModFromMod(
           sourceModDefinition,
           modMetadataFactory(),
+          { keepLocalCopy: false },
         ),
       ).rejects.toThrow(DataIntegrityError);
     });
@@ -156,6 +158,7 @@ describe("useCreateModFromMod", () => {
         result.current.createModFromMod(
           sourceModDefinition,
           modMetadataFactory(),
+          { keepLocalCopy: false },
         ),
       ).rejects.toThrow(DataIntegrityError);
     });

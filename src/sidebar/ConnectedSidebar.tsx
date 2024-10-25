@@ -51,7 +51,7 @@ import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
 import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
-import { type AsyncDispatch } from "@/sidebar/store";
+import { type AppDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
 import {
   type ModComponentRef,
@@ -65,7 +65,7 @@ import { datadogRum } from "@datadog/browser-rum";
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
  */
 function useConnectedListener(): SidebarListener {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
 
   return useMemo(
     () => ({

@@ -40,6 +40,7 @@ One-time setup:
 - You can optionally run tests against specific browsers and/or browser versions by setting environment variable
   `E2E_CHROMIUM_CHANNELS`, which takes an array of channel values. Current expected values include `chrome`, `msedge`,
   `chromium`, `chrome-beta`, and `msedge-beta`. See `.env.example` for example configuration.
+- You can optionally decrease the default timeout for tests by uncommenting `E2E_TIMEOUT`
 
 ## Writing Tests
 
