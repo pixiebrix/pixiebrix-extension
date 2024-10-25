@@ -91,13 +91,14 @@ function useOnSelectModComponent(
   // Watching for value seems a bit hacky (e.g. as opposed to watching for editorSlice actions that could impact the
   // activeModComponentFormState). But it's a simple method that does not require maintaining the list of actions that
   // *might* impact the selected mod component form state.
-  const previousModComponentFormState = usePreviousValue(
+  const previousActiveModComponentFormState = usePreviousValue(
     activeModComponentFormState,
   );
 
   if (
-    activeModComponentFormState &&
-    activeModComponentFormState !== previousModComponentFormState
+    activeModComponentFormState?.uuid &&
+    activeModComponentFormState.uuid !==
+      previousActiveModComponentFormState?.uuid
   ) {
     callback(activeModComponentFormState);
   }
