@@ -317,7 +317,7 @@ describe("Mod Options editing", () => {
     // Edit the mod options
     initialState = editorSlice.reducer(
       initialState,
-      actions.editModOptionsValues({ testOption: "initial value" }),
+      actions.editModOptionsArgs({ testOption: "initial value" }),
     );
   });
 
@@ -325,7 +325,7 @@ describe("Mod Options editing", () => {
     const updatedOptionsArgs = { testOption: "updated value" };
     const stateAfterEdit = editorSlice.reducer(
       initialState,
-      actions.editModOptionsValues(updatedOptionsArgs),
+      actions.editModOptionsArgs(updatedOptionsArgs),
     );
 
     // Check if the existing component's options are updated
@@ -384,7 +384,7 @@ describe("Mod Options editing", () => {
     const updatedOptionsArgs = { testOption: "updated value" };
     const stateAfterEdit = editorSlice.reducer(
       stateAfterDeletion,
-      actions.editModOptionsValues(updatedOptionsArgs),
+      actions.editModOptionsArgs(updatedOptionsArgs),
     );
 
     // Check if the existing component's options are updated
