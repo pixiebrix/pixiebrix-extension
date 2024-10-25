@@ -30,6 +30,7 @@ import {
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { type RegistryId } from "@/types/registryTypes";
 import {
+  selectActiveModComponentFormState,
   selectActiveModId,
   selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
@@ -54,6 +55,9 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
   const activeModId = useSelector(selectActiveModId);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
@@ -113,9 +117,14 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         );
 
         if (activeModId === unsavedModId) {
-          // If the mod list item was selected, reselect the mod item using the new ID. Otherwise, keep the
-          // current selection in mod listing pane.
+          // If the mod list item is selected, reselect the mod item using the new id
           dispatch(editorActions.setActiveModId(newModId));
+        } else if (
+          activeModComponentFormState?.modMetadata.id === unsavedModId
+        ) {
+          // A mod component in the unsaved mod is selected. Expand the mod using the new new mod id
+          // XXX: currently, there's a short flicker for the mod to re-expand
+          dispatch(editorActions.toggleExpandedModId(newModId));
         }
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
@@ -125,6 +134,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
     },
     [
       activeModId,
+      activeModComponentFormState,
       getDraftModComponentsForMod,
       dirtyModOptionsDefinitionMap,
       buildAndValidateMod,

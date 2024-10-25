@@ -82,7 +82,10 @@ const ModListItem: React.FC<{
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`mod-${modId}`}
-        onClick={() => modId != null && dispatch(actions.setActiveModId(modId))}
+        onClick={() => {
+          dispatch(actions.setActiveModId(modId));
+          dispatch(actions.toggleExpandedModId(modId));
+        }}
       >
         <span className={styles.icon}>
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />

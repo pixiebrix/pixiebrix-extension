@@ -78,24 +78,19 @@ test("#9349: can save new mod with multiple components", async ({
     "Second Trigger",
   );
 
-  await pageEditorPage.saveNewMod({
+  await pageEditorPage.saveNewModWithoutSelectingModItem({
     currentModName: modName,
-    descriptionOverride: "Created by playwright test",
-    // This test is testing that the mod component stays selected on save
-    selectModItem: false,
   });
 
   // Mod Component should still be selected because the user never selected the mod item
-  const modComponentItem = pageEditorPage.modListingPanel.getModListItemByName(
-    "Test trigger mod component #2",
-  );
-  await expect(modComponentItem.root).toHaveClass("active");
+  const modComponentItem =
+    pageEditorPage.modListingPanel.getModListItemByName("Second Trigger");
+  await expect(modComponentItem.root).toBeVisible();
+  await expect(modComponentItem.root).toHaveClass(/active/);
 
-  const modsPage = new ModsPage(page, extensionId);
-  await modsPage.goto();
-
+  // Expect the first mod component is also within the expanded mod item
   await expect(
-    modsPage.locator(".list-group-item", { hasText: modName }),
+    pageEditorPage.modListingPanel.getModListItemByName("First Trigger").root,
   ).toBeVisible();
 });
 
