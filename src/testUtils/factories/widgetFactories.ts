@@ -15,17 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
+import { define } from "cooky-cutter";
 import { type WidgetProps } from "@rjsf/utils";
-import { widgetPropsFactory } from "@/testUtils/factories/widgetFactories";
 
-describe("RichTextWidget", () => {
-  const defaultProps: WidgetProps = widgetPropsFactory();
-
-  test("renders the RichTextWidget", () => {
-    render(<RichTextWidget {...defaultProps} />);
-    expect(screen.getByText("RichTextWidget")).toBeInTheDocument();
-  });
+export const widgetPropsFactory = define<WidgetProps>({
+  id: (n: number) => `test-widget-${n}`,
+  schema: {},
+  value: "",
+  required: false,
+  disabled: false,
+  readonly: false,
+  autofocus: false,
+  onChange: jest.fn(),
+  onBlur: jest.fn(),
+  onFocus: jest.fn(),
+  label: (n: number) => `Test Widget ${n}`,
+  multiple: false,
+  rawErrors: [],
+  options: {},
+  name: (n: number) => `test-widget-${n}`,
+  registry: {} as any,
 });
