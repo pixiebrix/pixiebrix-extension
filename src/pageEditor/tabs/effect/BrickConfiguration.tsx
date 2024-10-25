@@ -51,7 +51,9 @@ import { useDispatch } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 /**
- * Handles possible NPE from `config.value` being undefined.
+ * Handles possible NPE from the brick configuration not being migrated.
+ * Ensures that the brickPipelineUIState is valid
+ *
  * This originally happened during the extension -> modComponent form state migration.
  * See https://github.com/pixiebrix/pixiebrix-extension/issues/8781
  */
@@ -60,7 +62,12 @@ function useRecoverFormStateIntegrityError(name: string) {
   const [config] = useField<BrickConfig | undefined>(name);
   const dispatch = useDispatch();
 
-  if (!config.value) {
+  /**
+   * If the name doesn't include "modComponent", the brickPipelineUIstate has not been migrated
+   * and is invalid. Previously, we checked for the existence of config.value, but config.value can be undefined
+   * (see usage in BrickConfiguration). Remounting the form instead of reinitializing hid that logic error.
+   */
+  if (!name.includes("modComponent")) {
     dispatch(
       editorActions.setModComponentFormState({
         modComponentFormState: context.values,

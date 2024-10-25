@@ -20,14 +20,12 @@ import type { ModComponentBase } from "@/types/modComponentTypes";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
-import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import type { RegistryId } from "@/types/registryTypes";
 import { getDraftModComponentId } from "@/pageEditor/utils";
-import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 /**
  * Update Redux for a saved mod definition.
@@ -48,13 +46,7 @@ function updateReduxForSavedModDefinition({
   draftModComponents: Array<ModComponentBase | ModComponentFormState>;
   isReactivate: boolean;
 }) {
-  return async (
-    dispatch: ThunkDispatch<
-      EditorRootState & ModComponentsRootState,
-      unknown,
-      AnyAction
-    >,
-  ): Promise<void> => {
+  return async (dispatch: AppDispatch): Promise<void> => {
     const modMetadata = mapModDefinitionToModMetadata(modDefinition);
 
     // Activate/re-activate the mod

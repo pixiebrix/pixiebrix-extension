@@ -22,7 +22,6 @@ import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
-import { assertNotNullish } from "@/utils/nullishUtils";
 import type { ModInstance } from "@/types/modInstanceTypes";
 import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
@@ -57,7 +56,6 @@ function useModPermissions(modInstances: ModInstance[]): {
     noRequiredPermissionsStatus,
   );
 
-  assertNotNullish(data, "Permissions data is null");
   const { permissions, hasPermissions } = data;
 
   const requestPermissions = useRequestPermissionsCallback(permissions);

@@ -201,6 +201,30 @@ export const lexicon: LexiconMap = {
       "DevTools in the Extension Console or on internal chrome pages).",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  FACTORY_RESET: {
+    description:
+      "Reported when a user performs a factory reset of the PixieBrix Extension, which is available via " +
+      "the Extension Console settings page. This event is triggered after the user confirms the factory reset action.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
+  FLOATING_ACTION_BUTTON_CLICK: {
+    description:
+      "Reported when a user clicks the floating action button on any web page for which it is shown.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  FLOATING_ACTION_BUTTON_REPOSITION: {
+    description:
+      "Reported when the floating action button is repositioned on the page by clicking the drag handle and moving " +
+      "the button to a new location. Only reported once per page load.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE: {
+    description:
+      "Reported when the floating action button is hidden by clicking the 'Hide Button' button " +
+      "that appears when hovering over the floating action button. Sets the Floating Action Button setting to 'disabled' " +
+      "in the Extension Console settings.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
   GOOGLE_FILE_PICKER_EVENT: {
     description: "[OBSOLETE] This event is no longer in use.",
     hidden: true,

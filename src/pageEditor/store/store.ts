@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, type Middleware } from "@reduxjs/toolkit";
+import {
+  type AnyAction,
+  configureStore,
+  type ThunkDispatch,
+  type Middleware,
+} from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import {
   editorSlice,
@@ -49,6 +54,7 @@ import { createStateSyncMiddleware } from "redux-state-sync";
 import { boolean } from "@/utils/typeUtils";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -117,6 +123,8 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+export type AppDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
 
 // https://redux-toolkit.js.org/rtk-query/overview#configure-the-store
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional

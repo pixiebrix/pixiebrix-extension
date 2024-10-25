@@ -57,7 +57,7 @@ import {
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
-import useAllBricks from "@/bricks/hooks/useAllBricks";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import {
@@ -221,7 +221,7 @@ const usePipelineNodes = (): {
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBricks, isLoading } = useAllBricks();
+  const { data: allBricks, isLoading } = useTypedBrickMap();
 
   const pasteBlock = usePasteBrick();
   const showPaste = pasteBlock && isApiAtLeastV2;
@@ -311,7 +311,7 @@ const usePipelineNodes = (): {
     assertNotNullish(instanceId, "instanceId is required");
 
     const nodes: EditorNodeProps[] = [];
-    const block = allBricks.get(blockConfig.id)?.block;
+    const block = allBricks?.get(blockConfig.id)?.block;
     const isNodeActive = instanceId === activeNodeId;
 
     const traceRecord = getLatestBrickCall(
@@ -372,15 +372,15 @@ const usePipelineNodes = (): {
       }));
     };
 
-    const showAddBlock = isApiAtLeastV2 && (index < lastIndex || showAppend);
+    const showAddBrick = isApiAtLeastV2 && (index < lastIndex || showAppend);
     const showBiggerActions = index === lastIndex && isRootPipeline;
-    const showAddMessage = showAddBlock && showBiggerActions;
+    const showAddMessage = showAddBrick && showBiggerActions;
 
     const brickNodeActions: NodeAction[] = [];
     const nodeId = instanceId;
 
     // TODO: Refactoring - remove code duplication in the node actions here
-    if (showAddBlock) {
+    if (showAddBrick) {
       brickNodeActions.push({
         name: `${nodeId}-add-brick`,
         icon: faPlusCircle,
@@ -415,7 +415,7 @@ const usePipelineNodes = (): {
     };
 
     if (block) {
-      assertNotNullish(nodeId, "nodeId is required to get block annotations");
+      assertNotNullish(nodeId, "nodeId is required to get brick annotations");
       // Handle race condition on pipelineMap updates
       // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
       const blockPath = maybePipelineMap?.[nodeId]?.path;
@@ -635,7 +635,7 @@ const usePipelineNodes = (): {
     const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
     const lastBlockId = pipeline.at(lastIndex)?.id;
-    const lastBlock = lastBlockId ? allBricks.get(lastBlockId) : undefined;
+    const lastBlock = lastBlockId ? allBricks?.get(lastBlockId) : undefined;
     const showAppend =
       !lastBlock?.block || lastBlock.type !== BrickTypes.RENDERER;
     const nodes: EditorNodeProps[] = [];
