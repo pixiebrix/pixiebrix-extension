@@ -230,6 +230,39 @@ export const lexicon: LexiconMap = {
     hidden: true,
     tags: [LexiconTags.OBSOLETE],
   },
+  HANDLE_CONTEXT_MENU: {
+    description:
+      "Triggered by running a Context Menu starter brick, as a result of a user clicking a PixieBrix context menu item on a modified web page.\n" +
+      "\n" +
+      "Does not necessarily indicate a successful mod run.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  HANDLE_QUICK_BAR: {
+    description:
+      "Triggered by running a Quickbar mod, as a result of opening the Quickbar on a modified web page and selecting " +
+      "a mod to run by clicking on the mod or pressing 'enter' on the keyboard with the mod highlighted." +
+      "\n" +
+      "Does not necessarily indicate a successful mod run.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  IDB_RECLAIM_QUOTA: {
+    description:
+      "Reported when a user clicks the 'Reclaim Space' button on the IndexedDB (IDB) error display in the Extension " +
+      "Console when the user gets a 'Insufficient storage space available to PixieBrix' error.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
+  IDB_RECOVER_CONNECTION: {
+    description:
+      "Reported when a user clicks the 'Recover Connection' button on the IndexedDB (IDB) error display in the Extension " +
+      "Console when the user gets a 'Error connecting to local database' error.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
+  IDB_UNRESPONSIVE_BANNER: {
+    description:
+      "Reported when the error banner containing the message 'We're having trouble connecting to your browser's local database, please restart " +
+      "your browser' for IndexedDB (IDB) errors is shown in the Extension Console",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
 };
 
 /**
