@@ -26,6 +26,7 @@ const LexiconTags = {
   MOD_RUNTIME: "mod runtime",
   ENTERPRISE: "enterprise",
   TEAM: "team",
+  OBSOLETE: "obsolete",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -47,6 +48,14 @@ interface LexiconEventEntry {
    * Tags to categorize the event in the Mixpanel interface. Typically used to group related events together.
    */
   tags?: LexiconTag[];
+  /**
+   * True if the event should be hidden from the Mixpanel interface. Hidden events are still tracked (granted they are
+   * reported to Mixpanel), but since they are hidden they will be discouraged from being used in reports.
+   *
+   * "Hidden" is the preferred way to deprecate or make an event obsolete, and differs from "dropped" in that it is less
+   * severe; dropped events are intercepted by Mixpanel and not reported at all, and is thus error-prone.
+   */
+  hidden?: boolean;
 }
 
 /**
@@ -216,6 +225,11 @@ export const lexicon: LexiconMap = {
       "in the Extension Console settings.",
     tags: [LexiconTags.MOD_RUNTIME],
   },
+  GOOGLE_FILE_PICKER_EVENT: {
+    description: "[OBSOLETE] This event is no longer in use.",
+    hidden: true,
+    tags: [LexiconTags.OBSOLETE],
+  },
 };
 
 /**
@@ -269,7 +283,7 @@ export function transformLexiconMapToRequestSchema(
           "com.mixpanel": {
             tags: entry.tags,
             displayName: getDisplayName(eventKey),
-            hidden: false,
+            hidden: entry.hidden ?? false,
             dropped: false,
           },
         },
