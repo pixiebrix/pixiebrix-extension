@@ -177,7 +177,6 @@ export class PageEditorPage extends BasePageObject {
    *
    * @param currentModName the current name (not registry id) of the mod to save
    * @param descriptionOverride the optional description override
-   * @param selectModItem true to select the mod item before clicking save, or false to click save without selecting
    * @returns the RegistryId of the saved mod
    */
   @ModifiesModFormState
