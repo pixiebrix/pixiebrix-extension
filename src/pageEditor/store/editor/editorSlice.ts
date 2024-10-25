@@ -394,11 +394,10 @@ export const editorSlice = createSlice({
     },
 
     /**
-     * Toggle the expand/collapse of the mod listing pane item.
+     * Set the expanded mod id.
      */
-    toggleExpandedModId(state, action: PayloadAction<RegistryId>) {
-      const modId = action.payload;
-      state.expandedModId = state.expandedModId === modId ? null : modId;
+    setExpandedModId(state, action: PayloadAction<RegistryId | null>) {
+      state.expandedModId = action.payload;
     },
 
     /**

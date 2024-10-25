@@ -69,7 +69,9 @@ const ModListItem: React.FC<{
     activatedVersion != null &&
     semver.gt(latestModVersion, activatedVersion);
 
-  const caretIcon = expandedModId === modId ? faCaretDown : faCaretRight;
+  const isExpanded = expandedModId === modId;
+
+  const caretIcon = isExpanded ? faCaretDown : faCaretRight;
 
   return (
     <>
@@ -84,7 +86,7 @@ const ModListItem: React.FC<{
         key={`mod-${modId}`}
         onClick={() => {
           dispatch(actions.setActiveModId(modId));
-          dispatch(actions.toggleExpandedModId(modId));
+          dispatch(actions.setExpandedModId(isExpanded ? null : modId));
         }}
       >
         <span className={styles.icon}>

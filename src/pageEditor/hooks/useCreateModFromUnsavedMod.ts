@@ -124,7 +124,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         ) {
           // A mod component in the unsaved mod is selected. Expand the mod using the new new mod id
           // XXX: currently, there's a short flicker for the mod to re-expand
-          dispatch(editorActions.toggleExpandedModId(newModId));
+          dispatch(editorActions.setExpandedModId(newModId));
         }
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {

@@ -16,19 +16,15 @@
  */
 
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import {
-  ModalKey,
-  type ModMetadataFormState,
-} from "@/pageEditor/store/editor/pageEditorTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
-import { getModalDataSelector } from "@/pageEditor/store/editor/editorSelectors";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { createPrivateSharing } from "@/utils/registryUtils";
@@ -45,7 +41,6 @@ type UseCreateModFromModReturn = {
 
 function useCreateModFromModComponent(): UseCreateModFromModReturn {
   const dispatch = useDispatch<AppDispatch>();
-  const modalData = useSelector(getModalDataSelector(ModalKey.CREATE_MOD));
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
@@ -108,7 +103,6 @@ function useCreateModFromModComponent(): UseCreateModFromModReturn {
       buildAndValidateMod,
       createModDefinitionOnServer,
       dispatch,
-      modalData,
       deleteDraftModComponent,
     ],
   );
