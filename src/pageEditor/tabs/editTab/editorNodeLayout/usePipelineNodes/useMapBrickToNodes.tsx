@@ -53,7 +53,6 @@ import {
   ADD_MESSAGE,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import { type AppDispatch } from "@/pageEditor/store/store";
-import { type TypedBrickMap } from "@/bricks/registry";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveModComponentFormState,
@@ -68,6 +67,8 @@ import PackageIcon from "@/components/PackageIcon";
 import { useDispatch, useSelector } from "react-redux";
 import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
+import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 
 export type MapBrickToNodesArgs = {
   index: number;
@@ -82,14 +83,13 @@ export type MapBrickToNodesArgs = {
   isAncestorActive: boolean;
   nestingLevel: number;
   modComponentHasTraces?: boolean;
-  allBricks?: TypedBrickMap;
-  isLoadingBricks: boolean;
-  isApiAtLeastV2: boolean;
 };
 
 export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const dispatch = useDispatch<AppDispatch>();
   const [hoveredState, setHoveredState] = useHoveredState();
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+  const { data: allBricks, isLoading: isLoadingBricks } = useTypedBrickMap();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
@@ -128,9 +128,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       isAncestorActive,
       nestingLevel,
       modComponentHasTraces: modComponentHasTracesInput,
-      allBricks,
-      isLoadingBricks,
-      isApiAtLeastV2,
     }: MapBrickToNodesArgs) => {
       const showPaste = pasteBrick && isApiAtLeastV2;
 
@@ -402,9 +399,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
             // If this pipeline is a sub-pipeline that doesn't have traces yet, fall back to the latest parent call
             // That prevents deeply nested stale traces from appearing in the UI
             latestParentCall: traceRecord?.branches ?? latestPipelineCall,
-            allBricks,
-            isLoadingBricks,
-            isApiAtLeastV2,
           });
 
           nodes.push(
@@ -446,11 +440,17 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
     [
       activeBuilderPreviewElementId,
       activeNodeId,
+      allBricks,
       annotations,
       collapsedNodes,
       dispatch,
+      hoveredState,
+      isApiAtLeastV2,
+      isLoadingBricks,
+      mapPipelineToNodes,
       maybePipelineMap,
       pasteBrick,
+      setHoveredState,
       traces,
     ],
   );

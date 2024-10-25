@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
 import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { isEmpty } from "lodash";
-import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useSelector } from "react-redux";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
-import { type UUID } from "@/types/stringTypes";
-import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import {
@@ -49,10 +44,6 @@ const usePipelineNodes = (): {
   );
   const traces = useSelector(selectActiveModComponentTraces);
 
-  const { data: allBricks, isLoading } = useTypedBrickMap();
-
-  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
-  const pasteBrick = usePasteBrick();
   const mapBrickToNodes = useMapBrickToNodes();
   const mapPipelineToNodes = useMapPipelineToNodes(mapBrickToNodes);
 
@@ -68,9 +59,6 @@ const usePipelineNodes = (): {
     pipeline: rootPipeline,
     flavor: rootPipelineFlavor,
     traces,
-    allBricks,
-    isLoadingBricks: isLoading,
-    isApiAtLeastV2,
   });
 
   const foundationNodeProps = useMakeFoundationNode({
@@ -79,8 +67,6 @@ const usePipelineNodes = (): {
     starterBrickLabel,
     starterBrickIcon,
     modComponentHasTraces,
-    pasteBrick,
-    isApiAtLeastV2,
   });
 
   return {

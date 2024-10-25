@@ -34,6 +34,8 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { ADD_MESSAGE } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
+import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
+import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 
 type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;
@@ -41,10 +43,6 @@ type MakeFoundationNodeArgs = {
   starterBrickLabel: string;
   starterBrickIcon: IconProp;
   modComponentHasTraces: boolean;
-  pasteBrick:
-    | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
-    | null;
-  isApiAtLeastV2: boolean;
 };
 
 export function useMakeFoundationNode({
@@ -53,11 +51,11 @@ export function useMakeFoundationNode({
   starterBrickLabel,
   starterBrickIcon,
   modComponentHasTraces,
-  pasteBrick,
-  isApiAtLeastV2,
 }: MakeFoundationNodeArgs) {
   const dispatch = useDispatch();
   const [, setHoveredState] = useHoveredState();
+  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+  const pasteBrick = usePasteBrick();
 
   const showPaste = pasteBrick && isApiAtLeastV2;
 

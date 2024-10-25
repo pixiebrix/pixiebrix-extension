@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { type TypedBrickMap } from "@/bricks/registry";
 import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
 import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
@@ -47,14 +48,13 @@ type MapPipelineToNodesArgs = {
    */
   latestParentCall?: Branch[];
   traces: TraceRecord[];
-  allBricks?: TypedBrickMap;
-  isLoadingBricks: boolean;
-  isApiAtLeastV2: boolean;
 };
 
 export function useMapPipelineToNodes(
   mapBrickToNodes: (args: MapBrickToNodesArgs) => MapOutput,
 ): (args: MapPipelineToNodesArgs) => MapOutput {
+  const { data: allBricks } = useTypedBrickMap();
+
   return useCallback(
     ({
       pipeline,
@@ -65,9 +65,6 @@ export function useMapPipelineToNodes(
       isAncestorActive = false,
       latestParentCall,
       traces,
-      allBricks,
-      isLoadingBricks,
-      isApiAtLeastV2,
     }: MapPipelineToNodesArgs) => {
       const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
       const lastIndex = pipeline.length - 1;
@@ -108,9 +105,6 @@ export function useMapPipelineToNodes(
           isAncestorActive,
           nestingLevel,
           modComponentHasTraces,
-          allBricks,
-          isLoadingBricks,
-          isApiAtLeastV2,
         });
 
         nodes.push(...brickNodes);
@@ -122,6 +116,6 @@ export function useMapPipelineToNodes(
         modComponentHasTraces,
       };
     },
-    [],
+    [allBricks, mapBrickToNodes],
   );
 }
