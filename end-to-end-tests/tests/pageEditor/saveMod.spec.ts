@@ -78,8 +78,10 @@ test("#9349: can save new mod with multiple components", async ({
     "Second Trigger",
   );
 
-  await pageEditorPage.saveNewModWithoutSelectingModItem({
+  await pageEditorPage.saveNewMod({
     currentModName: modName,
+    // This test is verifying the UI state after saving with the mod component selected
+    selectModListItem: false,
   });
 
   // Mod Component should still be selected because the user never selected the mod item
