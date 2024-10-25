@@ -656,7 +656,7 @@ describe("can copy and paste a node", () => {
     const pasteButtons = screen.getAllByTestId(/-paste-brick/i);
     expect(pasteButtons).toHaveLength(5);
 
-    // // Click the last one
+    // Click the last one
     await immediateUserEvent.click(pasteButtons[4]!);
 
     // Expect nodes to be: Foundation, Echo, ForEach: [Echo], ForEach: [Echo]
