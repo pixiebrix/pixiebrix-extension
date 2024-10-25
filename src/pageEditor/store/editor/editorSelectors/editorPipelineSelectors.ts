@@ -50,10 +50,7 @@ export const selectActiveNodeId = createSelector(
 export const selectActiveNodeInfo = createSelector(
   selectActiveBrickPipelineUIState,
   selectActiveNodeId,
-  (
-    uiState: Nullishable<BrickPipelineUIState>,
-    activeNodeId: Nullishable<UUID>,
-  ) => {
+  (uiState, activeNodeId) => {
     assertNotNullish(
       uiState,
       `uiState is ${typeof uiState === "object" ? "null" : "undefined"}`,
