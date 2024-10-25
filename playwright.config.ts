@@ -1,5 +1,5 @@
 import { defineConfig } from "@playwright/test";
-import { CI, E2E_CHROMIUM_CHANNELS } from "./end-to-end-tests/env";
+import { CI, E2E_CHROMIUM_CHANNELS, E2E_TIMEOUT } from "./end-to-end-tests/env";
 import { type ValueOf } from "type-fest";
 
 export const SupportedChannels = {
@@ -54,7 +54,7 @@ const getChromiumChannelsFromEnv = (): SupportedChannel[] => {
 };
 
 /** Default timeout used for each action and assertion */
-export const DEFAULT_TIMEOUT = 20_000;
+export const DEFAULT_TIMEOUT = CI ? 20_000 : Number(E2E_TIMEOUT);
 
 /**
  * See https://playwright.dev/docs/test-configuration.

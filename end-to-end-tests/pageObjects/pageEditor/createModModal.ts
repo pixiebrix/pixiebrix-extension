@@ -19,13 +19,11 @@ import { BasePageObject } from "../basePageObject";
 import { type UUID } from "@/types/stringTypes";
 import { ModifiesModFormState } from "./utils";
 import { uuidv4 } from "@/types/helpers";
-import { expect } from "@playwright/test";
 
 export class CreateModModal extends BasePageObject {
   modIdInput = this.getByTestId("registryId-id-id");
-  modNameInput = this.getByLabel("Name", { exact: true });
-  // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9238, prefer getByLabel
-  descriptionInput = this.locator("#description");
+  modNameInput = this.getByRole("textbox", { name: "Name" });
+  descriptionInput = this.getByRole("textbox", { name: "Description" });
   saveButton = this.getByRole("button", { name: "Save" });
 
   /**
@@ -59,11 +57,10 @@ export class CreateModModal extends BasePageObject {
     await this.saveButton.click();
 
     // Wait for the save confirmation
-    await expect(
-      this.page
-        .getByRole("status")
-        .filter({ hasText: "Mod created successfully" }),
-    ).toBeVisible();
+    await this.page
+      .getByRole("status")
+      .filter({ hasText: "Mod created successfully" })
+      .waitFor();
 
     return modId;
   }
