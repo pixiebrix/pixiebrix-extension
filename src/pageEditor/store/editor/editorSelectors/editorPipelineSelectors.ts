@@ -140,6 +140,3 @@ const parentNodeInfoSelector = createSelector(
 export const selectParentNodeInfo =
   (nodeId: UUID) => (state: EditorRootState) =>
     parentNodeInfoSelector(state, nodeId);
-
-export const selectAddBrickLocation = ({ editor }: EditorRootState) =>
-  editor.addBrickLocation;

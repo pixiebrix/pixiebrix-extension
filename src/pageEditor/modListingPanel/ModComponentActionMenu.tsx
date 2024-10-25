@@ -80,7 +80,11 @@ const ModComponentActionMenu: React.FC<{
         />
       ),
       async action() {
-        dispatch(actions.showMoveCopyToModModal({ moveOrCopy: "move" }));
+        dispatch(
+          actions.showMoveCopyToModModal({
+            moveOrCopy: "move",
+          }),
+        );
       },
     },
     {

@@ -50,6 +50,52 @@ test("can save a new trigger mod", async ({
   ).toBeVisible();
 });
 
+test("#9349: can save new mod with multiple components", async ({
+  page,
+  extensionId,
+  newPageEditorPage,
+}) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+  await pageEditorPage.modListingPanel.addNewMod({
+    starterBrickName: "Trigger",
+  });
+  await pageEditorPage.brickConfigurationPanel.fillField(
+    "name",
+    "First Trigger",
+  );
+
+  const modName = "New Mod";
+
+  const modListItem =
+    pageEditorPage.modListingPanel.getModListItemByName("New Mod");
+  await modListItem.select();
+  await modListItem.menuButton.click();
+  await modListItem.modActionMenu.addStarterBrick("Trigger");
+
+  await pageEditorPage.brickConfigurationPanel.fillField(
+    "name",
+    "Second Trigger",
+  );
+
+  await pageEditorPage.saveNewMod({
+    currentModName: modName,
+    // This test is verifying the UI state after saving with the mod component selected
+    selectModListItem: false,
+  });
+
+  // Mod Component should still be selected because the user never selected the mod item
+  const modComponentItem =
+    pageEditorPage.modListingPanel.getModListItemByName("Second Trigger");
+  await expect(modComponentItem.root).toBeVisible();
+  await expect(modComponentItem.root).toHaveClass(/active/);
+
+  // Expect the first mod component is also within the expanded mod item
+  await expect(
+    pageEditorPage.modListingPanel.getModListItemByName("First Trigger").root,
+  ).toBeVisible();
+});
+
 test("shows error notification when updating a public mod without incrementing the version", async ({
   page,
   newPageEditorPage,

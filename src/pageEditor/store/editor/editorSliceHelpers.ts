@@ -186,22 +186,6 @@ export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
   delete state.deletedModComponentFormStatesByModId[modId];
 }
 
-export function setActiveModId(state: Draft<EditorState>, modId: RegistryId) {
-  state.error = null;
-  state.beta = false;
-  state.activeModComponentId = null;
-
-  if (state.expandedModId === modId && state.activeModId === modId) {
-    // "un-toggle" the mod, if it's already selected
-    state.expandedModId = null;
-  } else {
-    state.expandedModId = modId;
-  }
-
-  state.activeModId = modId;
-  state.selectionSeq++;
-}
-
 export function editModMetadata(
   state: Draft<EditorState>,
   metadata: ModMetadataFormState,

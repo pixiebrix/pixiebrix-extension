@@ -26,6 +26,7 @@ import {
   type AddBrickLocation,
   type EditorRootState,
   type EditorState,
+  type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
@@ -52,7 +53,6 @@ import {
   editModOptionsDefinitions,
   markModComponentFormStateAsDeleted,
   removeModData,
-  setActiveModId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
@@ -103,8 +103,7 @@ export const initialState: EditorState = {
   brickPipelineUIStateById: {},
   dirtyModOptionsById: {},
   dirtyModMetadataById: {},
-  visibleModalKey: null,
-  keepLocalCopyOnCreateMod: false,
+  visibleModal: null,
   deletedModComponentFormStatesByModId: {},
   availableActivatedModComponentIds: [],
   isPendingAvailableActivatedModComponents: false,
@@ -338,7 +337,7 @@ export const editorSlice = createSlice({
     },
 
     hideModal(state) {
-      state.visibleModalKey = null;
+      state.visibleModal = null;
     },
 
     ///
@@ -365,23 +364,46 @@ export const editorSlice = createSlice({
     },
 
     showSaveDataIntegrityErrorModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_DATA_INTEGRITY_ERROR;
+      state.visibleModal = {
+        type: ModalKey.SAVE_DATA_INTEGRITY_ERROR,
+        data: {},
+      };
     },
 
     ///
     /// MOD LISTING PANE NAVIGATION
     ///
 
+    /**
+     * Activate the mod with the given id. Expands the mod listing pane item if not already expanded
+     * @see toggleExpandedModId
+     */
     setActiveModId(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
-      setActiveModId(state, modId);
+
+      state.error = null;
+      state.beta = false;
+      state.activeModComponentId = null;
+      state.activeModId = modId;
+
+      if (state.expandedModId !== modId) {
+        state.expandedModId = modId;
+      }
+
+      state.selectionSeq++;
+    },
+
+    /**
+     * Set the expanded mod id.
+     */
+    setExpandedModId(state, action: PayloadAction<RegistryId | null>) {
+      state.expandedModId = action.payload;
     },
 
     /**
      * Select the mod component with the given ID. NOTE: this action is only navigational. The form state must have
      * already been added to the Page Editor using addModComponentFormState
      * @see addModComponentFormState
-     * @see selectActivatedModComponentFormState
      */
     setActiveModComponentId(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
@@ -410,23 +432,33 @@ export const editorSlice = createSlice({
 
     showCreateModModal(
       state,
-      action: PayloadAction<{ keepLocalCopy: boolean }>,
+      action: PayloadAction<
+        Extract<ModalDefinition, { type: ModalKey.CREATE_MOD }>["data"]
+      >,
     ) {
-      state.visibleModalKey = ModalKey.CREATE_MOD;
-      state.keepLocalCopyOnCreateMod = action.payload.keepLocalCopy;
+      state.visibleModal = {
+        type: ModalKey.CREATE_MOD,
+        data: action.payload,
+      };
     },
 
     showSaveAsNewModModal(state) {
-      state.visibleModalKey = ModalKey.SAVE_AS_NEW_MOD;
+      state.visibleModal = {
+        type: ModalKey.SAVE_AS_NEW_MOD,
+        data: {},
+      };
     },
 
     showMoveCopyToModModal(
       state,
       action: PayloadAction<{ moveOrCopy: "move" | "copy" }>,
     ) {
-      const { moveOrCopy } = action.payload;
-      state.visibleModalKey = ModalKey.MOVE_COPY_TO_MOD;
-      state.keepLocalCopyOnCreateMod = moveOrCopy === "copy";
+      state.visibleModal = {
+        type: ModalKey.MOVE_COPY_TO_MOD,
+        data: {
+          keepLocalCopy: action.payload.moveOrCopy === "copy",
+        },
+      };
     },
 
     ///
@@ -672,8 +704,10 @@ export const editorSlice = createSlice({
     ///
 
     showAddBrickModal(state, action: PayloadAction<AddBrickLocation>) {
-      state.addBrickLocation = action.payload;
-      state.visibleModalKey = ModalKey.ADD_BRICK;
+      state.visibleModal = {
+        type: ModalKey.ADD_BRICK,
+        data: { addBrickLocation: action.payload },
+      };
     },
 
     addNode(
@@ -1031,12 +1065,7 @@ export const persistEditorConfig = {
   storage: localStorage as StorageInterface,
   version: 9,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: [
-    "inserting",
-    "isVarPopoverVisible",
-    "isSaveDataIntegrityErrorModalVisible",
-    "visibleModalKey",
-  ],
+  blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
 };
 
 function validateActiveModComponentId(state: Draft<EditorState>) {
