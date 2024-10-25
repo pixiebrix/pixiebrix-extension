@@ -75,7 +75,6 @@ const usePipelineNodes = (): {
       hoveredState,
       setHoveredState,
       isApiAtLeastV2,
-      pasteBrick,
     }),
   );
 

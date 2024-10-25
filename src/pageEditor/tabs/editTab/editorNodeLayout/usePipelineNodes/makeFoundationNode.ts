@@ -106,7 +106,7 @@ export function makeFoundationNode({
       icon: starterBrickIcon,
       runStatus: decideFoundationStatus({
         hasTraces: modComponentHasTraces,
-        blockAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
+        brickAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
       }),
       brickLabel: starterBrickLabel,
       outputKey: "input" as OutputKey,

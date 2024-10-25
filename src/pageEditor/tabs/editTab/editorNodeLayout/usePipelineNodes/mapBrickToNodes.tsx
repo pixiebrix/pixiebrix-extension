@@ -35,7 +35,7 @@ import {
   actions,
   actions as editorActions,
 } from "@/pageEditor/store/editor/editorSlice";
-import { decideBlockStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
+import { decideBrickStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
 import { type Branch } from "@/types/runtimeTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
@@ -49,7 +49,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
 import {
   getBuilderPreviewElementId,
-  getSubPipelinesForBlock,
+  getSubPipelinesForBrick,
   ADD_MESSAGE,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import { type AppDispatch } from "@/pageEditor/store/store";
@@ -68,10 +68,11 @@ import { mapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/u
 import { type Dispatch, type SetStateAction } from "react";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import PackageIcon from "@/components/PackageIcon";
+import getPasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/getPasteBrick";
 
 export function mapBrickToNodes({
   index,
-  blockConfig,
+  brickConfig,
   latestPipelineCall,
   flavor,
   pipelinePath,
@@ -87,10 +88,9 @@ export function mapBrickToNodes({
   hoveredState,
   setHoveredState,
   isApiAtLeastV2,
-  pasteBrick,
 }: {
   index: number;
-  blockConfig: BrickConfig;
+  brickConfig: BrickConfig;
   latestPipelineCall: Branch[] | undefined;
   flavor: PipelineFlavor;
   pipelinePath: string;
@@ -106,13 +106,11 @@ export function mapBrickToNodes({
   hoveredState: Record<UUID, boolean>;
   setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
   isApiAtLeastV2: boolean;
-  pasteBrick:
-    | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
-    | null;
 }) {
   // eslint-disable-next-line complexity -- TODO
   return (dispatch: AppDispatch, getState: () => RootState): MapOutput => {
     const state = getState();
+    const pasteBrick = dispatch(getPasteBrick());
     const activeNodeId = selectActiveNodeId(state);
     const traces = selectActiveModComponentTraces(state);
     const collapsedNodes = selectCollapsedNodes(state);
@@ -133,11 +131,11 @@ export function mapBrickToNodes({
 
     const showPaste = pasteBrick && isApiAtLeastV2;
 
-    const { instanceId } = blockConfig;
+    const { instanceId } = brickConfig;
     assertNotNullish(instanceId, "instanceId is required");
 
     const nodes: EditorNodeProps[] = [];
-    const block = allBricks?.get(blockConfig.id)?.block;
+    const brick = allBricks?.get(brickConfig.id)?.block;
     const isNodeActive = instanceId === activeNodeId;
 
     const traceRecord = getLatestBrickCall(
@@ -148,7 +146,7 @@ export function mapBrickToNodes({
     let modComponentHasTraces =
       modComponentHasTracesInput || traceRecord != null;
 
-    const subPipelines = getSubPipelinesForBlock(block, blockConfig);
+    const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
     const hasSubPipelines = !isEmpty(subPipelines);
     const collapsed = collapsedNodes.includes(instanceId);
     const expanded = hasSubPipelines && !collapsed;
@@ -241,27 +239,27 @@ export function mapBrickToNodes({
       brickLabel: "Loading...",
     };
 
-    if (block) {
+    if (brick) {
       assertNotNullish(nodeId, "nodeId is required to get brick annotations");
       // Handle race condition on pipelineMap updates
       // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
-      const blockPath = maybePipelineMap?.[nodeId]?.path;
-      const blockAnnotations = blockPath
-        ? filterAnnotationsByBrickPath(annotations, blockPath)
+      const brickPath = maybePipelineMap?.[nodeId]?.path;
+      const brickAnnotations = brickPath
+        ? filterAnnotationsByBrickPath(annotations, brickPath)
         : [];
 
       contentProps = {
-        icon: <PackageIcon packageOrMetadata={block} size="2x" inheritColor />,
-        runStatus: decideBlockStatus({
+        icon: <PackageIcon packageOrMetadata={brick} size="2x" inheritColor />,
+        runStatus: decideBrickStatus({
           traceRecord,
-          blockAnnotations,
+          brickAnnotations,
         }),
-        brickLabel: isNullOrBlank(blockConfig.label)
-          ? block.name
+        brickLabel: isNullOrBlank(brickConfig.label)
+          ? brick.name
           : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked by isNullOrBlank
-            blockConfig.label!,
-        brickSummary: getBrickPipelineNodeSummary(blockConfig),
-        outputKey: expanded ? undefined : blockConfig.outputKey,
+            brickConfig.label!,
+        brickSummary: getBrickPipelineNodeSummary(brickConfig),
+        outputKey: expanded ? undefined : brickConfig.outputKey,
       };
     }
 
@@ -271,7 +269,7 @@ export function mapBrickToNodes({
         : subPipelines.some(
             ({ path }) =>
               activeBuilderPreviewElementId ===
-              getBuilderPreviewElementId(blockConfig, path),
+              getBuilderPreviewElementId(brickConfig, path),
           );
 
     const restBrickNodeProps: Except<
@@ -311,7 +309,7 @@ export function mapBrickToNodes({
         const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
         const builderPreviewElementId = getBuilderPreviewElementId(
-          blockConfig,
+          brickConfig,
           path,
         );
         const isHeaderNodeActive =
@@ -404,7 +402,6 @@ export function mapBrickToNodes({
             hoveredState,
             setHoveredState,
             isApiAtLeastV2,
-            pasteBrick,
           }),
         );
 
@@ -421,7 +418,7 @@ export function mapBrickToNodes({
       }
 
       const footerNodeProps: PipelineFooterNodeProps = {
-        outputKey: blockConfig.outputKey,
+        outputKey: brickConfig.outputKey,
         nodeActions: brickNodeActions,
         showBiggerActions,
         trailingMessage,

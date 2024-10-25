@@ -54,25 +54,25 @@ export function getBuilderPreviewElementId(
 }
 
 /**
- * @param block the block, or null if the resolved block is not available yet
- * @param blockConfig the block config
+ * @param brick the brick, or null if the resolved brick is not available yet
+ * @param brickConfig the brick config
  */
-export function getSubPipelinesForBlock(
-  block: Brick | undefined,
-  blockConfig: BrickConfig,
+export function getSubPipelinesForBrick(
+  brick: Brick | undefined,
+  brickConfig: BrickConfig,
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
-  if (blockConfig.id === DocumentRenderer.BRICK_ID) {
+  if (brickConfig.id === DocumentRenderer.BRICK_ID) {
     for (const docPipelinePath of getDocumentBuilderPipelinePaths(
-      blockConfig,
+      brickConfig,
     )) {
       const path = joinPathParts(docPipelinePath, "__value__");
-      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(brickConfig, path) ?? [];
 
       // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
       const elementPathParts = docPipelinePath.split(".").slice(0, -2);
       const docBuilderElement = get(
-        blockConfig,
+        brickConfig,
         elementPathParts,
       ) as DocumentBuilderElement;
 
@@ -91,9 +91,9 @@ export function getSubPipelinesForBlock(
       });
     }
   } else {
-    for (const pipelinePropName of getPipelinePropNames(block, blockConfig)) {
+    for (const pipelinePropName of getPipelinePropNames(brick, brickConfig)) {
       const path = joinName("config", pipelinePropName, "__value__");
-      const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
+      const pipeline: BrickPipeline = get(brickConfig, path) ?? [];
 
       const subPipeline: SubPipeline = {
         headerLabel: pipelinePropName,
@@ -103,7 +103,7 @@ export function getSubPipelinesForBlock(
       };
 
       const inputKey = getVariableKeyForSubPipeline(
-        blockConfig,
+        brickConfig,
         pipelinePropName,
       );
 

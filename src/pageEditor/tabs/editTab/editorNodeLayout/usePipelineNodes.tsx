@@ -53,7 +53,7 @@ import {
 } from "@/pageEditor/store/editor/editorSlice";
 import PackageIcon from "@/components/PackageIcon";
 import {
-  decideBlockStatus,
+  decideBrickStatus,
   decideFoundationStatus,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
@@ -425,9 +425,9 @@ const usePipelineNodes = (): {
 
       contentProps = {
         icon: <PackageIcon packageOrMetadata={block} size="2x" inheritColor />,
-        runStatus: decideBlockStatus({
+        runStatus: decideBrickStatus({
           traceRecord,
-          blockAnnotations,
+          brickAnnotations: blockAnnotations,
         }),
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block.name
@@ -727,7 +727,7 @@ const usePipelineNodes = (): {
       icon: starterBrickIcon,
       runStatus: decideFoundationStatus({
         hasTraces: modComponentHasTraces,
-        blockAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
+        brickAnnotations: filterStarterBrickAnalysisAnnotations(annotations),
       }),
       brickLabel: starterBrickLabel,
       outputKey: "input" as OutputKey,

@@ -48,7 +48,6 @@ export function mapPipelineToNodes({
   hoveredState,
   setHoveredState,
   isApiAtLeastV2,
-  pasteBrick,
 }: {
   pipeline: BrickPipeline;
   flavor: PipelineFlavor;
@@ -69,17 +68,14 @@ export function mapPipelineToNodes({
   hoveredState: Record<UUID, boolean>;
   setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
   isApiAtLeastV2: boolean;
-  pasteBrick:
-    | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
-    | null;
 }) {
   return (dispatch: AppDispatch) => {
     const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
-    const lastBlockId = pipeline.at(lastIndex)?.id;
-    const lastBlock = lastBlockId ? allBricks?.get(lastBlockId) : undefined;
+    const lastBrickId = pipeline.at(lastIndex)?.id;
+    const lastBrick = lastBrickId ? allBricks?.get(lastBrickId) : undefined;
     const showAppend =
-      !lastBlock?.block || lastBlock.type !== BrickTypes.RENDERER;
+      !lastBrick?.block || lastBrick.type !== BrickTypes.RENDERER;
     const nodes: EditorNodeProps[] = [];
 
     // Determine which execution of the pipeline to show. Currently, getting the latest execution
@@ -87,7 +83,7 @@ export function mapPipelineToNodes({
     if (pipeline.length > 0) {
       // Pass [] as default to include all traces
       const latestTraces = filterTracesByCall(traces, latestParentCall ?? []);
-      // Use first block in pipeline to determine the latest run
+      // Use first brick in pipeline to determine the latest run
       latestPipelineCall = getLatestBrickCall(
         latestTraces,
         pipeline[0]?.instanceId,
@@ -96,14 +92,14 @@ export function mapPipelineToNodes({
 
     let modComponentHasTraces = false;
 
-    for (const [index, blockConfig] of pipeline.entries()) {
+    for (const [index, brickConfig] of pipeline.entries()) {
       const {
-        nodes: blockNodes,
+        nodes: brickNodes,
         modComponentHasTraces: modComponentHasTracesOut,
       }: MapOutput = dispatch(
         mapBrickToNodes({
           index,
-          blockConfig,
+          brickConfig,
           latestPipelineCall,
           flavor,
           pipelinePath,
@@ -119,10 +115,9 @@ export function mapPipelineToNodes({
           hoveredState,
           setHoveredState,
           isApiAtLeastV2,
-          pasteBrick,
         }),
       );
-      nodes.push(...blockNodes);
+      nodes.push(...brickNodes);
       modComponentHasTraces ||= modComponentHasTracesOut;
     }
 
