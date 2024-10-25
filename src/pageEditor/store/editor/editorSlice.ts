@@ -487,10 +487,14 @@ export const editorSlice = createSlice({
       const notDeletedFormStates = selectNotDeletedModComponentFormStates({
         editor: state,
       });
+
       for (const formState of notDeletedFormStates) {
         formState.optionsArgs = action.payload;
         state.dirty[formState.uuid] = true;
       }
+
+      // Bump sequence number because arguments impact mod functionality
+      state.selectionSeq++;
     },
 
     updateModMetadataOnModComponentFormStates(
@@ -507,6 +511,9 @@ export const editorSlice = createSlice({
       for (const formState of modComponentFormStates) {
         formState.modMetadata = modMetadata;
       }
+
+      // Bump sequence number because the modId might have changed. The other metadata doesn't affect functionality
+      state.selectionSeq++;
     },
 
     /**
