@@ -35,6 +35,7 @@ import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { cloneDeep } from "lodash";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
+import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 
 const FIELDS = {
   DescriptionField,
@@ -44,6 +45,7 @@ const UI_WIDGETS = {
   imageCrop: ImageCropWidget,
   SelectWidget: RjsfSelectWidget,
   TextareaWidget: TextAreaWidget,
+  richText: RichTextWidget,
 } as const;
 
 export type CustomFormComponentProps = {

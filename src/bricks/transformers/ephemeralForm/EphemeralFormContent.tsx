@@ -33,6 +33,7 @@ import RjsfSelectWidget from "@/components/formBuilder/widgets/RjsfSelectWidget"
 import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
 import { Stylesheets } from "@/components/Stylesheets";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
+import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 
 export const fields = {
   DescriptionField,
@@ -41,6 +42,7 @@ export const uiWidgets = {
   imageCrop: ImageCropWidget,
   SelectWidget: RjsfSelectWidget,
   TextareaWidget: TextAreaWidget,
+  richText: RichTextWidget,
 } as const;
 
 export type EphemeralFormContentProps = {
