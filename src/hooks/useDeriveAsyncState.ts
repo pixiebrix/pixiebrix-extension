@@ -27,7 +27,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import {
-  checkAsyncStateInvariants,
+  assertAsyncStateInvariants,
   errorToAsyncState,
   uninitializedAsyncStateFactory,
 } from "@/utils/asyncStateUtils";
@@ -133,7 +133,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
 
   if (process.env.DEBUG) {
     for (const state of states) {
-      checkAsyncStateInvariants(state);
+      assertAsyncStateInvariants(state);
       checkStateSuccessInvariant(state);
     }
   }

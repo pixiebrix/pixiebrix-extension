@@ -26,7 +26,6 @@ import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { type Dispatch } from "@reduxjs/toolkit";
 import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
@@ -56,6 +55,7 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "@/types/modInstanceTypes";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 export type DeploymentsState = {
   /**
@@ -95,7 +95,7 @@ export type DeploymentsState = {
 };
 
 function useDeployments(): DeploymentsState {
-  const dispatch = useDispatch<Dispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const { data: browserIdentifier } = useBrowserIdentifier();
   const modInstances = useSelector(selectModInstances);
   const { state: flagsState } = useFlags();
@@ -250,12 +250,13 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
-      await activateDeployments({
-        dispatch,
-        activatableDeployments,
-        modInstances,
-        reloadMode: "immediate",
-      });
+      await dispatch(
+        activateDeployments({
+          activatableDeployments,
+          modInstances,
+          reloadMode: "immediate",
+        }),
+      );
       notify.success("Updated team deployments");
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });

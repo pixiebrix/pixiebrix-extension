@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectDirtyOptionsDefinitionsForModId,
-  selectDirtyOptionValuesForModId,
+  selectDirtyOptionsArgsForModId,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
@@ -54,7 +54,7 @@ const NoModOptions: React.FC = () => (
   <div>This mod does not require any configuration</div>
 );
 
-const ModOptionsValuesContent: React.FC = () => {
+const ModOptionsArgsContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
 
@@ -69,7 +69,7 @@ const ModOptionsValuesContent: React.FC = () => {
     selectDirtyOptionsDefinitionsForModId(activeModId),
   );
   const modifiedOptionValues = useSelector(
-    selectDirtyOptionValuesForModId(activeModId),
+    selectDirtyOptionsArgsForModId(activeModId),
   );
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
@@ -165,10 +165,10 @@ const ModOptionsValuesContent: React.FC = () => {
   );
 };
 
-const ModOptionsValuesEditor: React.FC = () => (
+const ModOptionsArgsEditor: React.FC = () => (
   <Container fluid className="pt-3">
-    <ModOptionsValuesContent />
+    <ModOptionsArgsContent />
   </Container>
 );
 
-export default ModOptionsValuesEditor;
+export default ModOptionsArgsEditor;

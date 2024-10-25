@@ -22,11 +22,12 @@ import { actions as modComponentActions } from "@/store/modComponents/modCompone
 import { deactivateMod } from "@/store/deactivateModHelpers";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 type ReactivateMod = (modDefinition: ModDefinition) => Promise<void>;
 
 function useReactivateMod(): ReactivateMod {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const modInstanceMap = useSelector(selectModInstanceMap);
 
   return useCallback(
@@ -36,7 +37,7 @@ function useReactivateMod(): ReactivateMod {
 
       assertNotNullish(modInstance, `Mod is not active: ${modId}`);
 
-      await deactivateMod(modId, modInstance.modComponentIds, dispatch);
+      await dispatch(deactivateMod(modId, modInstance.modComponentIds));
 
       dispatch(
         modComponentActions.activateMod({

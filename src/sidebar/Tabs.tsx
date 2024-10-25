@@ -61,7 +61,7 @@ import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import useHideEmptySidebarEffect from "@/sidebar/hooks/useHideEmptySidebarEffect";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
-import { type AsyncDispatch } from "@/sidebar/store";
+import { type AppDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
@@ -147,7 +147,7 @@ function useSidebarTelemetryMountEffect(): void {
 }
 
 const Tabs: React.FC = () => {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const activeKey = useSelector(selectSidebarActiveTabKey);
   const panels = useSelector(selectSidebarPanels);
   const forms = useSelector(selectSidebarForms);

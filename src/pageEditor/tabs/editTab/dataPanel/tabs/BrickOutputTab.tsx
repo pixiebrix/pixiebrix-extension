@@ -15,7 +15,7 @@ import {
   selectActiveNodeInfo,
   selectNodeDataPanelTabState,
 } from "@/pageEditor/store/editor/editorSelectors";
-import useAllBricks from "@/bricks/hooks/useAllBricks";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import ViewModeField, {
   type ViewModeOption,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
@@ -162,9 +162,8 @@ const BrickOutputTab: React.FC = () => {
 
   const viewMode = selectedViewMode ?? defaultViewMode;
 
-  const { allBricks } = useAllBricks();
-  const brick = allBricks.get(brickId);
-  const brickType = brick?.type;
+  const { data: allBricks } = useTypedBrickMap();
+  const { type: brickType } = allBricks?.get(brickId) ?? {};
 
   if (brickType === BrickTypes.RENDERER || brickType === BrickTypes.EFFECT) {
     return (

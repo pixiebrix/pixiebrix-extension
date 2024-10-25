@@ -33,7 +33,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
-import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor";
+import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArgsEditor";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 
 const ModEditorPane: React.VFC = () => {
@@ -64,7 +64,7 @@ const ModEditorPane: React.VFC = () => {
     },
     {
       name: "Current Inputs",
-      TabContent: ModOptionsValuesEditor,
+      TabContent: ModOptionsArgsEditor,
     },
     {
       name: "Input Form",

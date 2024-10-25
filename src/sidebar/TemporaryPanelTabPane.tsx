@@ -28,7 +28,7 @@ import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
-import { type AsyncDispatch } from "@/sidebar/store";
+import { type AppDispatch } from "@/sidebar/store";
 import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
 import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 
@@ -39,7 +39,7 @@ import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 export const TemporaryPanelTabPane: React.FC<{
   panel: TemporaryPanelEntry;
 }> = React.memo(({ panel }) => {
-  const dispatch = useDispatch<AsyncDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
 
   const onAction = useCallback(
     async (action: SubmitPanelAction) => {
