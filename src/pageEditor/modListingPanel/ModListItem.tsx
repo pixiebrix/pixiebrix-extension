@@ -50,7 +50,9 @@ const ModListItem: React.FC<{
   );
 
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
+
   const isActive = activeModId === modId;
+  const isExpanded = expandedModId === modId;
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
   //        (See: https://github.com/pixiebrix/pixiebrix-extension/issues/7184)
@@ -69,7 +71,7 @@ const ModListItem: React.FC<{
     activatedVersion != null &&
     semver.gt(latestModVersion, activatedVersion);
 
-  const caretIcon = expandedModId === modId ? faCaretDown : faCaretRight;
+  const caretIcon = isExpanded ? faCaretDown : faCaretRight;
 
   return (
     <>
@@ -82,7 +84,13 @@ const ModListItem: React.FC<{
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
         key={`mod-${modId}`}
-        onClick={() => modId != null && dispatch(actions.setActiveModId(modId))}
+        onClick={() => {
+          dispatch(actions.setActiveModId(modId));
+          // Collapse if the user clicks the mod item when it's already active/selected in the listing pane
+          dispatch(
+            actions.setExpandedModId(isExpanded && isActive ? null : modId),
+          );
+        }}
       >
         <span className={styles.icon}>
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />

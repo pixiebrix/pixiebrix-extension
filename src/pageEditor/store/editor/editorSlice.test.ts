@@ -32,7 +32,6 @@ import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBrickConfig } from "@/bricks/util";
 import { validateRegistryId } from "@/types/helpers";
-
 import {
   autoUUIDSequence,
   uuidSequence,
@@ -44,8 +43,10 @@ import { toExpression } from "@/utils/expressionUtils";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import { migrations } from "@/store/editorMigrations";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { setActiveModId } from "./editorSliceHelpers";
-import { castDraft } from "immer";
+import {
+  selectActiveModId,
+  selectExpandedModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 
 function getTabState(
   state: EditorState,
@@ -257,6 +258,31 @@ describe("Add/Remove Bricks", () => {
   });
 });
 
+describe("mod navigation", () => {
+  describe("selectActiveModId", () => {
+    test("select unselected mod", () => {
+      const mod = modMetadataFactory();
+      const newState = editorSlice.reducer(
+        undefined,
+        actions.setActiveModId(mod.id),
+      );
+      expect(selectActiveModId({ editor: newState })).toEqual(mod.id);
+      expect(selectExpandedModId({ editor: newState })).toEqual(mod.id);
+    });
+
+    test("re-select selected mod", () => {
+      const mod = modMetadataFactory();
+      let state = editorSlice.reducer(
+        undefined,
+        actions.setActiveModId(mod.id),
+      );
+      state = editorSlice.reducer(state, actions.setActiveModId(mod.id));
+      expect(selectActiveModId({ editor: state })).toEqual(mod.id);
+      expect(selectExpandedModId({ editor: state })).toEqual(mod.id);
+    });
+  });
+});
+
 describe("persistEditorConfig", () => {
   test("version is the highest migration version", () => {
     const maxVersion = getMaxMigrationsVersion(migrations);
@@ -284,7 +310,10 @@ describe("Mod Options editing", () => {
       modComponentFormStates: [existingComponent],
     };
     // Make the mod active
-    setActiveModId(castDraft(initialState), modId);
+    initialState = editorSlice.reducer(
+      initialState,
+      actions.setActiveModId(modId),
+    );
     // Edit the mod options
     initialState = editorSlice.reducer(
       initialState,
@@ -328,7 +357,7 @@ describe("Mod Options editing", () => {
     expect(stateAfterAddition.modComponentFormStates).toHaveLength(2);
 
     // Delete the additional component
-    const stateAfterDeletion = {
+    let stateAfterDeletion = {
       // Need the object to be extensible
       ...editorSlice.reducer(
         stateAfterAddition,
@@ -346,8 +375,10 @@ describe("Mod Options editing", () => {
       }),
     );
 
-    // Make the mod active again
-    setActiveModId(castDraft(stateAfterDeletion), modId);
+    stateAfterDeletion = editorSlice.reducer(
+      stateAfterDeletion,
+      actions.setActiveModId(modId),
+    );
 
     // Edit mod options values
     const updatedOptionsArgs = { testOption: "updated value" };

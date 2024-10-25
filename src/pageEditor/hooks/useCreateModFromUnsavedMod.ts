@@ -30,6 +30,8 @@ import {
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { type RegistryId } from "@/types/registryTypes";
 import {
+  selectActiveModComponentFormState,
+  selectActiveModId,
   selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -52,6 +54,10 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const dispatch = useDispatch<AppDispatch>();
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const { buildAndValidateMod } = useBuildAndValidateMod();
+  const activeModId = useSelector(selectActiveModId);
+  const activeModComponentFormState = useSelector(
+    selectActiveModComponentFormState,
+  );
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
@@ -74,6 +80,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       const draftModComponents = getDraftModComponentsForMod(unsavedModId);
 
       const dirtyModOptionsDefinition =
+        // eslint-disable-next-line security/detect-object-injection -- inner definition id
         dirtyModOptionsDefinitionMap[unsavedModId];
 
       return ensureModComponentFormStatePermissionsFromUserGesture(
@@ -109,7 +116,16 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
           }),
         );
 
-        dispatch(editorActions.setActiveModId(newModId));
+        if (activeModId === unsavedModId) {
+          // If the mod list item is selected, reselect the mod item using the new id
+          dispatch(editorActions.setActiveModId(newModId));
+        } else if (
+          activeModComponentFormState?.modMetadata.id === unsavedModId
+        ) {
+          // A mod component in the unsaved mod is selected. Expand the mod using the new mod id
+          // XXX: currently, there's a short flicker for the mod to re-expand
+          dispatch(editorActions.setExpandedModId(newModId));
+        }
 
         reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
           modId: newModId,
@@ -117,6 +133,8 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       });
     },
     [
+      activeModId,
+      activeModComponentFormState,
       getDraftModComponentsForMod,
       dirtyModOptionsDefinitionMap,
       buildAndValidateMod,
