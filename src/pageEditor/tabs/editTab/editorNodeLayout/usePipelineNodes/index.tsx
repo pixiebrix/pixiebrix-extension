@@ -19,7 +19,7 @@ import { useState } from "react";
 import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { isEmpty } from "lodash";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
@@ -33,7 +33,6 @@ import {
   type EditorNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
 import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
-import { type AppDispatch } from "@/pageEditor/store/store";
 import { useMakeFoundationNode } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMakeFoundationNode";
 import { useMapBrickToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
 
@@ -41,7 +40,6 @@ const usePipelineNodes = (): {
   foundationNodeProps: BrickNodeProps;
   nodes: EditorNodeProps[];
 } => {
-  const dispatch = useDispatch<AppDispatch>();
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -65,7 +63,6 @@ const usePipelineNodes = (): {
   } = adapterForComponent(activeModComponentFormState);
   const rootPipeline = activeModComponentFormState.modComponent.brickPipeline;
   const rootPipelineFlavor = getRootPipelineFlavor(starterBrickType);
-  const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   const { nodes, modComponentHasTraces }: MapOutput = mapPipelineToNodes({
     pipeline: rootPipeline,
@@ -73,8 +70,6 @@ const usePipelineNodes = (): {
     traces,
     allBricks,
     isLoadingBricks: isLoading,
-    hoveredState,
-    setHoveredState,
     isApiAtLeastV2,
   });
 
@@ -86,7 +81,6 @@ const usePipelineNodes = (): {
     modComponentHasTraces,
     pasteBrick,
     isApiAtLeastV2,
-    setHoveredState,
   });
 
   return {

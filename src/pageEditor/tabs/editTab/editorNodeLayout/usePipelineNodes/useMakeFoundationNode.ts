@@ -18,26 +18,22 @@
 import { type PipelineFlavor } from "@/bricks/types";
 import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
-import { type AppDispatch } from "@/pageEditor/store/store";
 import { decideFoundationStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
-import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { filterStarterBrickAnalysisAnnotations } from "@/pageEditor/utils";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faPlusCircle, faPaste } from "@fortawesome/free-solid-svg-icons";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { type UUID } from "@/types/stringTypes";
-import { type Dispatch, type SetStateAction } from "react";
 import { ADD_MESSAGE } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import { useDispatch, useSelector } from "react-redux";
+import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
 
 type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;
@@ -49,7 +45,6 @@ type MakeFoundationNodeArgs = {
     | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
     | null;
   isApiAtLeastV2: boolean;
-  setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
 };
 
 export function useMakeFoundationNode({
@@ -60,9 +55,10 @@ export function useMakeFoundationNode({
   modComponentHasTraces,
   pasteBrick,
   isApiAtLeastV2,
-  setHoveredState,
 }: MakeFoundationNodeArgs) {
   const dispatch = useDispatch();
+  const [, setHoveredState] = useHoveredState();
+
   const showPaste = pasteBrick && isApiAtLeastV2;
 
   const activeModComponentFormState = useSelector(

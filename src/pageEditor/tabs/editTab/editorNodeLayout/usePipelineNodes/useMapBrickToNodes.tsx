@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import {
   type BrickNodeContentProps,
   type BrickNodeProps,
@@ -62,13 +62,12 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
-import { type UUID } from "@/types/stringTypes";
 import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
-import { type Dispatch, type SetStateAction } from "react";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import PackageIcon from "@/components/PackageIcon";
 import { useDispatch, useSelector } from "react-redux";
 import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
+import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
 
 export type MapBrickToNodesArgs = {
   index: number;
@@ -85,13 +84,12 @@ export type MapBrickToNodesArgs = {
   modComponentHasTraces?: boolean;
   allBricks?: TypedBrickMap;
   isLoadingBricks: boolean;
-  hoveredState: Record<UUID, boolean>;
-  setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
   isApiAtLeastV2: boolean;
 };
 
 export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const dispatch = useDispatch<AppDispatch>();
+  const [hoveredState, setHoveredState] = useHoveredState();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
@@ -132,8 +130,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       modComponentHasTraces: modComponentHasTracesInput,
       allBricks,
       isLoadingBricks,
-      hoveredState,
-      setHoveredState,
       isApiAtLeastV2,
     }: MapBrickToNodesArgs) => {
       const showPaste = pasteBrick && isApiAtLeastV2;
@@ -408,8 +404,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
             latestParentCall: traceRecord?.branches ?? latestPipelineCall,
             allBricks,
             isLoadingBricks,
-            hoveredState,
-            setHoveredState,
             isApiAtLeastV2,
           });
 

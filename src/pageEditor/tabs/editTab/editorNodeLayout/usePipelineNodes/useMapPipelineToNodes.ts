@@ -30,8 +30,7 @@ import {
   getLatestBrickCall,
 } from "@/telemetry/traceHelpers";
 import { type Branch } from "@/types/runtimeTypes";
-import { type UUID } from "@/types/stringTypes";
-import { useCallback, type Dispatch, type SetStateAction } from "react";
+import { useCallback } from "react";
 
 type MapPipelineToNodesArgs = {
   pipeline: BrickPipeline;
@@ -50,8 +49,6 @@ type MapPipelineToNodesArgs = {
   traces: TraceRecord[];
   allBricks?: TypedBrickMap;
   isLoadingBricks: boolean;
-  hoveredState: Record<UUID, boolean>;
-  setHoveredState: Dispatch<SetStateAction<Record<UUID, boolean>>>;
   isApiAtLeastV2: boolean;
 };
 
@@ -70,8 +67,6 @@ export function useMapPipelineToNodes(
       traces,
       allBricks,
       isLoadingBricks,
-      hoveredState,
-      setHoveredState,
       isApiAtLeastV2,
     }: MapPipelineToNodesArgs) => {
       const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
@@ -115,8 +110,6 @@ export function useMapPipelineToNodes(
           modComponentHasTraces,
           allBricks,
           isLoadingBricks,
-          hoveredState,
-          setHoveredState,
           isApiAtLeastV2,
         });
 
