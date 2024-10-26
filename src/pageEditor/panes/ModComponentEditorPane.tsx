@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   actions,
   actions as editorActions,
 } from "@/pageEditor/store/editor/editorSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -37,39 +37,70 @@ import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
 const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
+function useGetFormReinitializationKey(): () => string {
+  const store = useStore<EditorRootState>();
+
+  return useCallback(() => {
+    const state = store.getState();
+    const editorUpdateKey = selectEditorUpdateKey(state);
+    const activeModComponentFormState =
+      selectActiveModComponentFormState(state);
+
+    assertNotNullish(
+      activeModComponentFormState,
+      "ModComponentEditorPane requires activeModComponentFormState",
+    );
+
+    // Key to force reinitialization of formik when user selects a different mod component from the sidebar
+    return `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
+  }, [store]);
+}
+
 const EditorPaneContent: React.VoidFunctionComponent<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
   const dispatch = useDispatch();
+  const getFormReinitializationKey = useGetFormReinitializationKey();
+  const previousKey = useRef<string | null>(getFormReinitializationKey());
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state
   const syncReduxState = useDebouncedCallback(
     (values: ModComponentFormState) => {
-      dispatch(
-        editorActions.setModComponentFormState({
-          modComponentFormState: values,
-          includesNonFormikChanges: false,
-          dirty: true,
-        }),
-      );
-      dispatch(actions.checkActiveModComponentAvailability());
+      const currentKey = getFormReinitializationKey();
+
+      // Don't sync on the first call after the reinitialization key changes because the call would cause
+      // the form to be marked dirty even if there are no changes.
+      // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9355
+      if (previousKey.current === currentKey) {
+        dispatch(
+          editorActions.setModComponentFormState({
+            modComponentFormState: values,
+            includesNonFormikChanges: false,
+            dirty: true,
+          }),
+        );
+
+        dispatch(actions.checkActiveModComponentAvailability());
+      }
+
+      previousKey.current = currentKey;
     },
     REDUX_SYNC_WAIT_MILLIS,
     { trailing: true, leading: false },
   );
 
+  // XXX: effect should be refactored to a middleware that listens for selected mod component
   useEffect(() => {
     const messageContext = {
       modComponentId: modComponentFormState.uuid,
-      modId: modComponentFormState.modMetadata
-        ? modComponentFormState.modMetadata.id
-        : undefined,
+      modId: modComponentFormState.modMetadata.id,
     };
     dispatch(logActions.setContext({ messageContext }));
   }, [modComponentFormState.uuid, modComponentFormState.modMetadata, dispatch]);
@@ -89,10 +120,12 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 };
 
 /**
- * Returns the active mod component form state. Responds to updates in the editor state for use with triggering rerenders.
+ * Returns the initial mod component form state for the Formik form. Responds to updates in the editor state
+ * for use with Formik reinitialization.
  */
 function useInitialValues(): ModComponentFormState {
-  const editorUpdateKey = useSelector(selectEditorUpdateKey);
+  const getCurrentFormReinitializationKey = useGetFormReinitializationKey();
+
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -103,7 +136,7 @@ function useInitialValues(): ModComponentFormState {
   );
 
   // Key to force reinitialization of formik when user selects a different mod component from the sidebar
-  const key = `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
+  const key = getCurrentFormReinitializationKey();
   const prevKey = usePreviousValue(key);
   const activeModComponentFormStateRef = useRef(activeModComponentFormState);
 
