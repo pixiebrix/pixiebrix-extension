@@ -28,14 +28,17 @@ const Icon: React.FunctionComponent<{
   size?: number | string;
   className?: string;
   color?: string;
-}> = ({ icon, library, size = 16, className, color }) => {
+  title?: string;
+}> = ({ icon, library, size = 16, className, color, title }) => {
   const { data: svg = "" } = useAsyncState(
     async () => getSvgIcon({ id: icon, library, size, color }),
     [icon, library],
   );
 
+  // FIXME: add role to this can be targeted by Playwright with role
   return (
     <span
+      aria-label={title}
       className={cx(className, styles.root)}
       dangerouslySetInnerHTML={{
         __html: svg,

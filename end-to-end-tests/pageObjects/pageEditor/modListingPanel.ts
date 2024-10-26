@@ -60,6 +60,12 @@ export class ModActionMenu extends BasePageObject {
   }
 }
 
+export class ModComponentActionMenu extends BasePageObject {
+  get clearChangesButton() {
+    return this.getByRole("menuitem", { name: "Clear changes" });
+  }
+}
+
 export class ModListItem extends BasePageObject {
   get saveButton() {
     return this.locator("[data-icon=save]");
@@ -67,6 +73,12 @@ export class ModListItem extends BasePageObject {
 
   get menuButton() {
     return this.getByLabel(" - Ellipsis");
+  }
+
+  get unsavedChangesIcon() {
+    return this.getByRole("img", {
+      name: "Unsaved changes",
+    });
   }
 
   get unavailableIcon() {
@@ -81,6 +93,10 @@ export class ModListItem extends BasePageObject {
 
   get modActionMenu() {
     return new ModActionMenu(this.page.getByLabel("Menu"));
+  }
+
+  get modComponentActionMenu() {
+    return new ModComponentActionMenu(this.page.getByLabel("Menu"));
   }
 }
 
