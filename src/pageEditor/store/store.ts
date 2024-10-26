@@ -55,8 +55,11 @@ import { boolean } from "@/utils/typeUtils";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
 import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import editorInvariantMiddleware from "@/pageEditor/store/editor/editorInvariantMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {
@@ -69,6 +72,10 @@ if (typeof createLogger === "function") {
       predicate: (getState, action) => !action.type.includes("logs/polling"),
     }),
   );
+}
+
+if (DEBUG) {
+  conditionalMiddleware.push(editorInvariantMiddleware);
 }
 
 const store = configureStore({

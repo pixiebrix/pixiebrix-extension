@@ -74,7 +74,7 @@ export const selectActiveModComponentRef = createSelector(
 /// DELETE STATE
 ///
 
-const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
+export const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedModComponentFormStatesByModId).map(
       (formState) => formState.uuid,

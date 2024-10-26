@@ -231,7 +231,6 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
             ...cleanFormStates,
             ...dirtyFormStates,
             ...newFormStates,
-            ...deletedDirtyFormStates,
             ...extraDirtyFormStates,
             ...extraNewFormStates,
           ],

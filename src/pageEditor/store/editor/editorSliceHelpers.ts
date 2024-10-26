@@ -132,7 +132,7 @@ export function markModComponentFormStateAsDeleted(
 
   // Some mod components in a mod may not have a corresponding mod component form state due to having never been
   // selected by the user in the UI. In this case, the mod component form state will not be in Redux.
-  // In practice, the in the Page Editor UI, the user must select a mod component to remove it, so there will be
+  // In practice, in the Page Editor UI, the user must select a mod component to remove it, so there will be
   // a mod component form state
   const formStateIndex = state.modComponentFormStates.findIndex(
     (x) => x.uuid === formStateId,
