@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import {
   isInnerDefinitionRegistryId,
   normalizeSemVerString,
@@ -69,6 +69,7 @@ import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.
+ * @param modId the reference mod for metadata. Only the initial value provided is used
  */
 function useInitialFormState(modId: RegistryId): ModMetadataFormState {
   const userScope = useSelector(selectScope);
@@ -77,12 +78,15 @@ function useInitialFormState(modId: RegistryId): ModMetadataFormState {
     "Expected scope, should be nested in RequireScope",
   );
 
+  // The CreateModModalBody modal is mounted until the save completes. When saving an unsaved mod/removing the
+  // local copy of the source mod, there's a render where the source mod is no longer available. Use a ref
+  // to store the original source metadata.
   const modMetadataMap = useSelector(selectModMetadataMap);
-
-  const modMetadata = modMetadataMap.get(modId);
-  assertNotNullish(modMetadata, "Expected metadata to be defined");
+  const { current: modMetadata } = useRef(modMetadataMap.get(modId));
+  assertNotNullish(modMetadata, "Expected mod metadata");
 
   const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
+
   let newModId = isUnsavedMod
     ? // If the mod is a brand new, unsaved mod, generate a new package id
       generatePackageId(userScope, modMetadata.name)
@@ -130,7 +134,7 @@ function useFormSchema() {
   });
 }
 
-const CreateModModalBody: React.FC = () => {
+const CreateModModalBody: React.FC<{ onHide: () => void }> = ({ onHide }) => {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
 
@@ -140,7 +144,12 @@ const CreateModModalBody: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
   const modalData = useSelector(getModalDataSelector(ModalKey.CREATE_MOD));
+  assertNotNullish(
+    modalData,
+    "CreateModModalBody rendered without modal data set",
+  );
 
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
@@ -151,19 +160,13 @@ const CreateModModalBody: React.FC = () => {
 
   const formSchema = useFormSchema();
 
-  const hideModal = useCallback(() => {
-    dispatch(editorActions.hideModal());
-  }, [dispatch]);
-
-  const initialModMetadataFormState = useInitialFormState(currentModId);
+  const initialFormState = useInitialFormState(currentModId);
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     if (isModDefinitionFetching) {
       helpers.setSubmitting(false);
       return;
     }
-
-    assertNotNullish(modalData, "Expected modal data to be defined");
 
     try {
       if ("sourceModComponentId" in modalData) {
@@ -194,7 +197,7 @@ const CreateModModalBody: React.FC = () => {
         message: "Mod created successfully",
       });
 
-      hideModal();
+      onHide();
     } catch (error) {
       if (isSpecificError(error, DataIntegrityError)) {
         dispatch(editorActions.showSaveDataIntegrityErrorModal());
@@ -253,7 +256,7 @@ const CreateModModalBody: React.FC = () => {
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
     <Modal.Footer>
-      <Button variant="info" onClick={hideModal}>
+      <Button variant="info" onClick={onHide}>
         Cancel
       </Button>
       <Button
@@ -274,7 +277,7 @@ const CreateModModalBody: React.FC = () => {
         <Form
           validationSchema={formSchema}
           validateOnMount
-          initialValues={initialModMetadataFormState}
+          initialValues={initialFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}
           renderSubmit={renderSubmit}
@@ -285,11 +288,12 @@ const CreateModModalBody: React.FC = () => {
 };
 
 const CreateModModal: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
+
   const { isCreateModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 
-  const dispatch = useDispatch();
   const hideModal = useCallback(() => {
     dispatch(editorActions.hideModal());
   }, [dispatch]);
@@ -297,7 +301,7 @@ const CreateModModal: React.FunctionComponent = () => {
   return (
     <ModalLayout title="Save new mod" show={show} onHide={hideModal}>
       <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
-        <CreateModModalBody />
+        {show && <CreateModModalBody onHide={hideModal} />}
       </RequireScope>
     </ModalLayout>
   );
