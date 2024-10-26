@@ -26,7 +26,7 @@ import {
   selectActiveModId,
   selectExpandedModId,
   selectModComponentAvailability,
-  selectNotDeletedModComponentFormStates,
+  selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useSelector } from "react-redux";
@@ -42,9 +42,7 @@ const ModSidebarListItems: React.FunctionComponent = () => {
   const cleanModComponents = useSelector(
     selectNotDeletedActivatedModComponents,
   );
-  const modComponentFormStates = useSelector(
-    selectNotDeletedModComponentFormStates,
-  );
+  const modComponentFormStates = useSelector(selectModComponentFormStates);
   const { availableActivatedModComponentIds, availableDraftModComponentIds } =
     useSelector(selectModComponentAvailability);
 

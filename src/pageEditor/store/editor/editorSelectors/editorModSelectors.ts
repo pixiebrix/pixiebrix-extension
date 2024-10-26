@@ -20,7 +20,6 @@ import type { RegistryId } from "@/types/registryTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { isEmpty, memoize, sortBy, uniqBy } from "lodash";
 import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
-import type { ModComponentBase, ModMetadata } from "@/types/modComponentTypes";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import {
@@ -28,9 +27,9 @@ import {
   selectIsModComponentDirtyById,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
-  selectNotDeletedModComponentFormStates,
 } from "@/pageEditor/store/editor/editorSelectors/editorModComponentSelectors";
 import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors/editorNavigationSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Select the mod id associated with the selected mod package or mod component. Should be used if the caller doesn't
@@ -57,41 +56,34 @@ export const selectActivatedModMetadatas = createSelector(
   selectModInstances,
   selectDirtyModMetadata,
   (formStates, modInstances, dirtyModMetadataById) => {
-    const formStateModMetadatas: Array<ModComponentBase["modMetadata"]> =
-      formStates.map((formState) => formState.modMetadata);
+    const formStateModMetadatas = formStates.map(
+      (formState) => formState.modMetadata,
+    );
 
-    const activatedModMetadatas: Array<ModComponentBase["modMetadata"]> =
-      modInstances.map((x) => mapModDefinitionToModMetadata(x.definition));
+    const activatedModMetadatas = modInstances.map((x) =>
+      mapModDefinitionToModMetadata(x.definition),
+    );
 
     const baseMetadatas = uniqBy(
+      // Order doesn't matter here. Metadata will always match because dirty metadata is not stored on the form state
       [...formStateModMetadatas, ...activatedModMetadatas],
       (x) => x.id,
     );
 
     return baseMetadatas.map((metadata) => {
       const dirtyMetadata = dirtyModMetadataById[metadata.id];
-      if (dirtyMetadata) {
-        return {
-          ...metadata,
-          ...dirtyMetadata,
-        } as ModMetadata;
-      }
 
-      return metadata;
+      return {
+        ...metadata,
+        ...dirtyMetadata,
+      };
     });
   },
 );
 
 export const selectModMetadataMap = createSelector(
   selectActivatedModMetadatas,
-  (metadatas) => {
-    const metadataMap = new Map<RegistryId, ModMetadata>();
-    for (const metadata of metadatas) {
-      metadataMap.set(metadata.id, metadata);
-    }
-
-    return metadataMap;
-  },
+  (metadatas) => new Map(metadatas.map((metadata) => [metadata.id, metadata])),
 );
 
 const dirtyMetadataForModIdSelector = createSelector(
@@ -103,8 +95,8 @@ const dirtyMetadataForModIdSelector = createSelector(
 );
 
 export const selectDirtyMetadataForModId =
-  (modId: RegistryId | undefined) => (state: EditorRootState) =>
-    modId ? dirtyMetadataForModIdSelector(state, modId) : null;
+  (modId: RegistryId) => (state: EditorRootState) =>
+    dirtyMetadataForModIdSelector(state, modId);
 
 ///
 /// MOD OPTION DEFINITIONS
@@ -115,12 +107,8 @@ export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
 
 const dirtyOptionsDefinitionsForModIdSelector = createSelector(
   selectDirtyModOptionsDefinitions,
-  (_state: EditorRootState, modId: RegistryId | null) => modId,
+  (_state: EditorRootState, modId: RegistryId) => modId,
   (dirtyOptionsDefinitionsByModId, modId) => {
-    if (modId == null) {
-      return;
-    }
-
     // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
     const options = dirtyOptionsDefinitionsByModId[modId];
 
@@ -135,69 +123,8 @@ const dirtyOptionsDefinitionsForModIdSelector = createSelector(
 );
 
 export const selectDirtyOptionsDefinitionsForModId =
-  (modId: RegistryId | null) => (state: EditorRootState) =>
+  (modId: RegistryId) => (state: EditorRootState) =>
     dirtyOptionsDefinitionsForModIdSelector(state, modId);
-
-///
-/// MOD OPTIONS ARGS
-///
-
-const dirtyOptionsArgsForModIdSelector = createSelector(
-  selectNotDeletedModComponentFormStates,
-  (_state: EditorRootState, modId: RegistryId | null) => modId,
-  (formStates, modId) =>
-    formStates.find((formState) => formState.modMetadata.id === modId)
-      ?.optionsArgs,
-);
-
-export const selectDirtyOptionsArgsForModId =
-  (modId: RegistryId | null) => (state: EditorRootState) =>
-    dirtyOptionsArgsForModIdSelector(state, modId);
-
-///
-/// MOD DIRTY STATE
-///
-
-/** @internal */
-export const selectDeletedComponentFormStatesByModId = ({
-  editor,
-}: EditorRootState) => editor.deletedModComponentFormStatesByModId;
-
-const modIsDirtySelector = createSelector(
-  selectIsModComponentDirtyById,
-  dirtyOptionsDefinitionsForModIdSelector,
-  dirtyMetadataForModIdSelector,
-  (state: EditorRootState, modId: RegistryId) =>
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId is a controlled string
-    selectDeletedComponentFormStatesByModId(state)[modId],
-  ({ editor }: EditorRootState, modId: RegistryId) =>
-    editor.modComponentFormStates
-      .filter((formState) => formState.modMetadata.id === modId)
-      .map((formState) => formState.uuid),
-  (
-    isModComponentDirtyById,
-    dirtyModOptions,
-    dirtyModMetadata,
-    deletedModComponentFormStates,
-    modComponentFormStateIds,
-    // eslint-disable-next-line max-params -- all are needed
-  ) => {
-    const hasDirtyComponentFormStates = modComponentFormStateIds.some(
-      // eslint-disable-next-line security/detect-object-injection -- UUID
-      (modComponentId) => isModComponentDirtyById[modComponentId],
-    );
-    return (
-      hasDirtyComponentFormStates ||
-      Boolean(dirtyModOptions) ||
-      Boolean(dirtyModMetadata) ||
-      !isEmpty(deletedModComponentFormStates)
-    );
-  },
-);
-
-export const selectModIsDirty =
-  (modId?: RegistryId) => (state: EditorRootState) =>
-    Boolean(modId && modIsDirtySelector(state, modId));
 
 ///
 /// MOD COMPONENTS
@@ -212,24 +139,28 @@ export const selectGetModComponentFormStatesByModId = createSelector(
 );
 
 export const selectFirstModComponentFormStateForActiveMod = createSelector(
-  selectModComponentFormStates,
+  selectGetModComponentFormStatesByModId,
   selectActiveModId,
-  (formState, activeModId) =>
-    formState.find((x) => x.modMetadata.id === activeModId),
+  (getModComponentFormStatesByModId, activeModId) => {
+    assertNotNullish(activeModId, "Expected active mod");
+    return getModComponentFormStatesByModId(activeModId)?.[0];
+  },
 );
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
-  selectNotDeletedModComponentFormStates,
+  selectGetModComponentFormStatesByModId,
   selectIsModComponentDirtyById,
-  (activatedModComponents, formStates, isDirtyByComponentId) =>
+  (
+    activatedModComponents,
+    getModComponentFormStateByModId,
+    isDirtyByComponentId,
+  ) =>
     // Memoize because method constructs a fresh object reference
     memoize((modId: RegistryId) => {
-      const dirtyModComponentFormStates = formStates.filter(
-        (formState) =>
-          formState.modMetadata.id === modId &&
-          isDirtyByComponentId[formState.uuid],
-      );
+      const dirtyModComponentFormStates = getModComponentFormStateByModId(
+        modId,
+      ).filter((formState) => isDirtyByComponentId[formState.uuid]);
 
       const cleanModComponents = activatedModComponents.filter(
         (modComponent) =>
@@ -261,3 +192,63 @@ export const selectGetDraftModComponentsForMod = createSelector(
       );
     }),
 );
+
+///
+/// MOD OPTIONS ARGS
+///
+
+const dirtyOptionsArgsForModIdSelector = createSelector(
+  selectGetModComponentFormStatesByModId,
+  (_state: EditorRootState, modId: RegistryId) => modId,
+  (getModComponentFormStatesByModId, modId) =>
+    getModComponentFormStatesByModId(modId)?.[0]?.optionsArgs,
+);
+
+export const selectDirtyOptionsArgsForModId =
+  (modId: RegistryId) => (state: EditorRootState) =>
+    dirtyOptionsArgsForModIdSelector(state, modId);
+
+///
+/// MOD DIRTY STATE
+///
+
+/** @internal */
+export const selectDeletedComponentFormStatesByModId = ({
+  editor,
+}: EditorRootState) => editor.deletedModComponentFormStatesByModId;
+
+const modIsDirtySelector = createSelector(
+  selectIsModComponentDirtyById,
+  dirtyOptionsDefinitionsForModIdSelector,
+  dirtyMetadataForModIdSelector,
+  (state: EditorRootState, modId: RegistryId) =>
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId is a controlled string
+    selectDeletedComponentFormStatesByModId(state)[modId],
+  ({ editor }: EditorRootState, modId: RegistryId) =>
+    editor.modComponentFormStates
+      .filter((formState) => formState.modMetadata.id === modId)
+      .map((formState) => formState.uuid),
+  (
+    isModComponentDirtyById,
+    dirtyModOptions,
+    dirtyModMetadata,
+    deletedModComponentFormStates,
+    modComponentFormStateIds,
+    // eslint-disable-next-line max-params -- all are needed
+  ) => {
+    const hasSomeDirtyComponentFormState = modComponentFormStateIds.some(
+      // eslint-disable-next-line security/detect-object-injection -- UUID
+      (modComponentId) => isModComponentDirtyById[modComponentId],
+    );
+    return (
+      hasSomeDirtyComponentFormState ||
+      Boolean(dirtyModOptions) ||
+      Boolean(dirtyModMetadata) ||
+      !isEmpty(deletedModComponentFormStates)
+    );
+  },
+);
+
+export const selectModIsDirty =
+  (modId: RegistryId) => (state: EditorRootState) =>
+    Boolean(modId && modIsDirtySelector(state, modId));

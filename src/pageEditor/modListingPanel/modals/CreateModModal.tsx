@@ -84,7 +84,7 @@ function useInitialFormState({
 }: {
   // This is only used locally in this module in one place, and we want to make sure all inputs are being passed in, even if they are undefined
   activeModDefinition: ModDefinition | undefined;
-  activeModId: RegistryId | undefined;
+  activeModId: RegistryId;
   activeModComponentFormState: ModComponentFormState | undefined;
 }): ModMetadataFormState | UnknownObject {
   const userScope = useSelector(selectScope);
@@ -166,6 +166,8 @@ const CreateModModalBody: React.FC = () => {
   const isMounted = useIsMounted();
 
   const currentModId = useSelector(selectCurrentModId);
+  assertNotNullish(currentModId, "Expected mod or mod component to be active");
+
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );

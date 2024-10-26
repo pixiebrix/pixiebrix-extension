@@ -16,22 +16,17 @@
  */
 
 import { type Draft } from "immer";
-import {
-  type EditorState,
-  type ModMetadataFormState,
-} from "@/pageEditor/store/editor/pageEditorTypes";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import {
   FOUNDATION_NODE_ID,
-  makeInitialBrickPipelineUIState,
   makeInitialBrickConfigurationUIState,
+  makeInitialBrickPipelineUIState,
 } from "@/pageEditor/store/editor/uiState";
 import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { clearModComponentTraces } from "@/telemetry/trace";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { remove } from "lodash";
 
@@ -123,7 +118,7 @@ export function setActiveNodeId(state: Draft<EditorState>, nodeId: UUID) {
 }
 
 /**
- * Remove a mod component form state from the Page Editor.
+ * Remove a draft mod component form state from the Page Editor.
  * @param state The redux state (slice)
  * @param formStateId The id for the mod component to remove
  */
@@ -165,50 +160,6 @@ export function markModComponentFormStateAsDeleted(
 
   // Make sure we're not keeping any private data around from Page Editor sessions
   void clearModComponentTraces(formStateId);
-}
-
-/**
- * Remove a given mod's extra data from a redux state object
- * @param state The editor redux state
- * @param modId The id of the mod to remove
- */
-export function removeModData(state: Draft<EditorState>, modId: RegistryId) {
-  if (state.activeModId === modId) {
-    state.activeModId = null;
-  }
-
-  if (state.expandedModId === modId) {
-    state.expandedModId = null;
-  }
-
-  delete state.dirtyModOptionsById[modId];
-  delete state.dirtyModMetadataById[modId];
-  delete state.deletedModComponentFormStatesByModId[modId];
-}
-
-export function editModMetadata(
-  state: Draft<EditorState>,
-  metadata: ModMetadataFormState,
-) {
-  const { activeModId } = state;
-  if (activeModId == null) {
-    return;
-  }
-
-  state.dirtyModMetadataById[activeModId] = metadata;
-}
-
-export function editModOptionsDefinitions(
-  state: Draft<EditorState>,
-  options: ModOptionsDefinition,
-) {
-  const { activeModId } = state;
-  if (activeModId == null) {
-    return;
-  }
-
-  state.dirtyModOptionsById[activeModId] =
-    options as Draft<ModOptionsDefinition>;
 }
 
 export function setActiveModComponentId(
