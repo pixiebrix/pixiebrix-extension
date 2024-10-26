@@ -29,7 +29,7 @@ import {
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors/editorModComponentSelectors";
 import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors/editorNavigationSelectors";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import type { ModMetadata } from "@/types/modComponentTypes";
 
 /**
  * Select the mod id associated with the selected mod package or mod component. Should be used if the caller doesn't
@@ -51,7 +51,7 @@ export const selectCurrentModId = createSelector(
 export const selectDirtyModMetadata = ({ editor }: EditorRootState) =>
   editor.dirtyModMetadataById;
 
-export const selectActivatedModMetadatas = createSelector(
+export const selectModMetadatas = createSelector(
   selectModComponentFormStates,
   selectModInstances,
   selectDirtyModMetadata,
@@ -65,24 +65,24 @@ export const selectActivatedModMetadatas = createSelector(
     );
 
     const baseMetadatas = uniqBy(
-      // Order doesn't matter here. Metadata will always match because dirty metadata is not stored on the form state
+      // Order shouldn't matter because dirty metadata is not stored on the form states
       [...formStateModMetadatas, ...activatedModMetadatas],
       (x) => x.id,
     );
 
-    return baseMetadatas.map((metadata) => {
-      const dirtyMetadata = dirtyModMetadataById[metadata.id];
-
-      return {
-        ...metadata,
-        ...dirtyMetadata,
-      };
-    });
+    return baseMetadatas.map(
+      (metadata) =>
+        ({
+          ...metadata,
+          // Can't return the dirty values directly because it's missing some props that ModMetadata requires
+          ...dirtyModMetadataById[metadata.id],
+        }) satisfies ModMetadata,
+    );
   },
 );
 
 export const selectModMetadataMap = createSelector(
-  selectActivatedModMetadatas,
+  selectModMetadatas,
   (metadatas) => new Map(metadatas.map((metadata) => [metadata.id, metadata])),
 );
 
@@ -136,15 +136,6 @@ export const selectGetModComponentFormStatesByModId = createSelector(
     memoize((modId: RegistryId) =>
       formStates.filter((formState) => formState.modMetadata.id === modId),
     ),
-);
-
-export const selectFirstModComponentFormStateForActiveMod = createSelector(
-  selectGetModComponentFormStatesByModId,
-  selectActiveModId,
-  (getModComponentFormStatesByModId, activeModId) => {
-    assertNotNullish(activeModId, "Expected active mod");
-    return getModComponentFormStatesByModId(activeModId)?.[0];
-  },
 );
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(

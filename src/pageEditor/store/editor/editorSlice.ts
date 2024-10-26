@@ -42,7 +42,6 @@ import {
   selectGetModComponentFormStatesByModId,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
-  selectGetModComponentFormStatesByModId,
 } from "./editorSelectors";
 import {
   isQuickBarStarterBrick,

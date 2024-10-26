@@ -28,9 +28,8 @@ import {
   getModalDataSelector,
   selectActiveModComponentFormState,
   selectCurrentModId,
-  selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
-  selectFirstModComponentFormStateForActiveMod,
+  selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
@@ -53,7 +52,6 @@ import {
 } from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   ModalKey,
   type ModMetadataFormState,
@@ -66,52 +64,23 @@ import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "@/hooks/useIsMounted";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.
- *
- * @param activeMod The mod definition fetched from the server for the active mod, if it could be found on the server
- * @param activeModId The mod id for the active mod, if a mod is selected
- * @param activeModComponentFormState The form state for the active mod component, if a mod component is selected
  */
-function useInitialFormState({
-  activeModDefinition,
-  activeModId,
-  activeModComponentFormState,
-}: {
-  // This is only used locally in this module in one place, and we want to make sure all inputs are being passed in, even if they are undefined
-  activeModDefinition: ModDefinition | undefined;
-  activeModId: RegistryId;
-  activeModComponentFormState: ModComponentFormState | undefined;
-}): ModMetadataFormState | UnknownObject {
+function useInitialFormState(modId: RegistryId): ModMetadataFormState {
   const userScope = useSelector(selectScope);
   assertNotNullish(
     userScope,
     "Expected scope, should be nested in RequireScope",
   );
 
-  const firstComponentFormStateForActiveMod = useSelector(
-    selectFirstModComponentFormStateForActiveMod,
-  );
-  const dirtyModMetadata = useSelector(
-    selectDirtyMetadataForModId(activeModId),
-  );
-  const modMetadata =
-    // If the mod metadata has been edited, it can be found in the dirty metadata state
-    dirtyModMetadata ??
-    // If an active mod that has been saved to the server already is selected, use its metadata
-    activeModDefinition?.metadata ??
-    // If the mod definition has not been created on the server yet, use the metadata from the first component form state of the selected mod
-    firstComponentFormStateForActiveMod?.modMetadata ??
-    // If the mod is not selected, use the metadata from the active mod component form state
-    activeModComponentFormState?.modMetadata;
+  const modMetadataMap = useSelector(selectModMetadataMap);
 
-  if (!modMetadata) {
-    return {};
-  }
+  const modMetadata = modMetadataMap.get(modId);
+  assertNotNullish(modMetadata, "Expected metadata to be defined");
 
   const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
   let newModId = isUnsavedMod
@@ -186,11 +155,7 @@ const CreateModModalBody: React.FC = () => {
     dispatch(editorActions.hideModal());
   }, [dispatch]);
 
-  const initialModMetadataFormState = useInitialFormState({
-    activeModDefinition: modDefinition,
-    activeModId: currentModId,
-    activeModComponentFormState,
-  });
+  const initialModMetadataFormState = useInitialFormState(currentModId);
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     if (isModDefinitionFetching) {
