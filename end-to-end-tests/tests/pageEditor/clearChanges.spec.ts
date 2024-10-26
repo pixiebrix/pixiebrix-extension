@@ -47,9 +47,14 @@ test("clear mod component changes", async ({
 
     brickConfigurationPanel = pageEditorPage.brickConfigurationPanel;
 
-    modListItem = pageEditorPage.modListingPanel.getModListItemByName(
-      "Test mod - Brick Configuration",
-    );
+    // Expand the mod
+    await pageEditorPage.modListingPanel
+      .getModListItemByName("Test mod - Brick Configuration")
+      .select();
+
+    // Select the mod component
+    modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("Context menu item");
     await modListItem.select();
 
     // Change icon should not exist
@@ -59,6 +64,10 @@ test("clear mod component changes", async ({
   await test.step("Modify the mod component name and expect change icon", async () => {
     await brickConfigurationPanel.fillField("Name", "A cool menu action");
 
+    // Reselect the mod component
+    modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("A cool menu action");
+
     await expect(modListItem.unsavedChangesIcon).toBeVisible();
   });
 
@@ -67,8 +76,12 @@ test("clear mod component changes", async ({
 
     await modListItem.modComponentActionMenu.clearChangesButton.click();
 
-    const dialog = page.getByRole("dialog");
+    const dialog = pageEditorPage.getByRole("dialog");
     await dialog.getByRole("button", { name: "Clear Changes" }).click();
+
+    // Reselect the mod component
+    modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("Context menu item");
 
     // Change icon should not exist
     await expect(modListItem.unsavedChangesIcon).toHaveCount(0);

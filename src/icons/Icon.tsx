@@ -29,15 +29,18 @@ const Icon: React.FunctionComponent<{
   className?: string;
   color?: string;
   title?: string;
-}> = ({ icon, library, size = 16, className, color, title }) => {
+  role?: React.AriaRole;
+}> = ({ icon, library, size = 16, className, color, title, role }) => {
   const { data: svg = "" } = useAsyncState(
     async () => getSvgIcon({ id: icon, library, size, color }),
     [icon, library],
   );
 
-  // FIXME: add role to this can be targeted by Playwright with role
   return (
     <span
+      // XXX: should be setting role attribute on svg and embedding <title> instead?
+      // See https://docs.fontawesome.com/web/dig-deeper/accessibility
+      role={role ?? "img"}
       aria-label={title}
       className={cx(className, styles.root)}
       dangerouslySetInnerHTML={{
