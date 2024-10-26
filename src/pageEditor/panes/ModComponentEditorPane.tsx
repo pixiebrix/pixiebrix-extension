@@ -44,6 +44,9 @@ import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes"
 const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
+/**
+ * Returns callback to generate the current key to force reinitialization of Formik form.
+ */
 function useGetFormReinitializationKey(): () => string {
   const store = useStore<EditorRootState>();
 
@@ -58,7 +61,6 @@ function useGetFormReinitializationKey(): () => string {
       "ModComponentEditorPane requires activeModComponentFormState",
     );
 
-    // Key to force reinitialization of formik when user selects a different mod component from the sidebar
     return `${activeModComponentFormState.uuid}-${activeModComponentFormState.installed}-${editorUpdateKey}`;
   }, [store]);
 }
