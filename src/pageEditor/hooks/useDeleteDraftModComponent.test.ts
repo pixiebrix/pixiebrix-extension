@@ -44,6 +44,7 @@ describe("useDeleteModComponent", () => {
     const {
       result: { current: deleteDraftModComponent },
       getReduxStore,
+      act,
     } = renderHook(() => useDeleteDraftModComponent(), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
@@ -62,8 +63,10 @@ describe("useDeleteModComponent", () => {
       },
     });
 
-    await deleteDraftModComponent({
-      modComponentId,
+    await act(async () => {
+      await deleteDraftModComponent({
+        modComponentId,
+      });
     });
 
     const { dispatch } = getReduxStore();
@@ -92,9 +95,11 @@ describe("useDeleteModComponent", () => {
       },
     });
 
-    await deleteDraftModComponent({
-      modComponentId,
-    });
+    await expect(
+      deleteDraftModComponent({
+        modComponentId,
+      }),
+    ).rejects.toThrow("Cannot delete the last starter brick in a mod");
 
     const { dispatch } = getReduxStore();
 

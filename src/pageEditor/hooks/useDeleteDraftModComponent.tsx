@@ -75,12 +75,10 @@ function useDeleteDraftModComponent(): (
   return useCallback(
     async ({ modComponentId, shouldShowConfirmation }) => {
       // Prevent deletion of the last mod component in a mod. The editorSlice state currently stores some mod
-      // information on the mod components/form state.
+      // information on the mod components/form state. In practice, this code should never get hit because the
+      // Page Editor should show the deletion affordances as disabled.
       if (getSiblingDraftModComponents(modComponentId).length === 1) {
-        notify.warning(
-          "You cannot delete/remove the last starter brick in a mod",
-        );
-        return;
+        throw new Error("Cannot delete the last starter brick in a mod");
       }
 
       if (shouldShowConfirmation) {

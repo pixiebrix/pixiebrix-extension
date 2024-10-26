@@ -170,6 +170,9 @@ export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
     }),
 );
 
+/**
+ * @see selectGetSiblingDraftModComponents
+ */
 export const selectGetDraftModComponentsForMod = createSelector(
   selectGetCleanComponentsAndDirtyFormStatesForMod,
   (getCleanComponentsAndDirtyFormStatesForMod) =>
@@ -186,6 +189,10 @@ export const selectGetDraftModComponentsForMod = createSelector(
     }),
 );
 
+/**
+ * Returns getter for sibling mod components for a given form state. Includes the query form state.
+ * @see selectGetDraftModComponentsForMod
+ */
 export const selectGetSiblingDraftModComponents = createSelector(
   selectModComponentFormStates,
   selectGetDraftModComponentsForMod,

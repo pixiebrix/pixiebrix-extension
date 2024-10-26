@@ -64,11 +64,14 @@ function useCreateModFromModComponent(): UseCreateModFromModReturn {
           return;
         }
 
+        // Prevent removal of the last mod component in a mod. The editorSlice state currently stores some mod
+        // information on the mod components/form state. In practice, this code should never get hit because the
+        // Page Editor should show the deletion affordances as disabled.
         if (
           !keepLocalCopy &&
           getSiblingDraftModComponents(modComponentFormState.uuid).length === 1
         ) {
-          throw new Error("Cannot remove the last starter brick in a mod");
+          throw new Error("Cannot move the last starter brick in a mod");
         }
 
         const modId = newModMetadata.id;

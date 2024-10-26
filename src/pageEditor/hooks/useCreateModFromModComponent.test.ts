@@ -93,7 +93,7 @@ describe("useCreateModFromModComponent", () => {
       result.current.createModFromComponent(menuItemFormState, metadata, {
         keepLocalCopy: false,
       }),
-    ).rejects.toThrow("Cannot remove the last starter brick in a mod");
+    ).rejects.toThrow("Cannot move the last starter brick in a mod");
 
     expect(appApiMock.history.post).toHaveLength(0);
   });
