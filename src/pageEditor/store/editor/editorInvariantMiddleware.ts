@@ -26,6 +26,7 @@ import {
   selectModComponentFormStates,
 } from "@/pageEditor/store/editor/editorSelectors";
 import type { EmptyObject } from "type-fest";
+import { uniqBy } from "lodash";
 
 class InvariantViolationError extends Error {
   override name = "InvariantViolationError";
@@ -44,6 +45,7 @@ class InvariantViolationError extends Error {
  * @throws InvariantViolationError if any of the invariants are violated
  * @see editorInvariantMiddleware
  */
+// XXX: in production, should we be attempting to auto-fix these invariants?
 export function assertEditorInvariants(state: EditorRootState): void {
   // Assert that a mod and mod component item cannot be selected at the same time
   if (selectActiveModId(state) && selectActiveModComponentId(state)) {
@@ -60,12 +62,24 @@ export function assertEditorInvariants(state: EditorRootState): void {
     );
   }
 
-  // Assert that mod component deletion flags are consistent with modComponentFormStates
+  const modComponentFormStates = selectModComponentFormStates(state);
+
+  // Assert each mod component has at most one form state. In the future, this could be enforced by storing form
+  // states in a record instead of an array.
+  if (
+    uniqBy(modComponentFormStates, (x) => x.uuid).length !==
+    modComponentFormStates.length
+  ) {
+    throw new InvariantViolationError(
+      "modComponentFormStates contains duplicate mod component ids",
+    );
+  }
+
+  // Assert that mod component deletion flags are consistent with modComponentFormStates. In the future, this could
+  // be enforced by instead tracking an isDeleted flag on the form state.
   const deletedModComponentIds = selectAllDeletedModComponentIds(state);
   if (
-    selectModComponentFormStates(state).some(({ uuid }) =>
-      deletedModComponentIds.has(uuid),
-    )
+    modComponentFormStates.some(({ uuid }) => deletedModComponentIds.has(uuid))
   ) {
     throw new InvariantViolationError(
       "modComponentFormStates includes deleted mod component",
@@ -81,7 +95,15 @@ export function assertEditorInvariants(state: EditorRootState): void {
 const editorInvariantMiddleware: Middleware<EmptyObject, EditorRootState> =
   (storeAPI) => (next: Dispatch) => (action: AnyAction) => {
     const result = next(action);
-    assertEditorInvariants(storeAPI.getState());
+
+    try {
+      assertEditorInvariants(storeAPI.getState());
+    } catch (error) {
+      throw new Error(`Action violated invariant: ${action.type}`, {
+        cause: error,
+      });
+    }
+
     return result;
   };
 

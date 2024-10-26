@@ -126,21 +126,15 @@ export function markModComponentFormStateAsDeleted(
   state: Draft<EditorState>,
   formStateId: UUID,
 ) {
-  if (state.activeModComponentId === formStateId) {
-    state.activeModComponentId = null;
-  }
-
   // Some mod components in a mod may not have a corresponding mod component form state due to having never been
   // selected by the user in the UI. In this case, the mod component form state will not be in Redux.
-  // In practice, in the Page Editor UI, the user must select a mod component to remove it, so there will be
-  // a mod component form state
-  const formStateIndex = state.modComponentFormStates.findIndex(
+  // However, in practice, in the Page Editor UI, the user must select a mod component to remove it, so there must
+  // be a corresponding  form state in modComponentFormStates
+  const [removedFormState] = remove(
+    state.modComponentFormStates,
     (x) => x.uuid === formStateId,
   );
-  const formState = state.modComponentFormStates[formStateIndex];
-  if (formStateIndex > -1) {
-    state.modComponentFormStates.splice(formStateIndex, 1);
-  }
+  assertNotNullish(removedFormState, "modComponentFormState not found with id");
 
   delete state.dirty[formStateId];
   delete state.brickPipelineUIStateById[formStateId];
@@ -148,15 +142,20 @@ export function markModComponentFormStateAsDeleted(
   // Remove from list mod components available on the page, if available
   remove(state.availableDraftModComponentIds, formStateId);
 
-  if (formState) {
-    // XXX: ideally this would only mark if the form state corresponds to an activated mod component. However,
-    // there's currently no way to determine if there's an activated mod component solely from the form state.
-    // The effect of adding the draft to deletedModComponentFormStatesByModId is benign - the mod will show as dirty
-    // even if the only change is that you added/removed a draft mod component.
-    // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/9320
-    (state.deletedModComponentFormStatesByModId[formState.modMetadata.id] ??=
-      []).push(formState);
+  // Change the selection from the mod component to the mod
+  if (state.activeModComponentId === formStateId) {
+    state.activeModComponentId = null;
+    state.activeModId = removedFormState.modMetadata.id;
   }
+
+  // XXX: ideally this would only mark if the form state corresponds to an activated mod component. However,
+  // there's currently no way to determine if there's an activated mod component solely from the form state.
+  // The effect of adding the draft to deletedModComponentFormStatesByModId is benign - the mod will show as dirty
+  // even if the only change is that you added/removed a draft mod component.
+  // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/9320
+  (state.deletedModComponentFormStatesByModId[
+    removedFormState.modMetadata.id
+  ] ??= []).push(removedFormState);
 
   // Make sure we're not keeping any private data around from Page Editor sessions
   void clearModComponentTraces(formStateId);

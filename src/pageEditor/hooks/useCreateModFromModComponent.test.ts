@@ -16,13 +16,14 @@
  */
 
 import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
-import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
+import { renderHook, waitFor } from "@/pageEditor/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 const reportEventMock = jest.mocked(reportEvent);
 
@@ -42,7 +43,7 @@ describe("useCreateModFromModComponent", () => {
     appApiMock.reset();
   });
 
-  it("saves with no dirty changes", async () => {
+  it("creates mod with no dirty changes", async () => {
     const metadata = modMetadataFactory();
     const menuItemFormState = menuItemFormStateFactory({
       modMetadata: metadata,
@@ -54,15 +55,15 @@ describe("useCreateModFromModComponent", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
 
-    const { result } = renderHook(() => useCreateModFromModComponent());
-
-    await hookAct(async () => {
-      // Wait for editable packages to be created
+    const { result, act } = renderHook(() => useCreateModFromModComponent(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addModComponentFormState(menuItemFormState));
+      },
     });
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current.createModFromComponent(menuItemFormState, metadata, {
-        keepLocalCopy: false,
+        keepLocalCopy: true,
       });
     });
 
@@ -74,5 +75,26 @@ describe("useCreateModFromModComponent", () => {
         expect.any(Object),
       );
     });
+  });
+
+  it("errors moving last mod component in a mod", async () => {
+    const metadata = modMetadataFactory();
+    const menuItemFormState = menuItemFormStateFactory({
+      modMetadata: metadata,
+    });
+
+    const { result } = renderHook(() => useCreateModFromModComponent(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addModComponentFormState(menuItemFormState));
+      },
+    });
+
+    await expect(
+      result.current.createModFromComponent(menuItemFormState, metadata, {
+        keepLocalCopy: false,
+      }),
+    ).rejects.toThrow("Cannot remove the last starter brick in a mod");
+
+    expect(appApiMock.history.post).toHaveLength(0);
   });
 });

@@ -30,6 +30,8 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors/editorModComponentSelectors";
 import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors/editorNavigationSelectors";
 import type { ModMetadata } from "@/types/modComponentTypes";
+import type { UUID } from "@/types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Select the mod id associated with the selected mod package or mod component. Should be used if the caller doesn't
@@ -181,6 +183,22 @@ export const selectGetDraftModComponentsForMod = createSelector(
         [...cleanModComponents, ...dirtyModComponentFormStates],
         (x) => x.label,
       );
+    }),
+);
+
+export const selectGetSiblingDraftModComponents = createSelector(
+  selectModComponentFormStates,
+  selectGetDraftModComponentsForMod,
+  (modComponentFormStates, getDraftModComponentsForMod) =>
+    memoize((modComponentId: UUID) => {
+      const modComponentFormState = modComponentFormStates.find(
+        (x) => x.uuid === modComponentId,
+      );
+      assertNotNullish(
+        modComponentFormState,
+        "Expected matching modComponentFormState",
+      );
+      return getDraftModComponentsForMod(modComponentFormState.modMetadata.id);
     }),
 );
 

@@ -30,6 +30,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { selectActivatedModComponentsMap } from "@/store/modComponents/modComponentSelectors";
+import { selectGetSiblingDraftModComponents } from "@/pageEditor/store/editor/editorSelectors";
 
 type DeleteConfig = {
   modComponentId: UUID;
@@ -63,6 +64,9 @@ function useDeleteDraftModComponent(): (
 ) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
+  const getSiblingDraftModComponents = useSelector(
+    selectGetSiblingDraftModComponents,
+  );
   const activatedModComponentsMap = useSelector(
     selectActivatedModComponentsMap,
   );
@@ -70,6 +74,15 @@ function useDeleteDraftModComponent(): (
 
   return useCallback(
     async ({ modComponentId, shouldShowConfirmation }) => {
+      // Prevent deletion of the last mod component in a mod. The editorSlice state currently stores some mod
+      // information on the mod components/form state.
+      if (getSiblingDraftModComponents(modComponentId).length === 1) {
+        notify.warning(
+          "You cannot delete/remove the last starter brick in a mod",
+        );
+        return;
+      }
+
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation(
           activatedModComponentsMap.get(modComponentId)
@@ -102,7 +115,13 @@ function useDeleteDraftModComponent(): (
         });
       }
     },
-    [dispatch, sessionId, showConfirmation, activatedModComponentsMap],
+    [
+      dispatch,
+      sessionId,
+      showConfirmation,
+      activatedModComponentsMap,
+      getSiblingDraftModComponents,
+    ],
   );
 }
 
