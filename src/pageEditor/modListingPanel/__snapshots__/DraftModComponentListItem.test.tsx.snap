@@ -36,7 +36,9 @@ exports[`DraftModComponentListItem renders active element 1`] = `
         class="icon unsaved text-danger"
       >
         <span
+          aria-label="Unsaved changes"
           class="root"
+          role="img"
         />
       </span>
       <div
