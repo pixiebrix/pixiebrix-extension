@@ -17,7 +17,6 @@
 
 import React, { useCallback } from "react";
 import { type BrickNodeContentProps } from "@/pageEditor/tabs/editTab/editTabTypes";
-import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import {
@@ -26,13 +25,10 @@ import {
 } from "@/telemetry/traceHelpers";
 import { filterAnnotationsByBrickPath } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
-import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { decideBrickStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Branch } from "@/types/runtimeTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { joinPathParts } from "@/utils/formUtils";
-import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import {
@@ -52,7 +48,6 @@ import {
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
-import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import PackageIcon from "@/components/PackageIcon";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,6 +55,8 @@ import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
 import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetSubPipelineNodes";
+import { useGetBrickContentProps } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetBrickContentProps";
 
 export type MapBrickToNodesArgs = {
   index: number;
@@ -81,7 +78,9 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const createNodeActions = useCreateNodeActions();
   const getNodeState = useGetNodeState();
-  const { data: allBricks, isLoading: isLoadingBricks } = useTypedBrickMap();
+  const getSubPiplineNodes = useGetSubPipelineNodes(useMapBrickToNodes());
+  const getBrickContentProps = useGetBrickContentProps();
+  const { data: allBricks } = useTypedBrickMap();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
@@ -102,10 +101,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
     selectModComponentAnnotations(activeModComponentFormState.uuid),
   );
 
-  const mapPipelineToNodes = useMapPipelineToNodes(useMapBrickToNodes());
-
   return useCallback(
-    // eslint-disable-next-line complexity -- TODO
     ({
       index,
       brickConfig,
@@ -173,35 +169,10 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         showAddBrick,
       });
 
-      let contentProps: BrickNodeContentProps = {
-        brickLabel: "Loading...",
-      };
-
-      if (brick) {
-        assertNotNullish(nodeId, "nodeId is required to get brick annotations");
-        // Handle race condition on pipelineMap updates
-        // eslint-disable-next-line security/detect-object-injection -- relying on nodeId being a UUID
-        const brickPath = maybePipelineMap?.[nodeId]?.path;
-        const brickAnnotations = brickPath
-          ? filterAnnotationsByBrickPath(annotations, brickPath)
-          : [];
-
-        contentProps = {
-          icon: (
-            <PackageIcon packageOrMetadata={brick} size="2x" inheritColor />
-          ),
-          runStatus: decideBrickStatus({
-            traceRecord,
-            brickAnnotations,
-          }),
-          brickLabel: isNullOrBlank(brickConfig.label)
-            ? brick.name
-            : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked by isNullOrBlank
-              brickConfig.label!,
-          brickSummary: getBrickPipelineNodeSummary(brickConfig),
-          outputKey: expanded ? undefined : brickConfig.outputKey,
-        };
-      }
+      const contentProps = getBrickContentProps({
+        brickConfig,
+        traceRecord,
+      });
 
       const isSubPipelineHeaderActive =
         activeBuilderPreviewElementId == null
@@ -234,102 +205,22 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       });
 
       if (expanded) {
-        for (const {
-          headerLabel,
-          pipeline,
-          path,
-          flavor,
-          inputKey,
-        } of subPipelines) {
-          const headerName = `${nodeId}-header`;
-          const fullSubPath = joinPathParts(pipelinePath, index, path);
-          const builderPreviewElementId = getBuilderPreviewElementId(
+        const { nodes: subNodes, modComponentHasTraces: subPipelineHasTraces } =
+          getSubPiplineNodes({
+            index,
             brickConfig,
-            path,
-          );
-          const isHeaderNodeActive =
-            activeBuilderPreviewElementId &&
-            builderPreviewElementId === activeBuilderPreviewElementId;
-          const isSiblingHeaderActive = isSubPipelineHeaderActive;
-
-          const headerActions: NodeAction[] = createNodeActions({
-            nodeId: headerName,
-            pipelinePath: fullSubPath,
-            flavor,
-            index: 0,
-            showAddBrick: true,
-          });
-
-          const headerNodeState = getNodeState({
-            active: isHeaderNodeActive || false,
-            nodeId: instanceId,
+            pipelinePath,
             nestingLevel,
-            nodeActions: headerActions,
-            isParentActive: !isSiblingHeaderActive && isParentActive,
+            isParentActive,
+            isAncestorActive,
+            traceRecord,
+            latestPipelineCall,
+            isSubPipelineHeaderActive,
           });
 
-          const headerNodeProps: PipelineHeaderNodeProps = {
-            ...headerNodeState,
-            headerLabel,
-            nestingLevel,
-            pipelineInputKey: inputKey,
-            isAncestorActive: !isSiblingHeaderActive && isParentActive,
-            builderPreviewElement: builderPreviewElementId
-              ? {
-                  name: builderPreviewElementId,
-                  focus() {
-                    dispatch(actions.setActiveNodeId(instanceId));
-                    dispatch(
-                      actions.setActiveBuilderPreviewElement(
-                        builderPreviewElementId,
-                      ),
-                    );
-                    window.dispatchEvent(
-                      new Event(
-                        `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${builderPreviewElementId}`,
-                      ),
-                    );
-                  },
-                  active:
-                    builderPreviewElementId === activeBuilderPreviewElementId,
-                }
-              : null,
-            isPipelineLoading: isLoadingBricks,
-          };
+        nodes.push(...subNodes);
 
-          const {
-            nodes: subPipelineNodes,
-            modComponentHasTraces: subPipelineHasTraces,
-          }: MapOutput = mapPipelineToNodes({
-            traces,
-            pipeline,
-            flavor,
-            pipelinePath: fullSubPath,
-            nestingLevel: nestingLevel + 1,
-            isParentActive:
-              (isSiblingHeaderActive
-                ? isHeaderNodeActive
-                : isNodeActive || isParentActive) || false,
-            isAncestorActive:
-              (isSiblingHeaderActive
-                ? isHeaderNodeActive
-                : isParentActive || isAncestorActive) || false,
-            // If this pipeline is a sub-pipeline that doesn't have traces yet, fall back to the latest parent call
-            // That prevents deeply nested stale traces from appearing in the UI
-            latestParentCall: traceRecord?.branches ?? latestPipelineCall,
-          });
-
-          nodes.push(
-            {
-              type: "header",
-              key: fullSubPath,
-              ...headerNodeProps,
-            },
-            ...subPipelineNodes,
-          );
-
-          modComponentHasTraces ||= subPipelineHasTraces;
-        }
+        modComponentHasTraces ||= subPipelineHasTraces;
 
         const footerNodeState = getNodeState({
           active: !isSubPipelineHeaderActive && isNodeActive,
@@ -365,9 +256,8 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       createNodeActions,
       dispatch,
       getNodeState,
+      getSubPiplineNodes,
       isApiAtLeastV2,
-      isLoadingBricks,
-      mapPipelineToNodes,
       maybePipelineMap,
       traces,
     ],
