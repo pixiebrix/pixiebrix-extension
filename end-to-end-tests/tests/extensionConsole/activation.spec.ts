@@ -219,7 +219,7 @@ test("activating a mod when the quickbar shortcut is not configured", async ({
       context,
     );
 
-    await expect(configureShortcutPage).toHaveURL(shortcutsPage.getPageUrl());
+    await expect(configureShortcutPage).toHaveURL(shortcutsPage.pageUrl);
     await configureShortcutPage.close();
   });
 
