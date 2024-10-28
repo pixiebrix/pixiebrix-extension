@@ -30,7 +30,7 @@ async function waitForBackgroundPageRequest(
 
   const request = offscreenPage?.waitForRequest(errorServiceEndpoint);
 
-  // Workaround to force datadog to flush metrics
+  // Workaround to force datadog to flush metrics immediately
   // See: https://github.com/DataDog/browser-sdk/issues/2327
   await offscreenPage?.evaluate(() => {
     document.dispatchEvent(new Event("freeze"));
