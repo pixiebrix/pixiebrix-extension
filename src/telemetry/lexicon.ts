@@ -71,20 +71,32 @@ export const lexicon: LexiconMap = {
     description:
       "Reported on the mod activation page in the Extension Console when a user selects an option in the dropdown menu " +
       "to configure an integration for the mod. This includes when a new integration is auto-filled after creating " +
-      "the integration via the '+ Add new' option.",
+      "the integration via the '+ Add new' option." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_SELECT",
+      )} event, which is reported in the Page Editor.`,
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   ACTIVATION_INTEGRATION_REFRESH: {
     description:
       "Reported on the mod activation page in the Extension Console when a user clicks the integration 'Refresh' button to " +
-      "refresh the list of available integrations.",
+      "refresh the list of available integrations." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_REFRESH",
+      )} event, which is reported in the Page Editor.`,
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   ACTIVATION_INTEGRATION_ADD_NEW_CLICK: {
     description:
       "Reported on the mod activation page in the Extension Console when a user selects the '+ Add new' option to " +
       "create a new integration configuration for the mod. A modal should appear for the user to create the configuration, " +
-      "but this event is triggered specifically when '+ Add new' option is clicked.",
+      "but this event is triggered specifically when '+ Add new' option is clicked." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK",
+      )} event, which is reported in the Page Editor.`,
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   ACTIVATION_INTEGRATION_ADD_NEW_CLOSE: {
@@ -229,6 +241,78 @@ export const lexicon: LexiconMap = {
     description: "[OBSOLETE] This event is no longer in use.",
     hidden: true,
     tags: [LexiconTags.OBSOLETE],
+  },
+  HANDLE_CONTEXT_MENU: {
+    description:
+      "Triggered by running a Context Menu starter brick, as a result of a user clicking a PixieBrix context menu item on a modified web page.\n" +
+      "\n" +
+      "Does not necessarily indicate a successful mod run.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  HANDLE_QUICK_BAR: {
+    description:
+      "Triggered by running a Quickbar mod, as a result of opening the Quickbar on a modified web page and selecting " +
+      "a mod to run by clicking on the mod or pressing 'enter' on the keyboard with the mod highlighted." +
+      "\n" +
+      "Does not necessarily indicate a successful mod run.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  IDB_RECLAIM_QUOTA: {
+    description:
+      "Reported when a user clicks the 'Reclaim Space' button on the IndexedDB (IDB) error display in the Extension " +
+      "Console when the user gets a 'Insufficient storage space available to PixieBrix' error.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
+  IDB_RECOVER_CONNECTION: {
+    description:
+      "Reported when a user clicks the 'Recover Connection' button on the IndexedDB (IDB) error display in the Extension " +
+      "Console when the user gets a 'Error connecting to local database' error.",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
+  IDB_UNRESPONSIVE_BANNER: {
+    description:
+      "Reported when the error banner containing the message 'We're having trouble connecting to your browser's local database, please restart " +
+      "your browser' for IndexedDB (IDB) errors is shown in the Extension Console",
+    tags: [LexiconTags.EXTENSION_CONSOLE],
+  },
+  INTEGRATION_WIDGET_SELECT: {
+    description:
+      "Reported in the Page Editor when a user selects a configuration from the integration field dropdown for a brick that uses an " +
+      "integration." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "ACTIVATION_INTEGRATION_CONFIG_SELECT",
+      )} event, which is reported when activating a mod ` +
+      "in the Extension Console.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  INTEGRATION_WIDGET_CLEAR: {
+    description:
+      "Reported in the Page Editor when a user clears the integration field for a brick that uses an integration " +
+      "by clicking the 'X' button in the field.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  INTEGRATION_WIDGET_REFRESH: {
+    description:
+      "Reported in the Page Editor when a user clicks the refresh button to the right of the integration field " +
+      "for a brick that uses an integration." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "ACTIVATION_INTEGRATION_REFRESH",
+      )} event, which is reported when activating a mod ` +
+      "in the Extension Console.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK: {
+    description:
+      "Reported in the Page Editor when a user clicks the 'Configure additional integrations here' link included " +
+      "underneath integration fields for bricks that use integrations." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "ACTIVATION_INTEGRATION_ADD_NEW_CLICK",
+      )} event, which is reported when activating a mod ` +
+      "in the Extension Console.",
+    tags: [LexiconTags.PAGE_EDITOR],
   },
 };
 

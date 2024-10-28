@@ -317,7 +317,7 @@ describe("Mod Options editing", () => {
     // Edit the mod options
     initialState = editorSlice.reducer(
       initialState,
-      actions.editModOptionsValues({ testOption: "initial value" }),
+      actions.editModOptionsArgs({ testOption: "initial value" }),
     );
   });
 
@@ -325,7 +325,7 @@ describe("Mod Options editing", () => {
     const updatedOptionsArgs = { testOption: "updated value" };
     const stateAfterEdit = editorSlice.reducer(
       initialState,
-      actions.editModOptionsValues(updatedOptionsArgs),
+      actions.editModOptionsArgs(updatedOptionsArgs),
     );
 
     // Check if the existing component's options are updated
@@ -335,16 +335,16 @@ describe("Mod Options editing", () => {
     expect(updatedExistingComponent?.optionsArgs).toEqual(updatedOptionsArgs);
   });
 
-  // Skipping this for now, because there is some weirdness around how "deleted" form states inside mods are handled
-  // eslint-disable-next-line jest/no-disabled-tests -- see above
-  test.skip("deleted mod component form states have their mod options updated correctly", () => {
+  test("deleted mod component form states don't have their options args updated", () => {
+    const initialOptionsArgs = { testOption: "initial value" };
+
     // Add another component with the same mod metadata, and then delete it
     const additionalComponentId = autoUUIDSequence();
     const newFormState = formStateFactory({
       formStateConfig: {
         uuid: additionalComponentId,
         modMetadata,
-        optionsArgs: { testOption: "initial value" },
+        optionsArgs: initialOptionsArgs,
       },
     });
 
@@ -371,7 +371,7 @@ describe("Mod Options editing", () => {
     ).toContainEqual(
       expect.objectContaining({
         uuid: additionalComponentId,
-        optionsArgs: { testOption: "initial value" },
+        optionsArgs: initialOptionsArgs,
       }),
     );
 
@@ -384,23 +384,30 @@ describe("Mod Options editing", () => {
     const updatedOptionsArgs = { testOption: "updated value" };
     const stateAfterEdit = editorSlice.reducer(
       stateAfterDeletion,
-      actions.editModOptionsValues(updatedOptionsArgs),
+      actions.editModOptionsArgs(updatedOptionsArgs),
     );
 
     // Check if the existing component's options are updated
     const updatedExistingComponent = stateAfterEdit.modComponentFormStates.find(
       (component) => component.uuid === existingComponentId,
     );
-    expect(updatedExistingComponent?.optionsArgs).toEqual(updatedOptionsArgs);
+    expect(updatedExistingComponent!.optionsArgs).toStrictEqual(
+      updatedOptionsArgs,
+    );
 
     // Check whether the deleted component's options are updated
     const updatedDeletedComponents =
       stateAfterEdit.deletedModComponentFormStatesByModId[modId];
     expect(updatedDeletedComponents).toBeDefined();
-    const updatedDeletedComponent = updatedDeletedComponents?.find(
+    const updatedDeletedComponent = updatedDeletedComponents!.find(
       (component) => component.uuid === additionalComponentId,
     );
-    expect(updatedDeletedComponent?.optionsArgs).toEqual(updatedOptionsArgs);
+
+    // The current behavior is to not update optionsArgs for deleted draft form states because there's no way
+    // to recover the draft form state, so there's no reason to keep the form states up to date
+    expect(updatedDeletedComponent!.optionsArgs).toStrictEqual(
+      initialOptionsArgs,
+    );
 
     // Ensure the state is marked as dirty for the existing component
     expect(stateAfterEdit.dirty[existingComponentId]).toBe(true);
@@ -409,7 +416,7 @@ describe("Mod Options editing", () => {
     expect(stateAfterEdit.dirty[additionalComponentId]).toBeUndefined();
   });
 
-  test("new component with existing mod metadata receives dirty mod options", () => {
+  test("new component with existing mod metadata receives dirty mod options args", () => {
     const newComponentId = autoUUIDSequence();
     const newComponent = formStateFactory({
       formStateConfig: {
@@ -431,5 +438,44 @@ describe("Mod Options editing", () => {
     expect(addedComponent?.optionsArgs).toEqual({
       testOption: "initial value",
     });
+  });
+
+  test("updating options args only updates args for the specified mod", () => {
+    const modComponentFormState = formStateFactory({
+      formStateConfig: {
+        modMetadata: modMetadataFactory({ id: modId }),
+      },
+    });
+
+    let state = editorSlice.reducer(
+      undefined,
+      actions.addModComponentFormState(modComponentFormState),
+    );
+
+    // Add another mod component with different mod metadata
+    state = editorSlice.reducer(
+      state,
+      actions.addModComponentFormState(formStateFactory({})),
+    );
+
+    state = editorSlice.reducer(state, actions.setActiveModId(modId));
+
+    const optionsArgsUpdate = { foo: 42 };
+    state = editorSlice.reducer(
+      state,
+      actions.editModOptionsArgs(optionsArgsUpdate),
+    );
+
+    expect(state.modComponentFormStates).toHaveLength(2);
+
+    const updatedComponent = state.modComponentFormStates.find(
+      (component) => component.modMetadata.id === modId,
+    );
+    expect(updatedComponent!.optionsArgs).toStrictEqual(optionsArgsUpdate);
+
+    const otherComponent = state.modComponentFormStates.find(
+      (component) => component.modMetadata.id !== modId,
+    );
+    expect(otherComponent!.optionsArgs).toStrictEqual({});
   });
 });

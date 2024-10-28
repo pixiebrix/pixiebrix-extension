@@ -118,7 +118,7 @@ const ModOptionsArgsContent: React.FC = () => {
 
   const updateRedux = useCallback(
     (options: OptionsArgs) => {
-      dispatch(actions.editModOptionsValues(options));
+      dispatch(actions.editModOptionsArgs(options));
     },
     [dispatch],
   );
