@@ -22,7 +22,7 @@ import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActio
 import { type UUID } from "@/types/stringTypes";
 import { useCallback, useState } from "react";
 
-export const ADD_MESSAGE = "Add more bricks with the plus button";
+const ADD_MESSAGE = "Add more bricks with the plus button";
 
 type NodeStateProps = {
   active: boolean;
