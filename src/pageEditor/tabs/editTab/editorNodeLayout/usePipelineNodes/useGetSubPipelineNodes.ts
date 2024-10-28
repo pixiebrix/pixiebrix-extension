@@ -29,7 +29,6 @@ import { useCallback } from "react";
 import { type MapBrickToNodesArgs } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import {
@@ -38,7 +37,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { type TraceRecord } from "@/telemetry/trace";
 
-type SubPipelineNodesProps = {
+type GetSubPipelineNodesProps = {
   index: number;
   brickConfig: BrickConfig;
   pipelinePath: string;
@@ -54,7 +53,6 @@ export function useGetSubPipelineNodes(
   mapBrickToNodes: (args: MapBrickToNodesArgs) => MapOutput,
 ) {
   const dispatch = useDispatch<AppDispatch>();
-  const traces = useSelector(selectActiveModComponentTraces);
   const activeNodeId = useSelector(selectActiveNodeId);
   const activeBuilderPreviewElementId = useSelector(
     selectActiveBuilderPreviewElement,
@@ -77,7 +75,7 @@ export function useGetSubPipelineNodes(
       isAncestorActive,
       traceRecord,
       isSubPipelineHeaderActive,
-    }: SubPipelineNodesProps) => {
+    }: GetSubPipelineNodesProps) => {
       const nodeId = brickConfig.instanceId;
       assertNotNullish(nodeId, "instanceId is required");
 
@@ -160,7 +158,6 @@ export function useGetSubPipelineNodes(
           nodes: subPipelineNodes,
           modComponentHasTraces: subPipelineHasTraces,
         } = mapPipelineToNodes({
-          traces,
           pipeline,
           flavor,
           pipelinePath: fullSubPath,
@@ -191,7 +188,6 @@ export function useGetSubPipelineNodes(
       getNodeState,
       isLoadingBricks,
       mapPipelineToNodes,
-      traces,
     ],
   );
 }

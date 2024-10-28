@@ -18,10 +18,9 @@
 import { useDispatch } from "react-redux";
 import { type AppDispatch } from "@/pageEditor/store/store";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { useHoveredState } from "./useHoveredState";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { type UUID } from "@/types/stringTypes";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -36,7 +35,7 @@ type NodeStateProps = {
 
 export function useGetNodeState() {
   const dispatch = useDispatch<AppDispatch>();
-  const [hoveredState, setHoveredState] = useHoveredState();
+  const [hoveredState, setHoveredState] = useState<Record<UUID, boolean>>({});
 
   return useCallback(
     ({
@@ -70,6 +69,6 @@ export function useGetNodeState() {
         trailingMessage: showBiggerActions ? ADD_MESSAGE : undefined,
       };
     },
-    [dispatch, hoveredState, setHoveredState],
+    [dispatch, hoveredState],
   );
 }

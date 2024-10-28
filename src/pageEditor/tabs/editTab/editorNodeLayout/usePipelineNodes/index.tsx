@@ -18,7 +18,6 @@
 import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
@@ -42,7 +41,6 @@ const usePipelineNodes = (): {
     activeModComponentFormState,
     "activeModComponentFormState is required",
   );
-  const traces = useSelector(selectActiveModComponentTraces);
 
   const mapBrickToNodes = useMapBrickToNodes();
   const mapPipelineToNodes = useMapPipelineToNodes(mapBrickToNodes);
@@ -58,7 +56,6 @@ const usePipelineNodes = (): {
   const { nodes, modComponentHasTraces }: MapOutput = mapPipelineToNodes({
     pipeline: rootPipeline,
     flavor: rootPipelineFlavor,
-    traces,
   });
 
   const foundationNodeProps = useMakeFoundationNode({
