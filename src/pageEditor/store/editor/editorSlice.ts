@@ -513,6 +513,9 @@ export const editorSlice = createSlice({
       for (const formState of modComponentFormStates) {
         formState.modMetadata = modMetadata;
       }
+
+      // Bump sequence number because the modId might have changed. The other metadata doesn't affect functionality
+      state.selectionSeq++;
     },
 
     /**
