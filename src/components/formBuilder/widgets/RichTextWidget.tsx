@@ -17,9 +17,28 @@
 
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
+import { Editor } from "@tinymce/tinymce-react";
+/* eslint-disable import/no-unassigned-import -- required imports for tinymce */
+import "tinymce/tinymce";
+import "tinymce/models/dom/model";
+import "tinymce/themes/silver";
+import "tinymce/icons/default";
+import "tinymce/skins/ui/oxide/skin";
+/* eslint-enable import/no-unassigned-import */
 
 const RichTextWidget: React.FunctionComponent<WidgetProps> = () => (
-  <div>RichTextWidget</div>
+  <Editor
+    initialValue="<p>Hello TinyMCE! 🍌</p>"
+    init={{
+      height: 200,
+      menubar: false,
+      elementpath: false,
+      branding: false,
+      plugins: [],
+      toolbar: "bold italic underline",
+      content_style: "body { font-size:16px }",
+    }}
+  />
 );
 
 export default RichTextWidget;
