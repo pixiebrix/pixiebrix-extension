@@ -30,7 +30,10 @@ import EllipsisMenu, {
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectModComponentIsDirty } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectGetSiblingDraftModComponents,
+  selectModComponentIsDirty,
+} from "@/pageEditor/store/editor/editorSelectors";
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 
@@ -42,6 +45,14 @@ const ModComponentActionMenu: React.FC<{
 
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const clearModComponentChanges = useClearModComponentChanges();
+
+  // Prevent deletion of the last mod component in a mod. The editorSlice state currently stores some mod
+  // information on the mod components/form state.
+  const getSiblingDraftModComponents = useSelector(
+    selectGetSiblingDraftModComponents,
+  );
+  const allowDelete =
+    getSiblingDraftModComponents(modComponentFormState.uuid).length > 1;
 
   const isDirty = useSelector(
     selectModComponentIsDirty(modComponentFormState.uuid),
@@ -79,6 +90,7 @@ const ModComponentActionMenu: React.FC<{
           className={styles.moveIcon}
         />
       ),
+      disabled: !allowDelete,
       async action() {
         dispatch(
           actions.showMoveCopyToModModal({
@@ -103,6 +115,7 @@ const ModComponentActionMenu: React.FC<{
     {
       title: "Delete",
       icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
+      disabled: !allowDelete,
       async action() {
         await deleteDraftModComponent({
           modComponentId: modComponentFormState.uuid,

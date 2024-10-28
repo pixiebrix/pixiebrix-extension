@@ -82,6 +82,12 @@ export class ModListItem extends BasePageObject {
   get modActionMenu() {
     return new ModActionMenu(this.page.getByLabel("Menu"));
   }
+
+  async openModActionMenu(): Promise<ModActionMenu> {
+    await this.select();
+    await this.menuButton.click();
+    return this.modActionMenu;
+  }
 }
 
 export class ModListingPanel extends BasePageObject {

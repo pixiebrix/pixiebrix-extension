@@ -19,8 +19,7 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
-  selectDirtyMetadataForModId,
-  selectFirstModComponentFormStateForActiveMod,
+  selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
@@ -110,10 +109,6 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   // Select a single mod component for the mod to check the activated version.
   // We rely on the assumption that every component in the mod has the same version.
   const modInstance = useSelector(selectActiveModInstance);
-  // Mod metadata for new mods will only exist on the component form state
-  const firstComponentFormStateForMod = useSelector(
-    selectFirstModComponentFormStateForActiveMod,
-  );
 
   const activatedModVersion = modInstance?.definition.metadata.version;
   const latestModVersion = modDefinition?.metadata?.version;
@@ -122,13 +117,8 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     latestModVersion &&
     lt(activatedModVersion, latestModVersion);
 
-  const dirtyMetadata = useSelector(selectDirtyMetadataForModId(modId));
-  // Prefer the metadata from the activated mod component
-  const currentMetadata =
-    dirtyMetadata ??
-    modInstance?.definition.metadata ??
-    modDefinition?.metadata ??
-    firstComponentFormStateForMod?.modMetadata;
+  const modMetadataMap = useSelector(selectModMetadataMap);
+  const currentMetadata = modMetadataMap.get(modId) ?? {};
 
   const initialFormState: Partial<ModMetadataFormState> = pick(
     currentMetadata,
