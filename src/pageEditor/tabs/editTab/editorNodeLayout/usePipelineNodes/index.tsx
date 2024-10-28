@@ -28,7 +28,7 @@ import {
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
 import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 import { useMakeFoundationNode } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMakeFoundationNode";
-import { useMapBrickToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
+import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
 
 const usePipelineNodes = (): {
   foundationNodeProps: BrickNodeProps;
@@ -42,8 +42,8 @@ const usePipelineNodes = (): {
     "activeModComponentFormState is required",
   );
 
-  const mapBrickToNodes = useMapBrickToNodes();
-  const mapPipelineToNodes = useMapPipelineToNodes(mapBrickToNodes);
+  const mapPipelineToNodes = useMapPipelineToNodes();
+  const getNodeState = useGetNodeState();
 
   const {
     starterBrickType,
@@ -56,6 +56,8 @@ const usePipelineNodes = (): {
   const { nodes, modComponentHasTraces }: MapOutput = mapPipelineToNodes({
     pipeline: rootPipeline,
     flavor: rootPipelineFlavor,
+    mapPipelineToNodes,
+    getNodeState,
   });
 
   const foundationNodeProps = useMakeFoundationNode({
@@ -64,6 +66,7 @@ const usePipelineNodes = (): {
     starterBrickLabel,
     starterBrickIcon,
     modComponentHasTraces,
+    getNodeState,
   });
 
   return {

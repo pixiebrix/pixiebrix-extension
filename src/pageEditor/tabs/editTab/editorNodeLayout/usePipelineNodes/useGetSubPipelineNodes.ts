@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorNodeProps, type MapOutput } from "./types";
+import { type EditorNodeProps } from "./types";
 import { type BrickConfig } from "@/bricks/types";
 import { joinPathParts } from "@/utils/formUtils";
 import { getBuilderPreviewElementId, getSubPipelinesForBrick } from "./helpers";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { type AppDispatch } from "@/extensionConsole/store";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
-import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
-import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { type useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 import { type Branch } from "@/types/runtimeTypes";
 import { useCallback } from "react";
-import { type MapBrickToNodesArgs } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -47,20 +46,18 @@ type GetSubPipelineNodesProps = {
   isSubPipelineHeaderActive: boolean;
   traceRecord?: TraceRecord;
   latestPipelineCall?: Branch[];
+  mapPipelineToNodes: ReturnType<typeof useMapPipelineToNodes>;
+  getNodeState: ReturnType<typeof useGetNodeState>;
 };
 
-export function useGetSubPipelineNodes(
-  mapBrickToNodes: (args: MapBrickToNodesArgs) => MapOutput,
-) {
+export function useGetSubPipelineNodes() {
   const dispatch = useDispatch<AppDispatch>();
   const activeNodeId = useSelector(selectActiveNodeId);
   const activeBuilderPreviewElementId = useSelector(
     selectActiveBuilderPreviewElement,
   );
 
-  const mapPipelineToNodes = useMapPipelineToNodes(mapBrickToNodes);
   const createNodeActions = useCreateNodeActions();
-  const getNodeState = useGetNodeState();
 
   const { data: allBricks, isLoading: isLoadingBricks } = useTypedBrickMap();
 
@@ -75,6 +72,8 @@ export function useGetSubPipelineNodes(
       isAncestorActive,
       traceRecord,
       isSubPipelineHeaderActive,
+      mapPipelineToNodes,
+      getNodeState,
     }: GetSubPipelineNodesProps) => {
       const nodeId = brickConfig.instanceId;
       assertNotNullish(nodeId, "instanceId is required");
@@ -171,6 +170,8 @@ export function useGetSubPipelineNodes(
               ? isHeaderNodeActive
               : isParentActive || isAncestorActive) || false,
           latestParentCall: traceRecord?.branches ?? latestPipelineCall,
+          mapPipelineToNodes,
+          getNodeState,
         });
 
         nodes.push(...subPipelineNodes);
@@ -185,9 +186,7 @@ export function useGetSubPipelineNodes(
       allBricks,
       createNodeActions,
       dispatch,
-      getNodeState,
       isLoadingBricks,
-      mapPipelineToNodes,
     ],
   );
 }

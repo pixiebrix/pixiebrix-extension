@@ -21,9 +21,11 @@ import {
   type MapOutput,
   type EditorNodeProps,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetSubPipelineNodes";
 import { useGetTraceHandling } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetTraceHandling";
 import { useGetLastBrickHandling } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useLastBrickHandling";
-import { type MapBrickToNodesArgs } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
+import { useMapBrickToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
 import { type Branch } from "@/types/runtimeTypes";
 import { useCallback } from "react";
 
@@ -41,13 +43,17 @@ export type MapPipelineToNodesArgs = {
    * @since 1.8.4
    */
   latestParentCall?: Branch[];
+  mapPipelineToNodes: ReturnType<typeof useMapPipelineToNodes>;
+  getNodeState: ReturnType<typeof useGetNodeState>;
 };
 
-export function useMapPipelineToNodes(
-  mapBrickToNodes: (args: MapBrickToNodesArgs) => MapOutput,
-): (args: MapPipelineToNodesArgs) => MapOutput {
+export function useMapPipelineToNodes(): (
+  args: MapPipelineToNodesArgs,
+) => MapOutput {
   const getTraceHandling = useGetTraceHandling();
   const getLastBrickHandling = useGetLastBrickHandling();
+  const mapBrickToNodes = useMapBrickToNodes();
+  const getSubPipelineNodes = useGetSubPipelineNodes();
 
   return useCallback(
     ({
@@ -58,6 +64,8 @@ export function useMapPipelineToNodes(
       isParentActive = false,
       isAncestorActive = false,
       latestParentCall,
+      mapPipelineToNodes,
+      getNodeState,
     }: MapPipelineToNodesArgs) => {
       const isRootPipeline = pipelinePath === PIPELINE_BRICKS_FIELD_NAME;
       const { lastIndex, showAppend } = getLastBrickHandling(pipeline);
@@ -87,6 +95,9 @@ export function useMapPipelineToNodes(
           isAncestorActive,
           nestingLevel,
           modComponentHasTraces,
+          getSubPipelineNodes,
+          mapPipelineToNodes,
+          getNodeState,
         });
 
         nodes.push(...brickNodes);
@@ -98,6 +109,11 @@ export function useMapPipelineToNodes(
         modComponentHasTraces,
       };
     },
-    [getLastBrickHandling, getTraceHandling, mapBrickToNodes],
+    [
+      getLastBrickHandling,
+      getSubPipelineNodes,
+      getTraceHandling,
+      mapBrickToNodes,
+    ],
   );
 }

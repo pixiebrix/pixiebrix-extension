@@ -44,10 +44,11 @@ import { useSelector } from "react-redux";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
-import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
-import { useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetSubPipelineNodes";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { type useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetSubPipelineNodes";
 import { useGetBrickContentProps } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetBrickContentProps";
 import { useGetNodeMovement } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeMovement";
+import { type useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 
 export type MapBrickToNodesArgs = {
   index: number;
@@ -62,13 +63,14 @@ export type MapBrickToNodesArgs = {
   isAncestorActive: boolean;
   nestingLevel: number;
   modComponentHasTraces?: boolean;
+  getSubPipelineNodes: ReturnType<typeof useGetSubPipelineNodes>;
+  mapPipelineToNodes: ReturnType<typeof useMapPipelineToNodes>;
+  getNodeState: ReturnType<typeof useGetNodeState>;
 };
 
 export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const createNodeActions = useCreateNodeActions();
-  const getNodeState = useGetNodeState();
-  const getSubPiplineNodes = useGetSubPipelineNodes(useMapBrickToNodes());
   const getBrickContentProps = useGetBrickContentProps();
   const getNodeMovement = useGetNodeMovement();
   const { data: allBricks } = useTypedBrickMap();
@@ -99,9 +101,12 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       isRootPipeline,
       showAppend,
       isParentActive,
-      isAncestorActive,
       nestingLevel,
       modComponentHasTraces: modComponentHasTracesInput,
+      isAncestorActive,
+      getSubPipelineNodes,
+      mapPipelineToNodes,
+      getNodeState,
     }: MapBrickToNodesArgs) => {
       const { instanceId } = brickConfig;
       assertNotNullish(instanceId, "instanceId is required");
@@ -178,7 +183,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
 
       if (expanded) {
         const { nodes: subNodes, modComponentHasTraces: subPipelineHasTraces } =
-          getSubPiplineNodes({
+          getSubPipelineNodes({
             index,
             brickConfig,
             pipelinePath,
@@ -188,6 +193,8 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
             traceRecord,
             latestPipelineCall,
             isSubPipelineHeaderActive,
+            mapPipelineToNodes,
+            getNodeState,
           });
 
         nodes.push(...subNodes);
@@ -227,8 +234,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       createNodeActions,
       getBrickContentProps,
       getNodeMovement,
-      getNodeState,
-      getSubPiplineNodes,
       isApiAtLeastV2,
       traces,
     ],

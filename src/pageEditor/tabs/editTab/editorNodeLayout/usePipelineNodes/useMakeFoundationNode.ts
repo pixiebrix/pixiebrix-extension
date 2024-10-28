@@ -28,7 +28,7 @@ import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/edi
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { useSelector } from "react-redux";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
-import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
 
 type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;
@@ -36,6 +36,7 @@ type MakeFoundationNodeArgs = {
   starterBrickLabel: string;
   starterBrickIcon: IconProp;
   modComponentHasTraces: boolean;
+  getNodeState: ReturnType<typeof useGetNodeState>;
 };
 
 export function useMakeFoundationNode({
@@ -44,9 +45,9 @@ export function useMakeFoundationNode({
   starterBrickLabel,
   starterBrickIcon,
   modComponentHasTraces,
+  getNodeState,
 }: MakeFoundationNodeArgs) {
   const createNodeActions = useCreateNodeActions();
-  const getNodeState = useGetNodeState();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
