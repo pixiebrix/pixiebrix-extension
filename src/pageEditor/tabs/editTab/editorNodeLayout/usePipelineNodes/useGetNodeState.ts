@@ -25,7 +25,7 @@ import { useCallback, useState } from "react";
 export const ADD_MESSAGE = "Add more bricks with the plus button";
 
 type NodeStateProps = {
-  active?: boolean;
+  active: boolean;
   nodeId: UUID;
   nestingLevel: number;
   showBiggerActions?: boolean;

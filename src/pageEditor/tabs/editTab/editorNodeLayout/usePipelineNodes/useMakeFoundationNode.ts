@@ -24,7 +24,10 @@ import { filterStarterBrickAnalysisAnnotations } from "@/pageEditor/utils";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectActiveNodeId,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { useSelector } from "react-redux";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
@@ -49,6 +52,7 @@ export function useMakeFoundationNode({
 }: MakeFoundationNodeArgs) {
   const createNodeActions = useCreateNodeActions();
 
+  const activeNodeId = useSelector(selectActiveNodeId);
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -69,6 +73,7 @@ export function useMakeFoundationNode({
   });
 
   const nodeState = getNodeState({
+    active: activeNodeId === FOUNDATION_NODE_ID,
     nodeId: FOUNDATION_NODE_ID,
     nestingLevel: 0,
     showBiggerActions,
