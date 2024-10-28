@@ -41,6 +41,7 @@ import {
   selectActiveBrickConfigurationUIState,
   selectNotDeletedModComponentFormStates,
   selectNotDeletedActivatedModComponents,
+  selectGetModComponentFormStatesByModId,
 } from "./editorSelectors";
 import {
   isQuickBarStarterBrick,
@@ -478,17 +479,15 @@ export const editorSlice = createSlice({
       editModOptionsDefinitions(state, options);
     },
 
-    editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
+    editModOptionsArgs(state, action: PayloadAction<OptionsArgs>) {
       const modId = state.activeModId;
-      if (modId == null) {
-        return;
-      }
+      assertNotNullish(modId, "Expected active mod");
 
-      const notDeletedFormStates = selectNotDeletedModComponentFormStates({
+      const getModComponentFormStates = selectGetModComponentFormStatesByModId({
         editor: state,
       });
 
-      for (const formState of notDeletedFormStates) {
+      for (const formState of getModComponentFormStates(modId)) {
         formState.optionsArgs = action.payload;
         state.dirty[formState.uuid] = true;
       }
