@@ -16,7 +16,6 @@
  */
 
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
-import { type TypedBrickMap } from "@/bricks/registry";
 import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
 import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import {

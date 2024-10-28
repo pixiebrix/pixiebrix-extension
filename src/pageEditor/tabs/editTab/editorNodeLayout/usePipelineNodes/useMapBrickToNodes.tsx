@@ -30,11 +30,7 @@ import {
 import { filterAnnotationsByBrickPath } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
-import { faPaste, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import {
-  actions,
-  actions as editorActions,
-} from "@/pageEditor/store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { decideBrickStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
 import { type Except } from "type-fest";
 import { type Branch } from "@/types/runtimeTypes";
@@ -65,10 +61,10 @@ import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayou
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import PackageIcon from "@/components/PackageIcon";
 import { useDispatch, useSelector } from "react-redux";
-import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
 import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
+import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
 
 export type MapBrickToNodesArgs = {
   index: number;
@@ -89,6 +85,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const dispatch = useDispatch<AppDispatch>();
   const [hoveredState, setHoveredState] = useHoveredState();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
+  const createNodeActions = useCreateNodeActions();
   const { data: allBricks, isLoading: isLoadingBricks } = useTypedBrickMap();
 
   const activeModComponentFormState = useSelector(
@@ -110,7 +107,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
     selectModComponentAnnotations(activeModComponentFormState.uuid),
   );
 
-  const pasteBrick = usePasteBrick();
   const mapPipelineToNodes = useMapPipelineToNodes(useMapBrickToNodes());
 
   return useCallback(
@@ -129,8 +125,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       nestingLevel,
       modComponentHasTraces: modComponentHasTracesInput,
     }: MapBrickToNodesArgs) => {
-      const showPaste = pasteBrick && isApiAtLeastV2;
-
       const { instanceId } = brickConfig;
       assertNotNullish(instanceId, "instanceId is required");
 
@@ -202,37 +196,15 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       const showAddBrick = isApiAtLeastV2 && (index < lastIndex || showAppend);
       const showBiggerActions = index === lastIndex && isRootPipeline;
       const showAddMessage = showAddBrick && showBiggerActions;
-
-      const brickNodeActions: NodeAction[] = [];
       const nodeId = instanceId;
 
-      if (showAddBrick) {
-        brickNodeActions.push({
-          name: `${nodeId}-add-brick`,
-          icon: faPlusCircle,
-          tooltipText: "Add a brick",
-          onClick() {
-            dispatch(
-              actions.showAddBrickModal({
-                path: pipelinePath,
-                flavor,
-                index: index + 1,
-              }),
-            );
-          },
-        });
-      }
-
-      if (showPaste) {
-        brickNodeActions.push({
-          name: `${nodeId}-paste-brick`,
-          icon: faPaste,
-          tooltipText: "Paste copied brick",
-          async onClick() {
-            await pasteBrick(pipelinePath, index + 1);
-          },
-        });
-      }
+      const brickNodeActions = createNodeActions({
+        nodeId,
+        pipelinePath,
+        flavor,
+        index: index + 1,
+        showAddBrick,
+      });
 
       const trailingMessage = showAddMessage ? ADD_MESSAGE : undefined;
 
@@ -320,33 +292,13 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
             builderPreviewElementId === activeBuilderPreviewElementId;
           const isSiblingHeaderActive = isSubPipelineHeaderActive;
 
-          const headerActions: NodeAction[] = [
-            {
-              name: `${headerName}-add-brick`,
-              icon: faPlusCircle,
-              tooltipText: "Add a brick",
-              onClick() {
-                dispatch(
-                  actions.showAddBrickModal({
-                    path: fullSubPath,
-                    flavor,
-                    index: 0,
-                  }),
-                );
-              },
-            },
-          ];
-
-          if (showPaste) {
-            headerActions.push({
-              name: `${headerName}-paste-brick`,
-              icon: faPaste,
-              tooltipText: "Paste copied brick",
-              async onClick() {
-                await pasteBrick(fullSubPath, 0);
-              },
-            });
-          }
+          const headerActions: NodeAction[] = createNodeActions({
+            nodeId: headerName,
+            pipelinePath: fullSubPath,
+            flavor,
+            index: 0,
+            showAddBrick: true,
+          });
 
           const headerNodeProps: PipelineHeaderNodeProps = {
             headerLabel,
@@ -362,7 +314,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
                   focus() {
                     dispatch(actions.setActiveNodeId(instanceId));
                     dispatch(
-                      editorActions.setActiveBuilderPreviewElement(
+                      actions.setActiveBuilderPreviewElement(
                         builderPreviewElementId,
                       ),
                     );
@@ -443,13 +395,13 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       allBricks,
       annotations,
       collapsedNodes,
+      createNodeActions,
       dispatch,
       hoveredState,
       isApiAtLeastV2,
       isLoadingBricks,
       mapPipelineToNodes,
       maybePipelineMap,
-      pasteBrick,
       setHoveredState,
       traces,
     ],

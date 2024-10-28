@@ -23,7 +23,6 @@ import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActio
 import { filterStarterBrickAnalysisAnnotations } from "@/pageEditor/utils";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { faPlusCircle, faPaste } from "@fortawesome/free-solid-svg-icons";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import {
@@ -34,8 +33,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { ADD_MESSAGE } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
-import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
-import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
+import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
 
 type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;
@@ -54,10 +52,7 @@ export function useMakeFoundationNode({
 }: MakeFoundationNodeArgs) {
   const dispatch = useDispatch();
   const [, setHoveredState] = useHoveredState();
-  const isApiAtLeastV2 = useApiVersionAtLeast("v2");
-  const pasteBrick = usePasteBrick();
-
-  const showPaste = pasteBrick && isApiAtLeastV2;
+  const createNodeActions = useCreateNodeActions();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
@@ -71,33 +66,13 @@ export function useMakeFoundationNode({
   );
   const activeNodeId = useSelector(selectActiveNodeId);
 
-  const foundationNodeActions: NodeAction[] = [
-    {
-      name: `${FOUNDATION_NODE_ID}-add-brick`,
-      icon: faPlusCircle,
-      tooltipText: "Add a brick",
-      onClick() {
-        dispatch(
-          actions.showAddBrickModal({
-            path: PIPELINE_BRICKS_FIELD_NAME,
-            flavor: pipelineFlavor,
-            index: 0,
-          }),
-        );
-      },
-    },
-  ];
-
-  if (showPaste) {
-    foundationNodeActions.push({
-      name: `${FOUNDATION_NODE_ID}-paste-brick`,
-      icon: faPaste,
-      tooltipText: "Paste copied brick",
-      async onClick() {
-        await pasteBrick(PIPELINE_BRICKS_FIELD_NAME, 0);
-      },
-    });
-  }
+  const foundationNodeActions: NodeAction[] = createNodeActions({
+    nodeId: FOUNDATION_NODE_ID,
+    pipelinePath: PIPELINE_BRICKS_FIELD_NAME,
+    flavor: pipelineFlavor,
+    index: 0,
+    showAddBrick: true,
+  });
 
   return {
     icon: starterBrickIcon,
