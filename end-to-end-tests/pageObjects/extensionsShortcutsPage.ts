@@ -49,12 +49,14 @@ export class ExtensionsShortcutsPage extends BasePageObject {
   readonly pageUrl: string;
 
   editToggleQuickBarShortcut = this.getByLabel("Edit shortcut Toggle Quick").or(
+    // Old versions of Edge show a clear button rather than "edit"
     this.getByRole("button", { name: "Clear shortcut" }),
   );
 
   toggleQuickBarShortcutTextBox = this.getByRole("textbox", {
     name: "Shortcut Toggle Quick Bar for PixieBrix",
   }).or(
+    // Old versions of Edge have a different label
     this.getByLabel(/Type a shortcut that will Toggle Quick Bar for PixieBrix/),
   );
 
