@@ -165,8 +165,7 @@ describe("ModListingPanel", () => {
       expect(screen.getByText(`${formState.label} (Copy)`)).toBeInTheDocument();
     });
 
-    // Regression test for the existing behavior. In the future, we might try to keep the empty mod item displayed
-    it("delete last activated mod component removes entire mod", async () => {
+    it("prevents deleting last mod component in a mod", async () => {
       const modDefinition = modDefinitionFactory();
       const componentName = modDefinition.extensionPoints[0]!.label;
 
@@ -196,11 +195,23 @@ describe("ModListingPanel", () => {
 
       await clickEllipsesMenu(componentName);
 
-      await clickMenuItemAndConfirm("Delete");
+      expect(
+        screen.getByRole("menuitem", {
+          name: "Delete",
+        }),
+      ).toHaveAttribute("aria-disabled", "true");
 
       expect(
-        screen.queryByText(modDefinition.metadata.name),
-      ).not.toBeInTheDocument();
+        screen.getByRole("menuitem", {
+          name: "Move to mod",
+        }),
+      ).toHaveAttribute("aria-disabled", "true");
+
+      expect(
+        screen.getByRole("menuitem", {
+          name: "Copy to mod",
+        }),
+      ).not.toHaveAttribute("aria-disabled", "true");
     });
 
     it("deletes an activated mod component and undeletes on clear changes", async () => {

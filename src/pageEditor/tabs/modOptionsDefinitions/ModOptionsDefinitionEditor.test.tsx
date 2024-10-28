@@ -25,6 +25,7 @@ import { screen } from "@testing-library/react";
 import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import userEvent from "@testing-library/user-event";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 
 jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({
@@ -49,6 +50,8 @@ describe("ModOptionsDefinitionEditor", () => {
             isReactivate: false,
           }),
         );
+
+        dispatch(editorSlice.actions.setActiveModId(modDefinition.metadata.id));
       },
     });
     await waitForEffect();

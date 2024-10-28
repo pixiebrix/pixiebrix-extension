@@ -177,14 +177,8 @@ test("Add starter brick to mod", async ({
   const modListItem =
     pageEditorPage.modListingPanel.getModListItemByName(modName);
 
-  const openModActionMenu = async () => {
-    await modListItem.select();
-    await modListItem.menuButton.click();
-    return modListItem.modActionMenu;
-  };
-
   await test.step("Add Button starter brick to mod", async () => {
-    const modActionMenu = await openModActionMenu();
+    const modActionMenu = await modListItem.openModActionMenu();
     await modActionMenu.addStarterBrick("Button");
     await pageEditorPage.selectConnectedPageElement(
       page.getByRole("link", { name: "navigation" }),
@@ -211,7 +205,7 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Context Menu starter brick to mod", async () => {
-    const modActionMenu = await openModActionMenu();
+    const modActionMenu = await modListItem.openModActionMenu();
     await modActionMenu.addStarterBrick("Context Menu");
 
     await expect(brickPipeline).toHaveCount(1);
@@ -232,7 +226,7 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Quick Bar Action starter brick to mod", async () => {
-    const modActionMenu = await openModActionMenu();
+    const modActionMenu = await modListItem.openModActionMenu();
     await modActionMenu.addStarterBrick("Quick Bar Action");
 
     await expect(brickPipeline).toHaveCount(1);
@@ -258,7 +252,7 @@ test("Add starter brick to mod", async ({
       await page.bringToFront();
     }
 
-    const modActionMenu = await openModActionMenu();
+    const modActionMenu = await modListItem.openModActionMenu();
     await modActionMenu.addStarterBrick("Sidebar Panel");
 
     await expect(brickPipeline).toHaveCount(2);
@@ -283,7 +277,7 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Trigger starter brick to mod", async () => {
-    const modActionMenu = await openModActionMenu();
+    const modActionMenu = await modListItem.openModActionMenu();
     await modActionMenu.addStarterBrick("Trigger");
 
     await expect(brickPipeline).toHaveCount(1);

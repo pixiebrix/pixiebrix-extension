@@ -16,7 +16,10 @@
  */
 
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { initialState } from "@/pageEditor/store/editor/editorSlice";
+import {
+  editorSlice,
+  initialState,
+} from "@/pageEditor/store/editor/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
@@ -27,7 +30,6 @@ import {
   ensureBrickPipelineUIState,
   ensureBrickConfigurationUIState,
   markModComponentFormStateAsDeleted,
-  removeModData,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
@@ -434,11 +436,16 @@ describe("removeModData", () => {
       },
     };
 
-    const newState = produce(state, (draft) => {
+    let newState = produce(state, (draft) => {
       markModComponentFormStateAsDeleted(draft, modComponentFormState1.uuid);
       markModComponentFormStateAsDeleted(draft, modComponentFormState2.uuid);
-      removeModData(draft, modMetadata.id);
     });
+
+    newState = editorSlice.reducer(
+      newState,
+      editorSlice.actions.removeModById(modMetadata.id),
+    );
+
     expect(selectActiveModId({ editor: newState })).toBeNull();
     expect(selectExpandedModId({ editor: newState })).toBeNull();
     expect(

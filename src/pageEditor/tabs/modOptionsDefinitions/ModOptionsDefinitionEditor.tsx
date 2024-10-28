@@ -48,6 +48,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -111,9 +112,15 @@ const Preview: React.VFC<{
 const ModOptionsDefinitionEditor: React.VFC = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const modId = useSelector(selectActiveModId);
-  const { data: mod, isFetching, error } = useOptionalModDefinition(modId);
+  assertNotNullish(modId, "Expected active mod id");
 
-  const savedOptions = mod?.options;
+  const {
+    data: modDefinition,
+    isFetching,
+    error,
+  } = useOptionalModDefinition(modId);
+
+  const savedOptions = modDefinition?.options;
   const dirtyOptions = useSelector(
     selectDirtyOptionsDefinitionsForModId(modId),
   );

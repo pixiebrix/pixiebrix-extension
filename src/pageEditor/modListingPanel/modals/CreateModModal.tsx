@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import {
   isInnerDefinitionRegistryId,
   normalizeSemVerString,
@@ -28,9 +28,8 @@ import {
   getModalDataSelector,
   selectActiveModComponentFormState,
   selectCurrentModId,
-  selectDirtyMetadataForModId,
   selectEditorModalVisibilities,
-  selectFirstModComponentFormStateForActiveMod,
+  selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
@@ -53,7 +52,6 @@ import {
 } from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   ModalKey,
   type ModMetadataFormState,
@@ -66,54 +64,29 @@ import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "@/hooks/useIsMounted";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.
- *
- * @param activeMod The mod definition fetched from the server for the active mod, if it could be found on the server
- * @param activeModId The mod id for the active mod, if a mod is selected
- * @param activeModComponentFormState The form state for the active mod component, if a mod component is selected
+ * @param modId the reference mod for metadata. Only the initial value provided is used
  */
-function useInitialFormState({
-  activeModDefinition,
-  activeModId,
-  activeModComponentFormState,
-}: {
-  // This is only used locally in this module in one place, and we want to make sure all inputs are being passed in, even if they are undefined
-  activeModDefinition: ModDefinition | undefined;
-  activeModId: RegistryId | undefined;
-  activeModComponentFormState: ModComponentFormState | undefined;
-}): ModMetadataFormState | UnknownObject {
+function useInitialFormState(modId: RegistryId): ModMetadataFormState {
   const userScope = useSelector(selectScope);
   assertNotNullish(
     userScope,
     "Expected scope, should be nested in RequireScope",
   );
 
-  const firstComponentFormStateForActiveMod = useSelector(
-    selectFirstModComponentFormStateForActiveMod,
-  );
-  const dirtyModMetadata = useSelector(
-    selectDirtyMetadataForModId(activeModId),
-  );
-  const modMetadata =
-    // If the mod metadata has been edited, it can be found in the dirty metadata state
-    dirtyModMetadata ??
-    // If an active mod that has been saved to the server already is selected, use its metadata
-    activeModDefinition?.metadata ??
-    // If the mod definition has not been created on the server yet, use the metadata from the first component form state of the selected mod
-    firstComponentFormStateForActiveMod?.modMetadata ??
-    // If the mod is not selected, use the metadata from the active mod component form state
-    activeModComponentFormState?.modMetadata;
-
-  if (!modMetadata) {
-    return {};
-  }
+  // The CreateModModalBody modal is mounted until the save completes. When saving an unsaved mod/removing the
+  // local copy of the source mod, there's a render where the source mod is no longer available. Use a ref
+  // to store the original source metadata.
+  const modMetadataMap = useSelector(selectModMetadataMap);
+  const { current: modMetadata } = useRef(modMetadataMap.get(modId));
+  assertNotNullish(modMetadata, "Expected mod metadata");
 
   const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
+
   let newModId = isUnsavedMod
     ? // If the mod is a brand new, unsaved mod, generate a new package id
       generatePackageId(userScope, modMetadata.name)
@@ -161,15 +134,22 @@ function useFormSchema() {
   });
 }
 
-const CreateModModalBody: React.FC = () => {
+const CreateModModalBody: React.FC<{ onHide: () => void }> = ({ onHide }) => {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
 
   const currentModId = useSelector(selectCurrentModId);
+  assertNotNullish(currentModId, "Expected mod or mod component to be active");
+
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
+
   const modalData = useSelector(getModalDataSelector(ModalKey.CREATE_MOD));
+  assertNotNullish(
+    modalData,
+    "CreateModModalBody rendered without modal data set",
+  );
 
   const { createModFromMod } = useCreateModFromMod();
   const { createModFromUnsavedMod } = useCreateModFromUnsavedMod();
@@ -180,23 +160,13 @@ const CreateModModalBody: React.FC = () => {
 
   const formSchema = useFormSchema();
 
-  const hideModal = useCallback(() => {
-    dispatch(editorActions.hideModal());
-  }, [dispatch]);
-
-  const initialModMetadataFormState = useInitialFormState({
-    activeModDefinition: modDefinition,
-    activeModId: currentModId,
-    activeModComponentFormState,
-  });
+  const initialFormState = useInitialFormState(currentModId);
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     if (isModDefinitionFetching) {
       helpers.setSubmitting(false);
       return;
     }
-
-    assertNotNullish(modalData, "Expected modal data to be defined");
 
     try {
       if ("sourceModComponentId" in modalData) {
@@ -227,7 +197,7 @@ const CreateModModalBody: React.FC = () => {
         message: "Mod created successfully",
       });
 
-      hideModal();
+      onHide();
     } catch (error) {
       if (isSpecificError(error, DataIntegrityError)) {
         dispatch(editorActions.showSaveDataIntegrityErrorModal());
@@ -286,7 +256,7 @@ const CreateModModalBody: React.FC = () => {
 
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
     <Modal.Footer>
-      <Button variant="info" onClick={hideModal}>
+      <Button variant="info" onClick={onHide}>
         Cancel
       </Button>
       <Button
@@ -307,7 +277,7 @@ const CreateModModalBody: React.FC = () => {
         <Form
           validationSchema={formSchema}
           validateOnMount
-          initialValues={initialModMetadataFormState}
+          initialValues={initialFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}
           renderSubmit={renderSubmit}
@@ -318,11 +288,12 @@ const CreateModModalBody: React.FC = () => {
 };
 
 const CreateModModal: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
+
   const { isCreateModModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
 
-  const dispatch = useDispatch();
   const hideModal = useCallback(() => {
     dispatch(editorActions.hideModal());
   }, [dispatch]);
@@ -330,7 +301,7 @@ const CreateModModal: React.FunctionComponent = () => {
   return (
     <ModalLayout title="Save new mod" show={show} onHide={hideModal}>
       <RequireScope scopeSettingsDescription="To create a mod, you must first set an account alias for your PixieBrix account">
-        <CreateModModalBody />
+        {show && <CreateModModalBody onHide={hideModal} />}
       </RequireScope>
     </ModalLayout>
   );
