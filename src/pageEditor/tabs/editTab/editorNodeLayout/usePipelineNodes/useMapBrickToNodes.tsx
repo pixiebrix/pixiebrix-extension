@@ -16,10 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import {
-  type BrickNodeContentProps,
-  type BrickNodeProps,
-} from "@/pageEditor/tabs/editTab/editTabTypes";
+import { type BrickNodeContentProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
@@ -32,7 +29,6 @@ import { isEmpty } from "lodash";
 import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { decideBrickStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
-import { type Except } from "type-fest";
 import { type Branch } from "@/types/runtimeTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
@@ -46,7 +42,6 @@ import {
 import {
   getBuilderPreviewElementId,
   getSubPipelinesForBrick,
-  ADD_MESSAGE,
 } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import { type AppDispatch } from "@/pageEditor/store/store";
 import {
@@ -61,10 +56,10 @@ import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayou
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import PackageIcon from "@/components/PackageIcon";
 import { useDispatch, useSelector } from "react-redux";
-import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
 import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
+import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
 
 export type MapBrickToNodesArgs = {
   index: number;
@@ -83,9 +78,9 @@ export type MapBrickToNodesArgs = {
 
 export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const dispatch = useDispatch<AppDispatch>();
-  const [hoveredState, setHoveredState] = useHoveredState();
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
   const createNodeActions = useCreateNodeActions();
+  const getNodeState = useGetNodeState();
   const { data: allBricks, isLoading: isLoadingBricks } = useTypedBrickMap();
 
   const activeModComponentFormState = useSelector(
@@ -145,25 +140,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       const collapsed = collapsedNodes.includes(instanceId);
       const expanded = hasSubPipelines && !collapsed;
 
-      const onClick = () => {
-        if (activeBuilderPreviewElementId) {
-          dispatch(actions.setActiveBuilderPreviewElement(null));
-
-          if (isNodeActive) {
-            return;
-          }
-        }
-
-        if (!isNodeActive) {
-          dispatch(actions.setActiveNodeId(instanceId));
-          return;
-        }
-
-        if (hasSubPipelines) {
-          dispatch(actions.toggleCollapseBrickPipelineNode(instanceId));
-        }
-      };
-
       // Editor nodes are displayed from top to bottom in array order,
       // so, "up" in the UI is lower in the array, and "down" in the UI
       // is higher in the array. Also, you cannot move the foundation node,
@@ -185,17 +161,8 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
           }
         : undefined;
 
-      const hovered = hoveredState[instanceId];
-      const onHoverChange = (hovered: boolean) => {
-        setHoveredState((previousState) => ({
-          ...previousState,
-          [instanceId as string]: hovered,
-        }));
-      };
-
       const showAddBrick = isApiAtLeastV2 && (index < lastIndex || showAppend);
       const showBiggerActions = index === lastIndex && isRootPipeline;
-      const showAddMessage = showAddBrick && showBiggerActions;
       const nodeId = instanceId;
 
       const brickNodeActions = createNodeActions({
@@ -205,8 +172,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         index: index + 1,
         showAddBrick,
       });
-
-      const trailingMessage = showAddMessage ? ADD_MESSAGE : undefined;
 
       let contentProps: BrickNodeContentProps = {
         brickLabel: "Loading...",
@@ -247,30 +212,25 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
                 getBuilderPreviewElementId(brickConfig, path),
             );
 
-      const restBrickNodeProps: Except<
-        BrickNodeProps,
-        keyof BrickNodeContentProps
-      > = {
-        onClickMoveUp,
-        onClickMoveDown,
-        onClick,
+      const brickNodeState = getNodeState({
         active: !isSubPipelineHeaderActive && isNodeActive,
-        onHoverChange,
-        isParentActive,
+        nodeId,
         nestingLevel,
-        hasSubPipelines,
-        collapsed,
-        nodeActions: expanded ? [] : brickNodeActions,
         showBiggerActions,
-        trailingMessage,
-        isSubPipelineHeaderActive,
-      };
+        nodeActions: expanded ? [] : brickNodeActions,
+        isParentActive,
+      });
 
       nodes.push({
         type: "brick",
         key: instanceId,
         ...contentProps,
-        ...restBrickNodeProps,
+        ...brickNodeState,
+        onClickMoveUp,
+        onClickMoveDown,
+        hasSubPipelines,
+        collapsed,
+        isSubPipelineHeaderActive,
       });
 
       if (expanded) {
@@ -300,13 +260,19 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
             showAddBrick: true,
           });
 
-          const headerNodeProps: PipelineHeaderNodeProps = {
-            headerLabel,
+          const headerNodeState = getNodeState({
+            active: isHeaderNodeActive || false,
+            nodeId: instanceId,
             nestingLevel,
             nodeActions: headerActions,
+            isParentActive: !isSiblingHeaderActive && isParentActive,
+          });
+
+          const headerNodeProps: PipelineHeaderNodeProps = {
+            ...headerNodeState,
+            headerLabel,
+            nestingLevel,
             pipelineInputKey: inputKey,
-            active: isHeaderNodeActive || false,
-            isParentActive: !isSiblingHeaderActive && isNodeActive,
             isAncestorActive: !isSiblingHeaderActive && isParentActive,
             builderPreviewElement: builderPreviewElementId
               ? {
@@ -365,17 +331,18 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
           modComponentHasTraces ||= subPipelineHasTraces;
         }
 
-        const footerNodeProps: PipelineFooterNodeProps = {
-          outputKey: brickConfig.outputKey,
-          nodeActions: brickNodeActions,
-          showBiggerActions,
-          trailingMessage,
-          nestingLevel,
+        const footerNodeState = getNodeState({
           active: !isSubPipelineHeaderActive && isNodeActive,
+          nodeId: instanceId,
+          nestingLevel,
+          showBiggerActions,
+          nodeActions: brickNodeActions,
+        });
+
+        const footerNodeProps: PipelineFooterNodeProps = {
+          ...footerNodeState,
+          outputKey: brickConfig.outputKey,
           nestedActive: isParentActive,
-          hovered,
-          onHoverChange,
-          onClick,
         };
         nodes.push({
           type: "footer",
@@ -397,12 +364,11 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       collapsedNodes,
       createNodeActions,
       dispatch,
-      hoveredState,
+      getNodeState,
       isApiAtLeastV2,
       isLoadingBricks,
       mapPipelineToNodes,
       maybePipelineMap,
-      setHoveredState,
       traces,
     ],
   );

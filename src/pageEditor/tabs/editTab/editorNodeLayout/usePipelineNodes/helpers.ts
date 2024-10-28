@@ -35,8 +35,6 @@ import { type Brick } from "@/types/brickTypes";
 import { joinPathParts, joinName } from "@/utils/formUtils";
 import { isEmpty, get } from "lodash";
 
-export const ADD_MESSAGE = "Add more bricks with the plus button";
-
 export function getBuilderPreviewElementId(
   brickConfig: BrickConfig,
   path: string,

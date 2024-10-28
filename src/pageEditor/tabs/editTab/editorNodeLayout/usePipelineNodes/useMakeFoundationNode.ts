@@ -23,17 +23,12 @@ import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActio
 import { filterStarterBrickAnalysisAnnotations } from "@/pageEditor/utils";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
-import {
-  selectActiveModComponentFormState,
-  selectActiveNodeId,
-} from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { ADD_MESSAGE } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
-import { useDispatch, useSelector } from "react-redux";
-import { useHoveredState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useHoveredState";
+import { useSelector } from "react-redux";
 import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
+import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
 
 type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;
@@ -50,9 +45,8 @@ export function useMakeFoundationNode({
   starterBrickIcon,
   modComponentHasTraces,
 }: MakeFoundationNodeArgs) {
-  const dispatch = useDispatch();
-  const [, setHoveredState] = useHoveredState();
   const createNodeActions = useCreateNodeActions();
+  const getNodeState = useGetNodeState();
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
@@ -64,7 +58,6 @@ export function useMakeFoundationNode({
   const annotations = useSelector(
     selectModComponentAnnotations(activeModComponentFormState.uuid),
   );
-  const activeNodeId = useSelector(selectActiveNodeId);
 
   const foundationNodeActions: NodeAction[] = createNodeActions({
     nodeId: FOUNDATION_NODE_ID,
@@ -72,6 +65,13 @@ export function useMakeFoundationNode({
     flavor: pipelineFlavor,
     index: 0,
     showAddBrick: true,
+  });
+
+  const nodeState = getNodeState({
+    nodeId: FOUNDATION_NODE_ID,
+    nestingLevel: 0,
+    showBiggerActions,
+    nodeActions: foundationNodeActions,
   });
 
   return {
@@ -82,19 +82,6 @@ export function useMakeFoundationNode({
     }),
     brickLabel: starterBrickLabel,
     outputKey: "input" as OutputKey,
-    onClick() {
-      dispatch(actions.setActiveNodeId(FOUNDATION_NODE_ID));
-    },
-    active: activeNodeId === FOUNDATION_NODE_ID,
-    onHoverChange(hovered: boolean) {
-      setHoveredState((previousState) => ({
-        ...previousState,
-        [FOUNDATION_NODE_ID]: hovered,
-      }));
-    },
-    nestingLevel: 0,
-    nodeActions: foundationNodeActions,
-    showBiggerActions,
-    trailingMessage: showBiggerActions ? ADD_MESSAGE : undefined,
+    ...nodeState,
   };
 }
