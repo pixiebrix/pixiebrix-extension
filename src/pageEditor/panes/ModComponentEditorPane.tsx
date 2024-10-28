@@ -21,7 +21,6 @@ import {
   actions as editorActions,
 } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -42,7 +41,6 @@ import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes"
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
 const CHANGE_DETECT_DELAY_MILLIS = 100;
-const REDUX_SYNC_WAIT_MILLIS = 500;
 
 /**
  * Returns callback to generate the current key to force reinitialization of Formik form.
@@ -72,13 +70,19 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const getFormReinitializationKey = useGetFormReinitializationKey();
   const previousKey = useRef<string | null>(getFormReinitializationKey());
 
-  // XXX: anti-pattern: callback to update the redux store based on the formik state
-  const syncReduxState = useDebouncedCallback(
+  // XXX: anti-pattern: callback to update the redux store based on the Formik state.
+  // Don't use useDebounceCallback because Effect component is already debounced
+  const syncReduxState = useCallback(
     (values: ModComponentFormState) => {
       const currentKey = getFormReinitializationKey();
 
       // Don't sync on the first call after the reinitialization key changes because the call would cause
       // the form to be marked dirty even if there are no changes.
+      //
+      // NOTE: there are some editor components that contain useEffect calls that perform normalization on mount.
+      // Therefore, in some cases, the first syncReduxState call will include changes, but we don't want to show
+      // the unsaved change icon as they aren't functional changes
+      //
       // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9355
       if (previousKey.current === currentKey) {
         dispatch(
@@ -94,8 +98,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 
       previousKey.current = currentKey;
     },
-    REDUX_SYNC_WAIT_MILLIS,
-    { trailing: true, leading: false },
+    [dispatch, getFormReinitializationKey, previousKey],
   );
 
   // XXX: effect should be refactored to a middleware that listens for selected mod component
