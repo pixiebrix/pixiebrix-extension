@@ -37,6 +37,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import deepEquals from "fast-deep-equal";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -69,22 +70,28 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const dispatch = useDispatch();
   const getFormReinitializationKey = useGetFormReinitializationKey();
   const previousKey = useRef<string | null>(getFormReinitializationKey());
+  const previousValues = useRef(modComponentFormState);
 
   // XXX: anti-pattern: callback to update the redux store based on the Formik state.
-  // Don't use useDebounceCallback because Effect component is already debounced
+  // Don't use useDebouncedCallback because Effect component is already debounced
   const syncReduxState = useCallback(
     (values: ModComponentFormState) => {
       const currentKey = getFormReinitializationKey();
 
-      // Don't sync on the first call after the reinitialization key changes because the call would cause
-      // the form to be marked dirty even if there are no changes.
+      // To avoid marking as dirty when selecting a clean component, skip the first call after reinitialization
       //
-      // NOTE: there are some editor components that contain useEffect calls that perform normalization on mount.
-      // Therefore, in some cases, the first syncReduxState call will include changes, but we don't want to show
-      // the unsaved change icon as they aren't functional changes
+      // However, need to account for editor components that contain useEffect-like calls that perform normalization on
+      // mount (for these, the first syncReduxState call will include changes). The UX is confusing because the
+      // the unsaved changes indicator will show up immediately after selecting a component that needs normalization.
+      // But this is necessary until we refactor the useEffect-like calls into the form state adapters.
       //
       // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9355
-      if (previousKey.current === currentKey) {
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9370
+      if (
+        previousKey.current === currentKey ||
+        (previousValues.current.uuid === values.uuid &&
+          !deepEquals(previousValues.current, values))
+      ) {
         dispatch(
           editorActions.setModComponentFormState({
             modComponentFormState: values,
@@ -98,7 +105,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
 
       previousKey.current = currentKey;
     },
-    [dispatch, getFormReinitializationKey, previousKey],
+    [dispatch, getFormReinitializationKey, previousKey, previousValues],
   );
 
   // XXX: effect should be refactored to a middleware that listens for selected mod component
