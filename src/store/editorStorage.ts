@@ -27,8 +27,12 @@ import { migrations } from "@/store/editorMigrations";
 import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
 import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { assertEditorInvariants } from "@/pageEditor/store/editor/editorInvariantMiddleware";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
+
+// eslint-disable-next-line prefer-destructuring -- process.env substitution
+const DEBUG = process.env.DEBUG;
 
 /**
  * Read draft mod components from local storage (without going through redux-persist)
@@ -53,6 +57,10 @@ export async function saveEditorState(
 ): Promise<void> {
   if (state == null) {
     return;
+  }
+
+  if (DEBUG) {
+    assertEditorInvariants({ editor: state });
   }
 
   await setReduxStorage(

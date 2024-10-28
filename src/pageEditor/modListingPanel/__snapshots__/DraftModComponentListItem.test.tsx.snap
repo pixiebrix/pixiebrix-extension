@@ -87,7 +87,7 @@ exports[`DraftModComponentListItem renders not active element 1`] = `
     action="#"
   >
     <div
-      class="root list-group-item"
+      class="root modBackground list-group-item"
     >
       <span
         class="icon"

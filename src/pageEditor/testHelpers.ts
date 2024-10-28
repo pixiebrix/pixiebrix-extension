@@ -34,6 +34,7 @@ import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
 import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import editorInvariantMiddleware from "@/pageEditor/store/editor/editorInvariantMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -55,6 +56,7 @@ const configureStoreForTests = () =>
       return getDefaultMiddleware()
         .concat(appApi.middleware)
         .concat(pageEditorAnalysisManager.middleware)
+        .concat(editorInvariantMiddleware)
         .concat(modDefinitionsMiddleware);
     },
   });

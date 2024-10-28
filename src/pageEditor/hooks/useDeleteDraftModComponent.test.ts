@@ -17,39 +17,96 @@
 
 import { renderHook } from "@/pageEditor/testHelpers";
 import useDeleteDraftModComponent from "./useDeleteDraftModComponent";
-import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import {
+  actions,
+  actions as editorActions,
+} from "@/pageEditor/store/editor/editorSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
-
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("useDeleteModComponent", async () => {
-  const modComponentId = autoUUIDSequence();
+describe("useDeleteModComponent", () => {
+  it("deletes one component from mod", async () => {
+    const modMetadata = modMetadataFactory();
 
-  const {
-    result: { current: deleteDraftModComponent },
-    getReduxStore,
-  } = renderHook(() => useDeleteDraftModComponent(), {
-    setupRedux(_dispatch, { store }) {
-      jest.spyOn(store, "dispatch");
-    },
+    const formState = formStateFactory({
+      formStateConfig: {
+        modMetadata,
+      },
+    });
+
+    const { uuid: modComponentId } = formState;
+
+    const {
+      result: { current: deleteDraftModComponent },
+      getReduxStore,
+      act,
+    } = renderHook(() => useDeleteDraftModComponent(), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
+        // Add another so they can be deleted
+        dispatch(
+          actions.addModComponentFormState(
+            formStateFactory({
+              formStateConfig: {
+                modMetadata,
+              },
+            }),
+          ),
+        );
+
+        dispatch(actions.addModComponentFormState(formState));
+      },
+    });
+
+    await act(async () => {
+      await deleteDraftModComponent({
+        modComponentId,
+      });
+    });
+
+    const { dispatch } = getReduxStore();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      editorActions.markModComponentFormStateAsDeleted(modComponentId),
+    );
+
+    expect(removeDraftModComponents).toHaveBeenCalledWith(
+      expect.any(Object),
+      modComponentId,
+    );
   });
 
-  await deleteDraftModComponent({
-    modComponentId,
+  it("does not delete last mod component in mod", async () => {
+    const formState = formStateFactory();
+    const { uuid: modComponentId } = formState;
+
+    const {
+      result: { current: deleteDraftModComponent },
+      getReduxStore,
+    } = renderHook(() => useDeleteDraftModComponent(), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
+        dispatch(actions.addModComponentFormState(formState));
+      },
+    });
+
+    await expect(
+      deleteDraftModComponent({
+        modComponentId,
+      }),
+    ).rejects.toThrow("Cannot delete the last starter brick in a mod");
+
+    const { dispatch } = getReduxStore();
+
+    expect(dispatch).not.toHaveBeenCalledWith(
+      editorActions.markModComponentFormStateAsDeleted(modComponentId),
+    );
+
+    expect(removeDraftModComponents).not.toHaveBeenCalled();
   });
-
-  const { dispatch } = getReduxStore();
-
-  expect(dispatch).toHaveBeenCalledWith(
-    editorActions.markModComponentFormStateAsDeleted(modComponentId),
-  );
-
-  expect(removeDraftModComponents).toHaveBeenCalledWith(
-    expect.any(Object),
-    modComponentId,
-  );
 });

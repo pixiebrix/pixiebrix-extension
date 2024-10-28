@@ -22,7 +22,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
 import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
 import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
@@ -30,6 +30,7 @@ import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { type AppDispatch } from "@/pageEditor/store/store";
+import { selectGetSiblingDraftModComponents } from "@/pageEditor/store/editor/editorSelectors";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (
@@ -44,6 +45,9 @@ function useCreateModFromModComponent(): UseCreateModFromModReturn {
   const [createModDefinitionOnServer] = useCreateModDefinitionMutation();
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const { buildAndValidateMod } = useBuildAndValidateMod();
+  const getSiblingDraftModComponents = useSelector(
+    selectGetSiblingDraftModComponents,
+  );
 
   const createModFromComponent = useCallback(
     (
@@ -58,6 +62,16 @@ function useCreateModFromModComponent(): UseCreateModFromModReturn {
       ).then(async (hasPermissions) => {
         if (!hasPermissions) {
           return;
+        }
+
+        // Prevent removal of the last mod component in a mod. The editorSlice state currently stores some mod
+        // information on the mod components/form state. In practice, this code should never get hit because the
+        // Page Editor should show the deletion affordances as disabled.
+        if (
+          !keepLocalCopy &&
+          getSiblingDraftModComponents(modComponentFormState.uuid).length === 1
+        ) {
+          throw new Error("Cannot move the last starter brick in a mod");
         }
 
         const modId = newModMetadata.id;
@@ -104,6 +118,7 @@ function useCreateModFromModComponent(): UseCreateModFromModReturn {
       createModDefinitionOnServer,
       dispatch,
       deleteDraftModComponent,
+      getSiblingDraftModComponents,
     ],
   );
 

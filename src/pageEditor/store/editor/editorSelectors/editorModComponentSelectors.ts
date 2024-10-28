@@ -25,7 +25,6 @@ import type {
 import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import type { UUID } from "@/types/stringTypes";
 
@@ -34,7 +33,7 @@ import type { UUID } from "@/types/stringTypes";
  */
 
 /**
- * Select the draft mod component form states
+ * Select the draft mod component form states. Only includes component form states that have not been deleted.
  */
 export const selectModComponentFormStates = ({
   editor,
@@ -42,7 +41,7 @@ export const selectModComponentFormStates = ({
   editor.modComponentFormStates;
 
 /**
- * Select the active/selected mod component, or null if a mod component is not currently selected/
+ * Select the active/selected mod component, or null if a mod component is not currently selected
  */
 export const selectActiveModComponentFormState = createSelector(
   // Write directly instead of selectActiveModComponentId to avoid circular dependency with editorNavigationSelectors
@@ -59,10 +58,7 @@ export const selectActiveModComponentFormState = createSelector(
 export const selectActiveModComponentRef = createSelector(
   selectActiveModComponentFormState,
   (formState) => {
-    assertNotNullish(
-      formState,
-      "selectActiveModComponentRef can only be used in a mod component editing context",
-    );
+    assertNotNullish(formState, "Expected active mod component form state");
 
     return {
       modComponentId: formState.uuid,
@@ -78,23 +74,12 @@ export const selectActiveModComponentRef = createSelector(
 /// DELETE STATE
 ///
 
-const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
+export const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedModComponentFormStatesByModId).map(
       (formState) => formState.uuid,
     ),
   );
-
-export const selectNotDeletedModComponentFormStates: ({
-  editor,
-}: EditorRootState) => ModComponentFormState[] = createSelector(
-  selectModComponentFormStates,
-  selectAllDeletedModComponentIds,
-  (modComponentFormStates, deletedModComponentIds) =>
-    modComponentFormStates.filter(
-      ({ uuid }) => !deletedModComponentIds.has(uuid),
-    ),
-);
 
 export const selectNotDeletedActivatedModComponents: ({
   options,

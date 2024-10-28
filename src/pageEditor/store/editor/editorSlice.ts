@@ -36,12 +36,12 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
-  selectActiveModComponentFormState,
-  selectActiveBrickPipelineUIState,
   selectActiveBrickConfigurationUIState,
-  selectNotDeletedModComponentFormStates,
-  selectNotDeletedActivatedModComponents,
+  selectActiveBrickPipelineUIState,
+  selectActiveModComponentFormState,
   selectGetModComponentFormStatesByModId,
+  selectModComponentFormStates,
+  selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
 import {
   isQuickBarStarterBrick,
@@ -49,11 +49,8 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  setActiveModComponentId,
-  editModMetadata,
-  editModOptionsDefinitions,
   markModComponentFormStateAsDeleted,
-  removeModData,
+  setActiveModComponentId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
@@ -61,8 +58,8 @@ import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import {
-  getRunningStarterBricks,
   checkAvailable,
+  getRunningStarterBricks,
 } from "@/contentScript/messenger/api";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
@@ -169,7 +166,7 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableActivatedModComponents", async (arg, thunkAPI) => {
-  const notDeletedFormStates = selectNotDeletedModComponentFormStates(
+  const notDeletedFormStates = selectModComponentFormStates(
     thunkAPI.getState(),
   );
   const notDeletedModComponents = selectNotDeletedActivatedModComponents(
@@ -252,28 +249,31 @@ const checkAvailableDraftModComponents = createAsyncThunk<
   AvailableDraftModComponentIds,
   void,
   { state: EditorRootState }
->("editor/checkAvailableDraftModComponentFormStates", async (arg, thunkAPI) => {
-  const notDeletedFormStates = selectNotDeletedModComponentFormStates(
-    thunkAPI.getState(),
-  );
-  const tabUrl = await getCurrentInspectedURL();
-  const availableFormStateIds = await Promise.all(
-    notDeletedFormStates.map(
-      async ({ uuid, starterBrick: formStateStarterBrick }) => {
-        const isAvailable = await isStarterBrickFormStateAvailable(
-          tabUrl,
-          formStateStarterBrick,
-        );
+>(
+  "editor/checkAvailableDraftModComponentFormStates",
+  async (_arg, thunkAPI) => {
+    const notDeletedFormStates = selectModComponentFormStates(
+      thunkAPI.getState(),
+    );
+    const tabUrl = await getCurrentInspectedURL();
+    const availableFormStateIds = await Promise.all(
+      notDeletedFormStates.map(
+        async ({ uuid, starterBrick: formStateStarterBrick }) => {
+          const isAvailable = await isStarterBrickFormStateAvailable(
+            tabUrl,
+            formStateStarterBrick,
+          );
 
-        return isAvailable ? uuid : null;
-      },
-    ),
-  );
+          return isAvailable ? uuid : null;
+        },
+      ),
+    );
 
-  const availableDraftModComponentIds = uniq(compact(availableFormStateIds));
+    const availableDraftModComponentIds = uniq(compact(availableFormStateIds));
 
-  return { availableDraftModComponentIds };
-});
+    return { availableDraftModComponentIds };
+  },
+);
 
 const checkActiveModComponentAvailability = createAsyncThunk<
   {
@@ -467,16 +467,19 @@ export const editorSlice = createSlice({
     ///
 
     editModMetadata(state, action: PayloadAction<ModMetadataFormState>) {
-      const { payload: metadata } = action;
-      editModMetadata(state, metadata);
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
+      state.dirtyModMetadataById[activeModId] = action.payload;
     },
 
     editModOptionsDefinitions(
       state,
       action: PayloadAction<ModOptionsDefinition>,
     ) {
-      const { payload: options } = action;
-      editModOptionsDefinitions(state, options);
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
+      state.dirtyModOptionsById[activeModId] =
+        action.payload as Draft<ModOptionsDefinition>;
     },
 
     editModOptionsArgs(state, action: PayloadAction<OptionsArgs>) {
@@ -510,6 +513,9 @@ export const editorSlice = createSlice({
       for (const formState of modComponentFormStates) {
         formState.modMetadata = modMetadata;
       }
+
+      // Bump sequence number because the modId might have changed. The other metadata doesn't affect functionality
+      state.selectionSeq++;
     },
 
     /**
@@ -543,8 +549,18 @@ export const editorSlice = createSlice({
         markModComponentFormStateAsDeleted(state, modComponentId);
       }
 
-      // Call last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
-      removeModData(state, modId);
+      if (state.activeModId === modId) {
+        state.activeModId = null;
+      }
+
+      if (state.expandedModId === modId) {
+        state.expandedModId = null;
+      }
+
+      // Perform cleanup last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
+      delete state.dirtyModOptionsById[modId];
+      delete state.dirtyModMetadataById[modId];
+      delete state.deletedModComponentFormStatesByModId[modId];
     },
 
     ///

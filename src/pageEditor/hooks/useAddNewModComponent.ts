@@ -40,7 +40,7 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
-import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
+import { selectModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
 import { RunReason } from "@/types/runtimeTypes";
 
 export type AddNewModComponent = (
@@ -48,7 +48,7 @@ export type AddNewModComponent = (
 ) => void;
 
 function useFreshModNameGenerator(): () => string {
-  const modMetadatas = useSelector(selectActivatedModMetadatas);
+  const modMetadatas = useSelector(selectModMetadatas);
 
   return useCallback((): string => {
     const nameBase = "New Mod";
