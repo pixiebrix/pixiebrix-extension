@@ -64,6 +64,8 @@ import {
 import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
 
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+
 export interface WizardStep {
   step: string;
   Component: React.FunctionComponent<{
@@ -120,7 +122,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "label"
   | "integrationDependencies"
   | "permissions"
-  | "optionsArgs"
   | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
@@ -132,7 +133,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
     integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
-    optionsArgs: config.optionsArgs ?? {},
     variablesDefinition:
       config.variablesDefinition ?? emptyModVariablesDefinitionFactory(),
     type,
@@ -140,17 +140,19 @@ export function baseFromModComponent<T extends StarterBrickType>(
   };
 }
 
-export function baseSelectModComponent({
-  apiVersion,
-  uuid,
-  label,
-  optionsArgs,
-  variablesDefinition,
-  integrationDependencies,
-  permissions,
-  starterBrick,
-  modMetadata,
-}: BaseFormState): Pick<
+export function baseSelectModComponent(
+  {
+    apiVersion,
+    uuid,
+    label,
+    variablesDefinition,
+    integrationDependencies,
+    permissions,
+    starterBrick,
+    modMetadata,
+  }: BaseFormState,
+  modState: DraftModState,
+): Pick<
   ModComponentBase,
   | "id"
   | "apiVersion"
@@ -159,8 +161,8 @@ export function baseSelectModComponent({
   | "label"
   | "integrationDependencies"
   | "permissions"
-  | "optionsArgs"
   | "variablesDefinition"
+  | "optionsArgs"
 > {
   return {
     id: uuid,
@@ -170,8 +172,8 @@ export function baseSelectModComponent({
     label,
     integrationDependencies,
     permissions,
-    optionsArgs,
     variablesDefinition,
+    optionsArgs: modState.optionsArgs,
   };
 }
 
@@ -188,7 +190,6 @@ export function makeInitialBaseState({
     modMetadata,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
-    optionsArgs: {},
     variablesDefinition: emptyModVariablesDefinitionFactory(),
     modComponent: {
       brickPipeline: [],

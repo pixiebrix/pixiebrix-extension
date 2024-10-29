@@ -413,7 +413,7 @@ describe("removeModData", () => {
         modComponentFormState1.uuid,
         orphanModComponentFormState.uuid,
       ],
-      dirtyModOptionsById: {
+      dirtyModOptionsDefinitionsById: {
         [modMetadata.id]: {
           schema: {
             type: "object",

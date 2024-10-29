@@ -34,6 +34,8 @@ export async function calculatePermissionsForModComponentFormState(
 
   const { modComponent, starterBrickDefinition } = asDraftModComponent(
     modComponentFormState,
+    // Safe to pass empty `optionsArgs` because they don't affect permissions calculations
+    { optionsArgs: {} },
   );
 
   const starterBrick = starterBrickFactory(starterBrickDefinition);

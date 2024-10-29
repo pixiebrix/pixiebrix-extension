@@ -48,6 +48,8 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+
 function fromNativeElement({
   modMetadata,
   starterBrickMetadata,
@@ -111,10 +113,11 @@ function selectStarterBrickDefinition(
 }
 
 function selectModComponent(
-  state: SidebarFormState,
+  formState: SidebarFormState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
-  const { modComponent } = state;
+  const { modComponent } = formState;
   const config: SidebarConfig = {
     heading: modComponent.heading,
     body: options.includeInstanceIds
@@ -122,17 +125,18 @@ function selectModComponent(
       : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectModComponent(state),
+    ...baseSelectModComponent(formState, modState),
     config,
   });
 }
 
 function asDraftModComponent(
   sidebarFormState: SidebarFormState,
+  modFormState: DraftModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.SIDEBAR_PANEL,
-    modComponent: selectModComponent(sidebarFormState, {
+    modComponent: selectModComponent(sidebarFormState, modFormState, {
       includeInstanceIds: true,
     }),
     starterBrickDefinition: selectStarterBrickDefinition(sidebarFormState),

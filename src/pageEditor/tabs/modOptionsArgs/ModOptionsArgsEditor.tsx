@@ -15,43 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, {useCallback, useMemo} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {
   selectActiveModId,
-  selectDirtyOptionsArgsForModId,
   selectDirtyOptionsDefinitionForModId,
   selectGetDraftModComponentsForMod,
+  selectGetOptionsArgsForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
-import genericOptionsFactory, {
-  type BrickOptionProps,
-} from "@/components/fields/schemaFields/genericOptionsFactory";
-import FieldRuntimeContext, {
-  type RuntimeContext,
-} from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { Card, Container } from "react-bootstrap";
+import {useOptionalModDefinition} from "@/modDefinitions/modDefinitionHooks";
+import genericOptionsFactory, {type BrickOptionProps,} from "@/components/fields/schemaFields/genericOptionsFactory";
+import FieldRuntimeContext, {type RuntimeContext,} from "@/components/fields/schemaFields/FieldRuntimeContext";
+import {Card, Container} from "react-bootstrap";
 import Form from "@/components/form/Form";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
-import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
+import {getOptionsValidationSchema} from "@/hooks/useAsyncModOptionsValidationSchema";
 import Effect from "@/components/Effect";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
-import { type OptionsArgs } from "@/types/runtimeTypes";
-import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+import {actions} from "@/pageEditor/store/editor/editorSlice";
+import {type OptionsArgs} from "@/types/runtimeTypes";
+import {DEFAULT_RUNTIME_API_VERSION} from "@/runtime/apiVersionOptions";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
-import { uniqBy } from "lodash";
-import { assertNotNullish } from "@/utils/nullishUtils";
-import type { RegistryId } from "@/types/registryTypes";
+import {emptyModOptionsDefinitionFactory} from "@/utils/modUtils";
+import {uniqBy} from "lodash";
+import {assertNotNullish} from "@/utils/nullishUtils";
+import type {RegistryId} from "@/types/registryTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { mergeAsyncState, valueToAsyncState } from "@/utils/asyncStateUtils";
-import type {
-  ModDefinition,
-  ModOptionsDefinition,
-} from "@/types/modDefinitionTypes";
+import {mergeAsyncState, valueToAsyncState} from "@/utils/asyncStateUtils";
+import type {ModDefinition, ModOptionsDefinition,} from "@/types/modDefinitionTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
-import type { FormikValues } from "formik";
+import type {FormikValues} from "formik";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -112,9 +104,7 @@ const ModOptionsArgsContent: React.FC = () => {
 
   const fieldGroupQuery = useOptionsFieldGroupQuery(activeModId);
 
-  const dirtyOptionsArgs = useSelector(
-    selectDirtyOptionsArgsForModId(activeModId),
-  );
+  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
 
   const integrationDependencies = useMemo(
     () =>
@@ -158,9 +148,7 @@ const ModOptionsArgsContent: React.FC = () => {
       {({ data: { validationSchema, OptionsFieldGroup } }) => (
         <Form
           validationSchema={validationSchema}
-          initialValues={
-            dirtyOptionsArgs ?? collectModOptionsArgs(draftModComponents)
-          }
+          initialValues={getOptionsArgsForModId(activeModId)}
           renderBody={optionsFieldBody(OptionsFieldGroup)}
           onSubmit={() => {
             console.error(

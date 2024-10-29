@@ -225,7 +225,6 @@ describe("selectVariables", () => {
         }),
       ],
       permissions: emptyPermissionsFactory(),
-      optionsArgs: {},
       variablesDefinition: emptyModVariablesDefinitionFactory(),
       modMetadata: createNewUnsavedModMetadata({ modName: "Document Mod" }),
       modComponent: {

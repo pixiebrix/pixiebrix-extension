@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectGetOptionsArgsForModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   type AnyAction,
   type ListenerEffect,
@@ -97,9 +100,12 @@ class ReduxAnalysisManager {
 
         const activeModComponentFormState =
           selectActiveModComponentFormState(state);
+
         if (activeModComponentFormState == null) {
           return;
         }
+
+        const getOptionsArgsForModId = selectGetOptionsArgsForModId(state);
 
         const analysis = await analysisFactory(action, state);
         if (!analysis) {
@@ -116,7 +122,11 @@ class ReduxAnalysisManager {
         );
 
         try {
-          await analysis.run(activeModComponentFormState);
+          await analysis.run(activeModComponentFormState, {
+            optionsArgs: getOptionsArgsForModId(
+              activeModComponentFormState.modMetadata.id,
+            ),
+          });
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({

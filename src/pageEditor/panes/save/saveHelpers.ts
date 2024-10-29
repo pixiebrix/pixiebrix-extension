@@ -138,7 +138,10 @@ function mapModComponentFormStateToModComponentBase(
   const { selectModComponent, selectStarterBrickDefinition } =
     adapterForComponent(modComponentFormState);
 
-  const unsavedModComponent = selectModComponent(modComponentFormState);
+  const unsavedModComponent = selectModComponent(modComponentFormState, {
+    // Activation-time optionsArgs are not relevant for mod component definitions
+    optionsArgs: {},
+  });
 
   if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
     const starterBrickConfig = selectStarterBrickDefinition(
