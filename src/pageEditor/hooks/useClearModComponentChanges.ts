@@ -80,7 +80,7 @@ function useClearModComponentChanges(): (
                 activatedModComponent,
               ),
               includesNonFormikChanges: true,
-              dirty: false,
+              dirtyOverride: false,
             }),
           );
         }

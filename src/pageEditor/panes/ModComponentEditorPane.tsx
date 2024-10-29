@@ -37,11 +37,10 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import deepEquals from "fast-deep-equal";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
-const CHANGE_DETECT_DELAY_MILLIS = 100;
+const CHANGE_DETECT_DELAY_MILLIS = 300;
 
 /**
  * Returns callback to generate the current key to force reinitialization of Formik form.
@@ -70,7 +69,6 @@ const EditorPaneContent: React.VoidFunctionComponent<{
   const dispatch = useDispatch();
   const getFormReinitializationKey = useGetFormReinitializationKey();
   const previousKey = useRef<string | null>(getFormReinitializationKey());
-  const previousValues = useRef(modComponentFormState);
 
   // XXX: anti-pattern: callback to update the redux store based on the Formik state.
   // Don't use useDebouncedCallback because Effect component is already debounced
@@ -78,34 +76,26 @@ const EditorPaneContent: React.VoidFunctionComponent<{
     (values: ModComponentFormState) => {
       const currentKey = getFormReinitializationKey();
 
-      // To avoid marking as dirty when selecting a clean component, skip the first call after reinitialization
-      //
-      // However, need to account for editor components that contain useEffect-like calls that perform normalization on
-      // mount (for these, the first syncReduxState call will include changes). The UX is confusing because the
-      // the unsaved changes indicator will show up immediately after selecting a component that needs normalization.
-      // But this is necessary until we refactor the useEffect-like calls into the form state adapters.
-      //
-      // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9355
-      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9370
-      if (
-        previousKey.current === currentKey ||
-        (previousValues.current.uuid === values.uuid &&
-          !deepEquals(previousValues.current, values))
-      ) {
-        dispatch(
-          editorActions.setModComponentFormState({
-            modComponentFormState: values,
-            includesNonFormikChanges: false,
-            dirty: true,
-          }),
-        );
+      dispatch(
+        editorActions.setModComponentFormState({
+          modComponentFormState: values,
+          includesNonFormikChanges: false,
+          // Keep existing dirty state on first syncReduxState call after reinitialization. There are
+          // some editor components that contain useEffect-like calls that perform normalization on the Formik
+          // form state on mount. We want to those changes to be reflected in the form state, but it would be
+          // confusing if that normalization automatically marked the component as dirty.
+          // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9355
+          // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9370 - remove logic once all
+          //  normalization has been moved to the form state adapter
+          dirtyOverride: previousKey.current === currentKey ? true : undefined,
+        }),
+      );
 
-        dispatch(actions.checkActiveModComponentAvailability());
-      }
+      dispatch(actions.checkActiveModComponentAvailability());
 
       previousKey.current = currentKey;
     },
-    [dispatch, getFormReinitializationKey, previousKey, previousValues],
+    [dispatch, getFormReinitializationKey, previousKey],
   );
 
   // XXX: effect should be refactored to a middleware that listens for selected mod component

@@ -72,7 +72,7 @@ function useRecoverFormStateIntegrityError(name: string) {
       editorActions.setModComponentFormState({
         modComponentFormState: context.values,
         includesNonFormikChanges: true,
-        dirty: true,
+        dirtyOverride: true,
       }),
     );
   }

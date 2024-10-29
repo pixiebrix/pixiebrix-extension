@@ -608,7 +608,10 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         modComponentFormState: ModComponentFormState;
-        dirty: boolean;
+        /**
+         * Set the dirty state of the form state. If undefined, the dirty state will not be modified.
+         */
+        dirty?: boolean;
         /**
          * Force the Page Editor to remount the Formik form because there are changes in the ModComponentFormState that
          * are not reflected in the Formik form.
@@ -628,7 +631,10 @@ export const editorSlice = createSlice({
       }
 
       state.modComponentFormStates[index] = modComponentFormState;
-      state.dirty[modComponentId] = dirty;
+
+      if (dirty != null) {
+        state.dirty[modComponentId] = dirty;
+      }
 
       if (includesNonFormikChanges) {
         state.selectionSeq++;
