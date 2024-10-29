@@ -120,11 +120,14 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
     error,
   } = useOptionalModDefinition(modId);
 
-  const savedOptions = modDefinition?.options;
-  const dirtyOptions = useSelector(selectDirtyOptionsDefinitionForModId(modId));
+  const dirtyOptionsDefinition = useSelector(
+    selectDirtyOptionsDefinitionForModId(modId),
+  );
 
   const optionsDefinition =
-    dirtyOptions ?? savedOptions ?? emptyModOptionsDefinitionFactory();
+    dirtyOptionsDefinition ??
+    modDefinition?.options ??
+    emptyModOptionsDefinitionFactory();
 
   const initialValues = { optionsDefinition };
 

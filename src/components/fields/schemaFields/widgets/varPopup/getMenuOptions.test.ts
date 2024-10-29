@@ -182,7 +182,7 @@ describe("mod variables", () => {
     const formState = formStateFactory({
       brickPipeline: [brickConfigFactory()],
     });
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const knownVars = analysis
       .getKnownVars()

@@ -116,7 +116,7 @@ describe("VarMenu", () => {
 
           // Run analysis directly
           const analysis = new VarAnalysis();
-          await analysis.run(formState);
+          await analysis.run(formState, { optionsArgs: {} });
 
           dispatch(
             analysisSlice.actions.setKnownVars({
@@ -161,7 +161,7 @@ describe("VarMenu", () => {
 
           // Run analysis directly
           const analysis = new VarAnalysis();
-          await analysis.run(formState);
+          await analysis.run(formState, { optionsArgs: {} });
 
           dispatch(
             analysisSlice.actions.setKnownVars({

@@ -120,7 +120,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "label"
   | "integrationDependencies"
   | "permissions"
-  | "optionsArgs"
   | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
@@ -132,7 +131,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
     integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
-    optionsArgs: config.optionsArgs ?? {},
     variablesDefinition:
       config.variablesDefinition ?? emptyModVariablesDefinitionFactory(),
     type,
@@ -144,7 +142,6 @@ export function baseSelectModComponent({
   apiVersion,
   uuid,
   label,
-  optionsArgs,
   variablesDefinition,
   integrationDependencies,
   permissions,
@@ -159,7 +156,6 @@ export function baseSelectModComponent({
   | "label"
   | "integrationDependencies"
   | "permissions"
-  | "optionsArgs"
   | "variablesDefinition"
 > {
   return {
@@ -170,7 +166,6 @@ export function baseSelectModComponent({
     label,
     integrationDependencies,
     permissions,
-    optionsArgs,
     variablesDefinition,
   };
 }
@@ -188,7 +183,6 @@ export function makeInitialBaseState({
     modMetadata,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
-    optionsArgs: {},
     variablesDefinition: emptyModVariablesDefinitionFactory(),
     modComponent: {
       brickPipeline: [],

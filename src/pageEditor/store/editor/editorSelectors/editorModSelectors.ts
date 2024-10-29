@@ -32,6 +32,8 @@ import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors/edi
 import type { ModMetadata } from "@/types/modComponentTypes";
 import type { UUID } from "@/types/stringTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { isModComponentBase } from "@/pageEditor/utils";
+import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
 /**
  * Select the mod id associated with the selected mod package or mod component. Should be used if the caller doesn't
@@ -105,7 +107,7 @@ export const selectDirtyMetadataForModId =
 ///
 
 export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
-  editor.dirtyModOptionsById;
+  editor.dirtyModOptionsDefinitionsById;
 
 const selectGetDirtyOptionsDefinitionForModId = createSelector(
   selectDirtyModOptionsDefinitions,
@@ -215,15 +217,35 @@ export const selectGetSiblingDraftModComponents = createSelector(
 ///
 
 const dirtyOptionsArgsForModIdSelector = createSelector(
-  selectGetModComponentFormStatesByModId,
+  (state: EditorRootState) => state.editor.dirtyModOptionsArgsById,
   (_state: EditorRootState, modId: RegistryId) => modId,
-  (getModComponentFormStatesByModId, modId) =>
-    getModComponentFormStatesByModId(modId)?.[0]?.optionsArgs,
+  (dirtyModOptionsArgsById, modId) =>
+    // eslint-disable-next-line security/detect-object-injection -- registry id
+    dirtyModOptionsArgsById[modId],
 );
 
 export const selectDirtyOptionsArgsForModId =
   (modId: RegistryId) => (state: EditorRootState) =>
     dirtyOptionsArgsForModIdSelector(state, modId);
+
+/**
+ * Returns the draft mod options args for the given mod id.
+ */
+export const selectGetOptionsArgsForModId = createSelector(
+  (state: EditorRootState) => state.editor.dirtyModOptionsArgsById,
+  selectGetDraftModComponentsForMod,
+  (dirtyOptionsArgsForModId, getDraftModComponentsForMod) =>
+    memoize(
+      (modId: RegistryId) =>
+        // eslint-disable-next-line security/detect-object-injection -- registry id
+        dirtyOptionsArgsForModId[modId] ??
+        collectModOptionsArgs(
+          getDraftModComponentsForMod(modId).filter((x) =>
+            isModComponentBase(x),
+          ),
+        ),
+    ),
+);
 
 ///
 /// MOD DIRTY STATE

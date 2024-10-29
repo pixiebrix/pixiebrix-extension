@@ -146,9 +146,6 @@ describe("Collecting available vars", () => {
             }),
             pixiebrixIntegrationDependencyFactory(),
           ],
-          optionsArgs: {
-            foo: "bar",
-          },
           modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
@@ -156,7 +153,9 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, {
+        optionsArgs: { foo: "bar" },
+      });
 
       const knownVars = analysis.getKnownVars();
       expect(knownVars.size).toBe(1);
@@ -190,7 +189,7 @@ describe("Collecting available vars", () => {
         ],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const block0Vars = analysis
         .getKnownVars()
@@ -219,7 +218,7 @@ describe("Collecting available vars", () => {
         ],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const block0Vars = analysis
         .getKnownVars()
@@ -246,7 +245,7 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const foundationKnownVars = analysis
         .getKnownVars()
@@ -268,7 +267,7 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const foundationKnownVars = analysis
         .getKnownVars()
@@ -298,7 +297,7 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const foundationKnownVars = analysis
         .getKnownVars()
@@ -327,7 +326,7 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const foundationKnownVars = analysis
         .getKnownVars()
@@ -350,11 +349,6 @@ describe("Collecting available vars", () => {
 
       const formState = formStateFactory({
         formStateConfig: {
-          // Let this mod component have an integration reference
-          optionsArgs: {
-            bar: "qux",
-            baz: "quux",
-          },
           modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
@@ -362,7 +356,12 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, {
+        optionsArgs: {
+          bar: "qux",
+          baz: "quux",
+        },
+      });
 
       const foundationKnownVars = analysis
         .getKnownVars()
@@ -398,7 +397,7 @@ describe("Collecting available vars", () => {
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const knownVars = analysis.getKnownVars();
 
@@ -424,14 +423,15 @@ describe("Collecting available vars", () => {
           modMetadata: modMetadataFactory({
             id: validateRegistryId("test/mod"),
           }),
-          optionsArgs: {
-            foo: "bar",
-          },
         },
         brickPipeline: [brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, {
+        optionsArgs: {
+          foo: "bar",
+        },
+      });
 
       const knownVars = analysis.getKnownVars();
 
@@ -469,7 +469,7 @@ describe("Collecting available vars", () => {
         ]) as any,
       );
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       return analysis.getKnownVars().get("modComponent.brickPipeline.1");
     }
@@ -753,7 +753,7 @@ describe("Collecting available vars", () => {
         brickPipeline: [ifElseBlock, brickConfigFactory()],
       });
 
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds if-else output after the brick", async () => {
@@ -820,7 +820,7 @@ describe("Collecting available vars", () => {
       });
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
 
       const knownVars = analysis.getKnownVars();
       const varMap = knownVars.get("modComponent.brickPipeline.1")!;
@@ -866,7 +866,7 @@ describe("Collecting available vars", () => {
       });
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds the list element key list body", () => {
@@ -936,7 +936,7 @@ describe("Collecting available vars", () => {
       });
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds the list element key list body", () => {
@@ -985,7 +985,7 @@ describe("Collecting available vars", () => {
       });
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds the error key to the except branch", () => {
@@ -1024,7 +1024,7 @@ describe("Collecting available vars", () => {
       });
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds the element key to the sub pipeline", () => {
@@ -1059,7 +1059,7 @@ describe("Collecting available vars", () => {
       });
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds for-each output after the brick", () => {
@@ -1161,7 +1161,7 @@ describe("Collecting available vars", () => {
       );
 
       analysis = new VarAnalysis();
-      await analysis.run(formState);
+      await analysis.run(formState, { optionsArgs: {} });
     });
 
     test("adds the `values` to the onsubmit handler", () => {
@@ -1216,11 +1216,11 @@ describe("Invalid template", () => {
   });
 
   test("analysis doesn't throw", async () => {
-    await expect(analysis.run(formState)).toResolve();
+    await expect(analysis.run(formState, { optionsArgs: {} })).toResolve();
   });
 
   test("analysis doesn't annotate invalid template", async () => {
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
     const annotations = analysis.getAnnotations();
 
     // Only the second (index = 1) block should be annotated
@@ -1248,7 +1248,7 @@ describe("var expression annotations", () => {
     });
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     expect(analysis.getAnnotations()).toHaveLength(0);
   });
@@ -1266,7 +1266,7 @@ describe("var expression annotations", () => {
     });
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     expect(analysis.getAnnotations()).toHaveLength(0);
   });
@@ -1284,7 +1284,7 @@ describe("var expression annotations", () => {
     });
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
@@ -1306,7 +1306,7 @@ describe("var expression annotations", () => {
     });
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
@@ -1326,7 +1326,7 @@ describe("var expression annotations", () => {
     });
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);
@@ -1351,7 +1351,7 @@ describe("var analysis integration tests", () => {
     formState.starterBrick.definition.trigger = "keypress";
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(0);
@@ -1373,7 +1373,7 @@ describe("var analysis integration tests", () => {
     formState.starterBrick.definition.trigger = "custom";
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(0);
@@ -1396,7 +1396,7 @@ describe("var analysis integration tests", () => {
     formState.starterBrick.definition.trigger = "selectionchange";
 
     const analysis = new VarAnalysis();
-    await analysis.run(formState);
+    await analysis.run(formState, { optionsArgs: {} });
 
     const annotations = analysis.getAnnotations();
     expect(annotations).toHaveLength(1);

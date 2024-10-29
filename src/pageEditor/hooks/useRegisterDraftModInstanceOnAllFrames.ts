@@ -34,6 +34,7 @@ import {
   selectCurrentModId,
   selectEditorUpdateKey,
   selectGetCleanComponentsAndDirtyFormStatesForMod,
+  selectGetOptionsArgsForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
@@ -114,6 +115,7 @@ function updateDraftModInstance() {
 
     const activeModComponentId = selectActiveModComponentId(state);
     const modId = selectCurrentModId(state);
+
     if (!modId) {
       // Skip if the modId has somehow become null before the microtask for this async method got scheduled
       return;
@@ -122,6 +124,7 @@ function updateDraftModInstance() {
     // NOTE: logic accounts for activated mod components that have been deleted. But it does not account for
     // unsaved draft mod component that have been deleted since the last injection. The draft mod component
     // deletion code is currently responsible for removing those from the tab
+    const getOptionsArgsForModId = selectGetOptionsArgsForModId(state);
     const getEditorInstance =
       selectGetCleanComponentsAndDirtyFormStatesForMod(state);
     const editorInstance = getEditorInstance(modId);
@@ -140,7 +143,9 @@ function updateDraftModInstance() {
 
       // Skip is component is active -- ReloadToolbar handles running the selected draft mod component
       if (!isSelectedInEditor) {
-        const draftModComponent = formStateToDraftModComponent(draftFormState);
+        const draftModComponent = formStateToDraftModComponent(draftFormState, {
+          optionsArgs: getOptionsArgsForModId(modId),
+        });
 
         // PERFORMANCE: only re-register if the component's state has changed. It would technically be safe to
         // updateDraftModComponent on every change to the mod (even for different mod components), but computing the
@@ -188,6 +193,8 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
   const modInstanceMap = useSelector(selectModInstanceMap);
   const activatedModInstance = modInstanceMap.get(modId);
 
+  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
+
   // Remove non-draft mod instance from the page. removeActivatedModInstanceFromTab is safe to call multiple times
   // per mod instance (it's a NOP if the mod instance is registered in a frame).
   useAsyncEffect(async () => {
@@ -207,7 +214,9 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
   // Register draft mod component on select. From there, ReloadToolbar will control re-running the mod component.
   // Currently, registering on select is to stop interval triggers from running when selected.
   useOnSelectModComponent(async (draftFormState) => {
-    const draftModComponent = formStateToDraftModComponent(draftFormState);
+    const draftModComponent = formStateToDraftModComponent(draftFormState, {
+      optionsArgs: getOptionsArgsForModId(draftFormState.modMetadata.id),
+    });
     updateDraftModComponent(allFramesInInspectedTab, draftModComponent, {
       isSelectedInEditor: true,
       runReason: RunReason.PAGE_EDITOR_REGISTER,

@@ -24,11 +24,7 @@ import {
   type SidebarFormState,
   type TriggerFormState,
 } from "@/pageEditor/starterBricks/formStateTypes";
-import {
-  type ApiVersion,
-  type OptionsArgs,
-  type OutputKey,
-} from "@/types/runtimeTypes";
+import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
@@ -79,9 +75,6 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  optionsArgs() {
-    return {} as OptionsArgs;
-  },
   variablesDefinition: () => emptyModVariablesDefinitionFactory(),
   integrationDependencies(): IntegrationDependency[] {
     return [];

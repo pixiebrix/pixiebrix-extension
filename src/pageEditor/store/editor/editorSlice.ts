@@ -39,7 +39,6 @@ import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,
   selectActiveModComponentFormState,
-  selectGetModComponentFormStatesByModId,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
@@ -85,7 +84,6 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
 /** @internal */
 export const initialState: EditorState = {
@@ -99,8 +97,9 @@ export const initialState: EditorState = {
   dirty: {},
   isBetaUI: false,
   brickPipelineUIStateById: {},
-  dirtyModOptionsById: {},
   dirtyModMetadataById: {},
+  dirtyModOptionsDefinitionsById: {},
+  dirtyModOptionsArgsById: {},
   visibleModal: null,
   deletedModComponentFormStatesByModId: {},
   availableActivatedModComponentIds: [],
@@ -478,22 +477,16 @@ export const editorSlice = createSlice({
     ) {
       const { activeModId } = state;
       assertNotNullish(activeModId, "Expected active mod");
-      state.dirtyModOptionsById[activeModId] =
+      state.dirtyModOptionsDefinitionsById[activeModId] =
         action.payload as Draft<ModOptionsDefinition>;
     },
 
     editModOptionsArgs(state, action: PayloadAction<OptionsArgs>) {
-      const modId = state.activeModId;
-      assertNotNullish(modId, "Expected active mod");
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
 
-      const getModComponentFormStates = selectGetModComponentFormStatesByModId({
-        editor: state,
-      });
-
-      for (const formState of getModComponentFormStates(modId)) {
-        formState.optionsArgs = action.payload;
-        state.dirty[formState.uuid] = true;
-      }
+      state.dirtyModOptionsArgsById[activeModId] =
+        action.payload as Draft<OptionsArgs>;
 
       // Bump sequence number because arguments impact mod functionality
       state.selectionSeq++;
@@ -532,7 +525,8 @@ export const editorSlice = createSlice({
 
       delete state.deletedModComponentFormStatesByModId[modId];
       delete state.dirtyModMetadataById[modId];
-      delete state.dirtyModOptionsById[modId];
+      delete state.dirtyModOptionsDefinitionsById[modId];
+      delete state.dirtyModOptionsArgsById[modId];
     },
 
     /**
@@ -558,7 +552,8 @@ export const editorSlice = createSlice({
       }
 
       // Perform cleanup last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
-      delete state.dirtyModOptionsById[modId];
+      delete state.dirtyModOptionsDefinitionsById[modId];
+      delete state.dirtyModOptionsArgsById[modId];
       delete state.dirtyModMetadataById[modId];
       delete state.deletedModComponentFormStatesByModId[modId];
     },
@@ -593,22 +588,6 @@ export const editorSlice = createSlice({
 
       if (state.modComponentFormStates.some((x) => x.uuid === modComponentId)) {
         throw new Error("Form state already exists for mod component");
-      }
-
-      const modId = modComponentFormState.modMetadata.id;
-
-      // Find existing activated mod components with the same mod id
-      const existingModFormStates = state.modComponentFormStates.filter(
-        (formState) => formState.modMetadata.id === modId,
-      );
-
-      // If there are existing components, collect their option arguments, and assign.
-      // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
-      // are stored/owned at the mod-level in the Page Editor
-      if (existingModFormStates.length > 0) {
-        modComponentFormState.optionsArgs = collectModOptionsArgs(
-          existingModFormStates,
-        );
       }
 
       state.modComponentFormStates.push(modComponentFormState);
@@ -1082,7 +1061,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 9,
+  version: 10,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
 };

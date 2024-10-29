@@ -30,6 +30,7 @@ import { isEmpty } from "lodash";
 import {
   type Analysis,
   type AnalysisAnnotation,
+  type AnalysisModState,
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
@@ -307,6 +308,7 @@ function setVarsFromSchema({
  */
 async function setOptionsVars(
   formState: ModComponentFormState,
+  modState: AnalysisModState,
   contextVars: VarMap,
 ): Promise<void> {
   const modId = formState.modMetadata.id;
@@ -333,7 +335,7 @@ async function setOptionsVars(
   });
 
   // Options currently only supports primitives, so don't need to recurse
-  for (const optionName of Object.keys(formState.optionsArgs ?? {})) {
+  for (const optionName of Object.keys(modState.optionsArgs)) {
     contextVars.setExistence({
       source,
       path: [optionsOutputKey, optionName],
@@ -377,13 +379,13 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   /**
    * The current mod page state
    */
-  private readonly modState: UnknownObject;
+  private readonly modVariableValues: UnknownObject;
 
   /**
    * Statically-inferred mod variable names.
    * @since 1.7.36
    */
-  private readonly modVariables: Array<Schema["properties"]>;
+  private readonly modVariableNames: Array<Schema["properties"]>;
 
   /**
    * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
@@ -469,8 +471,8 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   } = {}) {
     super();
     this.trace = trace;
-    this.modState = modState;
-    this.modVariables = modVariables;
+    this.modVariableValues = modState;
+    this.modVariableNames = modVariables;
   }
 
   /**
@@ -683,13 +685,20 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
     this.contextStack.pop();
   }
 
-  async run(formState: ModComponentFormState): Promise<void> {
+  async run(
+    formState: ModComponentFormState,
+    modState: AnalysisModState,
+  ): Promise<void> {
     this.allBlocks = await brickRegistry.allTyped();
 
     // Order of the following calls will determine the order of the sources in the UI
     const contextVars = new VarMap();
-    await setOptionsVars(formState, contextVars);
-    await setModVariables(this.modVariables, this.modState, contextVars);
+    await setOptionsVars(formState, modState, contextVars);
+    await setModVariables(
+      this.modVariableNames,
+      this.modVariableValues,
+      contextVars,
+    );
     await setIntegrationDependencyVars(formState, contextVars);
     await setInputVars(formState, contextVars);
 

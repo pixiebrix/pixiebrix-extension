@@ -40,7 +40,10 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
-import { selectModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectGetOptionsArgsForModId,
+  selectModMetadatas,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { RunReason } from "@/types/runtimeTypes";
 
 export type AddNewModComponent = (
@@ -76,6 +79,8 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   );
 
   const generateFreshModName = useFreshModNameGenerator();
+
+  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
 
   const getInitialModComponentFormState = useCallback(
     async ({
@@ -131,7 +136,11 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          adapter.asDraftModComponent(initialFormState),
+          adapter.asDraftModComponent(initialFormState, {
+            optionsArgs: getOptionsArgsForModId(
+              initialFormState.modMetadata.id,
+            ),
+          }),
           {
             isSelectedInEditor: true,
             runReason: RunReason.PAGE_EDITOR_REGISTER,
@@ -165,7 +174,13 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         });
       }
     },
-    [flagOff, modMetadata, dispatch, getInitialModComponentFormState],
+    [
+      dispatch,
+      flagOff,
+      getInitialModComponentFormState,
+      getOptionsArgsForModId,
+      modMetadata,
+    ],
   );
 }
 

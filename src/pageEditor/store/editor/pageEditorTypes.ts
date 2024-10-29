@@ -41,7 +41,9 @@ import {
   type BaseFormStateV4,
   type BaseFormStateV5,
   type BaseFormStateV6,
+  type BaseFormStateV7,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
 export type AddBrickLocation = {
   /**
@@ -391,9 +393,29 @@ export type EditorStateV9 = Except<
   deletedModComponentFormStatesByModId: Record<string, BaseFormStateV6[]>;
 };
 
+/**
+ * Version bump to move mod options args tracking from the form states.
+ *
+ * Renames dirtyModOptionsById to dirtyModOptionsDefinitionsById for clarity.
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @since 2.1.6
+ */
+export type EditorStateV10 = Except<
+  EditorStateV9,
+  | "modComponentFormStates"
+  | "deletedModComponentFormStatesByModId"
+  | "dirtyModOptionsById"
+> & {
+  modComponentFormStates: BaseFormStateV7[];
+  deletedModComponentFormStatesByModId: Record<RegistryId, BaseFormStateV7[]>;
+  dirtyModOptionsDefinitionsById: Record<RegistryId, ModOptionsDefinition>;
+  dirtyModOptionsArgsById: Record<RegistryId, OptionsArgs>;
+};
+
 export type EditorState = Except<
   // On migration, re-point this type to the most recent EditorStateV<N> type name
-  EditorStateV9,
+  EditorStateV10,
   // Swap out any properties with versioned types for type references to the latest version.
   // NOTE: overriding these properties is not changing the type shape/structure. It's just cleaning up the type
   // name/reference which makes types easier to work with for testing migrations.

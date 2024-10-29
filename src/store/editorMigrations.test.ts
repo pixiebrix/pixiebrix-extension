@@ -25,6 +25,7 @@ import {
   type EditorStateV7,
   type EditorStateV8,
   type EditorStateV9,
+  type EditorStateV10,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { cloneDeep, mapValues, omit } from "lodash";
 import {
@@ -52,6 +53,7 @@ import {
   type BaseFormStateV4,
   type BaseFormStateV5,
   type BaseFormStateV6,
+  type BaseFormStateV7,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
@@ -65,6 +67,7 @@ import {
   migrateEditorStateV6,
   migrateEditorStateV7,
   migrateEditorStateV8,
+  migrateEditorStateV9,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -72,6 +75,7 @@ import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
 } from "@/pageEditor/store/editor/uiState";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
 const initialStateV1: EditorStateV1 & PersistedState = {
   selectionSeq: 0,
@@ -281,6 +285,12 @@ const initialStateV9: EditorStateV9 & PersistedState = {
   deletedModComponentFormStatesByModId: {},
 };
 
+const initialStateV10: EditorStateV10 & PersistedState = {
+  ...omit(cloneDeep(initialStateV9), "dirtyModOptionsById"),
+  dirtyModOptionsDefinitionsById: {},
+  dirtyModOptionsArgsById: {},
+};
+
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],
 ): IntegrationDependencyV1[] {
@@ -418,6 +428,16 @@ function unmigrateFormStateV6toV5(formState: BaseFormStateV6): BaseFormStateV5 {
   };
 }
 
+function unmigrateFormStateV7toV6(
+  formState: BaseFormStateV7,
+  modState: { optionsArgs: OptionsArgs },
+): BaseFormStateV6 {
+  return {
+    ...formState,
+    optionsArgs: modState.optionsArgs,
+  };
+}
+
 function unmigrateEditorStateV5toV4(
   state: EditorStateV5 & PersistedState,
 ): EditorStateV4 & PersistedState {
@@ -480,17 +500,48 @@ function unmigrateEditorStateV9toV8(
   };
 }
 
+function unmigrateEditorStateV10toV9(
+  state: EditorStateV10 & PersistedState,
+): EditorStateV9 & PersistedState {
+  return omit(
+    {
+      ...state,
+      dirtyModOptionsById: state.dirtyModOptionsDefinitionsById,
+      modComponentFormStates: state.modComponentFormStates.map((formState) =>
+        unmigrateFormStateV7toV6(formState, {
+          optionsArgs:
+            state.dirtyModOptionsArgsById[formState.modMetadata.id] ?? {},
+        }),
+      ),
+      deletedModComponentFormStatesByModId: mapValues(
+        state.deletedModComponentFormStatesByModId,
+        (formStates) =>
+          formStates.map((formState) =>
+            unmigrateFormStateV7toV6(formState, {
+              optionsArgs:
+                state.dirtyModOptionsArgsById[formState.modMetadata.id] ?? {},
+            }),
+          ),
+      ),
+    },
+    "dirtyModOptionsArgsById",
+  );
+}
+
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
 
-const formStateFactoryV6: SimpleFactory<BaseFormStateV6> = (override) =>
+const formStateFactoryV7: SimpleFactory<BaseFormStateV7> = (override) =>
   formStateFactory({
     formStateConfig: override as FactoryConfig<InternalFormStateOverride>,
   });
 
-const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = (override) =>
+const formStateFactoryV6: SimpleFactory<BaseFormStateV6> = () =>
+  unmigrateFormStateV7toV6(formStateFactoryV7(), { optionsArgs: {} });
+
+const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = () =>
   unmigrateFormStateV6toV5(formStateFactoryV6());
 
-const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = (override) =>
+const formStateFactoryV4: SimpleFactory<BaseFormStateV4> = () =>
   unmigrateFormStateV5toV4(formStateFactoryV5());
 
 const formStateFactoryV3: SimpleFactory<BaseFormStateV3> = () =>
@@ -739,6 +790,51 @@ describe("editor state migrations", () => {
           },
         ],
       });
+    });
+  });
+
+  describe("migrateEditorState V9 to V10", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV9(initialStateV9)).toStrictEqual(
+        initialStateV10,
+      );
+    });
+
+    it("migrates dirty options args", () => {
+      const optionsArgs = { foo: 42 };
+      const formState = formStateFactoryV7();
+
+      const expectedEditorStateV10: EditorStateV10 & PersistedState = {
+        ...initialStateV10,
+        modComponentFormStates: [formState],
+        dirty: { [formState.uuid]: true },
+        dirtyModOptionsArgsById: {
+          [formState.modMetadata.id]: optionsArgs,
+        },
+      };
+
+      const unmigrated = unmigrateEditorStateV10toV9(expectedEditorStateV10);
+
+      expect(migrateEditorStateV9(unmigrated)).toStrictEqual(
+        expectedEditorStateV10,
+      );
+    });
+
+    it("migrates clean options args", () => {
+      const formState = formStateFactoryV7();
+
+      const expectedEditorStateV10: EditorStateV10 & PersistedState = {
+        ...initialStateV10,
+        modComponentFormStates: [formState],
+        dirty: {},
+      };
+
+      const unmigrated = unmigrateEditorStateV10toV9(expectedEditorStateV10);
+      unmigrated.modComponentFormStates[0]!.optionsArgs = { foo: 42 };
+
+      expect(migrateEditorStateV9(unmigrated)).toStrictEqual(
+        expectedEditorStateV10,
+      );
     });
   });
 });
