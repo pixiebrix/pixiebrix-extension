@@ -46,6 +46,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import {
   selectActiveModId,
   selectExpandedModId,
+  selectModIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 
 function getTabState(
@@ -321,15 +322,25 @@ describe("Mod Options editing", () => {
     );
   });
 
-  test("mod options are updated correctly", () => {
+  test("mod options args are updated correctly and marks mod as dirty", () => {
     const updatedOptionsArgs = { testOption: "updated value" };
-    const stateAfterEdit = editorSlice.reducer(
+
+    let stateAfterEdit = editorSlice.reducer(
       initialState,
+      actions.markModAsCleanById(modId),
+    );
+
+    expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeFalse();
+
+    stateAfterEdit = editorSlice.reducer(
+      stateAfterEdit,
       actions.editModOptionsArgs(updatedOptionsArgs),
     );
 
     expect(stateAfterEdit.dirtyModOptionsArgsById[modId]).toStrictEqual(
       updatedOptionsArgs,
     );
+
+    expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeTrue();
   });
 });

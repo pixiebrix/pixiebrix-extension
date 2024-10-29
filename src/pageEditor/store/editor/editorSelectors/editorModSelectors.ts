@@ -216,23 +216,14 @@ export const selectGetSiblingDraftModComponents = createSelector(
 /// MOD OPTIONS ARGS
 ///
 
-const dirtyOptionsArgsForModIdSelector = createSelector(
-  (state: EditorRootState) => state.editor.dirtyModOptionsArgsById,
-  (_state: EditorRootState, modId: RegistryId) => modId,
-  (dirtyModOptionsArgsById, modId) =>
-    // eslint-disable-next-line security/detect-object-injection -- registry id
-    dirtyModOptionsArgsById[modId],
-);
-
-export const selectDirtyOptionsArgsForModId =
-  (modId: RegistryId) => (state: EditorRootState) =>
-    dirtyOptionsArgsForModIdSelector(state, modId);
+export const selectDirtyOptionsArgsForModId = (state: EditorRootState) =>
+  state.editor.dirtyModOptionsArgsById;
 
 /**
  * Returns the draft mod options args for the given mod id.
  */
 export const selectGetOptionsArgsForModId = createSelector(
-  (state: EditorRootState) => state.editor.dirtyModOptionsArgsById,
+  selectDirtyOptionsArgsForModId,
   selectGetDraftModComponentsForMod,
   (dirtyOptionsArgsForModId, getDraftModComponentsForMod) =>
     memoize(
@@ -256,16 +247,22 @@ export const selectDeletedComponentFormStatesByModId = ({
   editor,
 }: EditorRootState) => editor.deletedModComponentFormStatesByModId;
 
+/**
+ * Returns a function that returns if the mod definition or instance (i.e., options args, integration configurations)
+ * are dirty.
+ */
 const selectGetModIsDirtySelector = createSelector(
   selectDirtyModMetadata,
   selectIsModComponentDirtyById,
   selectGetDirtyOptionsDefinitionForModId,
+  selectDirtyOptionsArgsForModId,
   selectGetModComponentFormStatesByModId,
   selectDeletedComponentFormStatesByModId,
   (
     dirtyModMetadata,
     isModComponentDirtyById,
     getDirtyOptionsDefinitionsForModId,
+    dirtyModOptionsArgsForModId,
     getModComponentFormStatesByModId,
     getDeletedModComponentFormStatesByModId,
     // eslint-disable-next-line max-params -- required because createSelector takes array of selector args
@@ -281,6 +278,10 @@ const selectGetModIsDirtySelector = createSelector(
         // eslint-disable-next-line security/detect-object-injection -- registry id
         Boolean(dirtyModMetadata[modId]) ||
         Boolean(getDirtyOptionsDefinitionsForModId(modId)) ||
+        // Mod Options Args aren't on the mod definition. But this selector is used to determine if the mod definition
+        // or it's configuration is dirty.
+        // eslint-disable-next-line security/detect-object-injection -- registry id
+        Boolean(dirtyModOptionsArgsForModId[modId]) ||
         hasDirtyFormState ||
         // eslint-disable-next-line security/detect-object-injection -- registry id
         !isEmpty(getDeletedModComponentFormStatesByModId[modId])
