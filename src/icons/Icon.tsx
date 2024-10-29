@@ -28,7 +28,9 @@ const Icon: React.FunctionComponent<{
   size?: number | string;
   className?: string;
   color?: string;
-}> = ({ icon, library, size = 16, className, color }) => {
+  title?: string;
+  role?: React.AriaRole;
+}> = ({ icon, library, size = 16, className, color, title, role }) => {
   const { data: svg = "" } = useAsyncState(
     async () => getSvgIcon({ id: icon, library, size, color }),
     [icon, library],
@@ -36,6 +38,10 @@ const Icon: React.FunctionComponent<{
 
   return (
     <span
+      // XXX: should be setting role attribute on svg and embedding <title> instead?
+      // See https://docs.fontawesome.com/web/dig-deeper/accessibility
+      role={role ?? "img"}
+      aria-label={title}
       className={cx(className, styles.root)}
       dangerouslySetInnerHTML={{
         __html: svg,
