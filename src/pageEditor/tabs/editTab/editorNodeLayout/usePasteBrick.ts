@@ -22,33 +22,41 @@ import { type BrickConfig } from "@/bricks/types";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { useMemo } from "react";
 
 function usePasteBrick():
   | ((pipelinePath: string, pipelineIndex: number) => Promise<void>)
   | null {
   const dispatch = useDispatch();
   const copiedBrick = useSelector(selectCopiedBrick);
-  if (copiedBrick == null) {
-    return null;
-  }
 
-  return async (pipelinePath: string, pipelineIndex: number) => {
-    // Give the block a new instanceId
-    const newInstanceId = uuidv4();
-    const newBrick: BrickConfig = {
-      ...copiedBrick,
-      instanceId: newInstanceId,
+  return useMemo(() => {
+    if (copiedBrick == null) {
+      return null;
+    }
+
+    return async (pipelinePath: string, pipelineIndex: number) => {
+      // Give the block a new instanceId
+      const newInstanceId = uuidv4();
+      const newBrick: BrickConfig = {
+        ...copiedBrick,
+        instanceId: newInstanceId,
+      };
+      // Give all the bricks new instance ids
+      const normalizedPipeline = await normalizePipelineForEditor([newBrick]);
+      const normalizedBrick = normalizedPipeline.at(0);
+      assertNotNullish(normalizedBrick, "Brick not found in pipeline");
+      // Insert the block
+      dispatch(
+        actions.addNode({
+          block: normalizedBrick,
+          pipelinePath,
+          pipelineIndex,
+        }),
+      );
+      dispatch(actions.clearCopiedBrickConfig());
     };
-    // Give all the bricks new instance ids
-    const normalizedPipeline = await normalizePipelineForEditor([newBrick]);
-    const normalizedBrick = normalizedPipeline.at(0);
-    assertNotNullish(normalizedBrick, "Brick not found in pipeline");
-    // Insert the block
-    dispatch(
-      actions.addNode({ block: normalizedBrick, pipelinePath, pipelineIndex }),
-    );
-    dispatch(actions.clearCopiedBrickConfig());
-  };
+  }, [copiedBrick, dispatch]);
 }
 
 export default usePasteBrick;

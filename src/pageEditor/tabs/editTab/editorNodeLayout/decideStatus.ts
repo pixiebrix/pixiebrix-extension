@@ -21,16 +21,16 @@ import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 
 type DecideBlockStatusArgs = {
-  blockAnnotations: AnalysisAnnotation[];
+  brickAnnotations: AnalysisAnnotation[];
   traceRecord: TraceRecord | undefined;
 };
 
-export function decideBlockStatus({
-  blockAnnotations,
+export function decideBrickStatus({
+  brickAnnotations,
   traceRecord,
 }: DecideBlockStatusArgs): RunStatus {
   if (
-    blockAnnotations.some(
+    brickAnnotations.some(
       (annotation) => annotation.type === AnnotationType.Error,
     )
   ) {
@@ -38,7 +38,7 @@ export function decideBlockStatus({
   }
 
   if (
-    blockAnnotations.some(
+    brickAnnotations.some(
       (annotation) => annotation.type === AnnotationType.Warning,
     )
   ) {
@@ -62,14 +62,14 @@ export function decideBlockStatus({
 
 type DecideFoundationStatusArgs = {
   hasTraces: boolean;
-  blockAnnotations: AnalysisAnnotation[];
+  brickAnnotations: AnalysisAnnotation[];
 };
 export function decideFoundationStatus({
   hasTraces,
-  blockAnnotations,
+  brickAnnotations,
 }: DecideFoundationStatusArgs): RunStatus {
   if (
-    blockAnnotations.some(
+    brickAnnotations.some(
       (annotation) => annotation.type === AnnotationType.Error,
     )
   ) {
@@ -77,7 +77,7 @@ export function decideFoundationStatus({
   }
 
   if (
-    blockAnnotations.some(
+    brickAnnotations.some(
       (annotation) => annotation.type === AnnotationType.Warning,
     )
   ) {
