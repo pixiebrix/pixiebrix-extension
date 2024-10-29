@@ -26,6 +26,6 @@ describe("RichTextWidget", () => {
 
   test("renders the RichTextWidget", () => {
     render(<RichTextWidget {...defaultProps} />);
-    expect(screen.getByText("RichTextWidget")).toBeInTheDocument();
+    expect(screen.getByText("Hello TipTap! 🍌")).toBeInTheDocument();
   });
 });
