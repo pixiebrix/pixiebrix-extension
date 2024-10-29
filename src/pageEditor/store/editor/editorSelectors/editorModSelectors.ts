@@ -279,7 +279,7 @@ const selectGetModIsDirtySelector = createSelector(
         Boolean(dirtyModMetadata[modId]) ||
         Boolean(getDirtyOptionsDefinitionsForModId(modId)) ||
         // Mod Options Args aren't on the mod definition. But this selector is used to determine if the mod definition
-        // or it's configuration is dirty.
+        // or its configuration is dirty.
         // eslint-disable-next-line security/detect-object-injection -- registry id
         Boolean(dirtyModOptionsArgsForModId[modId]) ||
         hasDirtyFormState ||
