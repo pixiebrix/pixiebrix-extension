@@ -70,7 +70,7 @@ function useOptionsFieldGroupQuery(modId: RegistryId) {
   );
 
   return useDeriveAsyncState(
-    // Map undefined to null because `useDeriveAsyncState` does't support undefined values in isSuccess state
+    // Map undefined to null because `useDeriveAsyncState` does not support undefined values in isSuccess state
     mergeAsyncState(
       modDefinitionQuery,
       (x: ModDefinition | undefined) => x ?? null,
@@ -78,10 +78,10 @@ function useOptionsFieldGroupQuery(modId: RegistryId) {
     valueToAsyncState(dirtyModOptionsDefinitions),
     async (
       modDefinition: ModDefinition,
-      dirtyModOptionsDefinitions: ModOptionsDefinition,
+      dirtyModOptionsDefinition: ModOptionsDefinition,
     ) => {
       const optionsDefinition =
-        dirtyModOptionsDefinitions ??
+        dirtyModOptionsDefinition ??
         modDefinition?.options ??
         emptyModOptionsDefinitionFactory();
 
