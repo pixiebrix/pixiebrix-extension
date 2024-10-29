@@ -87,7 +87,7 @@ const EditorPaneContent: React.VoidFunctionComponent<{
           // See: https://github.com/pixiebrix/pixiebrix-extension/issues/9355
           // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9370 - remove logic once all
           //  normalization has been moved to the form state adapter
-          dirtyOverride: previousKey.current === currentKey ? true : undefined,
+          dirty: previousKey.current === currentKey ? true : undefined,
         }),
       );
 
