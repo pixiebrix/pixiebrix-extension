@@ -39,16 +39,46 @@ export function getBuilderPreviewElementId(
   brickConfig: BrickConfig,
   path: string,
 ): string | undefined {
-  if (brickConfig.id === DocumentRenderer.BRICK_ID) {
-    // The Document Preview element name is a substring of the header node path, e.g.
-    // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
-    // Document element: 0.children.9.children.0.children.0
-    const regex = /config\.body\.(.*)\.config\..*$/;
-    const result = regex.exec(path);
-    if (result) {
-      return result[1];
-    }
+  if (brickConfig.id !== DocumentRenderer.BRICK_ID) {
+    return;
   }
+
+  // The Document Preview element name is a substring of the header node path, e.g.
+  // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
+  // Document element: 0.children.9.children.0.children.0
+  const regex = /config\.body\.(.*)\.config\..*$/;
+  const match = regex.exec(path);
+  return match?.[1];
+}
+
+function getDocumentRendererSubPipelines(
+  brickConfig: BrickConfig,
+): SubPipeline[] {
+  return getDocumentBuilderPipelinePaths(brickConfig).map((docPipelinePath) => {
+    const path = joinPathParts(docPipelinePath, "__value__");
+    const pipeline: BrickPipeline = get(brickConfig, path) ?? [];
+
+    // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
+    const elementPathParts = docPipelinePath.split(".").slice(0, -2);
+    const docBuilderElement = get(
+      brickConfig,
+      elementPathParts,
+    ) as DocumentBuilderElement;
+
+    const isButton = isButtonElement(docBuilderElement);
+
+    let subPipelineLabel = docBuilderElement.config.label as string;
+    if (isEmpty(subPipelineLabel)) {
+      subPipelineLabel = isButton ? "button" : "brick";
+    }
+
+    return {
+      headerLabel: subPipelineLabel,
+      pipeline,
+      path,
+      flavor: isButton ? PipelineFlavor.NoRenderer : PipelineFlavor.NoEffect,
+    };
+  });
 }
 
 /**
@@ -59,59 +89,30 @@ export function getSubPipelinesForBrick(
   brick: Brick | undefined,
   brickConfig: BrickConfig,
 ): SubPipeline[] {
-  const subPipelines: SubPipeline[] = [];
   if (brickConfig.id === DocumentRenderer.BRICK_ID) {
-    for (const docPipelinePath of getDocumentBuilderPipelinePaths(
-      brickConfig,
-    )) {
-      const path = joinPathParts(docPipelinePath, "__value__");
-      const pipeline: BrickPipeline = get(brickConfig, path) ?? [];
-
-      // Removing the 'config.<pipelinePropName>' from the end of the docPipelinePath
-      const elementPathParts = docPipelinePath.split(".").slice(0, -2);
-      const docBuilderElement = get(
-        brickConfig,
-        elementPathParts,
-      ) as DocumentBuilderElement;
-
-      const isButton = isButtonElement(docBuilderElement);
-
-      let subPipelineLabel = docBuilderElement.config.label as string;
-      if (isEmpty(subPipelineLabel)) {
-        subPipelineLabel = isButton ? "button" : "brick";
-      }
-
-      subPipelines.push({
-        headerLabel: subPipelineLabel,
-        pipeline,
-        path,
-        flavor: isButton ? PipelineFlavor.NoRenderer : PipelineFlavor.NoEffect,
-      });
-    }
-  } else {
-    for (const pipelinePropName of getPipelinePropNames(brick, brickConfig)) {
-      const path = joinName("config", pipelinePropName, "__value__");
-      const pipeline: BrickPipeline = get(brickConfig, path) ?? [];
-
-      const subPipeline: SubPipeline = {
-        headerLabel: pipelinePropName,
-        pipeline,
-        path,
-        flavor: PipelineFlavor.NoRenderer,
-      };
-
-      const inputKey = getVariableKeyForSubPipeline(
-        brickConfig,
-        pipelinePropName,
-      );
-
-      if (inputKey) {
-        subPipeline.inputKey = inputKey;
-      }
-
-      subPipelines.push(subPipeline);
-    }
+    return getDocumentRendererSubPipelines(brickConfig);
   }
 
-  return subPipelines;
+  return getPipelinePropNames(brick, brickConfig).map((pipelinePropName) => {
+    const path = joinName("config", pipelinePropName, "__value__");
+    const pipeline: BrickPipeline = get(brickConfig, path) ?? [];
+
+    const subPipeline: SubPipeline = {
+      headerLabel: pipelinePropName,
+      pipeline,
+      path,
+      flavor: PipelineFlavor.NoRenderer,
+    };
+
+    const inputKey = getVariableKeyForSubPipeline(
+      brickConfig,
+      pipelinePropName,
+    );
+
+    if (inputKey) {
+      subPipeline.inputKey = inputKey;
+    }
+
+    return subPipeline;
+  });
 }
