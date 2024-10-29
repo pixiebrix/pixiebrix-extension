@@ -49,6 +49,8 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+
 function fromNativeElement({
   modMetadata,
   starterBrickMetadata,
@@ -113,10 +115,11 @@ function selectStarterBrickDefinition(
 }
 
 function selectModComponent(
-  state: ContextMenuFormState,
+  formState: ContextMenuFormState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ContextMenuConfig> {
-  const { modComponent } = state;
+  const { modComponent } = formState;
   const config: ContextMenuConfig = {
     title: modComponent.title,
     onSuccess: modComponent.onSuccess,
@@ -125,7 +128,7 @@ function selectModComponent(
       : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectModComponent(state),
+    ...baseSelectModComponent(formState, modState),
     config,
   });
 }
@@ -175,10 +178,11 @@ async function fromModComponent(
 
 function asDraftModComponent(
   contextMenuFormState: ContextMenuFormState,
+  modState: DraftModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.CONTEXT_MENU,
-    modComponent: selectModComponent(contextMenuFormState, {
+    modComponent: selectModComponent(contextMenuFormState, modState, {
       includeInstanceIds: true,
     }),
     starterBrickDefinition: selectStarterBrickDefinition(contextMenuFormState),

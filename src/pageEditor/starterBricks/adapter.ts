@@ -36,6 +36,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { compact, sortBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 
 const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.TRIGGER, triggerModComponent],
@@ -130,6 +131,7 @@ export async function modComponentToFormState(
 
 export function formStateToDraftModComponent(
   modComponentFormState: ModComponentFormState,
+  options: { optionsArgs: OptionsArgs },
 ): DraftModComponent {
   const starterBrickType = modComponentFormState.starterBrick.definition.type;
   const adapter = ADAPTERS.get(starterBrickType);
@@ -137,5 +139,5 @@ export function formStateToDraftModComponent(
     adapter,
     `No adapter found for starter brick type: ${starterBrickType}`,
   );
-  return adapter.asDraftModComponent(modComponentFormState);
+  return adapter.asDraftModComponent(modComponentFormState, options);
 }

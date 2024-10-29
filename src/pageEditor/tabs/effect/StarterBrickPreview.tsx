@@ -32,7 +32,10 @@ import { inspectedTab } from "@/pageEditor/context/connection";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectGetOptionsArgsForModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useAsyncEffect } from "use-async-effect";
 
 type PreviewState = {
@@ -72,6 +75,7 @@ const StarterBrickPreview: React.FC = () => {
     previewSlice.reducer,
     initialState,
   );
+
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
@@ -80,6 +84,8 @@ const StarterBrickPreview: React.FC = () => {
     "StarterBrickPreview cannot be rendered without an activeModComponentFormState",
   );
   const { starterBrick } = activeModComponentFormState;
+
+  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
 
   const run = useCallback(async () => {
     dispatch(previewSlice.actions.startRun());
@@ -100,14 +106,18 @@ const StarterBrickPreview: React.FC = () => {
 
       const data = await runStarterBrickReaderPreview(
         inspectedTab,
-        asDraftModComponent(activeModComponentFormState),
+        asDraftModComponent(activeModComponentFormState, {
+          optionsArgs: getOptionsArgsForModId(
+            activeModComponentFormState.modMetadata.id,
+          ),
+        }),
         rootSelector,
       );
       dispatch(previewSlice.actions.runSuccess({ "@input": data }));
     } catch (error) {
       dispatch(previewSlice.actions.runError(error));
     }
-  }, [activeModComponentFormState, starterBrick]);
+  }, [activeModComponentFormState, getOptionsArgsForModId, starterBrick]);
 
   const debouncedRun = useDebouncedCallback(run, 250, {
     trailing: true,
