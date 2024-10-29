@@ -90,8 +90,8 @@ function useOptionsFieldGroupQuery(modId: RegistryId) {
           optionsDefinition.schema,
         ),
         OptionsFieldGroup: genericOptionsFactory(
-          optionsDefinition?.schema,
-          optionsDefinition?.uiSchema,
+          optionsDefinition.schema,
+          optionsDefinition.uiSchema,
           { NoOptionsComponent: NoModOptions },
         ),
       };
