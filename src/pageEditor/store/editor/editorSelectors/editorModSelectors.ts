@@ -107,26 +107,27 @@ export const selectDirtyMetadataForModId =
 export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
   editor.dirtyModOptionsById;
 
-const dirtyOptionsDefinitionsForModIdSelector = createSelector(
+const selectGetDirtyOptionsDefinitionForModId = createSelector(
   selectDirtyModOptionsDefinitions,
-  (_state: EditorRootState, modId: RegistryId) => modId,
-  (dirtyOptionsDefinitionsByModId, modId) => {
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
-    const options = dirtyOptionsDefinitionsByModId[modId];
+  (dirtyOptionsDefinitionsByModId) =>
+    // Memoize because normalizeModOptionsDefinition returns a fresh object reference
+    memoize((modId: RegistryId) => {
+      // eslint-disable-next-line security/detect-object-injection -- RegistryId for mod
+      const options = dirtyOptionsDefinitionsByModId[modId];
 
-    if (options) {
-      // Provide a consistent shape of the options
-      return normalizeModOptionsDefinition(options);
-    }
+      if (options) {
+        // Provide a consistent shape of the options
+        return normalizeModOptionsDefinition(options);
+      }
 
-    // Return undefined if the options aren't dirty. Returning nullish instead of a default empty options allows the
-    // caller to distinguish no dirty options vs. options that have been reverted to the default.
-  },
+      // Return undefined if the options aren't dirty. Returning nullish instead of a default empty options allows the
+      // caller to distinguish no dirty options vs. options that have been reverted to the default.
+    }),
 );
 
-export const selectDirtyOptionsDefinitionsForModId =
+export const selectDirtyOptionsDefinitionForModId =
   (modId: RegistryId) => (state: EditorRootState) =>
-    dirtyOptionsDefinitionsForModIdSelector(state, modId);
+    selectGetDirtyOptionsDefinitionForModId(state)(modId);
 
 ///
 /// MOD COMPONENTS
@@ -233,38 +234,38 @@ export const selectDeletedComponentFormStatesByModId = ({
   editor,
 }: EditorRootState) => editor.deletedModComponentFormStatesByModId;
 
-const modIsDirtySelector = createSelector(
+const selectGetModIsDirtySelector = createSelector(
+  selectDirtyModMetadata,
   selectIsModComponentDirtyById,
-  dirtyOptionsDefinitionsForModIdSelector,
-  dirtyMetadataForModIdSelector,
-  (state: EditorRootState, modId: RegistryId) =>
-    // eslint-disable-next-line security/detect-object-injection -- RegistryId is a controlled string
-    selectDeletedComponentFormStatesByModId(state)[modId],
-  ({ editor }: EditorRootState, modId: RegistryId) =>
-    editor.modComponentFormStates
-      .filter((formState) => formState.modMetadata.id === modId)
-      .map((formState) => formState.uuid),
+  selectGetDirtyOptionsDefinitionForModId,
+  selectGetModComponentFormStatesByModId,
+  selectDeletedComponentFormStatesByModId,
   (
-    isModComponentDirtyById,
-    dirtyModOptions,
     dirtyModMetadata,
-    deletedModComponentFormStates,
-    modComponentFormStateIds,
-    // eslint-disable-next-line max-params -- all are needed
-  ) => {
-    const hasSomeDirtyComponentFormState = modComponentFormStateIds.some(
-      // eslint-disable-next-line security/detect-object-injection -- UUID
-      (modComponentId) => isModComponentDirtyById[modComponentId],
-    );
-    return (
-      hasSomeDirtyComponentFormState ||
-      Boolean(dirtyModOptions) ||
-      Boolean(dirtyModMetadata) ||
-      !isEmpty(deletedModComponentFormStates)
-    );
-  },
+    isModComponentDirtyById,
+    getDirtyOptionsDefinitionsForModId,
+    getModComponentFormStatesByModId,
+    getDeletedModComponentFormStatesByModId,
+    // eslint-disable-next-line max-params -- required because createSelector takes array of selector args
+  ) =>
+    // Memoize for consistency. It's not necessary because the return value is primitive
+    memoize((modId: RegistryId) => {
+      const hasDirtyFormState = getModComponentFormStatesByModId(modId).some(
+        // eslint-disable-next-line security/detect-object-injection -- UUID
+        ({ uuid }) => isModComponentDirtyById[uuid],
+      );
+
+      return (
+        // eslint-disable-next-line security/detect-object-injection -- registry id
+        Boolean(dirtyModMetadata[modId]) ||
+        Boolean(getDirtyOptionsDefinitionsForModId(modId)) ||
+        hasDirtyFormState ||
+        // eslint-disable-next-line security/detect-object-injection -- registry id
+        !isEmpty(getDeletedModComponentFormStatesByModId[modId])
+      );
+    }),
 );
 
 export const selectModIsDirty =
   (modId: RegistryId) => (state: EditorRootState) =>
-    Boolean(modId && modIsDirtySelector(state, modId));
+    modId != null && selectGetModIsDirtySelector(state)(modId);
