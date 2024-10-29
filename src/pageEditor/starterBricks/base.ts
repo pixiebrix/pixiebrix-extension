@@ -63,6 +63,7 @@ import {
 } from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
+import { type AnalysisModState } from "@/analysis/analysisTypes";
 
 export interface WizardStep {
   step: string;
@@ -138,16 +139,19 @@ export function baseFromModComponent<T extends StarterBrickType>(
   };
 }
 
-export function baseSelectModComponent({
-  apiVersion,
-  uuid,
-  label,
-  variablesDefinition,
-  integrationDependencies,
-  permissions,
-  starterBrick,
-  modMetadata,
-}: BaseFormState): Pick<
+export function baseSelectModComponent(
+  {
+    apiVersion,
+    uuid,
+    label,
+    variablesDefinition,
+    integrationDependencies,
+    permissions,
+    starterBrick,
+    modMetadata,
+  }: BaseFormState,
+  modState: AnalysisModState,
+): Pick<
   ModComponentBase,
   | "id"
   | "apiVersion"
@@ -157,6 +161,7 @@ export function baseSelectModComponent({
   | "integrationDependencies"
   | "permissions"
   | "variablesDefinition"
+  | "optionsArgs"
 > {
   return {
     id: uuid,
@@ -167,6 +172,7 @@ export function baseSelectModComponent({
     integrationDependencies,
     permissions,
     variablesDefinition,
+    optionsArgs: modState.optionsArgs,
   };
 }
 

@@ -51,6 +51,7 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { ReportModes } from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import { type AnalysisModState } from "@/analysis/analysisTypes";
 
 function fromNativeElement({
   starterBrickMetadata,
@@ -134,27 +135,29 @@ function selectStarterBrickDefinition(
 }
 
 function selectModComponent(
-  state: TriggerFormState,
+  formState: TriggerFormState,
+  modState: AnalysisModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TriggerConfig> {
-  const { modComponent } = state;
+  const { modComponent } = formState;
   const config: TriggerConfig = {
     action: options.includeInstanceIds
       ? modComponent.brickPipeline
       : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectModComponent(state),
+    ...baseSelectModComponent(formState, modState),
     config,
   });
 }
 
 function asDraftModComponent(
   triggerFormState: TriggerFormState,
+  modState: AnalysisModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.TRIGGER,
-    modComponent: selectModComponent(triggerFormState, {
+    modComponent: selectModComponent(triggerFormState, modState, {
       includeInstanceIds: true,
     }),
     starterBrickDefinition: selectStarterBrickDefinition(triggerFormState),

@@ -53,6 +53,7 @@ import {
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { type AnalysisModState } from "@/analysis/analysisTypes";
 
 function fromNativeElement({
   url,
@@ -129,10 +130,11 @@ function selectStarterBrickDefinition(
 }
 
 function selectModComponent(
-  state: ButtonFormState,
+  formState: ButtonFormState,
+  modState: AnalysisModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ButtonStarterBrickConfig> {
-  const { modComponent } = state;
+  const { modComponent } = formState;
   const config: ButtonStarterBrickConfig = {
     caption: modComponent.caption,
     icon: modComponent.icon,
@@ -144,7 +146,7 @@ function selectModComponent(
     synchronous: modComponent.synchronous,
   };
   return removeEmptyValues({
-    ...baseSelectModComponent(state),
+    ...baseSelectModComponent(formState, modState),
     config,
   });
 }
@@ -184,10 +186,11 @@ async function fromModComponent(
 
 function asDraftModComponent(
   actionFormState: ButtonFormState,
+  modState: AnalysisModState,
 ): DraftButtonModComponent {
   return {
     type: StarterBrickTypes.BUTTON,
-    modComponent: selectModComponent(actionFormState, {
+    modComponent: selectModComponent(actionFormState, modState, {
       includeInstanceIds: true,
     }),
     starterBrickDefinition: selectStarterBrickDefinition(actionFormState),

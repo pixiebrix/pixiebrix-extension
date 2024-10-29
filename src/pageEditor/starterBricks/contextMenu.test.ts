@@ -28,7 +28,7 @@ describe("contextMenu", () => {
       element: null,
     });
 
-    expect(config.selectModComponent(formState)).toEqual(
+    expect(config.selectModComponent(formState, { optionsArgs: {} })).toEqual(
       expect.objectContaining({
         config: {
           action: [],
