@@ -16,7 +16,6 @@
  */
 
 import { useCallback } from "react";
-import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import {
   filterTracesByCall,
@@ -49,6 +48,8 @@ import { type useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNod
 import { useGetBrickContentProps } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetBrickContentProps";
 import { useGetNodeMovement } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeMovement";
 import { type useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { type TraceRecord } from "@/telemetry/trace";
 
 type BrickNodeContext = {
   isNodeActive: boolean;
@@ -77,6 +78,101 @@ export type MapBrickToNodesArgs = {
   mapPipelineToNodes: ReturnType<typeof useMapPipelineToNodes>;
   getNodeState: ReturnType<typeof useGetNodeState>;
 };
+
+function createBrickNode({
+  brickConfig,
+  context,
+  getBrickContentProps,
+  getNodeMovement,
+  getNodeState,
+  lastIndex,
+  index,
+  isParentActive,
+  nestingLevel,
+  nodeActions,
+  traceRecord,
+}: {
+  brickConfig: BrickConfig;
+  context: BrickNodeContext;
+  getBrickContentProps: ReturnType<typeof useGetBrickContentProps>;
+  getNodeMovement: ReturnType<typeof useGetNodeMovement>;
+  getNodeState: ReturnType<typeof useGetNodeState>;
+  lastIndex: number;
+  index: number;
+  isParentActive: boolean;
+  nestingLevel: number;
+  nodeActions: NodeAction[];
+  traceRecord?: TraceRecord;
+}): Extract<EditorNodeProps, { type: "brick" }> {
+  const { instanceId } = brickConfig;
+  assertNotNullish(instanceId, "instanceId is required");
+
+  const brickNodeState = getNodeState({
+    active: !context.isSubPipelineHeaderActive && context.isNodeActive,
+    nodeId: instanceId,
+    nestingLevel,
+    showBiggerActions: context.showBiggerActions,
+    nodeActions: context.expanded ? [] : nodeActions,
+    isParentActive,
+  });
+
+  const contentProps = getBrickContentProps({
+    brickConfig,
+    traceRecord,
+  });
+
+  const movement = getNodeMovement({
+    nodeId: instanceId,
+    index,
+    lastIndex,
+  });
+
+  return {
+    type: "brick",
+    key: instanceId,
+    ...brickNodeState,
+    ...contentProps,
+    ...movement,
+    hasSubPipelines: context.hasSubPipelines,
+    collapsed: context.collapsed,
+    isSubPipelineHeaderActive: context.isSubPipelineHeaderActive,
+  };
+}
+
+function createFooterNode({
+  brickConfig,
+  context,
+  isParentActive,
+  nestingLevel,
+  nodeActions,
+  getNodeState,
+}: {
+  brickConfig: BrickConfig;
+  context: BrickNodeContext;
+  isParentActive: boolean;
+  nestingLevel: number;
+  nodeActions: NodeAction[];
+  getNodeState: ReturnType<typeof useGetNodeState>;
+}): Extract<EditorNodeProps, { type: "footer" }> {
+  const { instanceId } = brickConfig;
+  assertNotNullish(instanceId, "instanceId is required");
+
+  const footerNodeState = getNodeState({
+    active: !context.isSubPipelineHeaderActive && context.isNodeActive,
+    nodeId: instanceId,
+    nestingLevel,
+    showBiggerActions: context.showBiggerActions,
+    nodeActions,
+  });
+
+  return {
+    type: "footer",
+    key: `${instanceId}-footer`,
+    ...footerNodeState,
+    outputKey: brickConfig.outputKey,
+    nestedActive: isParentActive,
+  };
+}
 
 export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
@@ -194,47 +290,29 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         showAppend,
       });
 
-      const { onClickMoveUp, onClickMoveDown } = getNodeMovement({
-        nodeId: instanceId,
-        index,
-        lastIndex,
-      });
-
-      const nodeId = instanceId;
-
       const brickNodeActions = createNodeActions({
-        nodeId,
+        nodeId: instanceId,
         pipelinePath,
         flavor,
         index: index + 1,
         showAddBrick: context.showAddBrick,
       });
 
-      const contentProps = getBrickContentProps({
-        brickConfig,
-        traceRecord,
-      });
-
-      const brickNodeState = getNodeState({
-        active: !context.isSubPipelineHeaderActive && context.isNodeActive,
-        nodeId,
-        nestingLevel,
-        showBiggerActions: context.showBiggerActions,
-        nodeActions: context.expanded ? [] : brickNodeActions,
-        isParentActive,
-      });
-
-      nodes.push({
-        type: "brick",
-        key: instanceId,
-        ...contentProps,
-        ...brickNodeState,
-        onClickMoveUp,
-        onClickMoveDown,
-        hasSubPipelines: context.hasSubPipelines,
-        collapsed: context.collapsed,
-        isSubPipelineHeaderActive: context.isSubPipelineHeaderActive,
-      });
+      nodes.push(
+        createBrickNode({
+          brickConfig,
+          context,
+          getBrickContentProps,
+          getNodeMovement,
+          getNodeState,
+          lastIndex,
+          index,
+          isParentActive,
+          nestingLevel,
+          nodeActions: brickNodeActions,
+          traceRecord,
+        }),
+      );
 
       if (context.expanded) {
         const { nodes: subNodes, modComponentHasTraces: subPipelineHasTraces } =
@@ -256,24 +334,16 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
 
         modComponentHasTraces ||= subPipelineHasTraces;
 
-        const footerNodeState = getNodeState({
-          active: !context.isSubPipelineHeaderActive && context.isNodeActive,
-          nodeId: instanceId,
-          nestingLevel,
-          showBiggerActions: context.showBiggerActions,
-          nodeActions: brickNodeActions,
-        });
-
-        const footerNodeProps: PipelineFooterNodeProps = {
-          ...footerNodeState,
-          outputKey: brickConfig.outputKey,
-          nestedActive: isParentActive,
-        };
-        nodes.push({
-          type: "footer",
-          key: `${instanceId}-footer`,
-          ...footerNodeProps,
-        });
+        nodes.push(
+          createFooterNode({
+            brickConfig,
+            context,
+            isParentActive,
+            nestingLevel,
+            nodeActions: brickNodeActions,
+            getNodeState,
+          }),
+        );
       }
 
       return {
