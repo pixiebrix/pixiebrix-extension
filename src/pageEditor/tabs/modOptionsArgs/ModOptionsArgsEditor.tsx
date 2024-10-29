@@ -134,9 +134,7 @@ const ModOptionsArgsContent: React.FC = () => {
     [dispatch],
   );
 
-  const optionsFieldBody = (
-    OptionsFieldGroup: React.FunctionComponent<BrickOptionProps>,
-  ) => {
+  const optionsFieldBody = (OptionsFieldGroup: React.FC<BrickOptionProps>) => {
     // Name local variable so React has a display name
     const renderBody = ({ values }: { values: FormikValues }) => (
       <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
