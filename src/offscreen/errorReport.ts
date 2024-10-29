@@ -32,7 +32,7 @@ type errorMessageData = {
     UnknownObject & { extensionVersion: SemVerString };
 };
 
-export async function sendErrorViaErrorReporter(
+export async function sendErrorToDataDog(
   data: errorMessageData,
 ): Promise<void> {
   const { error, errorMessage, errorReporterInitInfo, messageContext } = data;

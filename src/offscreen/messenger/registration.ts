@@ -16,7 +16,7 @@
  */
 
 import { registerMethods } from "webext-messenger";
-import { sendErrorViaErrorReporter } from "@/offscreen/errorReport";
+import { sendErrorToDataDog } from "@/offscreen/errorReport";
 import {
   extractRecordingTabId,
   startRecording,
@@ -26,7 +26,7 @@ import { noop } from "lodash";
 
 declare global {
   interface MessengerMethods {
-    SEND_OFFSCREEN_ERROR: typeof sendErrorViaErrorReporter;
+    SEND_OFFSCREEN_ERROR: typeof sendErrorToDataDog;
     GET_RECORDING_TAB_ID: typeof extractRecordingTabId;
     START_RECORDING: typeof startRecording;
     STOP_RECORDING: typeof stopRecording;
@@ -36,7 +36,7 @@ declare global {
 
 export default function registerOffscreenMessenger(): void {
   registerMethods({
-    SEND_OFFSCREEN_ERROR: sendErrorViaErrorReporter,
+    SEND_OFFSCREEN_ERROR: sendErrorToDataDog,
     GET_RECORDING_TAB_ID: extractRecordingTabId,
     START_RECORDING: startRecording,
     STOP_RECORDING: stopRecording,

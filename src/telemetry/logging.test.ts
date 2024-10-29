@@ -29,11 +29,10 @@ import {
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { flagOn } from "@/auth/featureFlagStorage";
-import Reason = chrome.offscreen.Reason;
-import ManifestV3 = chrome.runtime.ManifestV3;
 import { serializeError } from "serialize-error";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import { waitFor } from "@testing-library/react";
+import { sendErrorViaErrorReporter } from "@/offscreen/messenger/api";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
@@ -47,39 +46,18 @@ jest.mock("@/telemetry/telemetryHelpers", () => ({
   mapAppUserToTelemetryUser: jest.fn().mockResolvedValue({}),
 }));
 
-global.chrome = {
-  ...global.chrome,
-  runtime: {
-    ...global.chrome.runtime,
-    getContexts: jest.fn(async () => []),
-    getManifest: jest.fn(() => ({ manifest_version: 3 }) as ManifestV3),
-    getURL: jest.fn((path) => path),
-    ContextType: {
-      OFFSCREEN_DOCUMENT:
-        "offscreen_document" as typeof global.chrome.runtime.ContextType.OFFSCREEN_DOCUMENT,
-    } as typeof global.chrome.runtime.ContextType,
-  },
-  offscreen: {
-    ...global.chrome.offscreen,
-    Reason: {
-      BLOBS: "blobs" as typeof global.chrome.offscreen.Reason.BLOBS,
-    } as typeof Reason,
-    createDocument: jest.fn(),
-  },
-};
+jest.mock("@/offscreen/messenger/api");
 
 const flagOnMock = jest.mocked(flagOn);
 const mockFlag = (flag: FeatureFlag) => {
   flagOnMock.mockImplementation(async (testFlag) => flag === testFlag);
 };
 
-const sendMessageSpy = jest.spyOn(global.chrome.runtime, "sendMessage");
-
 describe("logging", () => {
   beforeEach(async () => {
     await clearLog();
     flagOnMock.mockReset();
-    sendMessageSpy.mockReset();
+    jest.mocked(sendErrorViaErrorReporter).mockReset();
   });
 
   test("appendEntry", async () => {
@@ -104,20 +82,17 @@ describe("logging", () => {
     await expect(appendEntry(logEntryFactory())).toResolve();
 
     await waitFor(() => {
-      expect(sendMessageSpy).toHaveBeenCalled();
+      expect(sendErrorViaErrorReporter).toHaveBeenCalled();
     });
 
-    expect(sendMessageSpy).toHaveBeenCalledWith(
+    expect(sendErrorViaErrorReporter).toHaveBeenCalledWith(
       expect.objectContaining({
-        target: "offscreen-doc",
-        data: expect.objectContaining({
-          error: serializeError(error),
-          errorMessage: "Test db.add error",
-          messageContext: expect.objectContaining({
-            idbOperationName: "appendEntry",
-            someMockReportErrorContext: 123,
-            name: "Error",
-          }),
+        error: serializeError(error),
+        errorMessage: "Test db.add error",
+        messageContext: expect.objectContaining({
+          idbOperationName: "appendEntry",
+          someMockReportErrorContext: 123,
+          name: "Error",
         }),
       }),
     );
