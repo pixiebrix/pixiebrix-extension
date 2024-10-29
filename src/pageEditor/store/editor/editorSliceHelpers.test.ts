@@ -45,7 +45,7 @@ import {
   selectActiveModId,
   selectDeletedComponentFormStatesByModId,
   selectDirtyMetadataForModId,
-  selectDirtyOptionsDefinitionsForModId,
+  selectDirtyOptionsDefinitionForModId,
   selectModComponentFormStates,
   selectExpandedModId,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -449,7 +449,7 @@ describe("removeModData", () => {
     expect(selectActiveModId({ editor: newState })).toBeNull();
     expect(selectExpandedModId({ editor: newState })).toBeNull();
     expect(
-      selectDirtyOptionsDefinitionsForModId(modMetadata.id)({
+      selectDirtyOptionsDefinitionForModId(modMetadata.id)({
         editor: newState,
       }),
     ).toBeUndefined();

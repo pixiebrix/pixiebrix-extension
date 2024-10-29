@@ -107,7 +107,7 @@ export const selectDirtyMetadataForModId =
 export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
   editor.dirtyModOptionsById;
 
-const selectGetDirtyOptionsDefinitionsForModId = createSelector(
+const selectGetDirtyOptionsDefinitionForModId = createSelector(
   selectDirtyModOptionsDefinitions,
   (dirtyOptionsDefinitionsByModId) =>
     // Memoize because normalizeModOptionsDefinition returns a fresh object reference
@@ -125,9 +125,9 @@ const selectGetDirtyOptionsDefinitionsForModId = createSelector(
     }),
 );
 
-export const selectDirtyOptionsDefinitionsForModId =
+export const selectDirtyOptionsDefinitionForModId =
   (modId: RegistryId) => (state: EditorRootState) =>
-    selectGetDirtyOptionsDefinitionsForModId(state)(modId);
+    selectGetDirtyOptionsDefinitionForModId(state)(modId);
 
 ///
 /// MOD COMPONENTS
@@ -237,7 +237,7 @@ export const selectDeletedComponentFormStatesByModId = ({
 const selectGetModIsDirtySelector = createSelector(
   selectDirtyModMetadata,
   selectIsModComponentDirtyById,
-  selectGetDirtyOptionsDefinitionsForModId,
+  selectGetDirtyOptionsDefinitionForModId,
   selectGetModComponentFormStatesByModId,
   selectDeletedComponentFormStatesByModId,
   (

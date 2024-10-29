@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectDirtyOptionsArgsForModId,
-  selectDirtyOptionsDefinitionsForModId,
+  selectDirtyOptionsDefinitionForModId,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
@@ -65,8 +65,8 @@ const NoModOptions: React.FC = () => (
 function useOptionsFieldGroupQuery(modId: RegistryId) {
   const modDefinitionQuery = useOptionalModDefinition(modId);
 
-  const dirtyModOptionsDefinitions = useSelector(
-    selectDirtyOptionsDefinitionsForModId(modId),
+  const dirtyModOptionsDefinition = useSelector(
+    selectDirtyOptionsDefinitionForModId(modId),
   );
 
   return useDeriveAsyncState(
@@ -75,7 +75,7 @@ function useOptionsFieldGroupQuery(modId: RegistryId) {
       modDefinitionQuery,
       (x: ModDefinition | undefined) => x ?? null,
     ),
-    valueToAsyncState(dirtyModOptionsDefinitions ?? null),
+    valueToAsyncState(dirtyModOptionsDefinition ?? null),
     async (
       modDefinition: ModDefinition,
       dirtyModOptionsDefinition: ModOptionsDefinition,

@@ -33,7 +33,7 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
-  selectDirtyOptionsDefinitionsForModId,
+  selectDirtyOptionsDefinitionForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -121,9 +121,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
   } = useOptionalModDefinition(modId);
 
   const savedOptions = modDefinition?.options;
-  const dirtyOptions = useSelector(
-    selectDirtyOptionsDefinitionsForModId(modId),
-  );
+  const dirtyOptions = useSelector(selectDirtyOptionsDefinitionForModId(modId));
 
   const optionsDefinition =
     dirtyOptions ?? savedOptions ?? emptyModOptionsDefinitionFactory();
