@@ -63,7 +63,8 @@ import {
 } from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
-import { type AnalysisModState } from "@/analysis/analysisTypes";
+
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 export interface WizardStep {
   step: string;
@@ -150,7 +151,7 @@ export function baseSelectModComponent(
     starterBrick,
     modMetadata,
   }: BaseFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
 ): Pick<
   ModComponentBase,
   | "id"

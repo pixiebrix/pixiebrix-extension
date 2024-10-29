@@ -45,6 +45,17 @@ import {
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
+/**
+ * Mod-level editor state passed to the runtime/analysis engine
+ * @since 2.1.6
+ */
+export type DraftModState = {
+  /**
+   * The current option args for the draft mod
+   */
+  optionsArgs: OptionsArgs;
+};
+
 export type AddBrickLocation = {
   /**
    * The object property path to the pipeline where a block will be added by the add block modal

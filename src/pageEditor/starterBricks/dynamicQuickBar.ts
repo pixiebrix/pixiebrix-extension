@@ -49,7 +49,8 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { FeatureFlags } from "@/auth/featureFlags";
-import { type AnalysisModState } from "@/analysis/analysisTypes";
+
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   modMetadata,
@@ -105,7 +106,7 @@ function selectStarterBrickDefinition(
 
 function selectModComponent(
   state: DynamicQuickBarFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<DynamicQuickBarConfig> {
   const { modComponent } = state;
@@ -163,7 +164,7 @@ async function fromModComponent(
 
 function asDraftModComponent(
   dynamicQuickBarFormState: DynamicQuickBarFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.DYNAMIC_QUICK_BAR,

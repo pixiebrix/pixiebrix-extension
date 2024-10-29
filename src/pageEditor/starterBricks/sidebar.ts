@@ -47,7 +47,8 @@ import {
 } from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { type AnalysisModState } from "@/analysis/analysisTypes";
+
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   modMetadata,
@@ -113,7 +114,7 @@ function selectStarterBrickDefinition(
 
 function selectModComponent(
   formState: SidebarFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<SidebarConfig> {
   const { modComponent } = formState;
@@ -131,7 +132,7 @@ function selectModComponent(
 
 function asDraftModComponent(
   sidebarFormState: SidebarFormState,
-  modFormState: AnalysisModState,
+  modFormState: DraftModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.SIDEBAR_PANEL,

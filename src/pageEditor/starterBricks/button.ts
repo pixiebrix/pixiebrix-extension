@@ -53,7 +53,8 @@ import {
 } from "@/starterBricks/button/buttonStarterBrickTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { type AnalysisModState } from "@/analysis/analysisTypes";
+
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   url,
@@ -131,7 +132,7 @@ function selectStarterBrickDefinition(
 
 function selectModComponent(
   formState: ButtonFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ButtonStarterBrickConfig> {
   const { modComponent } = formState;
@@ -186,7 +187,7 @@ async function fromModComponent(
 
 function asDraftModComponent(
   actionFormState: ButtonFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
 ): DraftButtonModComponent {
   return {
     type: StarterBrickTypes.BUTTON,

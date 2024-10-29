@@ -30,7 +30,6 @@ import { isEmpty } from "lodash";
 import {
   type Analysis,
   type AnalysisAnnotation,
-  type AnalysisModState,
 } from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
@@ -59,6 +58,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /** @internal */
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
@@ -308,7 +308,7 @@ function setVarsFromSchema({
  */
 async function setOptionsVars(
   formState: ModComponentFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
   contextVars: VarMap,
 ): Promise<void> {
   const modId = formState.modMetadata.id;
@@ -687,7 +687,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   async run(
     formState: ModComponentFormState,
-    modState: AnalysisModState,
+    modState: DraftModState,
   ): Promise<void> {
     this.allBlocks = await brickRegistry.allTyped();
 

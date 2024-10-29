@@ -216,7 +216,7 @@ export const selectGetSiblingDraftModComponents = createSelector(
 /// MOD OPTIONS ARGS
 ///
 
-export const selectDirtyOptionsArgsForModId = (state: EditorRootState) =>
+const selectDirtyOptionsArgsForModId = (state: EditorRootState) =>
   state.editor.dirtyModOptionsArgsById;
 
 /**

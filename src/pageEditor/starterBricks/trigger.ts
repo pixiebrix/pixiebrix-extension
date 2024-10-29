@@ -51,7 +51,8 @@ import {
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { ReportModes } from "@/starterBricks/trigger/triggerStarterBrickTypes";
-import { type AnalysisModState } from "@/analysis/analysisTypes";
+
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   starterBrickMetadata,
@@ -136,7 +137,7 @@ function selectStarterBrickDefinition(
 
 function selectModComponent(
   formState: TriggerFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<TriggerConfig> {
   const { modComponent } = formState;
@@ -153,7 +154,7 @@ function selectModComponent(
 
 function asDraftModComponent(
   triggerFormState: TriggerFormState,
-  modState: AnalysisModState,
+  modState: DraftModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.TRIGGER,

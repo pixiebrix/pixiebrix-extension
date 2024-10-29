@@ -30,7 +30,8 @@ import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type FeatureFlag } from "@/auth/featureFlags";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { type AnalysisModState } from "@/analysis/analysisTypes";
+
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /**
  * Adapter used to create initial mod component form state in the Page Editor from a starter brick.
@@ -135,7 +136,7 @@ export interface ModComponentFormStateAdapter<
    */
   readonly selectModComponent: (
     modComponentFormState: TState,
-    modState: AnalysisModState,
+    modState: DraftModState,
   ) => // XXX: refine type to enforce starter brick reference is the registry id and not an inner definition reference
   ModComponentBase;
 }

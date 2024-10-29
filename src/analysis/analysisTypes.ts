@@ -20,7 +20,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type BaseAnnotation } from "@/types/annotationTypes";
 import { type UUID } from "@/types/stringTypes";
-import type { OptionsArgs } from "@/types/runtimeTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 export enum AnalysisAnnotationActionType {
   AddValueToArray,
@@ -55,14 +55,6 @@ export type AnalysisAnnotation = BaseAnnotation & {
 };
 
 /**
- * Mod-level state passed to the analysis engine
- * @since 2.1.6
- */
-export type AnalysisModState = {
-  optionsArgs: OptionsArgs;
-};
-
-/**
  * An analysis to run against the FormState for a single ModComponentBase.
  * @see ModComponentFormState
  */
@@ -84,7 +76,7 @@ export interface Analysis {
    */
   run(
     formState: ModComponentFormState,
-    modState: AnalysisModState,
+    modState: DraftModState,
   ): void | Promise<void>;
 }
 
