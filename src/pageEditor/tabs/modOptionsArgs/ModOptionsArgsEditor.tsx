@@ -75,7 +75,7 @@ function useOptionsFieldGroupQuery(modId: RegistryId) {
       modDefinitionQuery,
       (x: ModDefinition | undefined) => x ?? null,
     ),
-    valueToAsyncState(dirtyModOptionsDefinitions),
+    valueToAsyncState(dirtyModOptionsDefinitions ?? null),
     async (
       modDefinition: ModDefinition,
       dirtyModOptionsDefinition: ModOptionsDefinition,
