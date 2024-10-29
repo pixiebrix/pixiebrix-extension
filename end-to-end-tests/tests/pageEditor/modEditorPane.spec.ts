@@ -20,6 +20,7 @@ import { expect, test } from "../../fixtures/testBase";
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
+import { sleep } from "@/utils/timeUtils";
 
 const testModDefinitionName = "simple-sidebar-panel";
 test.use({ modDefinitionNames: [testModDefinitionName] });
@@ -95,12 +96,26 @@ test("mod editor pane behavior", async ({
     ).toHaveValue("default val");
     await modEditorPane.currentInputsTabPanel.fillField(
       "test label",
-      "some real value",
+      "some real ",
     );
+    // Sleep to test that the field stays focused on sync with Redux
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/9376
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7148
+    await sleep(750);
+    // Use `pressSequentially` instead of `fill` so Playwright doesn't clear/refocus the field
+    const labelFieldLocator =
+      modEditorPane.currentInputsTabPanel.getByLabel("test label");
+    await labelFieldLocator.pressSequentially("value");
+    await sleep(750);
+    await expect(labelFieldLocator).toHaveValue("some real value");
+
     await pageEditorPage.saveActiveMod();
     await verifyModDefinitionSnapshot({
       modId,
       snapshotName: "updated-inputs",
     });
+
+    // Args should be persisted across saves
+    await expect(labelFieldLocator).toHaveValue("some real value");
   });
 });

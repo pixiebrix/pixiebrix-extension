@@ -28,7 +28,6 @@ export interface TabItem {
   badgeCount?: number;
   badgeVariant?: Variant;
   TabContent: React.VoidFunctionComponent;
-  mountWhenActive?: boolean;
 }
 
 export interface ActionButton {
@@ -64,7 +63,7 @@ const EditorTabLayout: React.FC<{
           className={styles.nav}
         >
           {tabs.map(({ name, badgeCount, badgeVariant }) => (
-            <Nav.Item key={`nav-tab-${name}`} className={styles.navItem}>
+            <Nav.Item key={name} className={styles.navItem}>
               <Nav.Link eventKey={name} className={styles.navLink}>
                 {name}
                 {badgeCount && badgeVariant && (
@@ -82,10 +81,7 @@ const EditorTabLayout: React.FC<{
               <div className="flex-grow-1" />
               <ButtonGroup>
                 {actionButtons.map(
-                  (
-                    { variant, onClick, caption, disabled = false, icon },
-                    index,
-                  ) => (
+                  ({ variant, onClick, caption, disabled = false, icon }) => (
                     <Button
                       key={caption}
                       size="sm"
@@ -109,14 +105,15 @@ const EditorTabLayout: React.FC<{
         </Nav>
 
         <Tab.Content className={styles.content}>
-          {tabs.map(({ name, TabContent, mountWhenActive }) => (
+          {tabs.map(({ name, TabContent }) => (
             <Tab.Pane
               key={name}
               eventKey={name}
-              mountOnEnter={mountWhenActive}
-              unmountOnExit={mountWhenActive}
+              // Simplify form state handling by only mounting when active
+              mountOnEnter
+              unmountOnExit
             >
-              <TabContent key={name} />
+              <TabContent />
             </Tab.Pane>
           ))}
         </Tab.Content>
