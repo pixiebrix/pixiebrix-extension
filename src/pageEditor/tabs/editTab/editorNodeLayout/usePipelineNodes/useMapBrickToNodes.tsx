@@ -50,6 +50,16 @@ import { useGetBrickContentProps } from "@/pageEditor/tabs/editTab/editorNodeLay
 import { useGetNodeMovement } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeMovement";
 import { type useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 
+type BrickNodeContext = {
+  isNodeActive: boolean;
+  isSubPipelineHeaderActive: boolean;
+  showAddBrick: boolean;
+  showBiggerActions: boolean;
+  hasSubPipelines: boolean;
+  collapsed: boolean;
+  expanded: boolean;
+};
+
 export type MapBrickToNodesArgs = {
   index: number;
   brickConfig: BrickConfig;
@@ -90,6 +100,62 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
     selectActiveBuilderPreviewElement,
   );
 
+  const getBrickContext = useCallback(
+    ({
+      brickConfig,
+      index,
+      lastIndex,
+      isRootPipeline,
+      showAppend,
+    }: {
+      brickConfig: BrickConfig;
+      index: number;
+      lastIndex: number;
+      isRootPipeline: boolean;
+      showAppend: boolean;
+    }): BrickNodeContext => {
+      const { instanceId } = brickConfig;
+      assertNotNullish(instanceId, "instanceId is required");
+
+      const brick = allBricks?.get(brickConfig.id)?.block;
+      const isNodeActive = instanceId === activeNodeId;
+
+      const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
+      const hasSubPipelines = !isEmpty(subPipelines);
+      const collapsed = collapsedNodes.includes(instanceId);
+      const expanded = hasSubPipelines && !collapsed;
+
+      const showAddBrick = isApiAtLeastV2 && (index < lastIndex || showAppend);
+      const showBiggerActions = index === lastIndex && isRootPipeline;
+
+      const isSubPipelineHeaderActive =
+        activeBuilderPreviewElementId == null
+          ? false
+          : subPipelines.some(
+              ({ path }) =>
+                activeBuilderPreviewElementId ===
+                getBuilderPreviewElementId(brickConfig, path),
+            );
+
+      return {
+        isNodeActive,
+        isSubPipelineHeaderActive,
+        showAddBrick,
+        showBiggerActions,
+        hasSubPipelines,
+        collapsed,
+        expanded,
+      };
+    },
+    [
+      activeBuilderPreviewElementId,
+      activeNodeId,
+      allBricks,
+      collapsedNodes,
+      isApiAtLeastV2,
+    ],
+  );
+
   return useCallback(
     ({
       index,
@@ -112,21 +178,21 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       assertNotNullish(instanceId, "instanceId is required");
 
       const nodes: EditorNodeProps[] = [];
-      const brick = allBricks?.get(brickConfig.id)?.block;
-      const isNodeActive = instanceId === activeNodeId;
+      let modComponentHasTraces = modComponentHasTracesInput;
 
       const traceRecord = getLatestBrickCall(
         filterTracesByCall(traces, latestPipelineCall),
         instanceId,
       );
+      modComponentHasTraces ||= traceRecord != null;
 
-      let modComponentHasTraces =
-        modComponentHasTracesInput || traceRecord != null;
-
-      const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
-      const hasSubPipelines = !isEmpty(subPipelines);
-      const collapsed = collapsedNodes.includes(instanceId);
-      const expanded = hasSubPipelines && !collapsed;
+      const context = getBrickContext({
+        brickConfig,
+        index,
+        lastIndex,
+        isRootPipeline,
+        showAppend,
+      });
 
       const { onClickMoveUp, onClickMoveDown } = getNodeMovement({
         nodeId: instanceId,
@@ -134,8 +200,6 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         lastIndex,
       });
 
-      const showAddBrick = isApiAtLeastV2 && (index < lastIndex || showAppend);
-      const showBiggerActions = index === lastIndex && isRootPipeline;
       const nodeId = instanceId;
 
       const brickNodeActions = createNodeActions({
@@ -143,7 +207,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         pipelinePath,
         flavor,
         index: index + 1,
-        showAddBrick,
+        showAddBrick: context.showAddBrick,
       });
 
       const contentProps = getBrickContentProps({
@@ -151,21 +215,12 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         traceRecord,
       });
 
-      const isSubPipelineHeaderActive =
-        activeBuilderPreviewElementId == null
-          ? false
-          : subPipelines.some(
-              ({ path }) =>
-                activeBuilderPreviewElementId ===
-                getBuilderPreviewElementId(brickConfig, path),
-            );
-
       const brickNodeState = getNodeState({
-        active: !isSubPipelineHeaderActive && isNodeActive,
+        active: !context.isSubPipelineHeaderActive && context.isNodeActive,
         nodeId,
         nestingLevel,
-        showBiggerActions,
-        nodeActions: expanded ? [] : brickNodeActions,
+        showBiggerActions: context.showBiggerActions,
+        nodeActions: context.expanded ? [] : brickNodeActions,
         isParentActive,
       });
 
@@ -176,12 +231,12 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         ...brickNodeState,
         onClickMoveUp,
         onClickMoveDown,
-        hasSubPipelines,
-        collapsed,
-        isSubPipelineHeaderActive,
+        hasSubPipelines: context.hasSubPipelines,
+        collapsed: context.collapsed,
+        isSubPipelineHeaderActive: context.isSubPipelineHeaderActive,
       });
 
-      if (expanded) {
+      if (context.expanded) {
         const { nodes: subNodes, modComponentHasTraces: subPipelineHasTraces } =
           getSubPipelineNodes({
             index,
@@ -192,7 +247,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
             isAncestorActive,
             traceRecord,
             latestPipelineCall,
-            isSubPipelineHeaderActive,
+            isSubPipelineHeaderActive: context.isSubPipelineHeaderActive,
             mapPipelineToNodes,
             getNodeState,
           });
@@ -202,10 +257,10 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
         modComponentHasTraces ||= subPipelineHasTraces;
 
         const footerNodeState = getNodeState({
-          active: !isSubPipelineHeaderActive && isNodeActive,
+          active: !context.isSubPipelineHeaderActive && context.isNodeActive,
           nodeId: instanceId,
           nestingLevel,
-          showBiggerActions,
+          showBiggerActions: context.showBiggerActions,
           nodeActions: brickNodeActions,
         });
 
@@ -227,14 +282,10 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       };
     },
     [
-      activeBuilderPreviewElementId,
-      activeNodeId,
-      allBricks,
-      collapsedNodes,
       createNodeActions,
       getBrickContentProps,
+      getBrickContext,
       getNodeMovement,
-      isApiAtLeastV2,
       traces,
     ],
   );
