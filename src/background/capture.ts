@@ -21,7 +21,6 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type JsonObject } from "type-fest";
 import { emitAudioEvent } from "@/contentScript/messenger/api";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
-import { ensureOffscreenDocument } from "@/offscreen/offscreenDocumentController";
 import {
   getRecordingTabId,
   startRecording,
@@ -108,9 +107,6 @@ export async function startAudioCapture(
       );
     });
   }
-
-  // If an offscreen document is not already open, create one
-  await ensureOffscreenDocument();
 
   // Send the stream ID to the offscreen document to start recording.
   await startRecording({

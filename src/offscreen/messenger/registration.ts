@@ -22,6 +22,7 @@ import {
   startRecording,
   stopRecording,
 } from "@/offscreen/recording";
+import { noop } from "lodash";
 
 declare global {
   interface MessengerMethods {
@@ -29,6 +30,7 @@ declare global {
     GET_RECORDING_TAB_ID: typeof extractRecordingTabId;
     START_RECORDING: typeof startRecording;
     STOP_RECORDING: typeof stopRecording;
+    OFFSCREEN_PING: typeof noop;
   }
 }
 
@@ -38,5 +40,6 @@ export default function registerOffscreenMessenger(): void {
     GET_RECORDING_TAB_ID: extractRecordingTabId,
     START_RECORDING: startRecording,
     STOP_RECORDING: stopRecording,
+    OFFSCREEN_PING: noop,
   });
 }

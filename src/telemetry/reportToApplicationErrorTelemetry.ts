@@ -25,7 +25,6 @@ import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { allowsTrack } from "@/telemetry/dnt";
 
 import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
-import { ensureOffscreenDocument } from "@/offscreen/offscreenDocumentController";
 import type { MessageContext } from "@/types/loggerTypes";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
@@ -90,12 +89,6 @@ export async function reportToApplicationErrorTelemetry(
     mapAppUserToTelemetryUser(await readAuthData()),
     selectExtraContext(error),
   ]);
-
-  // Due to service worker limitations with the Datadog SDK, which we currently use for Application error telemetry,
-  // we need to send the error from an offscreen document.
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/8268
-  // and offscreen.ts
-  await ensureOffscreenDocument();
 
   await sendErrorViaErrorReporter({
     error: serializeError(error),
