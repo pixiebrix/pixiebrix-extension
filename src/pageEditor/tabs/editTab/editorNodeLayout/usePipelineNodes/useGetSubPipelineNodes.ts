@@ -16,7 +16,7 @@
  */
 
 import { type EditorNodeProps } from "./types";
-import { type BrickConfig } from "@/bricks/types";
+import { type PipelineFlavor, type BrickConfig } from "@/bricks/types";
 import { joinPathParts } from "@/utils/formUtils";
 import { getBuilderPreviewElementId, getSubPipelinesForBrick } from "./helpers";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
@@ -49,6 +49,96 @@ type GetSubPipelineNodesProps = {
   mapPipelineToNodes: ReturnType<typeof useMapPipelineToNodes>;
   getNodeState: ReturnType<typeof useGetNodeState>;
 };
+
+function createHeaderNode({
+  activeBuilderPreviewElementId,
+  brickConfig,
+  createNodeActions,
+  flavor,
+  fullSubPath,
+  getNodeState,
+  headerLabel,
+  inputKey,
+  isHeaderNodeActive,
+  isLoadingBricks,
+  isParentActive,
+  isSiblingHeaderActive,
+  nestingLevel,
+  path,
+}: {
+  activeBuilderPreviewElementId: string | null;
+  brickConfig: BrickConfig;
+  createNodeActions: ReturnType<typeof useCreateNodeActions>;
+  flavor: PipelineFlavor;
+  fullSubPath: string;
+  getNodeState: ReturnType<typeof useGetNodeState>;
+  headerLabel: string;
+  inputKey?: string;
+  isHeaderNodeActive: boolean;
+  isLoadingBricks: boolean;
+  isParentActive: boolean;
+  isSiblingHeaderActive: boolean;
+  nestingLevel: number;
+  path: string;
+}) {
+  return (
+    dispatch: AppDispatch,
+  ): Extract<EditorNodeProps, { type: "header" }> => {
+    const { instanceId } = brickConfig;
+    assertNotNullish(instanceId, "instanceId is required");
+
+    const builderPreviewElementId = getBuilderPreviewElementId(
+      brickConfig,
+      path,
+    );
+
+    const headerName = `${instanceId}-header`;
+
+    const headerActions = createNodeActions({
+      nodeId: headerName,
+      pipelinePath: fullSubPath,
+      flavor,
+      index: 0,
+      showAddBrick: true,
+    });
+
+    const headerNodeState = getNodeState({
+      active: isHeaderNodeActive || false,
+      nodeId: instanceId,
+      nestingLevel,
+      nodeActions: headerActions,
+      isParentActive: !isSiblingHeaderActive && isParentActive,
+    });
+
+    return {
+      type: "header",
+      key: fullSubPath,
+      ...headerNodeState,
+      headerLabel,
+      nestingLevel,
+      pipelineInputKey: inputKey,
+      isAncestorActive: !isSiblingHeaderActive && isParentActive,
+      builderPreviewElement: builderPreviewElementId
+        ? {
+            name: builderPreviewElementId,
+            focus() {
+              dispatch(actions.setActiveNodeId(instanceId));
+              dispatch(
+                actions.setActiveBuilderPreviewElement(builderPreviewElementId),
+              );
+              window.dispatchEvent(
+                new Event(
+                  `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${builderPreviewElementId}`,
+                ),
+              );
+            },
+            active: builderPreviewElementId === activeBuilderPreviewElementId,
+          }
+        : null,
+      isPipelineLoading: isLoadingBricks,
+    };
+  };
+}
 
 export function useGetSubPipelineNodes() {
   const dispatch = useDispatch<AppDispatch>();
@@ -93,64 +183,38 @@ export function useGetSubPipelineNodes() {
         flavor,
         inputKey,
       } of subPipelines) {
-        const headerName = `${nodeId}-header`;
         const fullSubPath = joinPathParts(pipelinePath, index, path);
         const builderPreviewElementId = getBuilderPreviewElementId(
           brickConfig,
           path,
         );
-        const isHeaderNodeActive =
+        const isHeaderNodeActive = Boolean(
           activeBuilderPreviewElementId &&
-          builderPreviewElementId === activeBuilderPreviewElementId;
+            builderPreviewElementId === activeBuilderPreviewElementId,
+        );
         const isSiblingHeaderActive = isSubPipelineHeaderActive;
 
-        const headerActions = createNodeActions({
-          nodeId: headerName,
-          pipelinePath: fullSubPath,
-          flavor,
-          index: 0,
-          showAddBrick: true,
-        });
-
-        const headerNodeState = getNodeState({
-          active: isHeaderNodeActive || false,
-          nodeId,
-          nestingLevel,
-          nodeActions: headerActions,
-          isParentActive: !isSiblingHeaderActive && isParentActive,
-        });
-
         // Add header node
-        nodes.push({
-          type: "header",
-          key: fullSubPath,
-          ...headerNodeState,
-          headerLabel,
-          nestingLevel,
-          pipelineInputKey: inputKey,
-          isAncestorActive: !isSiblingHeaderActive && isParentActive,
-          builderPreviewElement: builderPreviewElementId
-            ? {
-                name: builderPreviewElementId,
-                focus() {
-                  dispatch(actions.setActiveNodeId(nodeId));
-                  dispatch(
-                    actions.setActiveBuilderPreviewElement(
-                      builderPreviewElementId,
-                    ),
-                  );
-                  window.dispatchEvent(
-                    new Event(
-                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${builderPreviewElementId}`,
-                    ),
-                  );
-                },
-                active:
-                  builderPreviewElementId === activeBuilderPreviewElementId,
-              }
-            : null,
-          isPipelineLoading: isLoadingBricks,
-        });
+        nodes.push(
+          dispatch(
+            createHeaderNode({
+              activeBuilderPreviewElementId,
+              brickConfig,
+              createNodeActions,
+              flavor,
+              fullSubPath,
+              getNodeState,
+              headerLabel,
+              inputKey,
+              isHeaderNodeActive,
+              isLoadingBricks,
+              isParentActive,
+              isSiblingHeaderActive,
+              nestingLevel,
+              path,
+            }),
+          ),
+        );
 
         // Map sub-pipeline nodes
         const {
