@@ -19,23 +19,22 @@ import React, { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
-  selectDirtyOptionsDefinitionsForModId,
   selectDirtyOptionsArgsForModId,
+  selectDirtyOptionsDefinitionForModId,
   selectGetDraftModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
-import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
+import genericOptionsFactory, {
+  type BrickOptionProps,
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { Card, Container } from "react-bootstrap";
-import Form, { type RenderBody } from "@/components/form/Form";
-import Loader from "@/components/Loader";
-import Alert from "@/components/Alert";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import Form from "@/components/form/Form";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
-import useAsyncModOptionsValidationSchema from "@/hooks/useAsyncModOptionsValidationSchema";
+import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -44,6 +43,15 @@ import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import type { RegistryId } from "@/types/registryTypes";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { mergeAsyncState, valueToAsyncState } from "@/utils/asyncStateUtils";
+import type {
+  ModDefinition,
+  ModOptionsDefinition,
+} from "@/types/modDefinitionTypes";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import type { FormikValues } from "formik";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -54,55 +62,58 @@ const NoModOptions: React.FC = () => (
   <div>This mod does not require any configuration</div>
 );
 
+function useOptionsFieldGroupQuery(modId: RegistryId) {
+  const modDefinitionQuery = useOptionalModDefinition(modId);
+
+  const dirtyModOptionsDefinition = useSelector(
+    selectDirtyOptionsDefinitionForModId(modId),
+  );
+
+  return useDeriveAsyncState(
+    // Map undefined to null because `useDeriveAsyncState` does not support undefined values in isSuccess state
+    mergeAsyncState(
+      modDefinitionQuery,
+      (x: ModDefinition | undefined) => x ?? null,
+    ),
+    valueToAsyncState(dirtyModOptionsDefinition ?? null),
+    async (
+      modDefinition: ModDefinition,
+      dirtyModOptionsDefinition: ModOptionsDefinition,
+    ) => {
+      const optionsDefinition =
+        dirtyModOptionsDefinition ??
+        modDefinition?.options ??
+        emptyModOptionsDefinitionFactory();
+
+      return {
+        validationSchema: await getOptionsValidationSchema(
+          optionsDefinition.schema,
+        ),
+        OptionsFieldGroup: genericOptionsFactory(
+          optionsDefinition.schema,
+          optionsDefinition.uiSchema,
+          { NoOptionsComponent: NoModOptions },
+        ),
+      };
+    },
+  );
+}
+
 const ModOptionsArgsContent: React.FC = () => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
 
   assertNotNullish(activeModId, "activeModId is required");
 
-  const {
-    data: mod,
-    isFetching: isFetchingMod,
-    error: modError,
-  } = useOptionalModDefinition(activeModId);
-  const dirtyModOptions = useSelector(
-    selectDirtyOptionsDefinitionsForModId(activeModId),
-  );
-  const modifiedOptionValues = useSelector(
-    selectDirtyOptionsArgsForModId(activeModId),
-  );
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
   const draftModComponents = getDraftModComponentsForMod(activeModId);
 
-  const optionsDefinition = useMemo(() => {
-    if (dirtyModOptions) {
-      return dirtyModOptions;
-    }
+  const fieldGroupQuery = useOptionsFieldGroupQuery(activeModId);
 
-    return mod?.options ?? emptyModOptionsDefinitionFactory();
-  }, [dirtyModOptions, mod?.options]);
-
-  const {
-    data: validationSchema,
-    isLoading: isLoadingSchema,
-    error: schemaError,
-  } = useAsyncModOptionsValidationSchema(optionsDefinition?.schema);
-
-  const OptionsFieldGroup = useMemo(
-    () =>
-      genericOptionsFactory(
-        optionsDefinition?.schema,
-        optionsDefinition?.uiSchema,
-        { NoOptionsComponent: NoModOptions },
-      ),
-    [optionsDefinition],
-  );
-
-  const initialValues = useMemo(
-    () => modifiedOptionValues ?? collectModOptionsArgs(draftModComponents),
-    [draftModComponents, modifiedOptionValues],
+  const dirtyOptionsArgs = useSelector(
+    selectDirtyOptionsArgsForModId(activeModId),
   );
 
   const integrationDependencies = useMemo(
@@ -123,51 +134,51 @@ const ModOptionsArgsContent: React.FC = () => {
     [dispatch],
   );
 
-  if (isLoadingSchema || isFetchingMod) {
-    return <Loader />;
-  }
+  const optionsFieldBody = (OptionsFieldGroup: React.FC<BrickOptionProps>) => {
+    // Name local variable so React has a display name
+    const renderBody = ({ values }: { values: FormikValues }) => (
+      <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
+        <Effect values={values} onChange={updateRedux} delayMillis={300} />
+        <Card>
+          <Card.Header>Mod Input Options</Card.Header>
+          <Card.Body>
+            <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
+              <OptionsFieldGroup name="" />
+            </FieldRuntimeContext.Provider>
+          </Card.Body>
+        </Card>
+      </ModIntegrationsContext.Provider>
+    );
 
-  const error = modError ?? schemaError;
-  if (error) {
-    console.error(error);
-    return <Alert variant="danger">{getErrorMessage(error)}</Alert>;
-  }
-
-  const renderBody: RenderBody = ({ values }) => (
-    <ModIntegrationsContext.Provider value={{ integrationDependencies }}>
-      <Effect values={values} onChange={updateRedux} delayMillis={300} />
-      <Card>
-        <Card.Header>Mod Input Options</Card.Header>
-        <Card.Body>
-          <FieldRuntimeContext.Provider value={OPTIONS_FIELD_RUNTIME_CONTEXT}>
-            <OptionsFieldGroup name="" />
-          </FieldRuntimeContext.Provider>
-        </Card.Body>
-      </Card>
-    </ModIntegrationsContext.Provider>
-  );
+    return renderBody;
+  };
 
   return (
-    <ErrorBoundary>
-      <Form
-        validationSchema={validationSchema}
-        initialValues={initialValues}
-        enableReinitialize
-        renderBody={renderBody}
-        onSubmit={() => {
-          console.error(
-            "The form's submit should not be called to save mod option values, they are automatically synced with redux",
-          );
-        }}
-        renderSubmit={() => null}
-      />
-    </ErrorBoundary>
+    <AsyncStateGate state={fieldGroupQuery}>
+      {({ data: { validationSchema, OptionsFieldGroup } }) => (
+        <Form
+          validationSchema={validationSchema}
+          initialValues={
+            dirtyOptionsArgs ?? collectModOptionsArgs(draftModComponents)
+          }
+          renderBody={optionsFieldBody(OptionsFieldGroup)}
+          onSubmit={() => {
+            console.error(
+              "The form's submit should not be called to save mod option args, they are automatically synced with redux",
+            );
+          }}
+          renderSubmit={() => null}
+        />
+      )}
+    </AsyncStateGate>
   );
 };
 
 const ModOptionsArgsEditor: React.FC = () => (
   <Container fluid className="pt-3">
-    <ModOptionsArgsContent />
+    <ErrorBoundary>
+      <ModOptionsArgsContent />
+    </ErrorBoundary>
   </Container>
 );
 
