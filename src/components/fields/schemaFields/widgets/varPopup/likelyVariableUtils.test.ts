@@ -355,4 +355,8 @@ describe("getFullVariableName", () => {
       ]),
     ).toBe('@foo?.["hello world?"].bar');
   });
+
+  it("handles trailing number", () => {
+    expect(getFullVariableName("@ou", ["@output2"])).toBe("@output2");
+  });
 });
