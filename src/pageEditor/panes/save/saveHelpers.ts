@@ -140,13 +140,15 @@ const emptyModDefinition: UnsavedModDefinition = {
 
 function mapModComponentFormStateToModComponentBase(
   modComponentFormState: ModComponentFormState,
-): Except<ModComponentBase, "variablesDefinition"> {
+): Except<ModComponentBase, "variablesDefinition" | "optionsArgs"> {
   const { selectModComponent, selectStarterBrickDefinition } =
     adapterForComponent(modComponentFormState);
 
   const unsavedModComponent = selectModComponent(modComponentFormState, {
-    // Activation-time optionsArgs are not relevant for mod component definitions
+    // Activation-time `optionsArgs` are not relevant for mod component definitions
     optionsArgs: {},
+    // Mod-level `variablesDefinition` are not relevant for mod component definitions
+    variablesDefinition: emptyModVariablesDefinitionFactory(),
   });
 
   if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {

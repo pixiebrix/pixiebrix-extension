@@ -45,6 +45,7 @@ import {
   type BaseFormStateV5,
   type BaseFormStateV6,
   type BaseFormStateV7,
+  type BaseFormStateV8,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 
@@ -427,7 +428,7 @@ export type EditorStateV10 = Except<
 > & {
   modComponentFormStates: BaseFormStateV7[];
   deletedModComponentFormStatesByModId: Record<RegistryId, BaseFormStateV7[]>;
-  dirtyModOptionsDefinitionById: Record<RegistryId, ModOptionsDefinition>;
+  dirtyModOptionsDefinitionsById: Record<RegistryId, ModOptionsDefinition>;
   dirtyModOptionsArgsById: Record<RegistryId, OptionsArgs>;
 };
 
@@ -441,9 +442,9 @@ export type EditorStateV11 = Except<
   EditorStateV10,
   | "modComponentFormStates"
   | "deletedModComponentFormStatesByModId"
-  | "dirtyModOptionsDefinitionById"
+  | "dirtyModOptionsDefinitionsById"
 > & {
-  modComponentFormStates: BaseFormStateV7[];
+  modComponentFormStates: BaseFormStateV8[];
   deletedModComponentFormStatesByModId: Record<RegistryId, UUID[]>;
   dirtyModOptionsDefinitionById: Record<RegistryId, ModOptionsDefinition>;
   dirtyModVariablesDefinitionById: Record<RegistryId, ModOptionsDefinition>;

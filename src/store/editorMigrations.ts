@@ -34,6 +34,7 @@ import {
 import {
   type EditorStateV1,
   type EditorStateV10,
+  type EditorStateV11,
   type EditorStateV2,
   type EditorStateV3,
   type EditorStateV4,
@@ -49,6 +50,7 @@ import { makeInitialDataTabState } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import {
   createNewUnsavedModMetadata,
+  emptyModOptionsDefinitionFactory,
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
 import { type SetOptional } from "type-fest";
@@ -67,6 +69,7 @@ export const migrations: MigrationManifest = {
   8: (state: EditorStateV7 & PersistedState) => migrateEditorStateV7(state),
   9: (state: EditorStateV8 & PersistedState) => migrateEditorStateV8(state),
   10: (state: EditorStateV9 & PersistedState) => migrateEditorStateV9(state),
+  11: (state: EditorStateV10 & PersistedState) => migrateEditorStateV10(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -287,7 +290,7 @@ export function migrateEditorStateV9(
       >;
 
       // Rename dirtyModOptionsById to dirtyModOptionsDefinitionById
-      draft.dirtyModOptionsDefinitionById = oldDraft.dirtyModOptionsById ?? {};
+      draft.dirtyModOptionsDefinitionsById = oldDraft.dirtyModOptionsById ?? {};
       delete oldDraft.dirtyModOptionsById;
 
       // Populate dirtyModOptionsArgsById and drop optionsArgs from modComponentFormStates
@@ -303,6 +306,43 @@ export function migrateEditorStateV9(
 
         delete (formState as SetOptional<BaseFormStateV5, "optionsArgs">)
           .optionsArgs;
+      }
+    },
+  );
+}
+
+/** @internal */
+export function migrateEditorStateV10(
+  state: EditorStateV10 & PersistedState,
+): EditorStateV11 & PersistedState {
+  return produce(
+    state as unknown as EditorStateV11 & PersistedState,
+    (draft) => {
+      // Alias the old draft type for deleting old properties
+      const oldDraft = draft as unknown as Draft<
+        SetOptional<EditorStateV10, "dirtyModOptionsDefinitionsById">
+      >;
+
+      // Rename dirtyModOptionsDefinitionsById to dirtyModOptionsDefinitionById
+      draft.dirtyModOptionsDefinitionById =
+        oldDraft.dirtyModOptionsDefinitionsById ??
+        emptyModOptionsDefinitionFactory();
+      delete oldDraft.dirtyModOptionsDefinitionsById;
+
+      // Populate dirtyModOptionsArgsById and drop optionsArgs from modComponentFormStates
+      draft.dirtyModVariablesDefinitionById = {};
+      for (const formState of oldDraft.modComponentFormStates) {
+        // If the form state is dirty, populate the dirty optionsArgs. (They might not actually be dirty, to know
+        // for sure, would need to compare the form state to the activate mods. However, if no form state is dirty,
+        // we know the optionsArgs are not dirty.)
+        if (oldDraft.dirty[formState.uuid]) {
+          draft.dirtyModVariablesDefinitionById[formState.modMetadata.id] =
+            formState.variablesDefinition;
+        }
+
+        delete (
+          formState as SetOptional<BaseFormStateV6, "variablesDefinition">
+        ).variablesDefinition;
       }
     },
   );

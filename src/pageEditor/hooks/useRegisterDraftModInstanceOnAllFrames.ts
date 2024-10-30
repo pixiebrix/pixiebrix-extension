@@ -18,7 +18,7 @@
 import { useEffect } from "react";
 import {
   formStateToDraftModComponent,
-  modComponentToFormState,
+  selectGetDraftFormStatesPromiseForModId,
   selectType,
 } from "@/pageEditor/starterBricks/adapter";
 import {
@@ -33,7 +33,6 @@ import {
   selectActiveModComponentId,
   selectCurrentModId,
   selectEditorUpdateKey,
-  selectGetCleanComponentsAndDirtyFormStatesForMod,
   selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -124,21 +123,9 @@ function updateDraftModInstance() {
     // NOTE: logic accounts for activated mod components that have been deleted. But it does not account for
     // unsaved draft mod component that have been deleted since the last injection. The draft mod component
     // deletion code is currently responsible for removing those from the tab
-    const getModDraftStateForModId = useSelector(
-      selectGetModDraftStateForModId,
-    );
-    const getEditorInstance =
-      selectGetCleanComponentsAndDirtyFormStatesForMod(state);
-    const editorInstance = getEditorInstance(modId);
-
-    const { cleanModComponents, dirtyModComponentFormStates } = editorInstance;
-
-    const draftFormStates = [
-      ...(await Promise.all(
-        cleanModComponents.map(async (x) => modComponentToFormState(x)),
-      )),
-      ...dirtyModComponentFormStates,
-    ];
+    const getModDraftStateForModId = selectGetModDraftStateForModId(state);
+    const draftFormStates =
+      await selectGetDraftFormStatesPromiseForModId(state)(modId);
 
     for (const draftFormState of draftFormStates) {
       const isSelectedInEditor = activeModComponentId === draftFormState.uuid;

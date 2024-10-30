@@ -36,7 +36,13 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { compact, sortBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+import {
+  type DraftModState,
+  type RootState,
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectGetDraftModComponentsForMod } from "@/pageEditor/store/editor/editorSelectors";
+import { type RegistryId } from "@/types/registryTypes";
+import { isModComponentBase } from "@/pageEditor/utils";
 
 const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.TRIGGER, triggerModComponent],
@@ -140,4 +146,17 @@ export function formStateToDraftModComponent(
     `No adapter found for starter brick type: ${starterBrickType}`,
   );
   return adapter.asDraftModComponent(modComponentFormState, modState);
+}
+
+export function selectGetDraftFormStatesPromiseForModId(state: RootState) {
+  return async (modId: RegistryId) => {
+    const getDraftModComponentsForMod =
+      selectGetDraftModComponentsForMod(state);
+
+    return Promise.all(
+      getDraftModComponentsForMod(modId).map(async (x) =>
+        isModComponentBase(x) ? modComponentToFormState(x) : x,
+      ),
+    );
+  };
 }

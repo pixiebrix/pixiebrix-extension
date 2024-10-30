@@ -284,6 +284,7 @@ const selectGetModIsDirtySelector = createSelector(
   selectDirtyModMetadata,
   selectIsModComponentDirtyById,
   selectGetDirtyOptionsDefinitionForModId,
+  selectDirtyModVariablesDefinitionForModId,
   selectDirtyOptionsArgsForModId,
   selectGetModComponentFormStatesByModId,
   selectDeletedComponentFormStatesByModId,
@@ -291,6 +292,7 @@ const selectGetModIsDirtySelector = createSelector(
     dirtyModMetadata,
     isModComponentDirtyById,
     getDirtyOptionsDefinitionsForModId,
+    dirtyModVariablesDefinitionForModId,
     dirtyModOptionsArgsForModId,
     getModComponentFormStatesByModId,
     getDeletedModComponentFormStatesByModId,
@@ -307,6 +309,8 @@ const selectGetModIsDirtySelector = createSelector(
         // eslint-disable-next-line security/detect-object-injection -- registry id
         Boolean(dirtyModMetadata[modId]) ||
         Boolean(getDirtyOptionsDefinitionsForModId(modId)) ||
+        // eslint-disable-next-line security/detect-object-injection -- registry id
+        Boolean(dirtyModVariablesDefinitionForModId[modId]) ||
         // Mod Options Args aren't on the mod definition. But this selector is used to determine if the mod definition
         // or its configuration is dirty.
         // eslint-disable-next-line security/detect-object-injection -- registry id
@@ -330,6 +334,7 @@ export const selectGetModDraftStateForModId = createSelector(
   selectGetOptionsArgsForModId,
   selectGetModVariablesDefinitionForModId,
   (getOptionsArgsForModId, getModVariablesDefinitionForModId) =>
+    // Memoize because it constructs a new object
     memoize((modId: RegistryId) => ({
       optionsArgs: getOptionsArgsForModId(modId),
       variablesDefinition: getModVariablesDefinitionForModId(modId),
