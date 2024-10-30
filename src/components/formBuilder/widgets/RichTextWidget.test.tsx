@@ -18,7 +18,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CustomFormComponent from "@/bricks/renderers/CustomFormComponent";
+import CustomFormComponent, {
+  type CustomFormComponentProps,
+} from "@/bricks/renderers/CustomFormComponent";
 import { type Schema } from "@/types/schemaTypes";
 
 describe("RichTextWidget", () => {
@@ -56,86 +58,69 @@ describe("RichTextWidget", () => {
     Range.prototype.getClientRects = (): DOMRectList => new FakeDOMRectList();
   });
 
-  test("updates form data when content changes", async () => {
-    const onSubmit = jest.fn();
-    const schema: Schema = {
-      type: "object",
-      properties: {
-        content: {
-          type: "string",
-          title: "Content",
-        },
-      },
-    };
-    const uiSchema = {
-      content: {
-        "ui:widget": "richText",
-      },
-    };
+  const createSchema = (properties: Record<string, any>): Schema => ({
+    type: "object",
+    properties,
+  });
 
+  const createRichTextUiSchema = (fields: string[]) =>
+    Object.fromEntries(
+      fields.map((field) => [field, { "ui:widget": "richText" }]),
+    );
+
+  const renderRichTextForm = ({
+    schema,
+    uiSchema,
+    formData,
+    onSubmit = jest.fn(),
+  }: Pick<CustomFormComponentProps, "schema" | "uiSchema" | "formData"> & {
+    onSubmit?: jest.Mock;
+  }) => {
     render(
       <CustomFormComponent
         schema={schema}
-        formData={{ content: "" }}
+        formData={formData}
         uiSchema={uiSchema}
         submitCaption="Submit"
         autoSave={false}
         onSubmit={onSubmit}
       />,
     );
+    return { onSubmit };
+  };
+
+  test("updates form data when content changes", async () => {
+    const { onSubmit } = renderRichTextForm({
+      schema: createSchema({
+        foo: { type: "string", title: "Foo" },
+      }),
+      uiSchema: createRichTextUiSchema(["foo"]),
+      formData: { foo: "" },
+    });
 
     const editor = screen.getByRole("textbox");
     await userEvent.type(editor, "Hello World");
-
     screen.getByRole("button", { name: "Submit" }).click();
 
     expect(onSubmit).toHaveBeenCalledWith(
-      // TODO: Should be "<p>Hello World</p>"; this is only happening in unit tests
-      { content: "<p></p><p>Hello World</p>" },
+      { foo: "<p></p><p>Hello World</p>" },
       { submissionCount: 1 },
     );
   });
 
   test("can handle multiple rich text editors", async () => {
-    const onSubmit = jest.fn();
-    const schema: Schema = {
-      type: "object",
-      properties: {
-        foo: {
-          type: "string",
-          title: "Foo",
-        },
-        bar: {
-          type: "string",
-          title: "Bar",
-        },
-      },
-    };
-    const uiSchema = {
-      foo: {
-        "ui:widget": "richText",
-      },
-      bar: {
-        "ui:widget": "richText",
-      },
-    };
-
-    render(
-      <CustomFormComponent
-        schema={schema}
-        formData={{ foo: "", bar: "" }}
-        uiSchema={uiSchema}
-        submitCaption="Submit"
-        autoSave={false}
-        onSubmit={onSubmit}
-      />,
-    );
+    const { onSubmit } = renderRichTextForm({
+      schema: createSchema({
+        foo: { type: "string", title: "Foo" },
+        bar: { type: "string", title: "Bar" },
+      }),
+      uiSchema: createRichTextUiSchema(["foo", "bar"]),
+      formData: { foo: "", bar: "" },
+    });
 
     const [fooEditor, barEditor] = screen.getAllByRole("textbox");
-
     await userEvent.type(fooEditor!, "Hello");
     await userEvent.type(barEditor!, "Goodbye");
-
     screen.getByRole("button", { name: "Submit" }).click();
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -145,5 +130,19 @@ describe("RichTextWidget", () => {
       },
       { submissionCount: 1 },
     );
+  });
+
+  test("submits empty rich text fields", () => {
+    const { onSubmit } = renderRichTextForm({
+      schema: createSchema({
+        foo: { type: "string", title: "Foo" },
+      }),
+      uiSchema: createRichTextUiSchema(["foo"]),
+      formData: { foo: "" },
+    });
+
+    screen.getByRole("button", { name: "Submit" }).click();
+
+    expect(onSubmit).toHaveBeenCalledWith({ foo: "" }, { submissionCount: 1 });
   });
 });
