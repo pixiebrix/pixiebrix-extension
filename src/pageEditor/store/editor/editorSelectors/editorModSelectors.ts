@@ -251,7 +251,7 @@ const selectDirtyModVariablesDefinitionForModId = (state: EditorRootState) =>
 /**
  * Returns the draft mod options args for the given mod id.
  */
-export const selectGetModVariablesDefinitionForModId = createSelector(
+const selectGetModVariablesDefinitionForModId = createSelector(
   selectDirtyModVariablesDefinitionForModId,
   selectGetDraftModComponentsForMod,
   (dirtyModVariablesDefinitionForModId, getDraftModComponentsForMod) =>
