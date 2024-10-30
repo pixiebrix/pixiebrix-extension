@@ -18,7 +18,6 @@
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
 import { useCurrentEditor, EditorProvider } from "@tiptap/react";
-// TODO: Only install the extensions we need
 import { StarterKit } from "@tiptap/starter-kit";
 import { Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

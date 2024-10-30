@@ -16,10 +16,10 @@
  */
 
 .root {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+
   :global(.tiptap) {
-    border: 1px solid #ced4da;
-    border-radius: 0 0 4px 4px;
-    border-top: none;
     padding: 6px 12px 6px 12px;
     max-height: 300px;
     overflow-y: auto;
@@ -27,6 +27,6 @@
 }
 
 .toolbar {
-  border: 1px solid #ced4da;
+  border-bottom: 1px solid #ced4da;
   border-radius: 4px 4px 0 0;
 }
