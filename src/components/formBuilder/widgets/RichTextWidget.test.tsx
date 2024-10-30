@@ -95,4 +95,55 @@ describe("RichTextWidget", () => {
       { submissionCount: 1 },
     );
   });
+
+  test("can handle multiple rich text editors", async () => {
+    const onSubmit = jest.fn();
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        foo: {
+          type: "string",
+          title: "Foo",
+        },
+        bar: {
+          type: "string",
+          title: "Bar",
+        },
+      },
+    };
+    const uiSchema = {
+      foo: {
+        "ui:widget": "richText",
+      },
+      bar: {
+        "ui:widget": "richText",
+      },
+    };
+
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ foo: "", bar: "" }}
+        uiSchema={uiSchema}
+        submitCaption="Submit"
+        autoSave={false}
+        onSubmit={onSubmit}
+      />,
+    );
+
+    const [fooEditor, barEditor] = screen.getAllByRole("textbox");
+
+    await userEvent.type(fooEditor!, "Hello");
+    await userEvent.type(barEditor!, "Goodbye");
+
+    screen.getByRole("button", { name: "Submit" }).click();
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        foo: "<p></p><p>Hello</p>",
+        bar: "<p></p><p>Goodbye</p>",
+      },
+      { submissionCount: 1 },
+    );
+  });
 });
