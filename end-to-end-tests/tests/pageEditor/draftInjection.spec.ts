@@ -41,7 +41,7 @@ test("#9381: inject non-selected/active sidebar", async ({
 
   async function assertSidebarVisible() {
     const sidebarPage = await getSidebarPage(page, extensionId);
-    // Check tab title (see https://github.com/pixiebrix/pixiebrix-extension/issues/9381)
+    // Check tab title is visible: see https://github.com/pixiebrix/pixiebrix-extension/issues/9381
     await expect(
       sidebarPage.getByRole("tab", { name: "Sidebar Panel" }),
     ).toBeVisible();
@@ -70,6 +70,28 @@ test("#9381: inject non-selected/active sidebar", async ({
   });
 
   await test.step("Select Quickbar component and assert panel heading is visible", async () => {
+    await pageEditorPage.modListingPanel
+      .getModListItemByName("Show Sidebar")
+      .select();
+
+    // Provide time for the draft to be injected
+    await sleep(500);
+
+    await assertSidebarVisible();
+  });
+
+  await test.step("Select sidebar component and assert panel heading is visible", async () => {
+    await pageEditorPage.modListingPanel
+      .getModListItemByName("Sidebar Panel")
+      .select();
+
+    // Provide time for the draft to be injected
+    await sleep(500);
+
+    await assertSidebarVisible();
+  });
+
+  await test.step("Reselect quickbar component and assert panel heading is visible", async () => {
     await pageEditorPage.modListingPanel
       .getModListItemByName("Show Sidebar")
       .select();
