@@ -20,9 +20,10 @@ import { type WidgetProps } from "@rjsf/utils";
 import { useCurrentEditor, EditorProvider } from "@tiptap/react";
 // TODO: Only install the extensions we need
 import { StarterKit } from "@tiptap/starter-kit";
-import { Button, ButtonGroup } from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBold, faItalic } from "@fortawesome/free-solid-svg-icons";
+import styles from "./RichTextWidget.module.scss";
 
 const Toolbar: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
@@ -32,37 +33,32 @@ const Toolbar: React.FunctionComponent = () => {
   }
 
   return (
-    <ButtonGroup
-      size="sm"
-      aria-label="Rich-Text Editor Toolbar"
-      style={{
-        border: "1px solid #ced4da",
-        borderRadius: "4px",
-      }}
-    >
-      <Button
-        variant="default"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        disabled={!editor.can().chain().focus().toggleBold().run()}
-        active={editor.isActive("bold")}
-      >
-        {/* TODO: Fix having to explicitly set height and width for document renderer */}
-        <FontAwesomeIcon icon={faBold} height="16" width="16" />
-      </Button>
-      <Button
-        variant="default"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        disabled={!editor.can().chain().focus().toggleItalic().run()}
-        active={editor.isActive("italic")}
-      >
-        <FontAwesomeIcon icon={faItalic} height="16" width="16" />
-      </Button>
-    </ButtonGroup>
+    <ButtonToolbar className={styles.toolbar}>
+      <ButtonGroup size="sm" aria-label="Rich-Text Editor Toolbar">
+        <Button
+          variant="default"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          disabled={!editor.can().chain().focus().toggleBold().run()}
+          active={editor.isActive("bold")}
+        >
+          {/* TODO: Fix having to explicitly set height and width for document renderer */}
+          <FontAwesomeIcon icon={faBold} height="16" width="16" />
+        </Button>
+        <Button
+          variant="default"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          active={editor.isActive("italic")}
+        >
+          <FontAwesomeIcon icon={faItalic} height="16" width="16" />
+        </Button>
+      </ButtonGroup>
+    </ButtonToolbar>
   );
 };
 
 const RichTextWidget: React.FunctionComponent<WidgetProps> = () => (
-  <div>
+  <div className={styles.root}>
     <EditorProvider
       extensions={[StarterKit]}
       content="<p>Hello TipTap! 🍌</p>"
