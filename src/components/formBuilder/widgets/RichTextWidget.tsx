@@ -23,10 +23,11 @@ import { StarterKit } from "@tiptap/starter-kit";
 import { type Level } from "@tiptap/extension-heading";
 import { Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBold, faItalic } from "@fortawesome/free-solid-svg-icons";
+import { faBold, faItalic, faImage } from "@fortawesome/free-solid-svg-icons";
 import styles from "./RichTextWidget.module.scss";
 import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
+import Image from "@tiptap/extension-image";
 
 const Toolbar: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
@@ -115,6 +116,20 @@ const Toolbar: React.FunctionComponent = () => {
         >
           <FontAwesomeIcon icon={faItalic} height="16" width="16" />
         </Button>
+        <Button
+          variant="default"
+          onClick={() => {
+            // eslint-disable-next-line no-alert -- POC
+            const url = window.prompt("URL");
+
+            if (url) {
+              editor.chain().focus().setImage({ src: url }).run();
+            }
+          }}
+          disabled={!editor.can().chain().focus().setImage({ src: "" }).run()}
+        >
+          <FontAwesomeIcon icon={faImage} height="16" width="16" />
+        </Button>
       </ButtonGroup>
     </ButtonToolbar>
   );
@@ -123,7 +138,7 @@ const Toolbar: React.FunctionComponent = () => {
 const RichTextWidget: React.FunctionComponent<WidgetProps> = () => (
   <div className={styles.root}>
     <EditorProvider
-      extensions={[StarterKit]}
+      extensions={[StarterKit, Image]}
       content="<p>Hello TipTap! 🍌</p>"
       slotBefore={<Toolbar />}
     />

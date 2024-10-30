@@ -54,6 +54,7 @@
     "@rjsf/core": "^5.21.2",
     "@rjsf/utils": "^5.21.2",
     "@szhsin/react-menu": "^4.2.2",
+    "@tiptap/extension-image": "^2.9.1",
     "@tiptap/pm": "^2.9.1",
     "@tiptap/react": "^2.9.1",
     "@tiptap/starter-kit": "^2.9.1",
