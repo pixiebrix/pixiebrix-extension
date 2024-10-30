@@ -155,7 +155,7 @@ export function markModComponentFormStateAsDeleted(
   // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/9320
   (state.deletedModComponentFormStatesByModId[
     removedFormState.modMetadata.id
-  ] ??= []).push(removedFormState);
+  ] ??= []).push(formStateId);
 
   // Make sure we're not keeping any private data around from Page Editor sessions
   void clearModComponentTraces(formStateId);

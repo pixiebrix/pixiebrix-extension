@@ -41,6 +41,7 @@ import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -64,7 +65,9 @@ function packageUpsertResponseFactory(
 }
 
 describe("useSaveMod", () => {
-  it("saves with no dirty changes", async () => {
+  function setupModDefinitionMocks(
+    definitionOverrides: Partial<ModDefinition> = {},
+  ) {
     appApiMock.reset();
 
     const editablePackage = editablePackageMetadataFactory({
@@ -77,6 +80,7 @@ describe("useSaveMod", () => {
         name: editablePackage.verbose_name!,
         version: editablePackage.version as SemVerString,
       },
+      ...definitionOverrides,
     });
 
     // Register directly in modDefinitionRegistry because background call to sync with the bricks registry endpoint is mocked
@@ -89,9 +93,18 @@ describe("useSaveMod", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
-    appApiMock
+    const putMock = appApiMock
       .onPut(API_PATHS.BRICK(editablePackage.id))
       .reply(200, packageUpsertResponseFactory(editablePackage));
+
+    return {
+      modDefinition,
+      putMock,
+    };
+  }
+
+  it("saves with no dirty changes", async () => {
+    const { modDefinition } = setupModDefinitionMocks();
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -117,18 +130,7 @@ describe("useSaveMod", () => {
   });
 
   it("preserves original options if no dirty options", async () => {
-    appApiMock.reset();
-
-    const editablePackage = editablePackageMetadataFactory({
-      name: modId,
-    });
-
-    const definition = defaultModDefinitionFactory({
-      metadata: {
-        id: editablePackage.name,
-        name: editablePackage.verbose_name!,
-        version: editablePackage.version as SemVerString,
-      },
+    const { modDefinition, putMock } = setupModDefinitionMocks({
       options: {
         schema: {
           type: "object",
@@ -141,27 +143,11 @@ describe("useSaveMod", () => {
       },
     });
 
-    // Register directly in modDefinitionRegistry because background call to sync with API_PATHS.REGISTRY_BRICKS is mocked
-    // This data structure is not quite what happens in practice because the modDefinitionRegistry factory calls
-    // normalizeModOptionsDefinition during hydration.
-    modDefinitionRegistry.register([
-      {
-        id: modId,
-        ...definition,
-      },
-    ]);
-
-    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
-
-    const putMock = appApiMock
-      .onPut(API_PATHS.BRICK(editablePackage.id))
-      .reply(201, packageUpsertResponseFactory(editablePackage));
-
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
-            modDefinition: definition,
+            modDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -198,41 +184,13 @@ describe("useSaveMod", () => {
   });
 
   it("saves dirty options", async () => {
-    appApiMock.reset();
-
-    const editablePackage = editablePackageMetadataFactory({
-      name: modId,
-    });
-
-    const definition = defaultModDefinitionFactory({
-      metadata: {
-        id: editablePackage.name,
-        name: editablePackage.verbose_name!,
-        version: editablePackage.version as SemVerString,
-      },
-    });
-
-    // Register directly in modDefinitionRegistry because background call to sync with API_PATHS.REGISTRY_BRICKS is mocked
-    // This data structure is not quite what happens in practice because the modDefinitionRegistry factory calls
-    // normalizeModOptionsDefinition during hydration.
-    modDefinitionRegistry.register([
-      {
-        id: modId,
-        ...definition,
-      },
-    ]);
-
-    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
-
-    const putMock = appApiMock
-      .onPut(API_PATHS.BRICK(editablePackage.id))
-      .reply(200, packageUpsertResponseFactory(editablePackage));
+    const { modDefinition, putMock } = setupModDefinitionMocks();
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
-            modDefinition: definition,
+            modDefinition,
             screen: "pageEditor",
             isReactivate: false,
           }),
@@ -280,6 +238,58 @@ describe("useSaveMod", () => {
       },
       uiSchema: {
         "ui:order": ["test", "*"],
+      },
+    });
+  });
+
+  it("saves dirty mod variable definitions", async () => {
+    const { modDefinition, putMock } = setupModDefinitionMocks();
+
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          modComponentSlice.actions.activateMod({
+            modDefinition,
+            screen: "pageEditor",
+            isReactivate: false,
+          }),
+        );
+        dispatch(editorSlice.actions.setActiveModId(modId));
+        dispatch(
+          editorSlice.actions.editModVariablesDefinition({
+            schema: propertiesToSchema(
+              { modVariableName: { type: "string" } },
+              [],
+            ),
+          }),
+        );
+      },
+    });
+
+    await waitForEffect();
+
+    await hookAct(async () => {
+      await result.current(modId);
+    });
+
+    const yamlConfig = (
+      JSON.parse(
+        putMock.history.put[0]!.data,
+      ) as components["schemas"]["Package"]
+    ).config;
+
+    expect(
+      (loadBrickYaml(yamlConfig) as ModDefinition).variables,
+    ).toStrictEqual({
+      schema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          modVariableName: {
+            type: "string",
+          },
+        },
+        required: [],
       },
     });
   });

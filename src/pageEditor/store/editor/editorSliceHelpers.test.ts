@@ -432,7 +432,7 @@ describe("removeModData", () => {
         },
       },
       deletedModComponentFormStatesByModId: {
-        [modMetadata.id]: [modComponentFormState2],
+        [modMetadata.id]: [modComponentFormState2.uuid],
       },
     };
 

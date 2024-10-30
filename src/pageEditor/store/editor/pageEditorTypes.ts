@@ -459,7 +459,7 @@ export type EditorState = Except<
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: ModComponentFormState[];
-  deletedModComponentFormStatesByModId: Record<string, ModComponentFormState[]>;
+  deletedModComponentFormStatesByModId: Record<string, UUID[]>;
 };
 
 export type EditorRootState = {

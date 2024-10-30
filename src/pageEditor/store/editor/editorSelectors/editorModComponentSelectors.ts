@@ -16,7 +16,7 @@
  */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { flatMap } from "lodash";
+import { flatten } from "lodash";
 import type {
   EditorRootState,
   EditorState,
@@ -75,11 +75,7 @@ export const selectActiveModComponentRef = createSelector(
 ///
 
 export const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
-  new Set(
-    flatMap(editor.deletedModComponentFormStatesByModId).map(
-      (formState) => formState.uuid,
-    ),
-  );
+  new Set(flatten(Object.values(editor.deletedModComponentFormStatesByModId)));
 
 export const selectNotDeletedActivatedModComponents: ({
   options,

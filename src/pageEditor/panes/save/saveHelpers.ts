@@ -219,7 +219,7 @@ export function buildNewMod({
     }
 
     if (dirtyModVariablesDefinition) {
-      draft.options = dirtyModVariablesDefinition;
+      draft.variables = dirtyModVariablesDefinition;
     }
 
     if (dirtyModMetadata) {

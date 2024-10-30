@@ -48,6 +48,7 @@ const Template: ComponentStory<StoryArgs> = (args: { isDirty?: boolean }) => {
     editor: {
       dirty: isDirty ? { [modComponentFormState.uuid]: true } : {},
       modComponentFormStates: [modComponentFormState],
+      deletedModComponentFormStatesByModId: {},
       brickPipelineUIStateById: {
         [modComponentFormState.uuid]: {
           pipelineMap: getPipelineMap(
