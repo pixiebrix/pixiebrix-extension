@@ -239,7 +239,7 @@ describe("useSaveMod", () => {
         );
         dispatch(editorSlice.actions.setActiveModId(modId));
         dispatch(
-          editorSlice.actions.editModOptionsDefinitions({
+          editorSlice.actions.editModOptionsDefinition({
             schema: {
               type: "object",
               properties: {

@@ -26,7 +26,8 @@ sessionChangesListenerMiddleware.startListening({
   matcher: isAnyOf(
     // Page Editor mod actions
     editorActions.editModMetadata,
-    editorActions.editModOptionsDefinitions,
+    editorActions.editModOptionsDefinition,
+    editorActions.editModVariablesDefinition,
     editorActions.editModOptionsArgs,
     editorActions.markModAsCleanById,
     editorActions.removeModById,

@@ -149,7 +149,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
   const dispatch = useDispatch();
   const updateRedux = useCallback(
     (options: ModOptionsDefinition) => {
-      dispatch(actions.editModOptionsDefinitions(options));
+      dispatch(actions.editModOptionsDefinition(options));
     },
     [dispatch],
   );
