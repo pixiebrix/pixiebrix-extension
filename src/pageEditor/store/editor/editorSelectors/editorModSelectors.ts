@@ -58,6 +58,18 @@ export const selectCurrentModId = createSelector(
 export const selectDirtyModMetadata = ({ editor }: EditorRootState) =>
   editor.dirtyModMetadataById;
 
+const dirtyMetadataForModIdSelector = createSelector(
+  selectDirtyModMetadata,
+  (_state: EditorRootState, modId: RegistryId) => modId,
+  (dirtyModMetadataById, modId) =>
+    // eslint-disable-next-line security/detect-object-injection -- modId is a controlled string
+    dirtyModMetadataById[modId],
+);
+
+export const selectDirtyMetadataForModId =
+  (modId: RegistryId) => (state: EditorRootState) =>
+    dirtyMetadataForModIdSelector(state, modId);
+
 export const selectModMetadatas = createSelector(
   selectModComponentFormStates,
   selectModInstances,
@@ -93,27 +105,16 @@ export const selectModMetadataMap = createSelector(
   (metadatas) => new Map(metadatas.map((metadata) => [metadata.id, metadata])),
 );
 
-const dirtyMetadataForModIdSelector = createSelector(
-  selectDirtyModMetadata,
-  (_state: EditorRootState, modId: RegistryId) => modId,
-  (dirtyModMetadataById, modId) =>
-    // eslint-disable-next-line security/detect-object-injection -- modId is a controlled string
-    dirtyModMetadataById[modId],
-);
-
-export const selectDirtyMetadataForModId =
-  (modId: RegistryId) => (state: EditorRootState) =>
-    dirtyMetadataForModIdSelector(state, modId);
-
 ///
 /// MOD OPTION DEFINITIONS
 ///
 
-export const selectDirtyModOptionsDefinitions = ({ editor }: EditorRootState) =>
-  editor.dirtyModOptionsDefinitionById;
+export const selectDirtyModOptionsDefinitionById = ({
+  editor,
+}: EditorRootState) => editor.dirtyModOptionsDefinitionById;
 
-const selectGetDirtyOptionsDefinitionForModId = createSelector(
-  selectDirtyModOptionsDefinitions,
+export const selectGetDirtyModOptionsDefinitionForModId = createSelector(
+  selectDirtyModOptionsDefinitionById,
   (dirtyOptionsDefinitionsByModId) =>
     // Memoize because normalizeModOptionsDefinition returns a fresh object reference
     memoize((modId: RegistryId) => {
@@ -130,17 +131,18 @@ const selectGetDirtyOptionsDefinitionForModId = createSelector(
     }),
 );
 
-export const selectDirtyOptionsDefinitionForModId =
+export const selectDirtyModOptionsDefinitionForModId =
   (modId: RegistryId) => (state: EditorRootState) =>
-    selectGetDirtyOptionsDefinitionForModId(state)(modId);
+    selectGetDirtyModOptionsDefinitionForModId(state)(modId);
 
 ///
 /// MOD COMPONENTS
 ///
 
-export const selectGetModComponentFormStatesByModId = createSelector(
+export const selectGetModComponentFormStatesForMod = createSelector(
   selectModComponentFormStates,
   (formStates) =>
+    // Memoize because `filter` returns a fresh object reference
     memoize((modId: RegistryId) =>
       formStates.filter((formState) => formState.modMetadata.id === modId),
     ),
@@ -148,7 +150,7 @@ export const selectGetModComponentFormStatesByModId = createSelector(
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
-  selectGetModComponentFormStatesByModId,
+  selectGetModComponentFormStatesForMod,
   selectIsModComponentDirtyById,
   (
     activatedModComponents,
@@ -219,14 +221,14 @@ export const selectGetSiblingDraftModComponents = createSelector(
 /// MOD OPTIONS ARGS
 ///
 
-const selectDirtyOptionsArgsForModId = (state: EditorRootState) =>
+const selectDirtyOptionsArgsByModId = (state: EditorRootState) =>
   state.editor.dirtyModOptionsArgsById;
 
 /**
  * Returns the draft mod options args for the given mod id.
  */
 export const selectGetOptionsArgsForModId = createSelector(
-  selectDirtyOptionsArgsForModId,
+  selectDirtyOptionsArgsByModId,
   selectGetDraftModComponentsForMod,
   (dirtyOptionsArgsForModId, getDraftModComponentsForMod) =>
     memoize(
@@ -245,14 +247,14 @@ export const selectGetOptionsArgsForModId = createSelector(
 /// MOD VARIABLE DEFINITIONS
 ///
 
-const selectDirtyModVariablesDefinitionForModId = (state: EditorRootState) =>
+const selectDirtyModVariablesDefinitionByModId = (state: EditorRootState) =>
   state.editor.dirtyModVariablesDefinitionById;
 
 /**
  * Returns the draft mod options args for the given mod id.
  */
 const selectGetModVariablesDefinitionForModId = createSelector(
-  selectDirtyModVariablesDefinitionForModId,
+  selectDirtyModVariablesDefinitionByModId,
   selectGetDraftModComponentsForMod,
   (dirtyModVariablesDefinitionForModId, getDraftModComponentsForMod) =>
     memoize(
@@ -283,10 +285,10 @@ export const selectDeletedComponentFormStatesByModId = ({
 const selectGetModIsDirtySelector = createSelector(
   selectDirtyModMetadata,
   selectIsModComponentDirtyById,
-  selectGetDirtyOptionsDefinitionForModId,
-  selectDirtyModVariablesDefinitionForModId,
-  selectDirtyOptionsArgsForModId,
-  selectGetModComponentFormStatesByModId,
+  selectGetDirtyModOptionsDefinitionForModId,
+  selectDirtyModVariablesDefinitionByModId,
+  selectDirtyOptionsArgsByModId,
+  selectGetModComponentFormStatesForMod,
   selectDeletedComponentFormStatesByModId,
   (
     dirtyModMetadata,
@@ -330,13 +332,34 @@ export const selectModIsDirty =
 /// MOD DRAFT STATE
 ///
 
+/**
+ * Returns a selector for getting the mod-level state of a draft mod.
+ *
+ * The mod options definition is only included if it's dirty because there's no way derive the current
+ * ModOptionsDefinition from the Redux store because it's not stored on the activated modComponentsSlice, and only the
+ * dirty values are stored on the editorSlice.
+ */
 export const selectGetModDraftStateForModId = createSelector(
+  selectModMetadataMap,
+  selectGetDirtyModOptionsDefinitionForModId,
   selectGetOptionsArgsForModId,
   selectGetModVariablesDefinitionForModId,
-  (getOptionsArgsForModId, getModVariablesDefinitionForModId) =>
+  (
+    modMetadataMap,
+    getDirtyModOptionsDefinitionForModId,
+    getOptionsArgsForModId,
+    getModVariablesDefinitionForModId,
+  ) =>
     // Memoize because it constructs a new object
-    memoize((modId: RegistryId) => ({
-      optionsArgs: getOptionsArgsForModId(modId),
-      variablesDefinition: getModVariablesDefinitionForModId(modId),
-    })),
+    memoize((modId: RegistryId) => {
+      const modMetadata = modMetadataMap.get(modId);
+      assertNotNullish(modMetadata, "Expected mod metadata");
+      return {
+        modMetadata,
+        // See jsdoc comment on why the options definition is only available if it's dirty
+        dirtyModOptionsDefinition: getDirtyModOptionsDefinitionForModId(modId),
+        optionsArgs: getOptionsArgsForModId(modId),
+        variablesDefinition: getModVariablesDefinitionForModId(modId),
+      };
+    }),
 );

@@ -32,7 +32,7 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
-  selectDirtyOptionsDefinitionForModId,
+  selectDirtyModOptionsDefinitionForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -119,7 +119,7 @@ function useInitialValuesQuery(
   modId: RegistryId,
 ): AsyncState<{ optionsDefinition: ModOptionsDefinition }> {
   const dirtyOptionsDefinition = useSelector(
-    selectDirtyOptionsDefinitionForModId(modId),
+    selectDirtyModOptionsDefinitionForModId(modId),
   );
 
   const modDefinitionQuery = useOptionalModDefinition(modId);
