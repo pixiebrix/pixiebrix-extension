@@ -2,7 +2,7 @@ Index: brick-copy-pasted
 ===================================================================
 --- brick-copy-pasted
 +++ brick-copy-pasted
-@@ -6,78 +6,86 @@
+@@ -6,80 +6,88 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -89,3 +89,5 @@ Index: brick-copy-pasted
    uiSchema:
      ui:order:
        - '*'
+ variables:
+   schema:

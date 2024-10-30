@@ -50,13 +50,16 @@ import {
 } from "@/testUtils/factories/brickFactories";
 import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { type Permissions } from "webextension-polyfill";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   createNewUnsavedModMetadata,
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
-import { type AddBrickLocation } from "@/pageEditor/store/editor/pageEditorTypes";
+import {
+  type AddBrickLocation,
+  type DraftModState,
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),
@@ -75,18 +78,12 @@ const internalFormStateFactory = define<InternalFormStateOverride>({
   apiVersion: "v3" as ApiVersion,
   uuid: uuidSequence,
   installed: true,
-  variablesDefinition: () => emptyModVariablesDefinitionFactory(),
   integrationDependencies(): IntegrationDependency[] {
     return [];
   },
   modMetadata: (n: number) =>
     createNewUnsavedModMetadata({ modName: `Unsaved Mod ${n}` }),
-  permissions(): Permissions.Permissions {
-    return {
-      permissions: [],
-      origins: [],
-    };
-  },
+  permissions: emptyPermissionsFactory,
   label: (i: number) => `Element ${i}`,
   modComponent: baseModComponentStateFactory,
   starterBrick: starterBrickDefinitionFactory,
@@ -311,4 +308,11 @@ export const addBrickLocationFactory = define<AddBrickLocation>({
   path: "body",
   flavor: PipelineFlavor.AllBricks,
   index: 0,
+});
+
+export const draftModStateFactory = define<DraftModState>({
+  optionsArgs() {
+    return {};
+  },
+  variablesDefinition: emptyModVariablesDefinitionFactory,
 });

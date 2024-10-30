@@ -21,7 +21,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
-import { selectGetModComponentFormStatesByModId } from "@/pageEditor/store/editor/editorSelectors";
+import { selectGetModComponentFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Hook that returns a callback to clear unsaved mod changes for a given mod id.
@@ -32,7 +32,7 @@ function useClearModChanges(): (modId: RegistryId) => Promise<void> {
   const dispatch = useDispatch();
   const clearModComponentChanges = useClearModComponentChanges();
   const getModComponentFormStatesByModId = useSelector(
-    selectGetModComponentFormStatesByModId,
+    selectGetModComponentFormStatesForMod,
   );
 
   return useCallback(

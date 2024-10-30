@@ -48,6 +48,7 @@ import {
   selectExpandedModId,
   selectModIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 function getTabState(
   state: EditorState,
@@ -339,6 +340,57 @@ describe("Mod Options editing", () => {
 
     expect(stateAfterEdit.dirtyModOptionsArgsById[modId]).toStrictEqual(
       updatedOptionsArgs,
+    );
+
+    expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeTrue();
+  });
+});
+
+describe("Mod Variables Definition editing", () => {
+  let initialState: EditorState;
+  const modId = validateRegistryId("test/mod");
+  const modMetadata = modMetadataFactory({ id: modId });
+
+  const existingComponentId = autoUUIDSequence();
+
+  const existingComponent = formStateFactory({
+    formStateConfig: {
+      uuid: existingComponentId,
+      modMetadata,
+    },
+  });
+
+  beforeEach(() => {
+    initialState = {
+      ...editorSlice.getInitialState(),
+      modComponentFormStates: [existingComponent],
+    };
+    // Make the mod active
+    initialState = editorSlice.reducer(
+      initialState,
+      actions.setActiveModId(modId),
+    );
+  });
+
+  test("mod variables definition are updated and marks mod as dirty", () => {
+    const updatedModOptionsDefinition = {
+      schema: propertiesToSchema({ foo: { type: "string" } }, []),
+    };
+
+    let stateAfterEdit = editorSlice.reducer(
+      initialState,
+      actions.markModAsCleanById(modId),
+    );
+
+    expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeFalse();
+
+    stateAfterEdit = editorSlice.reducer(
+      stateAfterEdit,
+      actions.editModVariablesDefinition(updatedModOptionsDefinition),
+    );
+
+    expect(stateAfterEdit.dirtyModVariablesDefinitionById[modId]).toStrictEqual(
+      updatedModOptionsDefinition,
     );
 
     expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeTrue();

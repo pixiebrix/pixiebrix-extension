@@ -70,7 +70,10 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModOptionsDefinition,
+  type ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
@@ -98,10 +101,11 @@ export const initialState: EditorState = {
   isBetaUI: false,
   brickPipelineUIStateById: {},
   dirtyModMetadataById: {},
-  dirtyModOptionsDefinitionsById: {},
+  dirtyModOptionsDefinitionById: {},
+  dirtyModVariablesDefinitionById: {},
   dirtyModOptionsArgsById: {},
   visibleModal: null,
-  deletedModComponentFormStatesByModId: {},
+  deletedModComponentFormStateIdsByModId: {},
   availableActivatedModComponentIds: [],
   isPendingAvailableActivatedModComponents: false,
   availableDraftModComponentIds: [],
@@ -471,13 +475,13 @@ export const editorSlice = createSlice({
       state.dirtyModMetadataById[activeModId] = action.payload;
     },
 
-    editModOptionsDefinitions(
+    editModOptionsDefinition(
       state,
       action: PayloadAction<ModOptionsDefinition>,
     ) {
       const { activeModId } = state;
       assertNotNullish(activeModId, "Expected active mod");
-      state.dirtyModOptionsDefinitionsById[activeModId] =
+      state.dirtyModOptionsDefinitionById[activeModId] =
         action.payload as Draft<ModOptionsDefinition>;
     },
 
@@ -490,6 +494,16 @@ export const editorSlice = createSlice({
 
       // Bump sequence number because arguments impact mod functionality
       state.selectionSeq++;
+    },
+
+    editModVariablesDefinition(
+      state,
+      action: PayloadAction<ModVariablesDefinition>,
+    ) {
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
+      state.dirtyModVariablesDefinitionById[activeModId] =
+        action.payload as Draft<ModVariablesDefinition>;
     },
 
     updateModMetadataOnModComponentFormStates(
@@ -523,9 +537,10 @@ export const editorSlice = createSlice({
         state.dirty[modComponentFormState.uuid] = false;
       }
 
-      delete state.deletedModComponentFormStatesByModId[modId];
+      delete state.deletedModComponentFormStateIdsByModId[modId];
       delete state.dirtyModMetadataById[modId];
-      delete state.dirtyModOptionsDefinitionsById[modId];
+      delete state.dirtyModOptionsDefinitionById[modId];
+      delete state.dirtyModVariablesDefinitionById[modId];
       delete state.dirtyModOptionsArgsById[modId];
     },
 
@@ -552,10 +567,11 @@ export const editorSlice = createSlice({
       }
 
       // Perform cleanup last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
-      delete state.dirtyModOptionsDefinitionsById[modId];
+      delete state.dirtyModOptionsDefinitionById[modId];
+      delete state.dirtyModVariablesDefinitionById[modId];
       delete state.dirtyModOptionsArgsById[modId];
       delete state.dirtyModMetadataById[modId];
-      delete state.deletedModComponentFormStatesByModId[modId];
+      delete state.deletedModComponentFormStateIdsByModId[modId];
     },
 
     ///
@@ -1067,7 +1083,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 10,
+  version: 11,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
 };

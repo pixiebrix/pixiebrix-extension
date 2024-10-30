@@ -49,6 +49,7 @@ import {
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { normalizeModDefinition } from "@/utils/modUtils";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { array } from "cooky-cutter";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -182,12 +183,7 @@ describe("buildNewMod", () => {
 
   test("Delete excess starter brick definitions", async () => {
     // Load the adapter for this mod component
-    const starterBricks = [
-      starterBrickInnerDefinitionFactory(),
-      starterBrickInnerDefinitionFactory(),
-      // Excess
-      starterBrickInnerDefinitionFactory(),
-    ];
+    const starterBricks = array(starterBrickInnerDefinitionFactory, 3)();
 
     const modComponents = starterBricks.slice(0, 2).map((starterBrick) => {
       const modComponent = modComponentFactory({

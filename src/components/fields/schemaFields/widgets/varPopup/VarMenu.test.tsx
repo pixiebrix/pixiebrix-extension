@@ -18,7 +18,10 @@
 import { render, screen } from "@/pageEditor/testHelpers";
 import React, { type MutableRefObject } from "react";
 import VarMenu from "@/components/fields/schemaFields/widgets/varPopup/VarMenu";
-import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  draftModStateFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
@@ -116,7 +119,7 @@ describe("VarMenu", () => {
 
           // Run analysis directly
           const analysis = new VarAnalysis();
-          await analysis.run(formState, { optionsArgs: {} });
+          await analysis.run(formState, draftModStateFactory());
 
           dispatch(
             analysisSlice.actions.setKnownVars({
@@ -161,7 +164,7 @@ describe("VarMenu", () => {
 
           // Run analysis directly
           const analysis = new VarAnalysis();
-          await analysis.run(formState, { optionsArgs: {} });
+          await analysis.run(formState, draftModStateFactory());
 
           dispatch(
             analysisSlice.actions.setKnownVars({

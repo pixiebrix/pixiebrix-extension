@@ -54,6 +54,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
       draftModComponents,
       dirtyModOptionsDefinition,
       dirtyModMetadata,
+      dirtyModVariablesDefinition,
     }: ModParts) => {
       if (draftModComponents.length === 0) {
         throw new Error("Expected mod components to save");
@@ -64,6 +65,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         draftModComponents,
         dirtyModOptionsDefinition,
         dirtyModMetadata,
+        dirtyModVariablesDefinition,
       });
 
       if (sourceModDefinition) {

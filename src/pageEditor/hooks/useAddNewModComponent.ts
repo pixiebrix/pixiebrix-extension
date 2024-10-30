@@ -41,7 +41,7 @@ import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import {
-  selectGetOptionsArgsForModId,
+  selectGetModDraftStateForModId,
   selectModMetadatas,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { RunReason } from "@/types/runtimeTypes";
@@ -80,7 +80,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
   const generateFreshModName = useFreshModNameGenerator();
 
-  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
 
   const getInitialModComponentFormState = useCallback(
     async ({
@@ -136,11 +136,10 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          adapter.asDraftModComponent(initialFormState, {
-            optionsArgs: getOptionsArgsForModId(
-              initialFormState.modMetadata.id,
-            ),
-          }),
+          adapter.asDraftModComponent(
+            initialFormState,
+            getModDraftStateForModId(initialFormState.modMetadata.id),
+          ),
           {
             isSelectedInEditor: true,
             runReason: RunReason.PAGE_EDITOR_REGISTER,
@@ -178,7 +177,7 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
       dispatch,
       flagOff,
       getInitialModComponentFormState,
-      getOptionsArgsForModId,
+      getModDraftStateForModId,
       modMetadata,
     ],
   );

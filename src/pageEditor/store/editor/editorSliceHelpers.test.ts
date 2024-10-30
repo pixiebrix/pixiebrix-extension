@@ -43,9 +43,9 @@ import {
   selectActiveModComponentId,
   selectActiveNodeId,
   selectActiveModId,
-  selectDeletedComponentFormStatesByModId,
+  selectDeletedComponentFormStateIdsByModId,
   selectDirtyMetadataForModId,
-  selectDirtyOptionsDefinitionForModId,
+  selectDirtyModOptionsDefinitionForModId,
   selectModComponentFormStates,
   selectExpandedModId,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -413,7 +413,7 @@ describe("removeModData", () => {
         modComponentFormState1.uuid,
         orphanModComponentFormState.uuid,
       ],
-      dirtyModOptionsDefinitionsById: {
+      dirtyModOptionsDefinitionById: {
         [modMetadata.id]: {
           schema: {
             type: "object",
@@ -431,8 +431,8 @@ describe("removeModData", () => {
           description: "new description",
         },
       },
-      deletedModComponentFormStatesByModId: {
-        [modMetadata.id]: [modComponentFormState2],
+      deletedModComponentFormStateIdsByModId: {
+        [modMetadata.id]: [modComponentFormState2.uuid],
       },
     };
 
@@ -449,7 +449,7 @@ describe("removeModData", () => {
     expect(selectActiveModId({ editor: newState })).toBeNull();
     expect(selectExpandedModId({ editor: newState })).toBeNull();
     expect(
-      selectDirtyOptionsDefinitionForModId(modMetadata.id)({
+      selectDirtyModOptionsDefinitionForModId(modMetadata.id)({
         editor: newState,
       }),
     ).toBeUndefined();
@@ -457,7 +457,7 @@ describe("removeModData", () => {
       selectDirtyMetadataForModId(modMetadata.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDeletedComponentFormStatesByModId({ editor: newState })[
+      selectDeletedComponentFormStateIdsByModId({ editor: newState })[
         modMetadata.id
       ],
     ).toBeUndefined();
