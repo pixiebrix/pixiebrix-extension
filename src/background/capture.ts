@@ -22,14 +22,11 @@ import { type JsonObject } from "type-fest";
 import { emitAudioEvent } from "@/contentScript/messenger/api";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import {
-  ensureOffscreenDocument,
   getRecordingTabId,
-} from "@/tinyPages/offscreenDocumentController";
+  startRecording,
+  stopRecording,
+} from "@/offscreen/messenger/api";
 import { integrationConfigLocator } from "@/background/integrationConfigLocator";
-import {
-  type StartAudioCaptureMessage,
-  type StopAudioCaptureMessage,
-} from "@/tinyPages/offscreenProtocol";
 import { assertDeepgramIntegrationConfig } from "@/contrib/deepgram/deepgramTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -111,29 +108,19 @@ export async function startAudioCapture(
     });
   }
 
-  // If an offscreen document is not already open, create one
-  await ensureOffscreenDocument();
-
   // Send the stream ID to the offscreen document to start recording.
-  await chrome.runtime.sendMessage({
-    type: "start-recording",
-    target: "offscreen",
-    data: {
-      apiKey: integrationConfig.config.apiKey,
-      tabId,
-      tabStreamId,
-      captureMicrophone,
-    },
-  } satisfies StartAudioCaptureMessage);
+  await startRecording({
+    apiKey: integrationConfig.config.apiKey,
+    tabId,
+    tabStreamId,
+    captureMicrophone,
+  });
 
   audioCaptureTabId = tabId;
 }
 
 export async function stopAudioCapture(this: MessengerMeta): Promise<void> {
-  void chrome.runtime.sendMessage({
-    type: "stop-recording",
-    target: "offscreen",
-  } satisfies StopAudioCaptureMessage);
+  await stopRecording();
 
   audioCaptureTabId = null;
 }

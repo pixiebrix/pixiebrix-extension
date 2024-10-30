@@ -134,7 +134,7 @@ const createConfig = (env, options) =>
         // The script that gets injected into the host page
         "pageScript/pageScript",
 
-        "tinyPages/offscreen",
+        "offscreen/offscreen",
 
         // The isolated components whose CSS will be loaded in a shadow DOM
         ...isolatedComponentList,
