@@ -55,11 +55,11 @@ export const selectCurrentModId = createSelector(
 /// MOD METADATA
 ///
 
-export const selectDirtyModMetadata = ({ editor }: EditorRootState) =>
+const selectDirtyModMetadataById = ({ editor }: EditorRootState) =>
   editor.dirtyModMetadataById;
 
 const dirtyMetadataForModIdSelector = createSelector(
-  selectDirtyModMetadata,
+  selectDirtyModMetadataById,
   (_state: EditorRootState, modId: RegistryId) => modId,
   (dirtyModMetadataById, modId) =>
     // eslint-disable-next-line security/detect-object-injection -- modId is a controlled string
@@ -73,7 +73,7 @@ export const selectDirtyMetadataForModId =
 export const selectModMetadatas = createSelector(
   selectModComponentFormStates,
   selectModInstances,
-  selectDirtyModMetadata,
+  selectDirtyModMetadataById,
   (formStates, modInstances, dirtyModMetadataById) => {
     const formStateModMetadatas = formStates.map(
       (formState) => formState.modMetadata,
@@ -109,11 +109,10 @@ export const selectModMetadataMap = createSelector(
 /// MOD OPTION DEFINITIONS
 ///
 
-export const selectDirtyModOptionsDefinitionById = ({
-  editor,
-}: EditorRootState) => editor.dirtyModOptionsDefinitionById;
+const selectDirtyModOptionsDefinitionById = ({ editor }: EditorRootState) =>
+  editor.dirtyModOptionsDefinitionById;
 
-export const selectGetDirtyModOptionsDefinitionForModId = createSelector(
+const selectGetDirtyModOptionsDefinitionForModId = createSelector(
   selectDirtyModOptionsDefinitionById,
   (dirtyOptionsDefinitionsByModId) =>
     // Memoize because normalizeModOptionsDefinition returns a fresh object reference
@@ -283,7 +282,7 @@ export const selectDeletedComponentFormStatesByModId = ({
  * are dirty.
  */
 const selectGetModIsDirtySelector = createSelector(
-  selectDirtyModMetadata,
+  selectDirtyModMetadataById,
   selectIsModComponentDirtyById,
   selectGetDirtyModOptionsDefinitionForModId,
   selectDirtyModVariablesDefinitionByModId,

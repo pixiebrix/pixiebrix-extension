@@ -447,7 +447,7 @@ export type EditorStateV11 = Except<
   modComponentFormStates: BaseFormStateV8[];
   deletedModComponentFormStatesByModId: Record<RegistryId, UUID[]>;
   dirtyModOptionsDefinitionById: Record<RegistryId, ModOptionsDefinition>;
-  dirtyModVariablesDefinitionById: Record<RegistryId, ModOptionsDefinition>;
+  dirtyModVariablesDefinitionById: Record<RegistryId, ModVariablesDefinition>;
 };
 
 export type EditorState = Except<
