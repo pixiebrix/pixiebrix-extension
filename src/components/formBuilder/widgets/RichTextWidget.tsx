@@ -20,37 +20,14 @@ import { type WidgetProps } from "@rjsf/utils";
 import { useCurrentEditor, EditorProvider } from "@tiptap/react";
 // TODO: Only install the extensions we need
 import { StarterKit } from "@tiptap/starter-kit";
-import { type Level } from "@tiptap/extension-heading";
 import { Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBold, faItalic } from "@fortawesome/free-solid-svg-icons";
 import styles from "./RichTextWidget.module.scss";
 import Select from "react-select";
-import { type Option } from "@/components/form/widgets/SelectWidget";
 
 const Toolbar: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
-
-  const headingOptions: Array<
-    Option<{ name: "paragraph" } | { name: "heading"; level: Level }>
-  > = [
-    {
-      value: { name: "paragraph" },
-      label: "Paragraph",
-    },
-    {
-      value: { name: "heading", level: 1 },
-      label: "Heading 1",
-    },
-    {
-      value: { name: "heading", level: 2 },
-      label: "Heading 2",
-    },
-    {
-      value: { name: "heading", level: 3 },
-      label: "Heading 3",
-    },
-  ];
 
   if (!editor) {
     return null;
@@ -63,30 +40,40 @@ const Toolbar: React.FunctionComponent = () => {
           <Select
             className={styles.dropdown}
             value={{
-              value: {
-                name: editor.isActive("heading") ? "heading" : "paragraph",
-                level: editor.isActive("heading")
-                  ? editor.getAttributes("heading").level
-                  : undefined,
-              },
-              label: editor.isActive("heading")
-                ? `Heading ${editor.getAttributes("heading").level}`
-                : "Paragraph",
+              value: editor.isActive("heading", { level: 1 })
+                ? "h1"
+                : editor.isActive("heading", { level: 2 })
+                  ? "h2"
+                  : editor.isActive("heading", { level: 3 })
+                    ? "h3"
+                    : "p",
+              label: editor.isActive("heading", { level: 1 })
+                ? "Heading 1"
+                : editor.isActive("heading", { level: 2 })
+                  ? "Heading 2"
+                  : editor.isActive("heading", { level: 3 })
+                    ? "Heading 3"
+                    : "Paragraph",
             }}
-            onChange={(
-              selectedOption: Option<
-                { name: "paragraph" } | { name: "heading"; level: Level }
-              >,
-            ) => {
-              switch (selectedOption.value.name) {
-                case "paragraph": {
+            onChange={(selectedOption) => {
+              switch (selectedOption?.value) {
+                case "p": {
                   editor.chain().focus().setParagraph().run();
                   break;
                 }
 
-                case "heading": {
-                  const { level } = selectedOption.value;
-                  editor.chain().focus().setHeading({ level }).run();
+                case "h1": {
+                  editor.chain().focus().toggleHeading({ level: 1 }).run();
+                  break;
+                }
+
+                case "h2": {
+                  editor.chain().focus().toggleHeading({ level: 2 }).run();
+                  break;
+                }
+
+                case "h3": {
+                  editor.chain().focus().toggleHeading({ level: 3 }).run();
                   break;
                 }
 
@@ -95,7 +82,24 @@ const Toolbar: React.FunctionComponent = () => {
                 }
               }
             }}
-            options={headingOptions}
+            options={[
+              {
+                value: "p",
+                label: "Paragraph",
+              },
+              {
+                value: "h1",
+                label: "Heading 1",
+              },
+              {
+                value: "h2",
+                label: "Heading 2",
+              },
+              {
+                value: "h3",
+                label: "Heading 3",
+              },
+            ]}
           />
         </ButtonGroup>
         <Button
