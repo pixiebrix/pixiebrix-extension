@@ -29,17 +29,4 @@
 .toolbar {
   border: 1px solid #ced4da;
   border-radius: 4px 4px 0 0;
-
-  :global(.btn.active) {
-    color: #007bff;
-  }
-
-  :global(.react-shadow-13cymwt-control),
-  :global(.css-13cymwt-control) {
-    border-color: transparent;
-
-    &:hover {
-      border-color: transparent;
-    }
-  }
 }
