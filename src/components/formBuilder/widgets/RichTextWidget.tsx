@@ -17,16 +17,58 @@
 
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useCurrentEditor, EditorProvider } from "@tiptap/react";
+// TODO: Only install the extensions we need
 import { StarterKit } from "@tiptap/starter-kit";
+import { Button, ButtonGroup } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBold, faItalic } from "@fortawesome/free-solid-svg-icons";
 
-const RichTextWidget: React.FunctionComponent<WidgetProps> = () => {
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: "<p>Hello TipTap! 🍌</p>",
-  });
+const Toolbar: React.FunctionComponent = () => {
+  const { editor } = useCurrentEditor();
 
-  return <EditorContent editor={editor} />;
+  if (!editor) {
+    return null;
+  }
+
+  return (
+    <ButtonGroup
+      size="sm"
+      aria-label="Rich-Text Editor Toolbar"
+      style={{
+        border: "1px solid #ced4da",
+        borderRadius: "4px",
+      }}
+    >
+      <Button
+        variant="default"
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        disabled={!editor.can().chain().focus().toggleBold().run()}
+        active={editor.isActive("bold")}
+      >
+        {/* TODO: Fix having to explicitly set height and width for document renderer */}
+        <FontAwesomeIcon icon={faBold} height="16" width="16" />
+      </Button>
+      <Button
+        variant="default"
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        disabled={!editor.can().chain().focus().toggleItalic().run()}
+        active={editor.isActive("italic")}
+      >
+        <FontAwesomeIcon icon={faItalic} height="16" width="16" />
+      </Button>
+    </ButtonGroup>
+  );
 };
+
+const RichTextWidget: React.FunctionComponent<WidgetProps> = () => (
+  <div>
+    <EditorProvider
+      extensions={[StarterKit]}
+      content="<p>Hello TipTap! 🍌</p>"
+      slotBefore={<Toolbar />}
+    />
+  </div>
+);
 
 export default RichTextWidget;
