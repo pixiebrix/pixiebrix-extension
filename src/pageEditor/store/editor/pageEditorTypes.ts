@@ -32,7 +32,10 @@ import { type ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTyp
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModOptionsDefinition,
+  type ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import { type EmptyObject, type Except } from "type-fest";
 import {
   type BaseFormStateV1,
@@ -54,6 +57,10 @@ export type DraftModState = {
    * The current option args for the draft mod
    */
   optionsArgs: OptionsArgs;
+  /**
+   * The current mod variables definition for the draft mod.
+   */
+  variablesDefinition: ModVariablesDefinition;
 };
 
 export type AddBrickLocation = {
@@ -407,7 +414,7 @@ export type EditorStateV9 = Except<
 /**
  * Version bump to move mod options args tracking from the form states.
  *
- * Renames dirtyModOptionsById to dirtyModOptionsDefinitionsById for clarity.
+ * Renames dirtyModOptionsById to dirtyModOptionsDefinitionById for clarity.
  *
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @since 2.1.6
@@ -420,13 +427,31 @@ export type EditorStateV10 = Except<
 > & {
   modComponentFormStates: BaseFormStateV7[];
   deletedModComponentFormStatesByModId: Record<RegistryId, BaseFormStateV7[]>;
-  dirtyModOptionsDefinitionsById: Record<RegistryId, ModOptionsDefinition>;
+  dirtyModOptionsDefinitionById: Record<RegistryId, ModOptionsDefinition>;
   dirtyModOptionsArgsById: Record<RegistryId, OptionsArgs>;
+};
+
+/**
+ * Version bump to move mod variables definition tracking from the form states.
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @since 2.1.6
+ */
+export type EditorStateV11 = Except<
+  EditorStateV10,
+  | "modComponentFormStates"
+  | "deletedModComponentFormStatesByModId"
+  | "dirtyModOptionsDefinitionById"
+> & {
+  modComponentFormStates: BaseFormStateV7[];
+  deletedModComponentFormStatesByModId: Record<RegistryId, UUID[]>;
+  dirtyModOptionsDefinitionById: Record<RegistryId, ModOptionsDefinition>;
+  dirtyModVariablesDefinitionById: Record<RegistryId, ModOptionsDefinition>;
 };
 
 export type EditorState = Except<
   // On migration, re-point this type to the most recent EditorStateV<N> type name
-  EditorStateV10,
+  EditorStateV11,
   // Swap out any properties with versioned types for type references to the latest version.
   // NOTE: overriding these properties is not changing the type shape/structure. It's just cleaning up the type
   // name/reference which makes types easier to work with for testing migrations.

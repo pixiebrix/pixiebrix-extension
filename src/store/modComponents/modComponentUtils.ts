@@ -26,8 +26,12 @@ import {
   INTEGRATIONS_BASE_SCHEMA_URL,
   PIXIEBRIX_INTEGRATION_ID,
 } from "@/integrations/constants";
-import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
+import type {
+  ModComponentDefinition,
+  ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import type { Schema } from "@/types/schemaTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 /**
  * Infer options from existing mod-component-like instances for reactivating a mod
@@ -40,6 +44,20 @@ export function collectModOptionsArgs(
   // activation process (even if they don't use the options), so we can take
   // the optionsArgs for any of the extensions
   return modComponents[0]?.optionsArgs ?? {};
+}
+
+/**
+ * Infer options from existing mod-component-like instances for reactivating a mod
+ * @see activateMod
+ */
+export function collectModVariablesDefinition(
+  modComponents: Array<Pick<ModComponentBase, "variablesDefinition">>,
+): ModVariablesDefinition {
+  // `variablesDefinition` is defined at the mod-level, so will be the same on each mod component
+  return (
+    modComponents[0]?.variablesDefinition ??
+    emptyModVariablesDefinitionFactory()
+  );
 }
 
 /**

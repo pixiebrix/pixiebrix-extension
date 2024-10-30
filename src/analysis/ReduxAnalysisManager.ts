@@ -17,13 +17,13 @@
 
 import {
   selectActiveModComponentFormState,
-  selectGetOptionsArgsForModId,
+  selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import {
   type AnyAction,
+  createListenerMiddleware,
   type ListenerEffect,
   type ThunkDispatch,
-  createListenerMiddleware,
 } from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
@@ -105,7 +105,7 @@ class ReduxAnalysisManager {
           return;
         }
 
-        const getOptionsArgsForModId = selectGetOptionsArgsForModId(state);
+        const getModDraftStateForModId = selectGetModDraftStateForModId(state);
 
         const analysis = await analysisFactory(action, state);
         if (!analysis) {
@@ -122,11 +122,12 @@ class ReduxAnalysisManager {
         );
 
         try {
-          await analysis.run(activeModComponentFormState, {
-            optionsArgs: getOptionsArgsForModId(
+          await analysis.run(
+            activeModComponentFormState,
+            getModDraftStateForModId(
               activeModComponentFormState.modMetadata.id,
             ),
-          });
+          );
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({

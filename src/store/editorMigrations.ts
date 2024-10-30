@@ -286,8 +286,8 @@ export function migrateEditorStateV9(
         SetOptional<EditorStateV9, "dirtyModOptionsById">
       >;
 
-      // Rename dirtyModOptionsById to dirtyModOptionsDefinitionsById
-      draft.dirtyModOptionsDefinitionsById = oldDraft.dirtyModOptionsById ?? {};
+      // Rename dirtyModOptionsById to dirtyModOptionsDefinitionById
+      draft.dirtyModOptionsDefinitionById = oldDraft.dirtyModOptionsById ?? {};
       delete oldDraft.dirtyModOptionsById;
 
       // Populate dirtyModOptionsArgsById and drop optionsArgs from modComponentFormStates

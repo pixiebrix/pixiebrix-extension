@@ -26,9 +26,11 @@ import {
   type EditorStateV8,
   type EditorStateV9,
   type EditorStateV10,
+  type DraftModState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { cloneDeep, mapValues, omit } from "lodash";
 import {
+  draftModStateFactory,
   formStateFactory,
   type InternalFormStateOverride,
 } from "@/testUtils/factories/pageEditorFactories";
@@ -287,7 +289,7 @@ const initialStateV9: EditorStateV9 & PersistedState = {
 
 const initialStateV10: EditorStateV10 & PersistedState = {
   ...omit(cloneDeep(initialStateV9), "dirtyModOptionsById"),
-  dirtyModOptionsDefinitionsById: {},
+  dirtyModOptionsDefinitionById: {},
   dirtyModOptionsArgsById: {},
 };
 
@@ -430,7 +432,7 @@ function unmigrateFormStateV6toV5(formState: BaseFormStateV6): BaseFormStateV5 {
 
 function unmigrateFormStateV7toV6(
   formState: BaseFormStateV7,
-  modState: { optionsArgs: OptionsArgs },
+  modState: DraftModState,
 ): BaseFormStateV6 {
   return {
     ...formState,
@@ -506,7 +508,7 @@ function unmigrateEditorStateV10toV9(
   return omit(
     {
       ...state,
-      dirtyModOptionsById: state.dirtyModOptionsDefinitionsById,
+      dirtyModOptionsById: state.dirtyModOptionsDefinitionById,
       modComponentFormStates: state.modComponentFormStates.map((formState) =>
         unmigrateFormStateV7toV6(formState, {
           optionsArgs:
@@ -536,7 +538,7 @@ const formStateFactoryV7: SimpleFactory<BaseFormStateV7> = (override) =>
   });
 
 const formStateFactoryV6: SimpleFactory<BaseFormStateV6> = () =>
-  unmigrateFormStateV7toV6(formStateFactoryV7(), { optionsArgs: {} });
+  unmigrateFormStateV7toV6(formStateFactoryV7(), draftModStateFactory());
 
 const formStateFactoryV5: SimpleFactory<BaseFormStateV5> = () =>
   unmigrateFormStateV6toV5(formStateFactoryV6());

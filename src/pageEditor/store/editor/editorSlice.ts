@@ -98,7 +98,8 @@ export const initialState: EditorState = {
   isBetaUI: false,
   brickPipelineUIStateById: {},
   dirtyModMetadataById: {},
-  dirtyModOptionsDefinitionsById: {},
+  dirtyModOptionsDefinitionById: {},
+  dirtyModVariablesDefinitionById: {},
   dirtyModOptionsArgsById: {},
   visibleModal: null,
   deletedModComponentFormStatesByModId: {},
@@ -477,7 +478,7 @@ export const editorSlice = createSlice({
     ) {
       const { activeModId } = state;
       assertNotNullish(activeModId, "Expected active mod");
-      state.dirtyModOptionsDefinitionsById[activeModId] =
+      state.dirtyModOptionsDefinitionById[activeModId] =
         action.payload as Draft<ModOptionsDefinition>;
     },
 
@@ -525,7 +526,8 @@ export const editorSlice = createSlice({
 
       delete state.deletedModComponentFormStatesByModId[modId];
       delete state.dirtyModMetadataById[modId];
-      delete state.dirtyModOptionsDefinitionsById[modId];
+      delete state.dirtyModOptionsDefinitionById[modId];
+      delete state.dirtyModVariablesDefinitionById[modId];
       delete state.dirtyModOptionsArgsById[modId];
     },
 
@@ -552,7 +554,8 @@ export const editorSlice = createSlice({
       }
 
       // Perform cleanup last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
-      delete state.dirtyModOptionsDefinitionsById[modId];
+      delete state.dirtyModOptionsDefinitionById[modId];
+      delete state.dirtyModVariablesDefinitionById[modId];
       delete state.dirtyModOptionsArgsById[modId];
       delete state.dirtyModMetadataById[modId];
       delete state.deletedModComponentFormStatesByModId[modId];

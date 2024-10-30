@@ -38,6 +38,7 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
   type ModOptionsDefinition,
+  type ModVariablesDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import {
@@ -62,6 +63,7 @@ import {
   getDraftModComponentId,
   isModComponentFormState,
 } from "@/pageEditor/utils";
+import type { Except } from "type-fest";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -109,9 +111,13 @@ export type ModParts = {
    */
   sourceModDefinition?: ModDefinition;
   /**
-   * Dirty/new options to save. Undefined if there are no changes.
+   * Dirty/new option definition to save. Undefined if there are no changes.
    */
   dirtyModOptionsDefinition?: ModOptionsDefinition;
+  /**
+   * Dirty/new mod variables definition to save. Undefined if there are no changes.
+   */
+  dirtyModVariablesDefinition?: ModVariablesDefinition;
   /**
    * Dirty/new metadata to save. Undefined if there are no changes.
    */
@@ -134,7 +140,7 @@ const emptyModDefinition: UnsavedModDefinition = {
 
 function mapModComponentFormStateToModComponentBase(
   modComponentFormState: ModComponentFormState,
-): ModComponentBase {
+): Except<ModComponentBase, "variablesDefinition"> {
   const { selectModComponent, selectStarterBrickDefinition } =
     adapterForComponent(modComponentFormState);
 
@@ -167,12 +173,14 @@ function mapModComponentFormStateToModComponentBase(
  * @param sourceMod the original mod definition, or undefined for new mods
  * @param draftModComponents the activated mod components/form states to save. Must exclude deleted components
  * @param dirtyModOptionsDefinition the mod's option definition form state, or nullish if there are no dirty options
+ * @param dirtyModVariablesDefinition the mod's mod variables definition form state, or nullish if there are no dirty variables
  * @param dirtyModMetadata the mod's metadata form state, or nullish if there is no dirty mod metadata
  */
 export function buildNewMod({
   sourceModDefinition,
   draftModComponents,
   dirtyModOptionsDefinition,
+  dirtyModVariablesDefinition,
   dirtyModMetadata,
 }: ModParts): UnsavedModDefinition {
   // If there's no source mod, then we're creating a new one, so we
@@ -206,6 +214,10 @@ export function buildNewMod({
 
     if (dirtyModOptionsDefinition) {
       draft.options = normalizeModOptionsDefinition(dirtyModOptionsDefinition);
+    }
+
+    if (dirtyModVariablesDefinition) {
+      draft.options = dirtyModVariablesDefinition;
     }
 
     if (dirtyModMetadata) {

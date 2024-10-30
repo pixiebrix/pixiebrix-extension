@@ -56,7 +56,6 @@ import {
   type BaseModComponentState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
-import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 import {
   type Availability,
   type NormalizedAvailability,
@@ -122,7 +121,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
   | "label"
   | "integrationDependencies"
   | "permissions"
-  | "variablesDefinition"
   | "modMetadata"
 > & { type: T } {
   return {
@@ -133,8 +131,6 @@ export function baseFromModComponent<T extends StarterBrickType>(
     // Normalize here because the fields aren't optional/nullable on the BaseFormState destination type.
     integrationDependencies: config.integrationDependencies ?? [],
     permissions: config.permissions ?? {},
-    variablesDefinition:
-      config.variablesDefinition ?? emptyModVariablesDefinitionFactory(),
     type,
     modMetadata: config.modMetadata,
   };
@@ -145,7 +141,6 @@ export function baseSelectModComponent(
     apiVersion,
     uuid,
     label,
-    variablesDefinition,
     integrationDependencies,
     permissions,
     starterBrick,
@@ -172,7 +167,6 @@ export function baseSelectModComponent(
     label,
     integrationDependencies,
     permissions,
-    variablesDefinition,
     optionsArgs: modState.optionsArgs,
   };
 }
@@ -190,7 +184,6 @@ export function makeInitialBaseState({
     modMetadata,
     integrationDependencies: [],
     permissions: emptyPermissionsFactory(),
-    variablesDefinition: emptyModVariablesDefinitionFactory(),
     modComponent: {
       brickPipeline: [],
     },
