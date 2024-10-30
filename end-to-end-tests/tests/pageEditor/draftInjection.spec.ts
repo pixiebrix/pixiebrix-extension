@@ -20,20 +20,22 @@ import { expect, test } from "../../fixtures/testBase";
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
+import { getSidebarPage } from "../../utils";
 import { sleep } from "@/utils/timeUtils";
+import { FloatingActionButton } from "end-to-end-tests/pageObjects/floatingActionButton";
 
 test("#9381: inject non-selected/active sidebar", async ({
   page,
   extensionId,
   newPageEditorPage,
 }) => {
-  const modId = "@e2e-testing/draft-injection";
+  const modId = "@e2e-testing/ai/chatgpt-sidebar";
   let pageEditorPage: PageEditorPage;
 
   await test.step("Activate mod, and initialize page editor", async () => {
     const modActivationPage = new ActivateModPage(page, extensionId, modId);
     await modActivationPage.goto();
+    await modActivationPage.selectIntegrationOption(0, "OpenAI — ✨ Built-in");
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await page.goto("/");
@@ -43,15 +45,18 @@ test("#9381: inject non-selected/active sidebar", async ({
     const sidebarPage = await getSidebarPage(page, extensionId);
     // Check tab title is visible: see https://github.com/pixiebrix/pixiebrix-extension/issues/9381
     await expect(
-      sidebarPage.getByRole("tab", { name: "Sidebar Panel" }),
+      sidebarPage.getByRole("tab", { name: "ChatGPT Sidebar" }),
     ).toBeVisible();
 
     // Tab content is visible
-    await expect(sidebarPage.getByText("Hello World")).toBeVisible();
+    await expect(
+      sidebarPage.getByRole("heading", { name: "One-Click Prompts" }),
+    ).toBeVisible();
   }
 
   await test.step("Open Sidebar and assert activated mod component is showing", async () => {
-    await runModViaQuickBar(page, "Show Sidebar");
+    const floatingActionButton = new FloatingActionButton(page);
+    await floatingActionButton.toggleSidebar();
 
     await assertSidebarVisible();
   });
@@ -60,7 +65,7 @@ test("#9381: inject non-selected/active sidebar", async ({
     pageEditorPage = await newPageEditorPage(page.url());
 
     await pageEditorPage.modListingPanel
-      .getModListItemByName("E2E Test: Draft Injection")
+      .getModListItemByName("ChatGPT Sidebar")
       .select();
 
     // Provide time for the draft to be injected
@@ -69,9 +74,9 @@ test("#9381: inject non-selected/active sidebar", async ({
     await assertSidebarVisible();
   });
 
-  await test.step("Select Quickbar component and assert panel heading is visible", async () => {
+  await test.step("Select Primary Sidebar component and assert panel heading is visible", async () => {
     await pageEditorPage.modListingPanel
-      .getModListItemByName("Show Sidebar")
+      .getModListItemByName("[Panel]: Primary Sidebar")
       .select();
 
     // Provide time for the draft to be injected
@@ -80,9 +85,9 @@ test("#9381: inject non-selected/active sidebar", async ({
     await assertSidebarVisible();
   });
 
-  await test.step("Select sidebar component and assert panel heading is visible", async () => {
+  await test.step("Select a trigger component and assert panel heading is visible", async () => {
     await pageEditorPage.modListingPanel
-      .getModListItemByName("Sidebar Panel")
+      .getModListItemByName("[Event] Create/Edit Prompt")
       .select();
 
     // Provide time for the draft to be injected
@@ -91,9 +96,20 @@ test("#9381: inject non-selected/active sidebar", async ({
     await assertSidebarVisible();
   });
 
-  await test.step("Reselect quickbar component and assert panel heading is visible", async () => {
+  await test.step("Reselect Primary Sidebar component and assert panel heading is visible", async () => {
     await pageEditorPage.modListingPanel
-      .getModListItemByName("Show Sidebar")
+      .getModListItemByName("[Panel]: Primary Sidebar")
+      .select();
+
+    // Provide time for the draft to be injected
+    await sleep(500);
+
+    await assertSidebarVisible();
+  });
+
+  await test.step("Reselect the trigger component and assert panel heading is visible", async () => {
+    await pageEditorPage.modListingPanel
+      .getModListItemByName("[Event] Create/Edit Prompt")
       .select();
 
     // Provide time for the draft to be injected
