@@ -59,8 +59,8 @@ const Toolbar: React.FunctionComponent = () => {
   );
 };
 
-const RichTextEditor: React.FunctionComponent = (
-  props?: EditorProviderProps,
+const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
+  props: EditorProviderProps,
 ) => (
   <div className={styles.root}>
     <EditorProvider

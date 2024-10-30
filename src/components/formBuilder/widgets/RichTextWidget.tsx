@@ -19,8 +19,13 @@ import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
 import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
 
-const RichTextWidget: React.FunctionComponent<WidgetProps> = () => (
-  <RichTextEditor />
+const RichTextWidget: React.FunctionComponent<WidgetProps> = ({ onChange }) => (
+  <RichTextEditor
+    onUpdate={({ editor }) => {
+      console.log("stuff", editor.getHTML());
+      onChange(editor.getHTML());
+    }}
+  />
 );
 
 export default RichTextWidget;
