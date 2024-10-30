@@ -65,7 +65,6 @@ const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
   <div className={styles.root}>
     <EditorProvider
       extensions={[StarterKit]}
-      content="<p>Hello TipTap! 🍌</p>"
       slotBefore={<Toolbar />}
       {...props}
     />

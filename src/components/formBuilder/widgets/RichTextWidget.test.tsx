@@ -20,6 +20,9 @@ import { render, screen } from "@testing-library/react";
 import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 import { type WidgetProps } from "@rjsf/utils";
 import { widgetPropsFactory } from "@/testUtils/factories/widgetFactories";
+import userEvent from "@testing-library/user-event";
+import CustomFormComponent from "@/bricks/renderers/CustomFormComponent";
+import { type Schema } from "@/types/schemaTypes";
 
 describe("RichTextWidget", () => {
   const defaultProps: WidgetProps = widgetPropsFactory();
@@ -27,5 +30,75 @@ describe("RichTextWidget", () => {
   test("renders the RichTextWidget", () => {
     render(<RichTextWidget {...defaultProps} />);
     expect(screen.getByText("Hello TipTap! 🍌")).toBeInTheDocument();
+  });
+
+  test("updates form data when content changes", async () => {
+    const onSubmit = jest.fn();
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        content: {
+          type: "string",
+          title: "Content",
+        },
+      },
+    };
+    const uiSchema = {
+      content: {
+        "ui:widget": "richText",
+      },
+    };
+
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ content: "" }}
+        uiSchema={uiSchema}
+        submitCaption="Submit"
+        autoSave={false}
+        onSubmit={onSubmit}
+      />,
+    );
+
+    const editor = screen.getByRole("textbox");
+    await userEvent.type(editor, "Hello World");
+
+    screen.getByRole("button", { name: "Submit" }).click();
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      { content: "<p>Hello World</p>" },
+      { submissionCount: 1 },
+    );
+  });
+
+  test("handles initial form data", () => {
+    const initialHtml = "<p>Initial content</p>";
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        content: {
+          type: "string",
+          title: "Content",
+        },
+      },
+    };
+    const uiSchema = {
+      content: {
+        "ui:widget": "richtext",
+      },
+    };
+
+    render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ content: initialHtml }}
+        uiSchema={uiSchema}
+        submitCaption="Submit"
+        autoSave={false}
+        onSubmit={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Initial content")).toBeInTheDocument();
   });
 });

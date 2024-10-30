@@ -22,7 +22,6 @@ import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
 const RichTextWidget: React.FunctionComponent<WidgetProps> = ({ onChange }) => (
   <RichTextEditor
     onUpdate={({ editor }) => {
-      console.log("stuff", editor.getHTML());
       onChange(editor.getHTML());
     }}
   />
