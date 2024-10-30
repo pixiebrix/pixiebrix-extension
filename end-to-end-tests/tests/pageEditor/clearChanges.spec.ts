@@ -43,7 +43,7 @@ test("clear mod component changes", async ({
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await page.goto("/");
-    pageEditorPage = await newPageEditorPage(page.url());
+    pageEditorPage = await newPageEditorPage(page);
 
     brickConfigurationPanel = pageEditorPage.brickConfigurationPanel;
 

@@ -34,7 +34,7 @@ test("should hide add brick modal when Page Editor refreshes", async ({
     await modActivationPage.goto();
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
     await page.goto("/");
-    pageEditorPage = await newPageEditorPage(page.url());
+    pageEditorPage = await newPageEditorPage(page);
   });
 
   const addBrickModalTitle = pageEditorPage!.getByText("Add Brick", {

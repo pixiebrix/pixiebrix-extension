@@ -19,16 +19,15 @@ import { test, expect } from "../../fixtures/testBase";
 
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { getSidebarPage, isMsEdge } from "../../utils";
+import { getSidebarPage } from "../../utils";
 
 test("Add new mod with different starter brick components", async ({
   page,
   newPageEditorPage,
   extensionId,
-  chromiumChannel,
 }) => {
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
   await test.step("Add new Button starter brick", async () => {
@@ -91,11 +90,6 @@ test("Add new mod with different starter brick components", async ({
   });
 
   await test.step("Add new Sidebar Panel starter brick", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- MSedge won't open the sidebar unless the target page is focused
-    if (isMsEdge(chromiumChannel)) {
-      await page.bringToFront();
-    }
-
     const { modComponentNameMatcher } =
       await pageEditorPage.modListingPanel.addNewMod({
         starterBrickName: "Sidebar Panel",
@@ -160,7 +154,7 @@ test("Add starter brick to mod", async ({
   );
 
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   const brickPipeline = pageEditorPage.brickActionsPanel.bricks;
 
   // Create arbitrary mod to which to add starter bricks
@@ -247,11 +241,6 @@ test("Add starter brick to mod", async ({
   });
 
   await test.step("Add Sidebar Panel starter brick to mod", async () => {
-    // eslint-disable-next-line playwright/no-conditional-in-test -- MSedge won't open the sidebar unless the target page is focused
-    if (isMsEdge(chromiumChannel)) {
-      await page.bringToFront();
-    }
-
     const modActionMenu = await modListItem.openModActionMenu();
     await modActionMenu.addStarterBrick("Sidebar Panel");
 

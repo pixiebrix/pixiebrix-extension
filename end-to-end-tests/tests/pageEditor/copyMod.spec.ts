@@ -55,7 +55,7 @@ test("copying a mod that uses the PixieBrix API is copied correctly", async ({
 
   await test.step("Copy the mod", async () => {
     await page.goto("/");
-    const pageEditorPage = await newPageEditorPage(page.url());
+    const pageEditorPage = await newPageEditorPage(page);
     await pageEditorPage.copyMod(sourceModName, modUuid);
 
     await expect(
@@ -128,7 +128,7 @@ test("run a copied mod with a built-in integration", async ({
   });
 
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await test.step("Copy the mod", async () => {
     await pageEditorPage.copyMod(sourceModName, modUuid);
 

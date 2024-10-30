@@ -26,7 +26,7 @@ test.describe("page editor smoke test", () => {
   }) => {
     await page.goto("/bootstrap-5");
 
-    const pageEditorPage = await newPageEditorPage(page.url());
+    const pageEditorPage = await newPageEditorPage(page);
     await expect(pageEditorPage.templateGalleryButton).toBeVisible();
   });
 });

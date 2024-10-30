@@ -32,7 +32,7 @@ test("#8821: ensure Javascript script errors are thrown during brick runtime", a
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
   await page.goto("/bootstrap-5");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await pageEditorPage.modListingPanel
     .getModListItemByName("8821 Repro")
     .click();

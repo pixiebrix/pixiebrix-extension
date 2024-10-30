@@ -28,7 +28,7 @@ test("Restricted browser page", async ({
   extensionId,
 }) => {
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await page.goto(getBaseExtensionConsoleUrl(extensionId));
 
   await expect(
@@ -43,7 +43,7 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await pageEditorPage.modListingPanel
     .getModListItemByName("Google.com trigger")
     .select();
@@ -59,11 +59,11 @@ test("Unavailable mod", async ({ page, extensionId, newPageEditorPage }) => {
 
 test("Page Editor reload", async ({ page, newPageEditorPage, extensionId }) => {
   await page.goto("/");
-  const firstPageEditorPage = await newPageEditorPage(page.url());
+  const firstPageEditorPage = await newPageEditorPage(page);
 
   const newPage = await page.context().newPage();
   await newPage.goto("/bootstrap-5");
-  const secondPageEditorPage = await newPageEditorPage(page.url());
+  const secondPageEditorPage = await newPageEditorPage(page);
 
   await secondPageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Trigger",

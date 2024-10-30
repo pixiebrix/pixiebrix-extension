@@ -40,7 +40,7 @@ test("mod editor pane behavior", async ({
     await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
     await page.goto("/");
-    pageEditorPage = await newPageEditorPage(page.url());
+    pageEditorPage = await newPageEditorPage(page);
   });
 
   const { modEditorPane } = pageEditorPage!;

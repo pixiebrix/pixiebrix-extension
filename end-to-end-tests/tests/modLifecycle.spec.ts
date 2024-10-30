@@ -32,7 +32,7 @@ test("create, run, package, and update mod", async ({
   context,
 }) => {
   await page.goto("/create-react-app/table");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
 
   await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Button",

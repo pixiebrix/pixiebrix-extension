@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test as base, type BrowserContext } from "@playwright/test";
+import { test as base, type BrowserContext, type Page } from "@playwright/test";
 import path from "node:path";
 import fs from "node:fs/promises";
 import {
@@ -29,6 +29,7 @@ import {
   type SupportedChannel,
   SupportedChannels,
 } from "../../playwright.config";
+import { isMsEdge } from "../utils";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // See https://github.com/microsoft/playwright/issues/26693
@@ -44,7 +45,7 @@ export const test = base.extend<
     extensionId: string;
     profileName: "unaffiliated" | "affiliated";
     chromiumChannel: SupportedChannel;
-    newPageEditorPage: (urlToConnectTo: string) => Promise<PageEditorPage>;
+    newPageEditorPage: (pageToConnectTo: Page) => Promise<PageEditorPage>;
   },
   {
     checkRequiredEnvironmentVariables: () => void;
@@ -104,24 +105,30 @@ export const test = base.extend<
     // The page is closed by the context fixture `.close` cleanup step
   },
   /**
-   * Create a new Page Editor instance for the given URL. Cleans up any mods after the test.
-   * TODO: support cleaning up mods that have been saved to the server after the test
+   * Create a new Page Editor instance for the given URL.
    */
-  async newPageEditorPage({ context, extensionId }, use) {
+  async newPageEditorPage({ context, extensionId, chromiumChannel }, use) {
     const pageEditorPages: PageEditorPage[] = [];
-    await use(async (urlToConnectTo: string) => {
+    await use(async (pageToConnectTo: Page) => {
       const newPage = await context.newPage();
       const newPageEditorPage = new PageEditorPage(
         newPage,
-        urlToConnectTo,
+        pageToConnectTo.url(),
         extensionId,
       );
       await newPageEditorPage.goto();
+      /* MS Edge will not open the sidebar unless the connected page is focused. This is a workaround for that issue.
+       * https://www.loom.com/share/fbad85e901794161960b737b27a13677
+       */
+      if (isMsEdge(chromiumChannel)) {
+        await pageToConnectTo.bringToFront();
+      }
+
       pageEditorPages.push(newPageEditorPage);
       return newPageEditorPage;
     });
 
-    // Cleanup
+    // TODO: Consider removing this and relying on the daily cleanup job
     for (const page of pageEditorPages) {
       await page.bringToFront();
       await page.cleanup();

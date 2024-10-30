@@ -28,7 +28,7 @@ test("Create new mod by moving mod component", async ({
   newPageEditorPage,
 }) => {
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
 
   await test.step("Add new starter bricks", async () => {
     // Add 2x mod components because the last mod component in a mod can't be moved
@@ -75,7 +75,7 @@ test("Create new mod by copying a mod component", async ({
   newPageEditorPage,
 }) => {
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
 
   await test.step("Add new Trigger starter brick", async () => {
     const { modComponentNameMatcher } =

@@ -19,13 +19,12 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { getSidebarPage, isMsEdge, isSidebarOpen } from "../../utils";
+import { getSidebarPage, isSidebarOpen } from "../../utils";
 
 test("live editing behavior", async ({
   page,
   extensionId,
   newPageEditorPage,
-  chromiumChannel,
 }) => {
   await test.step("Activate test mod and navigate to testing site", async () => {
     const modId = "@e2e-testing/page-editor-live-editing-test";
@@ -36,7 +35,7 @@ test("live editing behavior", async ({
     await page.goto("/");
   });
 
-  const pageEditor = await newPageEditorPage(page.url());
+  const pageEditor = await newPageEditorPage(page);
 
   const modListItem =
     pageEditor.modListingPanel.getModListItemByName("Live Editing Test");
@@ -73,14 +72,6 @@ test("live editing behavior", async ({
     await expect(pageEditor.editorPane.renderPanelButton).toBeVisible();
 
     expect(isSidebarOpen(page, extensionId)).toBe(false);
-
-    /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
-     * cannot open the sidebar, unless the target page is already focused.
-     * https://www.loom.com/share/fbad85e901794161960b737b27a13677
-     */
-    if (isMsEdge(chromiumChannel)) {
-      await page.bringToFront();
-    }
 
     await pageEditor.editorPane.renderPanelButton.click();
     const sidebar = await getSidebarPage(page, extensionId);

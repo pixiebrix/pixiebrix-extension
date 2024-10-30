@@ -33,7 +33,7 @@ test("can view error logs", async ({
 
   await page.goto("/");
 
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await pageEditorPage.modListingPanel.getModListItemByName(modName).click();
   await pageEditorPage.modEditorPane.logsTab.click();
   const logsTabPane = await pageEditorPage.modEditorPane.getLogsTabPanel();

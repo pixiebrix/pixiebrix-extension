@@ -29,7 +29,7 @@ test("can save a new trigger mod", async ({
   newPageEditorPage,
 }) => {
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Trigger",
   });
@@ -56,7 +56,7 @@ test("#9349: can save new mod with multiple components", async ({
   newPageEditorPage,
 }) => {
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   await pageEditorPage.modListingPanel.addNewMod({
     starterBrickName: "Trigger",
   });
@@ -107,7 +107,7 @@ test("shows error notification when updating a public mod without incrementing t
   await modActivationPage.goto();
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();
   await page.goto("/");
-  const pageEditorPage = await newPageEditorPage(page.url());
+  const pageEditorPage = await newPageEditorPage(page);
   const modListItem =
     pageEditorPage.modListingPanel.getModListItemByName(modName);
   await modListItem.select();
