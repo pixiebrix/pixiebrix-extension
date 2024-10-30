@@ -16,7 +16,10 @@
  */
 
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { initialState } from "@/pageEditor/store/editor/editorSlice";
+import {
+  editorSlice,
+  initialState,
+} from "@/pageEditor/store/editor/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
@@ -27,7 +30,6 @@ import {
   ensureBrickPipelineUIState,
   ensureBrickConfigurationUIState,
   markModComponentFormStateAsDeleted,
-  removeModData,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
@@ -41,9 +43,9 @@ import {
   selectActiveModComponentId,
   selectActiveNodeId,
   selectActiveModId,
-  selectDeletedComponentFormStatesByModId,
+  selectDeletedComponentFormStateIdsByModId,
   selectDirtyMetadataForModId,
-  selectDirtyOptionsDefinitionsForModId,
+  selectDirtyModOptionsDefinitionForModId,
   selectModComponentFormStates,
   selectExpandedModId,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -411,7 +413,7 @@ describe("removeModData", () => {
         modComponentFormState1.uuid,
         orphanModComponentFormState.uuid,
       ],
-      dirtyModOptionsById: {
+      dirtyModOptionsDefinitionById: {
         [modMetadata.id]: {
           schema: {
             type: "object",
@@ -429,20 +431,25 @@ describe("removeModData", () => {
           description: "new description",
         },
       },
-      deletedModComponentFormStatesByModId: {
-        [modMetadata.id]: [modComponentFormState2],
+      deletedModComponentFormStateIdsByModId: {
+        [modMetadata.id]: [modComponentFormState2.uuid],
       },
     };
 
-    const newState = produce(state, (draft) => {
+    let newState = produce(state, (draft) => {
       markModComponentFormStateAsDeleted(draft, modComponentFormState1.uuid);
       markModComponentFormStateAsDeleted(draft, modComponentFormState2.uuid);
-      removeModData(draft, modMetadata.id);
     });
+
+    newState = editorSlice.reducer(
+      newState,
+      editorSlice.actions.removeModById(modMetadata.id),
+    );
+
     expect(selectActiveModId({ editor: newState })).toBeNull();
     expect(selectExpandedModId({ editor: newState })).toBeNull();
     expect(
-      selectDirtyOptionsDefinitionsForModId(modMetadata.id)({
+      selectDirtyModOptionsDefinitionForModId(modMetadata.id)({
         editor: newState,
       }),
     ).toBeUndefined();
@@ -450,7 +457,7 @@ describe("removeModData", () => {
       selectDirtyMetadataForModId(modMetadata.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDeletedComponentFormStatesByModId({ editor: newState })[
+      selectDeletedComponentFormStateIdsByModId({ editor: newState })[
         modMetadata.id
       ],
     ).toBeUndefined();

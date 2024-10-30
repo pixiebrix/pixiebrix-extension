@@ -2,7 +2,7 @@ Index: starter-brick-configuration-changes
 ===================================================================
 --- starter-brick-configuration-changes
 +++ starter-brick-configuration-changes
-@@ -1,71 +1,77 @@
+@@ -1,71 +1,81 @@
  apiVersion: v3
  definitions:
    extensionPoint:
@@ -85,3 +85,7 @@ Index: starter-brick-configuration-changes
    uiSchema:
      ui:order:
        - '*'
++variables:
++  schema:
++    properties: {}
++    type: object

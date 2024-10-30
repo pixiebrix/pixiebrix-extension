@@ -143,34 +143,6 @@ exports[`EditorTabLayout renders 1`] = `
           </p>
         </div>
       </div>
-      <div
-        aria-hidden="true"
-        class="fade tab-pane"
-        role="tabpanel"
-      >
-        <div>
-          <h1>
-            Sample $Options Tab
-          </h1>
-          <p>
-            This is a sample tab with some text content
-          </p>
-        </div>
-      </div>
-      <div
-        aria-hidden="true"
-        class="fade tab-pane"
-        role="tabpanel"
-      >
-        <div>
-          <h1>
-            Sample $Logs Tab
-          </h1>
-          <p>
-            This is a sample tab with some text content
-          </p>
-        </div>
-      </div>
     </div>
   </div>
 </DocumentFragment>

@@ -71,6 +71,10 @@ async function initErrorReporter(
     addAuthListener(updatePerson);
 
     datadogLogs.init({
+      // Allows us to programmatically flush datadog metrics using freeze events
+      // See: end-to-end-tests/tests/telemetry/errors.spec.ts
+      // See: https://github.com/DataDog/browser-sdk/issues/2327
+      allowUntrustedEvents: true,
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,

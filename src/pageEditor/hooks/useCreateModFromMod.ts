@@ -19,8 +19,8 @@ import { useCreateModDefinitionMutation } from "@/data/service/api";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
-  selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
+  selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -57,9 +57,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
-  const dirtyModOptionsDefinitionsMap = useSelector(
-    selectDirtyModOptionsDefinitions,
-  );
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromMod = useCallback(
@@ -87,13 +85,15 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         }
 
         const newModId = newModMetadata.id;
+        const draftModState = getModDraftStateForModId(sourceModId);
 
         const unsavedModDefinition = await buildAndValidateMod({
           sourceModDefinition,
-          draftModComponents,
-          // eslint-disable-next-line security/detect-object-injection -- new mod IDs are sanitized in the form validation
-          dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[sourceModId],
+          // Pass the metadata for the new mod, but the draft state from the source mod
           dirtyModMetadata: newModMetadata,
+          draftModComponents,
+          dirtyModOptionsDefinition: draftModState.dirtyModOptionsDefinition,
+          dirtyModVariablesDefinition: draftModState.variablesDefinition,
         });
 
         const upsertResponse = await createModDefinitionOnServer({
@@ -132,7 +132,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
     },
     [
       getDraftModComponentsForMod,
-      dirtyModOptionsDefinitionsMap,
+      getModDraftStateForModId,
       buildAndValidateMod,
       createModDefinitionOnServer,
       dispatch,

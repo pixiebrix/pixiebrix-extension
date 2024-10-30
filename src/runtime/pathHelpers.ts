@@ -171,7 +171,7 @@ function normalizePart(
     }
 
     // Treat numeric strings as array access
-    if (/\d+/.test(partOrRecord)) {
+    if (/^\d+$/.test(partOrRecord)) {
       return {
         part: `[${partOrRecord}]`,
         isOptional: false,

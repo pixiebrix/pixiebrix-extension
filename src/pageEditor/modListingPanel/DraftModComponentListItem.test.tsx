@@ -19,9 +19,7 @@ import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import DraftModComponentListItem from "@/pageEditor/modListingPanel/DraftModComponentListItem";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { authActions } from "@/auth/authSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { authStateFactory } from "@/testUtils/factories/authFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
@@ -55,7 +53,6 @@ describe("DraftModComponentListItem", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(authActions.setAuth(authStateFactory()));
             // The addElement also sets the active element
             dispatch(
               editorActions.addModComponentFormState(formStateFactory()),
@@ -63,6 +60,7 @@ describe("DraftModComponentListItem", () => {
 
             // Add new element to deactivate the previous one
             dispatch(editorActions.addModComponentFormState(formState));
+
             // Remove the active element and stay with one inactive item
             dispatch(
               editorActions.markModComponentFormStateAsDeleted(formState.uuid),
@@ -84,7 +82,6 @@ describe("DraftModComponentListItem", () => {
         {
           initialValues: formState,
           setupRedux(dispatch) {
-            dispatch(authActions.setAuth(authStateFactory()));
             // The addElement also sets the active element
             dispatch(editorActions.addModComponentFormState(formState));
           },

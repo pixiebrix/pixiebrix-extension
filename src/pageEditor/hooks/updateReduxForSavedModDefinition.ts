@@ -19,13 +19,14 @@ import type { ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import type { RegistryId } from "@/types/registryTypes";
 import { getDraftModComponentId } from "@/pageEditor/utils";
 import { type AppDispatch } from "@/pageEditor/store/store";
+import { selectGetOptionsArgsForModId } from "@/pageEditor/store/editor/editorSelectors";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /**
  * Update Redux for a saved mod definition.
@@ -46,8 +47,12 @@ function updateReduxForSavedModDefinition({
   draftModComponents: Array<ModComponentBase | ModComponentFormState>;
   isReactivate: boolean;
 }) {
-  return async (dispatch: AppDispatch): Promise<void> => {
+  return async (
+    dispatch: AppDispatch,
+    getState: () => RootState,
+  ): Promise<void> => {
     const modMetadata = mapModDefinitionToModMetadata(modDefinition);
+    const getOptionsArgsForModId = selectGetOptionsArgsForModId(getState());
 
     // Activate/re-activate the mod
     dispatch(modComponentActions.removeModById(modDefinition.metadata.id));
@@ -62,7 +67,7 @@ function updateReduxForSavedModDefinition({
           modDefinition,
           draftModComponents,
         ),
-        optionsArgs: collectModOptionsArgs(draftModComponents),
+        optionsArgs: getOptionsArgsForModId(modDefinition.metadata.id),
         screen: "pageEditor",
         isReactivate,
       }),

@@ -18,6 +18,7 @@
 import config from "@/pageEditor/starterBricks/contextMenu";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
+import { draftModStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("contextMenu", () => {
   it("smoke test", () => {
@@ -28,7 +29,9 @@ describe("contextMenu", () => {
       element: null,
     });
 
-    expect(config.selectModComponent(formState)).toEqual(
+    expect(
+      config.selectModComponent(formState, draftModStateFactory()),
+    ).toEqual(
       expect.objectContaining({
         config: {
           action: [],

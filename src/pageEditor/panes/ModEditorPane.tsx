@@ -18,23 +18,18 @@
 import styles from "./ModEditorPane.module.scss";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectActiveModId,
-  selectEditorUpdateKey,
-} from "@/pageEditor/store/editor/editorSelectors";
-import { Alert } from "react-bootstrap";
-import Centered from "@/components/Centered";
+import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors";
 import EditorTabLayout, {
   type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
 import Logs from "@/pageEditor/tabs/Logs";
 import ModMetadataEditor from "@/pageEditor/tabs/modMetadata/ModMetadataEditor";
-import { type MessageContext } from "@/types/loggerTypes";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArgsEditor";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -43,16 +38,10 @@ const ModEditorPane: React.VFC = () => {
   useRegisterDraftModInstanceOnAllFrames();
 
   const activeModId = useSelector(selectActiveModId);
-  const editorUpdateKey = useSelector(selectEditorUpdateKey);
-  const layoutKey = `${activeModId}-${editorUpdateKey}`;
+  assertNotNullish(activeModId, "Expected active mod id");
 
   useEffect(() => {
-    const messageContext: MessageContext = activeModId
-      ? {
-          modId: activeModId,
-        }
-      : {};
-    dispatch(logActions.setContext({ messageContext }));
+    dispatch(logActions.setContext({ messageContext: { modId: activeModId } }));
   }, [dispatch, activeModId]);
 
   const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();
@@ -75,21 +64,14 @@ const ModEditorPane: React.VFC = () => {
       badgeCount: unreadLogsCount,
       badgeVariant: logsBadgeVariant,
       TabContent: Logs,
-      mountWhenActive: true,
     },
   ];
 
-  if (!activeModId) {
-    return (
-      <Centered>
-        <Alert variant="danger">Mod not found</Alert>
-      </Centered>
-    );
-  }
-
   return (
+    // Only need to remount on activeModId change because the sub-tabs mount/unmount on selection and there's
+    // no Redux actions that'd update the values while the forms are mounted
     <div className={styles.root} data-testid="modEditorPane">
-      <EditorTabLayout key={layoutKey} tabs={tabItems} />
+      <EditorTabLayout key={activeModId} tabs={tabItems} />
     </div>
   );
 };

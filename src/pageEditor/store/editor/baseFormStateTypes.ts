@@ -243,12 +243,35 @@ export type BaseFormStateV6<
     modMetadata: ModMetadata;
   };
 
+/**
+ * Base form state version that eliminates optionsArgs because dirty mod options arguments should be tracked at the
+ * mod-level instead of on the mod components.
+ * @since 2.1.6
+ */
+export type BaseFormStateV7<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<BaseFormStateV6<TModComponent, TStarterBrick>, "optionsArgs">;
+
+/**
+ * Base form state version that eliminates variablesDefinition because dirty variable definition should be tracked at
+ * the mod-level instead of on the mod components.
+ * @since 2.1.7
+ */
+export type BaseFormStateV8<
+  TModComponent extends BaseModComponentState = BaseModComponentState,
+  TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
+> = Except<
+  BaseFormStateV7<TModComponent, TStarterBrick>,
+  "variablesDefinition"
+>;
+
 export type BaseFormState<
   TModComponent extends BaseModComponentState = BaseModComponentState,
   TStarterBrick extends BaseStarterBrickState = BaseStarterBrickState,
 > = Except<
   // On migration, re-point this type to the most recent BaseFormStateV<N> type name
-  BaseFormStateV6<TModComponent, TStarterBrick>,
+  BaseFormStateV8<TModComponent, TStarterBrick>,
   // NOTE: overriding integrationDependencies is not changing the type shape/structure. It's just cleaning up the
   // type name/reference which makes types easier to work with for testing migrations.
   "integrationDependencies"

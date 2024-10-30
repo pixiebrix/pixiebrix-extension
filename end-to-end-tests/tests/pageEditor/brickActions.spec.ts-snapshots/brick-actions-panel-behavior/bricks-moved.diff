@@ -2,7 +2,7 @@ Index: bricks-moved
 ===================================================================
 --- bricks-moved
 +++ bricks-moved
-@@ -1,91 +1,91 @@
+@@ -1,95 +1,95 @@
  apiVersion: v3
  definitions:
    extensionPoint:
@@ -109,3 +109,7 @@ Index: bricks-moved
    uiSchema:
      ui:order:
        - '*'
+ variables:
+   schema:
+     properties: {}
+     type: object

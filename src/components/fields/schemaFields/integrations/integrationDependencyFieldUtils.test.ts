@@ -31,10 +31,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { normalizeAvailability } from "@/bricks/available";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import {
-  createNewUnsavedModMetadata,
-  emptyModVariablesDefinitionFactory,
-} from "@/utils/modUtils";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -225,8 +222,6 @@ describe("selectVariables", () => {
         }),
       ],
       permissions: emptyPermissionsFactory(),
-      optionsArgs: {},
-      variablesDefinition: emptyModVariablesDefinitionFactory(),
       modMetadata: createNewUnsavedModMetadata({ modName: "Document Mod" }),
       modComponent: {
         brickPipeline: [

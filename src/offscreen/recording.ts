@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deserializeError } from "serialize-error";
 import {
   createClient,
   type LiveClient,
@@ -23,18 +22,10 @@ import {
   SOCKET_STATES,
 } from "@deepgram/sdk";
 import pDefer from "p-defer";
-import { type JsonObject } from "type-fest";
 import { tabCapture } from "@/background/messenger/api";
-import {
-  extractRecordingTabId,
-  isGetRecordingTabIdMessage,
-  isRecordErrorMessage,
-  isStartAudioCaptureMessage,
-  isStopAudioCaptureMessage,
-  type RecordErrorMessage,
-  type StartAudioCaptureMessage,
-} from "@/tinyPages/offscreenProtocol";
+import type { JsonObject } from "type-fest";
 import { compact } from "lodash";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 type MediaClient = {
   liveClient: LiveClient;
@@ -44,33 +35,11 @@ type MediaClient = {
 
 let mediaClient: MediaClient | null;
 
-export async function sendErrorViaErrorReporter(
-  data: RecordErrorMessage["data"],
-): Promise<void> {
-  const { error, errorMessage, errorReporterInitInfo, messageContext } = data;
-
-  // WARNING: the prototype chain is lost during deserialization, so make sure any predicates you call here
-  // to determine log level also handle serialized/deserialized errors.
-  // See https://github.com/sindresorhus/serialize-error/issues/48
-
-  const { getErrorReporter } = await import(
-    /* webpackChunkName: "errorReporter" */
-    "@/telemetry/initErrorReporter"
-  );
-
-  const { versionName, telemetryUser } = errorReporterInitInfo;
-  const reporter = await getErrorReporter(versionName, telemetryUser);
-
-  if (!reporter) {
-    // Error reporter not initialized
-    return;
-  }
-
-  reporter.error({
-    message: errorMessage,
-    error: deserializeError(error),
-    messageContext,
-  });
+export function extractRecordingTabId(): number | null {
+  const offscreenUrl = new URL(document.location.href);
+  const regex = /recording-(?<tabId>\d+)/;
+  const tabId = regex.exec(offscreenUrl.hash)?.groups?.tabId;
+  return tabId ? Number.parseInt(tabId, 10) : null;
 }
 
 /**
@@ -87,12 +56,22 @@ function markRecordingTab(tabId: number | null): void {
   window.location.hash = tabId == null ? "" : `recording-${tabId}`;
 }
 
-async function startRecording({
+type AudioRecordingData = {
+  /**
+   * The Deepgram API key.
+   */
+  apiKey: string;
+  tabId: number;
+  tabStreamId: Nullishable<string>;
+  captureMicrophone: boolean;
+};
+
+export async function startRecording({
   apiKey,
   tabId,
   tabStreamId,
   captureMicrophone,
-}: StartAudioCaptureMessage["data"]): Promise<void> {
+}: AudioRecordingData): Promise<void> {
   if (mediaClient) {
     throw new Error("Deepgram connection already exists");
   }
@@ -187,7 +166,7 @@ async function startRecording({
   markRecordingTab(tabId);
 }
 
-async function stopRecording(): Promise<void> {
+export async function stopRecording(): Promise<void> {
   if (!mediaClient) {
     console.debug("Recording not in progress");
     return;
@@ -196,7 +175,7 @@ async function stopRecording(): Promise<void> {
   const { recorder, liveClient, streams } = mediaClient;
 
   recorder.stop();
-  liveClient.finish();
+  liveClient.requestClose();
 
   // Stop so the recording icon goes away
   for (const track of recorder.stream.getTracks()) {
@@ -213,30 +192,3 @@ async function stopRecording(): Promise<void> {
   mediaClient = null;
   markRecordingTab(null);
 }
-
-// Use optional chaining in case the chrome runtime is not available:
-// https://github.com/pixiebrix/pixiebrix-extension/issues/8397
-chrome.runtime?.onMessage?.addListener(async (message: unknown) => {
-  switch (true) {
-    case isRecordErrorMessage(message): {
-      await sendErrorViaErrorReporter(message.data);
-      break;
-    }
-
-    case isStartAudioCaptureMessage(message): {
-      await startRecording(message.data);
-      break;
-    }
-
-    case isStopAudioCaptureMessage(message): {
-      await stopRecording();
-      break;
-    }
-
-    case isGetRecordingTabIdMessage(message): {
-      return extractRecordingTabId(document.location.href);
-    }
-
-    default:
-  }
-});

@@ -36,7 +36,9 @@ exports[`DraftModComponentListItem renders active element 1`] = `
         class="icon unsaved text-danger"
       >
         <span
+          aria-label="Unsaved changes"
           class="root"
+          role="img"
         />
       </span>
       <div
@@ -85,7 +87,7 @@ exports[`DraftModComponentListItem renders not active element 1`] = `
     action="#"
   >
     <div
-      class="root list-group-item"
+      class="root modBackground list-group-item"
     >
       <span
         class="icon"

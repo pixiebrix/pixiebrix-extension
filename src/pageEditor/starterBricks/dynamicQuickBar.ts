@@ -50,6 +50,8 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { FeatureFlags } from "@/auth/featureFlags";
 
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+
 function fromNativeElement({
   modMetadata,
   starterBrickMetadata,
@@ -104,6 +106,7 @@ function selectStarterBrickDefinition(
 
 function selectModComponent(
   state: DynamicQuickBarFormState,
+  modState: DraftModState,
   options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<DynamicQuickBarConfig> {
   const { modComponent } = state;
@@ -114,7 +117,7 @@ function selectModComponent(
       : omitEditorMetadata(modComponent.brickPipeline),
   };
   return removeEmptyValues({
-    ...baseSelectModComponent(state),
+    ...baseSelectModComponent(state, modState),
     config,
   });
 }
@@ -161,10 +164,11 @@ async function fromModComponent(
 
 function asDraftModComponent(
   dynamicQuickBarFormState: DynamicQuickBarFormState,
+  modState: DraftModState,
 ): DraftModComponent {
   return {
     type: StarterBrickTypes.DYNAMIC_QUICK_BAR,
-    modComponent: selectModComponent(dynamicQuickBarFormState, {
+    modComponent: selectModComponent(dynamicQuickBarFormState, modState, {
       includeInstanceIds: true,
     }),
     starterBrickDefinition: selectStarterBrickDefinition(

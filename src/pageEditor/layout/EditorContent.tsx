@@ -99,7 +99,9 @@ const EditorContent: React.FC = () => {
   }
 
   if (activeModComponentId) {
-    return <ModComponentEditorPane />;
+    // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9370 - consider removing key once all
+    //  normalization has been moved to the form state adapter
+    return <ModComponentEditorPane key={activeModComponentId} />;
   }
 
   if (activeModId) {

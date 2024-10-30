@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getModalDataSelector,
   selectActiveModComponentFormState,
+  selectGetModDraftStateForModId,
   selectPipelineMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
@@ -63,6 +64,7 @@ function useAddBrick(): AddBrick {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeModComponent = useSelector(selectActiveModComponentFormState);
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
   const pipelineMap = useSelector(selectPipelineMap);
   const modalData = useSelector(getModalDataSelector(ModalKey.ADD_BRICK));
 
@@ -117,7 +119,10 @@ function useAddBrick(): AddBrick {
       const analyses = makeBrickLevelAnalyses();
       const annotationSets = await Promise.all(
         analyses.map(async (analysis) => {
-          await analysis.run(newModComponent);
+          await analysis.run(
+            newModComponent,
+            getModDraftStateForModId(activeModComponent.modMetadata.id),
+          );
           return analysis.getAnnotations();
         }),
       );

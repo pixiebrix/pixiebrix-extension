@@ -36,10 +36,10 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
 import {
-  selectActiveModComponentFormState,
-  selectActiveBrickPipelineUIState,
   selectActiveBrickConfigurationUIState,
-  selectNotDeletedModComponentFormStates,
+  selectActiveBrickPipelineUIState,
+  selectActiveModComponentFormState,
+  selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
 import {
@@ -48,11 +48,8 @@ import {
 } from "@/pageEditor/starterBricks/formStateTypes";
 import reportError from "@/telemetry/reportError";
 import {
-  setActiveModComponentId,
-  editModMetadata,
-  editModOptionsDefinitions,
   markModComponentFormStateAsDeleted,
-  removeModData,
+  setActiveModComponentId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
 } from "@/pageEditor/store/editor/editorSliceHelpers";
@@ -60,8 +57,8 @@ import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import {
-  getRunningStarterBricks,
   checkAvailable,
+  getRunningStarterBricks,
 } from "@/contentScript/messenger/api";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
@@ -73,7 +70,10 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModOptionsDefinition,
+  type ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
@@ -87,7 +87,6 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { collectModOptionsArgs } from "@/store/modComponents/modComponentUtils";
 
 /** @internal */
 export const initialState: EditorState = {
@@ -101,10 +100,12 @@ export const initialState: EditorState = {
   dirty: {},
   isBetaUI: false,
   brickPipelineUIStateById: {},
-  dirtyModOptionsById: {},
   dirtyModMetadataById: {},
+  dirtyModOptionsDefinitionById: {},
+  dirtyModVariablesDefinitionById: {},
+  dirtyModOptionsArgsById: {},
   visibleModal: null,
-  deletedModComponentFormStatesByModId: {},
+  deletedModComponentFormStateIdsByModId: {},
   availableActivatedModComponentIds: [],
   isPendingAvailableActivatedModComponents: false,
   availableDraftModComponentIds: [],
@@ -168,7 +169,7 @@ const checkAvailableActivatedModComponents = createAsyncThunk<
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkAvailableActivatedModComponents", async (arg, thunkAPI) => {
-  const notDeletedFormStates = selectNotDeletedModComponentFormStates(
+  const notDeletedFormStates = selectModComponentFormStates(
     thunkAPI.getState(),
   );
   const notDeletedModComponents = selectNotDeletedActivatedModComponents(
@@ -251,28 +252,31 @@ const checkAvailableDraftModComponents = createAsyncThunk<
   AvailableDraftModComponentIds,
   void,
   { state: EditorRootState }
->("editor/checkAvailableDraftModComponentFormStates", async (arg, thunkAPI) => {
-  const notDeletedFormStates = selectNotDeletedModComponentFormStates(
-    thunkAPI.getState(),
-  );
-  const tabUrl = await getCurrentInspectedURL();
-  const availableFormStateIds = await Promise.all(
-    notDeletedFormStates.map(
-      async ({ uuid, starterBrick: formStateStarterBrick }) => {
-        const isAvailable = await isStarterBrickFormStateAvailable(
-          tabUrl,
-          formStateStarterBrick,
-        );
+>(
+  "editor/checkAvailableDraftModComponentFormStates",
+  async (_arg, thunkAPI) => {
+    const notDeletedFormStates = selectModComponentFormStates(
+      thunkAPI.getState(),
+    );
+    const tabUrl = await getCurrentInspectedURL();
+    const availableFormStateIds = await Promise.all(
+      notDeletedFormStates.map(
+        async ({ uuid, starterBrick: formStateStarterBrick }) => {
+          const isAvailable = await isStarterBrickFormStateAvailable(
+            tabUrl,
+            formStateStarterBrick,
+          );
 
-        return isAvailable ? uuid : null;
-      },
-    ),
-  );
+          return isAvailable ? uuid : null;
+        },
+      ),
+    );
 
-  const availableDraftModComponentIds = uniq(compact(availableFormStateIds));
+    const availableDraftModComponentIds = uniq(compact(availableFormStateIds));
 
-  return { availableDraftModComponentIds };
-});
+    return { availableDraftModComponentIds };
+  },
+);
 
 const checkActiveModComponentAvailability = createAsyncThunk<
   {
@@ -466,31 +470,40 @@ export const editorSlice = createSlice({
     ///
 
     editModMetadata(state, action: PayloadAction<ModMetadataFormState>) {
-      const { payload: metadata } = action;
-      editModMetadata(state, metadata);
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
+      state.dirtyModMetadataById[activeModId] = action.payload;
     },
 
-    editModOptionsDefinitions(
+    editModOptionsDefinition(
       state,
       action: PayloadAction<ModOptionsDefinition>,
     ) {
-      const { payload: options } = action;
-      editModOptionsDefinitions(state, options);
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
+      state.dirtyModOptionsDefinitionById[activeModId] =
+        action.payload as Draft<ModOptionsDefinition>;
     },
 
-    editModOptionsValues(state, action: PayloadAction<OptionsArgs>) {
-      const modId = state.activeModId;
-      if (modId == null) {
-        return;
-      }
+    editModOptionsArgs(state, action: PayloadAction<OptionsArgs>) {
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
 
-      const notDeletedFormStates = selectNotDeletedModComponentFormStates({
-        editor: state,
-      });
-      for (const formState of notDeletedFormStates) {
-        formState.optionsArgs = action.payload;
-        state.dirty[formState.uuid] = true;
-      }
+      state.dirtyModOptionsArgsById[activeModId] =
+        action.payload as Draft<OptionsArgs>;
+
+      // Bump sequence number because arguments impact mod functionality
+      state.selectionSeq++;
+    },
+
+    editModVariablesDefinition(
+      state,
+      action: PayloadAction<ModVariablesDefinition>,
+    ) {
+      const { activeModId } = state;
+      assertNotNullish(activeModId, "Expected active mod");
+      state.dirtyModVariablesDefinitionById[activeModId] =
+        action.payload as Draft<ModVariablesDefinition>;
     },
 
     updateModMetadataOnModComponentFormStates(
@@ -507,6 +520,9 @@ export const editorSlice = createSlice({
       for (const formState of modComponentFormStates) {
         formState.modMetadata = modMetadata;
       }
+
+      // Bump sequence number because the modId might have changed. The other metadata doesn't affect functionality
+      state.selectionSeq++;
     },
 
     /**
@@ -521,9 +537,11 @@ export const editorSlice = createSlice({
         state.dirty[modComponentFormState.uuid] = false;
       }
 
-      delete state.deletedModComponentFormStatesByModId[modId];
+      delete state.deletedModComponentFormStateIdsByModId[modId];
       delete state.dirtyModMetadataById[modId];
-      delete state.dirtyModOptionsById[modId];
+      delete state.dirtyModOptionsDefinitionById[modId];
+      delete state.dirtyModVariablesDefinitionById[modId];
+      delete state.dirtyModOptionsArgsById[modId];
     },
 
     /**
@@ -540,8 +558,20 @@ export const editorSlice = createSlice({
         markModComponentFormStateAsDeleted(state, modComponentId);
       }
 
-      // Call last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
-      removeModData(state, modId);
+      if (state.activeModId === modId) {
+        state.activeModId = null;
+      }
+
+      if (state.expandedModId === modId) {
+        state.expandedModId = null;
+      }
+
+      // Perform cleanup last because removeModComponentFormState sets entries on deletedModComponentFormStatesByModId
+      delete state.dirtyModOptionsDefinitionById[modId];
+      delete state.dirtyModVariablesDefinitionById[modId];
+      delete state.dirtyModOptionsArgsById[modId];
+      delete state.dirtyModMetadataById[modId];
+      delete state.deletedModComponentFormStateIdsByModId[modId];
     },
 
     ///
@@ -576,22 +606,6 @@ export const editorSlice = createSlice({
         throw new Error("Form state already exists for mod component");
       }
 
-      const modId = modComponentFormState.modMetadata.id;
-
-      // Find existing activated mod components with the same mod id
-      const existingModFormStates = state.modComponentFormStates.filter(
-        (formState) => formState.modMetadata.id === modId,
-      );
-
-      // If there are existing components, collect their option arguments, and assign.
-      // NOTE: we don't need to have logic here for optionsDefinition and variablesDefinition because those
-      // are stored/owned at the mod-level in the Page Editor
-      if (existingModFormStates.length > 0) {
-        modComponentFormState.optionsArgs = collectModOptionsArgs(
-          existingModFormStates,
-        );
-      }
-
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentId] = dirty;
 
@@ -610,7 +624,10 @@ export const editorSlice = createSlice({
       state,
       action: PayloadAction<{
         modComponentFormState: ModComponentFormState;
-        dirty: boolean;
+        /**
+         * Set the dirty state of the form state. If undefined, the dirty state will not be modified.
+         */
+        dirty?: boolean;
         /**
          * Force the Page Editor to remount the Formik form because there are changes in the ModComponentFormState that
          * are not reflected in the Formik form.
@@ -630,7 +647,10 @@ export const editorSlice = createSlice({
       }
 
       state.modComponentFormStates[index] = modComponentFormState;
-      state.dirty[modComponentId] = dirty;
+
+      if (dirty != null) {
+        state.dirty[modComponentId] = dirty;
+      }
 
       if (includesNonFormikChanges) {
         state.selectionSeq++;
@@ -1063,7 +1083,7 @@ export const persistEditorConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 9,
+  version: 11,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
 };

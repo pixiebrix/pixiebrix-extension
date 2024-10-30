@@ -40,7 +40,10 @@ import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
-import { selectActivatedModMetadatas } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectGetModDraftStateForModId,
+  selectModMetadatas,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { RunReason } from "@/types/runtimeTypes";
 
 export type AddNewModComponent = (
@@ -48,7 +51,7 @@ export type AddNewModComponent = (
 ) => void;
 
 function useFreshModNameGenerator(): () => string {
-  const modMetadatas = useSelector(selectActivatedModMetadatas);
+  const modMetadatas = useSelector(selectModMetadatas);
 
   return useCallback((): string => {
     const nameBase = "New Mod";
@@ -76,6 +79,8 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   );
 
   const generateFreshModName = useFreshModNameGenerator();
+
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
 
   const getInitialModComponentFormState = useCallback(
     async ({
@@ -131,7 +136,10 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          adapter.asDraftModComponent(initialFormState),
+          adapter.asDraftModComponent(
+            initialFormState,
+            getModDraftStateForModId(initialFormState.modMetadata.id),
+          ),
           {
             isSelectedInEditor: true,
             runReason: RunReason.PAGE_EDITOR_REGISTER,
@@ -165,7 +173,13 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         });
       }
     },
-    [flagOff, modMetadata, dispatch, getInitialModComponentFormState],
+    [
+      dispatch,
+      flagOff,
+      getInitialModComponentFormState,
+      getModDraftStateForModId,
+      modMetadata,
+    ],
   );
 }
 

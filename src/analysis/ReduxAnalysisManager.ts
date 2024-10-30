@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentFormState,
+  selectGetModDraftStateForModId,
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   type AnyAction,
+  createListenerMiddleware,
   type ListenerEffect,
   type ThunkDispatch,
-  createListenerMiddleware,
 } from "@reduxjs/toolkit";
 import analysisSlice from "./analysisSlice";
 import {
@@ -97,9 +100,12 @@ class ReduxAnalysisManager {
 
         const activeModComponentFormState =
           selectActiveModComponentFormState(state);
+
         if (activeModComponentFormState == null) {
           return;
         }
+
+        const getModDraftStateForModId = selectGetModDraftStateForModId(state);
 
         const analysis = await analysisFactory(action, state);
         if (!analysis) {
@@ -116,7 +122,12 @@ class ReduxAnalysisManager {
         );
 
         try {
-          await analysis.run(activeModComponentFormState);
+          await analysis.run(
+            activeModComponentFormState,
+            getModDraftStateForModId(
+              activeModComponentFormState.modMetadata.id,
+            ),
+          );
         } catch (error) {
           listenerApi.dispatch(
             analysisSlice.actions.failAnalysis({

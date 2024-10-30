@@ -26,7 +26,10 @@ import VarMap, {
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import getMenuOptions from "./getMenuOptions";
 import { type JsonObject } from "type-fest";
-import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  draftModStateFactory,
+  formStateFactory,
+} from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
@@ -182,7 +185,7 @@ describe("mod variables", () => {
     const formState = formStateFactory({
       brickPipeline: [brickConfigFactory()],
     });
-    await analysis.run(formState);
+    await analysis.run(formState, draftModStateFactory());
 
     const knownVars = analysis
       .getKnownVars()

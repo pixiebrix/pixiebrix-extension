@@ -20,6 +20,9 @@ import { test, expect } from "../../fixtures/testBase";
 import { type Page, test as base } from "@playwright/test";
 import { uuidv4 } from "@/types/helpers";
 
+// Since 2.1.4, new mods are created with the name "New Mod" instead of being a standalone mod component
+const DEFAULT_MOD_NAME = "New Mod";
+
 test("Create new mod by moving mod component", async ({
   page,
   newPageEditorPage,
@@ -27,17 +30,16 @@ test("Create new mod by moving mod component", async ({
   await page.goto("/");
   const pageEditorPage = await newPageEditorPage(page.url());
 
-  await test.step("Add new Trigger starter brick", async () => {
-    const { modComponentNameMatcher } =
-      await pageEditorPage.modListingPanel.addNewMod({
-        starterBrickName: "Trigger",
-      });
+  await test.step("Add new starter bricks", async () => {
+    // Add 2x mod components because the last mod component in a mod can't be moved
+    await pageEditorPage.modListingPanel.addNewMod({
+      starterBrickName: "Context Menu",
+    });
 
-    await expect(
-      pageEditorPage.brickConfigurationPanel.getByRole("textbox", {
-        name: "Name",
-      }),
-    ).toHaveValue(modComponentNameMatcher);
+    const modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName(DEFAULT_MOD_NAME);
+    const modActionMenu = await modListItem.openModActionMenu();
+    await modActionMenu.addStarterBrick("Trigger");
   });
 
   const modComponentName = await pageEditorPage.brickConfigurationPanel
@@ -46,9 +48,10 @@ test("Create new mod by moving mod component", async ({
     })
     .inputValue();
 
-  // Since 2.1.4, new mods are created with the name "New Mod" instead of being a standalone mod component
   await expect(
-    pageEditorPage.modListingPanel.getModListItemLocatorByName("New Mod"),
+    pageEditorPage.modListingPanel.getModListItemLocatorByName(
+      DEFAULT_MOD_NAME,
+    ),
   ).toBeVisible();
 
   const modName = `Destination Mod ${uuidv4()}`;
@@ -61,10 +64,10 @@ test("Create new mod by moving mod component", async ({
   await expect(pageEditorPage.getByText(modName)).toBeVisible();
   await expect(pageEditorPage.getByText(modComponentName)).toBeVisible();
 
-  // Should not be visible. Because it's only mod component was moved
+  // Will still be visible because only one of its mod components was moved
   await expect(
-    pageEditorPage.locator("span").filter({ hasText: "New Mod" }),
-  ).toBeHidden();
+    pageEditorPage.locator("span").filter({ hasText: DEFAULT_MOD_NAME }),
+  ).toBeVisible();
 });
 
 test("Create new mod by copying a mod component", async ({
@@ -93,9 +96,10 @@ test("Create new mod by copying a mod component", async ({
     })
     .inputValue();
 
-  // Since 2.1.4, new mods are created with the name "New Mod" instead of being a standalone mod component
   await expect(
-    pageEditorPage.modListingPanel.getModListItemLocatorByName("New Mod"),
+    pageEditorPage.modListingPanel.getModListItemLocatorByName(
+      DEFAULT_MOD_NAME,
+    ),
   ).toBeVisible();
 
   const modName = `Destination Mod ${uuidv4()}`;
@@ -107,7 +111,7 @@ test("Create new mod by copying a mod component", async ({
 
   // Use span locator to distinguish from the New Mod button
   await expect(
-    pageEditorPage.locator("span").filter({ hasText: "New Mod" }),
+    pageEditorPage.locator("span").filter({ hasText: DEFAULT_MOD_NAME }),
   ).toBeVisible();
   await expect(pageEditorPage.getByText(modName)).toBeVisible();
   await expect(pageEditorPage.getByText(modComponentName)).toHaveCount(2);

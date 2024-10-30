@@ -3633,6 +3633,7 @@ exports[`Storyshots Enhancements/SelectionMenu Mixed Buttons 1`] = `
           "__html": "",
         }
       }
+      role="img"
     />
   </button>
 </div>
