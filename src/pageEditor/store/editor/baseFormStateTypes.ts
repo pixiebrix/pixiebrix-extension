@@ -256,7 +256,7 @@ export type BaseFormStateV7<
 /**
  * Base form state version that eliminates variablesDefinition because dirty variable definition should be tracked at
  * the mod-level instead of on the mod components.
- * @since 2.1.6
+ * @since 2.1.7
  */
 export type BaseFormStateV8<
   TModComponent extends BaseModComponentState = BaseModComponentState,

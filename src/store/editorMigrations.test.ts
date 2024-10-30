@@ -305,7 +305,7 @@ const initialStateV11: EditorStateV11 & PersistedState = {
   ),
   dirtyModOptionsDefinitionById: {},
   dirtyModVariablesDefinitionById: {},
-  deletedModComponentFormStatesByModId: {},
+  deletedModComponentFormStateIdsByModId: {},
 };
 
 function unmigrateServices(
@@ -571,10 +571,10 @@ function unmigrateEditorStateV11toV10(
         unmigrateFormState(formState),
       ),
       deletedModComponentFormStatesByModId: mapValues(
-        state.deletedModComponentFormStatesByModId,
+        state.deletedModComponentFormStateIdsByModId,
         (modComponentIds, modId) =>
           // Create fake form states for the deleted ones
-          // FIXME: assign mod metadata to the fake form states
+          // XXX: ideally would assign mod metadata to the fake form states, but it doesn't matter for the tests
           modComponentIds.map((modComponentId) => ({
             ...formStateFactory({ formStateConfig: { uuid: modComponentId } }),
             variablesDefinition:

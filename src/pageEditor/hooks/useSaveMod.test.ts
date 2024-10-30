@@ -93,13 +93,12 @@ describe("useSaveMod", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
 
-    const putMock = appApiMock
+    appApiMock
       .onPut(API_PATHS.BRICK(editablePackage.id))
       .reply(200, packageUpsertResponseFactory(editablePackage));
 
     return {
       modDefinition,
-      putMock,
     };
   }
 
@@ -130,7 +129,7 @@ describe("useSaveMod", () => {
   });
 
   it("preserves original options if no dirty options", async () => {
-    const { modDefinition, putMock } = setupModDefinitionMocks({
+    const { modDefinition } = setupModDefinitionMocks({
       options: {
         schema: {
           type: "object",
@@ -167,7 +166,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put[0]!.data,
+        appApiMock.history.put[0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 
@@ -184,7 +183,7 @@ describe("useSaveMod", () => {
   });
 
   it("saves dirty options", async () => {
-    const { modDefinition, putMock } = setupModDefinitionMocks();
+    const { modDefinition } = setupModDefinitionMocks();
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -223,7 +222,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put[0]!.data,
+        appApiMock.history.put[0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 
@@ -243,7 +242,7 @@ describe("useSaveMod", () => {
   });
 
   it("saves dirty mod variable definitions", async () => {
-    const { modDefinition, putMock } = setupModDefinitionMocks();
+    const { modDefinition } = setupModDefinitionMocks();
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
@@ -274,7 +273,7 @@ describe("useSaveMod", () => {
 
     const yamlConfig = (
       JSON.parse(
-        putMock.history.put[0]!.data,
+        appApiMock.history.put[0]!.data,
       ) as components["schemas"]["Package"]
     ).config;
 

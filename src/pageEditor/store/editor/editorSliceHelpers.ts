@@ -153,7 +153,7 @@ export function markModComponentFormStateAsDeleted(
   // The effect of adding the draft to deletedModComponentFormStatesByModId is benign - the mod will show as dirty
   // even if the only change is that you added/removed a draft mod component.
   // See discussion at: https://github.com/pixiebrix/pixiebrix-extension/pull/9320
-  (state.deletedModComponentFormStatesByModId[
+  (state.deletedModComponentFormStateIdsByModId[
     removedFormState.modMetadata.id
   ] ??= []).push(formStateId);
 

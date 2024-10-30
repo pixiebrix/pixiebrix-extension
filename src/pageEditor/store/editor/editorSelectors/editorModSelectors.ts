@@ -273,9 +273,9 @@ const selectGetModVariablesDefinitionForModId = createSelector(
 ///
 
 /** @internal */
-export const selectDeletedComponentFormStatesByModId = ({
+export const selectDeletedComponentFormStateIdsByModId = ({
   editor,
-}: EditorRootState) => editor.deletedModComponentFormStatesByModId;
+}: EditorRootState) => editor.deletedModComponentFormStateIdsByModId;
 
 /**
  * Returns a function that returns if the mod definition or instance (i.e., options args, integration configurations)
@@ -288,7 +288,7 @@ const selectGetModIsDirtySelector = createSelector(
   selectDirtyModVariablesDefinitionByModId,
   selectDirtyOptionsArgsByModId,
   selectGetModComponentFormStatesForMod,
-  selectDeletedComponentFormStatesByModId,
+  selectDeletedComponentFormStateIdsByModId,
   (
     dirtyModMetadata,
     isModComponentDirtyById,
@@ -296,7 +296,7 @@ const selectGetModIsDirtySelector = createSelector(
     dirtyModVariablesDefinitionForModId,
     dirtyModOptionsArgsForModId,
     getModComponentFormStatesByModId,
-    getDeletedModComponentFormStatesByModId,
+    getDeletedModComponentFormStateIdsByModId,
     // eslint-disable-next-line max-params -- required because createSelector takes array of selector args
   ) =>
     // Memoize for consistency. It's not necessary because the return value is primitive
@@ -318,7 +318,7 @@ const selectGetModIsDirtySelector = createSelector(
         Boolean(dirtyModOptionsArgsForModId[modId]) ||
         hasDirtyFormState ||
         // eslint-disable-next-line security/detect-object-injection -- registry id
-        !isEmpty(getDeletedModComponentFormStatesByModId[modId])
+        !isEmpty(getDeletedModComponentFormStateIdsByModId[modId])
       );
     }),
 );

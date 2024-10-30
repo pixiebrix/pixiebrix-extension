@@ -242,7 +242,7 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
               ...extraNewFormStates,
             ].map((formState) => [formState.uuid, true]),
           ),
-          deletedModComponentFormStatesByModId: {
+          deletedModComponentFormStateIdsByModId: {
             [primaryModMetadata.id]: deletedDirtyFormStates.map((x) => x.uuid),
           },
         },

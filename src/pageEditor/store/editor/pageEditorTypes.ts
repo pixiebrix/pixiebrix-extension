@@ -436,7 +436,7 @@ export type EditorStateV10 = Except<
  * Version bump to move mod variables definition tracking from the form states.
  *
  * @deprecated - Do not use versioned state types directly, exported for testing
- * @since 2.1.6
+ * @since 2.1.7
  */
 export type EditorStateV11 = Except<
   EditorStateV10,
@@ -445,7 +445,7 @@ export type EditorStateV11 = Except<
   | "dirtyModOptionsDefinitionsById"
 > & {
   modComponentFormStates: BaseFormStateV8[];
-  deletedModComponentFormStatesByModId: Record<RegistryId, UUID[]>;
+  deletedModComponentFormStateIdsByModId: Record<RegistryId, UUID[]>;
   dirtyModOptionsDefinitionById: Record<RegistryId, ModOptionsDefinition>;
   dirtyModVariablesDefinitionById: Record<RegistryId, ModVariablesDefinition>;
 };

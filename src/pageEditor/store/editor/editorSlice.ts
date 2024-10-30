@@ -105,7 +105,7 @@ export const initialState: EditorState = {
   dirtyModVariablesDefinitionById: {},
   dirtyModOptionsArgsById: {},
   visibleModal: null,
-  deletedModComponentFormStatesByModId: {},
+  deletedModComponentFormStateIdsByModId: {},
   availableActivatedModComponentIds: [],
   isPendingAvailableActivatedModComponents: false,
   availableDraftModComponentIds: [],
@@ -537,7 +537,7 @@ export const editorSlice = createSlice({
         state.dirty[modComponentFormState.uuid] = false;
       }
 
-      delete state.deletedModComponentFormStatesByModId[modId];
+      delete state.deletedModComponentFormStateIdsByModId[modId];
       delete state.dirtyModMetadataById[modId];
       delete state.dirtyModOptionsDefinitionById[modId];
       delete state.dirtyModVariablesDefinitionById[modId];
@@ -571,7 +571,7 @@ export const editorSlice = createSlice({
       delete state.dirtyModVariablesDefinitionById[modId];
       delete state.dirtyModOptionsArgsById[modId];
       delete state.dirtyModMetadataById[modId];
-      delete state.deletedModComponentFormStatesByModId[modId];
+      delete state.deletedModComponentFormStateIdsByModId[modId];
     },
 
     ///

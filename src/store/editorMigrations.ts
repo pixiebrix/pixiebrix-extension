@@ -320,7 +320,11 @@ export function migrateEditorStateV10(
     (draft) => {
       // Alias the old draft type for deleting old properties
       const oldDraft = draft as unknown as Draft<
-        SetOptional<EditorStateV10, "dirtyModOptionsDefinitionsById">
+        SetOptional<
+          EditorStateV10,
+          | "dirtyModOptionsDefinitionsById"
+          | "deletedModComponentFormStatesByModId"
+        >
       >;
 
       // Rename dirtyModOptionsDefinitionsById to dirtyModOptionsDefinitionById
@@ -328,6 +332,13 @@ export function migrateEditorStateV10(
         oldDraft.dirtyModOptionsDefinitionsById ??
         emptyModOptionsDefinitionFactory();
       delete oldDraft.dirtyModOptionsDefinitionsById;
+
+      // Rename dirtyModOptionsDefinitionsById to deletedModComponentFormStateIdsByModId
+      draft.deletedModComponentFormStateIdsByModId = mapValues(
+        oldDraft.deletedModComponentFormStatesByModId,
+        (formStates) => formStates.map((x) => x.uuid),
+      );
+      delete oldDraft.deletedModComponentFormStatesByModId;
 
       // Populate dirtyModOptionsArgsById and drop optionsArgs from modComponentFormStates
       draft.dirtyModVariablesDefinitionById = {};

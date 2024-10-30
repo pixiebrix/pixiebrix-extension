@@ -43,7 +43,7 @@ import {
   selectActiveModComponentId,
   selectActiveNodeId,
   selectActiveModId,
-  selectDeletedComponentFormStatesByModId,
+  selectDeletedComponentFormStateIdsByModId,
   selectDirtyMetadataForModId,
   selectDirtyModOptionsDefinitionForModId,
   selectModComponentFormStates,
@@ -431,7 +431,7 @@ describe("removeModData", () => {
           description: "new description",
         },
       },
-      deletedModComponentFormStatesByModId: {
+      deletedModComponentFormStateIdsByModId: {
         [modMetadata.id]: [modComponentFormState2.uuid],
       },
     };
@@ -457,7 +457,7 @@ describe("removeModData", () => {
       selectDirtyMetadataForModId(modMetadata.id)({ editor: newState }),
     ).toBeUndefined();
     expect(
-      selectDeletedComponentFormStatesByModId({ editor: newState })[
+      selectDeletedComponentFormStateIdsByModId({ editor: newState })[
         modMetadata.id
       ],
     ).toBeUndefined();
