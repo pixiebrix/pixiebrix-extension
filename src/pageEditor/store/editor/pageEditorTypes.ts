@@ -456,10 +456,9 @@ export type EditorState = Except<
   // Swap out any properties with versioned types for type references to the latest version.
   // NOTE: overriding these properties is not changing the type shape/structure. It's just cleaning up the type
   // name/reference which makes types easier to work with for testing migrations.
-  "modComponentFormStates" | "deletedModComponentFormStatesByModId"
+  "modComponentFormStates"
 > & {
   modComponentFormStates: ModComponentFormState[];
-  deletedModComponentFormStatesByModId: Record<string, UUID[]>;
 };
 
 export type EditorRootState = {
