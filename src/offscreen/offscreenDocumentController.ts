@@ -26,6 +26,7 @@ const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
 // Manually manage promise vs. using pMemoize to support re-adding if the offscreen document has closed
 let createOffscreenDocumentPromise: Promise<void> | null = null;
 
+// Defined here to avoid circular dependency with offscreen/messenger/api.ts
 const pingOffscreen = getMethod("OFFSCREEN_PING", { page: "/offscreen.html" });
 
 /**
@@ -75,7 +76,6 @@ async function ensureOffscreenDocument(): Promise<void> {
   }
 
   try {
-    console.debug("Creating the offscreen document");
     createOffscreenDocumentPromise = chrome.offscreen.createDocument({
       url: OFFSCREEN_DOCUMENT_PATH,
       // Our reason for creating an offscreen document does not fit nicely into options offered by the Chrome API, which
@@ -93,6 +93,7 @@ async function ensureOffscreenDocument(): Promise<void> {
     await createOffscreenDocumentPromise;
     console.debug("Offscreen document created successfully");
 
+    // Ensures that the offscreen messenger is ready to receive messages.
     await pingOffscreen();
   } catch (error) {
     const errorMessage = getErrorMessage(error);
@@ -103,12 +104,9 @@ async function ensureOffscreenDocument(): Promise<void> {
       return;
     }
 
-    throw new Error(
-      "Error occurred while creating the offscreen document used for error reporting",
-      {
-        cause: error,
-      },
-    );
+    throw new Error("Error occurred while creating the offscreen document", {
+      cause: error,
+    });
   } finally {
     createOffscreenDocumentPromise = null;
   }
