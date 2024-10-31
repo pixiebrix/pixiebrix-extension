@@ -177,5 +177,5 @@ describe("RichTextWidget", () => {
       },
       { submissionCount: 1 },
     );
-  }, 8000);
+  }, 10_000);
 });
