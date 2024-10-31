@@ -18,12 +18,32 @@
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
 import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
+import { type Editor } from "@tiptap/react";
 
-const RichTextWidget: React.FunctionComponent<WidgetProps> = ({ onChange }) => (
+const getEditorValue = (editor: Editor) =>
+  // TipTap will return an empty html tag if the editor has been cleared
+  editor.isEmpty ? undefined : editor.getHTML();
+
+const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
+  id,
+  onChange,
+  onFocus,
+  onBlur,
+  disabled,
+  readonly,
+}) => (
   <RichTextEditor
     onUpdate={({ editor }) => {
-      onChange(editor.getHTML());
+      onChange(getEditorValue(editor));
     }}
+    onFocus={({ editor }) => {
+      editor.commands.focus();
+      onFocus(id, getEditorValue(editor));
+    }}
+    onBlur={({ editor }) => {
+      onBlur(id, getEditorValue(editor));
+    }}
+    editable={!(disabled || readonly)}
   />
 );
 
