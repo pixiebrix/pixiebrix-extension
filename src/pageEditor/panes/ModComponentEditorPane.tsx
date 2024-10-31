@@ -37,6 +37,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { AppDispatch } from "@/pageEditor/store/store";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -66,7 +67,7 @@ function useGetFormReinitializationKey(): () => string {
 const EditorPaneContent: React.VoidFunctionComponent<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const getFormReinitializationKey = useGetFormReinitializationKey();
   const previousKey = useRef<string | null>(getFormReinitializationKey());
 
@@ -91,7 +92,8 @@ const EditorPaneContent: React.VoidFunctionComponent<{
         }),
       );
 
-      dispatch(actions.checkActiveModComponentAvailability());
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9389
+      void dispatch(actions.checkActiveModComponentAvailability());
 
       previousKey.current = currentKey;
     },

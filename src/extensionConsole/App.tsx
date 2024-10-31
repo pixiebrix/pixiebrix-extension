@@ -16,7 +16,11 @@
  */
 
 import React, { useEffect } from "react";
-import store, { hashHistory, persistor } from "@/extensionConsole/store";
+import store, {
+  type AppDispatch,
+  hashHistory,
+  persistor,
+} from "@/extensionConsole/store";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Container } from "react-bootstrap";
@@ -67,12 +71,12 @@ registerContribBricks();
 registerDefaultWidgets();
 
 const AuthenticatedContent: React.VFC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { permit } = useFlags();
 
   useEffect(() => {
     // Start polling logs
-    dispatch(logActions.pollLogs());
+    void dispatch(logActions.pollLogs());
   }, [dispatch]);
 
   return (

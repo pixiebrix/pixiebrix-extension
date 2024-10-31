@@ -36,12 +36,13 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 const ModComponentActionMenu: React.FC<{
   modComponentFormState: ModComponentFormState;
   labelRoot: string;
 }> = ({ modComponentFormState, labelRoot }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const deleteDraftModComponent = useDeleteDraftModComponent();
   const clearModComponentChanges = useClearModComponentChanges();
@@ -75,7 +76,7 @@ const ModComponentActionMenu: React.FC<{
       title: "Duplicate",
       icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
       async action() {
-        dispatch(
+        await dispatch(
           // Duplicate the mod component within the current mod
           actions.duplicateActiveModComponent(),
         );

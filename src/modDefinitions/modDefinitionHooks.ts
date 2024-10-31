@@ -32,6 +32,8 @@ import { loadingAsyncStateFactory } from "@/utils/asyncStateUtils";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import pluralize from "@/utils/pluralize";
 import { type Nullishable } from "@/utils/nullishUtils";
+import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import type { ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTypes";
 
 /**
  * Lookup a mod definition from the registry by ID, or null if it doesn't exist.
@@ -144,16 +146,16 @@ export function useRequiredModDefinitions(
  * Safe to include multiple times in the React tree, because it's connected to the Redux store.
  */
 export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
-  const dispatch = useDispatch();
-  const refetch = useCallback(
-    () => dispatch(modDefinitionsActions.syncRemoteModDefinitions()),
-    [dispatch],
-  );
+  const dispatch =
+    useDispatch<ThunkDispatch<ModDefinitionsRootState, unknown, AnyAction>>();
+  const refetch = useCallback(async () => {
+    await dispatch(modDefinitionsActions.syncRemoteModDefinitions());
+  }, [dispatch]);
   const state = useSelector(selectModDefinitionsAsyncState);
 
   // First load from local database
   useEffect(() => {
-    dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
+    void dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
   }, [dispatch]);
 
   // Load from remote data source once the local data has been loaded
@@ -163,7 +165,7 @@ export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
       !state.isLoadingFromCache &&
       !state.isCacheUninitialized
     ) {
-      dispatch(modDefinitionsActions.syncRemoteModDefinitions());
+      void dispatch(modDefinitionsActions.syncRemoteModDefinitions());
     }
   }, [
     dispatch,

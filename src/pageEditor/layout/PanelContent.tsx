@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { tabStateActions } from "@/pageEditor/store/tabState/tabStateSlice";
-import { persistor } from "@/pageEditor/store/store";
+import { type AppDispatch, persistor } from "@/pageEditor/store/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import TabConnectionErrorBanner from "@/pageEditor/components/TabConnectionErrorBanner";
@@ -44,15 +44,15 @@ import { navigationEvent } from "@/pageEditor/events";
  * @see navigationEvent
  */
 function useConnectToContentScript(): void {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const connect = () => {
-      dispatch(tabStateActions.connectToContentScript());
+    const connect = async () => {
+      await dispatch(tabStateActions.connectToContentScript());
     };
 
     // Automatically connect on mount
-    connect();
+    void connect();
 
     navigationEvent.add(connect);
     return () => {
@@ -62,14 +62,14 @@ function useConnectToContentScript(): void {
 }
 
 const PanelContent: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const trialStatus = useTeamTrialStatus();
 
   useConnectToContentScript();
 
   useEffect(() => {
     // Start polling logs
-    dispatch(logActions.pollLogs());
+    void dispatch(logActions.pollLogs());
   }, [dispatch]);
 
   const authPersistenceContext: ReduxPersistenceContextType = {
