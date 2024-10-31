@@ -294,27 +294,54 @@ describe("persistEditorConfig", () => {
 
 describe("Mod Options editing", () => {
   let initialState: EditorState;
-  const modId = validateRegistryId("test/mod");
-  const modMetadata = modMetadataFactory({ id: modId });
+  const modId1 = validateRegistryId("test/mod");
+  const modMetadata1 = modMetadataFactory({ id: modId1 });
 
-  const existingComponentId = autoUUIDSequence();
-
-  const existingComponent = formStateFactory({
+  const existingComponentId1ForModId1 = autoUUIDSequence();
+  const existingComponent1ForMod1 = formStateFactory({
     formStateConfig: {
-      uuid: existingComponentId,
-      modMetadata,
+      uuid: existingComponentId1ForModId1,
+      modMetadata: modMetadata1,
+    },
+  });
+
+  const existingComponentId2ForModId1 = autoUUIDSequence();
+  const existingComponent2ForMod1 = formStateFactory({
+    formStateConfig: {
+      uuid: existingComponentId2ForModId1,
+      modMetadata: modMetadata1,
+    },
+  });
+
+  const modId2 = validateRegistryId("test/mod2");
+  const modMetadata2 = modMetadataFactory({ id: modId2 });
+
+  const existingComponentId1ForModId2 = autoUUIDSequence();
+  const existingComponent1ForMod2 = formStateFactory({
+    formStateConfig: {
+      uuid: existingComponentId1ForModId2,
+      modMetadata: modMetadata2,
     },
   });
 
   beforeEach(() => {
     initialState = {
       ...editorSlice.getInitialState(),
-      modComponentFormStates: [existingComponent],
+      modComponentFormStates: [
+        existingComponent1ForMod1,
+        existingComponent2ForMod1,
+        existingComponent1ForMod2,
+      ],
+      dirty: {
+        [existingComponent1ForMod1.uuid]: true,
+        [existingComponent2ForMod1.uuid]: false,
+        [existingComponent1ForMod2.uuid]: true,
+      },
     };
     // Make the mod active
     initialState = editorSlice.reducer(
       initialState,
-      actions.setActiveModId(modId),
+      actions.setActiveModId(modId1),
     );
     // Edit the mod options
     initialState = editorSlice.reducer(
@@ -328,21 +355,34 @@ describe("Mod Options editing", () => {
 
     let stateAfterEdit = editorSlice.reducer(
       initialState,
-      actions.markModAsCleanById(modId),
+      actions.markModAsCleanById(modId1),
     );
 
-    expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeFalse();
+    expect(selectModIsDirty(modId1)({ editor: stateAfterEdit })).toBeFalse();
 
     stateAfterEdit = editorSlice.reducer(
       stateAfterEdit,
       actions.editModOptionsArgs(updatedOptionsArgs),
     );
 
-    expect(stateAfterEdit.dirtyModOptionsArgsById[modId]).toStrictEqual(
+    expect(stateAfterEdit.dirtyModOptionsArgsById[modId1]).toStrictEqual(
       updatedOptionsArgs,
     );
 
-    expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeTrue();
+    expect(selectModIsDirty(modId1)({ editor: stateAfterEdit })).toBeTrue();
+  });
+
+  test("marking a mod clean only impacts mod components for that mod", () => {
+    const stateAfterEdit = editorSlice.reducer(
+      initialState,
+      actions.markModAsCleanById(modId1),
+    );
+
+    expect(stateAfterEdit.dirty).toStrictEqual({
+      [existingComponent1ForMod1.uuid]: false,
+      [existingComponent2ForMod1.uuid]: false,
+      [existingComponent1ForMod2.uuid]: true,
+    });
   });
 });
 
