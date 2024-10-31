@@ -118,7 +118,7 @@ const ReloadToolbar: React.FunctionComponent<{
       }),
       { isSelectedInEditor: true, runReason: RunReason.PAGE_EDITOR_RUN },
     );
-  }, [asDraftModComponent, getModDraftStateForModId, modComponentFormState]);
+  }, [asDraftModComponent, getOptionsArgsForModId, modComponentFormState]);
 
   const manualRun = async () => {
     // Report before the run to report even if the run errors
