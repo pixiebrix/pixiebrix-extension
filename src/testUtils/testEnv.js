@@ -87,3 +87,30 @@ globalThis.OffscreenCanvas.prototype.getContext = jest.fn(
 globalThis.createImageBitmap = jest
   .fn()
   .mockReturnValue({ width: 32, height: 32, close() {} });
+
+// See https://stackoverflow.com/questions/68023284/react-testing-library-user-event-throws-error-typeerror-root-elementfrompoint/77219899#77219899
+function getBoundingClientRect() {
+  const rec = {
+    x: 0,
+    y: 0,
+    bottom: 0,
+    height: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    width: 0,
+  };
+  return { ...rec, toJSON: () => rec };
+}
+
+class FakeDOMRectList extends Array {
+  item(index) {
+    return this[index];
+  }
+}
+
+document.elementFromPoint = () => null;
+HTMLElement.prototype.getBoundingClientRect = getBoundingClientRect;
+HTMLElement.prototype.getClientRects = () => new FakeDOMRectList();
+Range.prototype.getBoundingClientRect = getBoundingClientRect;
+Range.prototype.getClientRects = () => new FakeDOMRectList();

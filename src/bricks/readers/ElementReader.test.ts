@@ -64,7 +64,7 @@ describe("ElementReader", () => {
   });
 
   test("isInViewport: false for element partially outside of document", async () => {
-    (Element.prototype.getBoundingClientRect as any) = jest.fn(() =>
+    (HTMLElement.prototype.getBoundingClientRect as any) = jest.fn(() =>
       rectFactory({
         width: window.innerWidth + 1,
         right: window.innerWidth + 1,
