@@ -32,7 +32,7 @@ import { castDraft } from "immer";
 
 const REFRESH_INTERVAL = 750;
 
-let intervalTimeout: NodeJS.Timeout | null = null;
+let timeout: NodeJS.Timeout | null = null;
 
 /** @internal */
 export const initialLogState: LogState = {
@@ -67,10 +67,10 @@ const pollLogs = createAsyncThunk<
     state: LogRootState;
   }
 >("logs/polling", async (_arg, thunkAPI) => {
-  if (intervalTimeout) {
-    // Clear previous polling call (if any)
-    clearTimeout(intervalTimeout);
-    intervalTimeout = null;
+  if (timeout) {
+    // Clear previous call (if any)
+    clearTimeout(timeout);
+    timeout = null;
   }
 
   const activeContext = selectActiveContext(thunkAPI.getState());
@@ -79,8 +79,9 @@ const pollLogs = createAsyncThunk<
     availableEntries = await getLogEntries(activeContext);
   }
 
-  intervalTimeout = setTimeout(
-    // XXX: will this cause a stack overflow eventually? Or does it get a fresh stack since it's via createAsyncThunk?
+  // NOTE: use of setTimeout with the recursive action call instead of setInterval
+  // XXX: will this cause a stack overflow eventually? Or does it get a fresh stack because it's via createAsyncThunk?
+  timeout = setTimeout(
     async () => thunkAPI.dispatch(pollLogs()),
     REFRESH_INTERVAL,
   );
@@ -89,9 +90,9 @@ const pollLogs = createAsyncThunk<
 });
 
 export function stopPollLogs(): void {
-  if (intervalTimeout) {
-    clearTimeout(intervalTimeout);
-    intervalTimeout = null;
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
   }
 }
 
