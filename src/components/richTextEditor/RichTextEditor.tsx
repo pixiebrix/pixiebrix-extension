@@ -45,6 +45,7 @@ const Toolbar: React.FunctionComponent = () => {
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           active={editor.isActive("bold")}
+          aria-label="Bold"
         >
           {/* TODO: Fix having to explicitly set height and width for document renderer */}
           <FontAwesomeIcon icon={faBold} height="16" width="16" />
@@ -54,6 +55,7 @@ const Toolbar: React.FunctionComponent = () => {
           onClick={() => editor.chain().focus().toggleItalic().run()}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           active={editor.isActive("italic")}
+          aria-label="Italic"
         >
           <FontAwesomeIcon icon={faItalic} height="16" width="16" />
         </Button>

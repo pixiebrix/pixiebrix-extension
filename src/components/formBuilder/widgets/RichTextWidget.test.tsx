@@ -24,6 +24,12 @@ import CustomFormComponent, {
 import { type Schema } from "@/types/schemaTypes";
 
 describe("RichTextWidget", () => {
+  const user = userEvent.setup({
+    // 20ms delay between key presses to allow the editor state to update
+    // before the next key press
+    delay: 20,
+  });
+
   const createSchema = (properties: Record<string, any>): Schema => ({
     type: "object",
     properties,
@@ -65,11 +71,11 @@ describe("RichTextWidget", () => {
     });
 
     const editor = screen.getByRole("textbox");
-    await userEvent.type(editor, "Hello World");
+    await user.type(editor, "Hello World");
     screen.getByRole("button", { name: "Submit" }).click();
 
     expect(onSubmit).toHaveBeenCalledWith(
-      { foo: "<p></p><p>Hello World</p>" },
+      { foo: "<p>Hello World</p>" },
       { submissionCount: 1 },
     );
   });
@@ -85,14 +91,14 @@ describe("RichTextWidget", () => {
     });
 
     const [fooEditor, barEditor] = screen.getAllByRole("textbox");
-    await userEvent.type(fooEditor!, "Hello");
-    await userEvent.type(barEditor!, "Goodbye");
+    await user.type(fooEditor!, "Hello");
+    await user.type(barEditor!, "Goodbye");
     screen.getByRole("button", { name: "Submit" }).click();
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
-        foo: "<p></p><p>Hello</p>",
-        bar: "<p></p><p>Goodbye</p>",
+        foo: "<p>Hello</p>",
+        bar: "<p>Goodbye</p>",
       },
       { submissionCount: 1 },
     );
@@ -111,4 +117,65 @@ describe("RichTextWidget", () => {
 
     expect(onSubmit).toHaveBeenCalledWith({ foo: "" }, { submissionCount: 1 });
   });
+
+  test("supports keyboard shortcuts and markdown shortcuts", async () => {
+    const { onSubmit } = renderRichTextForm({
+      schema: createSchema({
+        foo: { type: "string", title: "Foo" },
+      }),
+      uiSchema: createRichTextUiSchema(["foo"]),
+      formData: { foo: "" },
+    });
+
+    const editor = screen.getByRole("textbox");
+
+    await user.type(editor, "regular, ");
+
+    // Test bold/italic shortcuts
+    await user.keyboard("{Control>}b{/Control}");
+    await user.type(editor, "bold");
+    await user.keyboard("{Control>}b{/Control}");
+
+    await user.keyboard("{Control>}i{/Control}");
+    await user.type(editor, "and italic");
+    await user.keyboard("{Control>}i{/Control}");
+
+    // Test bold and italic toolbar buttons
+    await user.click(screen.getByRole("button", { name: "Bold" }));
+    await user.click(screen.getByRole("button", { name: "Italic" }));
+    await user.type(editor, "bold and italic");
+
+    // Test heading shortcuts
+    await user.type(editor, "{enter}# Heading 1");
+    await user.type(editor, "{enter}## Heading 2");
+    await user.type(editor, "{enter}### Heading 3");
+
+    // Test list shortcuts
+    await user.type(editor, "{enter}* Bullet point");
+    await user.type(editor, "{enter}{enter}- Another bullet");
+    await user.type(editor, "{enter}{enter}1. Numbered item");
+
+    // Test horizontal rule shortcuts
+    await user.type(editor, "{enter}{enter}---___ ");
+
+    screen.getByRole("button", { name: "Submit" }).click();
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      {
+        foo:
+          "<p>" +
+          "regular, <strong>bold</strong><em>and italic</em>" +
+          "<strong><em>bold and italic</em></strong>" +
+          "</p>" +
+          "<h1>Heading 1</h1>" +
+          "<h2>Heading 2</h2>" +
+          "<h3>Heading 3</h3>" +
+          "<ul><li><p>Bullet point</p></li><li><p>Another bullet</p></li></ul>" +
+          "<ol><li><p>Numbered item</p></li></ol>" +
+          "<hr><hr>" +
+          "<p></p>",
+      },
+      { submissionCount: 1 },
+    );
+  }, 8000);
 });
