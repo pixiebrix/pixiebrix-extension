@@ -49,7 +49,7 @@ export const initialLogState: LogState = {
  */
 const clear = createAsyncThunk<void, void, { state: LogRootState }>(
   "logs/clearStatus",
-  async (arg, thunkAPI) => {
+  async (_arg, thunkAPI) => {
     const activeContext = selectActiveContext(thunkAPI.getState());
     if (activeContext != null) {
       await clearLog(activeContext);
@@ -70,6 +70,7 @@ const pollLogs = createAsyncThunk<
   if (intervalTimeout) {
     // Clear previous polling call (if any)
     clearTimeout(intervalTimeout);
+    intervalTimeout = null;
   }
 
   const activeContext = selectActiveContext(thunkAPI.getState());
@@ -79,6 +80,7 @@ const pollLogs = createAsyncThunk<
   }
 
   intervalTimeout = setTimeout(
+    // XXX: will this cause a stack overflow eventually? Or does it get a fresh stack since it's via createAsyncThunk?
     async () => thunkAPI.dispatch(pollLogs()),
     REFRESH_INTERVAL,
   );
@@ -89,6 +91,7 @@ const pollLogs = createAsyncThunk<
 export function stopPollLogs(): void {
   if (intervalTimeout) {
     clearTimeout(intervalTimeout);
+    intervalTimeout = null;
   }
 }
 
