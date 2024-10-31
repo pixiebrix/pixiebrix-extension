@@ -39,6 +39,7 @@ import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,
   selectActiveModComponentFormState,
+  selectGetModComponentFormStatesForMod,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
@@ -531,8 +532,12 @@ export const editorSlice = createSlice({
      */
     markModAsCleanById(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
+      const getModComponentFormStatesForMod =
+        selectGetModComponentFormStatesForMod({ editor: state });
+      const modComponentFormStatesForMod =
+        getModComponentFormStatesForMod(modId);
 
-      for (const modComponentFormState of state.modComponentFormStates) {
+      for (const modComponentFormState of modComponentFormStatesForMod) {
         modComponentFormState.installed = true;
         state.dirty[modComponentFormState.uuid] = false;
       }
