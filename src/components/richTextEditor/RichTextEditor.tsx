@@ -51,7 +51,6 @@ const Toolbar: React.FunctionComponent = () => {
           active={editor.isActive("bold")}
           aria-label="Bold"
         >
-          {/* TODO: Fix having to explicitly set height and width for document renderer */}
           <FontAwesomeIcon icon={faBold} />
         </Button>
         <Button

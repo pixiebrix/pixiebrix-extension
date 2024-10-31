@@ -18,6 +18,7 @@
 import "@/vendors/bootstrapWithoutRem.css";
 import "@/sidebar/sidebarBootstrapOverrides.scss";
 import "@/bricks/renderers/customForm.css";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import React from "react";
 import validator from "@/validators/formValidator";
 import JsonSchemaForm from "@rjsf/bootstrap-4";

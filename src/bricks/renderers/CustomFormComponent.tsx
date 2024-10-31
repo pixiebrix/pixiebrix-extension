@@ -18,6 +18,7 @@
 import "@/vendors/bootstrapWithoutRem.css";
 import "@/sidebar/sidebarBootstrapOverrides.scss";
 import "@/bricks/renderers/customForm.css";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import React, { useEffect, useRef, useState } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
