@@ -35,8 +35,11 @@ const Toolbar: React.FunctionComponent = () => {
   }
 
   return (
-    <ButtonToolbar className={styles.toolbar}>
-      <ButtonGroup size="sm" aria-label="Rich-Text Editor Toolbar">
+    <ButtonToolbar
+      className={styles.toolbar}
+      aria-label="Rich-Text Editor Toolbar"
+    >
+      <ButtonGroup size="sm">
         <Button
           variant="default"
           onClick={() => editor.chain().focus().toggleBold().run()}
