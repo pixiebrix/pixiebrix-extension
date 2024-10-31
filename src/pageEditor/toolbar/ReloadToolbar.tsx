@@ -30,7 +30,7 @@ import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { RunReason } from "@/types/runtimeTypes";
-import { selectGetOptionsArgsForModId } from "@/pageEditor/store/editor/editorSelectors";
+import { selectGetModDraftStateForModId } from "@/pageEditor/store/editor/editorSelectors";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -105,17 +105,16 @@ const ReloadToolbar: React.FunctionComponent<{
   refreshMillis?: number;
 }> = ({ modComponentFormState, refreshMillis = DEFAULT_RELOAD_MILLIS }) => {
   const sessionId = useSelector(selectSessionId);
-  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
   const { asDraftModComponent } = adapterForComponent(modComponentFormState);
 
   const run = useCallback(async () => {
     updateDraftModComponent(
       allFramesInInspectedTab,
-      asDraftModComponent(modComponentFormState, {
-        optionsArgs: getOptionsArgsForModId(
-          modComponentFormState.modMetadata.id,
-        ),
-      }),
+      asDraftModComponent(
+        modComponentFormState,
+        getModDraftStateForModId(modComponentFormState.modMetadata.id),
+      ),
       { isSelectedInEditor: true, runReason: RunReason.PAGE_EDITOR_RUN },
     );
   }, [asDraftModComponent, getOptionsArgsForModId, modComponentFormState]);

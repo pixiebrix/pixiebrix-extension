@@ -41,7 +41,7 @@ import {
   selectActiveModComponentRef,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
+import { selectGetDraftFormStatesPromiseForModId } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
@@ -50,8 +50,6 @@ import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
 import { StateNamespaces } from "@/platform/state/stateTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
-import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -66,32 +64,10 @@ async function selectActiveModFormStates(
 ): Promise<ModComponentFormState[]> {
   const activeModComponentFormState = selectActiveModComponentFormState(state);
 
-  if (activeModComponentFormState?.modMetadata) {
-    const dirtyFormStates = state.editor.modComponentFormStates.filter(
-      (x) => x.modMetadata.id === activeModComponentFormState.modMetadata.id,
-    );
-    const dirtyModComponentIds = new Set(dirtyFormStates.map((x) => x.uuid));
-
-    const modInstanceMap = selectModInstanceMap(state);
-    const modInstance = modInstanceMap.get(
+  if (activeModComponentFormState) {
+    return selectGetDraftFormStatesPromiseForModId(state)(
       activeModComponentFormState.modMetadata.id,
     );
-
-    // Create implied form states for untouched mod components
-    let otherFormStates: ModComponentFormState[] = [];
-    if (modInstance) {
-      otherFormStates = await Promise.all(
-        mapModInstanceToActivatedModComponents(modInstance)
-          .filter((x) => !dirtyModComponentIds.has(x.id))
-          .map(async (x) => modComponentToFormState(x)),
-      );
-    }
-
-    return [...dirtyFormStates, ...otherFormStates];
-  }
-
-  if (activeModComponentFormState) {
-    return [activeModComponentFormState];
   }
 
   return [];

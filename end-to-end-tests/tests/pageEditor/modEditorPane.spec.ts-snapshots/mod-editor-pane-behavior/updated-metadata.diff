@@ -2,7 +2,7 @@ Index: updated-metadata
 ===================================================================
 --- updated-metadata
 +++ updated-metadata
-@@ -23,52 +23,52 @@
+@@ -23,52 +23,56 @@
        body:
          - config:
              body:
@@ -58,3 +58,7 @@ Index: updated-metadata
    uiSchema:
      ui:order:
        - '*'
++variables:
++  schema:
++    properties: {}
++    type: object

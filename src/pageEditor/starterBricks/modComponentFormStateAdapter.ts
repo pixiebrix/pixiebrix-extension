@@ -29,8 +29,6 @@ import { type Target } from "@/types/messengerTypes";
 import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type FeatureFlag } from "@/auth/featureFlags";
-import { type OptionsArgs } from "@/types/runtimeTypes";
-
 import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /**
@@ -107,8 +105,8 @@ export interface ModComponentFormStateAdapter<
    * Returns a draft mod component definition that the content script can render on the page
    */
   readonly asDraftModComponent: (
-    state: TState,
-    options: { optionsArgs: OptionsArgs },
+    modComponentFormState: TState,
+    modState: DraftModState,
   ) => DraftModComponent;
 
   /**

@@ -2,7 +2,7 @@ Index: brick-added
 ===================================================================
 --- brick-added
 +++ brick-added
-@@ -6,78 +6,84 @@
+@@ -6,78 +6,88 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -87,3 +87,7 @@ Index: brick-added
    uiSchema:
      ui:order:
        - '*'
++variables:
++  schema:
++    properties: {}
++    type: object

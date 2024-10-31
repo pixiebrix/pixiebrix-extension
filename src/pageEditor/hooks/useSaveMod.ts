@@ -18,9 +18,8 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDirtyModMetadata,
-  selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
+  selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import {
   useGetEditablePackagesQuery,
@@ -78,10 +77,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
-  const dirtyModOptionsDefinitionsMap = useSelector(
-    selectDirtyModOptionsDefinitions,
-  );
-  const dirtyModMetadataMap = useSelector(selectDirtyModMetadata);
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
 
   const { buildAndValidateMod } = useBuildAndValidateMod();
 
@@ -123,6 +119,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       }
 
       const draftModComponents = getDraftModComponentsForMod(sourceModId);
+      const draftModState = getModDraftStateForModId(sourceModId);
 
       // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
       // long to confirm?
@@ -134,10 +131,9 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       const unsavedModDefinition = await buildAndValidateMod({
         sourceModDefinition,
         draftModComponents,
-        // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModOptionsDefinition: dirtyModOptionsDefinitionsMap[sourceModId],
-        // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-        dirtyModMetadata: dirtyModMetadataMap[sourceModId],
+        dirtyModMetadata: draftModState.modMetadata,
+        dirtyModOptionsDefinition: draftModState.dirtyModOptionsDefinition,
+        dirtyModVariablesDefinition: draftModState.variablesDefinition,
       });
 
       const packageId = editablePackages.find(
@@ -174,8 +170,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       return true;
     },
     [
-      dirtyModMetadataMap,
-      dirtyModOptionsDefinitionsMap,
+      getModDraftStateForModId,
       getDraftModComponentsForMod,
       buildAndValidateMod,
       dispatch,

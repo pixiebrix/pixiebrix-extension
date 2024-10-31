@@ -26,6 +26,7 @@ import notify from "@/utils/notify";
 import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
 import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 export async function calculatePermissionsForModComponentFormState(
   modComponentFormState: ModComponentFormState,
@@ -34,8 +35,11 @@ export async function calculatePermissionsForModComponentFormState(
 
   const { modComponent, starterBrickDefinition } = asDraftModComponent(
     modComponentFormState,
-    // Safe to pass empty `optionsArgs` because they don't affect permissions calculations
-    { optionsArgs: {} },
+    // Safe to pass empty `optionsArgs` and `variablesDefinition` because they don't affect permissions calculations
+    {
+      optionsArgs: {},
+      variablesDefinition: emptyModVariablesDefinitionFactory(),
+    },
   );
 
   const starterBrick = starterBrickFactory(starterBrickDefinition);

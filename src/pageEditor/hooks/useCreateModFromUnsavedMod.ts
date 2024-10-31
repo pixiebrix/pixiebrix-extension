@@ -32,8 +32,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import {
   selectActiveModComponentFormState,
   selectActiveModId,
-  selectDirtyModOptionsDefinitions,
   selectGetDraftModComponentsForMod,
+  selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
@@ -61,9 +61,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
   const getDraftModComponentsForMod = useSelector(
     selectGetDraftModComponentsForMod,
   );
-  const dirtyModOptionsDefinitionMap = useSelector(
-    selectDirtyModOptionsDefinitions,
-  );
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
 
   /**
    * Save a new, unsaved mod to the server.
@@ -79,10 +77,6 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
     ) => {
       const draftModComponents = getDraftModComponentsForMod(unsavedModId);
 
-      const dirtyModOptionsDefinition =
-        // eslint-disable-next-line security/detect-object-injection -- inner definition id
-        dirtyModOptionsDefinitionMap[unsavedModId];
-
       return ensureModComponentFormStatePermissionsFromUserGesture(
         draftModComponents.filter((x) => isModComponentFormState(x)),
         // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
@@ -92,11 +86,14 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         }
 
         const newModId = newModMetadata.id;
+        const draftModState = getModDraftStateForModId(unsavedModId);
 
         const unsavedModDefinition = await buildAndValidateMod({
-          draftModComponents,
+          // Pass new mod metadata, but the draft state from the unsaved mod
           dirtyModMetadata: newModMetadata,
-          dirtyModOptionsDefinition,
+          draftModComponents,
+          dirtyModOptionsDefinition: draftModState.dirtyModOptionsDefinition,
+          dirtyModVariablesDefinition: draftModState.variablesDefinition,
         });
 
         const upsertResponse = await createModDefinitionOnServer({
@@ -136,7 +133,7 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
       activeModId,
       activeModComponentFormState,
       getDraftModComponentsForMod,
-      dirtyModOptionsDefinitionMap,
+      getModDraftStateForModId,
       buildAndValidateMod,
       createModDefinitionOnServer,
       dispatch,

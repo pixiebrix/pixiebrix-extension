@@ -2,7 +2,7 @@ Index: updated-inputs
 ===================================================================
 --- updated-inputs
 +++ updated-inputs
-@@ -30,45 +30,56 @@
+@@ -30,49 +30,60 @@
                                heading: h1
                                title: !nunjucks Simple Sidebar Panel
                              type: header
@@ -60,3 +60,7 @@ Index: updated-inputs
      ui:order:
 +      - testField
        - '*'
+ variables:
+   schema:
+     properties: {}
+     type: object

@@ -34,7 +34,7 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
-  selectGetOptionsArgsForModId,
+  selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useAsyncEffect } from "use-async-effect";
 
@@ -85,7 +85,7 @@ const StarterBrickPreview: React.FC = () => {
   );
   const { starterBrick } = activeModComponentFormState;
 
-  const getOptionsArgsForModId = useSelector(selectGetOptionsArgsForModId);
+  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
 
   const run = useCallback(async () => {
     dispatch(previewSlice.actions.startRun());
@@ -106,18 +106,17 @@ const StarterBrickPreview: React.FC = () => {
 
       const data = await runStarterBrickReaderPreview(
         inspectedTab,
-        asDraftModComponent(activeModComponentFormState, {
-          optionsArgs: getOptionsArgsForModId(
-            activeModComponentFormState.modMetadata.id,
-          ),
-        }),
+        asDraftModComponent(
+          activeModComponentFormState,
+          getModDraftStateForModId(activeModComponentFormState.modMetadata.id),
+        ),
         rootSelector,
       );
       dispatch(previewSlice.actions.runSuccess({ "@input": data }));
     } catch (error) {
       dispatch(previewSlice.actions.runError(error));
     }
-  }, [activeModComponentFormState, getOptionsArgsForModId, starterBrick]);
+  }, [activeModComponentFormState, getModDraftStateForModId, starterBrick]);
 
   const debouncedRun = useDebouncedCallback(run, 250, {
     trailing: true,

@@ -2,7 +2,7 @@ Index: write-to-db-static-copy
 ===================================================================
 --- write-to-db-static-copy
 +++ write-to-db-static-copy
-@@ -22,51 +22,52 @@
+@@ -22,51 +22,56 @@
      kind: extensionPoint
  extensionPoints:
    - config:
@@ -57,3 +57,7 @@ Index: write-to-db-static-copy
    uiSchema:
      ui:order:
        - '*'
++variables:
++  schema:
++    properties: {}
++    type: object

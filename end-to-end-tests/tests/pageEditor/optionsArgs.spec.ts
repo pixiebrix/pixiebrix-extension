@@ -20,12 +20,13 @@ import { expect, test } from "../../fixtures/testBase";
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
 import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
-import { getSidebarPage } from "../../utils";
+import { getSidebarPage, isMsEdge } from "../../utils";
 
 test("mod editor pane behavior", async ({
   page,
   extensionId,
   newPageEditorPage,
+  chromiumChannel,
 }) => {
   const modId = "@e2e-testing/options-args";
   let pageEditorPage: PageEditorPage;
@@ -47,6 +48,14 @@ test("mod editor pane behavior", async ({
   });
 
   await test.step("Open Sidebar and assert default value", async () => {
+    /* eslint-disable-next-line playwright/no-conditional-in-test -- MS Edge has a bug where the page editor
+     * cannot open the sidebar unless it is already focused.
+     * https://www.loom.com/share/fbad85e901794161960b737b27a13677
+     */
+    if (isMsEdge(chromiumChannel)) {
+      await page.bringToFront();
+    }
+
     await pageEditorPage.modListingPanel
       .getModListItemByName("Sidebar Panel")
       .select();

@@ -2,7 +2,7 @@ Index: giphy-search-copy
 ===================================================================
 --- giphy-search-copy
 +++ giphy-search-copy
-@@ -83,51 +83,52 @@
+@@ -83,51 +83,56 @@
                                  element: !defer 
                                    children:
                                      - config:
@@ -57,3 +57,7 @@ Index: giphy-search-copy
    uiSchema:
      ui:order:
        - '*'
++variables:
++  schema:
++    properties: {}
++    type: object

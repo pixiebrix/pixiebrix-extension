@@ -2,7 +2,7 @@ Index: brick-copied-to-another-mod
 ===================================================================
 --- brick-copied-to-another-mod
 +++ brick-copied-to-another-mod
-@@ -1,74 +1,82 @@
+@@ -1,74 +1,86 @@
  apiVersion: v3
  definitions:
    extensionPoint:
@@ -85,3 +85,7 @@ Index: brick-copied-to-another-mod
    uiSchema:
      ui:order:
        - '*'
++variables:
++  schema:
++    properties: {}
++    type: object
