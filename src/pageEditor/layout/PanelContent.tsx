@@ -26,7 +26,6 @@ import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/layout/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
-import { logActions } from "@/components/logViewer/logSlice";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
@@ -38,6 +37,7 @@ import useTeamTrialStatus, {
   TeamTrialStatus,
 } from "@/components/teamTrials/useTeamTrialStatus";
 import { navigationEvent } from "@/pageEditor/events";
+import usePollModLogs from "@/components/logViewer/usePollModLogs";
 
 /**
  * Hook to connect to the content script on Page Editor mount and on navigation events.
@@ -62,15 +62,10 @@ function useConnectToContentScript(): void {
 }
 
 const PanelContent: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const trialStatus = useTeamTrialStatus();
 
   useConnectToContentScript();
-
-  useEffect(() => {
-    // Start polling logs
-    void dispatch(logActions.pollLogs());
-  }, [dispatch]);
+  usePollModLogs();
 
   const authPersistenceContext: ReduxPersistenceContextType = {
     async flush() {

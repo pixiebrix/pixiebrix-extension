@@ -15,13 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
-import store, {
-  type AppDispatch,
-  hashHistory,
-  persistor,
-} from "@/extensionConsole/store";
-import { Provider, useDispatch } from "react-redux";
+import React from "react";
+import store, { hashHistory, persistor } from "@/extensionConsole/store";
+import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -50,7 +46,6 @@ import useFlags from "@/hooks/useFlags";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import RequireAuth from "@/auth/RequireAuth";
 import useTheme from "@/hooks/useTheme";
-import { logActions } from "@/components/logViewer/logSlice";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "@/store/ReduxPersistenceContext";
@@ -61,6 +56,7 @@ import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPag
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import { useLocation } from "react-router";
 import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
+import usePollModLogs from "@/components/logViewer/usePollModLogs";
 
 // Register the built-in bricks
 registerEditors();
@@ -71,13 +67,8 @@ registerContribBricks();
 registerDefaultWidgets();
 
 const AuthenticatedContent: React.VFC = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const { permit } = useFlags();
-
-  useEffect(() => {
-    // Start polling logs
-    void dispatch(logActions.pollLogs());
-  }, [dispatch]);
+  usePollModLogs();
 
   return (
     <DeploymentsProvider>

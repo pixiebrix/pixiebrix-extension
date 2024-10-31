@@ -18,8 +18,11 @@
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModDefinitionsAsyncState } from "@/modDefinitions/modDefinitionsSelectors";
-import { useCallback, useEffect } from "react";
-import { modDefinitionsActions } from "./modDefinitionsSlice";
+import { useCallback } from "react";
+import {
+  modDefinitionsActions,
+  type ModDefinitionsDispatch,
+} from "./modDefinitionsSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type AsyncState,
@@ -32,8 +35,7 @@ import { loadingAsyncStateFactory } from "@/utils/asyncStateUtils";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import pluralize from "@/utils/pluralize";
 import { type Nullishable } from "@/utils/nullishUtils";
-import type { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import type { ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTypes";
+import useAsyncEffect from "use-async-effect";
 
 /**
  * Lookup a mod definition from the registry by ID, or null if it doesn't exist.
@@ -146,26 +148,26 @@ export function useRequiredModDefinitions(
  * Safe to include multiple times in the React tree, because it's connected to the Redux store.
  */
 export function useAllModDefinitions(): UseCachedQueryResult<ModDefinition[]> {
-  const dispatch =
-    useDispatch<ThunkDispatch<ModDefinitionsRootState, unknown, AnyAction>>();
+  const dispatch = useDispatch<ModDefinitionsDispatch>();
+  const state = useSelector(selectModDefinitionsAsyncState);
+
   const refetch = useCallback(async () => {
     await dispatch(modDefinitionsActions.syncRemoteModDefinitions());
   }, [dispatch]);
-  const state = useSelector(selectModDefinitionsAsyncState);
 
   // First load from local database
-  useEffect(() => {
-    void dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
+  useAsyncEffect(async () => {
+    await dispatch(modDefinitionsActions.loadModDefinitionsFromCache());
   }, [dispatch]);
 
   // Load from remote data source once the local data has been loaded
-  useEffect(() => {
+  useAsyncEffect(async () => {
     if (
       state.isRemoteUninitialized &&
       !state.isLoadingFromCache &&
       !state.isCacheUninitialized
     ) {
-      void dispatch(modDefinitionsActions.syncRemoteModDefinitions());
+      await dispatch(modDefinitionsActions.syncRemoteModDefinitions());
     }
   }, [
     dispatch,
