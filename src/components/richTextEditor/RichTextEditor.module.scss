@@ -50,7 +50,7 @@
       color: #007bff;
     }
 
-    &:hover {
+    &:not([disabled]):hover {
       color: #0056b3;
     }
 

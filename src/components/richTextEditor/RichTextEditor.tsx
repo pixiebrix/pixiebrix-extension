@@ -43,7 +43,11 @@ const Toolbar: React.FunctionComponent = () => {
         <Button
           variant="default"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          disabled={!editor.can().chain().focus().toggleBold().run()}
+          disabled={
+            editor.isEditable
+              ? !editor.can().chain().focus().toggleBold().run()
+              : true
+          }
           active={editor.isActive("bold")}
           aria-label="Bold"
         >
@@ -53,7 +57,11 @@ const Toolbar: React.FunctionComponent = () => {
         <Button
           variant="default"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          disabled={
+            editor.isEditable
+              ? !editor.can().chain().focus().toggleItalic().run()
+              : true
+          }
           active={editor.isActive("italic")}
           aria-label="Italic"
         >
