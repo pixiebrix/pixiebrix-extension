@@ -48,7 +48,7 @@ const Toolbar: React.FunctionComponent = () => {
           aria-label="Bold"
         >
           {/* TODO: Fix having to explicitly set height and width for document renderer */}
-          <FontAwesomeIcon icon={faBold} height="16" width="16" />
+          <FontAwesomeIcon icon={faBold} />
         </Button>
         <Button
           variant="default"
@@ -57,7 +57,7 @@ const Toolbar: React.FunctionComponent = () => {
           active={editor.isActive("italic")}
           aria-label="Italic"
         >
-          <FontAwesomeIcon icon={faItalic} height="16" width="16" />
+          <FontAwesomeIcon icon={faItalic} />
         </Button>
       </ButtonGroup>
     </ButtonToolbar>
