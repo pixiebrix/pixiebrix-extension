@@ -16,7 +16,7 @@
  */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { flatMap } from "lodash";
+import { flatMap, memoize } from "lodash";
 import type {
   EditorRootState,
   EditorState,
@@ -39,6 +39,14 @@ export const selectModComponentFormStates = ({
   editor,
 }: EditorRootState): EditorState["modComponentFormStates"] =>
   editor.modComponentFormStates;
+
+export const selectGetModComponentFormStateByModComponentId = createSelector(
+  selectModComponentFormStates,
+  (modComponentFormStates) =>
+    memoize((modComponentId: UUID) =>
+      modComponentFormStates.find((x) => x.uuid === modComponentId),
+    ),
+);
 
 /**
  * Select the active/selected mod component, or null if a mod component is not currently selected

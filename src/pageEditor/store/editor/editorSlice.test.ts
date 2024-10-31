@@ -297,7 +297,6 @@ describe("Mod Options editing", () => {
   const modMetadata = modMetadataFactory({ id: modId });
 
   const existingComponentId = autoUUIDSequence();
-
   const existingComponent = formStateFactory({
     formStateConfig: {
       uuid: existingComponentId,
@@ -342,5 +341,131 @@ describe("Mod Options editing", () => {
     );
 
     expect(selectModIsDirty(modId)({ editor: stateAfterEdit })).toBeTrue();
+  });
+});
+
+describe("Editing mod components for a mod", () => {
+  let initialState: EditorState;
+  const modId1 = validateRegistryId("test/mod");
+  const modMetadata1 = modMetadataFactory({ id: modId1 });
+
+  const existingComponentId1ForModId1 = autoUUIDSequence();
+  const existingComponent1ForMod1 = formStateFactory({
+    formStateConfig: {
+      uuid: existingComponentId1ForModId1,
+      modMetadata: modMetadata1,
+    },
+  });
+
+  const existingComponentId2ForModId1 = autoUUIDSequence();
+  const existingComponent2ForMod1 = formStateFactory({
+    formStateConfig: {
+      uuid: existingComponentId2ForModId1,
+      modMetadata: modMetadata1,
+    },
+  });
+
+  const modId2 = validateRegistryId("test/mod2");
+  const modMetadata2 = modMetadataFactory({ id: modId2 });
+
+  const existingComponentId1ForModId2 = autoUUIDSequence();
+  const existingComponent1ForMod2 = formStateFactory({
+    formStateConfig: {
+      uuid: existingComponentId1ForModId2,
+      modMetadata: modMetadata2,
+    },
+  });
+
+  beforeEach(() => {
+    initialState = {
+      ...editorSlice.getInitialState(),
+      modComponentFormStates: [
+        existingComponent1ForMod1,
+        existingComponent2ForMod1,
+        existingComponent1ForMod2,
+      ],
+      dirty: {
+        [existingComponent1ForMod1.uuid]: true,
+        [existingComponent2ForMod1.uuid]: false,
+        [existingComponent1ForMod2.uuid]: true,
+      },
+    };
+    // Make the mod active
+    initialState = editorSlice.reducer(
+      initialState,
+      actions.setActiveModId(modId1),
+    );
+  });
+
+  test("updateModMetadataOnModComponentFormStates only updates the mod metadata for mod components belonging to that mod", () => {
+    const modMetadata1Update = modMetadataFactory({
+      id: modId1,
+      name: "New Mod Name",
+    });
+
+    const stateAfterUpdate = editorSlice.reducer(
+      initialState,
+      actions.updateModMetadataOnModComponentFormStates({
+        modId: modId1,
+        modMetadata: modMetadata1Update,
+      }),
+    );
+
+    expect(stateAfterUpdate.modComponentFormStates).toStrictEqual(
+      expect.arrayContaining([
+        { ...existingComponent1ForMod1, modMetadata: modMetadata1Update },
+        { ...existingComponent2ForMod1, modMetadata: modMetadata1Update },
+        existingComponent1ForMod2,
+      ]),
+    );
+  });
+
+  test("markModAsCleanById only updates mod components for that mod", () => {
+    const stateAfterEdit = editorSlice.reducer(
+      initialState,
+      actions.markModAsCleanById(modId1),
+    );
+
+    expect(stateAfterEdit.dirty).toStrictEqual({
+      [existingComponent1ForMod1.uuid]: false,
+      [existingComponent2ForMod1.uuid]: false,
+      [existingComponent1ForMod2.uuid]: true,
+    });
+  });
+
+  test("removeModById(modId1) only removes mod components and state for modId1", () => {
+    const stateAfterRemovingMod1 = editorSlice.reducer(
+      initialState,
+      actions.removeModById(modId1),
+    );
+
+    expect(stateAfterRemovingMod1).toStrictEqual({
+      ...initialState,
+      activeModId: null,
+      dirty: {
+        [existingComponent1ForMod2.uuid]: true,
+      },
+      expandedModId: null,
+      modComponentFormStates: [existingComponent1ForMod2],
+    });
+  });
+
+  test("removeModById(modId2) only removes mod components and state for modId2", () => {
+    const stateAfterRemovingMod2 = editorSlice.reducer(
+      initialState,
+      actions.removeModById(modId2),
+    );
+
+    expect(stateAfterRemovingMod2).toStrictEqual({
+      ...initialState,
+      dirty: {
+        [existingComponent1ForMod1.uuid]: true,
+        [existingComponent2ForMod1.uuid]: false,
+      },
+      modComponentFormStates: [
+        existingComponent1ForMod1,
+        existingComponent2ForMod1,
+      ],
+    });
   });
 });

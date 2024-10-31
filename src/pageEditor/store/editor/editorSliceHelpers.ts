@@ -29,6 +29,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { clearModComponentTraces } from "@/telemetry/trace";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { remove } from "lodash";
+import { selectGetModComponentFormStateByModComponentId } from "@/pageEditor/store/editor/editorSelectors";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -40,9 +41,12 @@ export function ensureBrickPipelineUIState(
   if (!state.brickPipelineUIStateById[modComponentId]) {
     state.brickPipelineUIStateById[modComponentId] =
       makeInitialBrickPipelineUIState();
-    const pipeline = state.modComponentFormStates.find(
-      (x) => x.uuid === modComponentId,
-    )?.modComponent.brickPipeline;
+
+    const modComponentFormState =
+      selectGetModComponentFormStateByModComponentId({ editor: state })(
+        modComponentId,
+      );
+    const pipeline = modComponentFormState?.modComponent.brickPipeline;
 
     assertNotNullish(
       pipeline,

@@ -24,6 +24,7 @@ import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitio
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import {
   selectActiveModComponentFormState,
+  selectGetModComponentFormStateByModComponentId,
   selectIsModComponentDirtyById,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
@@ -135,7 +136,7 @@ export const selectDirtyOptionsDefinitionForModId =
 /// MOD COMPONENTS
 ///
 
-export const selectGetModComponentFormStatesByModId = createSelector(
+export const selectGetModComponentFormStatesForMod = createSelector(
   selectModComponentFormStates,
   (formStates) =>
     memoize((modId: RegistryId) =>
@@ -145,7 +146,7 @@ export const selectGetModComponentFormStatesByModId = createSelector(
 
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
-  selectGetModComponentFormStatesByModId,
+  selectGetModComponentFormStatesForMod,
   selectIsModComponentDirtyById,
   (
     activatedModComponents,
@@ -197,13 +198,13 @@ export const selectGetDraftModComponentsForMod = createSelector(
  * @see selectGetDraftModComponentsForMod
  */
 export const selectGetSiblingDraftModComponents = createSelector(
-  selectModComponentFormStates,
+  selectGetModComponentFormStateByModComponentId,
   selectGetDraftModComponentsForMod,
-  (modComponentFormStates, getDraftModComponentsForMod) =>
+  (getModComponentFormStateByModComponentId, getDraftModComponentsForMod) =>
     memoize((modComponentId: UUID) => {
-      const modComponentFormState = modComponentFormStates.find(
-        (x) => x.uuid === modComponentId,
-      );
+      const modComponentFormState =
+        getModComponentFormStateByModComponentId(modComponentId);
+
       assertNotNullish(
         modComponentFormState,
         "Expected matching modComponentFormState",
@@ -256,7 +257,7 @@ const selectGetModIsDirtySelector = createSelector(
   selectIsModComponentDirtyById,
   selectGetDirtyOptionsDefinitionForModId,
   selectDirtyOptionsArgsForModId,
-  selectGetModComponentFormStatesByModId,
+  selectGetModComponentFormStatesForMod,
   selectDeletedComponentFormStatesByModId,
   (
     dirtyModMetadata,
