@@ -44,7 +44,10 @@ function useMergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   const merge: (...args: AsyncValueArray<AsyncStates>) => Result = args.at(-1);
 
   // @ts-expect-error -- getting args except last element
-  const dependencies: FetchableAsyncStateArray = args.slice(0, -1);
+  const dependencies: FetchableAsyncStateArray = useMemo(
+    () => args.slice(0, -1),
+    [args],
+  );
 
   // Memoize the merge method avoid re-rendering downstream components
   const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
