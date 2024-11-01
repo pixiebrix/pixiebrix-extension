@@ -16,60 +16,10 @@
  */
 
 import styles from "./RichTextEditor.module.scss";
-import {
-  EditorProvider,
-  type EditorProviderProps,
-  useCurrentEditor,
-} from "@tiptap/react";
+import { EditorProvider, type EditorProviderProps } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import React from "react";
-import { Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBold, faItalic } from "@fortawesome/free-solid-svg-icons";
-
-const Toolbar: React.FunctionComponent = () => {
-  const { editor } = useCurrentEditor();
-
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <ButtonToolbar
-      className={styles.toolbar}
-      aria-label="Rich-Text Editor Toolbar"
-    >
-      <ButtonGroup size="sm">
-        <Button
-          variant="default"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          disabled={
-            editor.isEditable
-              ? !editor.can().chain().focus().toggleBold().run()
-              : true
-          }
-          active={editor.isActive("bold")}
-          aria-label="Bold"
-        >
-          <FontAwesomeIcon icon={faBold} />
-        </Button>
-        <Button
-          variant="default"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          disabled={
-            editor.isEditable
-              ? !editor.can().chain().focus().toggleItalic().run()
-              : true
-          }
-          active={editor.isActive("italic")}
-          aria-label="Italic"
-        >
-          <FontAwesomeIcon icon={faItalic} />
-        </Button>
-      </ButtonGroup>
-    </ButtonToolbar>
-  );
-};
+import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
 
 const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
   props: EditorProviderProps,
