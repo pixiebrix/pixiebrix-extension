@@ -30,14 +30,11 @@ function useMemoCompare<T>(
   dependencies?: unknown[],
 ): T {
   // IsEqual only initializes to true if next is nullish (previous is undefined on mount)
-  const [isEqual, setIsEqual] = useState(next != null);
-  const [previous, setPrevious] = useState<T>();
+  const [previous, setPrevious] = useState<T>(next);
+  const [isEqual, setIsEqual] = useState(true);
 
-  // IsDependenciesEqual only initializes to true if next is nullish (previousDependenciesRef.current is undefined on mount)
-  const previousDependenciesRef = useRef<unknown[] | undefined>();
-  const [isDependenciesEqual, setIsDependenciesEqual] = useState(
-    dependencies != null,
-  );
+  const previousDependenciesRef = useRef<unknown[] | undefined>(dependencies);
+  const [isDependenciesEqual, setIsDependenciesEqual] = useState(true);
 
   // If not equal update previousRef to next value. We only update if not equal so that this hook continues to return
   // the same old value if compare keeps returning true.
@@ -62,6 +59,7 @@ function useMemoCompare<T>(
       previousDependenciesRef.current === undefined
     ) {
       setIsDependenciesEqual(false);
+      previousDependenciesRef.current = undefined;
     } else {
       const check = deepEquals(previousDependenciesRef.current, dependencies);
       setIsDependenciesEqual(check);
@@ -73,8 +71,7 @@ function useMemoCompare<T>(
   }, [dependencies]);
 
   // Finally, if equal, and dependencies have not changed, then return the previous value
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Can't be undefined if it's equal to T
-  return isEqual && isDependenciesEqual ? previous! : next;
+  return isEqual && isDependenciesEqual ? previous : next;
 }
 
 export default useMemoCompare;
