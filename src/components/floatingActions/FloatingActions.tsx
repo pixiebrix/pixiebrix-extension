@@ -18,7 +18,7 @@
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
-import React from "react";
+import React, { StrictMode } from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { ActionButton } from "@/components/floatingActions/ActionButton";
@@ -69,15 +69,17 @@ function FloatingActions() {
 
 function FloatingActionsContainer() {
   return (
-    <Provider store={store}>
-      <PersistGate loading={<Loader />} persistor={persistor}>
-        <EmotionShadowRoot>
-          <Stylesheets href={[bootstrap, styles]}>
-            <FloatingActions />
-          </Stylesheets>
-        </EmotionShadowRoot>
-      </PersistGate>
-    </Provider>
+    <StrictMode>
+      <Provider store={store}>
+        <PersistGate loading={<Loader />} persistor={persistor}>
+          <EmotionShadowRoot>
+            <Stylesheets href={[bootstrap, styles]}>
+              <FloatingActions />
+            </Stylesheets>
+          </EmotionShadowRoot>
+        </PersistGate>
+      </Provider>
+    </StrictMode>
   );
 }
 

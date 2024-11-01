@@ -18,7 +18,7 @@
 import { debounce, once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render, unmountComponentAtNode } from "react-dom";
-import React from "react";
+import React, { StrictMode } from "react";
 import { tooltipFactory } from "@/contentScript/tooltipDom";
 import {
   autoUpdate,
@@ -165,21 +165,23 @@ function createSelectionMenu(): HTMLElement {
   selectionMenu.dataset.testid = "pixiebrix-selection-menu";
 
   render(
-    <IsolatedComponent
-      name="SelectionMenu"
-      lazy={async () =>
-        import(
-          /* webpackChunkName: "isolated/SelectionMenu" */
-          "@/contentScript/textSelectionMenu/SelectionMenu"
-        )
-      }
-      factory={(SelectionMenu) => (
-        <SelectionMenu
-          registry={selectionMenuActionRegistry}
-          onHide={hideSelectionMenu}
-        />
-      )}
-    />,
+    <StrictMode>
+      <IsolatedComponent
+        name="SelectionMenu"
+        lazy={async () =>
+          import(
+            /* webpackChunkName: "isolated/SelectionMenu" */
+            "@/contentScript/textSelectionMenu/SelectionMenu"
+          )
+        }
+        factory={(SelectionMenu) => (
+          <SelectionMenu
+            registry={selectionMenuActionRegistry}
+            onHide={hideSelectionMenu}
+          />
+        )}
+      />
+    </StrictMode>,
     selectionMenu,
   );
 
