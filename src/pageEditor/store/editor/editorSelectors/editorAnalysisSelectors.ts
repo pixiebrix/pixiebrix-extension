@@ -101,11 +101,11 @@ export const selectKnownEventNamesForActiveModComponent = createSelector(
 // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7462
 //  Use https://reselect.js.org/api/createstructuredselector/ after upgrading to RTK 2
 export const selectModComponentAvailability = createSelector(
-  (state: EditorRootState) => state.editor.availableActivatedModComponentIds,
-  (state: EditorRootState) =>
-    state.editor.isPendingAvailableActivatedModComponents,
-  (state: EditorRootState) => state.editor.availableDraftModComponentIds,
-  (state: EditorRootState) => state.editor.isPendingDraftModComponents,
+  ({ editor }: EditorRootState) => editor.availableActivatedModComponentIds,
+  ({ editor }: EditorRootState) =>
+    editor.isPendingAvailableActivatedModComponents,
+  ({ editor }: EditorRootState) => editor.availableDraftModComponentIds,
+  ({ editor }: EditorRootState) => editor.isPendingDraftModComponents,
   (
     availableActivatedModComponentIds,
     isPendingAvailableActivatedModComponents,
