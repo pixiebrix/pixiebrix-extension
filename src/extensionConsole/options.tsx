@@ -24,7 +24,7 @@ import "@/extensionContext";
 import "@/development/darkMode.js";
 
 import { render } from "react-dom";
-import React from "react";
+import React, { StrictMode } from "react";
 import App from "@/extensionConsole/App";
 import { initToaster } from "@/utils/notify";
 import { initTelemetry } from "@/background/messenger/api";
@@ -47,7 +47,12 @@ async function init() {
     console.error("Failed to initialize performance monitoring", error);
   }
 
-  render(<App />, document.querySelector("#container"));
+  render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+    document.querySelector("#container"),
+  );
 }
 
 void init();

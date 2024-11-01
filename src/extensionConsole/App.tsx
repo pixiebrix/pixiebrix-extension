@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { StrictMode } from "react";
+import React from "react";
 import store, { hashHistory, persistor } from "@/extensionConsole/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -157,20 +157,17 @@ const persistorContext: ReduxPersistenceContextType = {
 };
 
 const App: React.FunctionComponent = () => (
-  <StrictMode>
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <ReduxPersistenceContext.Provider value={persistorContext}>
-          <ConnectedRouter history={hashHistory}>
-            <ModalProvider>
-              {/* eslint-disable-next-line react/jsx-max-depth -- strict mode/providers */}
-              <Layout />
-            </ModalProvider>
-          </ConnectedRouter>
-        </ReduxPersistenceContext.Provider>
-      </PersistGate>
-    </Provider>
-  </StrictMode>
+  <Provider store={store}>
+    <PersistGate persistor={persistor}>
+      <ReduxPersistenceContext.Provider value={persistorContext}>
+        <ConnectedRouter history={hashHistory}>
+          <ModalProvider>
+            <Layout />
+          </ModalProvider>
+        </ConnectedRouter>
+      </ReduxPersistenceContext.Provider>
+    </PersistGate>
+  </Provider>
 );
 
 export default App;

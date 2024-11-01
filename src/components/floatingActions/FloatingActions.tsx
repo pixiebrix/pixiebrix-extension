@@ -69,17 +69,15 @@ function FloatingActions() {
 
 function FloatingActionsContainer() {
   return (
-    <StrictMode>
-      <Provider store={store}>
-        <PersistGate loading={<Loader />} persistor={persistor}>
-          <EmotionShadowRoot>
-            <Stylesheets href={[bootstrap, styles]}>
-              <FloatingActions />
-            </Stylesheets>
-          </EmotionShadowRoot>
-        </PersistGate>
-      </Provider>
-    </StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={<Loader />} persistor={persistor}>
+        <EmotionShadowRoot>
+          <Stylesheets href={[bootstrap, styles]}>
+            <FloatingActions />
+          </Stylesheets>
+        </EmotionShadowRoot>
+      </PersistGate>
+    </Provider>
   );
 }
 
@@ -92,5 +90,10 @@ export async function renderFloatingActions(): Promise<void> {
   const container = document.createElement("div");
   container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;
   document.body.prepend(container);
-  ReactDOM.render(<FloatingActionsContainer />, container);
+  ReactDOM.render(
+    <StrictMode>
+      <FloatingActionsContainer />
+    </StrictMode>,
+    container,
+  );
 }

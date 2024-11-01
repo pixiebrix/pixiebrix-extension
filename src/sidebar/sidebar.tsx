@@ -28,7 +28,7 @@ import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/sidebar/messenger/registration";
 import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
-import React from "react";
+import React, { StrictMode } from "react";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
 import { initToaster } from "@/utils/notify";
@@ -87,7 +87,12 @@ async function init(): Promise<void> {
   registerBuiltinBricks();
   initToaster();
 
-  ReactDOM.render(<App />, document.querySelector("#container"));
+  ReactDOM.render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+    document.querySelector("#container"),
+  );
 
   // XXX: Do we really want to delay the `init`? Maybe this should be last or use `getConnectedTarget().then`
   sidebarWasLoaded(await getConnectedTarget());
