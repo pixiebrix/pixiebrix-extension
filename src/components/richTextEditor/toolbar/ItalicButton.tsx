@@ -17,14 +17,11 @@
 
 import React from "react";
 import { useCurrentEditor } from "@tiptap/react";
-import { ButtonGroup, ButtonToolbar } from "react-bootstrap";
-import styles from "@/components/richTextEditor/RichTextEditor.module.scss";
-import BoldButton from "@/components/richTextEditor/toolbar/BoldButton";
-import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
-// Required for font-awesome styles to be available in IsolatedComponents
-import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faItalic } from "@fortawesome/free-solid-svg-icons";
 
-const Toolbar: React.FunctionComponent = () => {
+const ItalicButton: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
 
   if (!editor) {
@@ -32,16 +29,20 @@ const Toolbar: React.FunctionComponent = () => {
   }
 
   return (
-    <ButtonToolbar
-      className={styles.toolbar}
-      aria-label="Rich-Text Editor Toolbar"
+    <Button
+      variant="default"
+      onClick={() => editor.chain().focus().toggleItalic().run()}
+      disabled={
+        editor.isEditable
+          ? !editor.can().chain().focus().toggleItalic().run()
+          : true
+      }
+      active={editor.isActive("italic")}
+      aria-label="Italic"
     >
-      <ButtonGroup size="sm">
-        <BoldButton />
-        <ItalicButton />
-      </ButtonGroup>
-    </ButtonToolbar>
+      <FontAwesomeIcon icon={faItalic} />
+    </Button>
   );
 };
 
-export default Toolbar;
+export default ItalicButton;

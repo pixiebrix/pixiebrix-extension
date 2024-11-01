@@ -27,7 +27,6 @@ import StylesheetsContext, {
   useStylesheetsContextWithDocumentDefault,
 } from "@/components/StylesheetsContext";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import "@fortawesome/fontawesome-svg-core/styles.css";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
