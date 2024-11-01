@@ -16,15 +16,20 @@
  */
 
 import { createContext } from "react";
-import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
+import {
+  type AnalysisAnnotation,
+  type AnalysisRootState,
+} from "@/analysis/analysisTypes";
+import { createSelector } from "@reduxjs/toolkit";
 
-const defaultSelector: () => AnalysisAnnotation[] = () => [];
+const defaultSelector: (state: AnalysisRootState) => AnalysisAnnotation[] =
+  createSelector(() => []);
 const defaultContextValue = () => defaultSelector;
 
 export type AnalysisAnnotationsContextType = {
   analysisAnnotationsSelectorForPath: (
     path: string,
-  ) => (state: unknown) => AnalysisAnnotation[];
+  ) => (state: AnalysisRootState) => AnalysisAnnotation[];
 };
 
 const AnalysisAnnotationsContext =

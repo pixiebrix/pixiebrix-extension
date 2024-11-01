@@ -261,6 +261,9 @@ describe("RemoteMultiSelectWidget", () => {
     await waitFor(() => {
       expect(setLocalErrorSpy).toHaveBeenCalledWith(null);
     });
-    expect(reportErrorSpy).toHaveBeenCalledTimes(1);
+
+    // React team recommends keeping duplicate analytics calls in development mode:
+    // https://react.dev/learn/synchronizing-with-effects#sending-analytics
+    expect(reportErrorSpy).toHaveBeenCalledTimes(2);
   });
 });

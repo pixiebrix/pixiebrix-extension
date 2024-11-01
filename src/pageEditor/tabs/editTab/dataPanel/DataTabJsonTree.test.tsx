@@ -74,7 +74,7 @@ test("renders the DataTabJsonTree component", async () => {
 });
 
 test("doesn't re-render internal JSONTree on expand", async () => {
-  // No delay to run the click without setTimeout. Otherwise the test timeouts
+  // No delay to run the click without setTimeout. Otherwise, the test timeouts
   // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
   const immediateUserEvent = userEvent.setup({ delay: null });
   const { renderCount } = perf(React);

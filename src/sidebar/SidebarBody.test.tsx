@@ -56,7 +56,7 @@ describe("SidebarBody", () => {
   it("renders with anonymous user", async () => {
     jest
       .mocked(useConnectedTargetUrl)
-      .mockReturnValueOnce("https://www.example.com");
+      .mockReturnValue("https://www.example.com");
     mockAnonymousMeApiResponse();
     const { asFragment } = render(<SidebarBody />);
     await waitForEffect();
@@ -66,7 +66,7 @@ describe("SidebarBody", () => {
   it("renders with authenticated user", async () => {
     jest
       .mocked(useConnectedTargetUrl)
-      .mockReturnValueOnce("https://www.example.com");
+      .mockReturnValue("https://www.example.com");
     await mockAuthenticatedMeApiResponse();
     const { asFragment } = render(<SidebarBody />);
     await waitForEffect();
@@ -74,9 +74,7 @@ describe("SidebarBody", () => {
   });
 
   it("renders error when URL is restricted", async () => {
-    jest
-      .mocked(useConnectedTargetUrl)
-      .mockReturnValueOnce("chrome://extensions");
+    jest.mocked(useConnectedTargetUrl).mockReturnValue("chrome://extensions");
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });

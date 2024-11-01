@@ -18,7 +18,11 @@
 import { type EffectCallback, useEffect } from "react";
 
 /**
- * Dependency-free useEffect hook meant to run only once on mount
+ * Dependency-free useEffect hook that runs the callback to only once on mount.
+ *
+ * NOTE: will be run 2x in development mode.
+ * - https://react.dev/reference/react/StrictMode#fixing-bugs-found-by-re-running-effects-in-development
+ * - https://react.dev/learn/synchronizing-with-effects
  */
 export default function useOnMountOnly(callback: EffectCallback): void {
   // Do not add dependencies here. If you need dependencies, use useEffect

@@ -145,7 +145,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
         >
           <span
             class="css-1f43avz-a11yText-A11yText"
-            id="react-select-2-live-region"
+            id="react-select-3-live-region"
           />
           <span
             aria-atomic="false"
@@ -185,9 +185,9 @@ exports[`TriggerConfiguration renders custom event field with known event names 
                 data-value=""
               >
                 <input
-                  aria-activedescendant="react-select-2-option-0"
+                  aria-activedescendant="react-select-3-option-0"
                   aria-autocomplete="list"
-                  aria-controls="react-select-2-listbox"
+                  aria-controls="react-select-3-listbox"
                   aria-expanded="true"
                   aria-haspopup="true"
                   autocapitalize="none"
@@ -252,14 +252,14 @@ exports[`TriggerConfiguration renders custom event field with known event names 
             <div
               aria-multiselectable="false"
               class=" css-1n6sfyn-MenuList"
-              id="react-select-2-listbox"
+              id="react-select-3-listbox"
               role="listbox"
             >
               <div
                 aria-disabled="true"
                 aria-selected="false"
                 class=" css-sp6brv-option"
-                id="react-select-2-option-0"
+                id="react-select-3-option-0"
                 role="option"
                 tabindex="-1"
               >
@@ -269,7 +269,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
                 aria-disabled="false"
                 aria-selected="false"
                 class=" css-10wo9uf-option"
-                id="react-select-2-option-1"
+                id="react-select-3-option-1"
                 role="option"
                 tabindex="-1"
               >
