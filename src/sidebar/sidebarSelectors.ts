@@ -53,14 +53,12 @@ export const selectSidebarModActivationPanel = ({
 }: SidebarRootState) => sidebar.modActivationPanel;
 
 export const selectSidebarEntries = createSelector(
-  [
-    ({ sidebar }: SidebarRootState) => sidebar.panels,
-    ({ sidebar }: SidebarRootState) => sidebar.forms,
-    ({ sidebar }: SidebarRootState) => sidebar.temporaryPanels,
-    ({ sidebar }: SidebarRootState) => sidebar.staticPanels,
-    ({ sidebar }: SidebarRootState) => sidebar.modActivationPanel,
-  ],
-  // eslint-disable-next-line max-params -- reselect uses parameters for memoization
+  selectSidebarPanels,
+  selectSidebarForms,
+  selectSidebarTemporaryPanels,
+  selectSidebarStaticPanels,
+  selectSidebarModActivationPanel,
+  // eslint-disable-next-line max-params -- reselect uses parameters/args for memoization
   (panels, forms, temporaryPanels, staticPanels, modActivationPanel) => [
     ...panels,
     ...forms,
