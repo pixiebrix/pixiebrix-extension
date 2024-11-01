@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
 import useFlags from "@/hooks/useFlags";
@@ -33,18 +33,16 @@ import Loader from "@/components/Loader";
 import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "@/pageEditor/panes/StaleSessionPane";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();
   const { insertingStarterBrickType } = useInsertPane();
-  const isInserting = Boolean(insertingStarterBrickType);
   const { restrict } = useFlags();
-  const isRestricted = restrict(RestrictedFeatures.PAGE_EDITOR);
   const isStaleSession = useSelector(selectIsStaleSession);
-
-  const url = useCurrentInspectedUrl();
+  const isRestricted = restrict(RestrictedFeatures.PAGE_EDITOR);
+  const isInserting = Boolean(insertingStarterBrickType);
+  const inspectedUrl = useCurrentInspectedUrl();
 
   const currentPane = useMemo(
     () =>
@@ -63,18 +61,20 @@ const EditorLayout: React.FunctionComponent = () => {
     [isInserting, isRestricted, isStaleSession],
   );
 
-  const previousPane = usePreviousValue(currentPane);
-  if (previousPane !== currentPane) {
+  // Hide modals on Editor state transitions
+  // XXX: using usePreviousValue on currentPane was causing infinite re-render even when the useMemo was stable
+  // because the value of currentPane was changing between renders. That might be a quirk in how React fragments work?
+  useEffect(() => {
     dispatch(editorActions.hideModal());
-  }
+  }, [dispatch, isInserting, isRestricted, isStaleSession]);
 
-  if (!url) {
+  if (!inspectedUrl) {
     // Nearly immediate, likely never shown
     return <Loader />;
   }
 
-  if (!isScriptableUrl(url)) {
-    return <NonScriptablePage url={url} />;
+  if (!isScriptableUrl(inspectedUrl)) {
+    return <NonScriptablePage url={inspectedUrl} />;
   }
 
   return (
