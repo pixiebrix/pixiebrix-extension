@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectLogs } from "./logSelectors";
 import { logActions } from "./logSlice";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
@@ -40,9 +41,11 @@ const LogCard: React.FunctionComponent<OwnProps> = ({
   const [page, setPage] = useState(0);
 
   const { isLoading, isError, error } = useSelector(selectLogs);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const refreshEntries = () => dispatch(logActions.refreshEntries());
-  const clearAvailableEntries = () => dispatch(logActions.clear());
+  const clearAvailableEntries = async () => {
+    await dispatch(logActions.clear());
+  };
 
   const logs = useLogEntriesView({ level, page, perPage });
 

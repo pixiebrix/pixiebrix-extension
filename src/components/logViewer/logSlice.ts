@@ -19,9 +19,11 @@ import { clearLog, getLogEntries, type LogEntry } from "@/telemetry/logging";
 import { type MessageContext } from "@/types/loggerTypes";
 import {
   type ActionReducerMapBuilder,
+  type AnyAction,
   createAsyncThunk,
   createSlice,
   type PayloadAction,
+  type ThunkDispatch,
 } from "@reduxjs/toolkit";
 import { isEqual } from "lodash";
 import { selectActiveContext } from "./logSelectors";
@@ -29,6 +31,8 @@ import { type LogRootState, type LogState } from "./logViewerTypes";
 import { castDraft } from "immer";
 
 const REFRESH_INTERVAL = 750;
+
+let timeout: NodeJS.Timeout | null = null;
 
 /** @internal */
 export const initialLogState: LogState = {
@@ -40,10 +44,12 @@ export const initialLogState: LogState = {
   error: null,
 };
 
-// Clear the logs in storage for the given context
+/**
+ * Clear the logs in storage for the given context
+ */
 const clear = createAsyncThunk<void, void, { state: LogRootState }>(
   "logs/clearStatus",
-  async (arg, thunkAPI) => {
+  async (_arg, thunkAPI) => {
     const activeContext = selectActiveContext(thunkAPI.getState());
     if (activeContext != null) {
       await clearLog(activeContext);
@@ -51,24 +57,44 @@ const clear = createAsyncThunk<void, void, { state: LogRootState }>(
   },
 );
 
-// Init the logs polling. Should be dispatched once at the start of the app
+/**
+ * @see usePollModLogs
+ */
 const pollLogs = createAsyncThunk<
   LogEntry[],
   void,
   {
     state: LogRootState;
   }
->("logs/polling", async (arg, thunkAPI) => {
+>("logs/polling", async (_arg, thunkAPI) => {
+  if (timeout) {
+    // Clear previous call (if any)
+    clearTimeout(timeout);
+    timeout = null;
+  }
+
   const activeContext = selectActiveContext(thunkAPI.getState());
   let availableEntries: LogEntry[] = [];
   if (activeContext != null) {
     availableEntries = await getLogEntries(activeContext);
   }
 
-  setTimeout(async () => thunkAPI.dispatch(pollLogs()), REFRESH_INTERVAL);
+  // NOTE: use of setTimeout with the recursive action call instead of setInterval
+  // XXX: will this cause a stack overflow eventually? Or does it get a fresh stack because it's via createAsyncThunk?
+  timeout = setTimeout(
+    async () => thunkAPI.dispatch(pollLogs()),
+    REFRESH_INTERVAL,
+  );
 
   return availableEntries;
 });
+
+export function stopPollLogs(): void {
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+}
 
 // Extract extraReducers. Otherwise, TypeScript was failing with "Excessive stack depth comparing types" after
 // updating to TypeScript 4.7. Other people seeing issues with TypeScript upgrade:
@@ -131,3 +157,5 @@ export const logActions = {
   clear,
   pollLogs,
 };
+
+export type LogDispatch = ThunkDispatch<LogRootState, unknown, AnyAction>;

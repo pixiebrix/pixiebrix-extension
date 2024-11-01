@@ -36,6 +36,7 @@ import { object, string } from "yup";
 import { type RegistryId } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type FormState = {
   modId: RegistryId | null;
@@ -56,6 +57,7 @@ const formStateSchema = object({
  * @see selectKeepLocalCopyOnCreateMod
  */
 const MoveOrCopyToModModal: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { isMoveCopyToModVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
@@ -66,8 +68,6 @@ const MoveOrCopyToModModal: React.FC = () => {
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-
-  const dispatch = useDispatch();
 
   const hideModal = useCallback(() => {
     dispatch(editorActions.hideModal());
@@ -96,7 +96,7 @@ const MoveOrCopyToModModal: React.FC = () => {
       "Invalid for state: mod id does not match activate mod metadata entry",
     );
 
-    dispatch(
+    await dispatch(
       editorActions.duplicateActiveModComponent({
         destinationModMetadata: modMetadata,
       }),

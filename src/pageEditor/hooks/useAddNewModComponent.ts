@@ -45,6 +45,7 @@ import {
   selectModMetadatas,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { RunReason } from "@/types/runtimeTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,
@@ -68,7 +69,7 @@ function useFreshModNameGenerator(): () => string {
 }
 
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { setInsertingStarterBrickType } = useInsertPane();
   // XXX: useFlags is async. The flag query might not be initialized by the time the callback is called. Ensure
   // useFlags has already been used on the page, e.g., the AddStarterBrickButton, to ensure the flags have loaded by
@@ -131,8 +132,8 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
         dispatch(actions.addModComponentFormState(initialFormState));
         // Need to explicitly check availability of the new component form state
-        // TODO: refactor this to be an implicit side-effect in the reducer (add action above possibly needs to be a thunk?)
-        dispatch(actions.checkActiveModComponentAvailability());
+        // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9389
+        void dispatch(actions.checkActiveModComponentAvailability());
 
         updateDraftModComponent(
           allFramesInInspectedTab,

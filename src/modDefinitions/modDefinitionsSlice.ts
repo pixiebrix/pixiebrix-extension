@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  type AnyAction,
+  createAsyncThunk,
+  createSlice,
+  type ThunkDispatch,
+} from "@reduxjs/toolkit";
 import {
   type ModDefinitionsRootState,
   type ModDefinitionsState,
@@ -164,3 +169,9 @@ export const modDefinitionsActions = {
   loadModDefinitionsFromCache,
   syncRemoteModDefinitions,
 };
+
+export type ModDefinitionsDispatch = ThunkDispatch<
+  ModDefinitionsRootState,
+  unknown,
+  AnyAction
+>;

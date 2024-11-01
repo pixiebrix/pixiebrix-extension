@@ -28,11 +28,11 @@ import ViewModeField, {
   type ViewModeOption,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
 import type { ValueOf } from "type-fest";
-import { makeSelectBrickTrace } from "@/pageEditor/store/runtime/runtimeSelectors";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type TraceRecord } from "@/telemetry/trace";
+import { selectGetBrickTraceRecord } from "@/pageEditor/store/runtime/runtimeSelectors";
 
 const OutputViewModes = {
   Actual: "actual",
@@ -68,9 +68,11 @@ function useStarterBrickTraceRecord(): TraceRecord | undefined {
 
   const firstBrickInstanceId = brickPipeline[0]?.instanceId;
 
-  const { record } = useSelector(makeSelectBrickTrace(firstBrickInstanceId));
+  const getBrickTraceRecord = useSelector(selectGetBrickTraceRecord);
 
-  return record;
+  return firstBrickInstanceId
+    ? getBrickTraceRecord(firstBrickInstanceId)?.record
+    : undefined;
 }
 
 const OutputActualBody: React.FC = () => {

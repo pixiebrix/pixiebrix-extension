@@ -82,8 +82,12 @@ export const selectActiveModComponentRef = createSelector(
 /// DELETE STATE
 ///
 
-export const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
-  new Set(Object.values(editor.deletedModComponentFormStateIdsByModId).flat());
+export const selectAllDeletedModComponentIds = createSelector(
+  ({ editor }: EditorRootState) =>
+    editor.deletedModComponentFormStateIdsByModId,
+  (deletedModComponentFormStateIdsByModId) =>
+    new Set(Object.values(deletedModComponentFormStateIdsByModId).flat()),
+);
 
 export const selectNotDeletedActivatedModComponents: ({
   options,

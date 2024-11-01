@@ -50,6 +50,7 @@ import { appApi } from "@/data/service/api";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
@@ -61,7 +62,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   isNested?: boolean;
 }> = ({ modComponent, isAvailable, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { data: type } = useAsyncState(
     async () => selectType(modComponent),
     [modComponent.extensionPointId],
@@ -95,7 +96,8 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           }),
         );
 
-        dispatch(actions.checkActiveModComponentAvailability());
+        // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9389
+        void dispatch(actions.checkActiveModComponentAvailability());
 
         if (type === StarterBrickTypes.SIDEBAR_PANEL) {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching

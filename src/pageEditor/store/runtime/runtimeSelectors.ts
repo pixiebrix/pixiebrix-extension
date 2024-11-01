@@ -21,22 +21,26 @@ import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { getLatestBrickCall } from "@/telemetry/traceHelpers";
-import { selectActiveNodeId } from "../editor/editorSelectors";
-import { freeze } from "@/utils/objectUtils";
+import {
+  selectActiveModComponentId,
+  selectActiveNodeId,
+} from "../editor/editorSelectors";
+import { memoize } from "lodash";
 
 type RootState = { runtime: RuntimeState; editor: EditorState };
 
 type EditorSelector<T> = (state: RootState) => T;
 
-const EMPTY_TRACE = freeze<TraceRecord[]>([]);
-
-export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> = ({
-  runtime,
-  editor,
-}) =>
-  editor.activeModComponentId
-    ? runtime.modComponentTraces[editor.activeModComponentId] ?? EMPTY_TRACE
-    : EMPTY_TRACE;
+export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> =
+  createSelector(
+    selectActiveModComponentId,
+    ({ runtime }: RootState) => runtime.modComponentTraces,
+    (activeModComponentId, modComponentTraces) =>
+      activeModComponentId
+        ? // eslint-disable-next-line security/detect-object-injection -- UUID
+          modComponentTraces[activeModComponentId] ?? []
+        : [],
+  );
 
 const activeModComponentTraceForBrickSelector = createSelector(
   selectActiveModComponentTraces,
@@ -64,16 +68,11 @@ export const selectTraceErrors = createSelector(
   (records) => records.filter(isTraceError),
 );
 
-export function makeSelectBrickTrace(
-  blockInstanceId: UUID | undefined,
-): EditorSelector<{ record?: TraceRecord }> {
-  return ({ runtime, editor }: RootState) => {
-    const records = editor.activeModComponentId
-      ? runtime.modComponentTraces[editor.activeModComponentId] ?? []
-      : [];
-
-    return {
-      record: getLatestBrickCall(records, blockInstanceId),
-    };
-  };
-}
+export const selectGetBrickTraceRecord = createSelector(
+  selectActiveModComponentTraces,
+  (activeModComponentTraces) =>
+    // Memoize because this returns a fresh object
+    memoize((brickInstanceId: UUID) => ({
+      record: getLatestBrickCall(activeModComponentTraces, brickInstanceId),
+    })),
+);
