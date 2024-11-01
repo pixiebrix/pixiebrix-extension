@@ -114,8 +114,6 @@ const OutputActualBody: React.FC = () => {
 };
 
 const OutputPreviewBody: React.FC = () => {
-  const { traceRecord } = useBrickTraceRecord();
-
   const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
 
   return (
@@ -127,7 +125,7 @@ const OutputPreviewBody: React.FC = () => {
         </Alert>
       )}
       <ErrorBoundary>
-        <BrickPreview traceRecord={traceRecord} brickConfig={brickConfig} />
+        <BrickPreview />
       </ErrorBoundary>
     </>
   );

@@ -44,7 +44,11 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentRef } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentRef,
+  selectActiveNodeInfo,
+} from "@/pageEditor/store/editor/editorSelectors";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -135,11 +139,12 @@ const previewSlice = createSlice({
 });
 
 const BrickPreview: React.FunctionComponent<{
-  brickConfig: BrickConfig;
-  traceRecord: Nullishable<TraceRecord>;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik
-}> = ({ brickConfig, traceRecord, previewRefreshMillis }) => {
+}> = ({ previewRefreshMillis }) => {
+  const { traceRecord } = useBrickTraceRecord();
+  const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
+
   const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
     ...initialState,
     outputKey: brickConfig.outputKey,
