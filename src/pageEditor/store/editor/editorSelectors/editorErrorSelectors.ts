@@ -17,11 +17,16 @@
 
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { deserializeError } from "serialize-error";
+import { createSelector } from "@reduxjs/toolkit";
 
-export const selectErrorState = ({ editor }: EditorRootState) => ({
-  isBetaError: editor.error && editor.beta,
-  editorError: editor.error ? deserializeError(editor.error) : null,
-});
+export const selectErrorState = createSelector(
+  (state: EditorRootState) => state.editor.error,
+  (state: EditorRootState) => state.editor.beta,
+  (error, beta) => ({
+    isBetaError: error && beta,
+    editorError: error ? deserializeError(error) : null,
+  }),
+);
 
 export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
   state.editor.isDimensionsWarningDismissed;

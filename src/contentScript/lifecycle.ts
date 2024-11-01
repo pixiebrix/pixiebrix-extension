@@ -139,7 +139,7 @@ async function runStarterBrick(
 
   let installed = false;
 
-  // Details to make it easier to debug starer brick lifecycle
+  // Details to make it easier to debug starter brick lifecycle
   const details = {
     starterBrickId: starterBrick.id,
     kind: starterBrick.kind,

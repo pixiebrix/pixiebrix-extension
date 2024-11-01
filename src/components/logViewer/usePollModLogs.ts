@@ -15,25 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deactivateUnassignedModComponents } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useEffect } from "react";
+import {
+  logActions,
+  type LogDispatch,
+  stopPollLogs,
+} from "@/components/logViewer/logSlice";
 import { useDispatch } from "react-redux";
-import type { ModInstance } from "@/types/modInstanceTypes";
 
-function useDeactivateUnassignedDeploymentsEffect(
-  unassignedModInstances: ModInstance[],
-): void {
-  const dispatch = useDispatch();
+/**
+ * Polls the mod logs for new entries for the active mod context.
+ * Should be included once at the top of the App React tree.
+ */
+function usePollModLogs(): void {
+  const dispatch = useDispatch<LogDispatch>();
+
   useEffect(() => {
-    if (unassignedModInstances.length === 0) {
-      return;
-    }
+    // Start polling logs
+    void dispatch(logActions.pollLogs());
 
-    deactivateUnassignedModComponents({
-      dispatch,
-      unassignedModInstances,
-    });
-  }, [dispatch, unassignedModInstances]);
+    return () => {
+      stopPollLogs();
+    };
+  }, [dispatch]);
 }
 
-export default useDeactivateUnassignedDeploymentsEffect;
+export default usePollModLogs;

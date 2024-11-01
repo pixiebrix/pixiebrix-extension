@@ -26,6 +26,7 @@ import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import type { UUID } from "@/types/stringTypes";
+import { memoize } from "lodash";
 
 /**
  * @file Selectors for working with individual mod components and form states.
@@ -38,6 +39,14 @@ export const selectModComponentFormStates = ({
   editor,
 }: EditorRootState): EditorState["modComponentFormStates"] =>
   editor.modComponentFormStates;
+
+export const selectGetModComponentFormStateByModComponentId = createSelector(
+  selectModComponentFormStates,
+  (modComponentFormStates) =>
+    memoize((modComponentId: UUID) =>
+      modComponentFormStates.find((x) => x.uuid === modComponentId),
+    ),
+);
 
 /**
  * Select the active/selected mod component, or null if a mod component is not currently selected
@@ -73,8 +82,12 @@ export const selectActiveModComponentRef = createSelector(
 /// DELETE STATE
 ///
 
-export const selectAllDeletedModComponentIds = ({ editor }: EditorRootState) =>
-  new Set(Object.values(editor.deletedModComponentFormStateIdsByModId).flat());
+export const selectAllDeletedModComponentIds = createSelector(
+  ({ editor }: EditorRootState) =>
+    editor.deletedModComponentFormStateIdsByModId,
+  (deletedModComponentFormStateIdsByModId) =>
+    new Set(Object.values(deletedModComponentFormStateIdsByModId).flat()),
+);
 
 export const selectNotDeletedActivatedModComponents: ({
   options,

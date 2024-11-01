@@ -24,6 +24,7 @@ import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitio
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import {
   selectActiveModComponentFormState,
+  selectGetModComponentFormStateByModComponentId,
   selectIsModComponentDirtyById,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
@@ -201,13 +202,13 @@ export const selectGetDraftModComponentsForMod = createSelector(
  * @see selectGetDraftModComponentsForMod
  */
 export const selectGetSiblingDraftModComponents = createSelector(
-  selectModComponentFormStates,
+  selectGetModComponentFormStateByModComponentId,
   selectGetDraftModComponentsForMod,
-  (modComponentFormStates, getDraftModComponentsForMod) =>
+  (getModComponentFormStateByModComponentId, getDraftModComponentsForMod) =>
     memoize((modComponentId: UUID) => {
-      const modComponentFormState = modComponentFormStates.find(
-        (x) => x.uuid === modComponentId,
-      );
+      const modComponentFormState =
+        getModComponentFormStateByModComponentId(modComponentId);
+
       assertNotNullish(
         modComponentFormState,
         "Expected matching modComponentFormState",
