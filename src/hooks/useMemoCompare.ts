@@ -29,14 +29,13 @@ function useMemoCompare<T>(
   compare: (previous: T | undefined, next: T) => boolean,
   dependencies?: unknown[],
 ): T {
-  // IsEqual only initializes to true if next is nullish (previous is undefined on mount)
   const [previous, setPrevious] = useState<T>(next);
   const [isEqual, setIsEqual] = useState(true);
 
   const previousDependenciesRef = useRef<unknown[] | undefined>(dependencies);
   const [isDependenciesEqual, setIsDependenciesEqual] = useState(true);
 
-  // If not equal update previousRef to next value. We only update if not equal so that this hook continues to return
+  // If not equal update previous to next value. We only update if not equal so that this hook continues to return
   // the same old value if compare keeps returning true.
   useEffect(() => {
     // Pass previous and next value to compare function to determine whether to consider them equal.
