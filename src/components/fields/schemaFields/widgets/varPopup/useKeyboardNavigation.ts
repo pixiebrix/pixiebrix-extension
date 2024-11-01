@@ -16,14 +16,19 @@
  */
 
 import { type KeyPath } from "react-json-tree";
-import { type MutableRefObject, useCallback, useEffect, useState } from "react";
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   defaultMenuOption,
   type MenuOptions,
   moveMenuOption,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { isEqual } from "lodash";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field
@@ -115,17 +120,19 @@ function useResetActiveKeyPath({
   likelyVariable: string | null;
   setActiveKeyPath: React.Dispatch<React.SetStateAction<KeyPath | null>>;
 }) {
-  const prevMenuOptions = usePreviousValue(menuOptions);
-  const prevLikelyVariable = usePreviousValue(likelyVariable);
+  const prevMenuOptions = useRef(menuOptions);
+  const prevLikelyVariable = useRef(likelyVariable);
 
   useEffect(() => {
     if (
-      !isEqual(prevMenuOptions, menuOptions) ||
-      prevLikelyVariable !== likelyVariable
+      !isEqual(prevMenuOptions.current, menuOptions) ||
+      prevLikelyVariable.current !== likelyVariable
     ) {
+      prevMenuOptions.current = menuOptions;
+      prevLikelyVariable.current = likelyVariable;
+
       setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when the menuOptions or likelyVariable changes
   }, [likelyVariable, menuOptions, setActiveKeyPath]);
 }
 

@@ -1,11 +1,11 @@
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { TraceRecord } from "@/telemetry/trace";
 import { useSelector } from "react-redux";
+import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
 import {
-  selectActiveNodeId,
-  selectActiveNodeInfo,
-} from "@/pageEditor/store/editor/editorSelectors";
-import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
+  selectActiveModComponentTraceRecordForActiveNodeId,
+  selectActiveModComponentTraces,
+} from "@/pageEditor/store/runtime/runtimeSelectors";
 import { useMemo } from "react";
 import { isEqual, omit } from "lodash";
 
@@ -27,10 +27,9 @@ function useBrickTraceRecord(): {
    */
   traceRecord: Nullishable<TraceRecord>;
 } {
-  const activeNodeId = useSelector(selectActiveNodeId);
   const traces = useSelector(selectActiveModComponentTraces);
-  const traceRecord = traces.find(
-    (trace) => trace.brickInstanceId === activeNodeId,
+  const traceRecord = useSelector(
+    selectActiveModComponentTraceRecordForActiveNodeId,
   );
 
   const {

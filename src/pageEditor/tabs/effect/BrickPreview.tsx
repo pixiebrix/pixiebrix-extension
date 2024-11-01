@@ -24,7 +24,6 @@ import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
-import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
@@ -39,7 +38,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -138,11 +136,10 @@ const previewSlice = createSlice({
 
 const BrickPreview: React.FunctionComponent<{
   brickConfig: BrickConfig;
-  starterBrick: BaseStarterBrickState;
   traceRecord: Nullishable<TraceRecord>;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik
-}> = ({ brickConfig, starterBrick, traceRecord, previewRefreshMillis }) => {
+}> = ({ brickConfig, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
     ...initialState,
     outputKey: brickConfig.outputKey,
@@ -202,8 +199,7 @@ const BrickPreview: React.FunctionComponent<{
     if ((context && brickInfo?.isPure) || brickInfo?.traceOptional) {
       void debouncedRun(brickConfig, context as unknown as BrickArgsContext);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
-  }, [debouncedRun, brickConfig, brickInfo, objectHash(context ?? {})]);
+  }, [debouncedRun, brickConfig, brickInfo, context]);
 
   if (brickInfo?.type === BrickTypes.RENDERER) {
     return (

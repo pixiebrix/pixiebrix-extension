@@ -34,45 +34,38 @@ const useElementOptions = (
 ): React.FC => {
   const elementType = documentBuilderElement.type;
 
-  const ElementOptions = useMemo(
-    () => {
-      if (isListElement(documentBuilderElement)) {
-        const ListOptionsFields = () => (
-          <ListOptions elementName={elementName} />
-        );
-        return ListOptionsFields;
-      }
+  const ElementOptions = useMemo(() => {
+    if (isListElement(documentBuilderElement)) {
+      const ListOptionsFields = () => <ListOptions elementName={elementName} />;
+      return ListOptionsFields;
+    }
 
-      if (isPipelineElement(documentBuilderElement)) {
-        const PipelineOptionsFields = () => (
-          <PipelineOptions elementName={elementName} />
-        );
-        return PipelineOptionsFields;
-      }
+    if (isPipelineElement(documentBuilderElement)) {
+      const PipelineOptionsFields = () => (
+        <PipelineOptions elementName={elementName} />
+      );
+      return PipelineOptionsFields;
+    }
 
-      if (isButtonElement(documentBuilderElement)) {
-        const ButtonOptionsFields = () => (
-          <ButtonOptions elementName={elementName} />
-        );
-
-        return ButtonOptionsFields;
-      }
-
-      const editSchemas = getElementEditSchemas(elementType, elementName);
-      const OptionsFields: React.FC = () => (
-        <>
-          {editSchemas.map((editSchema) => (
-            <SchemaField key={editSchema.name} {...editSchema} />
-          ))}
-        </>
+    if (isButtonElement(documentBuilderElement)) {
+      const ButtonOptionsFields = () => (
+        <ButtonOptions elementName={elementName} />
       );
 
-      return OptionsFields;
-    },
-    // The element type can't change, so this is OK
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- leaving element off to prevent remounting
-    [elementType, elementName],
-  );
+      return ButtonOptionsFields;
+    }
+
+    const editSchemas = getElementEditSchemas(elementType, elementName);
+    const OptionsFields: React.FC = () => (
+      <>
+        {editSchemas.map((editSchema) => (
+          <SchemaField key={editSchema.name} {...editSchema} />
+        ))}
+      </>
+    );
+
+    return OptionsFields;
+  }, [documentBuilderElement, elementType, elementName]);
 
   return ElementOptions;
 };

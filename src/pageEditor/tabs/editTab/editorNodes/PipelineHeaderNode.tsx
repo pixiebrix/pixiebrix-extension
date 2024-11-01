@@ -84,8 +84,8 @@ const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
         scrollIntoView,
       );
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run when loading completes to prevent multiple event listeners from being added
-  }, [isPipelineLoading]);
+    // TODO: validate multiple listerners aren't added (old ones should be removed automatically)
+  }, [builderPreviewElement, isPipelineLoading]);
 
   return (
     <>

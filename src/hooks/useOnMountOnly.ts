@@ -15,13 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EffectCallback, useEffect } from "react";
+import { type EffectCallback, useEffect, useRef } from "react";
 
 /**
  * Dependency-free useEffect hook meant to run only once on mount
+ * @deprecated -- This is an anti-pattern and should be removed
  */
 export default function useOnMountOnly(callback: EffectCallback): void {
-  // Do not add dependencies here. If you need dependencies, use useEffect
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only meant to run once
-  useEffect(callback, []);
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!mountedRef.current) {
+      callback();
+    }
+
+    mountedRef.current = true;
+  }, [callback]);
 }

@@ -16,16 +16,21 @@
  */
 
 import reportError from "@/telemetry/reportError";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
+import { useEffect, useRef } from "react";
 
 /**
  * React hook to report an error if it's different from the previous error.
  */
 function useReportError(error: unknown): void {
-  const previousError = usePreviousValue(error);
-  if (error && error !== previousError) {
-    reportError(error);
-  }
+  const previousError = useRef(error);
+
+  useEffect(() => {
+    if (error && error !== previousError.current) {
+      reportError(error);
+
+      previousError.current = error;
+    }
+  }, [error]);
 }
 
 export default useReportError;

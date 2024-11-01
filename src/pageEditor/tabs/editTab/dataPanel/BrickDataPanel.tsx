@@ -75,14 +75,18 @@ const BrickDataPanel: React.FC = () => {
       ? DataPanelTabKey.Design
       : DataPanelTabKey.Output,
   );
+  const prevActiveTabKeyRef = useRef(activeTabKey);
 
   useEffect(() => {
-    reportEvent(Events.DATA_PANEL_TAB_VIEW, {
-      ...eventData,
-      tabName: activeTabKey,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to report when `activeTabKey` changes
-  }, [activeTabKey]);
+    if (activeTabKey !== prevActiveTabKeyRef.current) {
+      reportEvent(Events.DATA_PANEL_TAB_VIEW, {
+        ...eventData,
+        tabName: activeTabKey,
+      });
+
+      prevActiveTabKeyRef.current = activeTabKey;
+    }
+  }, [activeTabKey, eventData, prevActiveTabKeyRef]);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>

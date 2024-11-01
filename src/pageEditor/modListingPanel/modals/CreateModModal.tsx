@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   isInnerDefinitionRegistryId,
   normalizeSemVerString,
@@ -82,8 +82,13 @@ function useInitialFormState(modId: RegistryId): ModMetadataFormState {
   // local copy of the source mod, there's a render where the source mod is no longer available. Use a ref
   // to store the original source metadata.
   const modMetadataMap = useSelector(selectModMetadataMap);
-  const { current: modMetadata } = useRef(modMetadataMap.get(modId));
-  assertNotNullish(modMetadata, "Expected mod metadata");
+
+  const modMetadata = useMemo(() => {
+    const _modMetadata = modMetadataMap.get(modId);
+    assertNotNullish(_modMetadata, "Expected mod metadata");
+
+    return _modMetadata;
+  }, [modId, modMetadataMap]);
 
   const isUnsavedMod = isInnerDefinitionRegistryId(modMetadata.id);
 

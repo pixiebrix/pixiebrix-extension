@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   formStateToDraftModComponent,
   selectGetDraftFormStatesPromiseForModId,
@@ -44,7 +44,6 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { RunReason } from "@/types/runtimeTypes";
 import type { UUID } from "@/types/stringTypes";
 import hash from "object-hash";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import type { AppDispatch } from "@/pageEditor/store/store";
@@ -87,21 +86,25 @@ function useOnSelectModComponent(
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
   );
-
   // Watching for value seems a bit hacky (e.g. as opposed to watching for editorSlice actions that could impact the
   // activeModComponentFormState). But it's a simple method that does not require maintaining the list of actions that
   // *might* impact the selected mod component form state.
-  const previousActiveModComponentFormState = usePreviousValue(
-    activeModComponentFormState,
+  const previousActiveModComponentFormStateUuidRef = useRef(
+    activeModComponentFormState?.uuid,
   );
 
-  if (
-    activeModComponentFormState?.uuid &&
-    activeModComponentFormState.uuid !==
-      previousActiveModComponentFormState?.uuid
-  ) {
-    callback(activeModComponentFormState);
-  }
+  useEffect(() => {
+    if (
+      activeModComponentFormState?.uuid &&
+      activeModComponentFormState.uuid !==
+        previousActiveModComponentFormStateUuidRef.current
+    ) {
+      callback(activeModComponentFormState);
+
+      previousActiveModComponentFormStateUuidRef.current =
+        activeModComponentFormState.uuid;
+    }
+  }, [activeModComponentFormState, callback]);
 }
 
 /**
@@ -201,19 +204,24 @@ function useRegisterDraftModInstanceOnAllFrames(): void {
     await dispatch(updateDraftModInstance());
   }, [dispatch, editorUpdateKey]);
 
+  const onSelectModComponentCallback = useCallback(
+    async (draftFormState: ModComponentFormState) => {
+      const draftModComponent = formStateToDraftModComponent(
+        draftFormState,
+        getModDraftStateForModId(draftFormState.modMetadata.id),
+      );
+
+      updateDraftModComponent(allFramesInInspectedTab, draftModComponent, {
+        isSelectedInEditor: true,
+        runReason: RunReason.PAGE_EDITOR_REGISTER,
+      });
+    },
+    [getModDraftStateForModId],
+  );
+
   // Register draft mod component on select. From there, ReloadToolbar will control re-running the mod component.
   // Currently, registering on select is to stop interval triggers from running when selected.
-  useOnSelectModComponent(async (draftFormState) => {
-    const draftModComponent = formStateToDraftModComponent(
-      draftFormState,
-      getModDraftStateForModId(draftFormState.modMetadata.id),
-    );
-
-    updateDraftModComponent(allFramesInInspectedTab, draftModComponent, {
-      isSelectedInEditor: true,
-      runReason: RunReason.PAGE_EDITOR_REGISTER,
-    });
-  });
+  useOnSelectModComponent(onSelectModComponentCallback);
 
   useEffect(() => {
     const callback = async () => {

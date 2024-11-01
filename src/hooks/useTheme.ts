@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   addThemeClassToDocumentRoot,
   setThemeFavicon,
@@ -52,19 +52,22 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   const showSidebarLogoOverride = managedStorageState?.showSidebarLogo;
 
   const isLoading = isManagedStorageLoading || isCachedThemeLoading;
+  const cacheRefreshedRef = useRef(false);
 
   useEffect(() => {
     if (
       !isLoading &&
+      !cacheRefreshedRef.current &&
       cachedTheme &&
       (!cachedTheme.lastFetched ||
         Date.now() > cachedTheme.lastFetched + 120_000)
     ) {
       // Re-fetch the theme if it has not been fetched in the past 2 minutes
       void activateTheme();
+
+      cacheRefreshedRef.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-activate theme when loading finishes on mount
-  }, [isLoading]);
+  }, [cachedTheme, isLoading]);
 
   const activeTheme = useMemo(
     () => (!isLoading && cachedTheme ? cachedTheme : initialTheme),

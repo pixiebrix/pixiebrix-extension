@@ -44,8 +44,9 @@ module.exports = {
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
   ],
-  plugins: ["local-rules"],
+  plugins: ["local-rules", "react-compiler"],
   rules: {
+    "react-compiler/react-compiler": "warn",
     "new-cap": [
       "error",
       {

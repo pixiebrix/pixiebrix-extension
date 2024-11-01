@@ -42,6 +42,14 @@ export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> =
         : [],
   );
 
+export const selectActiveModComponentTraceRecordForActiveNodeId =
+  createSelector(
+    selectActiveNodeId,
+    selectActiveModComponentTraces,
+    (activeNodeId, traces) =>
+      traces.find((trace) => trace.brickInstanceId === activeNodeId),
+  );
+
 const activeModComponentTraceForBrickSelector = createSelector(
   selectActiveModComponentTraces,
   (_state: RootState, instanceId: UUID) => instanceId,

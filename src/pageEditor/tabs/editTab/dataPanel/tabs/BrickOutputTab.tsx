@@ -115,14 +115,6 @@ const OutputActualBody: React.FC = () => {
 
 const OutputPreviewBody: React.FC = () => {
   const { traceRecord } = useBrickTraceRecord();
-  const modComponentFormState = useSelector(selectActiveModComponentFormState);
-
-  assertNotNullish(
-    modComponentFormState,
-    "Output Tab can only be shown in a mod component editor context",
-  );
-
-  const { starterBrick } = modComponentFormState;
 
   const { blockConfig: brickConfig } = useSelector(selectActiveNodeInfo);
 
@@ -135,11 +127,7 @@ const OutputPreviewBody: React.FC = () => {
         </Alert>
       )}
       <ErrorBoundary>
-        <BrickPreview
-          traceRecord={traceRecord}
-          brickConfig={brickConfig}
-          starterBrick={starterBrick}
-        />
+        <BrickPreview traceRecord={traceRecord} brickConfig={brickConfig} />
       </ErrorBoundary>
     </>
   );

@@ -49,16 +49,15 @@ function useMergeAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // Memoize the merge method avoid re-rendering downstream components
   const memoizedMerge = useMemo(() => memoizeOne(merge), [merge]);
 
-  const refetchCallbacks = dependencies.map((x) => x.refetch);
-  const refetch = useCallback(
-    () => {
-      for (const refetch of refetchCallbacks) {
-        refetch();
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- depends on individual refetchCallbacks
-    refetchCallbacks,
+  const refetchCallbacks = useMemo(
+    () => dependencies.map((x) => x.refetch),
+    [dependencies],
   );
+  const refetch = useCallback(() => {
+    for (const refetch of refetchCallbacks) {
+      refetch();
+    }
+  }, [refetchCallbacks]);
 
   const result = {
     ...mergeAsyncState(...dependencies, memoizedMerge),

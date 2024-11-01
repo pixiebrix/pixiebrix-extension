@@ -20,7 +20,7 @@ import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
+import { useEffect, useRef } from "react";
 
 /**
  * React Hook that reports when there's an error in a trace. Reports the error once per runId.
@@ -33,13 +33,18 @@ function useReportTraceError(): void {
 
   const traceError = traceErrors.find((x) => x.runId);
   const runId = traceError?.runId;
-  const prevRunId = usePreviousValue(runId);
-  if (traceError && runId && runId !== prevRunId) {
-    reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {
-      sessionId,
-      modComponentId: traceError.modComponentId,
-    });
-  }
+  const prevRunIdRef = useRef(runId);
+
+  useEffect(() => {
+    if (traceError && runId && runId !== prevRunIdRef.current) {
+      reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {
+        sessionId,
+        modComponentId: traceError.modComponentId,
+      });
+
+      prevRunIdRef.current = runId;
+    }
+  }, [runId, sessionId, traceError]);
 }
 
 export default useReportTraceError;

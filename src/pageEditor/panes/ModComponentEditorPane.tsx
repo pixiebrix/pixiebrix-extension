@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   actions,
   actions as editorActions,
@@ -35,7 +35,6 @@ import {
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import type { AppDispatch } from "@/pageEditor/store/store";
 
@@ -141,17 +140,23 @@ function useInitialValues(): ModComponentFormState {
 
   // Key to force reinitialization of formik when user selects a different mod component from the sidebar
   const key = getCurrentFormReinitializationKey();
-  const prevKey = usePreviousValue(key);
-  const activeModComponentFormStateRef = useRef(activeModComponentFormState);
+  const prevKey = useRef(key);
+  const [initialValues, setInitialValues] = useState(
+    activeModComponentFormState,
+  );
 
-  return useMemo(() => {
-    if (key === prevKey) {
-      return activeModComponentFormStateRef.current;
+  // TODO: Validate change
+  useEffect(() => {
+    if (key === prevKey.current) {
+      return;
     }
 
-    activeModComponentFormStateRef.current = activeModComponentFormState;
-    return activeModComponentFormState;
-  }, [key, prevKey, activeModComponentFormState]);
+    setInitialValues(activeModComponentFormState);
+
+    prevKey.current = key;
+  }, [activeModComponentFormState, key]);
+
+  return initialValues;
 }
 
 const ModComponentEditorPane: React.VFC = () => {
