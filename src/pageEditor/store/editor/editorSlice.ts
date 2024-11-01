@@ -39,6 +39,8 @@ import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,
   selectActiveModComponentFormState,
+  selectGetModComponentFormStateByModComponentId,
+  selectGetModComponentFormStatesForMod,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "./editorSelectors";
@@ -411,9 +413,10 @@ export const editorSlice = createSlice({
      */
     setActiveModComponentId(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
-      const modComponentFormState = state.modComponentFormStates.find(
-        (x) => x.uuid === modComponentId,
-      );
+      const getModComponentFormStateByModComponentId =
+        selectGetModComponentFormStateByModComponentId({ editor: state });
+      const modComponentFormState =
+        getModComponentFormStateByModComponentId(modComponentId);
 
       assertNotNullish(
         modComponentFormState,
@@ -511,13 +514,14 @@ export const editorSlice = createSlice({
       action: PayloadAction<{ modId: RegistryId; modMetadata: ModMetadata }>,
     ) {
       const { modId, modMetadata } = action.payload;
-      const modComponentFormStates = state.modComponentFormStates.filter(
-        (modComponentFormState) =>
-          modComponentFormState.modMetadata.id === modId,
-      );
+      const getModComponentFormStatesForMod =
+        selectGetModComponentFormStatesForMod({ editor: state });
+      const modComponentFormStatesForMod =
+        getModComponentFormStatesForMod(modId);
+
       // Technically this method should also update the deleted form states. But this reducer method is only called
       // when the mod is being saved, so those deleted form states will be removed anyway.
-      for (const formState of modComponentFormStates) {
+      for (const formState of modComponentFormStatesForMod) {
         formState.modMetadata = modMetadata;
       }
 
@@ -531,8 +535,12 @@ export const editorSlice = createSlice({
      */
     markModAsCleanById(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
+      const getModComponentFormStatesForMod =
+        selectGetModComponentFormStatesForMod({ editor: state });
+      const modComponentFormStatesForMod =
+        getModComponentFormStatesForMod(modId);
 
-      for (const modComponentFormState of state.modComponentFormStates) {
+      for (const modComponentFormState of modComponentFormStatesForMod) {
         modComponentFormState.installed = true;
         state.dirty[modComponentFormState.uuid] = false;
       }
@@ -550,9 +558,12 @@ export const editorSlice = createSlice({
     removeModById(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
 
-      const modComponentIds = state.modComponentFormStates
-        .filter((x) => x.modMetadata.id === modId)
-        .map((x) => x.uuid);
+      const getModComponentFormStatesForMod =
+        selectGetModComponentFormStatesForMod({ editor: state });
+      const modComponentFormStatesForMod =
+        getModComponentFormStatesForMod(modId);
+
+      const modComponentIds = modComponentFormStatesForMod.map((x) => x.uuid);
 
       for (const modComponentId of modComponentIds) {
         markModComponentFormStateAsDeleted(state, modComponentId);
@@ -666,9 +677,10 @@ export const editorSlice = createSlice({
     markModComponentFormStateAsClean(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
 
-      const modComponentFormState = state.modComponentFormStates.find(
-        (x) => modComponentId === x.uuid,
-      );
+      const getModComponentFormStateByModComponentId =
+        selectGetModComponentFormStateByModComponentId({ editor: state });
+      const modComponentFormState =
+        getModComponentFormStateByModComponentId(modComponentId);
 
       assertNotNullish(
         modComponentFormState,
@@ -740,8 +752,15 @@ export const editorSlice = createSlice({
     ) {
       const { block, pipelinePath, pipelineIndex } = action.payload;
 
-      const modComponentFormState = state.modComponentFormStates.find(
-        (x) => x.uuid === state.activeModComponentId,
+      assertNotNullish(
+        state.activeModComponentId,
+        "Active mod component id not found",
+      );
+
+      const getModComponentFormStateByModComponentId =
+        selectGetModComponentFormStateByModComponentId({ editor: state });
+      const modComponentFormState = getModComponentFormStateByModComponentId(
+        state.activeModComponentId,
       );
 
       assertNotNullish(
@@ -760,7 +779,7 @@ export const editorSlice = createSlice({
           {
             block,
             invalidPath: getInvalidPath(
-              cloneDeep(modComponentFormState),
+              cloneDeep(modComponentFormState as Draft<ModComponentFormState>),
               pipelinePath,
             ),
             element: cloneDeep(modComponentFormState),
