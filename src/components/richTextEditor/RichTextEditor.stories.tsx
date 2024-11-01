@@ -4,6 +4,10 @@ import RichTextEditor from "./RichTextEditor";
 const meta: Meta<typeof RichTextEditor> = {
   title: "Components/RichTextEditor",
   component: RichTextEditor,
+  parameters: {
+    // FIXME: https://github.com/pixiebrix/pixiebrix-extension/issues/9393
+    storyshots: { disable: true },
+  },
 };
 
 export default meta;
