@@ -21,19 +21,23 @@ import {
   ModalKey,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import type { Selector } from "react-redux";
+import { createSelector } from "@reduxjs/toolkit";
 
-export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => {
-  const { type } = editor.visibleModal ?? {};
+export const selectEditorModalVisibilities = createSelector(
+  ({ editor }: EditorRootState) => editor.visibleModal,
+  (visibleModal) => {
+    const { type } = visibleModal ?? {};
 
-  return {
-    isMoveCopyToModVisible: type === ModalKey.MOVE_COPY_TO_MOD,
-    isSaveAsNewModModalVisible: type === ModalKey.SAVE_AS_NEW_MOD,
-    isCreateModModalVisible: type === ModalKey.CREATE_MOD,
-    isAddBlockModalVisible: type === ModalKey.ADD_BRICK,
-    isSaveDataIntegrityErrorModalVisible:
-      type === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
-  };
-};
+    return {
+      isMoveCopyToModVisible: type === ModalKey.MOVE_COPY_TO_MOD,
+      isSaveAsNewModModalVisible: type === ModalKey.SAVE_AS_NEW_MOD,
+      isCreateModModalVisible: type === ModalKey.CREATE_MOD,
+      isAddBlockModalVisible: type === ModalKey.ADD_BRICK,
+      isSaveDataIntegrityErrorModalVisible:
+        type === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
+    };
+  },
+);
 
 // Typescript-Fu for getModalDataSelector
 type ModalDataMap = {

@@ -98,16 +98,23 @@ export const selectKnownEventNamesForActiveModComponent = createSelector(
 );
 
 // Not analysis of the analysis engine/linter sense, but tracks which components are available on the page
-export const selectModComponentAvailability = ({
-  editor: {
+// TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7462
+//  Use https://reselect.js.org/api/createstructuredselector/ after upgrading to RTK 2
+export const selectModComponentAvailability = createSelector(
+  (state: EditorRootState) => state.editor.availableActivatedModComponentIds,
+  (state: EditorRootState) =>
+    state.editor.isPendingAvailableActivatedModComponents,
+  (state: EditorRootState) => state.editor.availableDraftModComponentIds,
+  (state: EditorRootState) => state.editor.isPendingDraftModComponents,
+  (
     availableActivatedModComponentIds,
     isPendingAvailableActivatedModComponents,
     availableDraftModComponentIds,
     isPendingDraftModComponents,
-  },
-}: EditorRootState) => ({
-  availableActivatedModComponentIds,
-  isPendingAvailableActivatedModComponents,
-  availableDraftModComponentIds,
-  isPendingDraftModComponents,
-});
+  ) => ({
+    availableActivatedModComponentIds,
+    isPendingAvailableActivatedModComponents,
+    availableDraftModComponentIds,
+    isPendingDraftModComponents,
+  }),
+);
