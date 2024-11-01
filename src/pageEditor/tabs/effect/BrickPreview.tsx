@@ -25,7 +25,6 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
 import { isEmpty } from "lodash";
-import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBrickPreview } from "@/contentScript/messenger/api";
 import { useField } from "formik";

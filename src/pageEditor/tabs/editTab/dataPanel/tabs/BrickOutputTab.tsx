@@ -11,7 +11,6 @@ import BrickPreview, {
 } from "@/pageEditor/tabs/effect/BrickPreview";
 import { useSelector } from "react-redux";
 import {
-  selectActiveModComponentFormState,
   selectActiveNodeInfo,
   selectNodeDataPanelTabState,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -25,7 +24,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { isTraceError } from "@/telemetry/trace";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 const OutputViewModes = {
   Actual: "actual",
