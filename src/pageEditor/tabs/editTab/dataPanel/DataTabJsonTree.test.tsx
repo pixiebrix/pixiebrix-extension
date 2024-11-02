@@ -103,18 +103,20 @@ test("doesn't re-render internal JSONTree on expand", async () => {
   await flushAsyncEffects();
 
   // The expanded state in Redux has been updated, triggering a re-render of the DataTabJsonTree and hence the JSONTree
-  // Vendored library not supported in React 18: https://github.com/keiya01/react-performance-testing/issues/27
+  // Vendored react-performance-testing library not supported in React 18 (exact limitations unclear):
+  // https://github.com/keiya01/react-performance-testing/issues/27
   expect(
     renderCount.current.DataTabJsonTree as RenderCountField[],
   ).toStrictEqual([
     { value: 1 },
-    // 3x due to React StrictMode
+    // XXX: why is this count 3x instead of 2x? Which StrictMode behavior causes the 2x when expanding the node?
+    // https://react.dev/reference/react/StrictMode#fixing-bugs-found-by-double-rendering-in-development
     { value: 3 },
   ]);
 
+  // DataTabJsonTree and JSONTree should have rendered the same number of times
   expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
     { value: 1 },
-    // 3x due to React StrictMode
     { value: 3 },
   ]);
 });
