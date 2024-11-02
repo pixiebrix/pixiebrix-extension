@@ -33,9 +33,9 @@ import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
-const Section: React.FunctionComponent = ({ children }) => (
-  <div className="mb-4">{children}</div>
-);
+const Section: React.FunctionComponent<React.PropsWithChildren> = ({
+  children,
+}) => <div className="mb-4">{children}</div>;
 
 const SettingsPage: React.FunctionComponent = () => {
   const organization = useSelector(selectOrganization);

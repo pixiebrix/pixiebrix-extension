@@ -37,7 +37,7 @@ import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 import useFindModInstance from "@/mods/hooks/useFindModInstance";
 import { compact } from "lodash";
 
-const Status: React.VoidFunctionComponent<{
+const Status: React.FC<{
   modViewItem: ModViewItem;
 }> = ({ modViewItem }) => {
   const history = useHistory();

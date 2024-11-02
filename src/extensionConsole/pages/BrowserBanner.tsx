@@ -26,7 +26,7 @@ import settingsSlice from "@/store/settings/settingsSlice";
 import { isOfficiallySupportedBrowser } from "@/utils/browserUtils";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
-const BrowserBanner: React.VoidFunctionComponent = () => {
+const BrowserBanner: React.FC = () => {
   const dispatch = useDispatch();
 
   const browserWarningDismissed = useSelector<RootState, boolean>(

@@ -30,7 +30,7 @@ type BasicProps = PreviewComponentProps & {
   documentBuilderComponent: DocumentBuilderComponent;
 };
 
-const Basic: React.FunctionComponent<BasicProps> = ({
+const Basic: React.FunctionComponent<React.PropsWithChildren<BasicProps>> = ({
   elementType,
   documentBuilderComponent: { Component, props },
   children,

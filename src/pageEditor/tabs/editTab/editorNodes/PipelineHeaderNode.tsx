@@ -44,7 +44,7 @@ export type PipelineHeaderNodeProps = {
   isPipelineLoading: boolean;
 };
 
-const PipelineHeaderNode: React.VFC<PipelineHeaderNodeProps> = ({
+const PipelineHeaderNode: React.FC<PipelineHeaderNodeProps> = ({
   headerLabel,
   nestingLevel,
   nodeActions,

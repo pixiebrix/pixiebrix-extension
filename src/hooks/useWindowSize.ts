@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSyncExternalStore } from "use-sync-external-store/shim";
-
 // Store as object - getSnapshot() must return reference to same object to avoid re-renders
+import { useSyncExternalStore } from "react";
+
 let windowSize = {
   width: 0,
   height: 0,

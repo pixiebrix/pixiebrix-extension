@@ -91,7 +91,7 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
-const Preview: React.VFC<{
+const Preview: React.FC<{
   optionsDefinition: RJSFSchema;
   activeField: string | null;
   setActiveField: (field: string) => void;
@@ -139,7 +139,7 @@ function useInitialValuesQuery(
   );
 }
 
-const ModOptionsDefinitionEditor: React.VFC = () => {
+const ModOptionsDefinitionEditor: React.FC = () => {
   const [activeField, setActiveField] = useState<string | null>(null);
   const modId = useSelector(selectActiveModId);
   assertNotNullish(modId, "Expected active mod id");

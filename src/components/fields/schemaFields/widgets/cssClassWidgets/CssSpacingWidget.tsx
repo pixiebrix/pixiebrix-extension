@@ -84,7 +84,7 @@ function getValue(options: Option[], spacing: Spacing[], side: string | null) {
   );
 }
 
-const SpacingControl: React.VFC<{
+const SpacingControl: React.FC<{
   prefix: string;
   label: string;
   className?: string;
@@ -177,7 +177,7 @@ const SpacingControl: React.VFC<{
   );
 };
 
-const CssSpacingWidget: React.VFC<
+const CssSpacingWidget: React.FC<
   SchemaFieldProps & { inputModeOptions: InputModeOption[] }
 > = (props) => {
   const { name, uiSchema } = props;

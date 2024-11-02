@@ -55,7 +55,7 @@ const urlSchemaProject: Schema = {
   },
 };
 
-const UrlPatternWidget: React.VFC<Except<SchemaFieldProps, "schema">> = (
+const UrlPatternWidget: React.FC<Except<SchemaFieldProps, "schema">> = (
   props,
 ) => {
   const { values: formState } = useFormikContext<ModComponentFormState>();

@@ -100,7 +100,7 @@ export function isVarLike(value: string): boolean {
   return match?.groups?.base != null && isVarValue(match.groups.base);
 }
 
-const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
+const TextWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
   validationSchema,

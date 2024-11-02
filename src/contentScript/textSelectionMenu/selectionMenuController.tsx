@@ -17,7 +17,6 @@
 
 import { debounce, once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { render, unmountComponentAtNode } from "react-dom";
 import React, { StrictMode } from "react";
 import { tooltipFactory } from "@/contentScript/tooltipDom";
 import {
@@ -40,12 +39,14 @@ import { snapWithin } from "@/utils/mathUtils";
 import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
 import { SELECTION_MENU_READY_ATTRIBUTE } from "@/domConstants";
 import IsolatedComponent from "@/components/IsolatedComponent";
+import { createRoot } from "react-dom/client";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
 export const selectionMenuActionRegistry = new ActionRegistry();
 
 let selectionMenu: Nullishable<HTMLElement>;
+let reactRoot: ReturnType<typeof createRoot>;
 
 /**
  * AbortController fired when the popover is hidden/destroyed.
@@ -148,7 +149,7 @@ function destroySelectionMenu(): void {
   if (selectionMenu) {
     // Cleanly unmount React component to ensure any listeners are cleaned up.
     // https://react.dev/reference/react-dom/unmountComponentAtNode
-    unmountComponentAtNode(selectionMenu);
+    reactRoot.unmount();
 
     selectionMenu.remove();
     selectionMenu = null;
@@ -162,9 +163,11 @@ function createSelectionMenu(): HTMLElement {
   }
 
   selectionMenu = tooltipFactory();
+  reactRoot = createRoot(selectionMenu);
+
   selectionMenu.dataset.testid = "pixiebrix-selection-menu";
 
-  render(
+  reactRoot.render(
     <StrictMode>
       <IsolatedComponent
         name="SelectionMenu"
@@ -182,7 +185,6 @@ function createSelectionMenu(): HTMLElement {
         )}
       />
     </StrictMode>,
-    selectionMenu,
   );
 
   return selectionMenu;
@@ -321,7 +323,7 @@ function markSelectionMenuReady() {
 }
 
 /**
- * Initialize the selection selection menu once.
+ * Initialize the selection menu once.
  */
 export const initSelectionMenu = once(() => {
   expectContext("contentScript");

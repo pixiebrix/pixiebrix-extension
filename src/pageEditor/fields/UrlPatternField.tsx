@@ -43,7 +43,7 @@ const defaultDescription = (
   </span>
 );
 
-const UrlPatternField: React.VFC<UrlPatternFieldProps> = ({
+const UrlPatternField: React.FC<UrlPatternFieldProps> = ({
   name,
   disabled,
   label = "URL Patterns",

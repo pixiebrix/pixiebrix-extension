@@ -34,9 +34,7 @@ type GridCardProps = {
   modViewItem: ModViewItem;
 };
 
-const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
-  modViewItem,
-}) => {
+const GridCard: React.FC<GridCardProps> = ({ modViewItem }) => {
   const { modId, name, updatedAt, sharingSource, description, isUnavailable } =
     modViewItem;
 

@@ -25,9 +25,11 @@ type FormPreviewDescriptionFieldProps = {
   className?: string;
 };
 
-const DescriptionFieldTemplate: React.VoidFunctionComponent<
-  FormPreviewDescriptionFieldProps
-> = ({ id, description, className }) => {
+const DescriptionFieldTemplate: React.FC<FormPreviewDescriptionFieldProps> = ({
+  id,
+  description,
+  className,
+}) => {
   if (!description) {
     return null;
   }

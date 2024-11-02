@@ -56,7 +56,7 @@ import { convertSchemaToConfigState } from "@/components/integrations/integratio
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
 
-const RefreshButton: React.VFC<{
+const RefreshButton: React.FC<{
   onRefresh: () => void;
   buttonText?: string;
 }> = ({ buttonText = "", onRefresh }) => {

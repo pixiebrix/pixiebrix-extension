@@ -29,7 +29,7 @@ export type TagItem = {
   svgIcon?: string;
 };
 
-const TagListItem: React.VFC<{
+const TagListItem: React.FC<{
   item: TagItem;
   isActive: boolean;
   onSelect: () => void;
@@ -59,7 +59,7 @@ const TagListItem: React.VFC<{
   );
 };
 
-const TagList: React.VFC<{
+const TagList: React.FC<{
   tagItems: TagItem[];
   activeTag: string | null;
   onSelectTag: (tag: string) => void;

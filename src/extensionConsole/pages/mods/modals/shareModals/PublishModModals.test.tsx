@@ -44,7 +44,9 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
 /**
  * Wrapper component to fetch marketplace listings because the PublishRecipeModals component does not fetch.
  */
-const MarketplaceListingsWrapper: React.FC = ({ children }) => {
+const MarketplaceListingsWrapper: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   useGetMarketplaceListingsQuery();
   return <>{children}</>;
 };

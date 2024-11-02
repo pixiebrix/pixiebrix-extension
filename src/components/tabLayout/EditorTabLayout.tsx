@@ -27,7 +27,7 @@ export interface TabItem {
   name: string;
   badgeCount?: number;
   badgeVariant?: Variant;
-  TabContent: React.VoidFunctionComponent;
+  TabContent: React.FC;
 }
 
 export interface ActionButton {

@@ -38,9 +38,9 @@ import reportError from "@/telemetry/reportError";
 import useReportError from "@/hooks/useReportError";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const Layout: React.FunctionComponent = ({ children }) => (
-  <div className="mt-5 w-100 max-550 mx-auto">{children}</div>
-);
+const Layout: React.FunctionComponent<React.PropsWithChildren> = ({
+  children,
+}) => <div className="mt-5 w-100 max-550 mx-auto">{children}</div>;
 
 /**
  * Extension Setup Page, guiding user to link to PixieBrix or connect via partner authentication.

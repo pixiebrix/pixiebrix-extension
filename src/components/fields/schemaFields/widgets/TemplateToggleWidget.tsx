@@ -55,7 +55,7 @@ export function getOptionForInputMode(
  * @param inputModeOptions Options for types of inputs allowed for this field
  * @param setFieldDescription Setter to handle changing the field description based on which option is toggled
  */
-const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
+const TemplateToggleWidget: React.FC<TemplateToggleWidgetProps> = ({
   inputModeOptions,
   setFieldDescription,
   defaultType,

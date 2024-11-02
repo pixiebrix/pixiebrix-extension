@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { useSyncExternalStore } from "use-sync-external-store/shim";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { useSyncExternalStore } from "react";
 
 // Using the string instead of the Selection object because the reference didn't seem to change on getSelection
 type TextSelection = string;

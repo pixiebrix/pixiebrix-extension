@@ -29,7 +29,7 @@ type ItemRendererProps = {
 
 // The item renderer must be its own separate component to react-window from re-mounting the results
 // https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
-const BrickGridItemRenderer: React.VFC<ItemRendererProps> = ({
+const BrickGridItemRenderer: React.FC<ItemRendererProps> = ({
   columnIndex,
   rowIndex,
   style,

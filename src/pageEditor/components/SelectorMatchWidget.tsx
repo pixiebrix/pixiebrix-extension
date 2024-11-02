@@ -31,7 +31,7 @@ const selectorMatchItemSchema: Schema = {
   },
 };
 
-const SelectorMatchWidget: React.VFC<SchemaFieldProps> = (props) => {
+const SelectorMatchWidget: React.FC<SchemaFieldProps> = (props) => {
   const { values: formState } = useFormikContext<ModComponentFormState>();
 
   return (

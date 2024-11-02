@@ -29,14 +29,14 @@ import IsolatedComponent from "@/components/IsolatedComponent";
 import { type EphemeralFormContentProps } from "./EphemeralFormContent";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const ModalLayout: React.FC = ({ children }) => (
+const ModalLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
   <div className="modal-content">
     <div className="modal-body">{children}</div>
   </div>
 );
 
-const PanelLayout: React.FC = ({ children }) => (
+const PanelLayout: React.FC<React.PropsWithChildren> = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 

@@ -33,7 +33,7 @@ import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
  *
  * @see IntegerWidget
  */
-const NumberWidget: React.VFC<
+const NumberWidget: React.FC<
   SchemaFieldProps &
     FormControlProps & {
       step?: number;

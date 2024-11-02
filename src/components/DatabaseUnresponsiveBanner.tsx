@@ -40,7 +40,7 @@ const errorBanner = (
  * Banner that displays when the local registry IDB database is unresponsive.
  * @param timeoutMillis the number of milliseconds to wait before IDB is considered unresponsive
  */
-const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
+const DatabaseUnresponsiveBanner: React.FC<{
   timeoutMillis?: number;
 }> = ({ timeoutMillis = 3500 }) => {
   const state = useAsyncState(async () => pingPackageDatabase(), []);

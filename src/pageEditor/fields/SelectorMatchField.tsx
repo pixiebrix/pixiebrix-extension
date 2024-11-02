@@ -34,7 +34,7 @@ const defaultDescription = (
   </span>
 );
 
-const SelectorMatchField: React.VFC<SelectorMatchFieldProps> = ({
+const SelectorMatchField: React.FC<SelectorMatchFieldProps> = ({
   name,
   disabled,
   label = "Selectors",

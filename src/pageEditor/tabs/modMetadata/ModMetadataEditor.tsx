@@ -98,7 +98,7 @@ const OldModVersionAlert: React.FunctionComponent<{
   </Alert>
 );
 
-const ModMetadataEditor: React.VoidFunctionComponent = () => {
+const ModMetadataEditor: React.FC = () => {
   const modId = useSelector(selectActiveModId);
 
   assertNotNullish(modId, "No active mod id");

@@ -116,7 +116,7 @@ function getInitialModComponentRef(url?: string): ModComponentRef | undefined {
 
 const staticPanels = [MOD_LAUNCHER];
 
-const ConnectedSidebar: React.VFC = () => {
+const ConnectedSidebar: React.FC = () => {
   const dispatch = useDispatch();
   const listener = useConnectedListener();
   const sidebarIsEmpty = useSelector(selectIsSidebarEmpty);

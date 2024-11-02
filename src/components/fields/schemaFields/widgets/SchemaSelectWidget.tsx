@@ -35,7 +35,7 @@ export type StringOption = {
 
 export type StringOptionsType = Options<StringOption>;
 
-const SchemaSelectWidget: React.VFC<
+const SchemaSelectWidget: React.FC<
   SchemaFieldProps & { placeholder?: string }
 > = ({ name, schema, isRequired, focusInput, placeholder, uiSchema }) => {
   const [created, setCreated] = useState<string[]>([]);

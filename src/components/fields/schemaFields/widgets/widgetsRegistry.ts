@@ -22,36 +22,36 @@ import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
 import { type IntegrationDependencyWidgetProps } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 
 type Widgets = {
-  ArrayWidget: React.VFC<SchemaFieldProps>;
-  BooleanWidget: React.VFC<SchemaFieldProps>;
-  IntegerWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-  NumberWidget: React.VFC<
+  ArrayWidget: React.FC<SchemaFieldProps>;
+  BooleanWidget: React.FC<SchemaFieldProps>;
+  IntegerWidget: React.FC<SchemaFieldProps & FormControlProps>;
+  NumberWidget: React.FC<
     SchemaFieldProps &
       FormControlProps & {
         step?: number;
       }
   >;
-  ObjectWidget: React.VFC<SchemaFieldProps>;
-  FixedInnerObjectWidget: React.VFC<SchemaFieldProps>;
-  OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-  SchemaSelectWidget: React.VFC<SchemaFieldProps>;
-  TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps>;
-  TextWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-  CssClassWidget: React.VFC<SchemaFieldProps>;
-  UnsupportedWidget: React.VFC<SchemaFieldProps>;
-  UrlMatchPatternWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-  UrlPatternWidget: React.VFC<SchemaFieldProps>;
-  SelectorMatchWidget: React.VFC<SchemaFieldProps>;
-  WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>>;
-  DatabaseWidget: React.VFC<{ name: string }>;
-  PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps>;
-  IconWidget: React.VFC<SchemaFieldProps & FormControlProps>;
+  ObjectWidget: React.FC<SchemaFieldProps>;
+  FixedInnerObjectWidget: React.FC<SchemaFieldProps>;
+  OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps>;
+  SchemaSelectWidget: React.FC<SchemaFieldProps>;
+  TemplateToggleWidget: React.FC<TemplateToggleWidgetProps>;
+  TextWidget: React.FC<SchemaFieldProps & FormControlProps>;
+  CssClassWidget: React.FC<SchemaFieldProps>;
+  UnsupportedWidget: React.FC<SchemaFieldProps>;
+  UrlMatchPatternWidget: React.FC<SchemaFieldProps & FormControlProps>;
+  UrlPatternWidget: React.FC<SchemaFieldProps>;
+  SelectorMatchWidget: React.FC<SchemaFieldProps>;
+  WorkshopMessageWidget: React.FC<Partial<SchemaFieldProps>>;
+  DatabaseWidget: React.FC<{ name: string }>;
+  PasswordWidget: React.FC<SchemaFieldProps & FormControlProps>;
+  IconWidget: React.FC<SchemaFieldProps & FormControlProps>;
   ServiceWidget: React.FC<IntegrationDependencyWidgetProps>;
   SpreadsheetPickerWidget: React.FC<SchemaFieldProps>;
 };
 
-function unsetWidgetFactory(label: string): React.VFC {
-  const UnsetWidget: React.VFC = () => {
+function unsetWidgetFactory(label: string): React.FC {
+  const UnsetWidget: React.FC = () => {
     throw new Error(
       `Input widget ${label} not set. Did you forget to register it in registerDefaultWidgets?`,
     );

@@ -31,7 +31,7 @@ import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArg
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-const ModEditorPane: React.VFC = () => {
+const ModEditorPane: React.FC = () => {
   const dispatch = useDispatch();
 
   // Inject the draft mod instance into the page while editing

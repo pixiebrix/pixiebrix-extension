@@ -34,7 +34,7 @@ const variantMap = new Map<string | null, BannerVariant>([
   ["staging", "info"],
 ]);
 
-const EnvironmentBannerMessage: React.VFC = () => {
+const EnvironmentBannerMessage: React.FC = () => {
   const { data: hostname } = useAsyncState(async () => {
     const { hostname } = await getExtensionAuth();
     return hostname;
@@ -60,7 +60,7 @@ const EnvironmentBannerMessage: React.VFC = () => {
   );
 };
 
-const EnvironmentBanner: React.VFC = () => {
+const EnvironmentBanner: React.FC = () => {
   if (environment === "production") {
     return null;
   }

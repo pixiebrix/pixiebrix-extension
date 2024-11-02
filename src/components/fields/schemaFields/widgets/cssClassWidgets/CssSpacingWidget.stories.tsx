@@ -28,7 +28,7 @@ import React from "react";
 import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 import { type Expression } from "@/types/runtimeTypes";
 
-const Preview: React.VFC = () => {
+const Preview: React.FC = () => {
   const [{ value }] = useField("cssClass");
 
   const { classes, isVar, includesTemplate } = parseValue(value);

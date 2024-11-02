@@ -34,7 +34,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 const emptyObject = {} as const;
 
-const RegistryIdWidget: React.VFC<{
+const RegistryIdWidget: React.FC<{
   name: string;
   id?: string;
   selectStyles?: StylesConfig;

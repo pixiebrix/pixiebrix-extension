@@ -62,9 +62,7 @@ const DEFAULT_SHORTCUTS: Shortcut[] = [
   { caption: "All URLs", getPattern: async () => SITES_PATTERN },
 ];
 
-const UrlMatchPatternWidget: React.VFC<UrlMatchPatternWidgetProps> = (
-  props,
-) => {
+const UrlMatchPatternWidget: React.FC<UrlMatchPatternWidgetProps> = (props) => {
   const {
     name,
     disabled,

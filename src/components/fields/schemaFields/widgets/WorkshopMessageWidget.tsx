@@ -20,7 +20,7 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 
-const WorkshopMessageWidget: React.VFC<Partial<SchemaFieldProps>> = () => (
+const WorkshopMessageWidget: React.FC<Partial<SchemaFieldProps>> = () => (
   <Form.Control
     className="px-1"
     plaintext

@@ -16,7 +16,6 @@
  */
 
 import { type AsyncState } from "@/types/sliceTypes";
-import { useSyncExternalStore } from "use-sync-external-store/shim";
 import {
   errorToAsyncState,
   loadingAsyncStateFactory,
@@ -27,6 +26,7 @@ import { type UUID } from "@/types/stringTypes";
 import { uuidv4, validateUUID } from "@/types/helpers";
 import deepEquals from "fast-deep-equal";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import { useSyncExternalStore } from "react";
 
 type Subscribe = (callback: () => void) => () => void;
 

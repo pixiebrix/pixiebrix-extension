@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { useSyncExternalStore } from "react";
 
 export default function useAbortSignal(signal: AbortSignal): boolean {
   return useSyncExternalStore(

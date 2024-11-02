@@ -19,7 +19,7 @@ import React from "react";
 /**
  * A mock for DelayedRender, because otherwise you have to use jest fake timers in tests.
  */
-const DelayedRender: React.FC = ({ children }) => (
+const DelayedRender: React.FC<React.PropsWithChildren> = ({ children }) => (
   // Unlike the real DelayedRender, this wraps in a div so that we can add a data-testid for testing
   <div data-testid="DelayedRender">{children}</div>
 );

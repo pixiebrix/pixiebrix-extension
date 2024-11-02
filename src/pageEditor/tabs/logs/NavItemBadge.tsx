@@ -21,7 +21,7 @@ import React, { useMemo } from "react";
 import { Badge } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
-const NavItemBadge: React.VoidFunctionComponent = () => {
+const NavItemBadge: React.FC = () => {
   const { availableEntries, entries } = useSelector(selectLogs);
 
   const unreadByLevels = useMemo(() => {

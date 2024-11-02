@@ -20,7 +20,7 @@ import React from "react";
 import { Form, type FormControlProps } from "react-bootstrap";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
-const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
+const OmitFieldWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   schema,
   isRequired,
   uiSchema,

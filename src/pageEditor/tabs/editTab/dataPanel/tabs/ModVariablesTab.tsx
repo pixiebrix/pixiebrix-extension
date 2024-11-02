@@ -49,7 +49,7 @@ type StateValues = {
 /**
  * Data panel tab displaying mod variables, and private/public state.
  */
-const ModVariablesTab: React.VFC = () => {
+const ModVariablesTab: React.FC = () => {
   const modComponentRef = useSelector(selectActiveModComponentRef);
 
   const state = useAsyncState<StateValues>(

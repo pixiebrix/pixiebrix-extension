@@ -19,7 +19,7 @@ import React from "react";
 import Centered from "@/components/Centered";
 import styles from "./Pane.module.scss";
 
-const RestrictedPane: React.VoidFunctionComponent = () => (
+const RestrictedPane: React.FC = () => (
   <Centered>
     <div className={styles.title}>
       Your team admin has restricted access to the Page Editor

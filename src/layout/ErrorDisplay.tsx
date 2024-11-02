@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 
-export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => {
+export const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => {
   useEffect(() => {
     reportError(error);
   }, [error]);

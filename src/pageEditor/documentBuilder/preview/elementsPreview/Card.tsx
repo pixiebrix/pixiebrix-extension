@@ -31,7 +31,7 @@ type CardProps = PreviewComponentProps & {
   documentBuilderComponent: DocumentBuilderComponent;
 };
 
-const Card: React.FunctionComponent<CardProps> = ({
+const Card: React.FunctionComponent<React.PropsWithChildren<CardProps>> = ({
   element,
   documentBuilderComponent: { Component, props },
   children,

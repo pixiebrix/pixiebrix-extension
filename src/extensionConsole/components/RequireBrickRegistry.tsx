@@ -25,7 +25,9 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 /**
  * Loading gate that requires brick definitions to be available before rendering children.
  */
-const RequireBrickRegistry: React.FC = ({ children }) => {
+const RequireBrickRegistry: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   const state = useAsyncState(
     async () =>
       Promise.all([

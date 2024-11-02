@@ -24,7 +24,7 @@ import { timeSince } from "@/utils/timeUtils";
 import React from "react";
 import cx from "classnames";
 
-const LastUpdatedLabel: React.VoidFunctionComponent<{
+const LastUpdatedLabel: React.FC<{
   timestamp: string | null;
   className?: string;
 }> = ({ timestamp, className }) => {

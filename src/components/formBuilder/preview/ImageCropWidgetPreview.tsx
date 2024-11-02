@@ -18,7 +18,7 @@
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
 
-const ImageCropWidgetPreview: React.VFC<WidgetProps> = ({ schema }) => (
+const ImageCropWidgetPreview: React.FC<WidgetProps> = ({ schema }) => (
   <div className="text-muted form-text">
     Image cropping is not displayed in preview.
   </div>

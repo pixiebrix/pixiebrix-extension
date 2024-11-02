@@ -160,7 +160,7 @@ export const optionsGroups = {
 
 type Value = string | Expression;
 
-const FlagButton: React.VFC<
+const FlagButton: React.FC<
   ClassFlag & {
     disabled: boolean;
     classes: string[];
@@ -187,7 +187,7 @@ const FlagButton: React.VFC<
   );
 };
 
-const FlagItem: React.VFC<
+const FlagItem: React.FC<
   ClassFlag & {
     classes: string[];
     toggleClass: (className: string, on: boolean, group?: ClassFlag[]) => void;
@@ -240,7 +240,7 @@ const defaultOptions: CssClassWidgetControls = {
  *
  * CSS classes are available in the document builder.
  */
-const CssClassWidget: React.VFC<
+const CssClassWidget: React.FC<
   SchemaFieldProps & { inputModeOptions: InputModeOption[] }
 > = (props) => {
   const { name, uiSchema } = props;

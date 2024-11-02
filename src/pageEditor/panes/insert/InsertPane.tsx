@@ -39,7 +39,9 @@ const InsertPaneContext = createContext<InsertPaneContextProps>({
   },
 });
 
-export const InsertPaneProvider: React.FunctionComponent = ({ children }) => {
+export const InsertPaneProvider: React.FunctionComponent<
+  React.PropsWithChildren
+> = ({ children }) => {
   const [insertingStarterBrickType, setInsertingStarterBrickType] =
     useState<StarterBrickType | null>(null);
 

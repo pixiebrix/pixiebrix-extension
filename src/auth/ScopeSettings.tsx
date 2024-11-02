@@ -60,7 +60,7 @@ type ScopeSettingsProps = {
   description: string;
 };
 
-const ScopeSettings: React.VoidFunctionComponent<ScopeSettingsProps> = ({
+const ScopeSettings: React.FC<ScopeSettingsProps> = ({
   title,
   description,
 }) => {

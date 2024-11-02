@@ -58,7 +58,7 @@ type OwnProps = {
   forceShowIntegrationConfigId: UUID | null;
 };
 
-const Actions: React.VoidFunctionComponent<{
+const Actions: React.FC<{
   row: Row<TableData>;
   id: UUID;
   navigate: (url: string) => void;

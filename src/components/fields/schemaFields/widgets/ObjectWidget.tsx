@@ -180,7 +180,7 @@ function getPropertyRow(
 
 type ObjectValue = UnknownObject;
 
-const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
+const ObjectWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)

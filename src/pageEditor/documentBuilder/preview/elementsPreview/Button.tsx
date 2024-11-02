@@ -33,7 +33,7 @@ type ButtonProps = PreviewComponentProps & {
   buttonProps: ButtonElementConfig;
 };
 
-const Button: React.FunctionComponent<ButtonProps> = ({
+const Button: React.FunctionComponent<React.PropsWithChildren<ButtonProps>> = ({
   element,
   children,
   className,

@@ -31,7 +31,7 @@ import {
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-const ListItem: React.VoidFunctionComponent<{
+const ListItem: React.FC<{
   modViewItem: ModViewItem;
   style: React.CSSProperties;
 }> = ({ modViewItem, style }) => {

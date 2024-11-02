@@ -75,7 +75,7 @@ const getPopoverMessage = (sharing: SharingSource): string => {
 
 // Omitted OverlayTrigger attributes aren't required
 // noinspection RequiredAttributes
-const SharingLabel: React.VoidFunctionComponent<{
+const SharingLabel: React.FC<{
   sharing: SharingSource;
   className?: string;
 }> = ({ sharing, className }) => (

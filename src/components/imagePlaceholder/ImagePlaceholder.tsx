@@ -19,7 +19,7 @@ import React, { useEffect, useRef } from "react";
 import { run as runHolder } from "holderjs";
 import { Image } from "react-bootstrap";
 
-const ImagePlaceholder: React.VoidFunctionComponent<{
+const ImagePlaceholder: React.FC<{
   height: number | string;
   width: number | string;
 }> = ({ height, width }) => {

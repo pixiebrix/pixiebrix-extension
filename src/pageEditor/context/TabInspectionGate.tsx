@@ -77,7 +77,7 @@ const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
  *
  * @since 1.8.10
  */
-const TabInspectionGate: React.FC = ({ children }) => {
+const TabInspectionGate: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [showTabSelector, setShowTabSelector] = useState(false);
 
   useEffect(() => {

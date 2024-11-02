@@ -23,7 +23,7 @@ import "./options.scss";
 import "@/extensionContext";
 import "@/development/darkMode.js";
 
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import React, { StrictMode } from "react";
 import App from "@/extensionConsole/App";
 import { initToaster } from "@/utils/notify";
@@ -33,6 +33,7 @@ import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 setPlatform(extensionPagePlatform);
 
@@ -47,11 +48,15 @@ async function init() {
     console.error("Failed to initialize performance monitoring", error);
   }
 
-  render(
+  const container = document.querySelector("#container");
+  assertNotNullish(container, "Extension Console container not found");
+
+  const root = createRoot(container);
+
+  root.render(
     <StrictMode>
       <App />
     </StrictMode>,
-    document.querySelector("#container"),
   );
 }
 

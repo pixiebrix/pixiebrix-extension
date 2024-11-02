@@ -64,7 +64,7 @@ function useGetFormReinitializationKey(): () => string {
   }, [store]);
 }
 
-const EditorPaneContent: React.VoidFunctionComponent<{
+const EditorPaneContent: React.FC<{
   modComponentFormState: ModComponentFormState;
 }> = ({ modComponentFormState }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -154,7 +154,7 @@ function useInitialValues(): ModComponentFormState {
   }, [key, prevKey, activeModComponentFormState]);
 }
 
-const ModComponentEditorPane: React.VFC = () => {
+const ModComponentEditorPane: React.FC = () => {
   // Inject the draft mod instance into the page while editing
   useRegisterDraftModInstanceOnAllFrames();
   const initialValues = useInitialValues();

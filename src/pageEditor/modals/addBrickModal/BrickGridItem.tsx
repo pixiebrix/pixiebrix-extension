@@ -36,7 +36,7 @@ type BrickItemProps = {
   invalidMessage?: React.ReactNode;
 };
 
-const BrickGridItem: React.VFC<BrickItemProps> = ({
+const BrickGridItem: React.FC<BrickItemProps> = ({
   brick,
   onSelect,
   onShowDetail,

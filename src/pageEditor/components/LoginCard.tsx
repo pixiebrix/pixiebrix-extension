@@ -23,7 +23,7 @@ import Centered from "@/components/Centered";
 import { getBaseURL } from "@/data/service/baseService";
 import useAsyncState from "@/hooks/useAsyncState";
 
-const LoginCard: React.VoidFunctionComponent = () => {
+const LoginCard: React.FC = () => {
   const { data: baseURL } = useAsyncState(getBaseURL, []);
 
   return (

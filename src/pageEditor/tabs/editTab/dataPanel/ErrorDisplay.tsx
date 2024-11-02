@@ -24,9 +24,7 @@ type ErrorDisplayProps = {
   error: ErrorObject;
 };
 
-const ErrorDisplay: React.VoidFunctionComponent<ErrorDisplayProps> = ({
-  error,
-}) => {
+const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error }) => {
   const { title, detailsElement } = getErrorDetails(error);
 
   return (

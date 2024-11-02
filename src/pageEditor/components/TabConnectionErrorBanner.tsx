@@ -29,7 +29,7 @@ import { TimeoutError } from "p-timeout";
  *
  * @see RequireAuth
  */
-const TabConnectionErrorBanner: React.VFC = () => {
+const TabConnectionErrorBanner: React.FC = () => {
   const error = useSelector(selectTabStateError);
 
   if (!error) {

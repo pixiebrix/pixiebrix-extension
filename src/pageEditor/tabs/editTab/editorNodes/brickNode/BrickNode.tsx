@@ -50,7 +50,7 @@ const useScrollIntoViewEffect = (
   return nodeRef;
 };
 
-const BrickNode: React.VFC<BrickNodeProps> = ({
+const BrickNode: React.FC<BrickNodeProps> = ({
   onClick,
   active,
   isParentActive,

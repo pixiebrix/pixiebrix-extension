@@ -30,7 +30,7 @@ import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 import Loader from "@/components/Loader";
 
-const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
+const ModsPageContent: React.FC<ModsPageContentProps> = ({
   tableInstance,
   width,
   height,

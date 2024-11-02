@@ -278,7 +278,7 @@ function useUrlOrConfigsChangeHandler(
   }, [dispatch, integrationConfigs, urlParam]);
 }
 
-const IntegrationsPage: React.VFC = () => {
+const IntegrationsPage: React.FC = () => {
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
 

@@ -29,7 +29,7 @@ declare module "react" {
   }
 }
 
-const IframeModal: React.VFC<{
+const IframeModal: React.FC<{
   url: URL;
   controller: AbortController;
   onOutsideClick?: () => void;

@@ -18,7 +18,7 @@
 import React from "react";
 import styles from "./TrailingMessage.module.scss";
 
-const TrailingMessage: React.VFC<{ message: string }> = ({ message }) => (
+const TrailingMessage: React.FC<{ message: string }> = ({ message }) => (
   <p className={styles.root}>
     <small className="text-muted">{message}</small>
   </p>

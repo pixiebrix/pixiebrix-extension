@@ -32,7 +32,7 @@ import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
+const ActivateFromMarketplaceColumn: React.FC = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
       Not sure what to build? Activate a pre-made mod from the public
@@ -51,7 +51,7 @@ const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   </Col>
 );
 
-const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
+const ActivateTeamBlueprintsColumn: React.FC = () => {
   const { setActiveTab } = modsPageSlice.actions;
   const dispatch = useDispatch();
 
@@ -74,7 +74,7 @@ const ActivateTeamBlueprintsColumn: React.VoidFunctionComponent = () => {
   );
 };
 
-const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
+const ActivateFromDeploymentBannerColumn: React.FC = () => (
   <Col>
     <p>
       Click the <strong className="text-primary">Activate</strong> button in the{" "}
@@ -85,7 +85,7 @@ const ActivateFromDeploymentBannerColumn: React.VoidFunctionComponent = () => (
   </Col>
 );
 
-const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
+const ContactTeamAdminColumn: React.FC = () => (
   <Col>
     <p>
       It looks like your team hasn&apos;t made any mods available to you yet.{" "}
@@ -95,7 +95,7 @@ const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
   </Col>
 );
 
-const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
+const UnaffiliatedColumn: React.FC = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
       Learn how to create your own mods in minutes by following our step-by-step
@@ -114,7 +114,7 @@ const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
   </Col>
 );
 
-const CreateBrickColumn: React.VoidFunctionComponent = () => (
+const CreateBrickColumn: React.FC = () => (
   <Col>
     <h4>Create your Own</h4>
     <p>
@@ -208,7 +208,7 @@ export const OnboardingViewContent: React.FC<{
   );
 };
 
-const OnboardingView: React.VoidFunctionComponent<{
+const OnboardingView: React.FC<{
   width: number;
   height: number;
 }> = ({ width, height }) => {

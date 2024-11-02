@@ -25,9 +25,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 
-const RootErrorPanel: React.VoidFunctionComponent<{ error: unknown }> = ({
-  error,
-}) => {
+const RootErrorPanel: React.FC<{ error: unknown }> = ({ error }) => {
   const rendererError = selectSpecificError(error, NoRendererError);
 
   if (rendererError) {

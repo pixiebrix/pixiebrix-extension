@@ -29,7 +29,7 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 import { Card } from "react-bootstrap";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
-const ExternalLink: React.VoidFunctionComponent<{
+const ExternalLink: React.FC<{
   linkText: string;
   url: string;
 }> = ({ linkText, url }) => (
@@ -45,7 +45,7 @@ const ExternalLink: React.VoidFunctionComponent<{
   </span>
 );
 
-const GetStartedView: React.VoidFunctionComponent<{
+const GetStartedView: React.FC<{
   width: number;
   height: number;
 }> = ({ width, height }) => {

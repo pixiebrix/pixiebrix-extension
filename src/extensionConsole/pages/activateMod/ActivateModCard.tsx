@@ -46,7 +46,7 @@ import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import castError from "@/utils/castError";
 import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 
-const WizardHeader: React.VoidFunctionComponent<{
+const WizardHeader: React.FC<{
   mod: ModDefinition;
   isReactivate: boolean;
   isSubmitting: boolean;
@@ -96,7 +96,7 @@ const ActivateModCard: React.FC<{
   } = useActivateModWizard(modDefinition);
 
   const activateMod = useActivateMod("extensionConsole");
-  const [activationError, setActivationError] = useState<unknown>();
+  const [activationError, setActivationError] = useState<string | undefined>();
   const [createMilestone] = useCreateMilestoneMutation();
 
   const { hasMilestone } = useMilestones();
@@ -127,7 +127,9 @@ const ActivateModCard: React.FC<{
           />
         </Card.Header>
         <Card.Body className={styles.wizardBody}>
-          {activationError && <Alert variant="danger">{activationError}</Alert>}
+          {activationError != null && (
+            <Alert variant="danger">{activationError}</Alert>
+          )}
 
           {instructions && (
             <div>

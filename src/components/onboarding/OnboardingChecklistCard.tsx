@@ -23,13 +23,15 @@ import styles from "./OnboardingChecklistCard.module.scss";
 import Loader from "@/components/Loader";
 import cx from "classnames";
 
-export const OnboardingStep: React.FunctionComponent<{
-  number: number;
-  title?: string;
-  completed?: boolean;
-  active?: boolean;
-  isLoading?: boolean;
-}> = ({ number, title, completed, active, isLoading = false, children }) => {
+export const OnboardingStep: React.FunctionComponent<
+  React.PropsWithChildren<{
+    number: number;
+    title?: string;
+    completed?: boolean;
+    active?: boolean;
+    isLoading?: boolean;
+  }>
+> = ({ number, title, completed, active, isLoading = false, children }) => {
   const circleIconStyle = completed
     ? styles.circleIconSuccess
     : active
@@ -71,9 +73,11 @@ export const OnboardingStep: React.FunctionComponent<{
   );
 };
 
-const OnboardingChecklistCard: React.FunctionComponent<{
-  title?: string;
-}> = ({ title, children }) => {
+const OnboardingChecklistCard: React.FunctionComponent<
+  React.PropsWithChildren<{
+    title?: string;
+  }>
+> = ({ title, children }) => {
   const checklistCard = (
     <Card className={styles.checklistCard}>
       <ListGroup>{children}</ListGroup>

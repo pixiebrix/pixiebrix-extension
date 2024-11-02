@@ -31,7 +31,7 @@ import { toExpression } from "@/utils/expressionUtils";
  *
  * @see getPipelinePropNames
  */
-const PipelineToggleField: React.VoidFunctionComponent<{
+const PipelineToggleField: React.FC<{
   name: string;
   label: string;
   description: string;

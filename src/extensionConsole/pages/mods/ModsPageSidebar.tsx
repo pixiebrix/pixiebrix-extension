@@ -176,7 +176,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   };
 };
 
-const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
+const ModsPageSidebar: React.FC<ModsPageSidebarProps> = ({
   teamFilters,
   tableInstance,
 }) => {

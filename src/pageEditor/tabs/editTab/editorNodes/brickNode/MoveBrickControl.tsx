@@ -25,7 +25,7 @@ export type MoveBrickControlProps = {
   onClickMoveDown?: () => void;
 };
 
-const MoveBrickControl: React.VFC<MoveBrickControlProps> = ({
+const MoveBrickControl: React.FC<MoveBrickControlProps> = ({
   onClickMoveUp,
   onClickMoveDown,
 }) => {

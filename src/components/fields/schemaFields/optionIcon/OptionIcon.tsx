@@ -45,7 +45,7 @@ type OptionIconProps = {
   icon: keyof typeof components;
 };
 
-const OptionIcon: React.VFC<OptionIconProps> = ({ icon }) => {
+const OptionIcon: React.FC<OptionIconProps> = ({ icon }) => {
   const IconComponent = components[icon];
 
   return <IconComponent className={styles.root} />;

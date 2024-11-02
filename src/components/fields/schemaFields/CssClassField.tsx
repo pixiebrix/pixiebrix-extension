@@ -36,7 +36,7 @@ export const getCssClassInputFieldOptions = () =>
     allowExpressions: true,
   });
 
-const CssClassField: React.VFC<SchemaFieldProps> = (props) => {
+const CssClassField: React.FC<SchemaFieldProps> = (props) => {
   const cssClassInputFieldOptions = useMemo(
     () => getCssClassInputFieldOptions(),
     [],

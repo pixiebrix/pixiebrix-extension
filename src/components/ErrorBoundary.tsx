@@ -108,7 +108,7 @@ export const DefaultErrorComponent: React.FC<ErrorDisplayProps> = ({
 
 class ErrorBoundary<
   Props extends BoundaryProps = BoundaryProps,
-> extends Component<Props, ErrorState> {
+> extends Component<React.PropsWithChildren<Props>, ErrorState> {
   override state: ErrorState = {
     error: undefined,
     hasError: false,

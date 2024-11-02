@@ -65,7 +65,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
+const ArrayWidget: React.FC<ArrayWidgetProps> = ({
   schema,
   validationSchema,
   name,

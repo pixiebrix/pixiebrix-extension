@@ -40,16 +40,18 @@ import { FeatureFlags } from "@/auth/featureFlags";
  * conflicts with our own layout.
  */
 const CollapsedElement: React.FC<
-  Omit<React.ComponentProps<typeof BootstrapCollapse>, "children"> & {
-    className?: string;
-  }
+  React.PropsWithChildren<
+    Omit<React.ComponentProps<typeof BootstrapCollapse>, "children"> & {
+      className?: string;
+    }
+  >
 > = ({ children, className, ...props }) => (
   <BootstrapCollapse unmountOnExit={true} {...props}>
     <div className={className}>{children}</div>
   </BootstrapCollapse>
 );
 
-const ModListingPanel: React.VFC = () => {
+const ModListingPanel: React.FC = () => {
   const dispatch = useDispatch();
 
   const isExpanded = useSelector(selectIsEditorSidebarExpanded);

@@ -21,7 +21,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 
-const RootCancelledPanel: React.VoidFunctionComponent<{
+const RootCancelledPanel: React.FC<{
   error: CancelError;
 }> = ({ error }) => (
   <div className="d-flex p-4">

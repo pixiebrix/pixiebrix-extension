@@ -38,7 +38,7 @@ type NodeActionsProps = {
   showBiggerActions?: boolean;
 };
 
-const NodeActionsView: React.VFC<NodeActionsProps> = ({
+const NodeActionsView: React.FC<NodeActionsProps> = ({
   nodeActions,
   showBiggerActions,
 }) => (

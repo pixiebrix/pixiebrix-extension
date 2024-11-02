@@ -301,7 +301,9 @@ const DeploymentsContext = React.createContext<DeploymentsState>(defaultValue);
  * @see DeploymentBanner
  * @see useOnboarding
  */
-export const DeploymentsProvider: React.FC = ({ children }) => {
+export const DeploymentsProvider: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   const deployments = useDeployments();
 
   return (

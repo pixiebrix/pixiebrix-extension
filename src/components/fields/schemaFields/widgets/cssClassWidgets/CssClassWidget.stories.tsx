@@ -28,7 +28,7 @@ import { Provider } from "react-redux";
 import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 import { toExpression } from "@/utils/expressionUtils";
 
-const Preview: React.VFC = () => {
+const Preview: React.FC = () => {
   const [{ value }] = useField("cssClass");
 
   const { classes, isVar, includesTemplate } = parseValue(value);

@@ -23,7 +23,7 @@ import styles from "./TagSearchInput.module.scss";
 import { useDebouncedCallback } from "use-debounce";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
-const TagBadge: React.VFC<{
+const TagBadge: React.FC<{
   tag: string;
   onClear: () => void;
 }> = ({ tag, onClear }) => (
@@ -32,7 +32,7 @@ const TagBadge: React.VFC<{
   </span>
 );
 
-const TagSearchInput: React.VFC<{
+const TagSearchInput: React.FC<{
   name: string;
   value: string;
   onValueChange: (value: string) => void;

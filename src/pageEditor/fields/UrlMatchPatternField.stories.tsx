@@ -38,9 +38,9 @@ const defaultProps: UrlMatchPatternFieldProps = {
   label: "Sites",
 };
 
-const Template: ComponentStory<
-  React.VoidFunctionComponent<UrlMatchPatternFieldProps>
-> = (props) => (
+const Template: ComponentStory<React.FC<UrlMatchPatternFieldProps>> = (
+  props,
+) => (
   <Provider store={editorStore()}>
     <Form
       initialValues={{

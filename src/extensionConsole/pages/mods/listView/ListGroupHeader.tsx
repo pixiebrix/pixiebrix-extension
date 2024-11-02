@@ -18,7 +18,7 @@
 import React from "react";
 import styles from "@/extensionConsole/pages/mods/listView/ListItem.module.scss";
 
-const ListGroupHeader: React.VoidFunctionComponent<{
+const ListGroupHeader: React.FC<{
   groupName: string;
   style: React.CSSProperties | undefined;
 }> = ({ groupName, style }) => (

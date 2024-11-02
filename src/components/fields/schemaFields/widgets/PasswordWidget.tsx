@@ -30,7 +30,7 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
-const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
+const PasswordWidget: React.FC<SchemaFieldProps & FormControlProps> = ({
   name,
   schema,
   isRequired,

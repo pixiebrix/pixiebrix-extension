@@ -25,7 +25,7 @@ type PipelineOffsetViewProps = {
   active?: boolean;
 };
 
-const PipelineOffsetView: React.VFC<PipelineOffsetViewProps> = ({
+const PipelineOffsetView: React.FC<PipelineOffsetViewProps> = ({
   nestingLevel,
   active,
 }) => (

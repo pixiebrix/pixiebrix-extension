@@ -66,7 +66,7 @@ registerContribBricks();
 // Register Widgets
 registerDefaultWidgets();
 
-const AuthenticatedContent: React.VFC = () => {
+const AuthenticatedContent: React.FC = () => {
   const { permit } = useFlags();
   usePollModLogs();
 

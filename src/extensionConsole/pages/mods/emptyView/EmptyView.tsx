@@ -26,7 +26,7 @@ import workshopImage from "@img/workshop.svg";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-const EmptyView: React.VoidFunctionComponent<{
+const EmptyView: React.FC<{
   tableInstance: TableInstance<ModViewItem>;
   height: number;
   width: number;

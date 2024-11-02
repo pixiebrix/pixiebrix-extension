@@ -24,7 +24,7 @@ import {
 import { render, screen } from "@/pageEditor/testHelpers";
 import { waitFor } from "@testing-library/react";
 
-const MockLoginPage: React.VFC = () => <div>Login</div>;
+const MockLoginPage: React.FC = () => <div>Login</div>;
 
 beforeEach(() => {
   jest.clearAllMocks();

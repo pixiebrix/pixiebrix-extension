@@ -35,7 +35,7 @@ registerBuiltinBricks();
 // Register Widgets
 registerDefaultWidgets();
 
-const UnguardedPanel: React.VoidFunctionComponent = () => {
+const UnguardedPanel: React.FC = () => {
   // Refresh the brick registry on mount
   useRefreshRegistries({ refreshOnMount: true });
 
@@ -46,7 +46,7 @@ const UnguardedPanel: React.VoidFunctionComponent = () => {
   );
 };
 
-const Panel: React.VoidFunctionComponent = () => (
+const Panel: React.FC = () => (
   <InvalidatedContextGate autoReload contextNameTitleCase="Page Editor">
     <TabInspectionGate>
       <UnguardedPanel />

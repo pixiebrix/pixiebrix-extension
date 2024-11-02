@@ -45,7 +45,7 @@ const defaultDescription = (
   </span>
 );
 
-const UrlMatchPatternField: React.VFC<UrlMatchPatternFieldProps> = ({
+const UrlMatchPatternField: React.FC<UrlMatchPatternFieldProps> = ({
   name,
   disabled,
   label = "Sites",

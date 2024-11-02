@@ -27,7 +27,6 @@ import "@/development/darkMode.js";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/sidebar/messenger/registration";
 import App from "@/sidebar/SidebarApp";
-import ReactDOM from "react-dom";
 import React, { StrictMode } from "react";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
@@ -50,6 +49,8 @@ import { FeatureFlags } from "@/auth/featureFlags";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { isPixieBrixDomain } from "@/utils/urlUtils";
 import { CONNECTED_TAB_URL_PERFORMANCE_KEY } from "@/sidebar/telemetryConstants";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { createRoot } from "react-dom/client";
 
 /**
  * Return performance init arguments, including session replay sample rate for the sidebar session.
@@ -87,11 +88,15 @@ async function init(): Promise<void> {
   registerBuiltinBricks();
   initToaster();
 
-  ReactDOM.render(
+  const container = document.querySelector("#container");
+  assertNotNullish(container, "Sidebar container not found");
+
+  const root = createRoot(container);
+
+  root.render(
     <StrictMode>
       <App />
     </StrictMode>,
-    document.querySelector("#container"),
   );
 
   // XXX: Do we really want to delay the `init`? Maybe this should be last or use `getConnectedTarget().then`

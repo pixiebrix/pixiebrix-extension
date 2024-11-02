@@ -33,6 +33,8 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { createRoot } from "react-dom/client";
 
 async function init() {
   setPlatform(extensionPagePlatform);
@@ -47,11 +49,14 @@ async function init() {
   watchNavigation();
   initToaster();
 
-  ReactDOM.render(
+  const container = document.querySelector("#container");
+  assertNotNullish(container, "Page Editor container not found");
+
+  const root = createRoot(container);
+  root.render(
     <StrictMode>
       <Panel />
     </StrictMode>,
-    document.querySelector("#container"),
   );
 }
 

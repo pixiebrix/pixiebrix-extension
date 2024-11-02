@@ -27,7 +27,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;
 
-const ListView: React.VoidFunctionComponent<ModsPageContentProps> = ({
+const ListView: React.FC<ModsPageContentProps> = ({
   tableInstance,
   height,
   width,

@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSyncExternalStore } from "use-sync-external-store/shim";
-import { useCallback } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 import type SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 

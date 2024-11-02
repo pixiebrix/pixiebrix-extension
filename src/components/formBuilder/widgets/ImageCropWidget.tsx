@@ -20,7 +20,7 @@ import ReactCrop, { type Crop } from "react-image-crop";
 import { type WidgetProps } from "@rjsf/utils";
 import "react-image-crop/src/ReactCrop.scss";
 
-const ImageCropWidget: React.VFC<WidgetProps> = ({
+const ImageCropWidget: React.FC<WidgetProps> = ({
   schema,
   onChange,
   uiSchema,

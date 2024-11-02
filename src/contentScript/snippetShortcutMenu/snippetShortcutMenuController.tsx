@@ -16,9 +16,8 @@
  */
 
 import { once } from "lodash";
-import type { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { tooltipFactory } from "@/contentScript/tooltipDom";
-import { render, unmountComponentAtNode } from "react-dom";
 import {
   autoUpdate,
   computePosition,
@@ -46,6 +45,7 @@ import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
 import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 import { SNIPPET_SHORTCUT_MENU_READY_ATTRIBUTE } from "@/domConstants";
+import { createRoot } from "react-dom/client";
 
 const COMMAND_KEY = "\\";
 
@@ -54,6 +54,7 @@ export const snippetRegistry = new SnippetRegistry();
 let targetElement: Nullishable<TextEditorElement>;
 
 let snippetShortcutMenu: Nullishable<HTMLElement>;
+let reactRoot: ReturnType<typeof createRoot>;
 
 const hideController = new ReusableAbortController();
 
@@ -157,7 +158,8 @@ function createMenu(element: TextEditorElement): HTMLElement {
   snippetShortcutMenu = tooltipFactory();
   snippetShortcutMenu.dataset.testid = "pixiebrix-shortcut-snippet-menu";
 
-  render(
+  reactRoot = createRoot(snippetShortcutMenu);
+  reactRoot.render(
     <StrictMode>
       <SnippetShortcutMenu
         registry={snippetRegistry}
@@ -166,7 +168,6 @@ function createMenu(element: TextEditorElement): HTMLElement {
         commandKey={COMMAND_KEY}
       />
     </StrictMode>,
-    snippetShortcutMenu,
   );
 
   return snippetShortcutMenu;
@@ -176,7 +177,7 @@ function destroyMenu(): void {
   if (snippetShortcutMenu) {
     // Cleanly unmount React component before removing from the DOM because useKeyboardQuery attaches document event
     // listeners via useEffect: https://react.dev/reference/react-dom/unmountComponentAtNode
-    unmountComponentAtNode(snippetShortcutMenu);
+    reactRoot.unmount();
 
     snippetShortcutMenu.remove();
     snippetShortcutMenu = null;

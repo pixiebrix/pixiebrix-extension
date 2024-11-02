@@ -45,7 +45,7 @@ type SchemaTreeRow = {
   subRow?: SchemaTreeRow;
 };
 
-const ExpandableCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row, cell }) => (
+const ExpandableCell: React.FC<CellProps<SchemaTreeRow>> = ({ row, cell }) => (
   <span
     className={cx(styles.codeCell)}
     {...row.getToggleRowExpandedProps({
@@ -65,11 +65,11 @@ const ExpandableCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row, cell }) => (
   </span>
 );
 
-const TypeCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) => (
+const TypeCell: React.FC<CellProps<SchemaTreeRow>> = ({ row }) => (
   <span className={cx(styles.codeCell)}>{row.values.type}</span>
 );
 
-const DescriptionCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) =>
+const DescriptionCell: React.FC<CellProps<SchemaTreeRow>> = ({ row }) =>
   row.values.description ? (
     <MarkdownInline
       markdown={row.values.description}
@@ -80,7 +80,7 @@ const DescriptionCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) =>
     <span></span>
   );
 
-const RequiredCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) => (
+const RequiredCell: React.FC<CellProps<SchemaTreeRow>> = ({ row }) => (
   <span>
     {row.values.required && (
       <FontAwesomeIcon icon={faCheck} className="text-success" />

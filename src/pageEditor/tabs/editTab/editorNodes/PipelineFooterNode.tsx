@@ -40,7 +40,7 @@ export type PipelineFooterNodeProps = {
   onClick: () => void;
 };
 
-const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
+const PipelineFooterNode: React.FC<PipelineFooterNodeProps> = ({
   outputKey,
   nodeActions,
   showBiggerActions,
