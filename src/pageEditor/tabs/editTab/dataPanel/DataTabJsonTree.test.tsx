@@ -82,7 +82,11 @@ test("doesn't re-render internal JSONTree on expand", async () => {
 
   await flushAsyncEffects();
 
-  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+  // Renders the component 2x due to StrictMode
+  expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
+    { value: 1 },
+    { value: 1 },
+  ]);
 
   // Get the element to expand the tree
   const bullet = screen.getByText("▶");
@@ -90,11 +94,27 @@ test("doesn't re-render internal JSONTree on expand", async () => {
   await immediateUserEvent.click(bullet);
 
   // The click event doesn't trigger a re-render
-  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+  expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
+    { value: 1 },
+    { value: 1 },
+  ]);
 
   // The redux action to update the expanded state is async, resolving all timeouts for it to fire
   await flushAsyncEffects();
 
-  // The expanded state in Redux has been updated, this triggers a re-render of the DataTabJsonTree and hence the JSONTree
-  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(2);
+  // The expanded state in Redux has been updated, triggering a re-render of the DataTabJsonTree and hence the JSONTree
+  // Vendored library not supported in React 18: https://github.com/keiya01/react-performance-testing/issues/27
+  expect(
+    renderCount.current.DataTabJsonTree as RenderCountField[],
+  ).toStrictEqual([
+    { value: 1 },
+    // 3x due to React StrictMode
+    { value: 3 },
+  ]);
+
+  expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
+    { value: 1 },
+    // 3x due to React StrictMode
+    { value: 3 },
+  ]);
 });
