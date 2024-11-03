@@ -161,7 +161,7 @@
     "use-async-effect": "^2.2.7",
     "use-debounce": "^10.0.4",
     "use-sync-external-store": "^1.2.2",
-    "uuid": "^10.0.0",
+    "uuid": "^11.0.2",
     "webext-content-scripts": "^2.7.0",
     "webext-detect": "^5.1.0",
     "webext-events": "^3.0.1",
