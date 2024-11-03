@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { StrictMode } from "react";
+import React from "react";
 import store from "../store/store";
 import { Provider } from "react-redux";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
@@ -47,13 +47,11 @@ const UnguardedPanel: React.VoidFunctionComponent = () => {
 };
 
 const Panel: React.VoidFunctionComponent = () => (
-  <StrictMode>
-    <InvalidatedContextGate autoReload contextNameTitleCase="Page Editor">
-      <TabInspectionGate>
-        <UnguardedPanel />
-      </TabInspectionGate>
-    </InvalidatedContextGate>
-  </StrictMode>
+  <InvalidatedContextGate autoReload contextNameTitleCase="Page Editor">
+    <TabInspectionGate>
+      <UnguardedPanel />
+    </TabInspectionGate>
+  </InvalidatedContextGate>
 );
 
 export default Panel;
