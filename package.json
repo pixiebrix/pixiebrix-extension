@@ -76,7 +76,7 @@
     "date-fns": "^4.1.0",
     "dompurify": "^3.1.7",
     "downloadjs": "^1.4.7",
-    "exifreader": "^4.24.0",
+    "exifreader": "^4.25.0",
     "export-to-csv": "^1.4.0",
     "filenamify": "^6.0.0",
     "filter-altered-clicks": "^2.1.1",
