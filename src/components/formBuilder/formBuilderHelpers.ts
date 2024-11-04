@@ -68,6 +68,11 @@ export const FIELD_TYPES_WITHOUT_DEFAULT = [
   }),
   stringifyUiType({
     propertyType: "string",
+    uiWidget: "richText",
+    propertyFormat: "html",
+  }),
+  stringifyUiType({
+    propertyType: "string",
     uiWidget: "imageCrop",
   }),
   stringifyUiType({ propertyType: "string", uiWidget: "database" }),

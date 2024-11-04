@@ -130,6 +130,9 @@ const knipConfig = {
     "@types/react-outside-click-handler",
     "@types/react-virtualized-auto-sizer",
     "@types/react-window",
+    "@tiptap/pm",
+    "@tiptap/starter-kit",
+    "@tiptap/react",
   ],
   // False positive for PackageInstance.featureFlag
   ignoreMembers: ["featureFlag"],

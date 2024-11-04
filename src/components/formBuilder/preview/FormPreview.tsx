@@ -43,6 +43,7 @@ import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import { cloneDeep } from "lodash";
+import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -186,6 +187,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     database: RjsfSelectWidget,
     SelectWidget: RjsfSelectWidget,
     googleSheet: RjsfSelectWidget,
+    richText: RichTextWidget,
   };
 
   return (

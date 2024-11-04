@@ -11,6 +11,14 @@ const FORM_FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     value: stringifyUiType({ propertyType: "string", uiWidget: "textarea" }),
   },
   {
+    label: "Rich text",
+    value: stringifyUiType({
+      propertyType: "string",
+      uiWidget: "richText",
+      propertyFormat: "html",
+    }),
+  },
+  {
     label: "Email",
     value: stringifyUiType({ propertyType: "string", propertyFormat: "email" }),
   },
