@@ -25,6 +25,7 @@ import {
   Formik,
   type FormikErrors,
   type FormikHelpers,
+  type FormikState,
   type FormikValues,
 } from "formik";
 import type * as yup from "yup";
@@ -36,9 +37,9 @@ export type OnSubmit<TValues = FormikValues> = (
   formikHelpers: FormikHelpers<TValues>,
 ) => void | Promise<unknown>;
 
-export type RenderBody = (state: {
+export type RenderBody<TValues = FormikValues> = (state: {
   isValid: boolean;
-  values: FormikValues;
+  values: FormikState<TValues>["values"];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type from Formik
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
   isSubmitting: boolean;

@@ -28,39 +28,39 @@ export type ModVariableSchemaResult = {
   /**
    * Statically known mod variable schemas.
    */
-  knownSchemas: Array<Schema["properties"]>;
+  knownProperties: Array<Schema["properties"]>;
 };
 
 /**
- * Visitor to collect all events fired by a single FormState.
+ * Visitor to collect all mod variables for a single form state
  * @since 1.7.34
  */
 class ModVariableSchemasVisitor extends PipelineVisitor {
   readonly schemaPromises: Array<Promise<Schema | undefined>> = [];
 
-  constructor(readonly allBlocks: TypedBrickMap) {
+  constructor(readonly allBricks: TypedBrickMap) {
     super();
   }
 
   override visitBrick(
     position: BrickPosition,
-    blockConfig: BrickConfig,
+    brickConfig: BrickConfig,
     extra: VisitBlockExtra,
   ): void {
-    super.visitBrick(position, blockConfig, extra);
+    super.visitBrick(position, brickConfig, extra);
 
-    const { block } = this.allBlocks.get(blockConfig.id) ?? {};
+    const { block } = this.allBricks.get(brickConfig.id) ?? {};
 
     if (block?.getModVariableSchema) {
-      this.schemaPromises.push(block.getModVariableSchema?.(blockConfig));
+      this.schemaPromises.push(block.getModVariableSchema?.(brickConfig));
     }
   }
 
   static async collectSchemas(
     formStates: ModComponentFormState[],
   ): Promise<ModVariableSchemaResult> {
-    const allBlocks = await brickRegistry.allTyped();
-    const visitor = new ModVariableSchemasVisitor(allBlocks);
+    const allBricks = await brickRegistry.allTyped();
+    const visitor = new ModVariableSchemasVisitor(allBricks);
 
     for (const formState of formStates) {
       visitor.visitRootPipeline(formState.modComponent.brickPipeline);
@@ -78,7 +78,7 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
     }
 
     return {
-      knownSchemas: uniqWith<Schema["properties"]>(variableSchemas, isEqual),
+      knownProperties: uniqWith<Schema["properties"]>(variableSchemas, isEqual),
     };
   }
 }
