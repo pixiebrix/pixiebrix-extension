@@ -18,29 +18,40 @@
 import { flagOn } from "@/auth/featureFlagStorage";
 import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 import { serializeError } from "serialize-error";
+import Reason = chrome.offscreen.Reason;
 import { FeatureFlags, type FeatureFlag } from "@/auth/featureFlags";
-import { sendErrorViaErrorReporter } from "@/offscreen/messenger/api";
 
 jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
+
+global.chrome = {
+  ...global.chrome,
+  offscreen: {
+    ...global.chrome.offscreen,
+    Reason: {
+      BLOBS: "blobs" as typeof global.chrome.offscreen.Reason.BLOBS,
+    } as typeof Reason,
+    createDocument: jest.fn(),
+  },
+};
 
 jest.mock("@/telemetry/telemetryHelpers", () => ({
   ...jest.requireActual("@/telemetry/telemetryHelpers"),
   mapAppUserToTelemetryUser: jest.fn().mockResolvedValue({}),
 }));
 
-jest.mock("@/offscreen/messenger/api");
-
 const flagOnMock = jest.mocked(flagOn);
 const mockFlag = (flag: FeatureFlag) => {
   flagOnMock.mockImplementation(async (testFlag) => flag === testFlag);
 };
 
+const sendMessageSpy = jest.spyOn(global.chrome.runtime, "sendMessage");
+
 describe("reportToApplicationErrorTelemetry", () => {
   beforeEach(async () => {
     flagOnMock.mockReset();
-    jest.mocked(sendErrorViaErrorReporter).mockReset();
+    sendMessageSpy.mockReset();
   });
 
   test("allow Application error telemetry reporting", async () => {
@@ -53,17 +64,20 @@ describe("reportToApplicationErrorTelemetry", () => {
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "application-error-telemetry-disable-report",
     );
-    expect(sendErrorViaErrorReporter).toHaveBeenCalledOnce();
-    expect(sendErrorViaErrorReporter).toHaveBeenCalledWith(
+    expect(sendMessageSpy).toHaveBeenCalledOnce();
+    expect(sendMessageSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        error: serializeError(reportedError),
-        errorMessage: "error message",
-        messageContext: expect.objectContaining({
-          cause: nestedError,
-          code: undefined,
-          extensionVersion: "1.5.2",
-          name: "Error",
-          stack: expect.any(String),
+        target: "offscreen-doc",
+        data: expect.objectContaining({
+          error: serializeError(reportedError),
+          errorMessage: "error message",
+          messageContext: expect.objectContaining({
+            cause: nestedError,
+            code: undefined,
+            extensionVersion: "1.5.2",
+            name: "Error",
+            stack: expect.any(String),
+          }),
         }),
       }),
     );
@@ -74,6 +88,6 @@ describe("reportToApplicationErrorTelemetry", () => {
 
     await reportToApplicationErrorTelemetry(new Error("test"), {}, "");
 
-    expect(sendErrorViaErrorReporter).not.toHaveBeenCalled();
+    expect(sendMessageSpy).not.toHaveBeenCalled();
   });
 });
