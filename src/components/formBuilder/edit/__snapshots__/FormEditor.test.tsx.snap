@@ -297,7 +297,7 @@ exports[`FormEditor renders simple schema 1`] = `
           >
             <span
               class="css-1f43avz-a11yText-A11yText"
-              id="react-select-2-live-region"
+              id="react-select-3-live-region"
             />
             <span
               aria-atomic="false"
@@ -894,7 +894,7 @@ exports[`FormEditor renders unknown field format 1`] = `
           >
             <span
               class="css-1f43avz-a11yText-A11yText"
-              id="react-select-3-live-region"
+              id="react-select-5-live-region"
             />
             <span
               aria-atomic="false"
@@ -911,7 +911,7 @@ exports[`FormEditor renders unknown field format 1`] = `
               >
                 <div
                   class=" css-1jqq78o-placeholder"
-                  id="react-select-3-placeholder"
+                  id="react-select-5-placeholder"
                 >
                   Select...
                 </div>
@@ -922,7 +922,7 @@ exports[`FormEditor renders unknown field format 1`] = `
                   <input
                     aria-activedescendant=""
                     aria-autocomplete="list"
-                    aria-describedby="react-select-3-placeholder"
+                    aria-describedby="react-select-5-placeholder"
                     aria-expanded="false"
                     aria-haspopup="true"
                     autocapitalize="none"

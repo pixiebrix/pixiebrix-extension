@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type KeyboardEventHandler, useEffect } from "react";
+import React, { type KeyboardEventHandler, StrictMode, useEffect } from "react";
 import ReactDOM from "react-dom";
 import {
   KBarAnimator,
@@ -231,7 +231,13 @@ export const initQuickBarApp = once(async () => {
   const container = document.createElement("div");
   container.className = PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS;
   document.body.prepend(container);
-  ReactDOM.render(<QuickBarApp />, container);
+
+  ReactDOM.render(
+    <StrictMode>
+      <QuickBarApp />
+    </StrictMode>,
+    container,
+  );
   console.debug("Initialized quick bar");
 
   markQuickBarReady();

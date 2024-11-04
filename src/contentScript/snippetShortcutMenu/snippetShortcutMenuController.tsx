@@ -29,7 +29,7 @@ import {
   type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
-import React from "react";
+import React, { StrictMode } from "react";
 import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
 import { onContextInvalidated } from "webext-events";
 import {
@@ -158,12 +158,14 @@ function createMenu(element: TextEditorElement): HTMLElement {
   snippetShortcutMenu.dataset.testid = "pixiebrix-shortcut-snippet-menu";
 
   render(
-    <SnippetShortcutMenu
-      registry={snippetRegistry}
-      element={element}
-      onHide={destroyMenu}
-      commandKey={COMMAND_KEY}
-    />,
+    <StrictMode>
+      <SnippetShortcutMenu
+        registry={snippetRegistry}
+        element={element}
+        onHide={destroyMenu}
+        commandKey={COMMAND_KEY}
+      />
+    </StrictMode>,
     snippetShortcutMenu,
   );
 

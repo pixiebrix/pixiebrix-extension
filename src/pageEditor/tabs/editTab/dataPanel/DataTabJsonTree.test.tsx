@@ -74,7 +74,7 @@ test("renders the DataTabJsonTree component", async () => {
 });
 
 test("doesn't re-render internal JSONTree on expand", async () => {
-  // No delay to run the click without setTimeout. Otherwise the test timeouts
+  // No delay to run the click without setTimeout. Otherwise, the test timeouts
   // See: https://onestepcode.com/testing-library-user-event-with-fake-timers/?utm_source=rss&utm_medium=rss&utm_campaign=testing-library-user-event-with-fake-timers
   const immediateUserEvent = userEvent.setup({ delay: null });
   const { renderCount } = perf(React);
@@ -82,7 +82,11 @@ test("doesn't re-render internal JSONTree on expand", async () => {
 
   await flushAsyncEffects();
 
-  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+  // Renders the component 2x due to StrictMode
+  expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
+    { value: 1 },
+    { value: 1 },
+  ]);
 
   // Get the element to expand the tree
   const bullet = screen.getByText("▶");
@@ -90,11 +94,29 @@ test("doesn't re-render internal JSONTree on expand", async () => {
   await immediateUserEvent.click(bullet);
 
   // The click event doesn't trigger a re-render
-  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(1);
+  expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
+    { value: 1 },
+    { value: 1 },
+  ]);
 
   // The redux action to update the expanded state is async, resolving all timeouts for it to fire
   await flushAsyncEffects();
 
-  // The expanded state in Redux has been updated, this triggers a re-render of the DataTabJsonTree and hence the JSONTree
-  expect((renderCount.current.JSONTree as RenderCountField).value).toBe(2);
+  // The expanded state in Redux has been updated, triggering a re-render of the DataTabJsonTree and hence the JSONTree
+  // Vendored react-performance-testing library not supported in React 18 (exact limitations unclear):
+  // https://github.com/keiya01/react-performance-testing/issues/27
+  expect(
+    renderCount.current.DataTabJsonTree as RenderCountField[],
+  ).toStrictEqual([
+    { value: 1 },
+    // XXX: why is this count 3x instead of 2x? Which StrictMode behavior causes the 2x when expanding the node?
+    // https://react.dev/reference/react/StrictMode#fixing-bugs-found-by-double-rendering-in-development
+    { value: 3 },
+  ]);
+
+  // DataTabJsonTree and JSONTree should have rendered the same number of times
+  expect(renderCount.current.JSONTree as RenderCountField[]).toStrictEqual([
+    { value: 1 },
+    { value: 3 },
+  ]);
 });

@@ -341,12 +341,6 @@ export async function clearModComponentTraces(
         cnt++;
         await cursor.delete();
       }
-
-      console.debug(
-        "Cleared %d trace entries for mod component %s",
-        cnt,
-        modComponentId,
-      );
     },
     { operationName: IDB_OPERATION.TRACE.CLEAR_MOD_COMPONENT_TRACES },
   );

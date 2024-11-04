@@ -173,7 +173,10 @@ describe("RemoteSelectWidget", () => {
     await waitFor(() => {
       expect(setLocalErrorSpy).toHaveBeenCalledWith(null);
     });
-    expect(reportErrorSpy).toHaveBeenCalledOnce();
+
+    // React team recommends keeping duplicate analytics calls in development mode:
+    // https://react.dev/learn/synchronizing-with-effects#sending-analytics
+    expect(reportErrorSpy).toHaveBeenCalledTimes(2);
   });
 
   it("should call onChange properly when options are selected", async () => {

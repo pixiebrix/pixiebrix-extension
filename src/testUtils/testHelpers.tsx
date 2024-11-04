@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { StrictMode } from "react";
 import {
   render,
   type RenderOptions,
@@ -136,33 +136,37 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     const Wrapper: React.FC<{ children: React.ReactElement }> = initialValues
       ? ({ children }) => (
-          <Provider store={store}>
-            <Formik
-              initialValues={initialValues}
-              initialErrors={initialErrors}
-              // Don't validate, we don't pass in a validation schema here
-              validateOnMount={false}
-              validateOnChange={false}
-              validateOnBlur={false}
-              onSubmit={onSubmit}
-            >
-              {({ handleSubmit, values, setValues }) => {
-                formValues = values;
-                updateFormState = setValues;
-                return (
-                  <Form onSubmit={handleSubmit}>
-                    <ExtraWrapper>{children}</ExtraWrapper>
-                    <button type="submit">Submit</button>
-                  </Form>
-                );
-              }}
-            </Formik>
-          </Provider>
+          <StrictMode>
+            <Provider store={store}>
+              <Formik
+                initialValues={initialValues}
+                initialErrors={initialErrors}
+                // Don't validate, we don't pass in a validation schema here
+                validateOnMount={false}
+                validateOnChange={false}
+                validateOnBlur={false}
+                onSubmit={onSubmit}
+              >
+                {({ handleSubmit, values, setValues }) => {
+                  formValues = values;
+                  updateFormState = setValues;
+                  return (
+                    <Form onSubmit={handleSubmit}>
+                      <ExtraWrapper>{children}</ExtraWrapper>
+                      <button type="submit">Submit</button>
+                    </Form>
+                  );
+                }}
+              </Formik>
+            </Provider>
+          </StrictMode>
         )
       : ({ children }) => (
-          <Provider store={store}>
-            <ExtraWrapper>{children}</ExtraWrapper>
-          </Provider>
+          <StrictMode>
+            <Provider store={store}>
+              <ExtraWrapper>{children}</ExtraWrapper>
+            </Provider>
+          </StrictMode>
         );
 
     const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
@@ -239,24 +243,28 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
     const Wrapper: WrapperComponent<TProps> = initialValues
       ? (props) => (
-          <Provider store={store}>
-            <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-              {({ handleSubmit, values }) => {
-                formValues = values;
-                return (
-                  <Form onSubmit={handleSubmit}>
-                    <ExtraWrapper {...props} />
-                    <button type="submit">Submit</button>
-                  </Form>
-                );
-              }}
-            </Formik>
-          </Provider>
+          <StrictMode>
+            <Provider store={store}>
+              <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+                {({ handleSubmit, values }) => {
+                  formValues = values;
+                  return (
+                    <Form onSubmit={handleSubmit}>
+                      <ExtraWrapper {...props} />
+                      <button type="submit">Submit</button>
+                    </Form>
+                  );
+                }}
+              </Formik>
+            </Provider>
+          </StrictMode>
         )
       : (props) => (
-          <Provider store={store}>
-            <ExtraWrapper {...props} />
-          </Provider>
+          <StrictMode>
+            <Provider store={store}>
+              <ExtraWrapper {...props} />
+            </Provider>
+          </StrictMode>
         );
 
     const utils = renderHook(hook, {

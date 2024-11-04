@@ -22,6 +22,8 @@ import { usePreviousValue } from "@/hooks/usePreviousValue";
  * React hook to report an error if it's different from the previous error.
  */
 function useReportError(error: unknown): void {
+  // React team recommends keeping double-reporting of analytics in development mode
+  // See: https://react.dev/learn/synchronizing-with-effects#sending-analytics
   const previousError = usePreviousValue(error);
   if (error && error !== previousError) {
     reportError(error);

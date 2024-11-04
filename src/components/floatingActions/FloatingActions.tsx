@@ -18,7 +18,7 @@
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
-import React from "react";
+import React, { StrictMode } from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { ActionButton } from "@/components/floatingActions/ActionButton";
@@ -90,5 +90,10 @@ export async function renderFloatingActions(): Promise<void> {
   const container = document.createElement("div");
   container.id = FLOATING_ACTION_BUTTON_CONTAINER_ID;
   document.body.prepend(container);
-  ReactDOM.render(<FloatingActionsContainer />, container);
+  ReactDOM.render(
+    <StrictMode>
+      <FloatingActionsContainer />
+    </StrictMode>,
+    container,
+  );
 }
