@@ -18,8 +18,13 @@
 import React, { StrictMode } from "react";
 import {
   render,
+  renderHook,
+  waitFor,
+  type RenderHookOptions,
+  type RenderHookResult,
   type RenderOptions,
   type RenderResult,
+  type waitForOptions,
 } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
@@ -41,20 +46,10 @@ import {
 } from "formik";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
-import {
-  act as actHook,
-  renderHook,
-  type RenderHookOptions,
-  type RenderHookResult,
-  type WrapperComponent,
-} from "@testing-library/react-hooks";
 
 /**
  * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
- *
- * NOTE: this assumes you're using "react-dom/test-utils". For hooks, you have to use act from
- * "@testing-library/react-hooks"
- *
+ * @deprecated prefer using `act` directly or `waitFor` directly
  */
 export const waitForEffect = async () =>
   // eslint-disable-next-line testing-library/no-unnecessary-act -- hack for testing some asynchronous code that the standard utilities have proven inadequate
@@ -195,6 +190,15 @@ type HookWrapperOptions<TProps> = RenderHookOptions<TProps> & {
   setupRedux?: SetupRedux;
 };
 
+// https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#waitfornextupdate
+async function waitForValueToChange<T>(getValue: () => T | Promise<T>) {
+  const original = getValue();
+
+  await waitFor(async () => {
+    await expect(original).resolves.not.toBe(await getValue());
+  });
+}
+
 type HookWrapperResult<
   TProps,
   TResult,
@@ -203,18 +207,45 @@ type HookWrapperResult<
   M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
     ThunkMiddlewareFor<S>,
   ],
-> = RenderHookResult<TProps, TResult> & {
-  getReduxStore(): EnhancedStore<S, A, M>;
+> = RenderHookResult<TResult, TProps> & {
+  //
+  // Helper methods left over from React 18 upgrade
+  //
 
   /**
-   * The act function which should be used with the renderHook
+   * The act function which should be used with the renderHook.
+   * @deprecated import `act` directly https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#wrapper-props
    */
-  act(callback: () => Promise<void>): Promise<undefined>;
+  act: typeof act;
 
   /**
    * Await all async side effects
+   * @deprecated use `act` directly https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#wrapper-props
    */
   waitForEffect(): Promise<void>;
+
+  /**
+   * Wait for the value to change
+   * @deprecated use `result.current` and `waitFor` https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#waitfornextupdate
+   */
+  waitForNextUpdate(options?: waitForOptions): Promise<void>;
+
+  /**
+   * The act function which should be used with the renderHook.
+   * @deprecated import `waitFor` directly https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#wrapper-props
+   */
+  waitFor: typeof waitFor;
+
+  /**
+   * https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#waitforvaluetochange
+   */
+  waitForValueToChange: typeof waitForValueToChange;
+
+  //
+  // PixieBrix-specific helper methods
+  //
+
+  getReduxStore(): EnhancedStore<S, A, M>;
 
   /**
    * Get the current form values
@@ -238,10 +269,9 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
     let formValues: FormikValues | null = null;
 
-    const ExtraWrapper: WrapperComponent<TProps> =
-      wrapper ?? (({ children }) => <>{children}</>);
+    const ExtraWrapper = wrapper ?? (({ children }) => <>{children}</>);
 
-    const Wrapper: WrapperComponent<TProps> = initialValues
+    const Wrapper: React.FC<{ children: React.ReactElement }> = initialValues
       ? (props) => (
           <StrictMode>
             <Provider store={store}>
@@ -274,17 +304,22 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
     return {
       ...utils,
-      getReduxStore() {
-        return store;
-      },
-      act: actHook,
-      async waitForEffect() {
-        await actHook(async () => {
-          // Awaiting the async state update
-        });
+      act,
+      waitFor,
+      waitForEffect,
+      waitForValueToChange,
+      async waitForNextUpdate(options?: waitForOptions) {
+        // https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#waitfornextupdate
+        const initialValue = utils.result.current;
+        await waitFor(() => {
+          expect(utils.result.current).not.toBe(initialValue);
+        }, options);
       },
       getFormState() {
         return formValues;
+      },
+      getReduxStore() {
+        return store;
       },
     };
   };

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { identity } from "lodash";

@@ -23,7 +23,7 @@ import {
   useGetPackageQuery,
   useUpdatePackageMutation,
 } from "@/data/service/api";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react";
 import { Provider } from "react-redux";
 import React from "react";
 import { isAxiosError } from "@/errors/networkErrorHelpers";

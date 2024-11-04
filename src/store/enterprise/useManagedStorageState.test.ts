@@ -17,12 +17,12 @@
 
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
-import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 beforeEach(async () => {
   await resetManagedStorage();

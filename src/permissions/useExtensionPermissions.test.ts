@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
 import { extractAdditionalPermissions } from "webext-permissions";
 import {
@@ -24,6 +23,7 @@ import {
 } from "@/utils/asyncStateUtils";
 import { setPermissions } from "@/testUtils/permissionsMock";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 const selectAdditionalMock = jest.mocked(extractAdditionalPermissions);
 

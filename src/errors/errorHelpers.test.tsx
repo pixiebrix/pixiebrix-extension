@@ -54,7 +54,7 @@ import {
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
 import { uuidv4 } from "@/types/helpers";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react";
 import { appApi, useGetPackageQuery } from "@/data/service/api";
 import { Provider } from "react-redux";
 import { waitForEffect } from "@/testUtils/testHelpers";

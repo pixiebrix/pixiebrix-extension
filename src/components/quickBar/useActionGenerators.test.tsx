@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook } from "@testing-library/react";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { waitForEffect } from "@/testUtils/testHelpers";

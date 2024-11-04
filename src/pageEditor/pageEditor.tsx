@@ -23,8 +23,6 @@ import "@/extensionContext";
 import "@/development/darkMode.js";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
-
-import ReactDOM from "react-dom";
 import React, { StrictMode } from "react";
 import Panel from "@/pageEditor/layout/Panel";
 import { watchNavigation } from "@/pageEditor/protocol";

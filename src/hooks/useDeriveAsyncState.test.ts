@@ -16,10 +16,9 @@
  */
 
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { renderHook } from "@testing-library/react-hooks";
 import pDefer from "p-defer";
 import useAsyncState from "@/hooks/useAsyncState";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 describe("useDeriveAsyncState", () => {
   it("should handle empty args", async () => {
@@ -71,7 +70,7 @@ describe("useDeriveAsyncState", () => {
 
     dependency.resolve(42);
 
-    await waitForEffect();
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       isFetching: false,
@@ -106,7 +105,7 @@ describe("useDeriveAsyncState", () => {
 
     dependency.reject(new Error("Test Error"));
 
-    await waitForEffect();
+    await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual({
       isFetching: false,

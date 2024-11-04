@@ -20,8 +20,8 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
 import { TreeTable } from "primereact/treetable";
-import type TreeNode from "primereact/treenode";
 import { Column } from "primereact/column";
+import { type TreeNode } from "primereact/treenode";
 import React from "react";
 
 const PropertyTree: React.FunctionComponent<{ value: TreeNode[] }> = ({

@@ -39,7 +39,7 @@ export const DescriptionField: React.FC<FormPreviewDescriptionFieldProps> = ({
       {typeof description === "string" ? (
         <MarkdownLazy markdown={description} />
       ) : (
-        { description }
+        <>{description}</>
       )}
     </div>
   );

@@ -17,7 +17,7 @@
 
 import React from "react";
 import useSubmitPackage from "@/extensionConsole/pages/packageEditor/useSubmitPackage";
-import { act, renderHook } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
 import integrationsSlice, {

@@ -27,15 +27,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { type TraceRecord } from "@/telemetry/trace";
 import { uuidv4 } from "@/types/helpers";
 import reportEvent from "@/telemetry/reportEvent";
-import { renderHook } from "@testing-library/react-hooks";
 import useReportTraceError from "./useReportTraceError";
 import { Provider } from "react-redux";
-
 import {
   traceErrorFactory,
   traceRecordFactory,
 } from "@/testUtils/factories/traceFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { renderHook } from "@/pageEditor/testHelpers";
 
 // Override the manual mock to support `expect` assertions
 jest.mock("@/telemetry/reportEvent");
@@ -71,7 +70,7 @@ const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
     },
     {
       wrapper: ({ children, rerenderTraces }) => (
-        <Provider store={getTestStore(rerenderTraces || traces)}>
+        <Provider store={getTestStore(rerenderTraces ?? traces)}>
           {children}
         </Provider>
       ),

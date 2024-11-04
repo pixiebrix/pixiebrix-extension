@@ -17,7 +17,7 @@
 
 import { type MenuOptions } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook, waitFor } from "@testing-library/react";
 import { cloneDeep } from "lodash";
 
 describe("useKeyboardNavigation", () => {
@@ -48,22 +48,16 @@ describe("useKeyboardNavigation", () => {
       "@input",
     ]);
 
-    expect(result.all).toHaveLength(2);
+    const prevResult = result.current;
 
     rerender({
       ...initialProps,
       menuOptions: cloneDeep(menuOptions),
     });
 
-    expect(result.all).toHaveLength(3);
-
-    const prevResult = result.all[1]!;
-
-    if (prevResult instanceof Error) {
-      throw new TypeError("prevResult is an error");
-    }
-
-    expect(prevResult.activeKeyPath).toBe(result.current.activeKeyPath);
+    await waitFor(async () => {
+      expect(prevResult.activeKeyPath).toBe(result.current.activeKeyPath);
+    });
   });
 
   it("sets the default active key path when the likely variable changes", async () => {
@@ -90,21 +84,18 @@ describe("useKeyboardNavigation", () => {
 
     expect(result.current.activeKeyPath).toStrictEqual(["@input"]);
 
+    const prevResult = result.current;
+
     rerender({
       ...initialProps,
       likelyVariable: "@input",
     });
 
-    expect(result.all).toHaveLength(4);
+    await waitFor(() => {
+      // Active Key Path is deep equal, but not referentially equal
+      expect(prevResult.activeKeyPath).not.toBe(result.current.activeKeyPath);
+    });
 
-    const prevResult = result.all[2]!;
-
-    if (prevResult instanceof Error) {
-      throw new TypeError("prevResult is an error");
-    }
-
-    // Active Key Path is deep equal, but not referentially equal
-    expect(prevResult.activeKeyPath).not.toBe(result.current.activeKeyPath);
     expect(prevResult.activeKeyPath).toStrictEqual(
       result.current.activeKeyPath,
     );

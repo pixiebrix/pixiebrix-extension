@@ -70,6 +70,7 @@ const renderHookWithWrappers = createRenderHookWithWrappers(
 export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
+// eslint-disable-next-line import/export -- override renderHook
 export { renderHookWithWrappers as renderHook };
-export { act as hookAct } from "@testing-library/react-hooks";
+export { act as hookAct } from "@testing-library/react";
 export { userEvent } from "@testing-library/user-event";

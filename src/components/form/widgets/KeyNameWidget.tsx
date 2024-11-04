@@ -24,7 +24,7 @@ const KeyNameWidget: React.FC<FormControlProps> = (props) => (
     <InputGroup.Prepend>
       <InputGroup.Text>@</InputGroup.Text>
     </InputGroup.Prepend>
-    <Form.Control {...props} />
+    <Form.Control {...props} as="input" />
   </InputGroup>
 );
 

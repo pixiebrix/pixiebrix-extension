@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { act, renderHook } from "@testing-library/react-hooks";
+import { act, renderHook } from "@testing-library/react";
 import useActions from "@/components/quickBar/useActions";
 import { KBarProvider, useKBar } from "kbar";
 import defaultActions, {
