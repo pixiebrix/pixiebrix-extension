@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { StrictMode } from "react";
+import React, { StrictMode, act } from "react";
 import {
   render,
   renderHook,
@@ -26,7 +26,6 @@ import {
   type RenderResult,
   type waitForOptions,
 } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import { Provider } from "react-redux";
 import {
   type Action,
