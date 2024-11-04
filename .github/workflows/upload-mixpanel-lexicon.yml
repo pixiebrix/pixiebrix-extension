@@ -2,8 +2,6 @@ name: Upload Mixpanel Lexicon
 
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -17,8 +15,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Compile TypeScript
-        run: npx tsc scripts/uploadMixpanelLexicon.ts --esModuleInterop
+        run: npx tsc scripts/uploadMixpanelLexicon.ts --esModuleInterop --lib es2022
       - name: Upload Lexicon
+        if: github.ref_name == 'main'
         run: node scripts/uploadMixpanelLexicon.js
         env:
           MIXPANEL_PROJECT_ID: ${{ secrets.MIXPANEL_PROJECT_ID }}
