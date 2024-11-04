@@ -22,12 +22,15 @@ import { type ButtonVariant, type Variant } from "react-bootstrap/types";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { freeze } from "@/utils/objectUtils";
+import type { FeatureFlag } from "@/auth/featureFlags";
+import useFlags from "@/hooks/useFlags";
 
 export interface TabItem {
   name: string;
   badgeCount?: number;
   badgeVariant?: Variant;
   TabContent: React.VoidFunctionComponent;
+  flag?: FeatureFlag;
 }
 
 export interface ActionButton {
@@ -45,6 +48,8 @@ const EditorTabLayout: React.FC<{
   actionButtons?: ActionButton[];
   defaultTabName?: string;
 }> = ({ tabs, actionButtons = EMPTY_ARRAY, defaultTabName }) => {
+  const { flagOn } = useFlags();
+
   const [activeTabName, setActiveTabName] = useState<string | undefined>(
     defaultTabName ?? tabs[0]?.name,
   );
@@ -62,18 +67,20 @@ const EditorTabLayout: React.FC<{
           }}
           className={styles.nav}
         >
-          {tabs.map(({ name, badgeCount, badgeVariant }) => (
-            <Nav.Item key={name} className={styles.navItem}>
-              <Nav.Link eventKey={name} className={styles.navLink}>
-                {name}
-                {badgeCount && badgeVariant && (
-                  <Badge className={styles.badge} variant={badgeVariant}>
-                    {badgeCount}
-                  </Badge>
-                )}
-              </Nav.Link>
-            </Nav.Item>
-          ))}
+          {tabs
+            .filter((x) => x.flag == null || flagOn(x.flag))
+            .map(({ name, badgeCount, badgeVariant }) => (
+              <Nav.Item key={name} className={styles.navItem}>
+                <Nav.Link eventKey={name} className={styles.navLink}>
+                  {name}
+                  {badgeCount && badgeVariant && (
+                    <Badge className={styles.badge} variant={badgeVariant}>
+                      {badgeCount}
+                    </Badge>
+                  )}
+                </Nav.Link>
+              </Nav.Item>
+            ))}
 
           {actionButtons.length > 0 && (
             <>
