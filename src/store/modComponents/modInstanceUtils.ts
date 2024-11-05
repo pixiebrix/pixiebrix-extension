@@ -47,9 +47,9 @@ import { type DeploymentMetadata } from "@/types/deploymentTypes";
 type ModInstanceActivatedModComponent = SetRequired<
   ActivatedModComponent,
   | "definitions"
-  | "variablesDefinition"
   | "integrationDependencies"
   | "permissions"
+  | "variablesDefinition"
 >;
 
 /**
