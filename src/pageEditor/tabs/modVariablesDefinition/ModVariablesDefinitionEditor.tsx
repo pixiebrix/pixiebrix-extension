@@ -21,36 +21,23 @@ import {
   selectActiveModId,
   selectGetModVariablesDefinitionForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
-import { Button, Card, Container, Table } from "react-bootstrap";
+import { Card, Container } from "react-bootstrap";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import styles from "./ModVariablesDefinitionEditor.module.scss";
 import Form, { type RenderBody } from "@/components/form/Form";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { FieldArray } from "formik";
-import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import FieldTemplate from "@/components/form/FieldTemplate";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
 import {
   mapDefinitionToFormValues,
   mapFormValuesToDefinition,
 } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorHelpers";
-import {
-  type ModVariable,
-  type ModVariableFormValues,
-  SYNC_OPTIONS,
-  TYPE_OPTIONS,
-} from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
+import { type ModVariableFormValues } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
 import useInferredModVariablesQuery from "@/pageEditor/tabs/modVariablesDefinition/useInferredModVariablesQuery";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { uuidv4 } from "@/types/helpers";
 import * as Yup from "yup";
 import useReportError from "@/hooks/useReportError";
 import { isOutputKey } from "@/runtime/runtimeTypes";
+import ModVariablesTable from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesTable";
 
 const validationSchema = Yup.object().shape({
   variables: Yup.array().of(
@@ -73,195 +60,6 @@ const validationSchema = Yup.object().shape({
     }),
   ),
 });
-
-const VariableTable: React.FC<{
-  values: ModVariableFormValues;
-  missingVariables: ModVariable[];
-}> = ({ values, missingVariables }) => (
-  <Table size="sm" className={styles.table}>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>
-          <PopoverInfoLabel
-            name="type"
-            label="Type"
-            description="Variable type. Currently documentation-only"
-          />
-        </th>
-        <th className={styles.asyncColumn}>
-          <PopoverInfoLabel
-            name="async"
-            label="Async"
-            description="Advanced: Toggle on if the variable tracks loading/error state"
-          />
-        </th>
-        <th>
-          <PopoverInfoLabel
-            name="synchronization"
-            label="Synchronization"
-            description="Automatically synchronize the variable across tab frames/navigation, or across all tabs"
-          />
-        </th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <FieldArray
-        name="variables"
-        render={(arrayHelpers) => (
-          <>
-            {values.variables.map(({ formReactKey }, index) => (
-              <tr key={formReactKey}>
-                <td>
-                  <ConnectedFieldTemplate
-                    name={`variables.${index}.name`}
-                    type="text"
-                  />
-                </td>
-                <td>
-                  <ConnectedFieldTemplate
-                    name={`variables.${index}.description`}
-                    type="text"
-                    placeholder="Enter variable documentation"
-                  />
-                </td>
-                <td>
-                  <ConnectedFieldTemplate
-                    name={`variables.${index}.type`}
-                    size="sm"
-                    as={SelectWidget}
-                    isClearable={false}
-                    options={TYPE_OPTIONS}
-                    blankValue={TYPE_OPTIONS}
-                  />
-                </td>
-                <td className={styles.asyncColumn}>
-                  <ConnectedFieldTemplate
-                    name={`variables.${index}.isAsync`}
-                    size="sm"
-                    as={SwitchButtonWidget}
-                  />
-                </td>
-                <td>
-                  <ConnectedFieldTemplate
-                    name={`variables.${index}.syncPolicy`}
-                    size="sm"
-                    as={SelectWidget}
-                    isClearable={false}
-                    options={SYNC_OPTIONS}
-                    blankValue={SYNC_OPTIONS[0]}
-                  />
-                </td>
-                <td>
-                  <Button
-                    variant="danger"
-                    title="Remove mod variable"
-                    onClick={() => {
-                      arrayHelpers.remove(index);
-                    }}
-                  >
-                    <FontAwesomeIcon fixedWidth icon={faTimes} />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-
-            {(missingVariables ?? []).map((variable, index) => (
-              <tr key={variable.name} className="text-muted">
-                <td>
-                  <FieldTemplate
-                    name={`variables.${index}.name`}
-                    type="text"
-                    disabled
-                    value={variable.name}
-                  />
-                </td>
-                <td>
-                  <FieldTemplate
-                    name={`variables.${index}.description`}
-                    type="text"
-                    disabled
-                    value="Found in brick configuration"
-                  />
-                </td>
-                <td>
-                  <FieldTemplate
-                    name={`variables.${index}.type`}
-                    size="sm"
-                    disabled
-                    as={SelectWidget}
-                    isClearable={false}
-                    options={TYPE_OPTIONS}
-                    value={variable.type}
-                  />
-                </td>
-                <td className={styles.asyncColumn}>
-                  <FieldTemplate
-                    name={`inferred.${index}.isAsync`}
-                    as={SwitchButtonWidget}
-                    disabled
-                    size="sm"
-                    value={variable.isAsync}
-                  />
-                </td>
-                <td>
-                  <FieldTemplate
-                    name={`inferred.${index}.syncPolicy`}
-                    size="sm"
-                    disabled
-                    as={SelectWidget}
-                    isClearable={false}
-                    options={SYNC_OPTIONS}
-                    value={SYNC_OPTIONS[0].value}
-                  />
-                </td>
-                <td>
-                  <Button
-                    title="Declare mod variable"
-                    variant="info"
-                    onClick={() => {
-                      arrayHelpers.push({
-                        ...variable,
-                        description: "Found in brick configuration",
-                      });
-                    }}
-                  >
-                    <FontAwesomeIcon fixedWidth icon={faPlus} />
-                  </Button>
-                </td>
-              </tr>
-            ))}
-            {values.variables.length === 0 && missingVariables.length === 0 && (
-              <tr>
-                <td colSpan={6}>This mod does use any mod variables</td>
-              </tr>
-            )}
-            <tr>
-              <td colSpan={6}>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    arrayHelpers.push({
-                      formReactKey: uuidv4(),
-                      name: "newVar",
-                      isAsync: false,
-                      syncPolicy: "none",
-                      type: "any",
-                    });
-                  }}
-                >
-                  <FontAwesomeIcon icon={faPlus} /> Add new mod variable
-                </Button>
-              </td>
-            </tr>
-          </>
-        )}
-      />
-    </tbody>
-  </Table>
-);
 
 const ModVariablesDefinitionEditor: React.FC = () => {
   const dispatch = useDispatch();
@@ -302,7 +100,10 @@ const ModVariablesDefinitionEditor: React.FC = () => {
       <Card>
         <Card.Header>Mod Variables</Card.Header>
         <Card.Body>
-          <VariableTable values={values} missingVariables={missingVariables} />
+          <ModVariablesTable
+            values={values}
+            missingVariables={missingVariables}
+          />
         </Card.Body>
       </Card>
     </>

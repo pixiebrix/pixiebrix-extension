@@ -93,51 +93,53 @@ function definitionToAsyncVariableDefinition(
   };
 }
 
+function mapPropertyDefinitionEntryToModVariable(
+  name: string,
+  definition: JSONSchema7Definition,
+): ModVariable | null {
+  if (definition === false) {
+    return null;
+  }
+
+  if (definition === true) {
+    return {
+      formReactKey: uuidv4(),
+      name,
+      isAsync: false,
+      description: undefined,
+      syncPolicy: "none",
+      type: "any",
+    } satisfies ModVariable;
+  }
+
+  const { description, properties } = definition;
+
+  const isAsync = isAsyncModVariableProperties(properties);
+
+  return {
+    formReactKey: uuidv4(),
+    name,
+    description,
+    isAsync,
+    type: isAsync
+      ? castType(
+          typeof properties.data === "boolean" ? null : properties.data.type,
+        )
+      : castType(definition.type),
+    syncPolicy: castSyncPolicy((definition as UnknownObject)["x-sync-policy"]),
+  };
+}
+
 export function mapDefinitionToFormValues({
   schema,
 }: ModVariablesDefinition): ModVariableFormValues {
-  const variables = sortBy(
-    Object.entries(schema.properties ?? {})
-      .map(([name, value]) => {
-        if (value === false) {
-          return null;
-        }
+  const variables = Object.entries(schema.properties ?? {})
+    .map(([name, value]) =>
+      mapPropertyDefinitionEntryToModVariable(name, value),
+    )
+    .filter((x) => x != null);
 
-        if (value === true) {
-          return {
-            formReactKey: uuidv4(),
-            name,
-            isAsync: false,
-            description: undefined,
-            syncPolicy: "none",
-            type: "any",
-          } satisfies ModVariable;
-        }
-
-        const { description, properties } = value;
-
-        const isAsync = isAsyncModVariableProperties(properties);
-
-        return {
-          formReactKey: uuidv4(),
-          name,
-          description,
-          isAsync,
-          type: isAsync
-            ? castType(
-                typeof properties.data === "boolean"
-                  ? null
-                  : properties.data.type,
-              )
-            : castType(value.type),
-          syncPolicy: castSyncPolicy((value as UnknownObject)["x-sync-policy"]),
-        };
-      })
-      .filter((x) => x != null),
-    (x) => x.name,
-  );
-
-  return { variables };
+  return { variables: sortBy(variables, (x) => x.name) };
 }
 
 function mapModVariableToDefinition(modVariable: ModVariable): Schema {

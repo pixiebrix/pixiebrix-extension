@@ -15,6 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  margin-top: 1em;
+.table {
+  td {
+    vertical-align: middle;
+
+    :global(.form-group) {
+      margin-bottom: 0;
+    }
+
+    :global(div:has(> .switch)) {
+      // Remove switch container label height adjustment
+      margin-top: 0;
+    }
+  }
+}
+
+.asyncColumn {
+  max-width: 75px;
 }
