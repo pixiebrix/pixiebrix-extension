@@ -28,6 +28,7 @@ import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/mo
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { uuidv4 } from "@/types/helpers";
 import brickRegistry from "@/bricks/registry";
+import userEvent from "@testing-library/user-event";
 
 beforeEach(() => {
   brickRegistry.register([new AssignModVariable()]);
@@ -42,6 +43,10 @@ describe("ModVariablesDefinitionEditor", () => {
         dispatch(editorActions.setActiveModId(formState.modMetadata.id));
       },
     });
+
+    expect(
+      screen.getByRole("button", { name: "Add new mod variable" }),
+    ).toBeInTheDocument();
   });
 
   it("renders dirty variables", async () => {
@@ -126,5 +131,27 @@ describe("ModVariablesDefinitionEditor", () => {
         screen.getByRole("cell", { name: "inferredAny" }),
       ).toBeInTheDocument();
     });
+  });
+
+  it("add/remove variable", async () => {
+    render(<ModVariablesDefinitionEditor />, {
+      setupRedux(dispatch) {
+        const formState = formStateFactory();
+        dispatch(editorActions.addModComponentFormState(formState));
+        dispatch(editorActions.setActiveModId(formState.modMetadata.id));
+      },
+    });
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Add new mod variable" }),
+    );
+    expect(screen.getByRole("cell", { name: "newVar" })).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Remove mod variable" }),
+    );
+    expect(
+      screen.queryByRole("cell", { name: "newVar" }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -29,6 +29,7 @@ import {
 import type { JSONSchema7Definition } from "json-schema";
 import type { Schema } from "@/types/schemaTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 /**
  * Casts a value to a SyncPolicy, defaulting to "none" if the value is nullish or not recognized.
@@ -162,10 +163,12 @@ export function mapFormValuesToDefinition(
   return {
     schema: propertiesToSchema(
       Object.fromEntries(
-        formValues.variables.map((variable) => [
-          variable.name,
-          mapModVariableToDefinition(variable),
-        ]),
+        formValues.variables
+          .filter((x) => !isNullOrBlank(x.name))
+          .map((variable) => [
+            variable.name,
+            mapModVariableToDefinition(variable),
+          ]),
       ),
       [],
     ),

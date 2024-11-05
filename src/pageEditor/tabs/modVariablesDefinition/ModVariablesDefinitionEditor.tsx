@@ -27,7 +27,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import styles from "./ModVariablesDefinitionEditor.module.scss";
 import Form, { type RenderBody } from "@/components/form/Form";
-import cx from "classnames";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { FieldArray } from "formik";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
@@ -46,22 +45,51 @@ import {
   TYPE_OPTIONS,
 } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
 import useInferredModVariablesQuery from "@/pageEditor/tabs/modVariablesDefinition/useInferredModVariablesQuery";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { uuidv4 } from "@/types/helpers";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object().shape({
+  variables: Yup.array().of(
+    Yup.object().shape({
+      name: Yup.string()
+        .required("Required")
+        .test("unique", "Name must be unique", (value, { options }) => {
+          const { variables } = options.context as ModVariableFormValues;
+          const duplicate =
+            variables.filter((x) => x.name === value).length > 1;
+          return !duplicate;
+        }),
+      description: Yup.string(),
+      type: Yup.string().required("Required"),
+      isAsync: Yup.boolean().required("Required"),
+      syncPolicy: Yup.string().required("Required"),
+    }),
+  ),
+});
 
 const VariableTable: React.FC<{
   values: ModVariableFormValues;
   missingVariables: ModVariable[];
 }> = ({ values, missingVariables }) => (
-  <Table responsive>
+  <Table responsive size="sm" className={styles.table}>
     <thead>
       <tr>
         <th>Name</th>
         <th>Description</th>
-        <th>Type</th>
+        <th>
+          <PopoverInfoLabel
+            name="type"
+            label="Type"
+            description="Variable type. Currently documentation-only"
+          />
+        </th>
         <th>
           <PopoverInfoLabel
             name="async"
             label="Async"
-            description="Whether the variable tracks loading/error state"
+            description="Advanced: Toggle on if the variable tracks loading/error state"
           />
         </th>
         <th>
@@ -122,13 +150,13 @@ const VariableTable: React.FC<{
                 </td>
                 <td>
                   <Button
-                    size="sm"
                     variant="danger"
+                    title="Remove mod variable"
                     onClick={() => {
                       arrayHelpers.remove(index);
                     }}
                   >
-                    Remove
+                    <FontAwesomeIcon fixedWidth icon={faTimes} />
                   </Button>
                 </td>
               </tr>
@@ -136,8 +164,22 @@ const VariableTable: React.FC<{
 
             {(missingVariables ?? []).map((variable, index) => (
               <tr key={variable.name} className="text-muted">
-                <td>{variable.name}</td>
-                <td>Found in brick configuration</td>
+                <td>
+                  <FieldTemplate
+                    name={`variables.${index}.name`}
+                    type="text"
+                    disabled
+                    value={variable.name}
+                  />
+                </td>
+                <td>
+                  <FieldTemplate
+                    name={`variables.${index}.description`}
+                    type="text"
+                    disabled
+                    value="Found in brick configuration"
+                  />
+                </td>
                 <td>
                   <FieldTemplate
                     name={`variables.${index}.type`}
@@ -171,16 +213,38 @@ const VariableTable: React.FC<{
                 </td>
                 <td>
                   <Button
-                    size="sm"
+                    title="Declare mod variable"
+                    variant="info"
                     onClick={() => {
-                      arrayHelpers.push(variable);
+                      arrayHelpers.push({
+                        ...variable,
+                        description: "Found in brick configuration",
+                      });
                     }}
                   >
-                    Add
+                    <FontAwesomeIcon fixedWidth icon={faPlus} />
                   </Button>
                 </td>
               </tr>
             ))}
+            <tr>
+              <td colSpan={6}>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    arrayHelpers.push({
+                      formReactKey: uuidv4(),
+                      name: "newVar",
+                      isAsync: false,
+                      syncPolicy: "none",
+                      type: "any",
+                    });
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPlus} /> Add new mod variable
+                </Button>
+              </td>
+            </tr>
           </>
         )}
       />
@@ -225,7 +289,7 @@ const ModVariablesDefinitionEditor: React.FC = () => {
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
       <Card>
         <Card.Header>Mod Variables</Card.Header>
-        <Card.Body>
+        <Card.Body className={styles.cardBody}>
           <VariableTable values={values} missingVariables={missingVariables} />
         </Card.Body>
       </Card>
@@ -233,10 +297,12 @@ const ModVariablesDefinitionEditor: React.FC = () => {
   );
 
   return (
-    <Container fluid className={cx(styles.root)}>
+    <Container fluid className={styles.root}>
       <ErrorBoundary>
         <Form
           initialValues={initialValues}
+          validationSchema={validationSchema}
+          validateOnMount
           onSubmit={() => {
             console.error(
               "The form's submit should not be called to save mod variables. Use 'saveMod' from 'useSaveMod' instead.",

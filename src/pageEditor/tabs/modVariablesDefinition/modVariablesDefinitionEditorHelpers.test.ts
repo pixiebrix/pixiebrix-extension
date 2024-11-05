@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { mapDefinitionToFormValues } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorHelpers";
+import {
+  mapDefinitionToFormValues,
+  mapFormValuesToDefinition,
+} from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorHelpers";
+import { uuidv4 } from "@/types/helpers";
 
 describe("mapDefinitionToFormValues", () => {
   it("maps description", () => {
@@ -172,6 +176,102 @@ describe("mapDefinitionToFormValues", () => {
           type: "object",
         },
       ],
+    });
+  });
+});
+
+describe("mapFormValuesToDefinition", () => {
+  it("excludes empty name", () => {
+    expect(
+      mapFormValuesToDefinition({
+        variables: [
+          {
+            formReactKey: uuidv4(),
+            name: "",
+            description: undefined,
+            isAsync: false,
+            syncPolicy: "none",
+            type: "any",
+          },
+        ],
+      }),
+    ).toStrictEqual({
+      schema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        properties: {},
+        required: [],
+        type: "object",
+      },
+    });
+  });
+
+  it("maps number with description", () => {
+    expect(
+      mapFormValuesToDefinition({
+        variables: [
+          {
+            formReactKey: uuidv4(),
+            name: "numberVar",
+            description: "A number with a description",
+            isAsync: false,
+            syncPolicy: "none",
+            type: "number",
+          },
+        ],
+      }),
+    ).toStrictEqual({
+      schema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        properties: {
+          numberVar: {
+            description: "A number with a description",
+            type: "number",
+            "x-sync-policy": "none",
+          },
+        },
+        required: [],
+        type: "object",
+      },
+    });
+  });
+
+  it("maps async variable with any payload", () => {
+    expect(
+      mapFormValuesToDefinition({
+        variables: [
+          {
+            formReactKey: uuidv4(),
+            name: "asyncVar",
+            description: undefined,
+            isAsync: true,
+            syncPolicy: "none",
+            type: "any",
+          },
+        ],
+      }),
+    ).toStrictEqual({
+      schema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        required: [],
+        properties: {
+          asyncVar: {
+            type: "object",
+            description: undefined,
+            "x-sync-policy": "none",
+            properties: {
+              isLoading: { type: "boolean" },
+              isFetching: { type: "boolean" },
+              isSuccess: { type: "boolean" },
+              isError: { type: "boolean" },
+              currentData: {},
+              data: {},
+              error: { type: "object" },
+            },
+            required: ["isLoading", "isFetching", "isSuccess", "isError"],
+          },
+        },
+      },
     });
   });
 });
