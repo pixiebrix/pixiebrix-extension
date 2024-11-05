@@ -49,12 +49,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { uuidv4 } from "@/types/helpers";
 import * as Yup from "yup";
+import useReportError from "@/hooks/useReportError";
+import { isOutputKey } from "@/runtime/runtimeTypes";
 
 const validationSchema = Yup.object().shape({
   variables: Yup.array().of(
     Yup.object().shape({
       name: Yup.string()
         .required("Required")
+        .test("identifier", "Name must be a valid identifier", (value) =>
+          isOutputKey(value),
+        )
         .test("unique", "Name must be unique", (value, { options }) => {
           const { variables } = options.context as ModVariableFormValues;
           const duplicate =
@@ -73,7 +78,7 @@ const VariableTable: React.FC<{
   values: ModVariableFormValues;
   missingVariables: ModVariable[];
 }> = ({ values, missingVariables }) => (
-  <Table responsive size="sm" className={styles.table}>
+  <Table size="sm" className={styles.table}>
     <thead>
       <tr>
         <th>Name</th>
@@ -85,7 +90,7 @@ const VariableTable: React.FC<{
             description="Variable type. Currently documentation-only"
           />
         </th>
-        <th>
+        <th className={styles.asyncColumn}>
           <PopoverInfoLabel
             name="async"
             label="Async"
@@ -119,6 +124,7 @@ const VariableTable: React.FC<{
                   <ConnectedFieldTemplate
                     name={`variables.${index}.description`}
                     type="text"
+                    placeholder="Enter variable documentation"
                   />
                 </td>
                 <td>
@@ -131,7 +137,7 @@ const VariableTable: React.FC<{
                     blankValue={TYPE_OPTIONS}
                   />
                 </td>
-                <td>
+                <td className={styles.asyncColumn}>
                   <ConnectedFieldTemplate
                     name={`variables.${index}.isAsync`}
                     size="sm"
@@ -191,7 +197,7 @@ const VariableTable: React.FC<{
                     value={variable.type}
                   />
                 </td>
-                <td>
+                <td className={styles.asyncColumn}>
                   <FieldTemplate
                     name={`inferred.${index}.isAsync`}
                     as={SwitchButtonWidget}
@@ -227,6 +233,11 @@ const VariableTable: React.FC<{
                 </td>
               </tr>
             ))}
+            {values.variables.length === 0 && missingVariables.length === 0 && (
+              <tr>
+                <td colSpan={6}>This mod does use any mod variables</td>
+              </tr>
+            )}
             <tr>
               <td colSpan={6}>
                 <Button
@@ -267,6 +278,7 @@ const ModVariablesDefinitionEditor: React.FC = () => {
   );
 
   const inferredModVariablesQuery = useInferredModVariablesQuery(modId);
+  useReportError(inferredModVariablesQuery.error);
 
   const missingVariables = (inferredModVariablesQuery.data ?? []).filter(
     (inferredVariable) =>
@@ -289,7 +301,7 @@ const ModVariablesDefinitionEditor: React.FC = () => {
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
       <Card>
         <Card.Header>Mod Variables</Card.Header>
-        <Card.Body className={styles.cardBody}>
+        <Card.Body>
           <VariableTable values={values} missingVariables={missingVariables} />
         </Card.Body>
       </Card>

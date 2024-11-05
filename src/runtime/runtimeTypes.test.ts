@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  margin-top: 1em;
-}
+import { isOutputKey } from "@/runtime/runtimeTypes";
 
-.table {
-  td {
-    vertical-align: middle;
+describe("isOutputKey", () => {
+  it.each(["a", "ab"])("returns true for valid output key %s", (outputKey) => {
+    expect(isOutputKey(outputKey)).toBeTrue();
+  });
 
-    :global(.form-group) {
-      margin-bottom: 0;
-    }
-
-    :global(div:has(> .switch)) {
-      // Remove switch container label height adjustment
-      margin-top: 0;
-    }
-  }
-}
-
-.asyncColumn {
-  max-width: 75px;
-}
+  it.each(["3", "a a", "ab!"])(
+    "returns false for valid output key %s",
+    (outputKey) => {
+      expect(isOutputKey(outputKey)).toBeFalse();
+    },
+  );
+});

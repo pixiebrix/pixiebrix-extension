@@ -34,5 +34,5 @@ export const TYPE_OPTIONS = [
   { label: "Boolean", value: "boolean" },
   { label: "Object", value: "object" },
   { label: "Array", value: "array" },
-  { label: "Nothing", value: "null" },
+  { label: "Null", value: "null" },
 ] as const;

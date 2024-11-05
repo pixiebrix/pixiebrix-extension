@@ -21,7 +21,7 @@ import ModVariablesDefinitionEditor from "@/pageEditor/tabs/modVariablesDefiniti
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
@@ -29,13 +29,14 @@ import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { uuidv4 } from "@/types/helpers";
 import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 beforeEach(() => {
   brickRegistry.register([new AssignModVariable()]);
 });
 
 describe("ModVariablesDefinitionEditor", () => {
-  it("renders no variables", () => {
+  it("renders no variables", async () => {
     render(<ModVariablesDefinitionEditor />, {
       setupRedux(dispatch) {
         const formState = formStateFactory();
@@ -43,6 +44,8 @@ describe("ModVariablesDefinitionEditor", () => {
         dispatch(editorActions.setActiveModId(formState.modMetadata.id));
       },
     });
+
+    await waitForEffect();
 
     expect(
       screen.getByRole("button", { name: "Add new mod variable" }),
@@ -68,6 +71,8 @@ describe("ModVariablesDefinitionEditor", () => {
         );
       },
     });
+
+    await waitForEffect();
 
     expect(
       screen.getByRole("cell", { name: "declaredAny" }),
@@ -101,11 +106,11 @@ describe("ModVariablesDefinitionEditor", () => {
       },
     });
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("cell", { name: "declaredAny" }),
-      ).toBeInTheDocument();
-    });
+    await waitForEffect();
+
+    expect(
+      screen.getByRole("cell", { name: "declaredAny" }),
+    ).toBeInTheDocument();
   });
 
   it("renders inferred variables", async () => {
@@ -126,11 +131,11 @@ describe("ModVariablesDefinitionEditor", () => {
       },
     });
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("cell", { name: "inferredAny" }),
-      ).toBeInTheDocument();
-    });
+    await waitForEffect();
+
+    expect(
+      screen.getByRole("cell", { name: "inferredAny" }),
+    ).toBeInTheDocument();
   });
 
   it("add/remove variable", async () => {
@@ -142,10 +147,18 @@ describe("ModVariablesDefinitionEditor", () => {
       },
     });
 
+    expect(
+      screen.getByText("This mod does use any mod variables"),
+    ).toBeInTheDocument();
+
     await userEvent.click(
       screen.getByRole("button", { name: "Add new mod variable" }),
     );
     expect(screen.getByRole("cell", { name: "newVar" })).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("This mod does use any mod variables"),
+    ).not.toBeInTheDocument();
 
     await userEvent.click(
       screen.getByRole("button", { name: "Remove mod variable" }),
@@ -153,5 +166,9 @@ describe("ModVariablesDefinitionEditor", () => {
     expect(
       screen.queryByRole("cell", { name: "newVar" }),
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("This mod does use any mod variables"),
+    ).toBeInTheDocument();
   });
 });
