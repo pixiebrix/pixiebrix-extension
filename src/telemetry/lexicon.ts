@@ -209,6 +209,16 @@ export const lexicon: LexiconMap = {
       "DevTools in the Extension Console or on internal chrome pages).",
     tags: [LexiconTags.PAGE_EDITOR],
   },
+  EXTENSION_CONSOLE_MOD_ACTIVATE: {
+    description:
+      "[DEPRECATED] Triggered when a user clicks the 'Activate' button in the Extension Console on the mod " +
+      "activation page. Does not indicate activation success.\n" +
+      `This event is deprecated in favor of the ${getDisplayName(
+        "MOD_ACTIVATE",
+      )} event, filtered by event property source='extensionConsole'.`,
+    hidden: true,
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
   FACTORY_RESET: {
     description:
       "Reported when a user performs a factory reset of the PixieBrix Extension, which is available via " +
@@ -318,16 +328,6 @@ export const lexicon: LexiconMap = {
       "extension is not linked, the user will be blocked by 'Link Extension' screens in the Extension Console, Page Editor, " +
       "and Sidebar, as the majority of extension features will not work without authentication.",
     tags: [LexiconTags.AUTHENTICATION],
-  },
-  MARKETPLACE_ACTIVATE: {
-    description:
-      "[DEPRECATED] Triggered when a user clicks the 'Activate' button in the Extension Console on the mod " +
-      "activation page. Does not indicate activation success.\n" +
-      `This event is deprecated in favor of the ${getDisplayName(
-        "MOD_ACTIVATE",
-      )} event.`,
-    hidden: true,
-    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   PAGE_EDITOR_CLEAR_CHANGES: {
     description:

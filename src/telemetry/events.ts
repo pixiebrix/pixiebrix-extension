@@ -44,6 +44,8 @@ export const Events = {
   DEVTOOLS_CLOSE: "DevToolsClose",
   DEVTOOLS_OPEN: "DevToolsOpen",
 
+  EXTENSION_CONSOLE_MOD_ACTIVATE: "MarketplaceActivate",
+
   FACTORY_RESET: "FactoryReset",
 
   FLOATING_ACTION_BUTTON_CLICK: "FloatingQuickBarButtonClick",
@@ -68,7 +70,6 @@ export const Events = {
 
   LINK_EXTENSION: "LinkExtension",
 
-  MARKETPLACE_ACTIVATE: "MarketplaceActivate",
   MARKETPLACE_REJECT_PERMISSIONS: "MarketplaceRejectPermissions",
 
   MODS_PAGE_VIEW: "BlueprintsPageView",
