@@ -26,13 +26,13 @@ import { compact, isEqual, uniqWith } from "lodash";
 
 export type ModVariableSchemaResult = {
   /**
-   * Statically known mod variable schemas.
+   * Statically known mod variable schema properties.
    */
   knownProperties: Array<Schema["properties"]>;
 };
 
 /**
- * Visitor to collect all mod variables for a single form state
+ * Visitor to collect all mod variables for a Page Editor form state(s)
  * @since 1.7.34
  */
 class ModVariableSchemasVisitor extends PipelineVisitor {

@@ -15,6 +15,7 @@ import type { AsyncState } from "@/types/sliceTypes";
 /**
  * Returns the inferred mod variables for the given mod id.
  * @param modId the mod id being edited in editor
+ * @see ModVariableSchemasVisitor
  */
 function useInferredModVariablesQuery(
   modId: RegistryId,
