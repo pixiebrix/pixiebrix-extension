@@ -44,12 +44,18 @@ function castType(value: unknown): (typeof TYPE_OPTIONS)[number]["value"] {
   return TYPE_OPTIONS.find((x) => x.value === value)?.value ?? "any";
 }
 
+type AsyncModVariableProperties = {
+  isFetching: { type: "boolean" };
+  isSuccess: { type: "boolean" };
+  data: JSONSchema7Definition;
+};
+
 /**
  * Returns true if a schema's properties correspond to an async mod variable declaration.
  */
 function isAsyncModVariableProperties(
   properties: Nullishable<Schema["properties"]>,
-) {
+): properties is AsyncModVariableProperties {
   return (
     properties != null &&
     Object.hasOwn(properties, "isSuccess") &&
@@ -58,47 +64,7 @@ function isAsyncModVariableProperties(
   );
 }
 
-export function mapDefinitionToFormValues({
-  schema,
-}: ModVariablesDefinition): ModVariableFormValues {
-  const variables = sortBy(
-    Object.entries(schema.properties ?? {})
-      .map(([name, value]) => {
-        if (value === false) {
-          return null;
-        }
-
-        if (value === true) {
-          return {
-            formReactKey: uuidv4(),
-            name,
-            isAsync: false,
-            syncPolicy: "none",
-            type: "any",
-          } satisfies ModVariable;
-        }
-
-        const { description, properties } = value;
-
-        const isAsync = isAsyncModVariableProperties(properties);
-
-        return {
-          formReactKey: uuidv4(),
-          name,
-          description,
-          isAsync,
-          type: isAsync ? castType(value.data.type) : castType(value.type),
-          syncPolicy: castSyncPolicy((value as UnknownObject)["x-sync-policy"]),
-        };
-      })
-      .filter((x) => x != null),
-    (x) => x.name,
-  );
-
-  return { variables };
-}
-
-function typeToAsyncState(
+function definitionToAsyncVariableDefinition(
   dataDefinition: JSONSchema7Definition,
 ): Exclude<JSONSchema7Definition, boolean> {
   return {
@@ -126,24 +92,82 @@ function typeToAsyncState(
   };
 }
 
+export function mapDefinitionToFormValues({
+  schema,
+}: ModVariablesDefinition): ModVariableFormValues {
+  const variables = sortBy(
+    Object.entries(schema.properties ?? {})
+      .map(([name, value]) => {
+        if (value === false) {
+          return null;
+        }
+
+        if (value === true) {
+          return {
+            formReactKey: uuidv4(),
+            name,
+            isAsync: false,
+            description: undefined,
+            syncPolicy: "none",
+            type: "any",
+          } satisfies ModVariable;
+        }
+
+        const { description, properties } = value;
+
+        const isAsync = isAsyncModVariableProperties(properties);
+
+        return {
+          formReactKey: uuidv4(),
+          name,
+          description,
+          isAsync,
+          type: isAsync
+            ? castType(
+                typeof properties.data === "boolean"
+                  ? null
+                  : properties.data.type,
+              )
+            : castType(value.type),
+          syncPolicy: castSyncPolicy((value as UnknownObject)["x-sync-policy"]),
+        };
+      })
+      .filter((x) => x != null),
+    (x) => x.name,
+  );
+
+  return { variables };
+}
+
+function mapModVariableToDefinition(modVariable: ModVariable): Schema {
+  const common = {
+    description: modVariable.description,
+    "x-sync-policy": modVariable.syncPolicy,
+  };
+
+  // Omitting type allows any type
+  const baseType = modVariable.type === "any" ? {} : { type: modVariable.type };
+
+  return {
+    ...common,
+    ...(modVariable.isAsync
+      ? definitionToAsyncVariableDefinition(baseType)
+      : baseType),
+  };
+}
+
 export function mapFormValuesToDefinition(
   formValues: ModVariableFormValues,
 ): ModVariablesDefinition {
-  const schema = propertiesToSchema(
-    Object.fromEntries(
-      formValues.variables.map((variable) => [
-        variable.name,
-        {
-          description: variable.description,
-          ...(variable.isAsync
-            ? typeToAsyncState({ type: variable.type })
-            : { type: variable.type }),
-          "x-sync-policy": variable.syncPolicy,
-        },
-      ]),
+  return {
+    schema: propertiesToSchema(
+      Object.fromEntries(
+        formValues.variables.map((variable) => [
+          variable.name,
+          mapModVariableToDefinition(variable),
+        ]),
+      ),
+      [],
     ),
-    [],
-  );
-
-  return { schema };
+  };
 }

@@ -43,6 +43,7 @@ import {
   type ModVariable,
   type ModVariableFormValues,
   SYNC_OPTIONS,
+  TYPE_OPTIONS,
 } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
 import useInferredModVariablesQuery from "@/pageEditor/tabs/modVariablesDefinition/useInferredModVariablesQuery";
 
@@ -50,11 +51,12 @@ const VariableTable: React.FC<{
   values: ModVariableFormValues;
   missingVariables: ModVariable[];
 }> = ({ values, missingVariables }) => (
-  <Table>
+  <Table responsive>
     <thead>
       <tr>
         <th>Name</th>
         <th>Description</th>
+        <th>Type</th>
         <th>
           <PopoverInfoLabel
             name="async"
@@ -93,6 +95,16 @@ const VariableTable: React.FC<{
                 </td>
                 <td>
                   <ConnectedFieldTemplate
+                    name={`variables.${index}.type`}
+                    size="sm"
+                    as={SelectWidget}
+                    isClearable={false}
+                    options={TYPE_OPTIONS}
+                    blankValue={TYPE_OPTIONS}
+                  />
+                </td>
+                <td>
+                  <ConnectedFieldTemplate
                     name={`variables.${index}.isAsync`}
                     size="sm"
                     as={SwitchButtonWidget}
@@ -126,6 +138,17 @@ const VariableTable: React.FC<{
               <tr key={variable.name} className="text-muted">
                 <td>{variable.name}</td>
                 <td>Found in brick configuration</td>
+                <td>
+                  <FieldTemplate
+                    name={`variables.${index}.type`}
+                    size="sm"
+                    disabled
+                    as={SelectWidget}
+                    isClearable={false}
+                    options={TYPE_OPTIONS}
+                    value={variable.type}
+                  />
+                </td>
                 <td>
                   <FieldTemplate
                     name={`inferred.${index}.isAsync`}
@@ -210,7 +233,7 @@ const ModVariablesDefinitionEditor: React.FC = () => {
   );
 
   return (
-    <Container className={cx(styles.root, "ml-0")}>
+    <Container fluid className={cx(styles.root)}>
       <ErrorBoundary>
         <Form
           initialValues={initialValues}
