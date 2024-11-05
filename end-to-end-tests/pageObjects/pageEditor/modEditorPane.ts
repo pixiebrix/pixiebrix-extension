@@ -32,6 +32,10 @@ class CurrentInputsConfigurationForm extends ConfigurationForm {
   );
 }
 
+class ModVariablesDefinitionConfigurationForm extends ConfigurationForm {
+  addVariableButton = this.getByRole("button", { name: "Add new variable" });
+}
+
 class InputConfigurationForm extends ConfigurationForm {
   addNewFieldButton = this.getByRole("button", { name: "Add new field" });
 }
@@ -58,6 +62,13 @@ export class ModEditorPane extends BasePageObject {
   editMetadataTabPanel = new MetadataConfigurationForm(
     this.getByRole("tabpanel").filter({
       hasText: "Mod Metadata",
+    }),
+  );
+
+  modVariablesTab = this.getByRole("tab", { name: "Mod Variables" });
+  modVariablesTabPanel = new ModVariablesDefinitionConfigurationForm(
+    this.getByRole("tabpanel").filter({
+      hasText: "Mod Variables",
     }),
   );
 
