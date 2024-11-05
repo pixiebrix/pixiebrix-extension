@@ -319,6 +319,16 @@ export const lexicon: LexiconMap = {
       "and Sidebar, as the majority of extension features will not work without authentication.",
     tags: [LexiconTags.AUTHENTICATION],
   },
+  MARKETPLACE_ACTIVATE: {
+    description:
+      "[DEPRECATED] Triggered when a user clicks the 'Activate' button in the Extension Console on the mod " +
+      "activation page. Does not indicate activation success.\n" +
+      `This event is deprecated in favor of the ${getDisplayName(
+        "MOD_ACTIVATE",
+      )} event.`,
+    hidden: true,
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
   PAGE_EDITOR_CLEAR_CHANGES: {
     description:
       "Reported when Clear Changes is clicked in 3-dot action action menu for a mod/mod component in the Page Editor",
