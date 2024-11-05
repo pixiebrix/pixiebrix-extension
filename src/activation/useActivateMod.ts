@@ -90,7 +90,7 @@ function useActivateMod(
       const isReactivate = Boolean(modInstance);
 
       if (source === "extensionConsole") {
-        reportEvent(Events.MARKETPLACE_ACTIVATE, {
+        reportEvent(Events.EXTENSION_CONSOLE_MOD_ACTIVATE, {
           ...selectActivateEventData(modDefinition),
           reactivate: isReactivate,
         });
