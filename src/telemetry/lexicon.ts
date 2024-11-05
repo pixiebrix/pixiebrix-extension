@@ -27,6 +27,7 @@ const LexiconTags = {
   ENTERPRISE: "enterprise",
   TEAM: "team",
   OBSOLETE: "obsolete",
+  AUTHENTICATION: "authentication",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -308,6 +309,15 @@ export const lexicon: LexiconMap = {
       )} event, which is reported when activating a mod ` +
       "in the Extension Console.",
     tags: [LexiconTags.PAGE_EDITOR],
+  },
+  LINK_EXTENSION: {
+    description:
+      "Triggered when the PixieBrix Extension authentication is obtained or updated by via visiting " +
+      "the Admin Console after successfully logging in. If authenticated, the Admin " +
+      "Console sends auth info in the PixieBrix Extension, a process we call 'linking'. If the " +
+      "extension is not linked, the user will be blocked by 'Link Extension' screens in the Extension Console, Page Editor, " +
+      "and Sidebar, as the majority of extension features will not work without authentication.",
+    tags: [LexiconTags.AUTHENTICATION],
   },
   PAGE_EDITOR_CLEAR_CHANGES: {
     description:
