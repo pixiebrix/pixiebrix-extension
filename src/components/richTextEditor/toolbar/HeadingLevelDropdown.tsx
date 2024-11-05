@@ -21,12 +21,13 @@ import Select from "react-select";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Level } from "@tiptap/extension-heading";
 
+const headingLevels: Level[] = [1, 2, 3, 4, 5, 6];
 const options: Array<Option<0 | Level>> = [
-  // TODO: refactor to instead generate options from a range of 1 to 6
-  { label: "Heading 1", value: 1 },
-  { label: "Heading 2", value: 2 },
-  { label: "Heading 3", value: 3 },
   { label: "Paragraph", value: 0 },
+  ...headingLevels.map((level) => ({
+    label: `Heading ${level}`,
+    value: level,
+  })),
 ];
 
 const HeadingLevelDropdown: React.FunctionComponent = () => {
@@ -41,12 +42,14 @@ const HeadingLevelDropdown: React.FunctionComponent = () => {
       return;
     }
 
-    if (option.value === 0) {
+    const level = option.value;
+
+    if (level === 0) {
       editor.chain().focus().setParagraph().run();
       return;
     }
 
-    editor.chain().focus().setHeading({ level: option.value }).run();
+    editor.chain().focus().setHeading({ level }).run();
   };
 
   return (
@@ -58,6 +61,8 @@ const HeadingLevelDropdown: React.FunctionComponent = () => {
           option.value === (editor.getAttributes("heading").level ?? 0),
       )}
       onChange={handleChange}
+      maxMenuHeight={100}
+      classNamePrefix="heading-level"
     />
   );
 };
