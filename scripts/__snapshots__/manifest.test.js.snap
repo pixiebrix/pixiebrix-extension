@@ -44,8 +44,9 @@ exports[`customizeManifest release builds beta 1`] = `
         "contentScript.js",
       ],
       "match_about_blank": true,
+      "match_origin_as_fallback": true,
       "matches": [
-        "*://*/*",
+        "<all_urls>",
       ],
       "run_at": "document_idle",
     },
@@ -196,8 +197,9 @@ exports[`customizeManifest release builds stable 1`] = `
         "contentScript.js",
       ],
       "match_about_blank": true,
+      "match_origin_as_fallback": true,
       "matches": [
-        "*://*/*",
+        "<all_urls>",
       ],
       "run_at": "document_idle",
     },
