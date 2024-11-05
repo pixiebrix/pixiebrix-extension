@@ -18,6 +18,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Compile TypeScript
+        # Explicitly specify the TypeScript environment because tsconfig.json is ignored when input files are specified
         run: npx tsc scripts/uploadMixpanelLexicon.ts --esModuleInterop --lib esnext
       - name: Upload Lexicon
         if: github.ref_name == 'main'
