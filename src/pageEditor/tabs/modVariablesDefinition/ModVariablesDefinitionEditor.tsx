@@ -96,10 +96,10 @@ const VariableTable: React.FC<{
           <PopoverInfoLabel
             name="synchronization"
             label="Synchronization"
-            description="Automatically synchronize the variable across tab reloads, or across all tabs"
+            description="Automatically synchronize the variable across tab frames/navigation, or across all tabs"
           />
         </th>
-        <th>Actions</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
