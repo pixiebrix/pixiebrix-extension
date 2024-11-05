@@ -4,7 +4,8 @@
   "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
     "sourceMap": true,
-    "module": "ES2020",
+    "module": "esnext",
+    "target": "es2023",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "baseUrl": ".",
