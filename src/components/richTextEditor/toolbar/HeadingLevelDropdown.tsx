@@ -52,14 +52,15 @@ const HeadingLevelDropdown: React.FunctionComponent = () => {
     editor.chain().focus().setHeading({ level }).run();
   };
 
+  const currentLevelOption = options.find(
+    (option) => option.value === (editor.getAttributes("heading").level ?? 0),
+  );
+
   return (
     <Select
       options={options}
       aria-label="Heading Level"
-      value={options.find(
-        (option) =>
-          option.value === (editor.getAttributes("heading").level ?? 0),
-      )}
+      value={currentLevelOption}
       onChange={handleChange}
       maxMenuHeight={100}
       classNamePrefix="heading-level"
