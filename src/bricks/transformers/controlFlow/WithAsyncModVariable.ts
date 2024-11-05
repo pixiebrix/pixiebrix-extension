@@ -124,8 +124,9 @@ export class WithAsyncModVariable extends TransformerABC {
               isError: {
                 type: "boolean",
               },
-              currentData: true,
-              data: true,
+              // Consider using `true` instead of `{}`
+              currentData: {},
+              data: {},
               requestId: {
                 type: "string",
                 format: "uuid",
