@@ -28,17 +28,20 @@ import useReportError from "@/hooks/useReportError";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type EphemeralFormContentProps } from "./EphemeralFormContent";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type EmptyObject } from "type-fest";
 
-const ModalLayout: React.FC = ({ children }) => (
+const ModalLayout: React.FC<React.PropsWithChildren<EmptyObject>> = ({
+  children,
+}) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
   <div className="modal-content">
     <div className="modal-body">{children}</div>
   </div>
 );
 
-const PanelLayout: React.FC = ({ children }) => (
-  <div className="p-3">{children}</div>
-);
+const PanelLayout: React.FC<React.PropsWithChildren<EmptyObject>> = ({
+  children,
+}) => <div className="p-3">{children}</div>;
 
 const IsolatedEphemeralFormContent: React.FunctionComponent<
   EphemeralFormContentProps

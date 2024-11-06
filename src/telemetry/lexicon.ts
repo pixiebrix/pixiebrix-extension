@@ -27,6 +27,7 @@ const LexiconTags = {
   ENTERPRISE: "enterprise",
   TEAM: "team",
   OBSOLETE: "obsolete",
+  AUTHENTICATION: "authentication",
 } as const;
 
 type LexiconTag = ValueOf<typeof LexiconTags>;
@@ -67,6 +68,23 @@ type LexiconMap = {
 
 // @ts-expect-error -- TODO: Remove this when the Lexicon is fully implemented https://github.com/pixiebrix/pixiebrix-extension/issues/9151
 export const lexicon: LexiconMap = {
+  ACTIVATION_INTEGRATION_ADD_NEW_CLICK: {
+    description:
+      "Reported on the mod activation page in the Extension Console when a user selects the '+ Add new' option to " +
+      "create a new integration configuration for the mod. A modal should appear for the user to create the configuration, " +
+      "but this event is triggered specifically when '+ Add new' option is clicked." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK",
+      )} event, which is reported in the Page Editor.`,
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
+  ACTIVATION_INTEGRATION_ADD_NEW_CLOSE: {
+    description:
+      "Reported on the mod activation page in the Extension Console when a user closes the modal for creating a new " +
+      "integration configuration for the mod (either by clicking 'Cancel', 'Save' or 'X' in the modal).",
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
+  },
   ACTIVATION_INTEGRATION_CONFIG_SELECT: {
     description:
       "Reported on the mod activation page in the Extension Console when a user selects an option in the dropdown menu " +
@@ -86,23 +104,6 @@ export const lexicon: LexiconMap = {
       `Not to be confused with the ${getDisplayName(
         "INTEGRATION_WIDGET_REFRESH",
       )} event, which is reported in the Page Editor.`,
-    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
-  },
-  ACTIVATION_INTEGRATION_ADD_NEW_CLICK: {
-    description:
-      "Reported on the mod activation page in the Extension Console when a user selects the '+ Add new' option to " +
-      "create a new integration configuration for the mod. A modal should appear for the user to create the configuration, " +
-      "but this event is triggered specifically when '+ Add new' option is clicked." +
-      "\n" +
-      `Not to be confused with the ${getDisplayName(
-        "INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK",
-      )} event, which is reported in the Page Editor.`,
-    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
-  },
-  ACTIVATION_INTEGRATION_ADD_NEW_CLOSE: {
-    description:
-      "Reported on the mod activation page in the Extension Console when a user closes the modal for creating a new " +
-      "integration configuration for the mod (either by clicking 'Cancel', 'Save' or 'X' in the modal).",
     tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   BRICK_ADD: {
@@ -127,11 +128,6 @@ export const lexicon: LexiconMap = {
       "Event reported from the 'Send Telemetry' brick in a mod. Mod developers can customize the `eventName` " +
       "property and add additional properties to this event at will.",
     tags: [LexiconTags.MOD_RUNTIME],
-  },
-  PAGE_EDITOR_CLEAR_CHANGES: {
-    description:
-      "Reported when Clear Changes is clicked in 3-dot action action menu for a mod/mod component in the Page Editor",
-    tags: [LexiconTags.PAGE_EDITOR],
   },
   DATA_PANEL_TAB_VIEW: {
     description:
@@ -162,12 +158,13 @@ export const lexicon: LexiconMap = {
       "is assigned to a deployment by belonging to a group assigned to the deployment.",
     tags: [LexiconTags.TEAM],
   },
-  DEPLOYMENT_REJECT_VERSION: {
+  DEPLOYMENT_LIST: {
     description:
-      "Reported on the Mods Page in the Extension Console when a user is prompted to update the Extension " +
-      "in order to activate a deployed mod. The event is triggered after the user clicks 'Activate' on the deployment " +
-      "activation modal.",
-    tags: [LexiconTags.TEAM, LexiconTags.EXTENSION_CONSOLE],
+      "Reported every 5 minutes from the background when the PixieBrix Extension fetches deployments for users" +
+      "that belong to a team, with a list of all deployment ids for that user. This event is only reported for " +
+      "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
+      "of users with this flag).",
+    tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
   },
   DEPLOYMENT_REJECT_PERMISSIONS: {
     description:
@@ -176,19 +173,18 @@ export const lexicon: LexiconMap = {
       "the team deployment banner in the Extension Console.",
     tags: [LexiconTags.TEAM, LexiconTags.EXTENSION_CONSOLE],
   },
+  DEPLOYMENT_REJECT_VERSION: {
+    description:
+      "Reported on the Mods Page in the Extension Console when a user is prompted to update the Extension " +
+      "in order to activate a deployed mod. The event is triggered after the user clicks 'Activate' on the deployment " +
+      "activation modal.",
+    tags: [LexiconTags.TEAM, LexiconTags.EXTENSION_CONSOLE],
+  },
   DEPLOYMENT_SYNC: {
     description:
       "Reported every 5 minutes from the background when the PixieBrix Extension checks for deployment updates for users " +
       "that belong to a team. See event properties for information on update prompt status (the prompt shown to users " +
       "to activate deployed mods that can't be auto-activated in the background). This event is only reported for " +
-      "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
-      "of users with this flag).",
-    tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
-  },
-  DEPLOYMENT_LIST: {
-    description:
-      "Reported every 5 minutes from the background when the PixieBrix Extension fetches deployments for users" +
-      "that belong to a team, with a list of all deployment ids for that user. This event is only reported for " +
       "certain teams as specified by the `report-background-deployments` feature flag (see the Django Admin for a list " +
       "of users with this flag).",
     tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
@@ -201,17 +197,27 @@ export const lexicon: LexiconMap = {
       "Admin for a list of users with this flag).",
     tags: [LexiconTags.TEAM, LexiconTags.ENTERPRISE],
   },
+  DEVTOOLS_CLOSE: {
+    description:
+      "Reported when the DevTools are closed on any modifiable web page (e.g. this event is not reported when opening the " +
+      "DevTools in the Extension Console or on internal chrome pages).",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
   DEVTOOLS_OPEN: {
     description:
       "Reported when the a user opens the DevTools on any modifiable web page (e.g. this event is not reported when opening the " +
       "DevTools in the Extension Console or on internal chrome pages).",
     tags: [LexiconTags.PAGE_EDITOR],
   },
-  DEVTOOLS_CLOSE: {
+  EXTENSION_CONSOLE_MOD_ACTIVATE: {
     description:
-      "Reported when the DevTools are closed on any modifiable web page (e.g. this event is not reported when opening the " +
-      "DevTools in the Extension Console or on internal chrome pages).",
-    tags: [LexiconTags.PAGE_EDITOR],
+      "[DEPRECATED] Triggered when a user clicks the 'Activate' button in the Extension Console on the mod " +
+      "activation page. Does not indicate activation success.\n" +
+      `This event is deprecated in favor of the ${getDisplayName(
+        "MOD_ACTIVATE",
+      )} event, filtered by event property source='extensionConsole'.`,
+    hidden: true,
+    tags: [LexiconTags.MOD_ACTIVATION, LexiconTags.EXTENSION_CONSOLE],
   },
   FACTORY_RESET: {
     description:
@@ -224,17 +230,17 @@ export const lexicon: LexiconMap = {
       "Reported when a user clicks the floating action button on any web page for which it is shown.",
     tags: [LexiconTags.MOD_RUNTIME],
   },
-  FLOATING_ACTION_BUTTON_REPOSITION: {
-    description:
-      "Reported when the floating action button is repositioned on the page by clicking the drag handle and moving " +
-      "the button to a new location. Only reported once per page load.",
-    tags: [LexiconTags.MOD_RUNTIME],
-  },
   FLOATING_ACTION_BUTTON_ON_SCREEN_HIDE: {
     description:
       "Reported when the floating action button is hidden by clicking the 'Hide Button' button " +
       "that appears when hovering over the floating action button. Sets the Floating Action Button setting to 'disabled' " +
       "in the Extension Console settings.",
+    tags: [LexiconTags.MOD_RUNTIME],
+  },
+  FLOATING_ACTION_BUTTON_REPOSITION: {
+    description:
+      "Reported when the floating action button is repositioned on the page by clicking the drag handle and moving " +
+      "the button to a new location. Only reported once per page load.",
     tags: [LexiconTags.MOD_RUNTIME],
   },
   GOOGLE_FILE_PICKER_EVENT: {
@@ -275,21 +281,21 @@ export const lexicon: LexiconMap = {
       "your browser' for IndexedDB (IDB) errors is shown in the Extension Console",
     tags: [LexiconTags.EXTENSION_CONSOLE],
   },
-  INTEGRATION_WIDGET_SELECT: {
-    description:
-      "Reported in the Page Editor when a user selects a configuration from the integration field dropdown for a brick that uses an " +
-      "integration." +
-      "\n" +
-      `Not to be confused with the ${getDisplayName(
-        "ACTIVATION_INTEGRATION_CONFIG_SELECT",
-      )} event, which is reported when activating a mod ` +
-      "in the Extension Console.",
-    tags: [LexiconTags.PAGE_EDITOR],
-  },
   INTEGRATION_WIDGET_CLEAR: {
     description:
       "Reported in the Page Editor when a user clears the integration field for a brick that uses an integration " +
       "by clicking the 'X' button in the field.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK: {
+    description:
+      "Reported in the Page Editor when a user clicks the 'Configure additional integrations here' link included " +
+      "underneath integration fields for bricks that use integrations." +
+      "\n" +
+      `Not to be confused with the ${getDisplayName(
+        "ACTIVATION_INTEGRATION_ADD_NEW_CLICK",
+      )} event, which is reported when activating a mod ` +
+      "in the Extension Console.",
     tags: [LexiconTags.PAGE_EDITOR],
   },
   INTEGRATION_WIDGET_REFRESH: {
@@ -303,15 +309,29 @@ export const lexicon: LexiconMap = {
       "in the Extension Console.",
     tags: [LexiconTags.PAGE_EDITOR],
   },
-  INTEGRATION_WIDGET_CONFIGURE_LINK_CLICK: {
+  INTEGRATION_WIDGET_SELECT: {
     description:
-      "Reported in the Page Editor when a user clicks the 'Configure additional integrations here' link included " +
-      "underneath integration fields for bricks that use integrations." +
+      "Reported in the Page Editor when a user selects a configuration from the integration field dropdown for a brick that uses an " +
+      "integration." +
       "\n" +
       `Not to be confused with the ${getDisplayName(
-        "ACTIVATION_INTEGRATION_ADD_NEW_CLICK",
+        "ACTIVATION_INTEGRATION_CONFIG_SELECT",
       )} event, which is reported when activating a mod ` +
       "in the Extension Console.",
+    tags: [LexiconTags.PAGE_EDITOR],
+  },
+  LINK_EXTENSION: {
+    description:
+      "Triggered when the PixieBrix Extension authentication is obtained or updated by via visiting " +
+      "the Admin Console after successfully logging in. If authenticated, the Admin " +
+      "Console sends auth info in the PixieBrix Extension, a process we call 'linking'. If the " +
+      "extension is not linked, the user will be blocked by 'Link Extension' screens in the Extension Console, Page Editor, " +
+      "and Sidebar, as the majority of extension features will not work without authentication.",
+    tags: [LexiconTags.AUTHENTICATION],
+  },
+  PAGE_EDITOR_CLEAR_CHANGES: {
+    description:
+      "Reported when Clear Changes is clicked in 3-dot action action menu for a mod/mod component in the Page Editor",
     tags: [LexiconTags.PAGE_EDITOR],
   },
 };

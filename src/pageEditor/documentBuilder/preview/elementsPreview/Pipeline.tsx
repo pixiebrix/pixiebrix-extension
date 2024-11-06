@@ -30,7 +30,9 @@ type PipelineProps = PreviewComponentProps & {
   element: DocumentBuilderElement;
 };
 
-const Pipeline: React.FunctionComponent<PipelineProps> = ({
+const Pipeline: React.FunctionComponent<
+  React.PropsWithChildren<PipelineProps>
+> = ({
   element,
   children,
   className,

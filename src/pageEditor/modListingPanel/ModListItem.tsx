@@ -39,9 +39,11 @@ import { useGetModDefinitionQuery } from "@/data/service/api";
 import { type ModMetadata } from "@/types/modComponentTypes";
 import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
-const ModListItem: React.FC<{
-  modMetadata: ModMetadata;
-}> = ({ modMetadata, children }) => {
+const ModListItem: React.FC<
+  React.PropsWithChildren<{
+    modMetadata: ModMetadata;
+  }>
+> = ({ modMetadata, children }) => {
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);

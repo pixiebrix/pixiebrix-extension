@@ -64,7 +64,7 @@ const InformationPanel: React.FunctionComponent<ContextInvalidatedProps> = ({
  * Use `<AbortSignalGate signal={onContextInvalidated.signal}>` if you just want to unmount the children instead.
  */
 const InvalidatedContextGate: React.FunctionComponent<
-  ContextInvalidatedProps
+  React.PropsWithChildren<ContextInvalidatedProps>
 > = ({ children, ...props }) => {
   const wasContextInvalidated = useContextInvalidated();
 

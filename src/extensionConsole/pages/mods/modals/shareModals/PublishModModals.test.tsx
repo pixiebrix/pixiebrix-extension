@@ -30,6 +30,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { type EmptyObject } from "type-fest";
 
 let modDefinition: ModDefinition;
 let auth: AuthState;
@@ -44,7 +45,9 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
 /**
  * Wrapper component to fetch marketplace listings because the PublishRecipeModals component does not fetch.
  */
-const MarketplaceListingsWrapper: React.FC = ({ children }) => {
+const MarketplaceListingsWrapper: React.FC<
+  React.PropsWithChildren<EmptyObject>
+> = ({ children }) => {
   useGetMarketplaceListingsQuery();
   return <>{children}</>;
 };

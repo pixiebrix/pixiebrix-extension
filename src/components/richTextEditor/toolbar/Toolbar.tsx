@@ -16,32 +16,25 @@
  */
 
 import React from "react";
-import { useCurrentEditor } from "@tiptap/react";
 import { ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import styles from "@/components/richTextEditor/RichTextEditor.module.scss";
 import BoldButton from "@/components/richTextEditor/toolbar/BoldButton";
 import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
 // Required for font-awesome styles to be available in IsolatedComponents
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import HeadingLevelDropdown from "@/components/richTextEditor/toolbar/HeadingLevelDropdown";
 
-const Toolbar: React.FunctionComponent = () => {
-  const { editor } = useCurrentEditor();
-
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <ButtonToolbar
-      className={styles.toolbar}
-      aria-label="Rich-Text Editor Toolbar"
-    >
-      <ButtonGroup size="sm">
-        <BoldButton />
-        <ItalicButton />
-      </ButtonGroup>
-    </ButtonToolbar>
-  );
-};
+const Toolbar: React.FunctionComponent = () => (
+  <ButtonToolbar
+    className={styles.toolbar}
+    aria-label="Rich-Text Editor Toolbar"
+  >
+    <HeadingLevelDropdown />
+    <ButtonGroup size="sm">
+      <BoldButton />
+      <ItalicButton />
+    </ButtonGroup>
+  </ButtonToolbar>
+);
 
 export default Toolbar;

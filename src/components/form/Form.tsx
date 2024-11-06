@@ -133,7 +133,7 @@ const defaultRenderStatus: RenderStatus = ({ status }) => (
 
 const emptyObject = {} as const;
 
-const Form: React.FC<FormProps> = ({
+const Form: React.FC<React.PropsWithChildren<FormProps>> = ({
   // Default to {} to be defensive against callers that pass through null/undefined form state when uninitialized
   initialValues = emptyObject,
   children,

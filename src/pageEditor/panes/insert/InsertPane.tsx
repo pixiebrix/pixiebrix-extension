@@ -24,6 +24,7 @@ import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
+import { type EmptyObject } from "type-fest";
 
 type InsertPaneContextProps = {
   insertingStarterBrickType: StarterBrickType | null;
@@ -56,7 +57,7 @@ export function useInsertPane(): InsertPaneContextProps {
   return useContext(InsertPaneContext);
 }
 
-const InsertPane: React.FC = () => {
+const InsertPane: React.FC<React.PropsWithChildren<EmptyObject>> = () => {
   const { insertingStarterBrickType, setInsertingStarterBrickType } =
     useInsertPane();
 

@@ -31,7 +31,9 @@ type ContainerProps = PreviewComponentProps & {
   documentBuilderComponent: DocumentBuilderComponent;
 };
 
-const Container: React.FunctionComponent<ContainerProps> = ({
+const Container: React.FunctionComponent<
+  React.PropsWithChildren<ContainerProps>
+> = ({
   element,
   documentBuilderComponent: { Component, props },
   children,
