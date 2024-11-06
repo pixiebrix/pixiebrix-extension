@@ -16,10 +16,12 @@
  */
 
 import React from "react";
-import { useCurrentEditor } from "@tiptap/react";
-import { Button } from "react-bootstrap";
+import { useCurrentEditor, BubbleMenu } from "@tiptap/react";
+// eslint-disable-next-line no-restricted-imports -- we need flexible styling for this component
+import { Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
+import styles from "./LinkButton.module.scss";
 
 const LinkButton: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
@@ -28,12 +30,14 @@ const LinkButton: React.FunctionComponent = () => {
     return null;
   }
 
-  const handleClick = () => {
-    // TODO: Fix typing if possible
-    const previousUrl = editor.getAttributes("link").href as string | undefined;
-    // eslint-disable-next-line no-alert -- temp
-    const url = window.prompt("Enter the URL", previousUrl || "https://");
-
+  const handleClick = async () => {
+    // TODO: typing for getAttributes is any, better solution?
+    // const previousUrl =
+    //   typeof editor.getAttributes("link").href === "string"
+    //     ? (editor.getAttributes("link").href as string)
+    //     : null;
+    // Implement me
+    const url = "";
     if (!url) {
       return;
     }
@@ -48,14 +52,25 @@ const LinkButton: React.FunctionComponent = () => {
   };
 
   return (
-    <Button
-      variant="default"
-      onClick={handleClick}
-      active={editor.isActive("link")}
-      aria-label="Link"
-    >
-      <FontAwesomeIcon icon={faLink} />
-    </Button>
+    <>
+      <BubbleMenu editor={editor} className={styles.bubbleMenu}>
+        <Form inline>
+          <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
+          <Form.Control id="newUrl" size="sm" />
+          <Button variant="link" type="submit" size="sm">
+            Submit
+          </Button>
+        </Form>
+      </BubbleMenu>
+      <Button
+        variant="default"
+        onClick={handleClick}
+        active={editor.isActive("link")}
+        aria-label="Link"
+      >
+        <FontAwesomeIcon icon={faLink} />
+      </Button>
+    </>
   );
 };
 
