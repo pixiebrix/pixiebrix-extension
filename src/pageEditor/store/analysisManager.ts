@@ -210,7 +210,7 @@ async function varAnalysisFactory(
   return new VarAnalysis({
     trace,
     modState,
-    modVariables: variables.knownSchemas,
+    modVariables: variables.knownProperties,
   });
 }
 

@@ -24,7 +24,7 @@ const OutputDetail: React.FunctionComponent<{
   data: SetRequired<LogEntry, "data">["data"];
 }> = ({ data }) => (
   <>
-    {data.outputKey && <code>{data.outputKey}</code>}
+    {data.outputKey != null && <code>{String(data.outputKey)}</code>}
     <JsonTree data={data.output} />
   </>
 );

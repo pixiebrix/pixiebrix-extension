@@ -33,16 +33,14 @@ import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { compact, sortBy } from "lodash";
+import { compact, memoize, sortBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { flagOn } from "@/auth/featureFlagStorage";
-import {
-  type DraftModState,
-  type RootState,
-} from "@/pageEditor/store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { selectGetDraftModComponentsForMod } from "@/pageEditor/store/editor/editorSelectors";
 import { type RegistryId } from "@/types/registryTypes";
 import { isModComponentBase } from "@/pageEditor/utils";
+import { createSelector } from "@reduxjs/toolkit";
 
 const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([
   [StarterBrickTypes.TRIGGER, triggerModComponent],
@@ -148,15 +146,14 @@ export function formStateToDraftModComponent(
   return adapter.asDraftModComponent(modComponentFormState, modState);
 }
 
-export function selectGetDraftFormStatesPromiseForModId(state: RootState) {
-  return async (modId: RegistryId) => {
-    const getDraftModComponentsForMod =
-      selectGetDraftModComponentsForMod(state);
-
-    return Promise.all(
-      getDraftModComponentsForMod(modId).map(async (x) =>
-        isModComponentBase(x) ? modComponentToFormState(x) : x,
+export const selectGetDraftFormStatesPromiseForModId = createSelector(
+  selectGetDraftModComponentsForMod,
+  (getDraftModComponentsForMod) =>
+    memoize(async (modId: RegistryId) =>
+      Promise.all(
+        getDraftModComponentsForMod(modId).map(async (x) =>
+          isModComponentBase(x) ? modComponentToFormState(x) : x,
+        ),
       ),
-    );
-  };
-}
+    ),
+);

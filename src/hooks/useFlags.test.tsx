@@ -36,7 +36,10 @@ import { API_PATHS } from "@/data/service/urlPaths";
 
 const testFlag = featureFlagFactory();
 
-const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
+const TestComponent: React.FC<React.PropsWithChildren<{ name: string }>> = ({
+  name,
+  children,
+}) => {
   const { flagOn } = useFlags();
 
   return (

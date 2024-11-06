@@ -31,7 +31,9 @@ type RequireScopeProps = {
  * Ensures that the user has the required scope to view the page.
  * The auth error is not handled here, it is the responsibility of a parent component.
  */
-export const RequireScope: React.FunctionComponent<RequireScopeProps> = ({
+export const RequireScope: React.FunctionComponent<
+  React.PropsWithChildren<RequireScopeProps>
+> = ({
   isRequired = true,
   scopeSettingsTitle,
   scopeSettingsDescription,

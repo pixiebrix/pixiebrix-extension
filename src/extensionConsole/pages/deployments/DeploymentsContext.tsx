@@ -56,6 +56,7 @@ import { RestrictedFeatures } from "@/auth/featureFlags";
 import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "@/types/modInstanceTypes";
 import { type AppDispatch } from "@/extensionConsole/store";
+import { type EmptyObject } from "type-fest";
 
 export type DeploymentsState = {
   /**
@@ -301,7 +302,9 @@ const DeploymentsContext = React.createContext<DeploymentsState>(defaultValue);
  * @see DeploymentBanner
  * @see useOnboarding
  */
-export const DeploymentsProvider: React.FC = ({ children }) => {
+export const DeploymentsProvider: React.FC<
+  React.PropsWithChildren<EmptyObject>
+> = ({ children }) => {
   const deployments = useDeployments();
 
   return (

@@ -57,7 +57,7 @@ export function unsafeAssumeValidArg<T extends UnknownObject>(
   return value as BrickArgs<T>;
 }
 
-const OUTPUT_KEY_REGEX = /[A-Z_a-z]\w{0,30}/;
+const OUTPUT_KEY_REGEX = /^[A-Z_a-z]\w{0,30}$/;
 
 /**
  * Validates and returns if `key` is a valid brick output key (i.e., variable name), or throws a TypeError.

@@ -21,10 +21,12 @@ import { castArray, uniq } from "lodash";
 /**
  * A mock for Stylesheets, because otherwise you have to use jest fake timers in tests.
  */
-export const Stylesheets: React.FC<{
-  href: string | string[];
-  mountOnLoad?: boolean;
-}> = ({ href, children }) => {
+export const Stylesheets: React.FC<
+  React.PropsWithChildren<{
+    href: string | string[];
+    mountOnLoad?: boolean;
+  }>
+> = ({ href, children }) => {
   const urls = uniq(castArray(href));
 
   return (

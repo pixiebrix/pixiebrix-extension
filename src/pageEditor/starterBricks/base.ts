@@ -168,6 +168,7 @@ export function baseSelectModComponent(
     integrationDependencies,
     permissions,
     optionsArgs: modState.optionsArgs,
+    variablesDefinition: modState.variablesDefinition,
   };
 }
 

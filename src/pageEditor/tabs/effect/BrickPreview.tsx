@@ -142,7 +142,7 @@ const BrickPreview: React.FunctionComponent<{
   traceRecord: Nullishable<TraceRecord>;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity -- complex due to formik
-}> = ({ brickConfig, starterBrick, traceRecord, previewRefreshMillis }) => {
+}> = ({ brickConfig, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
     ...initialState,
     outputKey: brickConfig.outputKey,
@@ -286,7 +286,7 @@ const BrickPreview: React.FunctionComponent<{
         </>
       )}
 
-      {output && !isError && !isEmpty(output) && (
+      {output != null && !isError && !isEmpty(output) && (
         <DataTabJsonTree
           data={output}
           searchable
@@ -296,11 +296,11 @@ const BrickPreview: React.FunctionComponent<{
         />
       )}
 
-      {output && !isError && isEmpty(output) && (
+      {output != null && !isError && isEmpty(output) && (
         <div className="text-muted mt-2">Brick produced empty output</div>
       )}
 
-      {output && isError && (
+      {output != null && isError && (
         <div className="text-danger mt-2">{getErrorMessage(output)}</div>
       )}
     </div>

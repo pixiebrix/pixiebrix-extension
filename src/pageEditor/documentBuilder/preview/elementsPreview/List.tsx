@@ -30,7 +30,7 @@ type ListProps = PreviewComponentProps & {
   element: DocumentBuilderElement;
 };
 
-const List: React.FunctionComponent<ListProps> = ({
+const List: React.FunctionComponent<React.PropsWithChildren<ListProps>> = ({
   element,
   children,
   className,
@@ -63,8 +63,10 @@ const List: React.FunctionComponent<ListProps> = ({
         isHovered={isHovered}
         isActive={isActive}
       />
-      <div className="text-muted">List: {arrayValue}</div>
-      <div className="text-muted">Element key: @{elementKey || "element"}</div>
+      <div className="text-muted">List: {String(arrayValue)}</div>
+      <div className="text-muted">
+        Element key: @{elementKey ? String(elementKey) : "element"}
+      </div>
       {children}
     </div>
   );

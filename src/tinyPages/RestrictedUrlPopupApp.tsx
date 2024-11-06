@@ -37,17 +37,16 @@ async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
     url: event.currentTarget.href,
   });
 
-  // TODO: Drop conditon after we drop the browser action popover since this
-  // component will only be shown in the sidebar
+  // TODO: Drop condition after we drop the browser action popover since this
+  //  component will only be shown in the sidebar
   if (!isBrowserSidebarTopFrame()) {
     window.close();
   }
 }
 
-const RestrictedUrlContent: React.FC<{ extensionConsoleLink?: boolean }> = ({
-  children,
-  extensionConsoleLink = true,
-}) => (
+const RestrictedUrlContent: React.FC<
+  React.PropsWithChildren<{ extensionConsoleLink?: boolean }>
+> = ({ children, extensionConsoleLink = true }) => (
   <div className="p-3">
     {children}
     <div className="mt-2">

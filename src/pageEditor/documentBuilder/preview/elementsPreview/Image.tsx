@@ -33,7 +33,7 @@ type ImageProps = PreviewComponentProps & {
   documentBuilderComponent: DocumentBuilderComponent;
 };
 
-const Image: React.FunctionComponent<ImageProps> = ({
+const Image: React.FunctionComponent<React.PropsWithChildren<ImageProps>> = ({
   elementType,
   documentBuilderComponent: { Component, props },
   children,

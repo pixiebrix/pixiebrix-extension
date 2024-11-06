@@ -21,11 +21,14 @@ import brickRegistry from "@/bricks/registry";
 import integrationRegistry from "@/integrations/registry";
 import starterBrickRegistry from "@/starterBricks/registry";
 import AsyncStateGate from "@/components/AsyncStateGate";
+import type { EmptyObject } from "type-fest";
 
 /**
  * Loading gate that requires brick definitions to be available before rendering children.
  */
-const RequireBrickRegistry: React.FC = ({ children }) => {
+const RequireBrickRegistry: React.FC<React.PropsWithChildren<EmptyObject>> = ({
+  children,
+}) => {
   const state = useAsyncState(
     async () =>
       Promise.all([

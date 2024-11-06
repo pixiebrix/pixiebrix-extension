@@ -37,7 +37,7 @@ const DescriptionFieldTemplate: React.VoidFunctionComponent<
       {typeof description === "string" ? (
         <MarkdownLazy markdown={description} />
       ) : (
-        { description }
+        <>{description}</>
       )}
     </div>
   );

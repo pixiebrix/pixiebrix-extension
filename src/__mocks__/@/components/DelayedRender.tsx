@@ -15,11 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from "react";
+import { EmptyObject } from "type-fest";
 
 /**
  * A mock for DelayedRender, because otherwise you have to use jest fake timers in tests.
  */
-const DelayedRender: React.FC = ({ children }) => (
+const DelayedRender: React.FC<React.PropsWithChildren<EmptyObject>> = ({
+  children,
+}) => (
   // Unlike the real DelayedRender, this wraps in a div so that we can add a data-testid for testing
   <div data-testid="DelayedRender">{children}</div>
 );

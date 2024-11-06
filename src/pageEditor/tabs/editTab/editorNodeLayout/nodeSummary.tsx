@@ -36,6 +36,7 @@ export function getBrickPipelineNodeSummary(
 
   if (
     brickConfig.id === CommentEffect.BRICK_ID &&
+    typeof brickConfig.config.comment === "string" &&
     !isNullOrBlank(brickConfig.config.comment)
   ) {
     return <div className={styles.comment}>{brickConfig.config.comment}</div>;

@@ -29,7 +29,10 @@ import {
   selectModComponentIntegrations,
 } from "@/store/modComponents/modComponentUtils";
 import { createPrivateSharing } from "@/utils/registryUtils";
-import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
 import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
 import type { SetRequired } from "type-fest";
@@ -43,7 +46,10 @@ import { type DeploymentMetadata } from "@/types/deploymentTypes";
  */
 type ModInstanceActivatedModComponent = SetRequired<
   ActivatedModComponent,
-  "definitions" | "integrationDependencies" | "permissions"
+  | "definitions"
+  | "integrationDependencies"
+  | "permissions"
+  | "variablesDefinition"
 >;
 
 /**
@@ -118,6 +124,8 @@ export function mapModInstanceToActivatedModComponents(
         // All definitions are pushed down into the mod components. That's OK because `resolveDefinitions` determines
         // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
         definitions: definition.definitions ?? {},
+        variablesDefinition:
+          definition.variables ?? emptyModVariablesDefinitionFactory(),
         optionsArgs: modInstance.optionsArgs,
         extensionPointId: modComponentDefinition.id,
         createTimestamp: updatedAt,
