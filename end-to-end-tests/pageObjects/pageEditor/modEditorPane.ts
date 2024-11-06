@@ -33,7 +33,9 @@ class CurrentInputsConfigurationForm extends ConfigurationForm {
 }
 
 class ModVariablesDefinitionConfigurationForm extends ConfigurationForm {
-  addVariableButton = this.getByRole("button", { name: "Add new variable" });
+  addVariableButton = this.getByRole("button", {
+    name: "Add new mod variable",
+  });
 }
 
 class InputConfigurationForm extends ConfigurationForm {

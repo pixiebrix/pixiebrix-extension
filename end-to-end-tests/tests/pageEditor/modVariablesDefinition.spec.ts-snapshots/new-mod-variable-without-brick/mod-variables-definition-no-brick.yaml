@@ -1,0 +1,52 @@
+apiVersion: v3
+kind: recipe
+metadata:
+  id: >-
+    @extension-e2e-test-unaffiliated/new-mod-00000000-0000-0000-0000-000000000000
+  name: New Mod
+  version: 1.0.0
+  description: Created by playwright for declaring mod variables
+extensionPoints:
+  - label: My pbx.vercel.app trigger
+    config:
+      action: []
+    permissions:
+      origins: []
+      permissions: []
+    id: extensionPoint
+    services: {}
+definitions:
+  extensionPoint:
+    kind: extensionPoint
+    definition:
+      type: trigger
+      reader:
+        - '@pixiebrix/document-metadata'
+        - '@pixiebrix/document-context'
+        - element: '@pixiebrix/html/element'
+      isAvailable:
+        matchPatterns:
+          - https://pbx.vercel.app/*
+        urlPatterns: []
+        selectors: []
+        allFrames: true
+      trigger: load
+      background: true
+      reportMode: once
+      showErrors: true
+options:
+  schema:
+    type: object
+    properties: {}
+  uiSchema:
+    ui:order:
+      - '*'
+variables:
+  schema:
+    $schema: https://json-schema.org/draft/2019-09/schema#
+    type: object
+    properties:
+      customVar:
+        description: Playwright description
+        x-sync-policy: none
+    required: []

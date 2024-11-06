@@ -72,3 +72,56 @@ test("add/save mod variable definition", async ({
     mode: "current",
   });
 });
+
+test("new mod variable without brick", async ({
+  page,
+  verifyModDefinitionSnapshot,
+  newPageEditorPage,
+}) => {
+  await page.goto("/");
+  const pageEditorPage = await newPageEditorPage(page.url());
+
+  await pageEditorPage.modListingPanel.addNewMod({
+    starterBrickName: "Trigger",
+  });
+
+  await test.step("Navigate to Mod Variables Pane", async () => {
+    const modListItem =
+      pageEditorPage.modListingPanel.getModListItemByName("New Mod");
+
+    await modListItem.click();
+
+    await pageEditorPage.modEditorPane.modVariablesTab.click();
+  });
+
+  await test.step("Declare Mod Variable", async () => {
+    const { modVariablesTabPanel } = pageEditorPage.modEditorPane;
+
+    await modVariablesTabPanel.addVariableButton.click();
+
+    expect(
+      modVariablesTabPanel.getByRole("cell", { name: "newVar" }),
+    ).not.toBeNull();
+
+    // TODO: improve a11y for mod variables definition table
+    await modVariablesTabPanel
+      .locator('input[name="variables.0.name"]')
+      .fill("customVar");
+
+    await modVariablesTabPanel
+      .getByPlaceholder("Enter variable documentation")
+      .fill("Playwright description");
+  });
+
+  const { modId } = await pageEditorPage.saveNewMod({
+    currentModName: "New Mod",
+    selectModListItem: false,
+    descriptionOverride: "Created by playwright for declaring mod variables",
+  });
+
+  await verifyModDefinitionSnapshot({
+    modId,
+    snapshotName: "mod-variables-definition-no-brick",
+    mode: "current",
+  });
+});
