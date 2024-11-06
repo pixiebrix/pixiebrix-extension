@@ -30,7 +30,7 @@ export interface RegistryProtocol {
   bricks: Registry<RegistryId, Brick>;
 
   /**
-   * Registry of bricks.
+   * Registry of starter bricks.
    */
   starterBricks: Registry<RegistryId, StarterBrick>;
 }
