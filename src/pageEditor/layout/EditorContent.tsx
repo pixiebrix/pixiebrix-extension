@@ -45,7 +45,7 @@ const EditorContent: React.FC = () => {
     selectTabIsConnectingToContentScript,
   );
   const sessionId = useSelector(selectSessionId);
-  const { editorError } = useSelector(selectErrorState);
+  const editorError = useSelector(selectErrorState);
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const {
