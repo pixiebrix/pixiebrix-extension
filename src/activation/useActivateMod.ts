@@ -90,12 +90,7 @@ function useActivateMod(
       const isReactivate = Boolean(modInstance);
 
       if (source === "extensionConsole") {
-        // Note: The prefix "Marketplace" on the telemetry event name
-        // here is legacy terminology from before the public marketplace
-        // was created. It refers to the mod-list part of the mod component
-        // console, to distinguish that from the workshop.
-        // It's being kept to keep our metrics history clean.
-        reportEvent(Events.MARKETPLACE_ACTIVATE, {
+        reportEvent(Events.EXTENSION_CONSOLE_MOD_ACTIVATE, {
           ...selectActivateEventData(modDefinition),
           reactivate: isReactivate,
         });
