@@ -47,7 +47,7 @@ import Retry from "@/bricks/transformers/controlFlow/Retry";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import TraverseElements from "@/bricks/transformers/traverseElements";
 import { type Brick } from "@/types/brickTypes";
-import { SelectElement } from "@/bricks/transformers/selectElement";
+import SelectElement from "@/bricks/transformers/selectElement";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
 import { Readable } from "@/bricks/transformers/readable";

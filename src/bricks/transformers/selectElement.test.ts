@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SelectElement } from "@/bricks/transformers/selectElement";
+import SelectElement from "@/bricks/transformers/selectElement";
 import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { CancelError } from "@/errors/businessErrors";

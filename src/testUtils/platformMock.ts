@@ -34,7 +34,6 @@ export const platformMock: PlatformProtocol = {
   open: jest.fn(),
   alert: jest.fn(),
   prompt: jest.fn(),
-  userSelectElementRefs: jest.fn(),
   request: jest.fn(),
   runSandboxedJavascript: jest.fn(),
   form: jest.fn(),

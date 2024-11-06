@@ -23,8 +23,9 @@ import {
 } from "@/platform/capabilities";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { isContentScriptPlatformProtocol } from "@/contentScript/platform/contentScriptPlatformProtocol";
 
-export class SelectElement extends TransformerABC {
+class SelectElement extends TransformerABC {
   constructor() {
     super(
       "@pixiebrix/html/select",
@@ -64,8 +65,15 @@ export class SelectElement extends TransformerABC {
     _args: BrickArgs,
     { platform }: BrickOptions,
   ): Promise<unknown> {
+    if (!isContentScriptPlatformProtocol(platform)) {
+      // Should never happen in practice because `getRequiredCapabilities` declares contentScript requirement
+      throw new Error("Expected ContentScriptPlatformProtocol");
+    }
+
     return {
       elements: await platform.userSelectElementRefs(),
     };
   }
 }
+
+export default SelectElement;

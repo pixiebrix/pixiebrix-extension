@@ -62,6 +62,7 @@ import { deferLogin } from "@/contentScript/integrations/deferredLoginController
 import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
+import type { ContentScriptPlatformProtocol } from "@/contentScript/platform/contentScriptPlatformProtocol";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -86,7 +87,10 @@ async function userSelectElementRefs(): Promise<ElementReference[]> {
   return elements.map((element) => getReferenceForElement(element));
 }
 
-class ContentScriptPlatform extends PlatformBase {
+class ContentScriptPlatform
+  extends PlatformBase
+  implements ContentScriptPlatformProtocol
+{
   private readonly _logger = new BackgroundLogger({
     platformName: "contentScript",
   });
@@ -130,7 +134,7 @@ class ContentScriptPlatform extends PlatformBase {
   override alert = window.alert.bind(window);
   override prompt = window.prompt.bind(window);
 
-  override userSelectElementRefs = userSelectElementRefs;
+  userSelectElementRefs = userSelectElementRefs;
 
   // Perform requests via the background so 1/ the host pages CSP doesn't conflict, and 2/ credentials aren't
   // passed to the content script
