@@ -15,35 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MessageContext } from "@/types/loggerTypes";
-import { type RegistryId } from "@/types/registryTypes";
-import { type BrickArgs, type RunMetadata } from "@/types/runtimeTypes";
-import { type Availability } from "@/types/availabilityTypes";
+import type { Registry, RegistryId } from "@/types/registryTypes";
+import type { Brick } from "@/types/brickTypes";
+import type { StarterBrick } from "@/types/starterBrickTypes";
 
 /**
- * @see BrickOptions
+ * Public interface for the Quick Bar registry.
+ * @since 1.8.10
  */
-export interface RemoteBrickOptions {
+export interface RegistryProtocol {
   /**
-   * Available variables for the brick execution.
+   * Registry of bricks.
    */
-  ctxt: unknown;
-  /**
-   * Run metadata for the brick execution.
-   */
-  meta: RunMetadata;
-  /**
-   * Logging context for the brick execution.
-   */
-  messageContext: MessageContext;
-  maxRetries?: number;
-  isAvailable?: Availability;
-}
+  bricks: Registry<RegistryId, Brick>;
 
-export interface RunBrickRequest {
-  sourceTabId?: number;
-  nonce?: string;
-  brickId: RegistryId;
-  brickArgs?: BrickArgs;
-  options: RemoteBrickOptions;
+  /**
+   * Registry of bricks.
+   */
+  starterBricks: Registry<RegistryId, StarterBrick>;
 }

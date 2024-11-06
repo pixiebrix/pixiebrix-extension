@@ -33,7 +33,7 @@ function registerBuiltinBricks(): void {
   }
 
   brickRegistry.register([
-    ...getAllTransformers(brickRegistry),
+    ...getAllTransformers(),
     ...getAllEffects(),
     ...getAllRenderers(),
     ...getAllReaders(),

@@ -16,7 +16,7 @@
  */
 
 import { type ReaderConfig } from "@/bricks/types";
-import brickRegistry from "@/bricks/registry";
+import { getPlatform } from "@/platform/platformContext";
 import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/bricks/readers/CompositeReader";
@@ -29,7 +29,9 @@ export async function mergeReaders(
   readerConfig: ReaderConfig,
 ): Promise<Reader> {
   if (typeof readerConfig === "string") {
-    return brickRegistry.lookup(readerConfig) as Promise<Reader>;
+    return getPlatform().registry.bricks.lookup(
+      readerConfig,
+    ) as Promise<Reader>;
   }
 
   if (Array.isArray(readerConfig)) {

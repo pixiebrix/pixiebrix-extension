@@ -99,6 +99,6 @@ export function makeIsBrickAllowedForPipeline(
     }
   }
 
-  return ({ type, block }: TypedBrickPair) =>
-    type !== excludedType || ALWAYS_SHOW.has(block.id);
+  return ({ type, brick }: TypedBrickPair) =>
+    type !== excludedType || ALWAYS_SHOW.has(brick.id);
 }

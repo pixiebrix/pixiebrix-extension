@@ -68,8 +68,8 @@ describe("requestRunInAllFrames", () => {
     const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
-      blockId: registryIdFactory(),
-      blockArgs: unsafeAssumeValidArg({}),
+      brickId: registryIdFactory(),
+      brickArgs: unsafeAssumeValidArg({}),
       options: optionsFactory(),
     });
     await expect(promise).resolves.toStrictEqual([]);
@@ -85,8 +85,8 @@ describe("requestRunInAllFrames", () => {
     const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
-      blockId: registryIdFactory(),
-      blockArgs: unsafeAssumeValidArg({}),
+      brickId: registryIdFactory(),
+      brickArgs: unsafeAssumeValidArg({}),
       options: optionsFactory(),
     });
 
@@ -105,8 +105,8 @@ describe("requestRunInAllFrames", () => {
     const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
-      blockId: registryIdFactory(),
-      blockArgs: unsafeAssumeValidArg({}),
+      brickId: registryIdFactory(),
+      brickArgs: unsafeAssumeValidArg({}),
       options: optionsFactory(),
     });
 

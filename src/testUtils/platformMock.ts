@@ -23,6 +23,7 @@ import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { RunArgs } from "@/types/runtimeTypes";
 import { normalizeSemVerString } from "@/types/helpers";
 import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
+import type { RegistryProtocol } from "@/platform/platformTypes/registryProtocol";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods
@@ -78,6 +79,16 @@ export const platformMock: PlatformProtocol = {
   },
   get logger(): Logger {
     return new ConsoleLogger();
+  },
+  get registry(): RegistryProtocol {
+    return {
+      bricks: {
+        lookup: jest.fn(),
+      },
+      starterBricks: {
+        lookup: jest.fn(),
+      },
+    };
   },
   get toasts(): ToastProtocol {
     return {

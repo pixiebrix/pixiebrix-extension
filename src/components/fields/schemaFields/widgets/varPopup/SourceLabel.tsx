@@ -48,7 +48,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       } else {
         label =
           brickConfig.label ??
-          allBricks.get(brickConfig.id)?.block?.name ??
+          allBricks.get(brickConfig.id)?.brick?.name ??
           source;
       }
     }

@@ -23,7 +23,7 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { InputValidationError } from "@/bricks/errors";
 import { BusinessError } from "@/errors/businessErrors";
 
-const brick = new RunBrickByIdTransformer(brickRegistry);
+const brick = new RunBrickByIdTransformer();
 
 beforeEach(() => {
   brickRegistry.clear();

@@ -42,6 +42,7 @@ import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 import type { ModComponentRef } from "@/types/modComponentTypes";
 import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
+import type { RegistryProtocol } from "@/platform/platformTypes/registryProtocol";
 
 /**
  * Base protocol with no capabilities implemented.
@@ -90,6 +91,13 @@ export class PlatformBase implements PlatformProtocol {
 
   async runSandboxedJavascript(_args: JavaScriptPayload): Promise<unknown> {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "sandbox");
+  }
+
+  get registry(): RegistryProtocol {
+    throw new PlatformCapabilityNotAvailableError(
+      this.platformName,
+      "registry",
+    );
   }
 
   get logger(): Logger {

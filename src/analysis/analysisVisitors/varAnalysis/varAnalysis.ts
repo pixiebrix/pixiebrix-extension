@@ -437,7 +437,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * @param blockConfig the block configuration
    */
   private safeGetOutputSchema(blockConfig: BrickConfig): Schema {
-    const block = this.allBlocks.get(blockConfig.id)?.block;
+    const block = this.allBlocks.get(blockConfig.id)?.brick;
 
     if (!block) {
       return {};
@@ -641,7 +641,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       const block = extra.parentNode?.id
         ? this.allBlocks.get(extra.parentNode.id)
         : null;
-      const variableSchema = block?.block.getPipelineVariableSchema?.(
+      const variableSchema = block?.brick.getPipelineVariableSchema?.(
         extra.parentNode,
         extra.pipelinePropName,
       );

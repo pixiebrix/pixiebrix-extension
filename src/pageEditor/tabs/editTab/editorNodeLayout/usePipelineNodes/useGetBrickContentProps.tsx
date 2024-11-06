@@ -60,7 +60,7 @@ export function useGetBrickContentProps() {
       brickConfig,
       traceRecord,
     }: BrickContentProps): BrickNodeContentProps => {
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
 
       if (isLoadingBricks || !brick) {
         return { brickLabel: "Loading..." };

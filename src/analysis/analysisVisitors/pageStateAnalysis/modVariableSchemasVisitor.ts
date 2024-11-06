@@ -49,10 +49,10 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
   ): void {
     super.visitBrick(position, brickConfig, extra);
 
-    const { block } = this.allBricks.get(brickConfig.id) ?? {};
+    const { brick } = this.allBricks.get(brickConfig.id) ?? {};
 
-    if (block?.getModVariableSchema) {
-      this.schemaPromises.push(block.getModVariableSchema?.(brickConfig));
+    if (brick?.getModVariableSchema) {
+      this.schemaPromises.push(brick.getModVariableSchema?.(brickConfig));
     }
   }
 

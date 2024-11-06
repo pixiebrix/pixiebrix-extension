@@ -23,7 +23,7 @@ import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfac
 import { pick } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
-const brick = new GetBrickInterfaceTransformer(brickRegistry);
+const brick = new GetBrickInterfaceTransformer();
 
 beforeEach(() => {
   brickRegistry.clear();

@@ -34,7 +34,7 @@ export function useGetIsBrickPipelineExpanded() {
 
   return useCallback(
     ({ brickConfig }: GetIsBrickPipelineExpandedProps) => {
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
 
       const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
       const hasSubPipelines = !isEmpty(subPipelines);
