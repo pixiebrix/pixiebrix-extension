@@ -49,6 +49,7 @@ import {
   type EditablePackageMetadata,
 } from "@/types/contract";
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { act } from "@testing-library/react-hooks";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/utils/notify");
@@ -177,7 +178,6 @@ describe("useActivateMod", () => {
     const {
       result: { current: activateMod },
       getReduxStore,
-      act,
     } = renderHook(() => useActivateMod("extensionConsole"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
@@ -250,7 +250,6 @@ describe("useActivateMod", () => {
     const {
       result: { current: activateMod },
       getReduxStore,
-      act,
     } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
@@ -323,7 +322,6 @@ describe("useActivateMod", () => {
 
     const {
       result: { current: activateMod },
-      act,
     } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");

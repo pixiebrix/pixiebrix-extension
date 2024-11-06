@@ -23,6 +23,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { type BrickConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
+import { act } from "@testing-library/react-hooks";
 
 const staticDocumentConfig: BrickConfig = {
   id: validateRegistryId("@pixiebrix/document"),
@@ -118,7 +119,7 @@ describe("useDuplicateElement", () => {
       },
     );
 
-    await wrapper.act(async () => {
+    await act(async () => {
       await wrapper.result.current("body.0.children.0.children.0.children.0");
     });
 
@@ -151,7 +152,7 @@ describe("useDuplicateElement", () => {
       },
     );
 
-    await wrapper.act(async () => {
+    await act(async () => {
       await wrapper.result.current("body.0.children.0.children.0.children.0");
     });
 
