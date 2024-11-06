@@ -16,7 +16,6 @@
  */
 
 import type { PlatformCapability } from "@/platform/capabilities";
-import type { ElementReference } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
@@ -101,14 +100,6 @@ export interface PlatformProtocol {
    * @param data the data to pass to the function
    */
   runSandboxedJavascript: (args: JavaScriptPayload) => Promise<unknown>;
-
-  /**
-   * Prompt the user to select one or more elements on a host page.
-   * @since 1.8.10
-   */
-  // XXX: this method only makes sense in the context of a content script. We might choose to exclude it from
-  // the platform protocol.
-  userSelectElementRefs: () => Promise<ElementReference[]>;
 
   /**
    * Perform an API request.

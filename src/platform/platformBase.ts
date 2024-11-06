@@ -26,7 +26,6 @@ import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
-import type { ElementReference } from "@/types/runtimeTypes";
 import type { Logger } from "@/types/loggerTypes";
 import type { DebuggerProtocol } from "@/platform/platformTypes/debuggerProtocol";
 import type { AudioProtocol } from "@/platform/platformTypes/audioProtocol";
@@ -91,13 +90,6 @@ export class PlatformBase implements PlatformProtocol {
 
   async runSandboxedJavascript(_args: JavaScriptPayload): Promise<unknown> {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "sandbox");
-  }
-
-  async userSelectElementRefs(): Promise<ElementReference[]> {
-    throw new PlatformCapabilityNotAvailableError(
-      this.platformName,
-      "contentScript",
-    );
   }
 
   get logger(): Logger {

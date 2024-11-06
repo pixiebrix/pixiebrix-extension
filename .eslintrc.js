@@ -87,7 +87,14 @@ module.exports = {
       {
         // This rule is customized below for files in "src/platform"
         boundaries,
-        allowedGlobs: ["**/messenger/**", "**/*.scss*"],
+        allowedGlobs: [
+          "**/messenger/**",
+          "**/*.scss*",
+          // Allow contexts to declare/export context-specific platform protocol. For example, the content script
+          // platform exposes additional methods for selecting elements, etc.
+          // Alternatively, we'd need to move platform-specific bricks into their respective context's folder.
+          "**/platform/*Protocol",
+        ],
       },
     ],
 
