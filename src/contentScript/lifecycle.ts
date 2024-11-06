@@ -744,3 +744,16 @@ export async function initNavigation() {
     _draftModComponentStarterBrickMap.clear();
   });
 }
+
+/**
+ * Test helper method to reset lifecycle module state. Simpler to use than Jest's isolateModules/resetModules which
+ * has gotchas with getPlatform() and other module-level state.
+ */
+export function TEST_reset(): void {
+  _initialFrameLoad = true;
+  pendingFrameLoadPromise = null;
+  _runningStarterBricks.clear();
+  _activatedModComponentStarterBrickMap.clear();
+  _draftModComponentStarterBrickMap.clear();
+  lastUrl = undefined;
+}
