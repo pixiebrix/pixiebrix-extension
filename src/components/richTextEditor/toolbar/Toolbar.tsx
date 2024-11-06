@@ -23,6 +23,7 @@ import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
 // Required for font-awesome styles to be available in IsolatedComponents
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import HeadingLevelDropdown from "@/components/richTextEditor/toolbar/HeadingLevelDropdown";
+import LinkButton from "@/components/richTextEditor/toolbar/LinkButton";
 
 const Toolbar: React.FunctionComponent = () => (
   <ButtonToolbar
@@ -33,6 +34,9 @@ const Toolbar: React.FunctionComponent = () => (
     <ButtonGroup size="sm">
       <BoldButton />
       <ItalicButton />
+    </ButtonGroup>
+    <ButtonGroup size="sm">
+      <LinkButton />
     </ButtonGroup>
   </ButtonToolbar>
 );
