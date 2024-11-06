@@ -78,6 +78,11 @@ export const FeatureFlags = {
   PAGE_EDITOR_DEVELOPER: "page-editor-developer",
 
   /**
+   * Show mod variables definition editor/affordances in the Page Editor
+   */
+  PAGE_EDITOR_MOD_VARIABLES_DEFINITION: "page-editor-mod-variables-definition",
+
+  /**
    * Show publish to public marketplace UI.
    * @since 1.7.37
    */

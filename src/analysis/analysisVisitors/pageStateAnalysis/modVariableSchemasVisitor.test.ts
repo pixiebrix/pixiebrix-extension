@@ -38,7 +38,7 @@ describe("ModVariableSchemasVisitor", () => {
     const result = ModVariableSchemasVisitor.collectSchemas([formState]);
 
     await expect(result).resolves.toEqual({
-      knownSchemas: [{ foo: true }],
+      knownProperties: [{ foo: true }],
     });
   });
 
@@ -65,7 +65,7 @@ describe("ModVariableSchemasVisitor", () => {
     ]);
 
     await expect(result).resolves.toEqual({
-      knownSchemas: [{ foo: true }, { bar: true }],
+      knownProperties: [{ foo: true }, { bar: true }],
     });
   });
 
@@ -92,7 +92,7 @@ describe("ModVariableSchemasVisitor", () => {
     ]);
 
     await expect(result).resolves.toEqual({
-      knownSchemas: [{ foo: true }],
+      knownProperties: [{ foo: true }],
     });
   });
 });

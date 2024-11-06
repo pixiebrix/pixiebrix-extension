@@ -30,6 +30,8 @@ import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/
 import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArgsEditor";
 import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import ModVariablesDefinitionEditor from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesDefinitionEditor";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -50,6 +52,11 @@ const ModEditorPane: React.VFC = () => {
     {
       name: "Edit",
       TabContent: ModMetadataEditor,
+    },
+    {
+      name: "Mod Variables",
+      TabContent: ModVariablesDefinitionEditor,
+      flag: FeatureFlags.PAGE_EDITOR_MOD_VARIABLES_DEFINITION,
     },
     {
       name: "Current Inputs",
