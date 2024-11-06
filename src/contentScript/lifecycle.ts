@@ -746,8 +746,11 @@ export async function initNavigation() {
 }
 
 /**
- * Test helper method to reset lifecycle module state. Simpler to use than Jest's isolateModules/resetModules which
- * has gotchas with getPlatform() and other module-level state.
+ * Test helper method to reset lifecycle module state.
+ *
+ * Simpler to use than Jest's isolateModules/resetModules which seem to have gotchas with getPlatform() and other
+ * module-level state.
+ * @internal
  */
 export function TEST_reset(): void {
   _initialFrameLoad = true;
