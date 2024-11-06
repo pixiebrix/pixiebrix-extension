@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* eslint-disable testing-library/no-node-access -- false positive on body/children when accessing document paths */
 
 import { toExpression } from "@/utils/expressionUtils";
 import useDuplicateElement from "@/pageEditor/documentBuilder/hooks/useDuplicateElement";
