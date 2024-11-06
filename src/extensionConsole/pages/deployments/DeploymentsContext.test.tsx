@@ -74,7 +74,7 @@ const Component: React.FC = () => {
       <AsyncButton onClick={async () => deployments.update()}>
         Update
       </AsyncButton>
-      {deployments.error && (
+      {deployments.error != null && (
         <div data-testid="Error">{getErrorMessage(deployments.error)}</div>
       )}
     </div>

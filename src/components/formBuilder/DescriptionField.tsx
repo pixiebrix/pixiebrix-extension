@@ -38,7 +38,7 @@ export const DescriptionField: React.VoidFunctionComponent<
       {typeof description === "string" ? (
         <MarkdownLazy markdown={description} />
       ) : (
-        { description }
+        <>{description}</>
       )}
     </div>
   );

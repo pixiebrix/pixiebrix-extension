@@ -22,21 +22,25 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
-export const UncollapsibleFieldSection: React.FC<{
-  title: React.ReactNode;
-}> = ({ title, children }) => (
+export const UncollapsibleFieldSection: React.FC<
+  React.PropsWithChildren<{
+    title: React.ReactNode;
+  }>
+> = ({ title, children }) => (
   <div className={styles.root}>
     <div className={styles.header}>{title}</div>
     <div className={styles.body}>{children}</div>
   </div>
 );
 
-const CollapsibleFieldSection: React.FC<{
-  title: React.ReactNode;
-  toggleExpanded: () => void;
-  expanded?: boolean;
-  bodyRef?: React.MutableRefObject<HTMLDivElement | null>;
-}> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
+const CollapsibleFieldSection: React.FC<
+  React.PropsWithChildren<{
+    title: React.ReactNode;
+    toggleExpanded: () => void;
+    expanded?: boolean;
+    bodyRef?: React.MutableRefObject<HTMLDivElement | null>;
+  }>
+> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
   const headerRef = useRef<HTMLButtonElement | null>(null);
 
   const onToggle = (event: React.MouseEvent | React.KeyboardEvent) => {

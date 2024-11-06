@@ -18,10 +18,12 @@
 import React from "react";
 import cx from "classnames";
 
-const Centered: React.FunctionComponent<{
-  isScrollable?: boolean;
-  vertically?: boolean;
-}> = ({ isScrollable = false, vertically = false, children }) => (
+const Centered: React.FunctionComponent<
+  React.PropsWithChildren<{
+    isScrollable?: boolean;
+    vertically?: boolean;
+  }>
+> = ({ isScrollable = false, vertically = false, children }) => (
   <div
     className={cx("d-flex flex-column mx-auto mt-4 pb-2 max-550 text-center", {
       "h-100 overflow-auto": isScrollable,

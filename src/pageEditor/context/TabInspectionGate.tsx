@@ -24,6 +24,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { queryTabs } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { type EmptyObject } from "type-fest";
 
 /**
  * Tab inspection selection component.
@@ -77,7 +78,9 @@ const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
  *
  * @since 1.8.10
  */
-const TabInspectionGate: React.FC = ({ children }) => {
+const TabInspectionGate: React.FC<React.PropsWithChildren<EmptyObject>> = ({
+  children,
+}) => {
   const [showTabSelector, setShowTabSelector] = useState(false);
 
   useEffect(() => {
