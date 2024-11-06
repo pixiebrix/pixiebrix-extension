@@ -26,6 +26,7 @@ import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
+import { type EmptyObject } from "type-fest";
 
 export const GatePanel: React.FunctionComponent = () => {
   const dispatch = useDispatch();
@@ -89,7 +90,9 @@ export const GatePanel: React.FunctionComponent = () => {
 /**
  * A React component to show a warning if the frame is in portrait layout.
  */
-const DimensionGate: React.FunctionComponent = ({ children }) => {
+const DimensionGate: React.FunctionComponent<
+  React.PropsWithChildren<EmptyObject>
+> = ({ children }) => {
   const isDimensionsWarningDismissed = useSelector(
     selectIsDimensionsWarningDismissed,
   );

@@ -29,13 +29,14 @@ import { useSelector } from "react-redux";
 import StorageSettings from "@/extensionConsole/pages/settings/StorageSettings";
 import GeneralSettings from "@/extensionConsole/pages/settings/GeneralSettings";
 import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
+import { type EmptyObject } from "type-fest";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
 
-const Section: React.FunctionComponent = ({ children }) => (
-  <div className="mb-4">{children}</div>
-);
+const Section: React.FunctionComponent<
+  React.PropsWithChildren<EmptyObject>
+> = ({ children }) => <div className="mb-4">{children}</div>;
 
 const SettingsPage: React.FunctionComponent = () => {
   const organization = useSelector(selectOrganization);

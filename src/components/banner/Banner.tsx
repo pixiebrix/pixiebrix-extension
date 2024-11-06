@@ -24,7 +24,7 @@ export interface BannerProps {
   variant?: BannerVariant;
 }
 
-const Banner: React.FunctionComponent<BannerProps> = ({
+const Banner: React.FunctionComponent<React.PropsWithChildren<BannerProps>> = ({
   variant,
   children,
 }) => (

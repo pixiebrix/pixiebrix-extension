@@ -27,7 +27,9 @@ type UnknownProps = PreviewComponentProps & {
   documentBuilderComponent: DocumentBuilderComponent;
 };
 
-const Unknown: React.FunctionComponent<UnknownProps> = ({
+const Unknown: React.FunctionComponent<
+  React.PropsWithChildren<UnknownProps>
+> = ({
   documentBuilderComponent: { Component, props },
   children,
   className,

@@ -129,7 +129,7 @@ const useRequiredAuth = () => {
  *   token-based authentication.
  * - Therefore, also check the extension has the Authentication header token from the server.
  */
-const RequireAuth: React.FC<RequireAuthProps> = ({
+const RequireAuth: React.FC<React.PropsWithChildren<RequireAuthProps>> = ({
   children,
   LoginPage,
   ignoreApiError = false,

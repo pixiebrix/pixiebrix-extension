@@ -40,18 +40,16 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Mode = "modal" | "popover";
 
-const ModalLayout: React.FC<{ className?: string }> = ({
-  className,
-  children,
-}) => (
+const ModalLayout: React.FC<
+  React.PropsWithChildren<{ className?: string }>
+> = ({ className, children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
   <div className={cx("modal-content", className)}>{children}</div>
 );
 
-const PopoverLayout: React.FC<{ className?: string }> = ({
-  className,
-  children,
-}) => (
+const PopoverLayout: React.FC<
+  React.PropsWithChildren<{ className?: string }>
+> = ({ className, children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
   // data-iframe-height is used by iframe-resizer
   <div className={cx("popover", className)} data-iframe-height="">

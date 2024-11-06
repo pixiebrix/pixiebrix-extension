@@ -33,9 +33,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
  * @param children the tab content
  */
 const DataTabPane: React.FC<
-  TabPaneProps & {
-    isDeveloperOnly?: boolean;
-  }
+  React.PropsWithChildren<
+    TabPaneProps & {
+      isDeveloperOnly?: boolean;
+    }
+  >
 > = ({ children, isDeveloperOnly = false, ...tabProps }) => (
   <Tab.Pane
     className={dataPanelStyles.tabPane}
