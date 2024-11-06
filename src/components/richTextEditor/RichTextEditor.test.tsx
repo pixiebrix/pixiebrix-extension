@@ -4,51 +4,43 @@ import userEvent from "@testing-library/user-event";
 import RichTextEditor from "./RichTextEditor";
 
 describe("RichTextEditor", () => {
-  const user = userEvent.setup();
+  const user = userEvent.setup({
+    delay: 20,
+  });
 
   test("applies bold formatting using toolbar button", async () => {
-    render(<RichTextEditor content="Hello World" />);
+    render(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
-    await user.tripleClick(editor); // Select all text
+    await user.type(editor, "regular");
+    await user.click(screen.getByRole("button", { name: "Bold" }));
+    await user.type(editor, "and bold");
 
-    const boldButton = screen.getByRole("button", { name: "Bold" });
-    await user.click(boldButton);
-
-    const editorElement = screen.getByRole("textbox");
-    expect(editorElement?.innerHTML).toBe(
-      "<p><strong>Hello World</strong></p>",
-    );
+    expect(editor?.innerHTML).toBe("<p>regular<strong>and bold</strong></p>");
   });
 
   test("applies italic formatting using toolbar button", async () => {
-    render(<RichTextEditor content="Hello World" />);
+    render(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
-    await user.tripleClick(editor); // Select all text
+    await user.type(editor, "regular");
+    await user.click(screen.getByRole("button", { name: "Italic" }));
+    await user.type(editor, "and italic");
 
-    const italicButton = screen.getByRole("button", { name: "Italic" });
-    await user.click(italicButton);
-
-    const editorElement = screen.getByRole("textbox");
-    expect(editorElement?.innerHTML).toBe("<p><em>Hello World</em></p>");
+    expect(editor?.innerHTML).toBe("<p>regular<em>and italic</em></p>");
   });
 
-  test("applies both bold and italic formatting", async () => {
-    render(<RichTextEditor content="Hello World" />);
+  test("applies both bold and italic formatting using toolbar buttons", async () => {
+    render(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
-    await user.tripleClick(editor); // Select all text
+    await user.type(editor, "regular");
+    await user.click(screen.getByRole("button", { name: "Bold" }));
+    await user.click(screen.getByRole("button", { name: "Italic" }));
+    await user.type(editor, "both bold and italic");
 
-    const boldButton = screen.getByRole("button", { name: "Bold" });
-    const italicButton = screen.getByRole("button", { name: "Italic" });
-
-    await user.click(boldButton);
-    await user.click(italicButton);
-
-    const editorElement = screen.getByRole("textbox");
-    expect(editorElement?.innerHTML).toBe(
-      "<p><strong><em>Hello World</em></strong></p>",
+    expect(editor?.innerHTML).toBe(
+      "<p>regular<strong><em>both bold and italic</em></strong></p>",
     );
   });
 
