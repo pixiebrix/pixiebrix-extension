@@ -30,6 +30,8 @@ import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import integrationRegistry from "@/integrations/registry";
+import brickRegistry from "@/bricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { performConfiguredRequest } from "@/background/requests";
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -43,6 +45,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
  */
 class ExtensionPagePlatform extends PlatformBase {
   override capabilities: PlatformCapability[] = [
+    "registry",
     "dom",
     "alert",
     "toast",
@@ -64,6 +67,13 @@ class ExtensionPagePlatform extends PlatformBase {
 
   override get logger() {
     return this._logger;
+  }
+
+  override get registry(): PlatformProtocol["registry"] {
+    return {
+      bricks: brickRegistry,
+      starterBricks: starterBrickRegistry,
+    };
   }
 
   // Support tracing for bricks run in the sidebar and clearing logs in Page Editor/Extension Console. See PanelBody.tsx

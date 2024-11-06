@@ -71,6 +71,11 @@ import starterBrickRegistry from "@/starterBricks/registry";
  * @see PlatformProtocol
  */
 
+expectContext(
+  "contentScript",
+  "contentScriptPlatform imported directly/indirectly from another context",
+);
+
 async function playSound(sound: string): Promise<void> {
   const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));
   // NOTE: this does not wait for the sound effect to complete
