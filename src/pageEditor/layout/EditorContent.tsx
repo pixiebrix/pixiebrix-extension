@@ -22,7 +22,6 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
-import BetaPane from "@/pageEditor/panes/BetaPane";
 import ModComponentEditorPane from "@/pageEditor/panes/ModComponentEditorPane";
 import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
 import HomePane from "@/pageEditor/panes/HomePane";
@@ -46,7 +45,7 @@ const EditorContent: React.FC = () => {
     selectTabIsConnectingToContentScript,
   );
   const sessionId = useSelector(selectSessionId);
-  const { isBetaError, editorError } = useSelector(selectErrorState);
+  const { editorError } = useSelector(selectErrorState);
   const activeModComponentId = useSelector(selectActiveModComponentId);
   const activeModId = useSelector(selectActiveModId);
   const {
@@ -91,11 +90,6 @@ const EditorContent: React.FC = () => {
   if (!tabHasPermissions && !isConnectingToContentScript) {
     // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
     return <NoTabAccessPane />;
-  }
-
-  // Show generic error for beta features
-  if (isBetaError) {
-    return <BetaPane />;
   }
 
   if (activeModComponentId) {

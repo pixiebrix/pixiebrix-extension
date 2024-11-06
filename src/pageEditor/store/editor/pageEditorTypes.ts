@@ -152,16 +152,6 @@ export type EditorStateV1 = {
   readonly elements: BaseFormStateV1[];
 
   /**
-   * True if error is because user does not have access to beta features
-   */
-  beta?: boolean;
-
-  /**
-   * Is the user using the new page editor beta UI?
-   */
-  isBetaUI: boolean;
-
-  /**
    * The current UI state of each element, indexed by the element id
    */
   elementUIStates: Record<UUID, BrickPipelineUIState>;
