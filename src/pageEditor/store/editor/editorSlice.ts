@@ -65,7 +65,6 @@ import {
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { testMatchPatterns } from "@/bricks/available";
-import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
@@ -97,10 +96,8 @@ export const initialState: EditorState = {
   activeModId: null,
   expandedModId: null,
   error: null,
-  beta: false,
   modComponentFormStates: [],
   dirty: {},
-  isBetaUI: false,
   brickPipelineUIStateById: {},
   dirtyModMetadataById: {},
   dirtyModOptionsDefinitionById: {},
@@ -338,7 +335,6 @@ export const editorSlice = createSlice({
       state.activeModId = null;
       state.expandedModId = null;
       state.error = null;
-      state.beta = false;
       state.selectionSeq++;
     },
 
@@ -350,17 +346,9 @@ export const editorSlice = createSlice({
     /// ERROR/WARNING HANDLING
     ///
 
-    betaError(state) {
-      const error = new BusinessError("This feature is in private beta");
-      state.error = serializeError(error);
-      state.beta = true;
-      state.activeModComponentId = null;
-    },
-
     adapterError(state, action: PayloadAction<{ uuid: UUID; error: unknown }>) {
       const { uuid, error } = action.payload;
       state.error = serializeError(error);
-      state.beta = false;
       state.activeModComponentId = uuid;
       state.selectionSeq++;
     },
@@ -388,7 +376,6 @@ export const editorSlice = createSlice({
       const modId = action.payload;
 
       state.error = null;
-      state.beta = false;
       state.activeModComponentId = null;
       state.activeModId = modId;
 
