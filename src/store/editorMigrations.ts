@@ -56,7 +56,7 @@ import {
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
 import { type SetOptional } from "type-fest";
-import { initialState } from "@/store/editorInitialState";
+import { initialState, initialSyncedState } from "@/store/editorInitialState";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -379,19 +379,6 @@ export function migrateEditorStateV10(
 }
 
 /** @internal */
-export function getInitialEditorStateSynced(): EditorStateSynced {
-  return pick(
-    cloneDeep(initialState),
-    "activeModComponentId",
-    "activeModId",
-    "expandedModId",
-    "brickPipelineUIStateById",
-    "isDataPanelExpanded",
-    "isModListExpanded",
-  );
-}
-
-/** @internal */
 export function migrateEditorStateV11(
   state: EditorStateMigratedV11 & PersistedState,
 ): EditorStateMigratedV12 & EditorStateSynced & PersistedState {
@@ -408,7 +395,7 @@ export function migrateEditorStateV11(
   } = state;
 
   return {
-    ...getInitialEditorStateSynced(),
+    ...initialSyncedState,
     dirty,
     dirtyModVariablesDefinitionById,
     isDimensionsWarningDismissed,

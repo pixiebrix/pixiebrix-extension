@@ -15,30 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import {
+  type EditorStateEphemeral,
+  type EditorState,
+  type EditorStateSynced,
+} from "@/pageEditor/store/editor/pageEditorTypes";
 
-/** @internal */
-export const initialState: EditorState = {
-  selectionSeq: 0,
-  activeModComponentId: null,
-  activeModId: null,
-  expandedModId: null,
+const initialEphemeralState: EditorStateEphemeral = {
   error: null,
-  modComponentFormStates: [],
-  dirty: {},
-  brickPipelineUIStateById: {},
-  dirtyModMetadataById: {},
-  dirtyModOptionsDefinitionById: {},
-  dirtyModVariablesDefinitionById: {},
-  dirtyModOptionsArgsById: {},
+  selectionSeq: 0,
   visibleModal: null,
-  deletedModComponentFormStateIdsByModId: {},
   availableActivatedModComponentIds: [],
   isPendingAvailableActivatedModComponents: false,
   availableDraftModComponentIds: [],
   isPendingDraftModComponents: false,
-  isModListExpanded: true,
-  isDataPanelExpanded: true,
-  isDimensionsWarningDismissed: false,
   isVariablePopoverVisible: false,
+};
+
+export const initialSyncedState: EditorStateSynced = {
+  activeModComponentId: null,
+  activeModId: null,
+  expandedModId: null,
+  brickPipelineUIStateById: {},
+  isDataPanelExpanded: true,
+  isModListExpanded: true,
+};
+
+/** @internal */
+export const initialState: EditorState = {
+  ...initialEphemeralState,
+  ...initialSyncedState,
+  modComponentFormStates: [],
+  dirty: {},
+  dirtyModMetadataById: {},
+  dirtyModOptionsDefinitionById: {},
+  dirtyModVariablesDefinitionById: {},
+  dirtyModOptionsArgsById: {},
+  deletedModComponentFormStateIdsByModId: {},
+  isDimensionsWarningDismissed: false,
 };

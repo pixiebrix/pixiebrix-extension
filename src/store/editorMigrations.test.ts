@@ -64,7 +64,6 @@ import {
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
-  getInitialEditorStateSynced,
   migrateEditorStateV1,
   migrateEditorStateV10,
   migrateEditorStateV11,
@@ -88,6 +87,7 @@ import {
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { initialSyncedState } from "@/store/editorInitialState";
 
 const initialStateV1: EditorStateMigratedV1 & PersistedState = {
   selectionSeq: 0,
@@ -318,7 +318,7 @@ const initialStateV12: EditorStateMigratedV12 & PersistedState = {
     "dirtyModVariablesDefinitionById",
     "_persist",
   ),
-  ...getInitialEditorStateSynced(),
+  ...initialSyncedState,
 };
 
 function unmigrateServices(
