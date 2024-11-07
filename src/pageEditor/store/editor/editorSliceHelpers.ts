@@ -170,7 +170,6 @@ export function setActiveModComponentId(
   modComponentFormState: ModComponentFormState,
 ) {
   state.error = null;
-  state.beta = false;
   state.activeModComponentId = modComponentFormState.uuid;
   state.activeModId = null;
   state.expandedModId =

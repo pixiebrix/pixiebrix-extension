@@ -122,11 +122,6 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
 
   return useCallback(
     async (adapter: ModComponentFormStateAdapter) => {
-      if (adapter.flag && flagOff(adapter.flag)) {
-        dispatch(actions.betaError());
-        return;
-      }
-
       try {
         const initialFormState = await getInitialModComponentFormState(adapter);
 

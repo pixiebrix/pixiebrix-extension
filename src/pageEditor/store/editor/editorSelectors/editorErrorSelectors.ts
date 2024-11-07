@@ -21,11 +21,7 @@ import { createSelector } from "@reduxjs/toolkit";
 
 export const selectErrorState = createSelector(
   (state: EditorRootState) => state.editor.error,
-  (state: EditorRootState) => state.editor.beta,
-  (error, beta) => ({
-    isBetaError: error && beta,
-    editorError: error ? deserializeError(error) : null,
-  }),
+  (error) => (error ? deserializeError(error) : null),
 );
 
 export const selectIsDimensionsWarningDismissed = (state: EditorRootState) =>
