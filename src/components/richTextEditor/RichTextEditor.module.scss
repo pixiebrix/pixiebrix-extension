@@ -43,6 +43,10 @@
 }
 
 .toolbarButtons {
+  :global(.btn-group) {
+    flex-direction: row;
+  }
+
   :global(.btn) {
     &:global(.active) {
       color: #007bff;

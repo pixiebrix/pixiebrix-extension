@@ -41,9 +41,11 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 const Toolbar: React.FunctionComponent = () => {
   const OverflowPopover = (
     <Popover id="toolbar-overflow-popover" className={styles.toolbarButtons}>
-      <ButtonGroup size="sm">
+      <ButtonGroup size="sm" className="mr-2">
         <UnderlineButton />
         <StrikethroughButton />
+      </ButtonGroup>
+      <ButtonGroup size="sm">
         <HorizontalRuleButton />
         <RemoveTextFormattingButton />
       </ButtonGroup>
@@ -56,12 +58,12 @@ const Toolbar: React.FunctionComponent = () => {
       aria-label="Rich-Text Editor Toolbar"
     >
       <HeadingLevelDropdown />
-      <ButtonGroup size="sm" className="ml-2">
+      <ButtonGroup size="sm" className="mr-2">
         <BoldButton />
         <ItalicButton />
       </ButtonGroup>
 
-      <ButtonGroup size="sm" className="ml-2">
+      <ButtonGroup size="sm" className="mr-2">
         <BulletedListButton />
         <NumberedListButton />
       </ButtonGroup>
