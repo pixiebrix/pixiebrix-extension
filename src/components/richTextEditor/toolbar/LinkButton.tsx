@@ -15,22 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useEffect } from "react";
-import { useCurrentEditor, BubbleMenu } from "@tiptap/react";
+import React, { useRef, useState } from "react";
+import { useCurrentEditor } from "@tiptap/react";
 // eslint-disable-next-line no-restricted-imports -- we need flexible styling for this component
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Overlay, Popover } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import styles from "./LinkButton.module.scss";
 
 const LinkButton: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
-  const showMenuRef = useRef(false);
+  const [showInputPopover, setShowInputPopover] = useState(false);
+  const target = useRef(null);
+
+  if (!editor) {
+    return null;
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    // TODO: fixme when moving to formik
     const url = formData.get("newUrl") as string;
 
     if (!url || url === "") {
@@ -44,47 +48,52 @@ const LinkButton: React.FunctionComponent = () => {
         .run();
     }
 
-    // Close the bubble menu after submission
-    showMenuRef.current = false;
+    setShowInputPopover(false);
     editor.commands.focus();
   };
 
-  if (!editor) {
-    return null;
-  }
-
   return (
     <>
-      <BubbleMenu
-        editor={editor}
-        shouldShow={({ editor: _editor }) => showMenuRef.current}
-        className={styles.bubbleMenu}
-      >
-        <Form inline onSubmit={handleSubmit}>
-          <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
-          <Form.Control
-            id="newUrl"
-            name="newUrl"
-            size="sm"
-            defaultValue={editor.getAttributes("link").href ?? ""}
-          />
-          <Button variant="link" type="submit" size="sm">
-            Submit
-          </Button>
-        </Form>
-      </BubbleMenu>
       <Button
+        ref={target}
         variant="default"
         active={editor.isActive("link")}
         aria-label="Link"
         onClick={() => {
-          showMenuRef.current = !showMenuRef.current;
-          // Force a re-render of the bubble menu
-          editor.commands.focus();
+          if (editor.state.selection.empty) {
+            return;
+          }
+
+          setShowInputPopover(!showInputPopover);
         }}
       >
         <FontAwesomeIcon icon={faLink} />
       </Button>
+
+      <Overlay
+        show={showInputPopover}
+        target={target.current}
+        placement="top"
+        rootClose
+        onHide={() => {
+          setShowInputPopover(false);
+        }}
+      >
+        <Popover id="urlInputPopover" className={styles.bubbleMenu}>
+          <Form inline onSubmit={handleSubmit}>
+            <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
+            <Form.Control
+              id="newUrl"
+              name="newUrl"
+              size="sm"
+              defaultValue={editor.getAttributes("link").href ?? ""}
+            />
+            <Button variant="link" type="submit" size="sm">
+              Submit
+            </Button>
+          </Form>
+        </Popover>
+      </Overlay>
     </>
   );
 };

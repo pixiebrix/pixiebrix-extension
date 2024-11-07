@@ -16,14 +16,13 @@
  */
 
 .bubbleMenu {
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
   font-size: 14px;
   padding: 4px 8px;
+  max-width: none;
 
   :global(.form-label) {
     margin: 0 8px 0 0;
+    text-wrap: nowrap;
   }
 
   :global(.form-control) {
