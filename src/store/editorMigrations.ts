@@ -16,7 +16,7 @@
  */
 
 import { type MigrationManifest, type PersistedState } from "redux-persist";
-import { mapValues, omit } from "lodash";
+import { cloneDeep, mapValues, omit, pick } from "lodash";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
@@ -44,6 +44,7 @@ import {
   type EditorStateMigratedV7,
   type EditorStateMigratedV8,
   type EditorStateMigratedV9,
+  type EditorStateSynced,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type Draft, produce } from "immer";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -55,6 +56,7 @@ import {
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
 import { type SetOptional } from "type-fest";
+import { initialState } from "@/store/editorInitialState";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
@@ -377,9 +379,22 @@ export function migrateEditorStateV10(
 }
 
 /** @internal */
+export function getInitialEditorStateSynced(): EditorStateSynced {
+  return pick(
+    cloneDeep(initialState),
+    "activeModComponentId",
+    "activeModId",
+    "expandedModId",
+    "brickPipelineUIStateById",
+    "isDataPanelExpanded",
+    "isModListExpanded",
+  );
+}
+
+/** @internal */
 export function migrateEditorStateV11(
   state: EditorStateMigratedV11 & PersistedState,
-): EditorStateMigratedV12 & PersistedState {
+): EditorStateMigratedV12 & EditorStateSynced & PersistedState {
   const {
     dirty,
     dirtyModVariablesDefinitionById,
@@ -393,6 +408,7 @@ export function migrateEditorStateV11(
   } = state;
 
   return {
+    ...getInitialEditorStateSynced(),
     dirty,
     dirtyModVariablesDefinitionById,
     isDimensionsWarningDismissed,

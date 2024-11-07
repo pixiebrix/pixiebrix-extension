@@ -64,6 +64,7 @@ import {
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { type PersistedState } from "redux-persist";
 import {
+  getInitialEditorStateSynced,
   migrateEditorStateV1,
   migrateEditorStateV10,
   migrateEditorStateV11,
@@ -301,21 +302,24 @@ const initialStateV11: EditorStateMigratedV11 & PersistedState = {
   deletedModComponentFormStateIdsByModId: {},
 };
 
-const initialStateV12: EditorStateMigratedV12 & PersistedState = pick<
-  EditorStateMigratedV11 & PersistedState,
-  keyof EditorStateMigratedV11 | "_persist"
->(
-  cloneDeep(initialStateV11),
-  "dirty",
-  "isDimensionsWarningDismissed",
-  "dirtyModMetadataById",
-  "dirtyModOptionsArgsById",
-  "modComponentFormStates",
-  "deletedModComponentFormStateIdsByModId",
-  "dirtyModOptionsDefinitionById",
-  "dirtyModVariablesDefinitionById",
-  "_persist",
-);
+const initialStateV12: EditorStateMigratedV12 & PersistedState = {
+  ...pick<
+    EditorStateMigratedV11 & PersistedState,
+    keyof EditorStateMigratedV11 | "_persist"
+  >(
+    cloneDeep(initialStateV11),
+    "dirty",
+    "isDimensionsWarningDismissed",
+    "dirtyModMetadataById",
+    "dirtyModOptionsArgsById",
+    "modComponentFormStates",
+    "deletedModComponentFormStateIdsByModId",
+    "dirtyModOptionsDefinitionById",
+    "dirtyModVariablesDefinitionById",
+    "_persist",
+  ),
+  ...getInitialEditorStateSynced(),
+};
 
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],

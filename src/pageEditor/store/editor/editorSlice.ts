@@ -90,32 +90,7 @@ import {
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { type UnionToTuple, type Except } from "type-fest";
-
-/** @internal */
-export const initialState: EditorState = {
-  selectionSeq: 0,
-  activeModComponentId: null,
-  activeModId: null,
-  expandedModId: null,
-  error: null,
-  modComponentFormStates: [],
-  dirty: {},
-  brickPipelineUIStateById: {},
-  dirtyModMetadataById: {},
-  dirtyModOptionsDefinitionById: {},
-  dirtyModVariablesDefinitionById: {},
-  dirtyModOptionsArgsById: {},
-  visibleModal: null,
-  deletedModComponentFormStateIdsByModId: {},
-  availableActivatedModComponentIds: [],
-  isPendingAvailableActivatedModComponents: false,
-  availableDraftModComponentIds: [],
-  isPendingDraftModComponents: false,
-  isModListExpanded: true,
-  isDataPanelExpanded: true,
-  isDimensionsWarningDismissed: false,
-  isVariablePopoverVisible: false,
-};
+import { initialState } from "@/store/editorInitialState";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 

@@ -16,10 +16,7 @@
  */
 
 import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import {
-  editorSlice,
-  initialState,
-} from "@/pageEditor/store/editor/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
@@ -51,6 +48,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { initialState } from "@/store/editorInitialState";
 
 describe("ensureBrickPipelineUIState", () => {
   test("does not affect existing ui state", () => {
