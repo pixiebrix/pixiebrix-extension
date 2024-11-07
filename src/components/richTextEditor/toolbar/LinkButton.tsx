@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { useCurrentEditor, BubbleMenu } from "@tiptap/react";
 // eslint-disable-next-line no-restricted-imports -- we need flexible styling for this component
 import { Button, Form } from "react-bootstrap";
@@ -25,38 +25,49 @@ import styles from "./LinkButton.module.scss";
 
 const LinkButton: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
+  const showMenuRef = useRef(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    // TODO: fixme when moving to formik
+    const url = formData.get("newUrl") as string;
+
+    if (!url || url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange("link")
+        .setLink({ href: url })
+        .run();
+    }
+
+    // Close the bubble menu after submission
+    showMenuRef.current = false;
+    editor.commands.focus();
+  };
 
   if (!editor) {
     return null;
   }
 
-  const handleClick = async () => {
-    // TODO: typing for getAttributes is any, better solution?
-    // const previousUrl =
-    //   typeof editor.getAttributes("link").href === "string"
-    //     ? (editor.getAttributes("link").href as string)
-    //     : null;
-    // Implement me
-    const url = "";
-    if (!url) {
-      return;
-    }
-
-    if (url === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-
-      return;
-    }
-
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  };
-
   return (
     <>
-      <BubbleMenu editor={editor} className={styles.bubbleMenu}>
-        <Form inline>
+      <BubbleMenu
+        editor={editor}
+        shouldShow={({ editor: _editor }) => showMenuRef.current}
+        className={styles.bubbleMenu}
+      >
+        <Form inline onSubmit={handleSubmit}>
           <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
-          <Form.Control id="newUrl" size="sm" />
+          <Form.Control
+            id="newUrl"
+            name="newUrl"
+            size="sm"
+            defaultValue={editor.getAttributes("link").href ?? ""}
+          />
           <Button variant="link" type="submit" size="sm">
             Submit
           </Button>
@@ -64,9 +75,13 @@ const LinkButton: React.FunctionComponent = () => {
       </BubbleMenu>
       <Button
         variant="default"
-        onClick={handleClick}
         active={editor.isActive("link")}
         aria-label="Link"
+        onClick={() => {
+          showMenuRef.current = !showMenuRef.current;
+          // Force a re-render of the bubble menu
+          editor.commands.focus();
+        }}
       >
         <FontAwesomeIcon icon={faLink} />
       </Button>
