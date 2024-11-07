@@ -17,17 +17,17 @@
 
 import {
   type DraftModState,
-  type EditorStateV1,
-  type EditorStateV10,
-  type EditorStateV11,
-  type EditorStateV2,
-  type EditorStateV3,
-  type EditorStateV4,
-  type EditorStateV5,
-  type EditorStateV6,
-  type EditorStateV7,
-  type EditorStateV8,
-  type EditorStateV9,
+  type EditorStateMigratedV1,
+  type EditorStateMigratedV10,
+  type EditorStateMigratedV11,
+  type EditorStateMigratedV2,
+  type EditorStateMigratedV3,
+  type EditorStateMigratedV4,
+  type EditorStateMigratedV5,
+  type EditorStateMigratedV6,
+  type EditorStateMigratedV7,
+  type EditorStateMigratedV8,
+  type EditorStateMigratedV9,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { cloneDeep, mapValues, omit } from "lodash";
 import {
@@ -83,7 +83,7 @@ import {
 import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
-const initialStateV1: EditorStateV1 & PersistedState = {
+const initialStateV1: EditorStateMigratedV1 & PersistedState = {
   selectionSeq: 0,
   activeElementId: null,
   activeRecipeId: null,
@@ -111,7 +111,7 @@ const initialStateV1: EditorStateV1 & PersistedState = {
   },
 };
 
-const initialStateV2: EditorStateV2 & PersistedState = {
+const initialStateV2: EditorStateMigratedV2 & PersistedState = {
   ...omit(initialStateV1, "elements", "deletedElementsByRecipeId"),
   elements: [],
   deletedElementsByRecipeId: {},
@@ -122,7 +122,7 @@ const initialStateV2: EditorStateV2 & PersistedState = {
   },
 };
 
-const initialStateV3: EditorStateV3 & PersistedState = {
+const initialStateV3: EditorStateMigratedV3 & PersistedState = {
   selectionSeq: 0,
   activeModComponentId: null,
   activeModId: null,
@@ -152,7 +152,7 @@ const initialStateV3: EditorStateV3 & PersistedState = {
   },
 };
 
-const initialStateV4: EditorStateV4 & PersistedState = {
+const initialStateV4: EditorStateMigratedV4 & PersistedState = {
   selectionSeq: 0,
   activeModComponentId: null,
   activeModId: null,
@@ -182,7 +182,7 @@ const initialStateV4: EditorStateV4 & PersistedState = {
   },
 };
 
-const initialStateV5: EditorStateV5 & PersistedState = {
+const initialStateV5: EditorStateMigratedV5 & PersistedState = {
   selectionSeq: 0,
   activeModComponentId: null,
   activeModId: null,
@@ -212,7 +212,7 @@ const initialStateV5: EditorStateV5 & PersistedState = {
   },
 };
 
-const initialStateV6: EditorStateV6 & PersistedState = {
+const initialStateV6: EditorStateMigratedV6 & PersistedState = {
   selectionSeq: 0,
   activeModComponentId: null,
   activeModId: null,
@@ -241,10 +241,10 @@ const initialStateV6: EditorStateV6 & PersistedState = {
   },
 };
 
-const initialStateV7: EditorStateV7 & PersistedState =
+const initialStateV7: EditorStateMigratedV7 & PersistedState =
   cloneDeep(initialStateV6);
 
-const initialStateV8: EditorStateV8 & PersistedState = {
+const initialStateV8: EditorStateMigratedV8 & PersistedState = {
   selectionSeq: 0,
   activeModComponentId: null,
   activeModId: null,
@@ -273,19 +273,19 @@ const initialStateV8: EditorStateV8 & PersistedState = {
   },
 };
 
-const initialStateV9: EditorStateV9 & PersistedState = {
+const initialStateV9: EditorStateMigratedV9 & PersistedState = {
   ...cloneDeep(initialStateV8),
   modComponentFormStates: [],
   deletedModComponentFormStatesByModId: {},
 };
 
-const initialStateV10: EditorStateV10 & PersistedState = {
+const initialStateV10: EditorStateMigratedV10 & PersistedState = {
   ...omit(cloneDeep(initialStateV9), "dirtyModOptionsById"),
   dirtyModOptionsDefinitionsById: {},
   dirtyModOptionsArgsById: {},
 };
 
-const initialStateV11: EditorStateV11 & PersistedState = {
+const initialStateV11: EditorStateMigratedV11 & PersistedState = {
   ...omit(
     cloneDeep(initialStateV10),
     "dirtyModOptionsDefinitionsById",
@@ -326,8 +326,8 @@ function unmigrateDeletedElements(
 }
 
 function unmigrateEditorStateV2toV1(
-  state: EditorStateV2 & PersistedState,
-): EditorStateV1 & PersistedState {
+  state: EditorStateMigratedV2 & PersistedState,
+): EditorStateMigratedV1 & PersistedState {
   return {
     ...omit(state, "elements", "deletedElementsByRecipeId"),
     elements: state.elements.map((element) =>
@@ -357,8 +357,8 @@ function unmigrateFormStateV3toV2(formState: BaseFormStateV3): BaseFormStateV2 {
 }
 
 function unmigrateEditorStateV3toV2(
-  state: EditorStateV3 & PersistedState,
-): EditorStateV2 & PersistedState {
+  state: EditorStateMigratedV3 & PersistedState,
+): EditorStateMigratedV2 & PersistedState {
   return {
     ...omit(
       state,
@@ -394,8 +394,8 @@ function unmigrateEditorStateV3toV2(
 }
 
 function unmigrateEditorStateV4toV3(
-  state: EditorStateV4 & PersistedState,
-): EditorStateV3 & PersistedState {
+  state: EditorStateMigratedV4 & PersistedState,
+): EditorStateMigratedV3 & PersistedState {
   return {
     ...omit(
       state,
@@ -454,8 +454,8 @@ function unmigrateFormStateV8toV7(
 }
 
 function unmigrateEditorStateV5toV4(
-  state: EditorStateV5 & PersistedState,
-): EditorStateV4 & PersistedState {
+  state: EditorStateMigratedV5 & PersistedState,
+): EditorStateMigratedV4 & PersistedState {
   return {
     ...omit(
       state,
@@ -476,8 +476,8 @@ function unmigrateEditorStateV5toV4(
 }
 
 function unmigrateEditorStateV6toV5(
-  state: EditorStateV6 & PersistedState,
-): EditorStateV5 & PersistedState {
+  state: EditorStateMigratedV6 & PersistedState,
+): EditorStateMigratedV5 & PersistedState {
   return {
     ...state,
     insertingStarterBrickType: null,
@@ -485,8 +485,8 @@ function unmigrateEditorStateV6toV5(
 }
 
 function unmigrateEditorStateV8toV7(
-  state: EditorStateV8 & PersistedState,
-): EditorStateV7 & PersistedState {
+  state: EditorStateMigratedV8 & PersistedState,
+): EditorStateMigratedV7 & PersistedState {
   return {
     ...omit(
       state,
@@ -505,8 +505,8 @@ function unmigrateEditorStateV8toV7(
 }
 
 function unmigrateEditorStateV9toV8(
-  state: EditorStateV9 & PersistedState,
-): EditorStateV8 & PersistedState {
+  state: EditorStateMigratedV9 & PersistedState,
+): EditorStateMigratedV8 & PersistedState {
   return {
     ...state,
     modComponentFormStates: state.modComponentFormStates.map((formState) =>
@@ -516,8 +516,8 @@ function unmigrateEditorStateV9toV8(
 }
 
 function unmigrateEditorStateV10toV9(
-  state: EditorStateV10 & PersistedState,
-): EditorStateV9 & PersistedState {
+  state: EditorStateMigratedV10 & PersistedState,
+): EditorStateMigratedV9 & PersistedState {
   const unmigrateFormState = (formState: BaseFormStateV7) =>
     unmigrateFormStateV7toV6(formState, {
       optionsArgs:
@@ -542,8 +542,8 @@ function unmigrateEditorStateV10toV9(
 }
 
 function unmigrateEditorStateV11toV10(
-  state: EditorStateV11 & PersistedState,
-): EditorStateV10 & PersistedState {
+  state: EditorStateMigratedV11 & PersistedState,
+): EditorStateMigratedV10 & PersistedState {
   const unmigrateFormState = (formState: BaseFormStateV8) =>
     unmigrateFormStateV8toV7(formState, {
       variablesDefinition:
@@ -692,7 +692,7 @@ describe("editor state migrations", () => {
 
     it("migrates the form states", () => {
       const formStateV2 = formStateFactoryV2();
-      const expectedEditorStateV3: EditorStateV3 & PersistedState = {
+      const expectedEditorStateV3: EditorStateMigratedV3 & PersistedState = {
         ...initialStateV3,
         modComponentFormStates: [formStateV2],
       };
@@ -712,7 +712,7 @@ describe("editor state migrations", () => {
 
     it("migrates the form states", () => {
       const formStateV3 = formStateFactoryV3();
-      const expectedEditorStateV4: EditorStateV4 & PersistedState = {
+      const expectedEditorStateV4: EditorStateMigratedV4 & PersistedState = {
         ...initialStateV4,
         modComponentFormStates: [formStateV3],
       };
@@ -731,7 +731,7 @@ describe("editor state migrations", () => {
     });
 
     it("migrates the inserting field and the form states", () => {
-      const expectedEditorStateV5: EditorStateV5 & PersistedState = {
+      const expectedEditorStateV5: EditorStateMigratedV5 & PersistedState = {
         ...initialStateV5,
         insertingStarterBrickType: StarterBrickTypes.BUTTON,
         modComponentFormStates: [formStateFactoryV4(), formStateFactoryV4()],
@@ -752,7 +752,8 @@ describe("editor state migrations", () => {
 
     it("migrates remove insertingStarterBrickType property", () => {
       const { insertingStarterBrickType, ...rest } = initialStateV5;
-      const expectedEditorStateV6: EditorStateV6 & PersistedState = rest;
+      const expectedEditorStateV6: EditorStateMigratedV6 & PersistedState =
+        rest;
       const unmigrated = unmigrateEditorStateV6toV5(expectedEditorStateV6);
       expect(migrateEditorStateV5(unmigrated)).toStrictEqual(
         expectedEditorStateV6,
@@ -805,7 +806,7 @@ describe("editor state migrations", () => {
     });
 
     it("add variable definitions section", () => {
-      const expectedEditorStateV8: EditorStateV8 & PersistedState = {
+      const expectedEditorStateV8: EditorStateMigratedV8 & PersistedState = {
         ...initialStateV8,
         modComponentFormStates: [formStateFactoryV5()],
       };
@@ -824,7 +825,7 @@ describe("editor state migrations", () => {
     });
 
     it("adds missing modMetadata", () => {
-      const expectedEditorStateV9: EditorStateV9 & PersistedState = {
+      const expectedEditorStateV9: EditorStateMigratedV9 & PersistedState = {
         ...initialStateV9,
         modComponentFormStates: [formStateFactoryV6()],
       };
@@ -856,7 +857,7 @@ describe("editor state migrations", () => {
       const optionsArgs = { foo: 42 };
       const formState = formStateFactoryV7();
 
-      const expectedEditorStateV10: EditorStateV10 & PersistedState = {
+      const expectedEditorStateV10: EditorStateMigratedV10 & PersistedState = {
         ...initialStateV10,
         modComponentFormStates: [formState],
         dirty: { [formState.uuid]: true },
@@ -875,7 +876,7 @@ describe("editor state migrations", () => {
     it("migrates clean options args", () => {
       const formState = formStateFactoryV7();
 
-      const expectedEditorStateV10: EditorStateV10 & PersistedState = {
+      const expectedEditorStateV10: EditorStateMigratedV10 & PersistedState = {
         ...initialStateV10,
         modComponentFormStates: [formState],
         dirty: {},
@@ -903,7 +904,7 @@ describe("editor state migrations", () => {
       };
       const formState = formStateFactoryV8();
 
-      const expectedEditorStateV11: EditorStateV11 & PersistedState = {
+      const expectedEditorStateV11: EditorStateMigratedV11 & PersistedState = {
         ...initialStateV11,
         modComponentFormStates: [formState],
         dirty: { [formState.uuid]: true },

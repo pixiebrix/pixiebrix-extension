@@ -26,6 +26,7 @@ import {
   type AddBrickLocation,
   type EditorRootState,
   type EditorState,
+  type EditorStateEphemeral,
   type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
@@ -80,7 +81,7 @@ import {
   type ModMetadata,
 } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { createMigrate } from "redux-persist";
+import { createMigrate, type PersistConfig } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
 import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
@@ -88,6 +89,7 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { type UnionToTuple, type Except } from "type-fest";
 
 /** @internal */
 export const initialState: EditorState = {
@@ -1084,14 +1086,31 @@ export const actions = {
   checkActiveModComponentAvailability,
 };
 
-export const persistEditorConfig = {
+type PageEditorPersistConfig = Except<
+  PersistConfig<EditorState>,
+  "blacklist"
+> & {
+  blacklist: UnionToTuple<keyof EditorStateEphemeral>;
+};
+
+export const persistEditorConfig: PageEditorPersistConfig = {
   key: "editor",
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 11,
+  version: 12,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
+  blacklist: [
+    "selectionSeq",
+    "error",
+    "visibleModal",
+    "isVariablePopoverVisible",
+    "copiedBrick",
+    "availableActivatedModComponentIds",
+    "isPendingAvailableActivatedModComponents",
+    "availableDraftModComponentIds",
+    "isPendingDraftModComponents",
+  ],
 };
 
 function validateActiveModComponentId(state: Draft<EditorState>) {

@@ -15,28 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthRootState } from "@/auth/authTypes";
-import { type LogRootState } from "@/components/logViewer/logViewerTypes";
-import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
-import { type SettingsRootState } from "@/store/settings/settingsTypes";
-import { type RuntimeRootState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
-import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { type UUID } from "@/types/stringTypes";
-import { type RegistryId, type VersionedMetadata } from "@/types/registryTypes";
-import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
-import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
-import { type AnalysisRootState } from "@/analysis/analysisTypes";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import { type TabStateRootState } from "@/pageEditor/store/tabState/tabStateTypes";
-import { type ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTypes";
+import { type BrickConfig } from "@/bricks/types";
 import { type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
-import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
-import {
-  type ModOptionsDefinition,
-  type ModVariablesDefinition,
-} from "@/types/modDefinitionTypes";
-import { type EmptyObject, type Except } from "type-fest";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
@@ -47,71 +27,25 @@ import {
   type BaseFormStateV7,
   type BaseFormStateV8,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
+import {
+  type ModMetadataFormState,
+  type ModalDefinition,
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
+import {
+  type ModOptionsDefinition,
+  type ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-
-/**
- * Mod-level editor state passed to the runtime/analysis engine
- * @since 2.1.6
- */
-export type DraftModState = {
-  /**
-   * The current option args for the draft mod
-   */
-  optionsArgs: OptionsArgs;
-  /**
-   * The current mod variables definition for the draft mod.
-   */
-  variablesDefinition: ModVariablesDefinition;
-};
-
-export type AddBrickLocation = {
-  /**
-   * The object property path to the pipeline where a block will be added by the add block modal
-   */
-  path: string;
-
-  /**
-   * The flavor of pipeline where a block will be added by the add block modal
-   * @see PipelineFlavor
-   */
-  flavor: PipelineFlavor;
-
-  /**
-   * The pipeline index where a block will be added by the add block modal
-   */
-  index: number;
-};
-
-export enum ModalKey {
-  MOVE_COPY_TO_MOD,
-  SAVE_AS_NEW_MOD,
-  CREATE_MOD,
-  ADD_BRICK,
-  SAVE_DATA_INTEGRITY_ERROR,
-}
-
-export type ModalDefinition =
-  | { type: ModalKey.ADD_BRICK; data: { addBrickLocation: AddBrickLocation } }
-  | { type: ModalKey.SAVE_AS_NEW_MOD; data: EmptyObject }
-  | {
-      type: ModalKey.CREATE_MOD;
-      data: { keepLocalCopy: boolean } & (
-        | { sourceModComponentId: UUID }
-        | { sourceModId: RegistryId }
-      );
-    }
-  | { type: ModalKey.MOVE_COPY_TO_MOD; data: { keepLocalCopy: boolean } }
-  | { type: ModalKey.SAVE_DATA_INTEGRITY_ERROR; data: EmptyObject };
-
-export type ModMetadataFormState = Pick<
-  VersionedMetadata,
-  "id" | "name" | "version" | "description"
->;
+import { type StarterBrickType } from "@/types/starterBrickTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Except } from "type-fest";
 
 /**
  * @deprecated - Do not use versioned state types directly
  */
-export type EditorStateV1 = {
+export type EditorStateMigratedV1 = {
   /**
    * A sequence number that changes whenever a new element is selected.
    *
@@ -227,8 +161,8 @@ export type EditorStateV1 = {
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
-export type EditorStateV2 = Except<
-  EditorStateV1,
+export type EditorStateMigratedV2 = Except<
+  EditorStateMigratedV1,
   "elements" | "deletedElementsByRecipeId"
 > & {
   elements: BaseFormStateV2[];
@@ -238,8 +172,8 @@ export type EditorStateV2 = Except<
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
-export type EditorStateV3 = Except<
-  EditorStateV2,
+export type EditorStateMigratedV3 = Except<
+  EditorStateMigratedV2,
   | "activeElementId"
   | "activeRecipeId"
   | "expandedRecipeId"
@@ -334,8 +268,8 @@ export type EditorStateV3 = Except<
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
-export type EditorStateV4 = Except<
-  EditorStateV3,
+export type EditorStateMigratedV4 = Except<
+  EditorStateMigratedV3,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: BaseFormStateV3[];
@@ -345,8 +279,8 @@ export type EditorStateV4 = Except<
 /**
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
-export type EditorStateV5 = Except<
-  EditorStateV4,
+export type EditorStateMigratedV5 = Except<
+  EditorStateMigratedV4,
   | "inserting"
   | "modComponentFormStates"
   | "deletedModComponentFormStatesByModId"
@@ -361,7 +295,10 @@ export type EditorStateV5 = Except<
  *
  * @deprecated - Do not use versioned state types directly, exported for testing
  */
-export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
+export type EditorStateMigratedV6 = Except<
+  EditorStateMigratedV5,
+  "insertingStarterBrickType"
+>;
 
 /**
  * Version bump to account for changes to DataPanelTabKeys.
@@ -372,7 +309,7 @@ export type EditorStateV6 = Except<EditorStateV5, "insertingStarterBrickType">;
  * @see migrateEditorStateV6
  * @see DataPanelTabKey
  */
-export type EditorStateV7 = EditorStateV6;
+export type EditorStateMigratedV7 = EditorStateMigratedV6;
 
 /**
  * Version bump to account for adding variableDefinition property in BaseFormState
@@ -380,8 +317,8 @@ export type EditorStateV7 = EditorStateV6;
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @see migrateEditorStateV7
  */
-export type EditorStateV8 = Except<
-  EditorStateV7,
+export type EditorStateMigratedV8 = Except<
+  EditorStateMigratedV7,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: BaseFormStateV5[];
@@ -394,8 +331,8 @@ export type EditorStateV8 = Except<
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @see migrateEditorStateV8
  */
-export type EditorStateV9 = Except<
-  EditorStateV8,
+export type EditorStateMigratedV9 = Except<
+  EditorStateMigratedV8,
   "modComponentFormStates" | "deletedModComponentFormStatesByModId"
 > & {
   modComponentFormStates: BaseFormStateV6[];
@@ -410,8 +347,8 @@ export type EditorStateV9 = Except<
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @since 2.1.6
  */
-export type EditorStateV10 = Except<
-  EditorStateV9,
+export type EditorStateMigratedV10 = Except<
+  EditorStateMigratedV9,
   | "modComponentFormStates"
   | "deletedModComponentFormStatesByModId"
   | "dirtyModOptionsById"
@@ -428,8 +365,8 @@ export type EditorStateV10 = Except<
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @since 2.1.7
  */
-export type EditorStateV11 = Except<
-  EditorStateV10,
+export type EditorStateMigratedV11 = Except<
+  EditorStateMigratedV10,
   | "modComponentFormStates"
   | "deletedModComponentFormStatesByModId"
   | "dirtyModOptionsDefinitionsById"
@@ -440,29 +377,29 @@ export type EditorStateV11 = Except<
   dirtyModVariablesDefinitionById: Record<RegistryId, ModVariablesDefinition>;
 };
 
-export type EditorState = Except<
-  // On migration, re-point this type to the most recent EditorStateV<N> type name
-  EditorStateV11,
-  // Swap out any properties with versioned types for type references to the latest version.
-  // NOTE: overriding these properties is not changing the type shape/structure. It's just cleaning up the type
-  // name/reference which makes types easier to work with for testing migrations.
-  "modComponentFormStates"
-> & {
-  modComponentFormStates: ModComponentFormState[];
-};
-
-export type EditorRootState = {
-  editor: EditorState;
-};
-
-export type RootState = AuthRootState &
-  LogRootState &
-  ModComponentsRootState &
-  AnalysisRootState &
-  EditorRootState &
-  ModDefinitionsRootState &
-  TabStateRootState &
-  RuntimeRootState &
-  SettingsRootState &
-  SessionRootState &
-  SessionChangesRootState;
+/**
+ * Version bump to split state types that do not need to be migrated from the other types
+ *
+ * @see editorStateSynced
+ * @see editorStateEphemeral
+ *
+ * @deprecated - Do not use versioned state types directly, exported for testing
+ * @since 2.1.8
+ */
+export type EditorStateMigratedV12 = Except<
+  EditorStateMigratedV11,
+  | "error"
+  | "selectionSeq"
+  | "visibleModal"
+  | "availableActivatedModComponentIds"
+  | "isPendingAvailableActivatedModComponents"
+  | "availableDraftModComponentIds"
+  | "isPendingDraftModComponents"
+  | "isVariablePopoverVisible"
+  | "activeModComponentId"
+  | "activeModId"
+  | "expandedModId"
+  | "brickPipelineUIStateById"
+  | "isDataPanelExpanded"
+  | "isModListExpanded"
+>;
