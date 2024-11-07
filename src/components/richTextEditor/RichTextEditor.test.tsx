@@ -35,6 +35,11 @@ describe("RichTextEditor", () => {
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
+
+    // Open the overflow menu
+    await user.click(
+      screen.getByRole("button", { name: "More editing options" }),
+    );
     await user.click(screen.getByRole("button", { name: "Underline" }));
     await user.type(editor, "and underlined");
 
@@ -48,6 +53,11 @@ describe("RichTextEditor", () => {
     await user.type(editor, "regular");
     await user.click(screen.getByRole("button", { name: "Bold" }));
     await user.click(screen.getByRole("button", { name: "Italic" }));
+
+    // Open the overflow menu
+    await user.click(
+      screen.getByRole("button", { name: "More editing options" }),
+    );
     await user.click(screen.getByRole("button", { name: "Underline" }));
     await user.type(editor, "all formats");
 
@@ -136,5 +146,20 @@ describe("RichTextEditor", () => {
       await user.click(screen.getByRole("button", { name: "Bullet List" }));
       expect(editor?.innerHTML).toBe("<p>list item</p>");
     });
+  });
+
+  test("applies strikethrough formatting using toolbar button", async () => {
+    render(<RichTextEditor />);
+
+    const editor = screen.getByRole("textbox");
+    await user.type(editor, "regular");
+
+    await user.click(
+      screen.getByRole("button", { name: "More editing options" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Strikethrough" }));
+    await user.type(editor, "struck through");
+
+    expect(editor?.innerHTML).toBe("<p>regular<s>struck through</s></p>");
   });
 });

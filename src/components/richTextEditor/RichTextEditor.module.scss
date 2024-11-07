@@ -42,9 +42,7 @@
   }
 }
 
-.toolbar {
-  border-bottom: 1px solid #ced4da;
-
+.toolbarButtons {
   :global(.btn) {
     &:global(.active) {
       color: #007bff;
@@ -64,4 +62,10 @@
     border: none;
     box-shadow: none;
   }
+}
+
+.toolbar {
+  border-bottom: 1px solid #ced4da;
+
+  @extend .toolbarButtons;
 }

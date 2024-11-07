@@ -2,9 +2,9 @@ import React from "react";
 import { useCurrentEditor } from "@tiptap/react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faRemoveFormat } from "@fortawesome/free-solid-svg-icons";
 
-const HorizontalRuleButton: React.FunctionComponent = () => {
+const RemoveTextFormattingButton: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
 
   if (!editor) {
@@ -14,17 +14,17 @@ const HorizontalRuleButton: React.FunctionComponent = () => {
   return (
     <Button
       variant="default"
-      onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      onClick={() => editor.chain().focus().unsetAllMarks().run()}
       disabled={
         editor.isEditable
-          ? !editor.can().chain().focus().setHorizontalRule().run()
+          ? !editor.can().chain().focus().unsetAllMarks().run()
           : true
       }
-      aria-label="Horizontal Rule"
+      aria-label="Remove Formatting"
     >
-      <FontAwesomeIcon icon={faMinus} />
+      <FontAwesomeIcon icon={faRemoveFormat} />
     </Button>
   );
 };
 
-export default HorizontalRuleButton;
+export default RemoveTextFormattingButton;
