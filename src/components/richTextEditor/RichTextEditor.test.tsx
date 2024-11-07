@@ -30,17 +30,29 @@ describe("RichTextEditor", () => {
     expect(editor?.innerHTML).toBe("<p>regular<em>and italic</em></p>");
   });
 
-  test("applies both bold and italic formatting using toolbar buttons", async () => {
+  test("applies underline formatting using toolbar button", async () => {
+    render(<RichTextEditor />);
+
+    const editor = screen.getByRole("textbox");
+    await user.type(editor, "regular");
+    await user.click(screen.getByRole("button", { name: "Underline" }));
+    await user.type(editor, "and underlined");
+
+    expect(editor?.innerHTML).toBe("<p>regular<u>and underlined</u></p>");
+  });
+
+  test("applies bold, italic and underline formatting using toolbar buttons", async () => {
     render(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
     await user.click(screen.getByRole("button", { name: "Bold" }));
     await user.click(screen.getByRole("button", { name: "Italic" }));
-    await user.type(editor, "both bold and italic");
+    await user.click(screen.getByRole("button", { name: "Underline" }));
+    await user.type(editor, "all formats");
 
     expect(editor?.innerHTML).toBe(
-      "<p>regular<strong><em>both bold and italic</em></strong></p>",
+      "<p>regular<strong><em><u>all formats</u></em></strong></p>",
     );
   });
 

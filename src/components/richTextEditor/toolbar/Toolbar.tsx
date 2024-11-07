@@ -18,11 +18,12 @@
 import React from "react";
 import { ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import styles from "@/components/richTextEditor/RichTextEditor.module.scss";
+import HeadingLevelDropdown from "@/components/richTextEditor/toolbar/HeadingLevelDropdown";
+import UnderlineButton from "@/components/richTextEditor/toolbar/UnderlineButton";
 import BoldButton from "@/components/richTextEditor/toolbar/BoldButton";
 import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
 // Required for font-awesome styles to be available in IsolatedComponents
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import HeadingLevelDropdown from "@/components/richTextEditor/toolbar/HeadingLevelDropdown";
 
 const Toolbar: React.FunctionComponent = () => (
   <ButtonToolbar
@@ -33,6 +34,7 @@ const Toolbar: React.FunctionComponent = () => (
     <ButtonGroup size="sm">
       <BoldButton />
       <ItalicButton />
+      <UnderlineButton />
     </ButtonGroup>
   </ButtonToolbar>
 );
