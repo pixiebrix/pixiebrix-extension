@@ -33,6 +33,7 @@ import {
   RestrictedFeatures,
 } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { waitFor } from "@testing-library/react";
 
 const testFlag = featureFlagFactory();
 
@@ -128,7 +129,7 @@ describe("useFlags", () => {
         flags: [testFlag],
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.flagOn(testFlag)).toBe(true);
@@ -140,7 +141,7 @@ describe("useFlags", () => {
         flags: [],
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.flagOn(testFlag)).toBe(false);
@@ -154,7 +155,7 @@ describe("useFlags", () => {
         flags: [],
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.flagOff(testFlag)).toBe(true);
@@ -166,7 +167,7 @@ describe("useFlags", () => {
         flags: [testFlag],
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.flagOff(testFlag)).toBe(false);
@@ -180,7 +181,7 @@ describe("useFlags", () => {
         flags: mapRestrictedFeatureToFeatureFlag(RestrictedFeatures.WORKSHOP),
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.permit(RestrictedFeatures.PAGE_EDITOR)).toBe(
@@ -197,7 +198,7 @@ describe("useFlags", () => {
         ].map((x) => mapRestrictedFeatureToFeatureFlag(x)),
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.permit(RestrictedFeatures.PAGE_EDITOR)).toBe(
@@ -216,7 +217,7 @@ describe("useFlags", () => {
         ].map((x) => mapRestrictedFeatureToFeatureFlag(x)),
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.restrict(RestrictedFeatures.PAGE_EDITOR)).toBe(
@@ -230,7 +231,7 @@ describe("useFlags", () => {
         flags: ["restricted-workshop"],
       });
 
-      const { result, waitFor } = renderHook(() => useFlags());
+      const { result } = renderHook(() => useFlags());
 
       await waitFor(() => {
         expect(result.current.restrict(RestrictedFeatures.PAGE_EDITOR)).toBe(

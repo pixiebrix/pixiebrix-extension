@@ -39,27 +39,28 @@ import {
   type FormikHelpers,
   type FormikValues,
 } from "formik";
-import { noop } from "lodash";
+import { noop, omit } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import {
-  act as actHook,
   renderHook,
   type RenderHookOptions,
   type RenderHookResult,
   type WrapperComponent,
 } from "@testing-library/react-hooks";
+import type { Except } from "type-fest";
 
 /**
  * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
  *
- * NOTE: this assumes you're using "react-dom/test-utils". For hooks, you have to use act from
- * "@testing-library/react-hooks"
+ * NOTE: if you're testing a hook, this will generate a benign "It looks like you're using the wrong act()" warning
+ * until we upgrade to React 18 and its corresponding testing library versions
  *
+ * @deprecated prefer using waitFor, screen.findBy, userEvent, or act directly. See https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning#how-to-fix-the-act-warning
  */
 export const waitForEffect = async () =>
   // eslint-disable-next-line testing-library/no-unnecessary-act -- hack for testing some asynchronous code that the standard utilities have proven inadequate
   act(async () => {
-    // Awaiting the async state update
+    // Await the async state update
   });
 
 type SetupRedux = (
@@ -203,19 +204,32 @@ type HookWrapperResult<
   M extends ReadonlyArray<Middleware<UnknownObject, S>> = [
     ThunkMiddlewareFor<S>,
   ],
-> = RenderHookResult<TProps, TResult> & {
-  getReduxStore(): EnhancedStore<S, A, M>;
+> =
+  // React 18's testing library drops some helpers from the renderHook result.
+  // Exclude here to drop the deprecated hooks prior to our React 18 upgrade
+  // Calls will generate "It looks like you're using the wrong act()" warning, but they're benign
+  // https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#waitfor
+  Except<
+    RenderHookResult<TProps, TResult>,
+    "result" | "waitFor" | "waitForValueToChange" | "waitForNextUpdate"
+  > & {
+    // React 18's testing library drops all/error from the result
+    // https://github.com/testing-library/react-hooks-testing-library/blob/chore/migration-guide/MIGRATION_GUIDE.md#resulterror
+    result: Except<
+      RenderHookResult<TProps, TResult>["result"],
+      "all" | "error"
+    >;
 
-  /**
-   * Await all async side effects
-   */
-  waitForEffect(): Promise<void>;
+    /**
+     * Get the underlying Redux store
+     */
+    getReduxStore(): EnhancedStore<S, A, M>;
 
-  /**
-   * Get the current form values
-   */
-  getFormState(): FormikValues | null;
-};
+    /**
+     * Get the current Formik form values, or null if initialValues was not passed to helper.
+     */
+    getFormState(): FormikValues | null;
+  };
 
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
   return <TProps, TResult>(
@@ -267,19 +281,21 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
       ...renderOptions,
     });
 
-    return {
-      ...utils,
-      getReduxStore() {
-        return store;
+    return omit(
+      {
+        ...utils,
+        getReduxStore() {
+          return store;
+        },
+        getFormState() {
+          return formValues;
+        },
+        // See comment on HookWrapperResult for omission explanation
       },
-      async waitForEffect() {
-        await actHook(async () => {
-          // Awaiting the async state update
-        });
-      },
-      getFormState() {
-        return formValues;
-      },
-    };
+      "waitFor",
+      "waitForValueToChange",
+      "waitForNextUpdate",
+      "error",
+    );
   };
 }

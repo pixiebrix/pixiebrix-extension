@@ -18,6 +18,7 @@
 import { renderHook } from "@/pageEditor/testHelpers";
 import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { waitFor } from "@testing-library/react";
 
 const OPTIONS = [
   { value: 1, label: "Option One" },
@@ -28,13 +29,11 @@ describe("useOptionsResolver", () => {
   it("returns the promise result directly if optionsFactory is a promise", async () => {
     const promise = Promise.resolve(OPTIONS);
 
-    const { result, waitForEffect } = renderHook(() =>
-      useOptionsResolver(null, promise),
-    );
+    const { result } = renderHook(() => useOptionsResolver(null, promise));
 
-    await waitForEffect();
-
-    expect(result.current).not.toBeNull();
+    await waitFor(() => {
+      expect(result.current).not.toBeNull();
+    });
 
     const { isSuccess, data } = result.current;
     expect(isSuccess).toBe(true);
@@ -43,30 +42,30 @@ describe("useOptionsResolver", () => {
 
   it("throws error if optionsFactory is a factory but config is null", async () => {
     const optionsFactory = async () => OPTIONS;
-    const { result, waitForEffect } = renderHook(() =>
+    const { result } = renderHook(() =>
       useOptionsResolver(null, optionsFactory),
     );
 
-    await waitForEffect();
-
-    expect(result.current.error).toEqual(
-      new Error("No integration configured"),
-    );
+    await waitFor(() => {
+      expect(result.current.error).toEqual(
+        new Error("No integration configured"),
+      );
+    });
   });
 
   it("fetches options with config if optionsFactory is a factory and config is provided", async () => {
     const optionsFactory = jest.fn().mockResolvedValue(OPTIONS);
     const config = sanitizedIntegrationConfigFactory();
 
-    const { result, waitForEffect } = renderHook(() =>
+    const { result } = renderHook(() =>
       useOptionsResolver(config, optionsFactory),
     );
 
-    await waitForEffect();
-
     expect(optionsFactory).toHaveBeenCalledWith(config, undefined);
 
-    expect(result.current).not.toBeNull();
+    await waitFor(() => {
+      expect(result.current).not.toBeNull();
+    });
 
     const { isSuccess, data } = result.current;
     expect(isSuccess).toBe(true);

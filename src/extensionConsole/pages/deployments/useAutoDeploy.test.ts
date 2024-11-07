@@ -24,6 +24,9 @@ import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFa
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
 import { type AppDispatch } from "@/extensionConsole/store";
+import { waitForValueToChange } from "@/testUtils/renderHookHelpers";
+import { array } from "cooky-cutter";
+import pDefer from "p-defer";
 
 jest.mock("@/mods/hooks/useModPermissions");
 jest.mock("@/hooks/useFlags");
@@ -105,7 +108,7 @@ describe("useAutoDeploy", () => {
       const modInstances = [modInstanceFactory(), modInstanceFactory()];
       const extensionUpdateRequired = false;
 
-      const { result, waitForValueToChange } = renderHook(() =>
+      const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
           modInstances,
@@ -133,7 +136,7 @@ describe("useAutoDeploy", () => {
       const modInstances = [modInstanceFactory(), modInstanceFactory()];
       const extensionUpdateRequired = false;
 
-      const { result, waitForValueToChange } = renderHook(() =>
+      const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
           modInstances,
@@ -149,25 +152,21 @@ describe("useAutoDeploy", () => {
     });
 
     it("should only attempt to activate deployments once", async () => {
-      const promise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, 1000);
-      });
+      const deferredPromise = pDefer<void>();
 
       mockHooks({
         async activateDeploymentsResponse() {
-          await promise;
+          await deferredPromise.promise;
         },
       });
 
       const activatableDeployment: ActivatableDeployment =
         activatableDeploymentFactory();
 
-      const modInstances = [modInstanceFactory(), modInstanceFactory()];
+      const modInstances = array(modInstanceFactory, 2)();
       const extensionUpdateRequired = false;
 
-      const { result, rerender, waitForValueToChange } = renderHook(
+      const { result, rerender } = renderHook(
         ({ activatableDeployments }) =>
           useAutoDeploy({
             activatableDeployments,
@@ -184,6 +183,8 @@ describe("useAutoDeploy", () => {
       rerender({ activatableDeployments: [activatableDeployment] });
 
       expect(activateDeployments).toHaveBeenCalledTimes(1);
+
+      deferredPromise.resolve();
 
       await waitForValueToChange(() => result.current.isAutoDeploying);
 
