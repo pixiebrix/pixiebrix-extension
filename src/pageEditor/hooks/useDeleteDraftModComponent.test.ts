@@ -24,7 +24,7 @@ import {
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 beforeEach(() => {
   jest.resetAllMocks();

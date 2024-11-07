@@ -17,7 +17,7 @@
 
 import React from "react";
 import useSubmitPackage from "@/extensionConsole/pages/packageEditor/useSubmitPackage";
-import { act, renderHook } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
 import integrationsSlice, {
@@ -40,6 +40,7 @@ import notify from "@/utils/notify";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { uuidv4 } from "@/types/helpers";
 import { ModalContext } from "@/components/ConfirmationModal";
+import { renderHook } from "@/extensionConsole/testHelpers";
 
 jest.mock("@/utils/notify");
 jest.mock("@/extensionConsole/pages/mods/utils/useReactivateMod");

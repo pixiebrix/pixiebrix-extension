@@ -42,7 +42,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
 const modId = validateRegistryId("@test/mod");

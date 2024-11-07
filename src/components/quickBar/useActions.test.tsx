@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { act, renderHook } from "@testing-library/react-hooks";
+import { act, waitFor } from "@testing-library/react";
 import useActions from "@/components/quickBar/useActions";
 import { KBarProvider, useKBar } from "kbar";
 import defaultActions, {
@@ -24,6 +24,7 @@ import defaultActions, {
 } from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
@@ -73,9 +74,11 @@ describe("useActions", () => {
       });
     });
 
-    expect(Object.keys(result.current.actions)).toHaveLength(
-      NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
-    );
+    await waitFor(async () => {
+      expect(Object.keys(result.current.actions)).toHaveLength(
+        NUM_DEFAULT_QUICKBAR_ACTIONS + 1,
+      );
+    });
 
     await act(async () => {
       quickBarRegistry.removeAction("test");

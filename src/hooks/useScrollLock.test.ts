@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useScrollLock from "./useScrollLock";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 describe("useScrollLock", () => {
   const html = document.documentElement;

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useEventListener from "./useEventListener";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 test("useEventListener", () => {
   const mockElement = document.createElement("div");

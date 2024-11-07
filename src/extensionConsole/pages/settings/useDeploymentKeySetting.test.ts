@@ -19,7 +19,7 @@ import { deploymentKeyStorage } from "@/auth/deploymentKey";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useDeploymentKeySetting from "@/extensionConsole/pages/settings/useDeploymentKeySetting";
 import { deploymentKeyFactory } from "@/testUtils/factories/authFactories";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 import { waitForNextUpdate } from "@/testUtils/renderHookHelpers";
 
 describe("useDeploymentKeySettings", () => {

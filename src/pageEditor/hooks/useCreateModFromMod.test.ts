@@ -32,7 +32,7 @@ import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModSta
 import { API_PATHS } from "@/data/service/urlPaths";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");

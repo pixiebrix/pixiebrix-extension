@@ -17,12 +17,13 @@
 
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
-import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
+import { waitFor } from "@testing-library/react";
 
 beforeEach(async () => {
   await resetManagedStorage();
@@ -32,42 +33,40 @@ beforeEach(async () => {
 
 describe("useManagedStorageState", () => {
   it("waits on uninitialized state", async () => {
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useManagedStorageState(),
-    );
+    const { result } = renderHook(() => useManagedStorageState());
     expect(result.current).toStrictEqual(loadingAsyncStateFactory());
 
-    await waitForNextUpdate({
-      // `readManagedStorage` will take a few seconds if there are no policies set
-      timeout: 5000,
-    });
-
-    expect(result.current).toStrictEqual(valueToAsyncState({}));
+    await waitFor(
+      () => {
+        expect(result.current).toStrictEqual(valueToAsyncState({}));
+      },
+      {
+        // `readManagedStorage` will take a few seconds if there are no policies set
+        timeout: 5000,
+      },
+    );
   });
 
   it("handles already initialized state", async () => {
     const expectedPolicy = { partnerId: "foo" };
     await browser.storage.managed.set(expectedPolicy);
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useManagedStorageState(),
-    );
+    const { result } = renderHook(() => useManagedStorageState());
 
-    await waitForNextUpdate();
-
-    expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
+    await waitFor(() => {
+      expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
+    });
   });
 
   it("listens for changes", async () => {
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useManagedStorageState(),
-    );
+    const { result } = renderHook(() => useManagedStorageState());
     expect(result.current.data).toBeUndefined();
 
     const expectedPolicy = { partnerId: "foo" };
     await browser.storage.managed.set(expectedPolicy);
 
-    await waitForNextUpdate();
-    expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
+    await waitFor(() => {
+      expect(result.current).toStrictEqual(valueToAsyncState(expectedPolicy));
+    });
   });
 });

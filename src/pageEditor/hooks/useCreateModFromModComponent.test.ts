@@ -24,7 +24,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 const reportEventMock = jest.mocked(reportEvent);
 

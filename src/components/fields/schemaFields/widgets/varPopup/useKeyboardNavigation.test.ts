@@ -17,8 +17,8 @@
 
 import { type MenuOptions } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
-import { renderHook } from "@testing-library/react-hooks";
 import { cloneDeep } from "lodash";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 describe("useKeyboardNavigation", () => {
   it("only sets the default active key path when the menu options change, ignoring referential inequality", async () => {
@@ -48,20 +48,12 @@ describe("useKeyboardNavigation", () => {
       "@input",
     ]);
 
-    expect(result.all).toHaveLength(2);
+    const prevResult = result.current;
 
     rerender({
       ...initialProps,
       menuOptions: cloneDeep(menuOptions),
     });
-
-    expect(result.all).toHaveLength(3);
-
-    const prevResult = result.all[1]!;
-
-    if (prevResult instanceof Error) {
-      throw new TypeError("prevResult is an error");
-    }
 
     expect(prevResult.activeKeyPath).toBe(result.current.activeKeyPath);
   });
@@ -90,18 +82,12 @@ describe("useKeyboardNavigation", () => {
 
     expect(result.current.activeKeyPath).toStrictEqual(["@input"]);
 
+    const prevResult = result.current;
+
     rerender({
       ...initialProps,
       likelyVariable: "@input",
     });
-
-    expect(result.all).toHaveLength(4);
-
-    const prevResult = result.all[2]!;
-
-    if (prevResult instanceof Error) {
-      throw new TypeError("prevResult is an error");
-    }
 
     // Active Key Path is deep equal, but not referentially equal
     expect(prevResult.activeKeyPath).not.toBe(result.current.activeKeyPath);
