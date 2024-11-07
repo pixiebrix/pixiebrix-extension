@@ -24,6 +24,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { act } from "@testing-library/react-hooks";
 
 const reportEventMock = jest.mocked(reportEvent);
 
@@ -55,7 +56,7 @@ describe("useCreateModFromModComponent", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
 
-    const { result, act } = renderHook(() => useCreateModFromModComponent(), {
+    const { result } = renderHook(() => useCreateModFromModComponent(), {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(menuItemFormState));
       },

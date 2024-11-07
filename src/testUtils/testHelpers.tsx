@@ -207,11 +207,6 @@ type HookWrapperResult<
   getReduxStore(): EnhancedStore<S, A, M>;
 
   /**
-   * The act function which should be used with the renderHook
-   */
-  act(callback: () => Promise<void>): Promise<undefined>;
-
-  /**
    * Await all async side effects
    */
   waitForEffect(): Promise<void>;
@@ -277,7 +272,6 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
       getReduxStore() {
         return store;
       },
-      act: actHook,
       async waitForEffect() {
         await actHook(async () => {
           // Awaiting the async state update

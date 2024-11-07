@@ -18,6 +18,7 @@
 import pDefer from "p-defer";
 import useAsyncState from "@/hooks/useAsyncState";
 import { renderHook } from "@/pageEditor/testHelpers";
+import { act } from "@testing-library/react-hooks";
 
 describe("useAsyncState", () => {
   it("should handle resolve promise", async () => {
@@ -96,7 +97,7 @@ describe("useAsyncState", () => {
     let deferred = pDefer<number>();
     let factory = async () => deferred.promise;
 
-    const { result, rerender, act } = renderHook(
+    const { result, rerender } = renderHook(
       ({ factory, dependency }) => useAsyncState(factory, [dependency]),
       {
         initialProps: {
@@ -145,7 +146,7 @@ describe("useAsyncState", () => {
 
   it("should handle refetch for same arguments", async () => {
     const originalFactory = async () => 42;
-    const { result, rerender, waitFor, act } = renderHook(
+    const { result, rerender, waitFor } = renderHook(
       (props) => useAsyncState(props, []),
       {
         initialProps: originalFactory,

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { hookAct, renderHook } from "@/pageEditor/testHelpers";
+import { renderHook } from "@/pageEditor/testHelpers";
 import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
 import { validateRegistryId } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -42,6 +42,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { createPrivateSharing } from "@/utils/registryUtils";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { act } from "@testing-library/react-hooks";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -119,7 +120,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -156,7 +157,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -212,7 +213,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -267,7 +268,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -323,7 +324,7 @@ describe("useSaveMod", () => {
 
     const { dispatch } = getReduxStore();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(temporaryModMetadata.id);
     });
 

@@ -19,6 +19,7 @@ import { deploymentKeyStorage } from "@/auth/deploymentKey";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useDeploymentKeySetting from "@/extensionConsole/pages/settings/useDeploymentKeySetting";
 import { deploymentKeyFactory } from "@/testUtils/factories/authFactories";
+import { act } from "@testing-library/react-hooks";
 
 describe("useDeploymentKeySettings", () => {
   beforeEach(async () => {
@@ -28,7 +29,7 @@ describe("useDeploymentKeySettings", () => {
   it("sets deployment key", async () => {
     const target = deploymentKeyFactory();
 
-    const { result, act } = renderHook(() => useDeploymentKeySetting());
+    const { result } = renderHook(() => useDeploymentKeySetting());
 
     const [value, setValue] = result.current;
     expect(value).toBeUndefined();
@@ -45,7 +46,7 @@ describe("useDeploymentKeySettings", () => {
 
     await deploymentKeyStorage.set(original);
 
-    const { result, act, waitForNextUpdate } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useDeploymentKeySetting(),
     );
 
@@ -63,7 +64,7 @@ describe("useDeploymentKeySettings", () => {
   });
 
   it("rejects invalid deployment key", async () => {
-    const { result, act } = renderHook(() => useDeploymentKeySetting());
+    const { result } = renderHook(() => useDeploymentKeySetting());
 
     const [_value, setValue] = result.current;
 
