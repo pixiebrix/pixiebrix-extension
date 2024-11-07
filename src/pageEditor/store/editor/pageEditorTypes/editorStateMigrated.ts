@@ -28,6 +28,8 @@ import {
   type BaseFormStateV8,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
+  type EditorStateEphemeral,
+  type EditorStateSynced,
   type ModMetadataFormState,
   type ModalDefinition,
 } from "@/pageEditor/store/editor/pageEditorTypes";
@@ -388,18 +390,5 @@ export type EditorStateMigratedV11 = Except<
  */
 export type EditorStateMigratedV12 = Except<
   EditorStateMigratedV11,
-  | "error"
-  | "selectionSeq"
-  | "visibleModal"
-  | "availableActivatedModComponentIds"
-  | "isPendingAvailableActivatedModComponents"
-  | "availableDraftModComponentIds"
-  | "isPendingDraftModComponents"
-  | "isVariablePopoverVisible"
-  | "activeModComponentId"
-  | "activeModId"
-  | "expandedModId"
-  | "brickPipelineUIStateById"
-  | "isDataPanelExpanded"
-  | "isModListExpanded"
+  keyof EditorStateSynced | keyof EditorStateEphemeral
 >;

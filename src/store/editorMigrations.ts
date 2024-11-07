@@ -385,10 +385,10 @@ export function migrateEditorStateV11(
     dirtyModVariablesDefinitionById,
     isDimensionsWarningDismissed,
     dirtyModMetadataById,
+    dirtyModOptionsDefinitionById,
     dirtyModOptionsArgsById,
     modComponentFormStates,
     deletedModComponentFormStateIdsByModId,
-    dirtyModOptionsDefinitionById,
     _persist,
   } = state;
 

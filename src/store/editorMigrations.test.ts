@@ -16,6 +16,7 @@
  */
 
 import {
+  type EditorStateMigratedV12,
   type DraftModState,
   type EditorStateMigratedV1,
   type EditorStateMigratedV10,
@@ -29,7 +30,7 @@ import {
   type EditorStateMigratedV8,
   type EditorStateMigratedV9,
 } from "@/pageEditor/store/editor/pageEditorTypes";
-import { cloneDeep, mapValues, omit } from "lodash";
+import { cloneDeep, mapValues, omit, pick } from "lodash";
 import {
   draftModStateFactory,
   formStateFactory,
@@ -65,6 +66,7 @@ import { type PersistedState } from "redux-persist";
 import {
   migrateEditorStateV1,
   migrateEditorStateV10,
+  migrateEditorStateV11,
   migrateEditorStateV2,
   migrateEditorStateV3,
   migrateEditorStateV4,
@@ -80,7 +82,10 @@ import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
 } from "@/pageEditor/store/editor/uiState";
-import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
+import {
+  emptyModOptionsDefinitionFactory,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const initialStateV1: EditorStateMigratedV1 & PersistedState = {
@@ -295,6 +300,22 @@ const initialStateV11: EditorStateMigratedV11 & PersistedState = {
   dirtyModVariablesDefinitionById: {},
   deletedModComponentFormStateIdsByModId: {},
 };
+
+const initialStateV12: EditorStateMigratedV12 & PersistedState = pick<
+  EditorStateMigratedV11 & PersistedState,
+  keyof EditorStateMigratedV11 | "_persist"
+>(
+  cloneDeep(initialStateV11),
+  "dirty",
+  "isDimensionsWarningDismissed",
+  "dirtyModMetadataById",
+  "dirtyModOptionsArgsById",
+  "modComponentFormStates",
+  "deletedModComponentFormStateIdsByModId",
+  "dirtyModOptionsDefinitionById",
+  "dirtyModVariablesDefinitionById",
+  "_persist",
+);
 
 function unmigrateServices(
   integrationDependencies: IntegrationDependencyV2[] = [],
@@ -575,6 +596,12 @@ function unmigrateEditorStateV11toV10(
     "dirtyModOptionsDefinitionById",
     "dirtyModVariablesDefinitionById",
   );
+}
+
+function unmigrateEditorStateV12toV11(
+  state: EditorStateMigratedV12 & PersistedState,
+): EditorStateMigratedV11 & PersistedState {
+  return { ...initialStateV11, ...state };
 }
 
 type SimpleFactory<T> = (override?: FactoryConfig<T>) => T;
@@ -918,6 +945,65 @@ describe("editor state migrations", () => {
       expect(migrateEditorStateV10(unmigrated)).toStrictEqual(
         expectedEditorStateV11,
       );
+    });
+  });
+
+  describe("migrateEditorState V11 to V12", () => {
+    it("migrates empty state", () => {
+      expect(migrateEditorStateV11(initialStateV11)).toStrictEqual(
+        initialStateV12,
+      );
+    });
+
+    it("EditorStateMigratedV12 state is preserved, all other keys are dropped", () => {
+      const modId = validateRegistryId("test/mod");
+
+      const modMetadata = modMetadataFactory({
+        id: modId,
+      });
+
+      const variablesDefinition = {
+        schema: propertiesToSchema({ foo: { type: "number" } }, []),
+      };
+      const formState = formStateFactoryV8({ modMetadata });
+
+      const editorStateV12: EditorStateMigratedV12 & PersistedState = {
+        ...initialStateV12,
+        dirty: { [formState.uuid]: true },
+        dirtyModVariablesDefinitionById: {
+          [modId]: variablesDefinition,
+        },
+        isDimensionsWarningDismissed: true,
+        dirtyModMetadataById: {
+          [modId]: { ...modMetadata, name: "New Name" },
+        },
+        dirtyModOptionsDefinitionById: {
+          [modId]: {
+            ...emptyModOptionsDefinitionFactory(),
+            ...propertiesToSchema(
+              {
+                db: {
+                  $ref: "https://app.pixiebrix.com/schemas/database#",
+                  title: "Database",
+                  format: "preview",
+                },
+              },
+              ["db"],
+            ),
+          },
+        },
+        dirtyModOptionsArgsById: {
+          [modId]: { db: "db value" },
+        },
+        modComponentFormStates: [formState],
+        deletedModComponentFormStateIdsByModId: {
+          [modId]: [formStateFactoryV8().uuid],
+        },
+      };
+
+      const unmigrated = unmigrateEditorStateV12toV11(editorStateV12);
+
+      expect(migrateEditorStateV11(unmigrated)).toStrictEqual(editorStateV12);
     });
   });
 });
