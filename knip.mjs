@@ -133,6 +133,7 @@ const knipConfig = {
     "@tiptap/pm",
     "@tiptap/starter-kit",
     "@tiptap/react",
+    "@tiptap/extension-underline",
   ],
   // False positive for PackageInstance.featureFlag
   ignoreMembers: ["featureFlag"],

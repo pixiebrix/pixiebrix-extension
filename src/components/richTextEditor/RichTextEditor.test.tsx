@@ -30,17 +30,39 @@ describe("RichTextEditor", () => {
     expect(editor?.innerHTML).toBe("<p>regular<em>and italic</em></p>");
   });
 
-  test("applies both bold and italic formatting using toolbar buttons", async () => {
+  test("applies underline formatting using toolbar button", async () => {
+    render(<RichTextEditor />);
+
+    const editor = screen.getByRole("textbox");
+    await user.type(editor, "regular");
+
+    // Open the overflow menu
+    await user.click(
+      screen.getByRole("button", { name: "More editing options" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Underline" }));
+    await user.type(editor, "and underlined");
+
+    expect(editor?.innerHTML).toBe("<p>regular<u>and underlined</u></p>");
+  });
+
+  test("applies bold, italic and underline formatting using toolbar buttons", async () => {
     render(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
     await user.click(screen.getByRole("button", { name: "Bold" }));
     await user.click(screen.getByRole("button", { name: "Italic" }));
-    await user.type(editor, "both bold and italic");
+
+    // Open the overflow menu
+    await user.click(
+      screen.getByRole("button", { name: "More editing options" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Underline" }));
+    await user.type(editor, "all formats");
 
     expect(editor?.innerHTML).toBe(
-      "<p>regular<strong><em>both bold and italic</em></strong></p>",
+      "<p>regular<strong><em><u>all formats</u></em></strong></p>",
     );
   });
 
@@ -79,5 +101,65 @@ describe("RichTextEditor", () => {
       const editorElement = screen.getByRole("textbox");
       expect(editorElement?.innerHTML).toBe("<p>Hello World</p>");
     });
+  });
+
+  describe("lists", () => {
+    test("applies bullet list formatting using toolbar button", async () => {
+      render(<RichTextEditor />);
+
+      const editor = screen.getByRole("textbox");
+      await user.type(editor, "first item");
+      await user.click(screen.getByRole("button", { name: "Bullet List" }));
+
+      expect(editor?.innerHTML).toBe("<ul><li><p>first item</p></li></ul>");
+
+      await user.type(editor, "{enter}second item");
+      expect(editor?.innerHTML).toBe(
+        "<ul><li><p>first item</p></li><li><p>second item</p></li></ul>",
+      );
+    });
+
+    test("applies numbered list formatting using toolbar button", async () => {
+      render(<RichTextEditor />);
+
+      const editor = screen.getByRole("textbox");
+      await user.type(editor, "first item");
+      await user.click(screen.getByRole("button", { name: "Numbered List" }));
+
+      expect(editor?.innerHTML).toBe("<ol><li><p>first item</p></li></ol>");
+
+      await user.type(editor, "{enter}second item");
+      expect(editor?.innerHTML).toBe(
+        "<ol><li><p>first item</p></li><li><p>second item</p></li></ol>",
+      );
+    });
+
+    test("can remove list formatting", async () => {
+      render(<RichTextEditor />);
+
+      const editor = screen.getByRole("textbox");
+      await user.type(editor, "list item");
+
+      await user.click(screen.getByRole("button", { name: "Bullet List" }));
+      expect(editor?.innerHTML).toBe("<ul><li><p>list item</p></li></ul>");
+
+      await user.click(screen.getByRole("button", { name: "Bullet List" }));
+      expect(editor?.innerHTML).toBe("<p>list item</p>");
+    });
+  });
+
+  test("applies strikethrough formatting using toolbar button", async () => {
+    render(<RichTextEditor />);
+
+    const editor = screen.getByRole("textbox");
+    await user.type(editor, "regular");
+
+    await user.click(
+      screen.getByRole("button", { name: "More editing options" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Strikethrough" }));
+    await user.type(editor, "struck through");
+
+    expect(editor?.innerHTML).toBe("<p>regular<s>struck through</s></p>");
   });
 });
