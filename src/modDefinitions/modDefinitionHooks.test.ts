@@ -23,6 +23,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
 import { registry } from "@/background/messenger/api";
+import { waitFor } from "@testing-library/react";
 
 registry.syncRemote = jest.fn();
 
@@ -33,33 +34,34 @@ describe("useRequiredModDefinitions", () => {
       .mocked(registry.syncRemote)
       .mockImplementation(async () => deferred.promise);
 
-    const wrapper = renderHook(() =>
+    const { result } = renderHook(() =>
       useRequiredModDefinitions([
         validateRegistryId("nonexistent-mod-definition"),
       ]),
     );
 
-    await wrapper.waitForEffect();
-
-    expect(wrapper.result.current).toEqual(
-      expect.objectContaining({
-        data: undefined,
-        isLoading: true,
-        isError: false,
-        error: undefined,
-      }),
-    );
+    await waitFor(() => {
+      expect(result.current).toEqual(
+        expect.objectContaining({
+          data: undefined,
+          isLoading: true,
+          isError: false,
+          error: undefined,
+        }),
+      );
+    });
 
     deferred.resolve([] as any);
-    await wrapper.waitForEffect();
 
-    expect(wrapper.result.current).toEqual(
-      expect.objectContaining({
-        isLoading: false,
-        isError: true,
-        error: expect.toBeObject(),
-      }),
-    );
+    await waitFor(() => {
+      expect(result.current).toEqual(
+        expect.objectContaining({
+          isLoading: false,
+          isError: true,
+          error: expect.toBeObject(),
+        }),
+      );
+    });
   });
 });
 
@@ -76,25 +78,26 @@ describe("useOptionalModDefinition", () => {
       ),
     );
 
-    await wrapper.waitForEffect();
-
-    expect(wrapper.result.current).toEqual(
-      expect.objectContaining({
-        data: undefined,
-        isLoading: false,
-        isSuccess: true,
-      }),
-    );
+    await waitFor(() => {
+      expect(wrapper.result.current).toEqual(
+        expect.objectContaining({
+          data: undefined,
+          isLoading: false,
+          isSuccess: true,
+        }),
+      );
+    });
 
     deferred.resolve([] as any);
-    await wrapper.waitForEffect();
 
-    expect(wrapper.result.current).toEqual(
-      expect.objectContaining({
-        data: undefined,
-        isLoading: false,
-        isSuccess: true,
-      }),
-    );
+    await waitFor(() => {
+      expect(wrapper.result.current).toEqual(
+        expect.objectContaining({
+          data: undefined,
+          isLoading: false,
+          isSuccess: true,
+        }),
+      );
+    });
   });
 });

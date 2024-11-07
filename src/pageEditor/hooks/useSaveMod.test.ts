@@ -43,6 +43,7 @@ import { createPrivateSharing } from "@/utils/registryUtils";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { act } from "@testing-library/react-hooks";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -106,7 +107,7 @@ describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {
     const { modDefinition } = setupModDefinitionMocks();
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -143,7 +144,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -186,7 +187,7 @@ describe("useSaveMod", () => {
   it("saves dirty options", async () => {
     const { modDefinition } = setupModDefinitionMocks();
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -245,7 +246,7 @@ describe("useSaveMod", () => {
   it("saves dirty mod variable definitions", async () => {
     const { modDefinition } = setupModDefinitionMocks();
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -301,24 +302,21 @@ describe("useSaveMod", () => {
       modName: "Test Mod",
     });
 
-    const { result, waitForEffect, getReduxStore } = renderHook(
-      () => useSaveMod(),
-      {
-        setupRedux(dispatch, { store }) {
-          jest.spyOn(store, "dispatch");
+    const { result, getReduxStore } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
 
-          dispatch(
-            editorActions.addModComponentFormState(
-              formStateFactory({
-                formStateConfig: {
-                  modMetadata: temporaryModMetadata,
-                },
-              }),
-            ),
-          );
-        },
+        dispatch(
+          editorActions.addModComponentFormState(
+            formStateFactory({
+              formStateConfig: {
+                modMetadata: temporaryModMetadata,
+              },
+            }),
+          ),
+        );
       },
-    );
+    });
 
     await waitForEffect();
 

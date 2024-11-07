@@ -20,6 +20,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import useDeploymentKeySetting from "@/extensionConsole/pages/settings/useDeploymentKeySetting";
 import { deploymentKeyFactory } from "@/testUtils/factories/authFactories";
 import { act } from "@testing-library/react-hooks";
+import { waitForNextUpdate } from "@/testUtils/renderHookHelpers";
 
 describe("useDeploymentKeySettings", () => {
   beforeEach(async () => {
@@ -46,12 +47,10 @@ describe("useDeploymentKeySettings", () => {
 
     await deploymentKeyStorage.set(original);
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useDeploymentKeySetting(),
-    );
+    const { result } = renderHook(() => useDeploymentKeySetting());
 
     // Wait for the async value to load in the hook
-    await waitForNextUpdate();
+    await waitForNextUpdate(result);
 
     const [value, setValue] = result.current;
     expect(value).toBe(original);

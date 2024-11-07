@@ -39,6 +39,7 @@ import usePartnerAuthData from "@/auth/usePartnerAuthData";
 import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "@/auth/deploymentKey";
 import { getExtensionToken } from "@/auth/authStorage";
+import { waitFor } from "@testing-library/react";
 
 jest.mock("@/store/enterprise/useManagedStorageState");
 jest.mock("@/auth/usePartnerAuthData");
@@ -63,7 +64,7 @@ describe("useRequiredPartnerAuth", () => {
   test("no partner", async () => {
     await mockAuthenticatedMeApiResponse();
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
@@ -80,7 +81,7 @@ describe("useRequiredPartnerAuth", () => {
   test("require partner via settings screen", async () => {
     await mockAuthenticatedMeApiResponse();
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth(), {
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setAuthMethod({ authMethod: "partner-oauth2" }),
@@ -117,7 +118,7 @@ describe("useRequiredPartnerAuth", () => {
       }),
     );
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
@@ -145,7 +146,7 @@ describe("useRequiredPartnerAuth", () => {
       }),
     );
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
@@ -166,7 +167,7 @@ describe("useRequiredPartnerAuth", () => {
 
     mockAnonymousMeApiResponse();
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
@@ -187,7 +188,7 @@ describe("useRequiredPartnerAuth", () => {
       }),
     );
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
@@ -208,7 +209,7 @@ describe("useRequiredPartnerAuth", () => {
       }),
     );
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
@@ -238,7 +239,7 @@ describe("useRequiredPartnerAuth", () => {
       }),
     );
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth(), {
+    const { result } = renderHook(() => useRequiredPartnerAuth(), {
       setupRedux(dispatch) {
         dispatch(
           integrationsSlice.actions.upsertIntegrationConfig(
@@ -276,12 +277,13 @@ describe("useRequiredPartnerAuth", () => {
       }),
     );
 
-    const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
+    const { result } = renderHook(() => useRequiredPartnerAuth());
 
     await waitFor(() => {
       expect(result.current).toStrictEqual({
-        hasPartner: false,
-        partnerKey: undefined,
+        // Partner/there is still set because there's a control room
+        hasPartner: true,
+        partnerKey: "automation-anywhere",
         requiresIntegration: false,
         hasConfiguredIntegration: false,
         isLoading: false,

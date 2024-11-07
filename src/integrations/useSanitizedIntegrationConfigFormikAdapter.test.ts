@@ -32,6 +32,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { makeVariableExpression } from "@/utils/variableUtils";
 import { type Expression, type OutputKey } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { waitFor } from "@testing-library/react";
 
 const integrationId1 = validateRegistryId("test/test-integration-1");
 const integrationId2 = validateRegistryId("test/test-integration-2");
@@ -146,7 +147,7 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
           makeVariableExpression(configuredOutputKey);
       }
 
-      const { waitForEffect, result } = renderHook(
+      const { result } = renderHook(
         () =>
           useSanitizedIntegrationConfigFormikAdapter(
             integrationIds,
@@ -155,13 +156,13 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
         { initialValues },
       );
 
-      await waitForEffect();
-
-      if (expectedConfig == null) {
-        expect(result.current.data).toBeNull();
-      } else {
-        expect(result.current.data).toStrictEqual(expectedConfig);
-      }
+      await waitFor(() => {
+        if (expectedConfig == null) {
+          expect(result.current.data).toBeNull();
+        } else {
+          expect(result.current.data).toStrictEqual(expectedConfig);
+        }
+      });
     },
   );
 });
