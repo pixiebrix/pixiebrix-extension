@@ -20,7 +20,7 @@ import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { hookAct, renderHook } from "@/pageEditor/testHelpers";
+import { renderHook } from "@/pageEditor/testHelpers";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
@@ -32,6 +32,7 @@ import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModSta
 import { API_PATHS } from "@/data/service/urlPaths";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { act } from "@testing-library/react-hooks";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -64,7 +65,7 @@ describe("useCreateModFromMod", () => {
       .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: timestampFactory() });
 
-    const { result, act } = renderHook(() => useCreateModFromMod(), {
+    const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentActions.activateMod({
@@ -116,7 +117,7 @@ describe("useCreateModFromMod", () => {
       },
     });
 
-    await hookAct(async () => {
+    await act(async () => {
       await expect(
         result.current.createModFromMod(
           sourceModDefinition,
@@ -153,7 +154,7 @@ describe("useCreateModFromMod", () => {
       },
     });
 
-    await hookAct(async () => {
+    await act(async () => {
       await expect(
         result.current.createModFromMod(
           sourceModDefinition,

@@ -18,14 +18,15 @@
 import pDefer from "p-defer";
 import useAsyncState from "@/hooks/useAsyncState";
 import { renderHook } from "@/pageEditor/testHelpers";
+import { act } from "@testing-library/react-hooks";
+import { waitFor } from "@testing-library/react";
+import { waitForNextUpdate } from "@/testUtils/renderHookHelpers";
 
 describe("useAsyncState", () => {
   it("should handle resolve promise", async () => {
     const dependency = pDefer<number>();
 
-    const { result, waitFor } = renderHook(() =>
-      useAsyncState(dependency.promise, []),
-    );
+    const { result } = renderHook(() => useAsyncState(dependency.promise, []));
 
     expect(result.current).toEqual({
       isFetching: true,
@@ -59,9 +60,7 @@ describe("useAsyncState", () => {
   it("should handle reject promise", async () => {
     const dependency = pDefer<number>();
 
-    const { result, waitFor } = renderHook(() =>
-      useAsyncState(dependency.promise, []),
-    );
+    const { result } = renderHook(() => useAsyncState(dependency.promise, []));
 
     expect(result.current).toEqual({
       isFetching: true,
@@ -96,7 +95,7 @@ describe("useAsyncState", () => {
     let deferred = pDefer<number>();
     let factory = async () => deferred.promise;
 
-    const { result, rerender, act } = renderHook(
+    const { result, rerender } = renderHook(
       ({ factory, dependency }) => useAsyncState(factory, [dependency]),
       {
         initialProps: {
@@ -145,7 +144,7 @@ describe("useAsyncState", () => {
 
   it("should handle refetch for same arguments", async () => {
     const originalFactory = async () => 42;
-    const { result, rerender, waitFor, act } = renderHook(
+    const { result, rerender } = renderHook(
       (props) => useAsyncState(props, []),
       {
         initialProps: originalFactory,
@@ -194,14 +193,14 @@ describe("useAsyncState", () => {
 
   it("should return a referentially equal (memoized) refetch callback on rerenders", async () => {
     const factory = async () => 42;
-    const { result, rerender, waitForNextUpdate } = renderHook(
+    const { result, rerender } = renderHook(
       (props) => useAsyncState(props, []),
       {
         initialProps: factory,
       },
     );
 
-    await waitForNextUpdate();
+    await waitForNextUpdate(result);
 
     const firstRefetch = result.current.refetch;
 

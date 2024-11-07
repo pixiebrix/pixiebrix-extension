@@ -28,6 +28,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { waitFor } from "@testing-library/react";
 
 jest.mock("@/hooks/useFlags");
 jest.mock("@/modDefinitions/modDefinitionHooks");
@@ -77,30 +78,35 @@ describe("useOnboarding", () => {
 
   test("default user", async () => {
     mockOnboarding();
-    const { result, waitForEffect } = renderHook(() => useOnboarding());
-    await waitForEffect();
-    expect(result.current.onboardingType).toBe("default");
+    const { result } = renderHook(() => useOnboarding());
+    await waitFor(() => {
+      expect(result.current.onboardingType).toBe("default");
+    });
   });
 
   test("restricted enterprise user", async () => {
     mockOnboarding({ hasOrganization: true, hasRestrictedFlag: true });
-    const { result, waitForEffect } = renderHook(() => useOnboarding());
-    await waitForEffect();
-    expect(result.current.onboardingType).toBe("restricted");
+    const { result } = renderHook(() => useOnboarding());
+    await waitFor(() => {
+      expect(result.current.onboardingType).toBe("restricted");
+    });
   });
 
   test("unrestricted enterprise user", async () => {
     mockOnboarding({ hasOrganization: true });
-    const { result, waitForEffect } = renderHook(() => useOnboarding());
-    await waitForEffect();
-    expect(result.current.onboardingType).toBe("default");
+    const { result } = renderHook(() => useOnboarding());
+    await waitFor(() => {
+      expect(result.current.onboardingType).toBe("default");
+    });
   });
 
   test("unrestricted enterprise user with teams", async () => {
     mockOnboarding({ hasOrganization: true, hasTeamBlueprints: true });
-    const { result, waitForEffect } = renderHook(() => useOnboarding());
-    await waitForEffect();
-    expect(result.current.onboardingType).toBe("hasTeamBlueprints");
+    const { result } = renderHook(() => useOnboarding());
+
+    await waitFor(() => {
+      expect(result.current.onboardingType).toBe("hasTeamBlueprints");
+    });
   });
 
   test("enterprise user with deployments", async () => {
@@ -115,7 +121,7 @@ describe("useOnboarding", () => {
     };
 
     mockOnboarding({ hasOrganization: true });
-    const { result, waitForEffect } = renderHook(() => useOnboarding(), {
+    const { result } = renderHook(() => useOnboarding(), {
       wrapper: ({ children }) => (
         <DeploymentsContext.Provider value={deployments}>
           {children}
@@ -123,7 +129,8 @@ describe("useOnboarding", () => {
       ),
     });
 
-    await waitForEffect();
-    expect(result.current.onboardingType).toBe("hasDeployments");
+    await waitFor(() => {
+      expect(result.current.onboardingType).toBe("hasDeployments");
+    });
   });
 });

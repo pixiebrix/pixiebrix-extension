@@ -71,5 +71,4 @@ export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
 export { renderHookWithWrappers as renderHook };
-export { act as hookAct } from "@testing-library/react-hooks";
 export { userEvent } from "@testing-library/user-event";
