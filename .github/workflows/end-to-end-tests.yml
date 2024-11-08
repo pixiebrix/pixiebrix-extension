@@ -78,7 +78,7 @@ jobs:
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z a .applications/browser-extension/end-to-end-tests/blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}.7z ./applications/browser-extension/end-to-end-tests/.blob-report/* -p"$ARTIFACT_ZIP_PASSWORD"
+        run: 7z a ./applications/browser-extension/end-to-end-tests/blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}.7z ./applications/browser-extension/end-to-end-tests/.blob-report/* -p"$ARTIFACT_ZIP_PASSWORD"
       - name: Upload zipped Playwright Report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
