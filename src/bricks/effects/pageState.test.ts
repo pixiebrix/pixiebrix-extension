@@ -21,6 +21,7 @@ import { toExpression } from "@/utils/expressionUtils";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 beforeEach(async () => {
   await TEST_resetStateController();
@@ -28,8 +29,20 @@ beforeEach(async () => {
 
 describe("@pixiebrix/state/get", () => {
   it("defaults to mod namespace", async () => {
+    const data = { foo: 42 };
+    const options = brickOptionsFactory();
+
+    await getPlatform().state.setState({
+      namespace: StateNamespaces.MOD,
+      modComponentRef: options.meta.modComponentRef,
+      data,
+      mergeStrategy: MergeStrategies.REPLACE,
+    });
+
     const brick = new GetPageState();
-    await brick.transform(unsafeAssumeValidArg({}), brickOptionsFactory());
+    await expect(
+      brick.transform(unsafeAssumeValidArg({}), options),
+    ).resolves.toStrictEqual(data);
   });
 
   it("is page state aware", async () => {
