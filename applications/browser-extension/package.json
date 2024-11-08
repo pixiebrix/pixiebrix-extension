@@ -21,10 +21,7 @@
     "build:typescript": "tsc --noEmit",
     "generate:headers": "npm run test -- src/development/headers.test.ts --no-silent",
     "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build",
-    "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
-    "dead-code:base": "knip --config knip.mjs --tags=-knip",
-    "dead-code:prod": "npm run dead-code -- --production"
+    "build-storybook": "storybook build"
   },
   "engine-strict": true,
   "engines": {
@@ -124,7 +121,6 @@
     "papaparse": "^5.4.1",
     "primeicons": "^6.0.1",
     "primereact": "^7.1.0",
-    "prop-types": "^15.7.2",
     "proper-event": "^0.9.2",
     "psl": "^1.8.0",
     "react": "^17.0.2",
