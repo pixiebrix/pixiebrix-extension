@@ -26,12 +26,13 @@ import {
   type AddBrickLocation,
   type EditorRootState,
   type EditorState,
+  type EditorStateEphemeral,
   type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, compact, get, pull, uniq } from "lodash";
+import { cloneDeep, compact, get, omit, pull, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
@@ -92,6 +93,7 @@ import {
   initialEphemeralState,
   initialState,
 } from "@/store/editorInitialState";
+import { type Simplify } from "type-fest";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 

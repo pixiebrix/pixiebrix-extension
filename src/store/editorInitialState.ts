@@ -21,7 +21,11 @@ import {
   type EditorStateSynced,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 
-export const initialEphemeralState: EditorStateEphemeral = {
+/**
+ * We use `Required` to protect against accidentally making a key optional in EditorStateEphemeral
+ * All keys are necessary to properly set the blacklist in persistEditorConfig
+ */
+export const initialEphemeralState: Required<EditorStateEphemeral> = {
   copiedBrick: null,
   error: null,
   selectionSeq: 0,
@@ -33,7 +37,12 @@ export const initialEphemeralState: EditorStateEphemeral = {
   isVariablePopoverVisible: false,
 } as const;
 
-export const initialSyncedState: EditorStateSynced = {
+/**
+ * We use `Required` to protect against accidentally making a key optional in EditorStateSynced
+ * The initialSyncedState is used to reset the synced state during EditorStateMigratedV<N>
+ * migrations, so every key must have an initial value
+ */
+export const initialSyncedState: Required<EditorStateSynced> = {
   activeModComponentId: null,
   activeModId: null,
   expandedModId: null,
