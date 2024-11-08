@@ -23,7 +23,8 @@
     "storybook": "storybook dev -p 6006 -s public",
     "build-storybook": "storybook build",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
-    "dead-code:base": "knip --config knip.mjs --tags=-knip",
+    "dead-code:base_BROKEN_DUE_TO_NOT_BEING_RUN_IN_ROOT": "knip --config knip.mjs --tags=-knip",
+    "dead-code:base": "echo 'skipping knip until fixed in next changeset. See: https://knip.dev/guides/handling-issues#missing-binaries'",
     "dead-code:prod": "npm run dead-code -- --production"
   },
   "engine-strict": true,

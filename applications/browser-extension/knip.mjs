@@ -115,8 +115,6 @@ const knipConfig = {
     "@types/gapi.client.oauth2-v2",
     "@types/gapi.client.sheets-v4",
 
-    // Used by Code Editor so format on save matches pre-commit behavior
-    "prettier",
     // Referenced in scss files
     "bootstrap",
     "compass-mixins",
