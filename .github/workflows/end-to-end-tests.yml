@@ -51,7 +51,7 @@ jobs:
           ref: ${{ github.event.inputs.checkout-ref }}
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - name: Install dependencies
         run: npm ci
@@ -68,22 +68,22 @@ jobs:
           attempt_delay: 15000
           attempt_limit: 40
       - name: Build the extension
-        run: npm run build:webpack
+        run: npm run build:webpack --workspace=applications/browser-extension
       - name: Run end to end tests
         # Xvfb is required to run the tests in headed mode. Headed mode is required to run tests for browser extensions
         # in Playwright, see https://playwright.dev/docs/ci#running-headed
-        run: xvfb-run npm run test:e2e -- --project=${{ matrix.project }}* --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: xvfb-run npm run test:e2e --workspace=applications/browser-extension -- --project=${{ matrix.project }}* --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
       - name: Password protect Playwright reports
         if: always()
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z a ./end-to-end-tests/blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}.7z ./end-to-end-tests/.blob-report/* -p"$ARTIFACT_ZIP_PASSWORD"
+        run: 7z a .applications/browser-extension/end-to-end-tests/blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}.7z ./applications/browser-extension/end-to-end-tests/.blob-report/* -p"$ARTIFACT_ZIP_PASSWORD"
       - name: Upload zipped Playwright Report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: end-to-end-tests-report-${{ matrix.project }}-${{ matrix.shardIndex }}
-          path: end-to-end-tests/blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}.7z
+          path: applications/browser-extension/end-to-end-tests/blob-report-${{ matrix.project }}-${{ matrix.shardIndex }}.7z
           retention-days: 5
           compression-level: 0 # already compressed with 7z

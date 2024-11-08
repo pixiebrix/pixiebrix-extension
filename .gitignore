@@ -46,6 +46,9 @@ web-ext-artifacts
 # Other artifacts
 artifacts
 /applications/browser-extension/scripts/bin/
+/applications/browser-extension/scripts/uploadMixpanelLexicon.js
+/applications/browser-extension/src/telemetry/events.js
+/applications/browser-extension/src/telemetry/lexicon.js
 headers.json
 report.html
 pixiebrix-extension-*.zip
