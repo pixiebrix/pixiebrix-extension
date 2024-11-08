@@ -31,7 +31,7 @@ import {
   type ModMetadataFormState,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
-import { cloneDeep, compact, get, omit, pull, uniq } from "lodash";
+import { cloneDeep, compact, get, pull, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
