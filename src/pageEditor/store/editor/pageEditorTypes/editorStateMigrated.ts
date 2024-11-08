@@ -388,12 +388,12 @@ export type EditorStateMigratedV11 = Except<
  */
 export type EditorStateMigratedV12 = Pick<
   EditorStateMigratedV11,
+  | "deletedModComponentFormStateIdsByModId"
   | "dirty"
-  | "dirtyModVariablesDefinitionById"
-  | "isDimensionsWarningDismissed"
   | "dirtyModMetadataById"
   | "dirtyModOptionsArgsById"
-  | "modComponentFormStates"
-  | "deletedModComponentFormStateIdsByModId"
   | "dirtyModOptionsDefinitionById"
+  | "dirtyModVariablesDefinitionById"
+  | "isDimensionsWarningDismissed"
+  | "modComponentFormStates"
 >;
