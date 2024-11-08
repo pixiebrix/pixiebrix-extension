@@ -21,7 +21,10 @@
     "build:typescript": "tsc --noEmit",
     "generate:headers": "npm run test -- src/development/headers.test.ts --no-silent",
     "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
+    "dead-code:base": "knip --config knip.mjs --tags=-knip",
+    "dead-code:prod": "npm run dead-code -- --production"
   },
   "engine-strict": true,
   "engines": {
