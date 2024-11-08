@@ -19,10 +19,10 @@ import {
   type DeferExpression,
   type Expression,
   type PipelineExpression,
-} from "../../types/runtimeTypes";
+} from "@/types/runtimeTypes";
 import { type ElementType, type MouseEventHandler, type Ref } from "react";
-import type { IconConfig } from "../../types/iconTypes";
-import { isObject } from "../../utils/objectUtils";
+import type { IconConfig } from "@/types/iconTypes";
+import { isObject } from "@/utils/objectUtils";
 
 export const DOCUMENT_BUILDER_ELEMENT_TYPES = [
   "header",

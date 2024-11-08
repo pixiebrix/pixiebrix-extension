@@ -16,8 +16,8 @@
  */
 
 @use "sass:math";
-@import "@/pageEditor/tabs/editTab/editTabVariables";
-@import "@/themes/colors";
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
+@import "@/themes/colors.scss";
 
 $headerOffsetX: math.div($pipeLineOffset, 2);
 $headerOffsetY: 0.5rem;

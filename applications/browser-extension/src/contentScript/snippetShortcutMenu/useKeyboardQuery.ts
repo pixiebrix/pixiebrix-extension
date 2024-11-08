@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Nullishable } from "../../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 import {
   type TextEditorElement,
   isSelectableTextControlElement,
   isContentEditableElement,
-} from "../../types/inputTypes";
+} from "@/types/inputTypes";
 import { useEffect, useRef, useState } from "react";
-import { getSelectionRange } from "../../utils/domUtils";
+import { getSelectionRange } from "@/utils/domUtils";
 
 /**
  * Set of keys that clear the query/hide the popover.

@@ -21,14 +21,14 @@ import {
   showBannerFromConfig,
   clearDeferredLogins,
   dismissDeferredLogin,
-} from "./deferredLoginController";
-import { sanitizedIntegrationConfigFactory } from "../../testUtils/factories/integrationFactories";
+} from "@/contentScript/integrations/deferredLoginController";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { RequestSupersededError } from "@/errors/businessErrors";
-import { showLoginBanner } from "../messenger/api";
-import type { Target } from "../../types/messengerTypes";
-import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import integrationRegistry from "../../integrations/registry";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { showLoginBanner } from "@/contentScript/messenger/api";
+import type { Target } from "@/types/messengerTypes";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import integrationRegistry from "@/integrations/registry";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({
@@ -40,7 +40,7 @@ jest.mock("react-shadow/emotion", () => ({
   },
 }));
 
-jest.mock("../messenger/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   showLoginBanner: jest.fn(),
 }));
 

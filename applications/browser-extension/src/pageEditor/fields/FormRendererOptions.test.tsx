@@ -1,14 +1,14 @@
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
-import { sidebarPanelFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { render } from "../testHelpers";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { render } from "@/pageEditor/testHelpers";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { screen } from "@testing-library/react";
 import React from "react";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { waitForEffect } from "../../testUtils/testHelpers";
-import FormRendererOptions from "./FormRendererOptions";
-import { toggleBootstrapSwitch } from "../../testUtils/userEventHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import FormRendererOptions from "@/pageEditor/fields/FormRendererOptions";
+import { toggleBootstrapSwitch } from "@/testUtils/userEventHelpers";
 
 beforeAll(() => {
   registerDefaultWidgets();

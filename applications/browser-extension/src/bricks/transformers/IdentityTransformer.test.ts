@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import IdentityTransformer from "./IdentityTransformer";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { validateBrickInputOutput } from "../../validators/schemaValidator";
-import { throwIfInvalidInput } from "../../runtime/runtimeUtils";
-import { toExpression } from "../../utils/expressionUtils";
-import { type RenderedArgs } from "../../types/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
+import { toExpression } from "@/utils/expressionUtils";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 
 const brick = new IdentityTransformer();
 

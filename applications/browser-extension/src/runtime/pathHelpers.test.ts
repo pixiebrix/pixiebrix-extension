@@ -22,7 +22,7 @@ import {
   getPathFromArray,
   getPropByPath,
   isSimplePath,
-} from "./pathHelpers";
+} from "@/runtime/pathHelpers";
 import { toPath } from "lodash";
 
 describe("getPropByPath", () => {

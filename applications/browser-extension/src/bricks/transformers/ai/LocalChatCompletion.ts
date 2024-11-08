@@ -17,12 +17,15 @@
 
 /// <reference types="@types/dom-chromium-ai" />
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
-import { type PlatformCapability } from "../../../platform/capabilities";
-import { assertAiCapabilities, throwIfBusinessError } from "./domAiHelpers";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type PlatformCapability } from "@/platform/capabilities";
+import {
+  assertAiCapabilities,
+  throwIfBusinessError,
+} from "@/bricks/transformers/ai/domAiHelpers";
 import { PropError } from "@/errors/businessErrors";
 
 type Message = {

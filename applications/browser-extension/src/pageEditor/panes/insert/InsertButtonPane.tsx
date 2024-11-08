@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "../Pane.module.scss";
+import styles from "@/pageEditor/panes/Pane.module.scss";
 
 import React from "react";
 import Centered from "@/components/Centered";

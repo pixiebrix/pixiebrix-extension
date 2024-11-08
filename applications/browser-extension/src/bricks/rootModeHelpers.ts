@@ -18,7 +18,7 @@
 import { PropError } from "@/errors/businessErrors";
 import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { $safeFind } from "../utils/domUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 /**
  * Special prop used to upgrade DOM bricks to be root-aware

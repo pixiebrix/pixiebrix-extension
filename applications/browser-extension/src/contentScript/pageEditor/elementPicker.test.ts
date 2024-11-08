@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { userSelectElement } from "./elementPicker";
+import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { BusinessError } from "@/errors/businessErrors";
 import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 // Mock because the React vs. JSDOM event handling and dom manipulation isn't playing nicely together
-jest.mock("../../components/selectionToolPopover/showSelectionToolPopover");
+jest.mock("@/components/selectionToolPopover/showSelectionToolPopover");
 
 const showSelectionToolPopoverMock = jest.mocked(showSelectionToolPopover);
 

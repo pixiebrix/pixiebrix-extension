@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import buildGetModActivationStatus from "./buildGetModActivationStatus";
-import { modDefinitionFactory } from "../../../../testUtils/factories/modDefinitionFactories";
+import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import {
   modInstanceFactory,
   teamDeploymentMetadataFactory,
-} from "../../../../testUtils/factories/modInstanceFactories";
+} from "@/testUtils/factories/modInstanceFactories";
 
 describe("buildGetModActivationStatus", () => {
   it("returns inactive for a mod with no activated components", () => {

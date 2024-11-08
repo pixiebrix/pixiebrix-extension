@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
 
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ToggleQuickbarEffect extends EffectABC {
   constructor() {
@@ -39,7 +39,7 @@ class ToggleQuickbarEffect extends EffectABC {
   async effect(): Promise<void> {
     const { toggleQuickBar } = await import(
       /* webpackChunkName: "quickBarApp" */
-      "../../components/quickBar/QuickBarApp"
+      "@/components/quickBar/QuickBarApp"
     );
 
     await toggleQuickBar();

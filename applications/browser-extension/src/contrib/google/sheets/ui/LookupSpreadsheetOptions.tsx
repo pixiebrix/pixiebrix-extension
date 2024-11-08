@@ -20,17 +20,17 @@ import { type BrickOptionProps } from "@/components/fields/schemaFields/genericO
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import TabField from "./TabField";
+import TabField from "@/contrib/google/sheets/ui/TabField";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { LOOKUP_SCHEMA } from "../bricks/lookup";
+import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 import { isEmpty } from "lodash";
 import { isExpression, toExpression } from "@/utils/expressionUtils";
-import RequireGoogleSheet from "./RequireGoogleSheet";
+import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import useAsyncEffect from "use-async-effect";
 import hash from "object-hash";
 import { joinName } from "@/utils/formUtils";
-import { getHeaders } from "../core/sheetsApi";
+import { getHeaders } from "@/contrib/google/sheets/core/sheetsApi";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {

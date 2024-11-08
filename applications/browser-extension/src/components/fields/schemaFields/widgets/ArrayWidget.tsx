@@ -15,18 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
 import { Button } from "react-bootstrap";
 import React, { useMemo } from "react";
-import { type Schema } from "../../../../types/schemaTypes";
-import { booleanPredicate, findOneOf, textPredicate } from "../schemaUtils";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  booleanPredicate,
+  findOneOf,
+  textPredicate,
+} from "@/components/fields/schemaFields/schemaUtils";
 import { defaultBrickConfig } from "@/bricks/util";
-import ArrowUpwardIcon from "../../../../icons/arrow-upward.svg?loadAsComponent";
-import ArrowDownwardIcon from "../../../../icons/arrow-downward.svg?loadAsComponent";
-import SchemaField from "../SchemaField";
+import ArrowUpwardIcon from "@/icons/arrow-upward.svg?loadAsComponent";
+import ArrowDownwardIcon from "@/icons/arrow-downward.svg?loadAsComponent";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import styles from "./ArrayWidget.module.scss";
-import { joinName } from "../../../../utils/formUtils";
+import { joinName } from "@/utils/formUtils";
 
 type ArrayWidgetProps = SchemaFieldProps & {
   addButtonCaption?: string;

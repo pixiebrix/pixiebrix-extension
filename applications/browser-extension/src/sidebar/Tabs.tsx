@@ -23,10 +23,10 @@ import {
   type PanelEntry,
   type SidebarEntry,
 } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "../store/sidebar/eventKeyUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   Button,
   CloseButton,
@@ -36,8 +36,8 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import PanelBody from "./PanelBody";
-import FormBody from "./FormBody";
+import PanelBody from "@/sidebar/PanelBody";
+import FormBody from "@/sidebar/FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
@@ -53,28 +53,28 @@ import {
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
   selectVisiblePanelCount,
-} from "./sidebarSelectors";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
-import { selectEventData } from "../telemetry/deployments";
-import ErrorBoundary from "./SidebarErrorBoundary";
+} from "@/sidebar/sidebarSelectors";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { selectEventData } from "@/telemetry/deployments";
+import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
-import { MOD_LAUNCHER } from "../store/sidebar/constants";
-import useHideEmptySidebarEffect from "./hooks/useHideEmptySidebarEffect";
-import removeTemporaryPanel from "../store/sidebar/thunks/removeTemporaryPanel";
-import { type AppDispatch } from "./store";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import useHideEmptySidebarEffect from "@/sidebar/hooks/useHideEmptySidebarEffect";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import { type AppDispatch } from "@/sidebar/store";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
-import UnavailableOverlay from "./UnavailableOverlay";
-import removeFormPanel from "../store/sidebar/thunks/removeFormPanel";
-import ConnectingOverlay from "./ConnectingOverlay";
+import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
+import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
+import ConnectingOverlay from "@/sidebar/ConnectingOverlay";
 
-import { mapModComponentRefToMessageContext } from "../utils/modUtils";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ActivateModPanel = lazy(
   async () =>
     import(
       /* webpackChunkName: "ActivatePanels" */
-      "./activateMod/ActivateModPanel"
+      "@/sidebar/activateMod/ActivateModPanel"
     ),
 );
 
@@ -82,7 +82,7 @@ const ActivateMultipleModsPanel = lazy(
   async () =>
     import(
       /* webpackChunkName: "ActivatePanels" */
-      "./activateMod/ActivateMultipleModsPanel"
+      "@/sidebar/activateMod/ActivateMultipleModsPanel"
     ),
 );
 

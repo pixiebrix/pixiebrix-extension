@@ -19,7 +19,7 @@ import { defaultBrickConfig, isOfficial } from "./util";
 import { type RegistryId } from "@/types/registryTypes";
 import IfElse from "./transformers/controlFlow/IfElse";
 import { type Schema } from "@/types/schemaTypes";
-import { EMPTY_PIPELINE } from "../utils/expressionUtils";
+import { EMPTY_PIPELINE } from "@/utils/expressionUtils";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {

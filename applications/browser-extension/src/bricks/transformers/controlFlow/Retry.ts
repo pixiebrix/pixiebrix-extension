@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type PipelineExpression,
-} from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { validateRegistryId } from "../../../types/helpers";
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { sleep } from "../../../utils/timeUtils";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
-import castError from "../../../utils/castError";
+import { sleep } from "@/utils/timeUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import castError from "@/utils/castError";
 
 class Retry extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/retry");

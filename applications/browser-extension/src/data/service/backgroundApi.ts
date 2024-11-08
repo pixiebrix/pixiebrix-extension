@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { memoizeUntilSettled } from "../../utils/promiseUtils";
-import { getApiClient } from "./apiClient";
-import type { components } from "../../types/swagger";
-import { expectContext } from "../../utils/expectContext";
-import { API_PATHS } from "./urlPaths";
-import { transformTeamResponse, type Team } from "../model/Team";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { getApiClient } from "@/data/service/apiClient";
+import type { components } from "@/types/swagger";
+import { expectContext } from "@/utils/expectContext";
+import { API_PATHS } from "@/data/service/urlPaths";
+import { transformTeamResponse, type Team } from "@/data/model/Team";
 
 // Safe to memoize in-memory because the background page/worker is reloaded when the authenticated user changes.
 // When the user changes, the background page/worker is reloaded, the memoizeUntilSettled cache is cleared so the

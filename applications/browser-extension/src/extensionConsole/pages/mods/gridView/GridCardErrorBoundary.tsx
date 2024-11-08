@@ -17,14 +17,14 @@
 
 import React from "react";
 import { Card } from "react-bootstrap";
-import { type ModViewItem } from "../../../../types/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { DEFAULT_TEXT_ICON_COLOR } from "../../../../icons/constants";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 
 type Props = {
   /**

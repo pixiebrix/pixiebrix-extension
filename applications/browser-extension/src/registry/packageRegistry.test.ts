@@ -21,10 +21,10 @@ import {
   syncPackages,
   find,
   count,
-} from "./packageRegistry";
+} from "@/registry/packageRegistry";
 import { produce } from "immer";
-import { appApiMock } from "../testUtils/appApiMock";
-import { defaultModDefinitionFactory } from "../testUtils/factories/modDefinitionFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import pDefer from "p-defer";
 import { normalizeSemVerString } from "@/types/helpers";
 import { API_PATHS } from "@/data/service/urlPaths";

@@ -16,26 +16,26 @@
  */
 
 import React from "react";
-import { render, screen } from "../../../../testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 import PublishModModals from "./PublishModModals";
 import { authSlice } from "@/auth/authSlice";
-import { modModalsSlice } from "../modModalsSlice";
-import { type ModDefinition } from "../../../../../types/modDefinitionTypes";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AuthState } from "@/auth/authTypes";
-import { validateRegistryId } from "../../../../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
-import { waitForEffect } from "../../../../../testUtils/testHelpers";
-import { appApiMock } from "../../../../../testUtils/appApiMock";
-import { defaultModDefinitionFactory } from "../../../../../testUtils/factories/modDefinitionFactories";
-import { metadataFactory } from "../../../../../testUtils/factories/metadataFactory";
-import { authStateFactory } from "../../../../../testUtils/factories/authFactories";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type EmptyObject } from "type-fest";
 
 let modDefinition: ModDefinition;
 let auth: AuthState;
 
-jest.mock("../../../../../modDefinitions/modDefinitionHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useOptionalModDefinition: jest.fn().mockImplementation(() => ({
     data: modDefinition,
     isFetching: false,

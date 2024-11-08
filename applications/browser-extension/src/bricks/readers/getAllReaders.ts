@@ -24,14 +24,14 @@ import { ImageExifReader } from "./ImageExifReader";
 import { ElementReader } from "./ElementReader";
 import { type Read, registerFactory } from "./factory";
 import { type FrameworkConfig, frameworkReadFactory } from "./frameworkReader";
-import { readJQuery } from "./jquery";
+import { readJQuery } from "@/bricks/readers/jquery";
 import { HtmlReader } from "./HtmlReader";
 import DocumentReader from "./DocumentReader";
 import ManifestReader from "./ManifestReader";
 import ProfileReader from "./ProfileReader";
 import SessionReader from "./SessionReader";
 import TimestampReader from "./TimestampReader";
-import { type Brick } from "../../types/brickTypes";
+import { type Brick } from "@/types/brickTypes";
 
 function getAllReaders(): Brick[] {
   return [

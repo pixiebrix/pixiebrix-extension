@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { canParseUrl } from "../../utils/urlUtils";
-import { type RequiredMeTeamThemeResponse } from "../service/responseTypeHelpers";
+import { canParseUrl } from "@/utils/urlUtils";
+import { type RequiredMeTeamThemeResponse } from "@/data/service/responseTypeHelpers";
 
 export type TeamTheme = {
   /**

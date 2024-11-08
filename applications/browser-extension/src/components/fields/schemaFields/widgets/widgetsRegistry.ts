@@ -16,10 +16,10 @@
  */
 
 import { type FormControlProps } from "react-bootstrap";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import type React from "react";
 import { type TemplateToggleWidgetProps } from "./templateToggleWidgetTypes";
-import { type IntegrationDependencyWidgetProps } from "../integrations/IntegrationDependencyWidget";
+import { type IntegrationDependencyWidgetProps } from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 
 type Widgets = {
   ArrayWidget: React.VFC<SchemaFieldProps>;

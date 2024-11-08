@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { mapSchemaToOptions } from "./selectFieldUtils";
-import { type Schema } from "../../../types/schemaTypes";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
+import { type Schema } from "@/types/schemaTypes";
 
 describe("selectFieldUtils", () => {
   describe("mapSchemaToOptions", () => {

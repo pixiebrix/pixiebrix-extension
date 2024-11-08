@@ -19,23 +19,23 @@ import type {
   ButtonFormState,
   ModComponentFormState,
   TriggerFormState,
-} from "../../pageEditor/starterBricks/formStateTypes";
-import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
-import { isNativeCssSelector, isValidSelector } from "../../utils/domUtils";
-import { AnnotationType } from "../../types/annotationTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
+import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
+import { isNativeCssSelector, isValidSelector } from "@/utils/domUtils";
+import { AnnotationType } from "@/types/annotationTypes";
 import { isEmpty } from "lodash";
-import pluralize from "../../utils/pluralize";
+import pluralize from "@/utils/pluralize";
 import type { BrickConfig, BrickPosition } from "@/bricks/types";
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { inputProperties } from "../../utils/schemaUtils";
+import { inputProperties } from "@/utils/schemaUtils";
 import {
   castTextLiteralOrThrow,
   containsTemplateExpression,
-} from "../../utils/expressionUtils";
-import { guessUsefulness } from "../../utils/detectRandomString";
-import type { Schema } from "../../types/schemaTypes";
-import { isObject } from "../../utils/objectUtils";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/utils/expressionUtils";
+import { guessUsefulness } from "@/utils/detectRandomString";
+import type { Schema } from "@/types/schemaTypes";
+import { isObject } from "@/utils/objectUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 
 // `jQuery` selector extension: https://api.jquery.com/category/selectors/jquery-selector-extensions/
@@ -336,7 +336,7 @@ class SelectorAnalysis extends AnalysisVisitorWithResolvedBricksABC {
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- wrapped in try/catch
-      brick = this.allBlocks.get(brickConfig.id)!.block;
+      brick = this.allBlocks.get(brickConfig.id)!.brick;
     } catch {
       return;
     }

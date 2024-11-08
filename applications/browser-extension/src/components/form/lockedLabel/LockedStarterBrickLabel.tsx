@@ -21,7 +21,7 @@ import {
   type OverlayTriggerProps,
   Tooltip,
 } from "react-bootstrap";
-import { uuidv4 } from "../../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";

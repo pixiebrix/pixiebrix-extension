@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { migrations } from "./integrationsMigrations";
-import { persistIntegrationsConfig } from "./integrationsSlice";
-import { getMaxMigrationsVersion } from "../../store/migratePersistedState";
+import { migrations } from "@/integrations/store/integrationsMigrations";
+import { persistIntegrationsConfig } from "@/integrations/store/integrationsSlice";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 
 describe("persistIntegrationsConfig", () => {
   test("version is the highest migration version", () => {

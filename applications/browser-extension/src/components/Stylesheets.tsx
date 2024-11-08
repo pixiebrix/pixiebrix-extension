@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { castArray, uniq } from "lodash";
 import oneEvent from "one-event";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Detect and extract font-face rules because Chrome fails to load them from

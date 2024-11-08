@@ -18,7 +18,7 @@
 import React from "react";
 import { type Field } from "@rjsf/utils";
 import cx from "classnames";
-import MarkdownLazy from "../Markdown";
+import MarkdownLazy from "@/components/Markdown";
 
 type FormPreviewDescriptionFieldProps = {
   description: string | React.ReactElement;

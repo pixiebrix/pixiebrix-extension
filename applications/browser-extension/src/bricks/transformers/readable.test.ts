@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Readable } from "./readable";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { Readable } from "@/bricks/transformers/readable";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new Readable();
 

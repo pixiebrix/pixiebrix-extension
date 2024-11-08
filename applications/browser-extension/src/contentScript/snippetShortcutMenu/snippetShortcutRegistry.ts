@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UUID } from "../../types/stringTypes";
-import { SimpleEventTarget } from "../../utils/SimpleEventTarget";
+import type { UUID } from "@/types/stringTypes";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { remove } from "lodash";
-import type { SnippetShortcut } from "../../platform/platformTypes/snippetShortcutMenuProtocol";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 
 /**
  * Registry for shortcut snippets

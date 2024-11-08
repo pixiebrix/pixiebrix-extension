@@ -16,18 +16,18 @@
  */
 
 import React from "react";
-import { screen, render } from "./testHelpers";
-import Header from "./Header";
+import { screen, render } from "@/sidebar/testHelpers";
+import Header from "@/sidebar/Header";
 import useTheme from "@/hooks/useTheme";
 
 import { waitFor } from "@testing-library/react";
-import { initialTheme } from "../themes/themeStore";
+import { initialTheme } from "@/themes/themeStore";
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-jest.mock("../hooks/useTheme");
+jest.mock("@/hooks/useTheme");
 
 describe("Header", () => {
   beforeEach(() => {

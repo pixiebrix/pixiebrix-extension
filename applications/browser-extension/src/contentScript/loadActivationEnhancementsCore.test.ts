@@ -15,41 +15,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { showModActivationInSidebar } from "./sidebarController";
-import { initSidebarActivation } from "./sidebarActivation";
-import { getActivatedModIds } from "../store/modComponents/modComponentStorage";
-import { getDocument } from "../starterBricks/testHelpers";
+import { showModActivationInSidebar } from "@/contentScript/sidebarController";
+import { initSidebarActivation } from "@/contentScript/sidebarActivation";
+import { getActivatedModIds } from "@/store/modComponents/modComponentStorage";
+import { getDocument } from "@/starterBricks/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { waitForEffect } from "../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { getActivatingMods } from "@/background/messenger/external/_implementation";
-import { modComponentFactory } from "../testUtils/factories/modComponentFactories";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   loadActivationEnhancements,
   TEST_unloadActivationEnhancements,
-} from "./loadActivationEnhancementsCore";
-import { getContentScriptState } from "./ready";
+} from "@/contentScript/loadActivationEnhancementsCore";
+import { getContentScriptState } from "@/contentScript/ready";
 import { isLinked } from "@/auth/authStorage";
 import { array } from "cooky-cutter";
-import { MARKETPLACE_URL } from "../urlConstants";
+import { MARKETPLACE_URL } from "@/urlConstants";
 import { type RegistryId } from "@/types/registryTypes";
 
-jest.mock("./sidebarController", () => ({
+jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
   showSidebar: jest.fn(),
   showModActivationInSidebar: jest.fn(),
 }));
 
-jest.mock("../auth/authStorage", () => ({
+jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
   addListener: jest.fn(),
 }));
 
 const isLinkedMock = jest.mocked(isLinked);
 
-jest.mock("./ready");
-jest.mock("../store/modComponents/modComponentStorage");
-jest.mock("../background/messenger/external/_implementation");
-jest.mock("../sidebar/store");
+jest.mock("@/contentScript/ready");
+jest.mock("@/store/modComponents/modComponentStorage");
+jest.mock("@/background/messenger/external/_implementation");
+jest.mock("@/sidebar/store");
 
 const showSidebarMock = jest.mocked(showModActivationInSidebar);
 const getActivatedModIdsMock = jest.mocked(getActivatedModIds);

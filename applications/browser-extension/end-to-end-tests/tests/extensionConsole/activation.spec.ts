@@ -27,7 +27,7 @@ import {
   isChrome,
 } from "../../utils";
 import path from "node:path";
-import { VALID_UUID_REGEX } from "../../../src/types/stringTypes";
+import { VALID_UUID_REGEX } from "@/types/stringTypes";
 import { type Serializable } from "playwright-core/types/structs";
 import { SERVICE_URL } from "../../env";
 import { ExtensionsShortcutsPage } from "../../pageObjects/extensionsShortcutsPage";

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SafeHTML } from "../../types/stringTypes";
-import sanitize from "../../utils/sanitize";
+import { type SafeHTML } from "@/types/stringTypes";
+import sanitize from "@/utils/sanitize";
 import { BusinessError } from "@/errors/businessErrors";
-import { isUnknownObjectArray } from "../../utils/objectUtils";
+import { isUnknownObjectArray } from "@/utils/objectUtils";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {

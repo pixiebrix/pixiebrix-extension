@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentRenderer } from "./renderers/document";
-import ForEach from "./transformers/controlFlow/ForEach";
-import { type BrickPosition, type BrickConfig } from "./types";
-import { createNewDocumentBuilderElement } from "../pageEditor/documentBuilder/createNewDocumentBuilderElement";
-import { PIPELINE_BRICKS_FIELD_NAME } from "../pageEditor/consts";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+import { type BrickPosition, type BrickConfig } from "@/bricks/types";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
 import {
   brickConfigFactory,
   pipelineFactory,
-} from "../testUtils/factories/brickFactories";
-import { toExpression } from "../utils/expressionUtils";
+} from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 test("should invoke the callback for the pipeline bricks", () => {

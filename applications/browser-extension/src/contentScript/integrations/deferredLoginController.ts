@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { oauth2Storage } from "@/auth/authConstants";
-import type { UUID } from "../../types/stringTypes";
+import type { UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError, RequestSupersededError } from "@/errors/businessErrors";
-import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
   hideAllLoginBanners,
   hideLoginBanner,
   showLoginBanner,
-} from "./bannerDomController";
-import integrationRegistry from "../../integrations/registry";
+} from "@/contentScript/integrations/bannerDomController";
+import integrationRegistry from "@/integrations/registry";
 import { onContextInvalidated } from "webext-events";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
-import { showLoginBanner as messengerApiShowLoginBanner } from "../messenger/api";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { showLoginBanner as messengerApiShowLoginBanner } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 
 /**

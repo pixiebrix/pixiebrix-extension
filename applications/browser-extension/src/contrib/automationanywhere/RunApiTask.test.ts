@@ -15,33 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setPlatform } from "../../platform/platformContext";
-import { platformMock } from "../../testUtils/platformMock";
-import { RunApiTask } from "./RunApiTask";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { type Nullishable } from "../../utils/nullishUtils";
+import { setPlatform } from "@/platform/platformContext";
+import { platformMock } from "@/testUtils/platformMock";
+import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { performConfiguredRequest } from "@/background/requests";
 import {
   remoteIntegrationConfigurationFactory,
   sanitizedIntegrationConfigFactory,
   secretsConfigFactory,
-} from "../../testUtils/factories/integrationFactories";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { appApiMock, onApiGet, onApiPost } from "../../testUtils/appApiMock";
+} from "@/testUtils/factories/integrationFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { appApiMock, onApiGet, onApiPost } from "@/testUtils/appApiMock";
 import { TEST_overrideFeatureFlags } from "@/auth/featureFlagStorage";
-import { fromJS } from "../../integrations/UserDefinedIntegration";
-import controlRoomOAuth2Service from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
-import integrationRegistry from "../../integrations/registry";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import controlRoomOAuth2Service from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import integrationRegistry from "@/integrations/registry";
 import { integrationConfigLocator } from "@/background/integrationConfigLocator";
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
-import { sleep } from "../../utils/timeUtils";
-import { type NetworkRequestConfig } from "../../types/networkTypes";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { sleep } from "@/utils/timeUtils";
+import { type NetworkRequestConfig } from "@/types/networkTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../../utils/timeUtils", () => {
+jest.mock("@/utils/timeUtils", () => {
   const actual = jest.requireActual("@/utils/timeUtils");
 
   return {

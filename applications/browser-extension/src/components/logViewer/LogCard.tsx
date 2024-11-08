@@ -16,16 +16,16 @@
  */
 
 import React, { useState } from "react";
-import { type MessageLevel } from "../../telemetry/logging";
-import Loader from "../Loader";
+import { type MessageLevel } from "@/telemetry/logging";
+import Loader from "@/components/Loader";
 import { Card } from "react-bootstrap";
-import LogTable from "./LogTable";
-import LogToolbar from "./LogToolbar";
-import useLogEntriesView from "./useLogEntriesView";
+import LogTable from "@/components/logViewer/LogTable";
+import LogToolbar from "@/components/logViewer/LogToolbar";
+import useLogEntriesView from "@/components/logViewer/useLogEntriesView";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLogs } from "./logSelectors";
 import { logActions } from "./logSlice";
-import { ErrorDisplay } from "../../layout/ErrorDisplay";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { type AppDispatch } from "@/extensionConsole/store";
 
 type OwnProps = {

@@ -17,9 +17,9 @@
 
 import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React from "react";
-import SelectionMenu from "./SelectionMenu";
-import ActionRegistry from "./ActionRegistry";
-import { uuidv4 } from "../../types/helpers";
+import SelectionMenu from "@/contentScript/textSelectionMenu/SelectionMenu";
+import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
 
 export default {

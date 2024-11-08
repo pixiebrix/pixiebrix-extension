@@ -16,22 +16,22 @@
  */
 
 import { compact, uniqBy } from "lodash";
-import { type ModComponentBase } from "../../types/modComponentTypes";
-import { type OptionsArgs } from "../../types/runtimeTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
 import {
   type IntegrationDependency,
   type ModDependencyAPIVersion,
-} from "../../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
   INTEGRATIONS_BASE_SCHEMA_URL,
   PIXIEBRIX_INTEGRATION_ID,
-} from "../../integrations/constants";
+} from "@/integrations/constants";
 import type {
   ModComponentDefinition,
   ModVariablesDefinition,
-} from "../../types/modDefinitionTypes";
-import type { Schema } from "../../types/schemaTypes";
-import { emptyModVariablesDefinitionFactory } from "../../utils/modUtils";
+} from "@/types/modDefinitionTypes";
+import type { Schema } from "@/types/schemaTypes";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 /**
  * Infer options from existing mod-component-like instances for reactivating a mod

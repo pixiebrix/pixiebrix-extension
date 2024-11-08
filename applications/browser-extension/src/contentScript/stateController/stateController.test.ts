@@ -19,16 +19,16 @@ import {
   setState,
   getState,
   TEST_resetStateController,
-} from "./stateController";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+} from "@/contentScript/stateController/stateController";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
-} from "../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 import type { JSONSchema7Definition } from "json-schema";
-import { registerModVariables } from "./modVariablePolicyController";
-import { getSessionStorageKey } from "../../platform/state/stateHelpers";
+import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
+import { getSessionStorageKey } from "@/platform/state/stateHelpers";
 import { getThisFrame } from "webext-messenger";
 
 beforeEach(async () => {

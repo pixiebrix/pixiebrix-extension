@@ -19,19 +19,19 @@ import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { GetAPITransformer } from "@/bricks/transformers/httpGet";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { AnnotationType } from "../../types/annotationTypes";
-import { AnalysisAnnotationActionType } from "../analysisTypes";
-import { ensurePermissionsFromUserGesture } from "../../permissions/permissionsUtils";
+import { AnnotationType } from "@/types/annotationTypes";
+import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import {
   containsTemplateExpression,
   isTemplateExpression,
   isVarExpression,
-} from "../../utils/expressionUtils";
-import { allSettled } from "../../utils/promiseUtils";
-import { isUrlRelative } from "../../utils/urlUtils";
+} from "@/utils/expressionUtils";
+import { allSettled } from "@/utils/promiseUtils";
+import { isUrlRelative } from "@/utils/urlUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call

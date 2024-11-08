@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { getMaxMigrationsVersion } from "../migratePersistedState";
-import { migrations } from "./settingsMigrations";
-import { persistSettingsConfig } from "./settingsStorage";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { migrations } from "@/store/settings/settingsMigrations";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 
 describe("persistSettingsConfig", () => {
   test("version is the highest migration version", () => {

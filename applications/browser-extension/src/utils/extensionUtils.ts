@@ -16,7 +16,7 @@
  */
 
 import pTimeout from "p-timeout";
-import { foreverPendingPromise } from "./promiseUtils";
+import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";

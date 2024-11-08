@@ -16,58 +16,52 @@
  */
 
 import React from "react";
-import { render, screen, within, userEvent } from "../testHelpers";
+import { render, screen, within, userEvent } from "@/pageEditor/testHelpers";
 import ModComponentEditorPane from "./ModComponentEditorPane";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { selectActiveModComponentFormState } from "../store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import brickRegistry from "@/bricks/registry";
-import { type EditorRootState } from "../store/editor/pageEditorTypes";
-import {
-  echoBrick,
-  teapotBrick,
-} from "../../runtime/pipelineTests/testHelpers";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
 import { defaultBrickConfig } from "@/bricks/util";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { JQTransformer } from "@/bricks/transformers/jq";
 import { AlertEffect } from "@/bricks/effects/alert";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import {
-  type OutputKey,
-  type PipelineExpression,
-} from "../../types/runtimeTypes";
-import AddBrickModal from "../modals/addBrickModal/AddBrickModal";
-import { type EditablePackageMetadata } from "../../types/contract";
-import { fireTextInput } from "../../testUtils/formHelpers";
+import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
+import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
+import { type EditablePackageMetadata } from "@/types/contract";
+import { fireTextInput } from "@/testUtils/formHelpers";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
-import { PIPELINE_BRICKS_FIELD_NAME } from "../consts";
-import getType from "../../runtime/getType";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
+import getType from "@/runtime/getType";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { MULTIPLE_RENDERERS_ERROR_MESSAGE } from "@/analysis/analysisVisitors/renderersAnalysis";
 import { RunProcess } from "@/contrib/uipath/process";
 import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 import { array } from "cooky-cutter";
-import { appApiMock } from "../../testUtils/appApiMock";
-import { mockAuthenticatedMeApiResponse } from "../../testUtils/userMock";
-import { uuidSequence } from "../../testUtils/factories/stringFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { mockAuthenticatedMeApiResponse } from "@/testUtils/userMock";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   formStateFactory,
   triggerFormStateFactory,
-} from "../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../testUtils/factories/brickFactories";
+} from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import {
   marketplaceListingFactory,
   marketplaceTagFactory,
-} from "../../testUtils/factories/marketplaceFactories";
-import { meWithPartnerApiResponseFactory } from "../../testUtils/factories/authFactories";
-import { toExpression } from "../../utils/expressionUtils";
+} from "@/testUtils/factories/marketplaceFactories";
+import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
+import { toExpression } from "@/utils/expressionUtils";
 import { PipelineFlavor } from "@/bricks/types";
 import {
   starterBrickDefinitionFactory,
   starterBrickDefinitionPropFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] -- TODO: replace with native expect and it.each */
@@ -82,7 +76,7 @@ async function tickAsyncEffects() {
 }
 
 // Mock to support hook usage in the subtree, not relevant to UI tests here
-jest.mock("../../hooks/useRefreshRegistries");
+jest.mock("@/hooks/useRefreshRegistries");
 
 const jqBrick = new JQTransformer();
 const alertBrick = new AlertEffect();

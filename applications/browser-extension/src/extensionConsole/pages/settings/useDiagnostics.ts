@@ -18,21 +18,21 @@
 import { useSelector } from "react-redux";
 import useExtensionPermissions, {
   type DetailedPermissions,
-} from "../../../permissions/useExtensionPermissions";
-import { type SerializedModComponent } from "../../../types/modComponentTypes";
+} from "@/permissions/useExtensionPermissions";
+import { type SerializedModComponent } from "@/types/modComponentTypes";
 import { uniqBy } from "lodash";
-import { type StorageEstimate } from "../../../types/browserTypes";
-import { count as registrySize } from "../../../registry/packageRegistry";
-import { count as logSize } from "../../../telemetry/logging";
-import { count as traceSize } from "../../../telemetry/trace";
+import { type StorageEstimate } from "@/types/browserTypes";
+import { count as registrySize } from "@/registry/packageRegistry";
+import { count as logSize } from "@/telemetry/logging";
+import { count as traceSize } from "@/telemetry/trace";
 import { count as eventsSize } from "@/background/telemetry";
 import useUserAction from "@/hooks/useUserAction";
 import download from "downloadjs";
 import filenamify from "filenamify";
-import { getExtensionVersion } from "../../../utils/extensionUtils";
-import { nowTimestamp } from "../../../utils/timeUtils";
+import { getExtensionVersion } from "@/utils/extensionUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
-import { selectActivatedModComponents } from "../../../store/modComponents/modComponentSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 async function collectDiagnostics({
   modComponents,

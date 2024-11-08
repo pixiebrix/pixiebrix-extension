@@ -21,9 +21,9 @@ import { partial } from "lodash";
 import { useField } from "formik";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { ALERT_PERSISTENT_OPTION, AlertEffect } from "@/bricks/effects/alert";
-import { type Schema } from "../../types/schemaTypes";
-import { joinName } from "../../utils/formUtils";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { type Schema } from "@/types/schemaTypes";
+import { joinName } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const AlertOptions: React.FC<BrickOptionProps> = ({ name, configKey }) => {
   const basePath = joinName(name, configKey);

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "../../../testHelpers";
-import CommentsPreview from "./CommentsPreview";
+import { render, screen } from "@/pageEditor/testHelpers";
+import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import React from "react";
-import { formStateFactory } from "../../../../testUtils/factories/pageEditorFactories";
-import { actions } from "../../../store/editor/editorSlice";
-import { selectNodeDataPanelTabSelected } from "../../../store/editor/editorSelectors";
-import { DataPanelTabKey } from "../dataPanel/dataPanelTypes";
-import { type EditorRootState } from "../../../store/editor/pageEditorTypes";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectNodeDataPanelTabSelected } from "@/pageEditor/store/editor/editorSelectors";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 const renderCommentsPreview = (comments: string) => {
   const formState = formStateFactory();

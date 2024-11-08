@@ -19,11 +19,11 @@ import {
   useGetDatabasesQuery,
   useGetOrganizationsQuery,
 } from "@/data/service/api";
-import useMergeAsyncState from "./useMergeAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Database } from "@/types/contract";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { type Team } from "@/data/model/Team";
 
 function databasesToOptions(

@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../../../../sidebar/testHelpers";
-import useSpreadsheetId from "./useSpreadsheetId";
+import { renderHook } from "@/sidebar/testHelpers";
+import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { validateRegistryId } from "../../../../types/helpers";
-import { uuidSequence } from "../../../../testUtils/factories/stringFactories";
+import { validateRegistryId } from "@/types/helpers";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../../../testUtils/factories/integrationFactories";
-import IntegrationsSliceModIntegrationsContextAdapter from "../../../../integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
-import { validateOutputKey } from "../../../../runtime/runtimeTypes";
-import { toExpression } from "../../../../utils/expressionUtils";
+} from "@/testUtils/factories/integrationFactories";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { waitFor } from "@testing-library/react";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -49,17 +50,19 @@ describe("useSpreadsheetId", () => {
   });
 
   test("works with string value", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+    const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: TEST_SPREADSHEET_ID,
       },
     });
-    await waitForEffect();
-    expect(result.current.data).toEqual(TEST_SPREADSHEET_ID);
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual(TEST_SPREADSHEET_ID);
+    });
   });
 
   test("works with service value", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+    const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: toExpression("var", "@google"),
         integrationDependencies: [
@@ -73,13 +76,13 @@ describe("useSpreadsheetId", () => {
       wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     });
 
-    await waitForEffect();
-
-    expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
+    await waitFor(() => {
+      expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
+    });
   });
 
   test("works with legacy service usage", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+    const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: toExpression("var", "@sheet.spreadsheetId"),
         integrationDependencies: [
@@ -93,13 +96,13 @@ describe("useSpreadsheetId", () => {
       wrapper: IntegrationsSliceModIntegrationsContextAdapter,
     });
 
-    await waitForEffect();
-
-    expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
+    await waitFor(() => {
+      expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
+    });
   });
 
   test("works with mod input", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+    const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: toExpression("var", "@options.sheetId"),
         optionsArgs: {
@@ -108,13 +111,13 @@ describe("useSpreadsheetId", () => {
       },
     });
 
-    await waitForEffect();
-
-    expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
+    await waitFor(() => {
+      expect(result.current.data).toBe(TEST_SPREADSHEET_ID);
+    });
   });
 
   test("returns null when options value doesn't exist", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+    const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: toExpression("var", "@options.sheetId"),
         optionsArgs: {
@@ -124,20 +127,20 @@ describe("useSpreadsheetId", () => {
       },
     });
 
-    await waitForEffect();
-
-    expect(result.current.data).toBeNull();
+    await waitFor(() => {
+      expect(result.current.data).toBeNull();
+    });
   });
 
   test("returns null with no services and variable field value", async () => {
-    const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
+    const { result } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
         spreadsheetId: toExpression("var", "@data.sheetId"),
       },
     });
 
-    await waitForEffect();
-
-    expect(result.current.data).toBeNull();
+    await waitFor(() => {
+      expect(result.current.data).toBeNull();
+    });
   });
 });

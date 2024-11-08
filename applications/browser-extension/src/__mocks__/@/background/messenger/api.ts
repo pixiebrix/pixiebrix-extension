@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import { RemoteResponse } from "../../../../types/contract";
-import { NetworkRequestConfig } from "../../../../types/networkTypes";
-import { RegistryId } from "../../../../types/registryTypes";
-import { Nullishable } from "../../../../utils/nullishUtils";
+import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { RemoteResponse } from "@/types/contract";
+import { NetworkRequestConfig } from "@/types/networkTypes";
+import { RegistryId } from "@/types/registryTypes";
+import { Nullishable } from "@/utils/nullishUtils";
 import { getMethod, backgroundTarget as bg } from "webext-messenger";
 
-export * from "@/background/messenger/api";
+export * from "../../../../background/messenger/api";
 
 export const registry = {
   syncRemote: jest.fn(),

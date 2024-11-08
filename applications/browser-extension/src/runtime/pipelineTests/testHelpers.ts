@@ -1,23 +1,20 @@
-import { type InitialValues } from "../reducePipeline";
-import apiVersionOptions from "../apiVersionOptions";
-import { mapArgs } from "../mapArgs";
+import { type InitialValues } from "@/runtime/reducePipeline";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { mapArgs } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
   type BrickOptions,
   type OptionsArgs,
   type PipelineExpression,
-} from "../../types/runtimeTypes";
-import { BrickABC } from "../../types/brickTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { isDeferExpression } from "../../utils/expressionUtils";
+} from "@/types/runtimeTypes";
+import { BrickABC } from "@/types/brickTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
-import {
-  minimalSchemaFactory,
-  propertiesToSchema,
-} from "../../utils/schemaUtils";
-import { UNSAFE_assumeFeatureFlag } from "../../testUtils/factories/featureFlagFactories";
+import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
+import { UNSAFE_assumeFeatureFlag } from "@/testUtils/factories/featureFlagFactories";
 import { cloneDeep } from "lodash";
 
 /**

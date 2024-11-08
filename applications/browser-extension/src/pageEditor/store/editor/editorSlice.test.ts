@@ -18,37 +18,37 @@
 import {
   editorSlice,
   actions,
-  initialState,
   persistEditorConfig,
-} from "./editorSlice";
-import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
-import { type EditorRootState, type EditorState } from "./pageEditorTypes";
-import { FOUNDATION_NODE_ID } from "./uiState";
-import brickRegistry from "@/bricks/registry";
+} from "@/pageEditor/store/editor/editorSlice";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
-  echoBrick,
-  teapotBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { type OutputKey } from "../../../types/runtimeTypes";
+  type EditorRootState,
+  type EditorState,
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
+import brickRegistry from "@/bricks/registry";
+import { echoBrick, teapotBrick } from "@/runtime/pipelineTests/testHelpers";
+import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBrickConfig } from "@/bricks/util";
-import { validateRegistryId } from "../../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   autoUUIDSequence,
   uuidSequence,
-} from "../../../testUtils/factories/stringFactories";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../../testUtils/factories/brickFactories";
-import { integrationDependencyFactory } from "../../../testUtils/factories/integrationFactories";
-import { toExpression } from "../../../utils/expressionUtils";
-import { getMaxMigrationsVersion } from "../../../store/migratePersistedState";
-import { migrations } from "../../../store/editorMigrations";
-import { modMetadataFactory } from "../../../testUtils/factories/modComponentFactories";
+} from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { migrations } from "@/store/editorMigrations";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   selectActiveModId,
   selectExpandedModId,
   selectModIsDirty,
-} from "./editorSelectors";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { initialState } from "@/store/editorInitialState";
 
 function getTabState(
   state: EditorState,

@@ -20,9 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectModMetadataMap,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
-import { actions } from "../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -31,23 +31,23 @@ import { object, string } from "yup";
 import {
   isInnerDefinitionRegistryId,
   testIsSemVerString,
-} from "../../../types/helpers";
+} from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
 import Alert from "@/components/Alert";
 import { createSelector } from "@reduxjs/toolkit";
 import { lt } from "semver";
-import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
-import { type ModMetadataFormState } from "../../store/editor/pageEditorTypes";
-import { FieldDescriptions } from "../../../modDefinitions/modDefinitionConstants";
-import IntegrationsSliceModIntegrationsContextAdapter from "../../../integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import cx from "classnames";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import { type RegistryId } from "../../../types/registryTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type RegistryId } from "@/types/registryTypes";
 import { pick } from "lodash";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { selectModInstanceMap } from "../../../store/modComponents/modInstanceSelectors";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432

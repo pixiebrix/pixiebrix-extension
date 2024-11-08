@@ -17,13 +17,13 @@
 
 import { Alert, Button } from "react-bootstrap";
 import React from "react";
-import useDataPanelActiveTabKey from "../dataPanel/useDataPanelActiveTabKey";
-import { DataPanelTabKey } from "../dataPanel/dataPanelTypes";
+import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStickyNote } from "@fortawesome/free-regular-svg-icons";
 import styles from "./CommentsPreview.module.scss";
 import { useDispatch } from "react-redux";
-import { actions } from "../../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 
 const CommentsPreview: React.FunctionComponent<{
   comments: string;

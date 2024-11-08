@@ -18,15 +18,15 @@
 import {
   getLatestRunByModComponentId,
   type TraceRecord,
-} from "../../telemetry/trace";
+} from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
-import runtimeSlice from "../store/runtime/runtimeSlice";
-import { selectActiveModComponentId } from "../store/editor/editorSelectors";
-import { selectActiveModComponentTraces } from "../store/runtime/runtimeSelectors";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import { selectActiveModComponentId } from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { isEqual } from "lodash";
 import { useRef } from "react";
-import reportError from "../../telemetry/reportError";
+import reportError from "@/telemetry/reportError";
 
 const { setModComponentTrace } = runtimeSlice.actions;
 

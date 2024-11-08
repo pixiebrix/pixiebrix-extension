@@ -23,7 +23,7 @@ import {
   NO_RESPONSE_MESSAGE,
   safeGuessStatusText,
   selectNetworkErrorMessage,
-} from "./networkErrorHelpers";
+} from "@/errors/networkErrorHelpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { snapWithin } from "./mathUtils";
+import { snapWithin } from "@/utils/mathUtils";
 
 describe("snapWithin", () => {
   const outerBox = { x: 0, y: 0, width: 100, height: 100 };

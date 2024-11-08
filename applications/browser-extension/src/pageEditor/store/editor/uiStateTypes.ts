@@ -16,11 +16,11 @@
  */
 
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { type DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
-import { type UUID } from "../../../types/stringTypes";
-import { type RegistryId } from "../../../types/registryTypes";
+import { type DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { type Nullishable } from "../../../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export type NodeInfo = {
   blockId: RegistryId;

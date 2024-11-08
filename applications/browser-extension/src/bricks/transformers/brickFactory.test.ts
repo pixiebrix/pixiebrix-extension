@@ -15,31 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import nytimes from "@/contrib/bricks/nytimes-org.yaml";
-import trelloReader from "@/contrib/readers/trello-card-reader.yaml";
-import { fromJS as nativeFromJS } from "./brickFactory";
+import nytimes from "@contrib/bricks/nytimes-org.yaml";
+import trelloReader from "@contrib/readers/trello-card-reader.yaml";
+import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { isUserDefinedBrick } from "../../types/brickTypes";
+import { isUserDefinedBrick } from "@/types/brickTypes";
 import { MappingTransformer } from "./mapping";
-import brickRegistry from "../registry";
+import brickRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
   OptionsBrick,
   optionsBrick,
   simpleInput,
-} from "../../runtime/pipelineTests/testHelpers";
-import { reducePipeline } from "../../runtime/reducePipeline";
-import Run from "./controlFlow/Run";
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import Run from "@/bricks/transformers/controlFlow/Run";
 import { cloneDeep, partial } from "lodash";
-import { extraEmptyModStateContext } from "../../runtime/extendModVariableContext";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { TEST_setContext } from "webext-detect";
-import { uuidv4, validateRegistryId } from "../../types/helpers";
-import registerBuiltinBricks from "../registerBuiltinBricks";
-import { toExpression } from "../../utils/expressionUtils";
-import { DefinitionKinds } from "../../types/registryTypes";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
+import { toExpression } from "@/utils/expressionUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 TEST_setContext("contentScript");
 

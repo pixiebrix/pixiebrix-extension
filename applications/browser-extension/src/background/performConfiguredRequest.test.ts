@@ -15,32 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import integrationRegistry from "../integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import axios, { type AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/authStorage";
-import Locator from "../integrations/integrationConfigLocator";
+import Locator from "@/integrations/integrationConfigLocator";
 import { validateRegistryId } from "@/types/helpers";
-import enrichAxiosErrors from "../utils/enrichAxiosErrors";
+import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import {
   type IntegrationABC,
   type IntegrationConfig,
   type SecretsConfig,
-} from "../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { TEST_setContext } from "webext-detect";
-import { sanitizedIntegrationConfigFactory } from "../testUtils/factories/integrationFactories";
-import { getToken } from "./auth/getToken";
-import { PIXIEBRIX_INTEGRATION_ID } from "../integrations/constants";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { getToken } from "@/background/auth/getToken";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deserializeError, serializeError } from "serialize-error";
 import { type NetworkRequestConfig } from "@/types/networkTypes";
 
 // Disable automatic __mocks__ resolution #6799
-jest.mock("../data/service/apiClient", () =>
+jest.mock("@/data/service/apiClient", () =>
   jest.requireActual("@/data/service/apiClient.ts"),
 );
 
@@ -57,17 +57,17 @@ const launchWebAuthFlowMock = jest.mocked(browser.identity.launchWebAuthFlow);
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
-jest.mock("./auth/authStorage", () => ({
+jest.mock("@/background/auth/authStorage", () => ({
   getCachedAuthData: jest.fn().mockResolvedValue(null),
   hasCachedAuthData: jest.fn().mockResolvedValue(false),
   deleteCachedAuthData: jest.fn(),
 }));
-jest.mock("./auth/getToken", () => ({
+jest.mock("@/background/auth/getToken", () => ({
   __esModule: true,
   getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
 }));
-jest.mock("../auth/authStorage");
-jest.mock("../integrations/integrationConfigLocator");
+jest.mock("@/auth/authStorage");
+jest.mock("@/integrations/integrationConfigLocator");
 
 enrichAxiosErrors();
 

@@ -21,9 +21,9 @@ import {
   faExclamationTriangle,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
-import { type StarterBrickType } from "../../types/starterBrickTypes";
-import Icon from "../../icons/Icon";
-import { adapter } from "../starterBricks/adapter";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
+import Icon from "@/icons/Icon";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 
 export const ModComponentIcon: React.FunctionComponent<{
   type: StarterBrickType;

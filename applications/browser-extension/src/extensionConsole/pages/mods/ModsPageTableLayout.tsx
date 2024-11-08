@@ -37,9 +37,9 @@ import {
 import { useSelector } from "react-redux";
 import { sortBy as _lodashSortBy, uniq } from "lodash";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
-import ModsPageToolbar from "./ModsPageToolbar";
-import ModsPageContent from "./ModsPageContent";
-import type { ModViewItem } from "../../../types/modTypes";
+import ModsPageToolbar from "@/extensionConsole/pages/mods/ModsPageToolbar";
+import ModsPageContent from "@/extensionConsole/pages/mods/ModsPageContent";
+import type { ModViewItem } from "@/types/modTypes";
 
 const statusFilter = (
   rows: Array<Row<ModViewItem>>,

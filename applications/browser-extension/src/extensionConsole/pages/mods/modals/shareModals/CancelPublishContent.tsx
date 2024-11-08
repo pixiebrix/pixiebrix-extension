@@ -16,21 +16,21 @@
  */
 
 import React from "react";
-import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "../modModalsSelectors";
-import { modModalsSlice } from "../modModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import PublishContentLayout from "./PublishContentLayout";
 import { produce } from "immer";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
-import notify from "../../../../../utils/notify";
+import notify from "@/utils/notify";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const CancelPublishContent: React.FunctionComponent = () => {
   const [isCancelling, setCancelling] = React.useState(false);

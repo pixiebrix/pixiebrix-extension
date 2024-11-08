@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { EditorRootState } from "../pageEditorTypes";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { deserializeError } from "serialize-error";
 import { createSelector } from "@reduxjs/toolkit";
 

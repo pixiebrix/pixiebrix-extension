@@ -31,8 +31,8 @@
  */
 
 import { type Target } from "@/types/messengerTypes";
-import { forbidContext } from "../utils/expectContext";
-import { isRemoteProcedureCallRequest } from "../utils/legacyMessengerUtils";
+import { forbidContext } from "@/utils/expectContext";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 
 const CONTENT_SCRIPT_STATE_SYMBOL = Symbol.for("content-script-state");
 

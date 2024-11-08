@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import castError from "./castError";
+import castError from "@/utils/castError";
 
 describe("castError", () => {
   const message = "error message";

@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import buildModsList from "./buildModsList";
-import type { ModDefinition } from "../../../../types/modDefinitionTypes";
+import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 import {
   activatedModComponentFactory,
   modMetadataFactory,
-} from "../../../../testUtils/factories/modComponentFactories";
-import { validateRegistryId } from "../../../../types/helpers";
-import { modDefinitionFactory } from "../../../../testUtils/factories/modDefinitionFactories";
-import { modInstanceFactory } from "../../../../testUtils/factories/modInstanceFactories";
-import { type ModInstance } from "../../../../types/modInstanceTypes";
-import { mapActivatedModComponentsToModInstance } from "../../../../store/modComponents/modInstanceUtils";
+} from "@/testUtils/factories/modComponentFactories";
+import { validateRegistryId } from "@/types/helpers";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 import { array } from "cooky-cutter";
 import { omit } from "lodash";
 import {
   teamSharingDefinitionFactory,
   publicSharingDefinitionFactory,
-} from "../../../../testUtils/factories/registryFactories";
+} from "@/testUtils/factories/registryFactories";
 
 const userScope = "my-test-user";
 

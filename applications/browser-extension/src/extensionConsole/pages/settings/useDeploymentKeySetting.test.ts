@@ -16,9 +16,11 @@
  */
 
 import { deploymentKeyStorage } from "@/auth/deploymentKey";
-import { renderHook } from "../../testHelpers";
-import useDeploymentKeySetting from "./useDeploymentKeySetting";
-import { deploymentKeyFactory } from "../../../testUtils/factories/authFactories";
+import { renderHook } from "@/extensionConsole/testHelpers";
+import useDeploymentKeySetting from "@/extensionConsole/pages/settings/useDeploymentKeySetting";
+import { deploymentKeyFactory } from "@/testUtils/factories/authFactories";
+import { act } from "@testing-library/react";
+import { waitForNextUpdate } from "@/testUtils/renderHookHelpers";
 
 describe("useDeploymentKeySettings", () => {
   beforeEach(async () => {
@@ -28,7 +30,7 @@ describe("useDeploymentKeySettings", () => {
   it("sets deployment key", async () => {
     const target = deploymentKeyFactory();
 
-    const { result, act } = renderHook(() => useDeploymentKeySetting());
+    const { result } = renderHook(() => useDeploymentKeySetting());
 
     const [value, setValue] = result.current;
     expect(value).toBeUndefined();
@@ -45,12 +47,10 @@ describe("useDeploymentKeySettings", () => {
 
     await deploymentKeyStorage.set(original);
 
-    const { result, act, waitForNextUpdate } = renderHook(() =>
-      useDeploymentKeySetting(),
-    );
+    const { result } = renderHook(() => useDeploymentKeySetting());
 
     // Wait for the async value to load in the hook
-    await waitForNextUpdate();
+    await waitForNextUpdate(result);
 
     const [value, setValue] = result.current;
     expect(value).toBe(original);
@@ -63,7 +63,7 @@ describe("useDeploymentKeySettings", () => {
   });
 
   it("rejects invalid deployment key", async () => {
-    const { result, act } = renderHook(() => useDeploymentKeySetting());
+    const { result } = renderHook(() => useDeploymentKeySetting());
 
     const [_value, setValue] = result.current;
 

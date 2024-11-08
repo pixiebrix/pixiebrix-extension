@@ -27,28 +27,28 @@ import {
   type PanelPayload,
   type PanelRunMetadata,
 } from "@/types/sidebarTypes";
-import RendererComponent from "./RendererComponent";
+import RendererComponent from "@/sidebar/RendererComponent";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
-import RootCancelledPanel from "./components/RootCancelledPanel";
-import RootErrorPanel from "./components/RootErrorPanel";
+import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
+import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type BrickArgsContext,
   type RendererOutput,
 } from "@/types/runtimeTypes";
-import { unsafeAssumeValidArg } from "../runtime/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { isEmpty } from "lodash";
 import DelayedRender from "@/components/DelayedRender";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
-import apiVersionOptions from "../runtime/apiVersionOptions";
-import { getConnectedTarget } from "./connectedTarget";
-import { type DynamicPath } from "../pageEditor/documentBuilder/documentBuilderTypes";
-import { mapPathToTraceBranches } from "../pageEditor/documentBuilder/utils";
-import { getPlatform } from "../platform/platformContext";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { type DynamicPath } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { mapPathToTraceBranches } from "@/pageEditor/documentBuilder/utils";
+import { getPlatform } from "@/platform/platformContext";
 
 type BodyProps = {
   brickId?: RegistryId;

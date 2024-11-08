@@ -16,29 +16,29 @@
  */
 
 import { useEffect, useReducer } from "react";
-import { usePreviewInfo } from "./BrickPreview";
-import { isTriggerStarterBrick } from "../../starterBricks/formStateTypes";
+import { usePreviewInfo } from "@/pageEditor/tabs/effect/BrickPreview";
+import { isTriggerStarterBrick } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentNodeInfo,
   selectActiveModComponentRef,
   selectParentNodeInfo,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
-import { type SerializableResponse } from "../../../types/messengerTypes";
+import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
 import { runRendererBrick } from "@/contentScript/messenger/api";
-import { removeEmptyValues } from "../../starterBricks/base";
-import { selectActiveModComponentTraceForBrick } from "../../store/runtime/runtimeSelectors";
-import { type UUID } from "../../../types/stringTypes";
-import { type BrickArgsContext } from "../../../types/runtimeTypes";
-import { isExpression } from "../../../utils/expressionUtils";
-import makeIntegrationContextFromDependencies from "../../../integrations/util/makeIntegrationContextFromDependencies";
+import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
+import { type UUID } from "@/types/stringTypes";
+import { type BrickArgsContext } from "@/types/runtimeTypes";
+import { isExpression } from "@/utils/expressionUtils";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import useAsyncState from "@/hooks/useAsyncState";
-import { inspectedTab } from "../../context/connection";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Location = "modal" | "panel";
 

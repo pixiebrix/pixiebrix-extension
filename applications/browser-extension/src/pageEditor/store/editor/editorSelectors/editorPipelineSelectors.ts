@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UUID } from "../../../../types/stringTypes";
-import type { EditorRootState } from "../pageEditorTypes";
+import type { UUID } from "@/types/stringTypes";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import type { BrickPipelineUIState } from "../uiStateTypes";
-import { assertNotNullish, type Nullishable } from "../../../../utils/nullishUtils";
-import { selectActiveModComponentFormState } from "./editorModComponentSelectors";
-import type { ReportEventData } from "../../../../telemetry/telemetryTypes";
+import type { BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors/editorModComponentSelectors";
+import type { ReportEventData } from "@/telemetry/telemetryTypes";
 
 export function selectActiveBrickPipelineUIState({
   editor,

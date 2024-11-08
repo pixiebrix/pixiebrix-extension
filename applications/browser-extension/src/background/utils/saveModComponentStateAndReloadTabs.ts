@@ -19,8 +19,8 @@ import {
   reloadModsEveryTab,
   queueReloadModEveryTab,
 } from "@/contentScript/messenger/api";
-import { saveModComponentState } from "../../store/modComponents/modComponentStorage";
-import { type ModComponentState } from "../../store/modComponents/modComponentTypes";
+import { saveModComponentState } from "@/store/modComponents/modComponentStorage";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 
 export type ReloadOptions = {
   /**

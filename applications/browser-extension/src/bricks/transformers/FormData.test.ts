@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { FormData } from "./FormData";
 import { html } from "code-tag";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("FormData block", () => {
   test("Basic form serialization", async () => {

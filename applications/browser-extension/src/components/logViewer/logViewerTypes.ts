@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type LogEntry } from "../../telemetry/logging";
-import { type MessageContext } from "../../types/loggerTypes";
+import { type LogEntry } from "@/telemetry/logging";
+import { type MessageContext } from "@/types/loggerTypes";
 
 export type LogState = {
   /**

@@ -25,7 +25,7 @@ import postMessage, {
   pendingMessageMetadataMap,
   type RequestPacket,
 } from "./postMessage";
-import { sleep } from "../utils/timeUtils";
+import { sleep } from "@/utils/timeUtils";
 
 (global as any).MessageChannel = polyfill.MessageChannel;
 (global as any).MessagePort = polyfill.MessagePort;

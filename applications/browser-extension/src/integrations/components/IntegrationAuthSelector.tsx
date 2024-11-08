@@ -27,17 +27,17 @@ import Select, {
 
 import { type AuthOption } from "@/auth/authTypes";
 import useAsyncEffect from "use-async-effect";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import { type RegistryId } from "../../types/registryTypes";
-import { type UUID } from "../../types/stringTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
 import { useSelector } from "react-redux";
-import { selectIntegrationConfigMap } from "../store/integrationsSelectors";
+import { selectIntegrationConfigMap } from "@/integrations/store/integrationsSelectors";
 import {
   type IntegrationConfigArgs,
   type SanitizedConfig,
-} from "../integrationTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "../constants";
+} from "@/integrations/integrationTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 // CustomStyles.js
 const colors = {

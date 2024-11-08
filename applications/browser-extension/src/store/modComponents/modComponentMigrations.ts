@@ -32,13 +32,13 @@ import {
   type ModComponentStateV5,
   type ModComponentStateV6,
   type ModComponentStateVersions,
-} from "./modComponentTypes";
+} from "@/store/modComponents/modComponentTypes";
 import { omit, toLower } from "lodash";
-import { migrateIntegrationDependenciesV1toV2 } from "../editorMigrations";
-import { nowTimestamp } from "../../utils/timeUtils";
-import { type Nullishable } from "../../utils/nullishUtils";
-import { type ActivatedModComponentV2 } from "../../types/modComponentTypes";
-import { normalizeSemVerString, validateRegistryId } from "../../types/helpers";
+import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
+import { nowTimestamp } from "@/utils/timeUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { type ActivatedModComponentV2 } from "@/types/modComponentTypes";
+import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
 import { getUserScope } from "@/auth/authUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- This is never mutated

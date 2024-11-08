@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { columnToLetter } from "./sheetsHelpers";
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import type { NetworkRequestConfig } from "../../../../types/networkTypes";
-import { handleGoogleRequestRejection } from "./handleGoogleRequestRejection";
+import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
+import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {
   type AppendValuesResponse,
   type BatchUpdateSpreadsheetRequest,
@@ -27,9 +27,9 @@ import {
   type Spreadsheet,
   type UserInfo,
   type ValueRange,
-} from "./types";
-import { getPlatform } from "../../../../platform/platformContext";
-import { assertNotNullish, type Nullishable } from "../../../../utils/nullishUtils";
+} from "@/contrib/google/sheets/core/types";
+import { getPlatform } from "@/platform/platformContext";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata } from "../../types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -32,24 +32,24 @@ import {
   removeEmptyValues,
   selectStarterBrickAvailability,
   ALL_SITES_AVAILABILITY,
-} from "./base";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
-import { ContextMenuStarterBrickABC } from "../../starterBricks/contextMenu/contextMenuStarterBrick";
+} from "@/pageEditor/starterBricks/base";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
-import ContextMenuConfiguration from "../tabs/contextMenu/ContextMenuConfiguration";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
+import ContextMenuConfiguration from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type SingleLayerReaderConfig } from "../store/editor/baseFormStateTypes";
+import { type SingleLayerReaderConfig } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
-} from "../../starterBricks/contextMenu/contextMenuTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   modMetadata,

@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PlatformProtocol } from "../platform/platformProtocol";
-import type { PlatformCapability } from "../platform/capabilities";
-import type { Nullishable } from "../utils/nullishUtils";
-import type { SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
-import { performConfiguredRequest } from "./requests";
-import BackgroundLogger from "../telemetry/BackgroundLogger";
-import { PlatformBase } from "../platform/platformBase";
-import { getExtensionVersion } from "../utils/extensionUtils";
+import { performConfiguredRequest } from "@/background/requests";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { PlatformBase } from "@/platform/platformBase";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 /**
  * Background platform implementation. Currently, just makes API requests.

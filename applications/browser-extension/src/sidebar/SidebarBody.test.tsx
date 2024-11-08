@@ -16,21 +16,21 @@
  */
 
 import React from "react";
-import SidebarBody from "./SidebarBody";
-import { render } from "./testHelpers";
-import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
+import SidebarBody from "@/sidebar/SidebarBody";
+import { render } from "@/sidebar/testHelpers";
+import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
 import useTheme from "@/hooks/useTheme";
-import { initialTheme } from "../themes/themeStore";
-import { waitForEffect } from "../testUtils/testHelpers";
+import { initialTheme } from "@/themes/themeStore";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import {
   mockAnonymousMeApiResponse,
   mockAuthenticatedMeApiResponse,
-} from "../testUtils/userMock";
+} from "@/testUtils/userMock";
 
-jest.mock("./hooks/useConnectedTargetUrl");
-jest.mock("../hooks/useTheme");
-jest.mock("../components/teamTrials/useTeamTrialStatus");
-jest.mock("../contentScript/messenger/api", () => ({
+jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
+jest.mock("@/hooks/useTheme");
+jest.mock("@/components/teamTrials/useTeamTrialStatus");
+jest.mock("@/contentScript/messenger/api", () => ({
   ensureStarterBricksInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],

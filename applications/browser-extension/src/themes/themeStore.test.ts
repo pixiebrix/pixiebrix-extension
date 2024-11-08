@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { saveSettingsState } from "../store/settings/settingsStorage";
-import { initialSettingsState } from "../store/settings/settingsSlice";
+import { saveSettingsState } from "@/store/settings/settingsStorage";
+import { initialSettingsState } from "@/store/settings/settingsSlice";
 import {
   INTERNAL_reset,
   readManagedStorage,
-} from "../store/enterprise/managedStorage";
-import { getActiveTheme } from "./themeStore";
+} from "@/store/enterprise/managedStorage";
+import { getActiveTheme } from "@/themes/themeStore";
 import { type AxiosError } from "axios";
-import reportError from "../telemetry/reportError";
-import { uuidSequence } from "../testUtils/factories/stringFactories";
-import { mockAuthenticatedMeApiResponse } from "../testUtils/userMock";
+import reportError from "@/telemetry/reportError";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { mockAuthenticatedMeApiResponse } from "@/testUtils/userMock";
 import {
   meWithPartnerApiResponseFactory,
   meOrganizationApiResponseFactory,
-} from "../testUtils/factories/authFactories";
-import { appApiMock } from "../testUtils/appApiMock";
+} from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const reportErrorMock = jest.mocked(reportError);

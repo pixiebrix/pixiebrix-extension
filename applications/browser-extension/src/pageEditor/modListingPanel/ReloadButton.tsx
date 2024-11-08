@@ -19,8 +19,8 @@ import React, { type MouseEvent } from "react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { sleep } from "../../utils/timeUtils";
-import { inspectedTab } from "../context/connection";
+import { sleep } from "@/utils/timeUtils";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const onReload = async (event: MouseEvent<HTMLElement>) => {
   if (event.shiftKey) {

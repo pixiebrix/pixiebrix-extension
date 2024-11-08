@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { requestRunInAllFrames } from "./executor";
-import { registryIdFactory } from "../testUtils/factories/stringFactories";
+import { requestRunInAllFrames } from "@/background/executor";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type MessengerMeta } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { type WebNavigation } from "webextension-polyfill";
-import { unsafeAssumeValidArg } from "../runtime/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import { type RemoteBrickOptions } from "@/contentScript/messenger/runBrickTypes";
-import { messengerMetaFactory } from "../testUtils/factories/messengerFactories";
-import { mapModComponentRefToMessageContext } from "../utils/modUtils";
-import { runMetadataFactory } from "../testUtils/factories/runtimeFactories";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { runMetadataFactory } from "@/testUtils/factories/runtimeFactories";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type GetAllFramesCallbackDetailsItemType =
   WebNavigation.GetAllFramesCallbackDetailsItemType;
 
 browser.webNavigation.getAllFrames = jest.fn();
 
-jest.mock("../contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   runBrick: jest.fn().mockRejectedValue(new Error("Mock not implemented")),
 }));
 
@@ -68,8 +68,8 @@ describe("requestRunInAllFrames", () => {
     const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
-      blockId: registryIdFactory(),
-      blockArgs: unsafeAssumeValidArg({}),
+      brickId: registryIdFactory(),
+      brickArgs: unsafeAssumeValidArg({}),
       options: optionsFactory(),
     });
     await expect(promise).resolves.toStrictEqual([]);
@@ -85,8 +85,8 @@ describe("requestRunInAllFrames", () => {
     const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
-      blockId: registryIdFactory(),
-      blockArgs: unsafeAssumeValidArg({}),
+      brickId: registryIdFactory(),
+      brickArgs: unsafeAssumeValidArg({}),
       options: optionsFactory(),
     });
 
@@ -105,8 +105,8 @@ describe("requestRunInAllFrames", () => {
     const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
-      blockId: registryIdFactory(),
-      blockArgs: unsafeAssumeValidArg({}),
+      brickId: registryIdFactory(),
+      brickArgs: unsafeAssumeValidArg({}),
       options: optionsFactory(),
     });
 

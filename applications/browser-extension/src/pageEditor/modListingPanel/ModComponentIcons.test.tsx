@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import testItRenders from "../../testUtils/testItRenders";
+import testItRenders from "@/testUtils/testItRenders";
 import { ModHasUpdateIcon } from "./ModComponentIcons";
 
 beforeAll(() => {

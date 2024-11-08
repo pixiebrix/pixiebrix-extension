@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { JSDOM } from "jsdom";
-import ReplaceTextEffect from "./replaceText";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import ReplaceTextEffect from "@/bricks/effects/replaceText";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   // Isolate extension state between test

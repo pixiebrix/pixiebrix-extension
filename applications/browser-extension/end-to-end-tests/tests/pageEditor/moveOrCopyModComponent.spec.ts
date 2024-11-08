@@ -18,7 +18,7 @@
 import { test, expect } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { uuidv4 } from "../../../src/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 
 // Since 2.1.4, new mods are created with the name "New Mod" instead of being a standalone mod component
 const DEFAULT_MOD_NAME = "New Mod";

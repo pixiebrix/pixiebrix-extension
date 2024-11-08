@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import buildGetCanEditModScope from "./buildGetCanEditModScope";
-import { modDefinitionFactory } from "../../../../testUtils/factories/modDefinitionFactories";
-import { modMetadataFactory } from "../../../../testUtils/factories/modComponentFactories";
-import { validateRegistryId } from "../../../../types/helpers";
-import { organizationStateFactory } from "../../../../testUtils/factories/authFactories";
+import buildGetCanEditModScope from "@/extensionConsole/pages/mods/utils/buildGetCanEditModScope";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { validateRegistryId } from "@/types/helpers";
+import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 import { LegacyUserRole } from "@/data/model/UserRole";
 
 const userScope = "my-test-user";

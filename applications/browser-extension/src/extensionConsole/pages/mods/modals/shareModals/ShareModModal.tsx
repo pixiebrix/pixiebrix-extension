@@ -17,8 +17,8 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowShareContext } from "../modModalsSelectors";
-import { modModalsSlice } from "../modModalsSlice";
+import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { RequireScope } from "@/auth/RequireScope";
 import ModalLayout from "@/components/ModalLayout";
 import ShareModModalBody from "./ShareModModalBody";

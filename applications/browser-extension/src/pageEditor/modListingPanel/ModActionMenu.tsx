@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import SaveButton from "./SaveButton";
+import SaveButton from "@/pageEditor/modListingPanel/SaveButton";
 import {
   faClone,
   faHistory,
@@ -29,19 +29,19 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import useAddNewModComponent from "../hooks/useAddNewModComponent";
-import { useAvailableFormStateAdapters } from "../starterBricks/adapter";
-import useDeactivateMod from "../hooks/useDeactivateMod";
-import useSaveMod from "../hooks/useSaveMod";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
+import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { type ModMetadata } from "@/types/modComponentTypes";
-import useClearModChanges from "../hooks/useClearModChanges";
+import useClearModChanges from "@/pageEditor/hooks/useClearModChanges";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { actions } from "../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectModIsDirty,
-} from "../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 
 const ModActionMenu: React.FC<{
   modMetadata: ModMetadata;

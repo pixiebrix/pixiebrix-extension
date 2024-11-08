@@ -18,12 +18,12 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { uuidv4 } from "../../types/helpers";
-import { rectFactory } from "../../testUtils/factories/domFactories";
+import { uuidv4 } from "@/types/helpers";
+import { rectFactory } from "@/testUtils/factories/domFactories";
 import {
   initSnippetShortcutMenuController,
   snippetRegistry,
-} from "./snippetShortcutMenuController";
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({

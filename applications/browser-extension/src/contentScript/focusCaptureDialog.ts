@@ -20,8 +20,8 @@ import { onContextInvalidated } from "webext-events";
 import {
   type AbortSignalAsOptions,
   memoizeUntilSettled,
-} from "../utils/promiseUtils";
-import cssText from "./focusCaptureDialog.scss?loadAsText";
+} from "@/utils/promiseUtils";
+import cssText from "@/contentScript/focusCaptureDialog.scss?loadAsText";
 
 type FocusCaptureDialogOptions = {
   message: string;

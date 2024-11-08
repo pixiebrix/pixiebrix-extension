@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Reader, ReaderABC } from "../../types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 
 class ArrayCompositeReader extends ReaderABC {

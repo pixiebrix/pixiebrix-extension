@@ -18,12 +18,12 @@
 import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import notify from "../../utils/notify";
+import notify from "@/utils/notify";
 import styles from "./JsonTree.module.scss";
 import cx from "classnames";
-import { getPathFromArray } from "../../runtime/pathHelpers";
-import AsyncButton from "../AsyncButton";
-import { writeToClipboard } from "../../utils/clipboardUtils";
+import { getPathFromArray } from "@/runtime/pathHelpers";
+import AsyncButton from "@/components/AsyncButton";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 
 export function useLabelRenderer() {
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx

@@ -18,77 +18,75 @@
 import {
   getModComponentState,
   saveModComponentState,
-} from "../store/modComponents/modComponentStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { uuidv4, normalizeSemVerString } from "@/types/helpers";
-import { appApiMock } from "../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";
 import {
   startupDeploymentUpdateLoaded,
   syncDeployments,
-} from "./deploymentUpdater";
-import reportEvent from "../telemetry/reportEvent";
+} from "@/background/deploymentUpdater";
+import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/authStorage";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { isUpdateAvailable } from "./installer";
+import { isUpdateAvailable } from "@/background/installer";
 import {
   getSettingsState,
   saveSettingsState,
-} from "../store/settings/settingsStorage";
-import { getEditorState, saveEditorState } from "../store/editorStorage";
-import {
-  editorSlice,
-  initialState as initialEditorState,
-} from "../pageEditor/store/editor/editorSlice";
-import { type ButtonFormState } from "../pageEditor/starterBricks/formStateTypes";
-import { parsePackage } from "../registry/packageRegistry";
-import { registry } from "./messenger/api";
-import { INTERNAL_reset as resetManagedStorage } from "../store/enterprise/managedStorage";
+} from "@/store/settings/settingsStorage";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { initialState as initialEditorState } from "@/store/editorInitialState";
+import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { parsePackage } from "@/registry/packageRegistry";
+import { registry } from "@/background/messenger/api";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { checkDeploymentPermissions } from "../permissions/deploymentPermissionsHelpers";
-import { emptyPermissionsFactory } from "../permissions/permissionsUtils";
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { TEST_setContext } from "webext-detect";
 import {
   activatedModComponentFactory,
   modComponentFactory,
   modMetadataFactory,
-} from "../testUtils/factories/modComponentFactories";
-import { personalSharingDefinitionFactory } from "../testUtils/factories/registryFactories";
+} from "@/testUtils/factories/modComponentFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
   modComponentDefinitionFactory,
   starterBrickDefinitionFactory,
-} from "../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 
-import { activatableDeploymentFactory } from "../testUtils/factories/deploymentFactories";
-import { packageConfigDetailFactory } from "../testUtils/factories/brickFactories";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
-import { resetMeApiMocks } from "../testUtils/userMock";
+import { resetMeApiMocks } from "@/testUtils/userMock";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
-import { adapter } from "../pageEditor/starterBricks/adapter";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 TEST_setContext("background");
 
-jest.mock("../store/settings/settingsStorage");
+jest.mock("@/store/settings/settingsStorage");
 
-jest.mock("../hooks/useRefreshRegistries");
+jest.mock("@/hooks/useRefreshRegistries");
 
-jest.mock("../utils/extensionUtils", () => ({
+jest.mock("@/utils/extensionUtils", () => ({
   ...jest.requireActual("@/utils/extensionUtils"),
   forEachTab: jest.fn(),
 }));
 
 // Override manual mock to support `expect` assertions
-jest.mock("../telemetry/reportEvent");
+jest.mock("@/telemetry/reportEvent");
 
-jest.mock("../sidebar/messenger/api", () => {});
-jest.mock("../contentScript/messenger/api");
+jest.mock("@/sidebar/messenger/api", () => {});
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("../auth/authStorage", () => ({
+jest.mock("@/auth/authStorage", () => ({
   getExtensionToken: async () => "TESTTOKEN",
   getAuthHeaders: jest.fn().mockResolvedValue({}),
   readAuthData: jest.fn().mockResolvedValue({
@@ -100,12 +98,12 @@ jest.mock("../auth/authStorage", () => ({
   TEST_setAuthData: jest.fn(),
 }));
 
-jest.mock("./installer", () => ({
+jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
 // This comes up in the extensions slice redux-persist migrations that run when mod component state is loaded
-jest.mock("../auth/authUtils", () => {
+jest.mock("@/auth/authUtils", () => {
   const actual = jest.requireActual("@/auth/authUtils");
   return {
     ...actual,
@@ -620,9 +618,11 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    jest.doMock("./deploymentUpdater");
+    jest.doMock("@/background/deploymentUpdater");
 
-    const { deactivateAllDeployedMods } = await import("./deploymentUpdater");
+    const { deactivateAllDeployedMods } = await import(
+      "@/background/deploymentUpdater"
+    );
 
     await syncDeployments();
 

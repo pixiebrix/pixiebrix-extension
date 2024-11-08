@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useDocumentVisibility from "./useDocumentVisibility";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 test("useDocumentVisibility", () => {
   const addEventListenerSpy = jest.spyOn(document, "addEventListener");

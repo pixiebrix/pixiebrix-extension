@@ -24,7 +24,7 @@ import {
   stopWaitingForTemporaryPanels,
   updatePanelDefinition,
   waitForTemporaryPanel,
-} from "../platform/panels/panelController";
+} from "@/platform/panels/panelController";
 import type { TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { once } from "lodash";
@@ -36,18 +36,18 @@ import {
   showTemporarySidebarPanel,
   sidePanelOnClose,
   updateTemporarySidebarPanel,
-} from "./sidebarController";
-import { updateTemporaryOverlayPanel } from "./ephemeralPanelController";
+} from "@/contentScript/sidebarController";
+import { updateTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 import {
   RefreshTriggers,
   type TemporaryPanelDefinition,
-} from "../platform/panels/panelTypes";
+} from "@/platform/panels/panelTypes";
 import type { Location } from "@/types/starterBrickTypes";
 import { getThisFrame } from "webext-messenger";
-import { expectContext } from "../utils/expectContext";
-import { showModal } from "./modalDom";
-import { isLoadedInIframe } from "../utils/iframeUtils";
-import { STATE_CHANGE_JS_EVENT_TYPE } from "../platform/state/stateTypes";
+import { expectContext } from "@/utils/expectContext";
+import { showModal } from "@/contentScript/modalDom";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export async function createFrameSource(
   nonce: string,
@@ -166,7 +166,7 @@ export async function ephemeralPanel({
 
       const { showPopover } = await import(
         /* webpackChunkName: "popoverDom" */
-        "./popoverDom"
+        "@/contentScript/popoverDom"
       );
 
       const popover = showPopover({

@@ -35,8 +35,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type PlatformCapability } from "../platform/capabilities";
-import { type PlatformProtocol } from "../platform/platformProtocol";
+import { type PlatformCapability } from "@/platform/capabilities";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { type Availability } from "@/types/availabilityTypes";
 
 /**

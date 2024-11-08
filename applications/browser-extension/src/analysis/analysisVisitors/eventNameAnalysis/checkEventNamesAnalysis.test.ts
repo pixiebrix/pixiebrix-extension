@@ -18,12 +18,12 @@
 import {
   formStateFactory,
   triggerFormStateFactory,
-} from "../../../testUtils/factories/pageEditorFactories";
-import CheckEventNamesAnalysis from "./checkEventNamesAnalysis";
+} from "@/testUtils/factories/pageEditorFactories";
+import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import { AnnotationType } from "../../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("checkEventNamesAnalysis", () => {
   it("error on missing custom event", async () => {

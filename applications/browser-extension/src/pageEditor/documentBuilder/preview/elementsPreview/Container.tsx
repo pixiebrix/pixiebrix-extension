@@ -20,11 +20,11 @@ import {
   type DocumentBuilderComponent,
   type DocumentBuilderElement,
   type PreviewComponentProps,
-} from "../../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
-import documentTreeStyles from "../documentTree.module.scss";
-import Flaps from "../flaps/Flaps";
-import documentBuilderElementTypeLabels from "../../elementTypeLabels";
+import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
+import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 
 type ContainerProps = PreviewComponentProps & {
   element: DocumentBuilderElement;

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementReader } from "./ElementReader";
-import { validateUUID } from "../../types/helpers";
-import { rectFactory } from "../../testUtils/factories/domFactories";
+import { ElementReader } from "@/bricks/readers/ElementReader";
+import { validateUUID } from "@/types/helpers";
+import { rectFactory } from "@/testUtils/factories/domFactories";
 
 const reader = new ElementReader();
 

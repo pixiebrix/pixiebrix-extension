@@ -16,12 +16,12 @@
  */
 
 import { getIn, useFormikContext } from "formik";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import getElementCollectionName from "../edit/getElementCollectionName";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { useCallback } from "react";
-import { actions as editorActions } from "../../store/editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch } from "react-redux";
 
 function useDeleteElement(documentBodyName: string) {

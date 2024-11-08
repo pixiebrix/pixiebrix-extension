@@ -21,10 +21,10 @@ import SwitchButtonWidget, {
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import React, { type ChangeEvent } from "react";
 import { useField, useFormikContext } from "formik";
-import { type PipelineExpression } from "../../types/runtimeTypes";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import { type PipelineExpression } from "@/types/runtimeTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 /**
  * A Formik field for toggling a pipeline expression on or off.

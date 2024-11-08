@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type Schema } from "../../types/schemaTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class ConfettiEffect extends EffectABC {
   constructor() {

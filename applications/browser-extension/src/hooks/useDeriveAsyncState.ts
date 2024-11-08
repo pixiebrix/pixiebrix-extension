@@ -23,14 +23,14 @@ import {
 } from "@/types/sliceTypes";
 import { once } from "lodash";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import useIsMounted from "./useIsMounted";
+import useIsMounted from "@/hooks/useIsMounted";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import {
   assertAsyncStateInvariants,
   errorToAsyncState,
   uninitializedAsyncStateFactory,
-} from "../utils/asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 

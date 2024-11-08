@@ -16,7 +16,7 @@
  */
 
 import { produce } from "immer";
-import { renderMustache } from "../runtime/mapArgs";
+import { renderMustache } from "@/runtime/mapArgs";
 import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
@@ -36,11 +36,11 @@ import {
   type IntegrationDefinition,
   type TokenAuthenticationDefinition,
   type TokenContext,
-} from "./integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import { canParseUrl, selectAbsoluteUrl } from "../utils/urlUtils";
-import { missingProperties } from "../utils/schemaUtils";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { canParseUrl, selectAbsoluteUrl } from "@/utils/urlUtils";
+import { missingProperties } from "@/utils/schemaUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
 
 /**

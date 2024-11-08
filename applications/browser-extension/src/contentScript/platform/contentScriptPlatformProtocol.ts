@@ -1,5 +1,5 @@
-import type { PlatformProtocol } from "../../platform/platformProtocol";
-import type { ElementReference } from "../../types/runtimeTypes";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import type { ElementReference } from "@/types/runtimeTypes";
 
 /**
  * @file Extended platform protocol for content scripts.

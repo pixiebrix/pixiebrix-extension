@@ -21,9 +21,9 @@ import {
   type DocumentBuilderComponent,
   type DocumentBuilderElement,
   type DynamicPath,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
-import { getDocumentBuilderComponent } from "../documentTree";
+import { getDocumentBuilderComponent } from "@/pageEditor/documentBuilder/documentTree";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";
 import Image from "./elementsPreview/Image";

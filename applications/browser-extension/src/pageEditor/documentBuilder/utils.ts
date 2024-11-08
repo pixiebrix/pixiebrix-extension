@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DynamicPath } from "./documentBuilderTypes";
-import { type Branch } from "../../types/runtimeTypes";
+import { type DynamicPath } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type Branch } from "@/types/runtimeTypes";
 
 export function mapPathToTraceBranches(tracePath: DynamicPath): Branch[] {
   return tracePath.branches.map(({ staticId, index }) => ({

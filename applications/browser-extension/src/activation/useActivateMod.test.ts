@@ -15,43 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WizardValues } from "./wizardTypes";
-import { renderHook } from "../pageEditor/testHelpers";
+import { type WizardValues } from "@/activation/wizardTypes";
+import { renderHook } from "@/pageEditor/testHelpers";
 import useActivateMod from "./useActivateMod";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type StarterBrickDefinitionLike } from "../starterBricks/types";
-import { type ContextMenuDefinition } from "../starterBricks/contextMenu/contextMenuTypes";
-import { deactivateMod } from "../store/deactivateModHelpers";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { type ContextMenuDefinition } from "@/starterBricks/contextMenu/contextMenuTypes";
+import { deactivateMod } from "@/store/deactivateModHelpers";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
-import { checkModDefinitionPermissions } from "../modDefinitions/modDefinitionPermissionsHelpers";
-import { emptyPermissionsFactory } from "../permissions/permissionsUtils";
-import databaseSchema from "../../schemas/database.json";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import databaseSchema from "@schemas/database.json";
 import { set } from "lodash";
 import {
   modComponentDefinitionFactory,
   starterBrickDefinitionFactory,
   defaultModDefinitionFactory,
-} from "../testUtils/factories/modDefinitionFactories";
-import { metadataFactory } from "../testUtils/factories/metadataFactory";
-import { databaseFactory } from "../testUtils/factories/databaseFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { appApiMock } from "../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { waitForEffect } from "../testUtils/testHelpers";
-import { editablePackageMetadataFactory } from "../testUtils/factories/registryFactories";
-import notify from "../utils/notify";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
+import notify from "@/utils/notify";
 import {
   type Deployment,
   type EditablePackageMetadata,
 } from "@/types/contract";
-import { activatableDeploymentFactory } from "../testUtils/factories/deploymentFactories";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { act } from "@testing-library/react";
 
-jest.mock("../contentScript/messenger/api");
-jest.mock("../utils/notify");
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/utils/notify");
 const mockedNotifyError = jest.mocked(notify.error);
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
@@ -177,7 +178,6 @@ describe("useActivateMod", () => {
     const {
       result: { current: activateMod },
       getReduxStore,
-      act,
     } = renderHook(() => useActivateMod("extensionConsole"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
@@ -250,7 +250,6 @@ describe("useActivateMod", () => {
     const {
       result: { current: activateMod },
       getReduxStore,
-      act,
     } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");
@@ -323,7 +322,6 @@ describe("useActivateMod", () => {
 
     const {
       result: { current: activateMod },
-      act,
     } = renderHook(() => useActivateMod("marketplace"), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");

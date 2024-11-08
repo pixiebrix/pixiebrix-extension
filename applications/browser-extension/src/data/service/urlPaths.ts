@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { RegistryId } from "../../types/registryTypes";
-import { type paths } from "../../types/swagger";
+import type { RegistryId } from "@/types/registryTypes";
+import { type paths } from "@/types/swagger";
 
 // These paths are not included in the swagger definition
 type WebhookPaths = "/api/webhooks/hooks/" | "/api/webhooks/key/";

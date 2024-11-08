@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { engineRenderer } from "./renderers";
+import { engineRenderer } from "@/runtime/renderers";
 
 describe("renderers", () => {
   describe("mustache", () => {

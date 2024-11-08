@@ -21,7 +21,7 @@ import {
   removeAuthListener,
 } from "@/auth/authStorage";
 import { getBaseURL } from "@/data/service/baseService";
-import useAsyncExternalStore from "./useAsyncExternalStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { type AsyncState } from "@/types/sliceTypes";
 
 // NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains

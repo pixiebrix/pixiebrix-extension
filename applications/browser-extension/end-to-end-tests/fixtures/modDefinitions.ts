@@ -19,7 +19,7 @@ import { expect } from "@playwright/test";
 import { test as pageContextFixture } from "./pageContext";
 import { WorkshopPage } from "../pageObjects/extensionConsole/workshop/workshopPage";
 import { createPatch } from "diff";
-import { dumpBrickYaml, loadBrickYaml } from "../../src/runtime/brickYaml";
+import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
 
 // The mod definitions are a map of mod names to their test metadata
 type ModDefinitions = Record<

@@ -23,40 +23,43 @@ import {
   type QuickBarFormState,
   type SidebarFormState,
   type TriggerFormState,
-} from "../../pageEditor/starterBricks/formStateTypes";
-import { type ApiVersion, type OutputKey } from "../../types/runtimeTypes";
-import { uuidSequence } from "./stringFactories";
-import { type IntegrationDependency } from "../../integrations/integrationTypes";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
+} from "@/pageEditor/starterBricks/formStateTypes";
+import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import {
   starterBrickDefinitionFactory,
   starterBrickDefinitionPropFactory,
-} from "./modDefinitionFactories";
-import { metadataFactory } from "./metadataFactory";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type BrickPipeline, PipelineFlavor } from "@/bricks/types";
-import contextMenu from "../../pageEditor/starterBricks/contextMenu";
-import { validateRegistryId } from "../../types/helpers";
-import menuItem from "../../pageEditor/starterBricks/button";
+import contextMenu from "@/pageEditor/starterBricks/contextMenu";
+import { validateRegistryId } from "@/types/helpers";
+import menuItem from "@/pageEditor/starterBricks/button";
 import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
-import quickBar from "../../pageEditor/starterBricks/quickBar";
-import trigger from "../../pageEditor/starterBricks/trigger";
-import { type TraceRecord } from "../../telemetry/trace";
+import quickBar from "@/pageEditor/starterBricks/quickBar";
+import trigger from "@/pageEditor/starterBricks/trigger";
+import { type TraceRecord } from "@/telemetry/trace";
 import { type Except, type JsonObject } from "type-fest";
-import sidebar from "../../pageEditor/starterBricks/sidebar";
-import { traceRecordFactory } from "./traceFactories";
-import { brickConfigFactory, pipelineFactory } from "./brickFactories";
-import { type BaseModComponentState } from "../../pageEditor/store/editor/baseFormStateTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
+import sidebar from "@/pageEditor/starterBricks/sidebar";
+import { traceRecordFactory } from "@/testUtils/factories/traceFactories";
+import {
+  brickConfigFactory,
+  pipelineFactory,
+} from "@/testUtils/factories/brickFactories";
+import { type BaseModComponentState } from "@/pageEditor/store/editor/baseFormStateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   createNewUnsavedModMetadata,
   emptyModVariablesDefinitionFactory,
-} from "../../utils/modUtils";
+} from "@/utils/modUtils";
 import {
   type AddBrickLocation,
   type DraftModState,
-} from "../../pageEditor/store/editor/pageEditorTypes";
-import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 
 const baseModComponentStateFactory = define<BaseModComponentState>({
   brickPipeline: () => pipelineFactory(),

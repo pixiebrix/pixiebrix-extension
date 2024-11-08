@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AnalysisVisitorABC } from "../baseAnalysisVisitors";
+import { AnalysisVisitorABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import {
   type ModComponentFormState,
   isTriggerStarterBrick,
-} from "../../../pageEditor/starterBricks/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 import { flatten, uniq } from "lodash";
-import { AnnotationType } from "../../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import CollectEventNamesVisitor, {
   type EventNameAnalysisResult,
-} from "./collectEventNamesVisitor";
-import { DOM_EVENTS } from "../../../types/browserTypes";
+} from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
+import { DOM_EVENTS } from "@/types/browserTypes";
 
 /**
  * Analysis visitor to collect all events fired by a single ModComponentBase.

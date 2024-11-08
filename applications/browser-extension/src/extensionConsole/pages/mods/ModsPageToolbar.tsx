@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ModsPageTableLayout.module.scss";
+import styles from "@/extensionConsole/pages/mods/ModsPageTableLayout.module.scss";
 import Select from "react-select";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,10 +33,10 @@ import {
   selectGroupBy,
   selectSortBy,
   selectView,
-} from "./modsPageSelectors";
-import modsPageSlice from "./modsPageSlice";
+} from "@/extensionConsole/pages/mods/modsPageSelectors";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useSelector } from "react-redux";
-import { type ModViewItem } from "../../../types/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 
 const ModsPageToolbar: React.FunctionComponent<{
   tableInstance: TableInstance<ModViewItem>;

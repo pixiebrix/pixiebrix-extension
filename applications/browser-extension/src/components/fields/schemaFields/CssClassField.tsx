@@ -16,10 +16,10 @@
  */
 
 import React, { useMemo } from "react";
-import CssClassWidget from "./widgets/cssClassWidgets/CssClassWidget";
-import { getToggleOptions } from "./getToggleOptions";
-import { type SchemaFieldProps } from "./propTypes";
-import defaultFieldFactory from "./defaultFieldFactory";
+import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
+import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
 
 const RawCssClassField = defaultFieldFactory(CssClassWidget);
 

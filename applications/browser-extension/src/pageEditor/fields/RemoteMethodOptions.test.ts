@@ -16,7 +16,7 @@
  */
 
 import { isJsonString } from "./RemoteMethodOptions";
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("isJsonString", () => {
   test("returns true when field value is JSON sting", () => {

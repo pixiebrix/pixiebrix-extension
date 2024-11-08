@@ -16,7 +16,7 @@
  */
 
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import panelInThisTab from "@/bricks/transformers/temporaryInfo/messenger/api";
 import { type UUID } from "@/types/stringTypes";
 import { type Except } from "type-fest";

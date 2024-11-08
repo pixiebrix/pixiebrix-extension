@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "./sender";
+import { createSendScriptMessage } from "@/pageScript/messenger/sender";
 import {
   type Framework,
   GET_COMPONENT_DATA,
@@ -24,8 +24,8 @@ import {
   READ_WINDOW,
   CKEDITOR_SET_VALUE,
   CKEDITOR_INSERT_TEXT,
-} from "./constants";
-import { type ElementInfo } from "../../utils/inference/selectorTypes";
+} from "@/pageScript/messenger/constants";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type JsonObject, type JsonValue } from "type-fest";
 
 export type PathSpec =

@@ -18,12 +18,12 @@
 import { useAsyncEffect } from "use-async-effect";
 import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
-import notify from "../utils/notify";
+import notify from "@/utils/notify";
 import {
   clearIntegrationRegistry,
   integrationConfigLocator,
 } from "@/background/messenger/api";
-import { syncRemotePackages } from "../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 
 const syncIntegrations = async () => {
   await integrationConfigLocator.refresh();

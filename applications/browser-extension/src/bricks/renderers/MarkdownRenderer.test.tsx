@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import MarkdownRenderer from "./MarkdownRenderer";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { render, screen } from "@testing-library/react";
 
 const brick = new MarkdownRenderer();

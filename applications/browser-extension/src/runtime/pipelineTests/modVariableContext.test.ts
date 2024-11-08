@@ -16,16 +16,17 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
-import { reducePipeline } from "../reducePipeline";
-import { contextAsPlainObject } from "../extendModVariableContext";
-import { toExpression } from "../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 import {
-  MergeStrategies,
-  StateNamespaces,
-} from "../../platform/state/stateTypes";
-import { getPlatform } from "../../platform/platformContext";
+  contextBrick,
+  echoBrick,
+  simpleInput,
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 beforeEach(() => {
   brickRegistry.clear();

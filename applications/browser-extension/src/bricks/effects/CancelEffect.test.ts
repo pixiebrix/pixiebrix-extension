@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CancelEffect from "./CancelEffect";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import CancelEffect from "@/bricks/effects/CancelEffect";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { CancelError } from "@/errors/businessErrors";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new CancelEffect();
 

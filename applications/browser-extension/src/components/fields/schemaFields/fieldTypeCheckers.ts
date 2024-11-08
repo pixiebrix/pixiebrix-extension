@@ -15,26 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createTypePredicate } from "../fieldUtils";
-import { type Expression } from "../../../types/runtimeTypes";
+import { createTypePredicate } from "@/components/fields/fieldUtils";
+import { type Expression } from "@/types/runtimeTypes";
 import {
   type LabelledEnumSchema,
   type Schema,
   type SchemaDefinition,
   type UiSchema,
-} from "../../../types/schemaTypes";
+} from "@/types/schemaTypes";
 import { get, isEmpty } from "lodash";
-import keySchema from "../../../../schemas/key.json";
-import iconSchema from "../../../../schemas/icon.json";
-import databaseSchema from "../../../../schemas/database.json";
-import googleSheetIdSchema from "../../../../schemas/googleSheetId.json";
+import keySchema from "@schemas/key.json";
+import iconSchema from "@schemas/icon.json";
+import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
-import { isVarExpression } from "../../../utils/expressionUtils";
+import { isVarExpression } from "@/utils/expressionUtils";
 import {
   INTEGRATION_DEPENDENCY_FIELD_REFS,
   PIXIEBRIX_INTEGRATION_REF_URL,
   INTEGRATIONS_BASE_SCHEMA_URL,
-} from "../../../integrations/constants";
+} from "@/integrations/constants";
 
 export const isPixiebrixIntegrationField = createTypePredicate(
   (schema) => schema.$ref === PIXIEBRIX_INTEGRATION_REF_URL,

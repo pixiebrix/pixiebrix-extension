@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnsavedModDefinition } from "../../types/modDefinitionTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import { isInnerDefinitionRegistryId } from "../../types/helpers";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
-} from "../../starterBricks/types";
-import { isInnerDefinitionEqual } from "../../starterBricks/starterBrickUtils";
+} from "@/starterBricks/types";
+import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
 import {
   DefinitionKinds,
   type InnerDefinitions,
   type RegistryId,
-} from "../../types/registryTypes";
+} from "@/types/registryTypes";
 import produce from "immer";
-import { buildModComponents } from "../panes/save/saveHelpers";
-import { adapterForComponent } from "../starterBricks/adapter";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "../store/editor/editorSelectors";
+import { buildModComponents } from "@/pageEditor/panes/save/saveHelpers";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 function useCheckModStarterBrickInvariants(): (
   unsavedModDefinition: UnsavedModDefinition,

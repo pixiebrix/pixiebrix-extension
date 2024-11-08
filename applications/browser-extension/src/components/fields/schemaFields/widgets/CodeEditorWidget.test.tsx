@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CodeEditorWidget from "./CodeEditorWidget";
+import CodeEditorWidget from "@/components/fields/schemaFields/widgets/CodeEditorWidget";
 import {
   render,
   screen,
   waitForElementToBeRemoved,
-} from "../../../../pageEditor/testHelpers";
+} from "@/pageEditor/testHelpers";
 import { userEvent } from "@testing-library/user-event";
 import { type JSONSchema7 } from "json-schema";
 import React from "react";

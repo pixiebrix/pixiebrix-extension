@@ -22,7 +22,7 @@ import {
 import { type FormikContextType } from "formik";
 // Use lodash's get/set because formik's does not mutate the object in place.
 import { get as getIn, set as setIn } from "lodash";
-import type { FieldAnnotationAction } from "./FieldAnnotation";
+import type { FieldAnnotationAction } from "@/components/form/FieldAnnotation";
 import { produce } from "immer";
 
 export function makeFieldActionForAnnotationAction<Values>(

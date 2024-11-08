@@ -20,13 +20,13 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Formik } from "formik";
 import SchemaField from "./SchemaField";
-import { type SchemaFieldProps } from "./propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button } from "react-bootstrap";
-import { getFieldNamesFromPathString } from "../../../runtime/pathHelpers";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
 import { action } from "@storybook/addon-actions";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import { Provider } from "react-redux";
-import { settingsStore } from "../../../testUtils/storyUtils";
+import { settingsStore } from "@/testUtils/storyUtils";
 
 registerDefaultWidgets();
 

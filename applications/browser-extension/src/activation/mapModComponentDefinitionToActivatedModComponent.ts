@@ -17,17 +17,17 @@
 
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uuidv4 } from "@/types/helpers";
-import mapModDefinitionToModMetadata from "../modDefinitions/util/mapModDefinitionToModMetadata";
-import getModDefinitionIntegrationIds from "../integrations/util/getModDefinitionIntegrationIds";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import type {
   ModComponentDefinition,
   ModDefinition,
 } from "@/types/modDefinitionTypes";
 import type { Deployment } from "@/types/contract";
 import type { OptionsArgs } from "@/types/runtimeTypes";
-import type { IntegrationDependency } from "../integrations/integrationTypes";
-import { nowTimestamp } from "../utils/timeUtils";
-import { emptyModVariablesDefinitionFactory } from "../utils/modUtils";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
+import { nowTimestamp } from "@/utils/timeUtils";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 import type { SetRequired } from "type-fest";
 
 export type ActivateModComponentParam = {

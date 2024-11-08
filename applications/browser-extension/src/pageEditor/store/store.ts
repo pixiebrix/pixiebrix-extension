@@ -22,37 +22,40 @@ import {
   type Middleware,
 } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import { editorSlice, persistEditorConfig } from "./editor/editorSlice";
+import {
+  editorSlice,
+  persistEditorConfig,
+} from "@/pageEditor/store/editor/editorSlice";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/data/service/api";
-import runtimeSlice from "./runtime/runtimeSlice";
-import settingsSlice from "../../store/settings/settingsSlice";
-import { persistModComponentOptionsConfig } from "../../store/modComponents/modComponentStorage";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
 import integrationsSlice, {
   persistIntegrationsConfig,
-} from "../../integrations/store/integrationsSlice";
-import modComponentSlice from "../../store/modComponents/modComponentSlice";
-import sessionSlice from "./session/sessionSlice";
+} from "@/integrations/store/integrationsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
-import { tabStateSlice } from "./tabState/tabStateSlice";
-import { modDefinitionsSlice } from "../../modDefinitions/modDefinitionsSlice";
-import { modDefinitionsMiddleware } from "../../modDefinitions/modDefinitionsListenerMiddleware";
+import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   persistSessionChangesConfig,
   sessionChangesSlice,
   sessionChangesStateSyncActions,
-} from "../../store/sessionChanges/sessionChangesSlice";
-import { sessionChangesMiddleware } from "../../store/sessionChanges/sessionChangesListenerMiddleware";
+} from "@/store/sessionChanges/sessionChangesSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
-import { boolean } from "../../utils/typeUtils";
-import { persistSettingsConfig } from "../../store/settings/settingsStorage";
-import { defaultCreateStateSyncMiddlewareConfig } from "../../store/defaultMiddlewareConfig";
-import { type RootState } from "./editor/pageEditorTypes";
-import editorInvariantMiddleware from "./editor/editorInvariantMiddleware";
+import { boolean } from "@/utils/typeUtils";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import { defaultCreateStateSyncMiddlewareConfig } from "@/store/defaultMiddlewareConfig";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import editorInvariantMiddleware from "@/pageEditor/store/editor/editorInvariantMiddleware";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 // eslint-disable-next-line prefer-destructuring -- process.env substitution

@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TypedBrickPair } from "./registry";
+import { type TypedBrickPair } from "@/bricks/registry";
 import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
 import { stubTrue } from "lodash";
-import { DocumentRenderer } from "./renderers/document";
-import { type BrickType, BrickTypes } from "../runtime/runtimeTypes";
-import DisplayTemporaryInfo from "./transformers/temporaryInfo/DisplayTemporaryInfo";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RegistryId } from "@/types/registryTypes";
-import { ErrorEffect } from "./effects/error";
-import CancelEffect from "./effects/CancelEffect";
-import CommentEffect from "./effects/comment";
-import { PipelineFlavor } from "./types";
+import { ErrorEffect } from "@/bricks/effects/error";
+import CancelEffect from "@/bricks/effects/CancelEffect";
+import CommentEffect from "@/bricks/effects/comment";
+import { PipelineFlavor } from "@/bricks/types";
 
 const PANEL_TYPES = [StarterBrickTypes.SIDEBAR_PANEL];
 
@@ -99,6 +99,6 @@ export function makeIsBrickAllowedForPipeline(
     }
   }
 
-  return ({ type, block }: TypedBrickPair) =>
-    type !== excludedType || ALWAYS_SHOW.has(block.id);
+  return ({ type, brick }: TypedBrickPair) =>
+    type !== excludedType || ALWAYS_SHOW.has(brick.id);
 }

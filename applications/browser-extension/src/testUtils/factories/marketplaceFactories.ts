@@ -16,10 +16,10 @@
  */
 
 import { define } from "cooky-cutter";
-import { type MarketplaceListing, type MarketplaceTag } from "../../types/contract";
-import { uuidSequence } from "./stringFactories";
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { DefinitionKinds } from "../../types/registryTypes";
+import { type MarketplaceListing, type MarketplaceTag } from "@/types/contract";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 export const marketplaceTagFactory = define<MarketplaceTag>({
   id: uuidSequence,

@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import PackageHistory from "./PackageHistory";
+import PackageHistory from "@/extensionConsole/pages/packageEditor/PackageHistory";
 import { act, screen, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
-import { waitForEffect } from "../../../testUtils/testHelpers";
-import { render } from "../../testHelpers";
-import { type Package, type PackageVersionDeprecated } from "../../../types/contract";
-import { type Timestamp } from "../../../types/stringTypes";
-import { DefinitionKinds } from "../../../types/registryTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
+import { type Package, type PackageVersionDeprecated } from "@/types/contract";
+import { type Timestamp } from "@/types/stringTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 const axiosMock = new MockAdapter(axios);
 

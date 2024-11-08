@@ -19,11 +19,11 @@ import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeInfo,
-} from "../../../../store/editor/editorSelectors";
-import useBrickTraceRecord from "./useBrickTraceRecord";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { useMemo } from "react";
-import { StarterBrickTypes } from "../../../../../types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { isEqual, omit } from "lodash";
 
 /**

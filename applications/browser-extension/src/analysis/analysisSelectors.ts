@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freeze } from "../utils/objectUtils";
+import { freeze } from "@/utils/objectUtils";
 import {
   type AnalysisRootState,
   type AnalysisAnnotation,

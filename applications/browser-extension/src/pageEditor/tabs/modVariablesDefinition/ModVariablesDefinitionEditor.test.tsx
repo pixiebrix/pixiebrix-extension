@@ -16,20 +16,20 @@
  */
 
 import React from "react";
-import { render } from "../../testHelpers";
-import ModVariablesDefinitionEditor from "./ModVariablesDefinitionEditor";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "../../store/editor/editorSlice";
-import { actions as modComponentsActions } from "../../../store/modComponents/modComponentSlice";
+import { render } from "@/pageEditor/testHelpers";
+import ModVariablesDefinitionEditor from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesDefinitionEditor";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import { screen } from "@testing-library/react";
-import { modInstanceFactory } from "../../../testUtils/factories/modInstanceFactories";
-import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
-import { mapModInstanceToActivatedModComponents } from "../../../store/modComponents/modInstanceUtils";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
-import { uuidv4 } from "../../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 beforeEach(() => {
   brickRegistry.register([new AssignModVariable()]);

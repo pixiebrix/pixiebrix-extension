@@ -17,17 +17,17 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "../modModalsSelectors";
-import { modModalsSlice } from "../modModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import PublishModContent from "./PublishModContent";
 import { Modal } from "react-bootstrap";
 import { useGetMarketplaceListingQuery } from "@/data/service/api";
 import Loader from "@/components/Loader";
-import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
 import PublishedContent from "./PublishedContent";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);

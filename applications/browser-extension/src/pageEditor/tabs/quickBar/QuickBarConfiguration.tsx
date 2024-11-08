@@ -17,15 +17,15 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import MultiSelectWidget from "../../fields/MultiSelectWidget";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import { contextOptions } from "../contextMenu/ContextMenuConfiguration";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import { contextOptions } from "@/pageEditor/tabs/contextMenu/ContextMenuConfiguration";
 import IconWidget from "@/components/fields/IconWidget";
-import ExtraPermissionsSection from "../ExtraPermissionsSection";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
-import { splitStartingEmoji } from "../../../utils/stringUtils";
-import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
+import { splitStartingEmoji } from "@/utils/stringUtils";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const QuickBarConfiguration: React.FC<{
   isLocked: boolean;

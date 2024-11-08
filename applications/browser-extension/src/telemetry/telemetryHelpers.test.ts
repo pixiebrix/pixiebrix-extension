@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cleanDatadogVersionName } from "./telemetryHelpers";
-import { modComponentRefFactory } from "../testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "../utils/modUtils";
+import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 // Disable automatic __mocks__ resolution #6799
-jest.mock("./telemetryHelpers", () =>
+jest.mock("@/telemetry/telemetryHelpers", () =>
   jest.requireActual("./telemetryHelpers.ts"),
 );
 

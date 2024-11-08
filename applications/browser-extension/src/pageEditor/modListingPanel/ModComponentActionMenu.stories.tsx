@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import ModComponentActionMenu from "./ModComponentActionMenu";
+import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import { editorStore } from "../../testUtils/storyUtils";
+import { editorStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { actions } from "../store/editor/editorSlice";
-import { getPipelineMap } from "../tabs/editTab/editHelpers";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickConfigurationUIState,
-} from "../store/editor/uiState";
+} from "@/pageEditor/store/editor/uiState";
 
 type StoryArgs = typeof ModComponentActionMenu & { isDirty: boolean };
 

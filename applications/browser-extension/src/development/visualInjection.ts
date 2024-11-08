@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MAX_Z_INDEX } from "../domConstants";
+import { MAX_Z_INDEX } from "@/domConstants";
 
 /**
  * Add a visual indicator to the top-left of the DOM.

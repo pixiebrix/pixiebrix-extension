@@ -20,10 +20,13 @@
 import injectIframe, {
   hiddenIframeStyle,
   IframeInjectionError,
-} from "../../utils/injectIframe";
-import postMessage, { type Payload, SandboxTimeoutError } from "../postMessage";
+} from "@/utils/injectIframe";
+import postMessage, {
+  type Payload,
+  SandboxTimeoutError,
+} from "@/sandbox/postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
-import { memoizeUntilSettled } from "../../utils/promiseUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import pRetry from "p-retry";
 import { type JsonObject } from "type-fest";
 import { TimeoutError } from "p-timeout";

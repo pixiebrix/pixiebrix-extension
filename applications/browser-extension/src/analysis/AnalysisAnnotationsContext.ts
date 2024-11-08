@@ -19,7 +19,7 @@ import { createContext } from "react";
 import {
   type AnalysisAnnotation,
   type AnalysisRootState,
-} from "./analysisTypes";
+} from "@/analysis/analysisTypes";
 import { createSelector } from "@reduxjs/toolkit";
 
 const defaultSelector: (state: AnalysisRootState) => AnalysisAnnotation[] =

@@ -18,7 +18,7 @@
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment, type PackageConfigDetail } from "@/types/contract";
-import { allSettled } from "../utils/promiseUtils";
+import { allSettled } from "@/utils/promiseUtils";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 

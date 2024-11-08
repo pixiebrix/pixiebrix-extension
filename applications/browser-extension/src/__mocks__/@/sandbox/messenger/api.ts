@@ -16,4 +16,4 @@
  */
 
 // Skip the sandbox messenger during tests
-export * from "../../../../sandbox/messenger/executor";
+export * from "@/sandbox/messenger/executor";

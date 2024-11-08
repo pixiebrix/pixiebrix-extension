@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ExportFileEffect from "./exportFileEffect";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import ExportFileEffect from "@/bricks/effects/exportFileEffect";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import download from "downloadjs";
 
 jest.mock("downloadjs");

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RootState } from "../../../store";
+import { type RootState } from "@/extensionConsole/store";
 
 export const selectShowLogsContext = ({ modModals }: RootState) =>
   modModals.showLogsContext;

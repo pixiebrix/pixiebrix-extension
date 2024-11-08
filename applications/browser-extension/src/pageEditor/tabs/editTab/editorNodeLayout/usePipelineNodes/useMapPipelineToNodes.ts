@@ -16,14 +16,17 @@
  */
 
 import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
-import { PIPELINE_BRICKS_FIELD_NAME } from "../../../../consts";
-import { type MapOutput, type EditorNodeProps } from "./types";
-import { type useGetNodeState } from "./useGetNodeState";
-import { useGetSubPipelineNodes } from "./useGetSubPipelineNodes";
-import { useGetTraceHandling } from "./useGetTraceHandling";
-import { useGetLastBrickHandling } from "./useLastBrickHandling";
-import { useMapBrickToNodes } from "./useMapBrickToNodes";
-import { type Branch } from "../../../../../types/runtimeTypes";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
+import {
+  type MapOutput,
+  type EditorNodeProps,
+} from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetSubPipelineNodes";
+import { useGetTraceHandling } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetTraceHandling";
+import { useGetLastBrickHandling } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useLastBrickHandling";
+import { useMapBrickToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapBrickToNodes";
+import { type Branch } from "@/types/runtimeTypes";
 import { useCallback } from "react";
 
 export type MapPipelineToNodesArgs = {

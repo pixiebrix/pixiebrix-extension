@@ -18,7 +18,7 @@
 import React from "react";
 import { type StoryFn, type Meta } from "@storybook/react";
 import SwitchButtonWidget, { type CheckBoxLike } from "./SwitchButtonWidget";
-import { type CustomFieldWidgetProps } from "../../FieldTemplate";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 
 const componentMeta: Meta<typeof SwitchButtonWidget> = {
   title: "Fields/SwitchButtonWidget",

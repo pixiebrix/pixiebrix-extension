@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isHTMLElement } from "./frameworkReader";
+import { isHTMLElement } from "@/bricks/readers/frameworkReader";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type SelectorRoot } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { isInViewport, isVisible } from "../../utils/domUtils";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { isInViewport, isVisible } from "@/utils/domUtils";
 
 /**
  * Read attributes, text, etc. from an HTML element.

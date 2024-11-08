@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type NodeAction } from "../../editorNodes/nodeActions/NodeActionsView";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { faPlusCircle, faPaste } from "@fortawesome/free-solid-svg-icons";
-import { actions } from "../../../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { type PipelineFlavor } from "@/bricks/types";
-import usePasteBrick from "../usePasteBrick";
-import useApiVersionAtLeast from "../../../../hooks/useApiVersionAtLeast";
+import usePasteBrick from "@/pageEditor/tabs/editTab/editorNodeLayout/usePasteBrick";
+import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import { useCallback } from "react";
 
 export function useCreateNodeActions() {

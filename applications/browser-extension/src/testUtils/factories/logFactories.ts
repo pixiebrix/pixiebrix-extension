@@ -16,12 +16,12 @@
  */
 
 import { define } from "cooky-cutter";
-import { type LogEntry } from "../../telemetry/logging";
+import { type LogEntry } from "@/telemetry/logging";
 import {
   timestampFactory,
   uuidSequence,
-} from "./stringFactories";
-import { type MessageContext } from "../../types/loggerTypes";
+} from "@/testUtils/factories/stringFactories";
+import { type MessageContext } from "@/types/loggerTypes";
 
 export const messageContextFactory = define<MessageContext>({
   modComponentId: uuidSequence,

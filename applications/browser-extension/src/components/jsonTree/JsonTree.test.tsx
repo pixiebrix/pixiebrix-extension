@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { searchData } from "./JsonTree";
+import { searchData } from "@/components/jsonTree/JsonTree";
 
 type SearchDataTestCase = {
   name: string;

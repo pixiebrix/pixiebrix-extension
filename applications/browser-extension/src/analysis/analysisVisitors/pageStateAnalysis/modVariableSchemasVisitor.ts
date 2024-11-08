@@ -19,9 +19,9 @@ import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/bricks/PipelineVisitor";
-import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
-import { type Schema } from "../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { compact, isEqual, uniqWith } from "lodash";
 
 export type ModVariableSchemaResult = {
@@ -49,10 +49,10 @@ class ModVariableSchemasVisitor extends PipelineVisitor {
   ): void {
     super.visitBrick(position, brickConfig, extra);
 
-    const { block } = this.allBricks.get(brickConfig.id) ?? {};
+    const { brick } = this.allBricks.get(brickConfig.id) ?? {};
 
-    if (block?.getModVariableSchema) {
-      this.schemaPromises.push(block.getModVariableSchema?.(brickConfig));
+    if (brick?.getModVariableSchema) {
+      this.schemaPromises.push(brick.getModVariableSchema?.(brickConfig));
     }
   }
 

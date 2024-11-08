@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { render, screen, userEvent } from "../../../pageEditor/testHelpers";
-import RemoteSelectWidget from "./RemoteSelectWidget";
-import { sanitizedIntegrationConfigFactory } from "../../../testUtils/factories/integrationFactories";
+import { render, screen, userEvent } from "@/pageEditor/testHelpers";
+import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { waitFor } from "@testing-library/react";
-import reportError from "../../../telemetry/reportError";
-import FieldTemplateLocalErrorContext from "./FieldTemplateLocalErrorContext";
+import reportError from "@/telemetry/reportError";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
-jest.mock("../../../telemetry/reportError");
+jest.mock("@/telemetry/reportError");
 const reportErrorSpy = jest.mocked(reportError);
 
 const setLocalErrorSpy = jest.fn();

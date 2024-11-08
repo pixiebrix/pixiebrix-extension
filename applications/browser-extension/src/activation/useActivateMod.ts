@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WizardValues } from "./wizardTypes";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import reportEvent from "../telemetry/reportEvent";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { deactivateMod } from "../store/deactivateModHelpers";
-import { ensurePermissionsFromUserGesture } from "../permissions/permissionsUtils";
-import { checkModDefinitionPermissions } from "../modDefinitions/modDefinitionPermissionsHelpers";
+import { deactivateMod } from "@/store/deactivateModHelpers";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { useCreateDatabaseMutation } from "@/data/service/api";
-import { Events } from "../telemetry/events";
+import { Events } from "@/telemetry/events";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import {
   autoCreateDatabaseOptionsArgsInPlace,
   useManagePersonalDeployment,
-} from "./modOptionsHelpers";
-import { type ReportEventData } from "../telemetry/telemetryTypes";
-import { selectModInstanceMap } from "../store/modComponents/modInstanceSelectors";
+} from "@/activation/modOptionsHelpers";
+import { type ReportEventData } from "@/telemetry/telemetryTypes";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 import { type AppDispatch } from "@/extensionConsole/store";
 
 export type ActivateResult = {

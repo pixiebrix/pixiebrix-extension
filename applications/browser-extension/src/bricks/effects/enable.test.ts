@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EnableEffect } from "./enable";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { EnableEffect } from "@/bricks/effects/enable";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new EnableEffect();
 

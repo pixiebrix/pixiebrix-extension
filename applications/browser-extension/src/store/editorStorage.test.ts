@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorState } from "../pageEditor/store/editor/pageEditorTypes";
-import { editorSlice } from "../pageEditor/store/editor/editorSlice";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import {
   getEditorState,
   removeDraftModComponentsByModId,
   saveEditorState,
-} from "./editorStorage";
-import { modMetadataFactory } from "../testUtils/factories/modComponentFactories";
-import { formStateFactory } from "../testUtils/factories/pageEditorFactories";
-import { readReduxStorage, setReduxStorage } from "../utils/storageUtils";
-import { getMaxMigrationsVersion } from "./migratePersistedState";
-import { migrations } from "./editorMigrations";
-import { registryIdFactory } from "../testUtils/factories/stringFactories";
+} from "@/store/editorStorage";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { migrations } from "@/store/editorMigrations";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { range } from "lodash";
-import type { Nullish } from "../utils/nullishUtils";
+import type { Nullish } from "@/utils/nullishUtils";
 
-jest.mock("../utils/storageUtils", () => {
+jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
 
   return {

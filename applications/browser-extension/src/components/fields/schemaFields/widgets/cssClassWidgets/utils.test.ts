@@ -19,8 +19,8 @@ import {
   calculateNextSpacing,
   calculateNextValue,
   extractSpacing,
-} from "./utils";
-import { optionsGroups } from "./CssClassWidget";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import { optionsGroups } from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 
 describe("calculateNextValue", () => {
   it("should toggle independent flag", () => {

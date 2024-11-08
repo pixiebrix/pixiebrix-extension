@@ -17,15 +17,15 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import ModsPage from "./ModsPage";
+import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import modsPageSlice from "./modsPageSlice";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
-import { modModalsSlice } from "./modals/modModalsSlice";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/data/service/api";
-import { modDefinitionsSlice } from "../../../modDefinitions/modDefinitionsSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 
 export default {
   title: "ModsPage/ModsPage",

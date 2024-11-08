@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import testItRenders from "../../../../../testUtils/testItRenders";
+import testItRenders from "@/testUtils/testItRenders";
 import { noop } from "lodash";
 import VariablesTree from "./VariablesTree";
 import VarMap, {

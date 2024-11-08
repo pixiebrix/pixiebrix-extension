@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { act, renderHook } from "@testing-library/react-hooks";
-import { useWindowSize } from "./useWindowSize";
+import { act } from "@testing-library/react";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 // Simulate window resize event: https://gist.github.com/javierarques/d95948ac7e9ddc8097612866ecc63a4b#file-jsdom-helper-js
 const resizeEvent = document.createEvent("Event");

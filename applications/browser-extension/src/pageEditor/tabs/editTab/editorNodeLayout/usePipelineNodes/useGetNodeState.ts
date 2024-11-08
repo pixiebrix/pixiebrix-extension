@@ -16,10 +16,10 @@
  */
 
 import { useDispatch } from "react-redux";
-import { type AppDispatch } from "../../../../store/store";
-import { actions } from "../../../../store/editor/editorSlice";
-import { type NodeAction } from "../../editorNodes/nodeActions/NodeActionsView";
-import { type UUID } from "../../../../../types/stringTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { type UUID } from "@/types/stringTypes";
 import { useCallback, useState } from "react";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";

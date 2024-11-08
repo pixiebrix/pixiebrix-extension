@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import { CountdownTimer } from "./DeploymentModal";
+import { CountdownTimer } from "@/extensionConsole/pages/deployments/DeploymentModal";
 import { action } from "@storybook/addon-actions";
 
 export default {

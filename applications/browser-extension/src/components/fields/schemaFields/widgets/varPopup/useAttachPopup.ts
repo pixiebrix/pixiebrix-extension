@@ -16,7 +16,7 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectSettings } from "../../../../../store/settings/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import {
   useEffect,
   useReducer,
@@ -27,13 +27,13 @@ import {
 import {
   getLikelyVariableAtPosition,
   getVariableAtPosition,
-} from "./likelyVariableUtils";
-import { type FieldInputMode } from "../../fieldInputMode";
+} from "@/components/fields/schemaFields/widgets/varPopup/likelyVariableUtils";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
-import { waitAnimationFrame } from "../../../../../utils/domUtils";
-import FieldRuntimeContext from "../../FieldRuntimeContext";
+import { waitAnimationFrame } from "@/utils/domUtils";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 type Props = {
   inputMode: FieldInputMode;

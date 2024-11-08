@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { $safeFind } from "../../../utils/domUtils";
-import { expectContext } from "../../../utils/expectContext";
-import Overlay from "../../../vendors/Overlay";
+import { $safeFind } from "@/utils/domUtils";
+import { expectContext } from "@/utils/expectContext";
+import Overlay from "@/vendors/Overlay";
 
 let _overlay: Overlay | null = null;
 

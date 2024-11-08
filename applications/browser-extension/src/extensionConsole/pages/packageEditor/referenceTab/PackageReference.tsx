@@ -33,10 +33,10 @@ import Loader from "@/components/Loader";
 import PackageDetail from "./PackageDetail";
 import PackageResult from "./PackageResult";
 import { isOfficial } from "@/bricks/util";
-import { find as findPackage } from "../../../../registry/packageRegistry";
-import { brickToYaml } from "../../../../utils/objToYaml";
+import { find as findPackage } from "@/registry/packageRegistry";
+import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/data/service/api";
-import { type PackageInstance } from "../../../../types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type OwnProps<Instance extends PackageInstance> = {

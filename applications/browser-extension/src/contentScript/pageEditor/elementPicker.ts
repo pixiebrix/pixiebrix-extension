@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Overlay from "../../vendors/Overlay";
+import Overlay from "@/vendors/Overlay";
 import ReactDOM from "react-dom";
-import { expandedCssSelector } from "../../utils/inference/selectorInference";
+import { expandedCssSelector } from "@/utils/inference/selectorInference";
 import { compact, difference, uniq } from "lodash";
 import type { SelectionHandlerType } from "@/components/selectionToolPopover/SelectionToolPopover";
 import { BusinessError, CancelError } from "@/errors/businessErrors";

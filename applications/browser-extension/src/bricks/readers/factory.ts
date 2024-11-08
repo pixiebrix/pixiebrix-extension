@@ -19,21 +19,21 @@ import { checkAvailable } from "@/bricks/available";
 import type { BrickConfig } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { InvalidDefinitionError } from "@/errors/businessErrors";
-import { type ApiVersion, type SelectorRoot } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { type ApiVersion, type SelectorRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { type Reader, ReaderABC } from "../../types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import {
   type DefinitionKinds,
   type Metadata,
   type SemVerString,
-} from "../../types/registryTypes";
+} from "@/types/registryTypes";
 import {
   PAGE_SCRIPT_CAPABILITIES,
   type PlatformCapability,
-} from "../../platform/capabilities";
-import { validatePackageDefinition } from "../../validators/schemaValidator";
-import { type Availability } from "../../types/availabilityTypes";
+} from "@/platform/capabilities";
+import { validatePackageDefinition } from "@/validators/schemaValidator";
+import { type Availability } from "@/types/availabilityTypes";
 
 export interface ReaderTypeConfig {
   type: string;

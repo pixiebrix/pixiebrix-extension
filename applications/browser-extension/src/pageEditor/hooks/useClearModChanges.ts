@@ -16,12 +16,12 @@
  */
 
 import { useCallback } from "react";
-import { type RegistryId } from "../../types/registryTypes";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import { type RegistryId } from "@/types/registryTypes";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
-import useClearModComponentChanges from "./useClearModComponentChanges";
-import { selectGetModComponentFormStatesForMod } from "../store/editor/editorSelectors";
+import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
+import { selectGetModComponentFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Hook that returns a callback to clear unsaved mod changes for a given mod id.

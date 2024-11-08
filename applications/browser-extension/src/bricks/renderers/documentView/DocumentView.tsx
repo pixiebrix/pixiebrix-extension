@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "../../../vendors/bootstrapWithoutRem.css";
-import "../../../sidebar/sidebarBootstrapOverrides.scss";
-import { buildDocumentBuilderSubtree } from "../../../pageEditor/documentBuilder/documentTree";
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/sidebar/sidebarBootstrapOverrides.scss";
+import { buildDocumentBuilderSubtree } from "@/pageEditor/documentBuilder/documentTree";
 import React from "react";
 import { type DocumentViewProps } from "./DocumentViewProps";
-import DocumentContext from "../../../pageEditor/documentBuilder/render/DocumentContext";
+import DocumentContext from "@/pageEditor/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
-import { joinPathParts } from "../../../utils/formUtils";
+import { joinPathParts } from "@/utils/formUtils";
 import StylesheetsContext, {
   useStylesheetsContextWithDocumentDefault,
 } from "@/components/StylesheetsContext";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,

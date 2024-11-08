@@ -16,7 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import RequireMods, { type RequiredModDefinition } from "./RequireMods";
+import RequireMods, {
+  type RequiredModDefinition,
+} from "@/sidebar/activateMod/RequireMods";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
@@ -27,11 +29,11 @@ import { wizardStateFactory } from "@/activation/useActivateModWizard";
 import useActivateMod, {
   type ActivateResult,
 } from "@/activation/useActivateMod";
-import { SuccessPanel } from "./ActivateModPanel";
-import sidebarSlice from "../../store/sidebar/sidebarSlice";
-import type { ModActivationConfig } from "../../types/modTypes";
+import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import type { ModActivationConfig } from "@/types/modTypes";
 import useFlags from "@/hooks/useFlags";
-import { selectModInstances } from "../../store/modComponents/modInstanceSelectors";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 
 type ModResultPair = {
   mod: RequiredModDefinition;

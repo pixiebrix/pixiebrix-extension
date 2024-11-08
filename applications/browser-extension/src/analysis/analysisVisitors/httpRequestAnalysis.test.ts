@@ -17,11 +17,11 @@
 
 import { type BrickPosition } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import HttpRequestAnalysis from "./httpRequestAnalysis";
+import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
-import { AnnotationType } from "../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const position: BrickPosition = {
   path: "test.path",

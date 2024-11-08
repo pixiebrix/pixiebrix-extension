@@ -20,13 +20,13 @@ import {
   formStateToDraftModComponent,
   selectGetDraftFormStatesPromiseForModId,
   selectType,
-} from "../starterBricks/adapter";
+} from "@/pageEditor/starterBricks/adapter";
 import {
   removeActivatedModComponent,
   updateDraftModComponent,
 } from "@/contentScript/messenger/api";
-import { allFramesInInspectedTab } from "../context/connection";
-import { navigationEvent } from "../events";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import { navigationEvent } from "@/pageEditor/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
@@ -34,20 +34,20 @@ import {
   selectCurrentModId,
   selectEditorUpdateKey,
   selectGetModDraftStateForModId,
-} from "../store/editor/editorSelectors";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { selectModInstanceMap } from "../../store/modComponents/modInstanceSelectors";
-import type { ModInstance } from "../../types/modInstanceTypes";
-import { mapModInstanceToActivatedModComponents } from "../../store/modComponents/modInstanceUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 import useAsyncEffect from "use-async-effect";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { RunReason } from "../../types/runtimeTypes";
-import type { UUID } from "../../types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { RunReason } from "@/types/runtimeTypes";
+import type { UUID } from "@/types/stringTypes";
 import hash from "object-hash";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
-import type { ModComponentFormState } from "../starterBricks/formStateTypes";
-import type { RootState } from "../store/editor/pageEditorTypes";
-import type { AppDispatch } from "../store/store";
+import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { AppDispatch } from "@/pageEditor/store/store";
 
 /**
  * Map from draft mod component UUID to object-hash of updated draft. Used to avoid unnecessary re-injection.

@@ -20,8 +20,8 @@ import React from "react";
 import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { useDNT } from "../../../telemetry/dnt";
-import SettingToggle from "./SettingToggle";
+import { useDNT } from "@/telemetry/dnt";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const PrivacySettings: React.FunctionComponent = () => {
   const [dnt, setDNT] = useDNT();

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FormDefinition } from "./formTypes";
-import { type UUID } from "../../types/stringTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
+import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
-import { type FormPanelEntry } from "../../types/sidebarTypes";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import { type FormPanelEntry } from "@/types/sidebarTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 export type RegisteredForm = {
   /**

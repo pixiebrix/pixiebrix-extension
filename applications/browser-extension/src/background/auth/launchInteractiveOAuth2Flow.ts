@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UUID } from "../../types/stringTypes";
-import { integrationConfigLocator } from "../integrationConfigLocator";
+import type { UUID } from "@/types/stringTypes";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { BusinessError } from "@/errors/businessErrors";
-import integrationRegistry from "../../integrations/registry";
-import launchOAuth2Flow from "./launchOAuth2Flow";
+import integrationRegistry from "@/integrations/registry";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 
 /**
  * Launch the interactive OAuth2 flow for the given integration configuration.

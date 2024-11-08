@@ -18,12 +18,12 @@
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { AnnotationType } from "../../types/annotationTypes";
-import { castTextLiteralOrThrow } from "../../utils/expressionUtils";
+import { AnnotationType } from "@/types/annotationTypes";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { isEmpty } from "lodash";
 import { type JsonValue } from "type-fest";
-import { joinPathParts } from "../../utils/formUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 function tryParse(value: unknown): JsonValue {
   if (typeof value === "string") {

@@ -1,4 +1,4 @@
-import { readJQuery } from "./jquery";
+import { readJQuery } from "@/bricks/readers/jquery";
 
 describe("jquery", () => {
   it("reads data attribute", async () => {

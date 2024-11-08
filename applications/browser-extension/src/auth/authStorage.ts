@@ -25,15 +25,15 @@ import {
   type UserDataUpdate,
 } from "./authTypes";
 import { isExtensionContext } from "webext-detect";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { omit } from "lodash";
-import { syncRemotePackages } from "../registry/memoryRegistry";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
-import { SimpleEventTarget } from "../utils/SimpleEventTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { ReusableAbortController } from "abort-utils";
 import { removeOAuth2Token } from "@/background/messenger/api";
-import { deploymentKeyStorage, getDeploymentKey } from "./deploymentKey";
-import { getUUID } from "../telemetry/telemetryHelpers";
+import { deploymentKeyStorage, getDeploymentKey } from "@/auth/deploymentKey";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,

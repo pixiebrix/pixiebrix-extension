@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import BrowserBanner from "./BrowserBanner";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
+import BrowserBanner from "@/extensionConsole/pages/BrowserBanner";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
-import { INTERNAL_reset } from "../../store/enterprise/managedStorage";
+import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
 
 beforeEach(async () => {

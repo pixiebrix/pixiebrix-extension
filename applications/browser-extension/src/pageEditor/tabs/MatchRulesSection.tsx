@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import UrlPatternField from "../fields/UrlPatternField";
-import { makeLockableFieldProps } from "../fields/makeLockableFieldProps";
-import SelectorMatchField from "../fields/SelectorMatchField";
+import UrlPatternField from "@/pageEditor/fields/UrlPatternField";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import SelectorMatchField from "@/pageEditor/fields/SelectorMatchField";
 import React from "react";
-import ConnectedCollapsibleFieldSection from "../fields/ConnectedCollapsibleFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const MatchRulesSection: React.FunctionComponent<{
   isLocked: boolean;

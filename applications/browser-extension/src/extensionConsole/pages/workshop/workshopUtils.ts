@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditablePackageMetadata } from "../../../types/contract";
+import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
  * Valid values for the Workshop table/filters.

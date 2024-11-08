@@ -16,32 +16,32 @@
  */
 
 import React from "react";
-import ConnectedSidebar from "./ConnectedSidebar";
-import { render } from "./testHelpers";
+import ConnectedSidebar from "@/sidebar/ConnectedSidebar";
+import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
-import { waitForEffect } from "../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
 import {
   mockAnonymousMeApiResponse,
   mockAuthenticatedMeApiResponse,
-} from "../testUtils/userMock";
+} from "@/testUtils/userMock";
 import useLinkState from "@/auth/useLinkState";
 import {
   authStateFactory,
   meWithPartnerApiResponseFactory,
-} from "../testUtils/factories/authFactories";
-import { appApiMock } from "../testUtils/appApiMock";
-import { valueToAsyncState } from "../utils/asyncStateUtils";
+} from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { getConnectedTabIdForSidebarTopFrame } from "./connectedTarget";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
+import { getConnectedTabIdForSidebarTopFrame } from "@/sidebar/connectedTarget";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { datadogRum } from "@datadog/browser-rum";
 
-jest.mock("../auth/useLinkState");
+jest.mock("@/auth/useLinkState");
 jest.mock("@datadog/browser-rum", () => ({
   datadogRum: { addAction: jest.fn(), setGlobalContextProperty: jest.fn() },
 }));
-jest.mock("./connectedTarget");
+jest.mock("@/sidebar/connectedTarget");
 
 // Needed until https://github.com/RickyMarou/jest-webextension-mock/issues/5 is implemented
 browser.webNavigation.onBeforeNavigate = {
@@ -50,7 +50,7 @@ browser.webNavigation.onBeforeNavigate = {
   hasListener: jest.fn(),
 };
 
-jest.mock("../contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   ensureStarterBricksInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],

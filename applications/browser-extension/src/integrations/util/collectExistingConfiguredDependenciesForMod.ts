@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { type ModComponentBase } from "../../types/modComponentTypes";
-import { type IntegrationDependency } from "../integrationTypes";
-import { collectConfiguredIntegrationDependencies } from "../../store/modComponents/modComponentUtils";
-import getUnconfiguredComponentIntegrations from "./getUnconfiguredComponentIntegrations";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { collectConfiguredIntegrationDependencies } from "@/store/modComponents/modComponentUtils";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**
  * Collect the existing configured dependencies for a given mod definition

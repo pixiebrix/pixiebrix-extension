@@ -16,11 +16,11 @@
  */
 
 import { type BrickPosition } from "@/bricks/types";
-import { type ModComponentFormState } from "../pageEditor/starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type BaseAnnotation } from "@/types/annotationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type DraftModState } from "../pageEditor/store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 export enum AnalysisAnnotationActionType {
   AddValueToArray,

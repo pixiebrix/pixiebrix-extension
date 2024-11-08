@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SELECTOR_HINTS } from "./siteSelectorHints";
+import { SELECTOR_HINTS } from "@/utils/inference/siteSelectorHints";
 import { html } from "code-tag";
-import { $safeFind } from "../domUtils";
-import { siteSelectorHintFactory } from "../../testUtils/factories/selectorFactories";
-import inferSingleElementSelector from "./inferSingleElementSelector";
+import { $safeFind } from "@/utils/domUtils";
+import { siteSelectorHintFactory } from "@/testUtils/factories/selectorFactories";
+import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 
 describe("inferElementSelector", () => {
   beforeEach(() => {

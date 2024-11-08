@@ -19,12 +19,12 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { uuidv4 } from "../../../src/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { type Serializable } from "playwright-core/types/structs";
 import path from "node:path";
-import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
-import { getSidebarPage, runModViaQuickBar } from "../../utils";
-import { VALID_UUID_REGEX } from "../../../src/types/stringTypes";
+import { FloatingActionButton } from "end-to-end-tests/pageObjects/floatingActionButton";
+import { getSidebarPage, runModViaQuickBar } from "end-to-end-tests/utils";
+import { VALID_UUID_REGEX } from "@/types/stringTypes";
 
 test("copying a mod that uses the PixieBrix API is copied correctly", async ({
   page,

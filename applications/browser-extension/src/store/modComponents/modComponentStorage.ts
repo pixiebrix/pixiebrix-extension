@@ -20,18 +20,18 @@ import { createMigrate } from "redux-persist";
 import {
   createMigrationsManifest,
   inferModComponentStateVersion,
-} from "./modComponentMigrations";
+} from "@/store/modComponents/modComponentMigrations";
 import { type ModComponentState } from "./modComponentTypes";
-import { type StorageInterface } from "../StorageInterface";
-import { type RegistryId } from "../../types/registryTypes";
-import { boolean } from "../../utils/typeUtils";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { type RegistryId } from "@/types/registryTypes";
+import { boolean } from "@/utils/typeUtils";
 import {
   readReduxStorage,
   setReduxStorage,
   validateReduxStorageKey,
-} from "../../utils/storageUtils";
-import { getMaxMigrationsVersion } from "../migratePersistedState";
-import { initialState } from "./modComponentSliceInitialState";
+} from "@/utils/storageUtils";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { type PersistMigrate } from "redux-persist/es/types";
 import { compact } from "lodash";
 

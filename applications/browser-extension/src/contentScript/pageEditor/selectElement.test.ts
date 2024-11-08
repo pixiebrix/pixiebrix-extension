@@ -19,7 +19,7 @@ import selectElement from "./selectElement";
 import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 // Mock because the React vs. JSDOM event handling and dom manipulation isn't playing nicely together
-jest.mock("../../components/selectionToolPopover/showSelectionToolPopover");
+jest.mock("@/components/selectionToolPopover/showSelectionToolPopover");
 
 const showSelectionToolPopoverMock = jest.mocked(showSelectionToolPopover);
 

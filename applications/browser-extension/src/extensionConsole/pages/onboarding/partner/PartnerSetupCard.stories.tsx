@@ -18,22 +18,22 @@
 import React, { useEffect } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
-import modComponentSlice from "../../../../store/modComponents/modComponentSlice";
-import settingsSlice from "../../../../store/settings/settingsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
-import integrationsSlice from "../../../../integrations/store/integrationsSlice";
-import { uuidv4 } from "../../../../types/helpers";
-import PartnerSetupCard from "./PartnerSetupCard";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import { uuidv4 } from "@/types/helpers";
+import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { type AuthState } from "@/auth/authTypes";
 import { appApi } from "@/data/service/api";
 import { rest } from "msw";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
-import { addThemeClassToDocumentRoot } from "../../../../themes/themeUtils";
-import defaultMiddlewareConfig from "../../../../store/defaultMiddlewareConfig";
-import { meApiResponseFactory } from "../../../../testUtils/factories/authFactories";
-import { mockAnonymousMeApiResponse } from "../../../../testUtils/userMock";
+import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
+import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
+import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
+import { mockAnonymousMeApiResponse } from "@/testUtils/userMock";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 export default {

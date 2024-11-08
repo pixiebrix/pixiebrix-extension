@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useCreateModFromModComponent from "./useCreateModFromModComponent";
-import { renderHook, waitFor } from "../testHelpers";
-import { appApiMock } from "../../testUtils/appApiMock";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
-import { menuItemFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
+import { renderHook, waitFor } from "@/pageEditor/testHelpers";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { act } from "@testing-library/react";
 
 const reportEventMock = jest.mocked(reportEvent);
 
 jest.mocked(browser.tabs.query).mockResolvedValue([]);
 
-jest.mock("../../telemetry/trace");
+jest.mock("@/telemetry/trace");
 
-jest.mock("./useCompareModComponentCounts", () =>
+jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
   jest.fn().mockReturnValue(() => true),
 );
-jest.mock("./useCheckModStarterBrickInvariants", () =>
+jest.mock("@/pageEditor/hooks/useCheckModStarterBrickInvariants", () =>
   jest.fn().mockReturnValue(async () => true),
 );
 
@@ -55,7 +56,7 @@ describe("useCreateModFromModComponent", () => {
 
     appApiMock.onGet(API_PATHS.BRICKS).reply(200, []);
 
-    const { result, act } = renderHook(() => useCreateModFromModComponent(), {
+    const { result } = renderHook(() => useCreateModFromModComponent(), {
       setupRedux(dispatch) {
         dispatch(editorActions.addModComponentFormState(menuItemFormState));
       },

@@ -16,21 +16,21 @@
  */
 
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
-import { type AnalysisAnnotation } from "../analysisTypes";
+import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import {
   isTraceError,
   type TraceError,
   type TraceRecord,
-} from "../../telemetry/trace";
+} from "@/telemetry/trace";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isSchemaValidationError } from "@/bricks/errors";
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type ErrorObject } from "serialize-error";
-import { AnnotationType } from "../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 const requiredFieldRegex =
   /^Instance does not have required property "(?<property>.+)"\.$/;

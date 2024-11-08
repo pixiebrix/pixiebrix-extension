@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "./businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type AxiosError } from "axios";
 
 /**

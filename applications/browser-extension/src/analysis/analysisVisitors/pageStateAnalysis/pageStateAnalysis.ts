@@ -17,16 +17,16 @@
 
 import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { AnalysisVisitorWithResolvedBricksABC } from "../baseAnalysisVisitors";
+import { AnalysisVisitorWithResolvedBricksABC } from "@/analysis/analysisVisitors/baseAnalysisVisitors";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import { AnnotationType } from "../../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import {
   CustomFormRenderer,
   type StateStorage,
   type Storage,
 } from "@/bricks/renderers/customForm";
 
-import { StateNamespaces } from "../../../platform/state/stateTypes";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const publicMessage =
   "The Public namespace is for advanced use cases. Other Mods are able to read and overwrite Public state.";

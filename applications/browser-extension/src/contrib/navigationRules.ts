@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SALESFORCE_SERVICE_CONSOLE_NAVIGATION_RULES } from "./salesforce/navigation";
+import { SALESFORCE_SERVICE_CONSOLE_NAVIGATION_RULES } from "@/contrib/salesforce/navigation";
 
 export const NAVIGATION_RULES = [
   ...SALESFORCE_SERVICE_CONSOLE_NAVIGATION_RULES,

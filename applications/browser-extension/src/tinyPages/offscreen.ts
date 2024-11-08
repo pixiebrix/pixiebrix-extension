@@ -33,7 +33,7 @@ import {
   isStopAudioCaptureMessage,
   type RecordErrorMessage,
   type StartAudioCaptureMessage,
-} from "./offscreenProtocol";
+} from "@/tinyPages/offscreenProtocol";
 import { compact } from "lodash";
 
 type MediaClient = {
@@ -55,7 +55,7 @@ export async function sendErrorViaErrorReporter(
 
   const { getErrorReporter } = await import(
     /* webpackChunkName: "errorReporter" */
-    "../telemetry/initErrorReporter"
+    "@/telemetry/initErrorReporter"
   );
 
   const { versionName, telemetryUser } = errorReporterInitInfo;

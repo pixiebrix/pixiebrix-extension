@@ -17,8 +17,8 @@
 
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
-import shadowWrap from "./shadowWrap";
-import { waitForDocumentRoot } from "./domUtils";
+import shadowWrap from "@/utils/shadowWrap";
+import { waitForDocumentRoot } from "@/utils/domUtils";
 
 const TIMEOUT_MS = 5000;
 

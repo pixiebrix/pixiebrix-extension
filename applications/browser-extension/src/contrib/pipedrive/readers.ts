@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { startCase } from "lodash";
-import { withReadWindow } from "../../pageScript/messenger/api";
+import { withReadWindow } from "@/pageScript/messenger/api";
 import { type PathSpec } from "@/bricks/readers/window";
 import { type JsonObject } from "type-fest";
-import { mapObject } from "../../utils/objectUtils";
+import { mapObject } from "@/utils/objectUtils";
 
 async function checkRoute(expectedRoute: string): Promise<boolean> {
   const { route } = await withReadWindow({

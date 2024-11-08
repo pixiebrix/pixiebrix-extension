@@ -18,7 +18,7 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 
-import AsyncButton from "./AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 
 export default {
   title: "Common/AsyncButton",

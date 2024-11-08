@@ -18,7 +18,7 @@
 import {
   STATE_CHANGE_JS_EVENT_TYPE,
   type StateChangeEventDetail,
-} from "../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 
 /**
  * Dispatch a state change event to the document.

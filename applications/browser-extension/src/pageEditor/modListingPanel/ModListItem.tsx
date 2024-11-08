@@ -17,9 +17,9 @@
 
 import React from "react";
 import styles from "./Entry.module.scss";
-import { ModHasUpdateIcon } from "./ModComponentIcons";
+import { ModHasUpdateIcon } from "@/pageEditor/modListingPanel/ModComponentIcons";
 import { Accordion, ListGroup } from "react-bootstrap";
-import { actions } from "../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -33,11 +33,11 @@ import {
   selectActiveModId,
   selectDirtyMetadataForModId,
   selectExpandedModId,
-} from "../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import * as semver from "semver";
 import { useGetModDefinitionQuery } from "@/data/service/api";
-import { type ModMetadata } from "../../types/modComponentTypes";
-import ModActionMenu from "./ModActionMenu";
+import { type ModMetadata } from "@/types/modComponentTypes";
+import ModActionMenu from "@/pageEditor/modListingPanel/ModActionMenu";
 
 const ModListItem: React.FC<
   React.PropsWithChildren<{

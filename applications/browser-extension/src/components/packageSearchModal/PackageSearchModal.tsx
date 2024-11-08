@@ -45,15 +45,12 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import {
-  type PackageInstance,
-  type RegistryId,
-} from "../../types/registryTypes";
-import { type Brick } from "../../types/brickTypes";
-import { isNullOrBlank } from "../../utils/stringUtils";
+import { type PackageInstance, type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
-import { freeze } from "../../utils/objectUtils";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { freeze } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type PackageOption<Instance extends PackageInstance = Brick> = {
   data: Instance;

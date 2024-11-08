@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import sanitize from "../utils/sanitize";
+import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
 import type { Config } from "dompurify";
 

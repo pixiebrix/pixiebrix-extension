@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import config from "./contextMenu";
-import { internalStarterBrickMetaFactory } from "./base";
-import { createNewUnsavedModMetadata } from "../../utils/modUtils";
-import { draftModStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import config from "@/pageEditor/starterBricks/contextMenu";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
+import { draftModStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("contextMenu", () => {
   it("smoke test", () => {

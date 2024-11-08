@@ -2,7 +2,7 @@ import { type RJSFSchema } from "./formBuilderTypes";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
-} from "../../utils/schemaUtils";
+} from "@/utils/schemaUtils";
 
 export const initOneFieldSchemaCase: (fieldName: string) => RJSFSchema = (
   fieldName = "firstName",

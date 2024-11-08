@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { type BrickConfig } from "../../types";
-import { type FormDefinition } from "../../../platform/forms/formTypes";
-import { isExpression } from "../../../utils/expressionUtils";
-import type { PlatformCapability } from "../../../platform/capabilities";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type BrickConfig } from "@/bricks/types";
+import { type FormDefinition } from "@/platform/forms/formTypes";
+import { isExpression } from "@/utils/expressionUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export const TEMPORARY_FORM_SCHEMA: Schema = {
   type: "object",

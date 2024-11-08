@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "../../../../types/schemaTypes";
-import { validateRegistryId } from "../../../../types/helpers";
-import googleSheetIdSchema from "../../../../../schemas/googleSheetId.json";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 
 export const SPREADSHEET_FIELD_TITLE = "Google Sheet";
 export const SPREADSHEET_FIELD_DESCRIPTION =

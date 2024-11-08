@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import { type SchemaFieldProps } from "../../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Button, ButtonGroup, Dropdown, DropdownButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,15 +32,15 @@ import {
   faItalic,
 } from "@fortawesome/free-solid-svg-icons";
 import { useField } from "formik";
-import TemplateToggleWidget from "../TemplateToggleWidget";
-import { type InputModeOption } from "../templateToggleWidgetTypes";
+import TemplateToggleWidget from "@/components/fields/schemaFields/widgets/TemplateToggleWidget";
+import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssClassWidget.module.scss";
-import { type Expression } from "../../../../../types/runtimeTypes";
+import { type Expression } from "@/types/runtimeTypes";
 import {
   calculateNextValue,
   parseValue,
-} from "./utils";
-import { type ClassFlag } from "./types";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import { type ClassFlag } from "@/components/fields/schemaFields/widgets/cssClassWidgets/types";
 
 export const optionsGroups = {
   textAlign: [

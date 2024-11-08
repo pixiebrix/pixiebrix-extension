@@ -16,13 +16,13 @@
  */
 
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
-import { expectContext } from "../utils/expectContext";
-import reportError from "./reportError";
+import { expectContext } from "@/utils/expectContext";
+import reportError from "@/telemetry/reportError";
 import {
   type TelemetryEvent,
   type ReportEventData,
-} from "./telemetryTypes";
-import { mapEventDataToDeprecatedTerminology } from "./telemetryHelpers";
+} from "@/telemetry/telemetryTypes";
+import { mapEventDataToDeprecatedTerminology } from "@/telemetry/telemetryHelpers";
 
 expectContext(
   "extension",

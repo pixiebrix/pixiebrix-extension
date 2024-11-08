@@ -18,9 +18,9 @@
 import {
   emptyPermissionsFactory,
   ensurePermissionsFromUserGesture,
-} from "./permissionsUtils";
-import notify from "../utils/notify";
-import { type Nullishable } from "../utils/nullishUtils";
+} from "@/permissions/permissionsUtils";
+import notify from "@/utils/notify";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { useCallback } from "react";
 import { type Permissions } from "webextension-polyfill";
 

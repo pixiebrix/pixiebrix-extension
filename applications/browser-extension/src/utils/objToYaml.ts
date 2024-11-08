@@ -16,8 +16,8 @@
  */
 
 import { sortBy } from "lodash";
-import { dumpBrickYaml } from "../runtime/brickYaml";
-import { removeUndefined } from "./objectUtils";
+import { dumpBrickYaml } from "@/runtime/brickYaml";
+import { removeUndefined } from "@/utils/objectUtils";
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/ban-types -- don't need/want index signature

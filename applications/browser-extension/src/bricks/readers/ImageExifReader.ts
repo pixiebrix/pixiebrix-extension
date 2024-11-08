@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { ensureJsonObject } from "../../utils/objectUtils";
-import { loadImageBinaryData } from "../../utils/imageUtils";
+import { ensureJsonObject } from "@/utils/objectUtils";
+import { loadImageBinaryData } from "@/utils/imageUtils";
 
 export class ImageExifReader extends ReaderABC {
   override defaultOutputKey = "image";

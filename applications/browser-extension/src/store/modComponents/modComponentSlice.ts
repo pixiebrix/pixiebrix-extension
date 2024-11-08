@@ -16,23 +16,23 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type Deployment } from "../../types/contract";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import { type Deployment } from "@/types/contract";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { contextMenus } from "@/background/messenger/api";
 import { cloneDeep, isEmpty, remove } from "lodash";
-import { assertModComponentNotHydrated } from "../../runtime/runtimeUtils";
-import { revertAll } from "../commonActions";
-import { type ActivatedModComponent } from "../../types/modComponentTypes";
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { type RegistryId } from "../../types/registryTypes";
-import { type OptionsArgs } from "../../types/runtimeTypes";
-import { type IntegrationDependency } from "../../integrations/integrationTypes";
-import { initialState } from "./modComponentSliceInitialState";
+import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
+import { revertAll } from "@/store/commonActions";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
-import { isInnerDefinitionRegistryId } from "../../types/helpers";
-import type { UUID } from "../../types/stringTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ActivateModPayload = {
   /**

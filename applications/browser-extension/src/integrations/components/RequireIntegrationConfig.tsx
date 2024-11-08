@@ -17,19 +17,19 @@
 
 import React from "react";
 import IntegrationDependencyField from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
-import { type Schema } from "../../types/schemaTypes";
-import { type SanitizedIntegrationConfig } from "../integrationTypes";
-import useSanitizedIntegrationConfigFormikAdapter from "../useSanitizedIntegrationConfigFormikAdapter";
-import extractIntegrationIdsFromSchema from "../util/extractIntegrationIdsFromSchema";
+import { type Schema } from "@/types/schemaTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 import useAsyncState from "@/hooks/useAsyncState";
-import { checkIntegrationAuth } from "../util/checkIntegrationAuth";
+import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
 import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
-import { AnnotationType } from "../../types/annotationTypes";
-import { getExtensionConsoleUrl } from "../../utils/extensionUtils";
+import { AnnotationType } from "@/types/annotationTypes";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { type Nullishable } from "../../utils/nullishUtils";
-import { DEFAULT_SERVICE_URL } from "../../urlConstants";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 type ConfigProps = {
   integrationFieldSchema: Schema;

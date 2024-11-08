@@ -16,7 +16,7 @@
  */
 
 import UrlMatchPatternWidget from "./UrlMatchPatternWidget";
-import UrlPatternWidget from "../../../../pageEditor/components/UrlPatternWidget";
+import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import ArrayWidget from "./ArrayWidget";
 import BooleanWidget from "./BooleanWidget";
 import IntegerWidget from "./IntegerWidget";
@@ -29,14 +29,14 @@ import TextWidget from "./TextWidget";
 import UnsupportedWidget from "./UnsupportedWidget";
 import widgetsRegistry from "./widgetsRegistry";
 import WorkshopMessageWidget from "./WorkshopMessageWidget";
-import SelectorMatchWidget from "../../../../pageEditor/components/SelectorMatchWidget";
-import CssClassWidget from "./cssClassWidgets/CssClassWidget";
+import SelectorMatchWidget from "@/pageEditor/components/SelectorMatchWidget";
+import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
-import IconWidget from "../../IconWidget";
-import IntegrationDependencyWidget from "../integrations/IntegrationDependencyWidget";
+import IconWidget from "@/components/fields/IconWidget";
+import IntegrationDependencyWidget from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
-import FixedInnerObjectWidget from "./FixedInnerObjectWidget";
+import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
 
 const defaultWidgets = {
   ArrayWidget,

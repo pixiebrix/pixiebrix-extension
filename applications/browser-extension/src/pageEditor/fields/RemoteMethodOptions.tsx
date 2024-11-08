@@ -17,14 +17,14 @@
 
 import { inputProperties } from "@/bricks/transformers/remoteMethod";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { useField } from "formik";
 import { partial } from "lodash";
 import React, { useEffect } from "react";
 import { Alert } from "react-bootstrap";
-import { isTemplateExpression } from "../../utils/expressionUtils";
-import { joinName } from "../../utils/formUtils";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { isTemplateExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const REMOTE_METHOD_ID = validateRegistryId("@pixiebrix/http");
 

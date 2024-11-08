@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import { type RootState } from "../store";
-import { selectBrowserWarningDismissed } from "../../store/settings/settingsSelectors";
+import { type RootState } from "@/extensionConsole/store";
+import { selectBrowserWarningDismissed } from "@/store/settings/settingsSelectors";
 import Banner from "@/components/banner/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
-import settingsSlice from "../../store/settings/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 
-import { isOfficiallySupportedBrowser } from "../../utils/browserUtils";
-import useManagedStorageState from "../../store/enterprise/useManagedStorageState";
+import { isOfficiallySupportedBrowser } from "@/utils/browserUtils";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 const BrowserBanner: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();

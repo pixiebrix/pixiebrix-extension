@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { RendererABC } from "../../types/bricks/rendererTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
 import { sortBy, isPlainObject } from "lodash";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { canParseUrl } from "../../utils/urlUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { canParseUrl } from "@/utils/urlUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import type TreeNode from "primereact/treenode";
-import { isObject } from "../../utils/objectUtils";
+import { isObject } from "@/utils/objectUtils";
 
 interface Item {
   key: string;

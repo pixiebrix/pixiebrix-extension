@@ -16,8 +16,8 @@
  */
 
 import type { ValueOf } from "type-fest";
-import type { UUID } from "../../types/stringTypes";
-import type { RegistryId } from "../../types/registryTypes";
+import type { UUID } from "@/types/stringTypes";
+import type { RegistryId } from "@/types/registryTypes";
 
 export const MergeStrategies = {
   SHALLOW: "shallow",

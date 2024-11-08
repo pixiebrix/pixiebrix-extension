@@ -27,15 +27,15 @@ import {
 import styles from "./FieldTemplate.module.scss";
 import cx from "classnames";
 import { isEmpty, isPlainObject } from "lodash";
-import FieldAnnotationAlert from "../annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "../../types/annotationTypes";
-import { type FieldAnnotation } from "./FieldAnnotation";
-import { DESCRIPTION_ALLOWED_TAGS } from "../../types/schemaTypes";
-import MarkdownInline from "../MarkdownInline";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { AnnotationType } from "@/types/annotationTypes";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { DESCRIPTION_ALLOWED_TAGS } from "@/types/schemaTypes";
+import MarkdownInline from "@/components/MarkdownInline";
 import { type Except } from "type-fest";
 import { type ActionMeta } from "react-select";
-import { freeze } from "../../utils/objectUtils";
-import FieldTemplateLocalErrorContext from "./widgets/FieldTemplateLocalErrorContext";
+import { freeze } from "@/utils/objectUtils";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType,

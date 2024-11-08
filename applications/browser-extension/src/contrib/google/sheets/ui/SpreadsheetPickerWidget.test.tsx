@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "../../../../pageEditor/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import SpreadsheetPickerWidget from "./SpreadsheetPickerWidget";
+import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { validateRegistryId } from "../../../../types/helpers";
-import { uuidSequence } from "../../../../testUtils/factories/stringFactories";
+import { validateRegistryId } from "@/types/helpers";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { act, screen } from "@testing-library/react";
 import { type FormikValues } from "formik";
-import { type UUID } from "../../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../../../testUtils/factories/integrationFactories";
-import { validateOutputKey } from "../../../../runtime/runtimeTypes";
-import { type FileList } from "../core/types";
+} from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import IntegrationsSliceModIntegrationsContextAdapter from "../../../../integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
-import { SHEET_FIELD_SCHEMA } from "../core/schemas";
-import { getAllSpreadsheets } from "../core/sheetsApi";
+import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import { getAllSpreadsheets } from "@/contrib/google/sheets/core/sheetsApi";
 
 // XXX: sheetsApi should likely be mocked at the network level, not the module level
-jest.mock("../core/sheetsApi");
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
 const getAllSpreadsheetsMock = jest.mocked(getAllSpreadsheets);
 

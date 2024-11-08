@@ -20,7 +20,10 @@ import {
   CancelError,
   RequestSupersededError,
 } from "@/errors/businessErrors";
-import { selectExtraContext, shouldIgnoreError } from "./errorService";
+import {
+  selectExtraContext,
+  shouldIgnoreError,
+} from "@/data/service/errorService";
 import { serializeError } from "serialize-error";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 

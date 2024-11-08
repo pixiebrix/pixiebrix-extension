@@ -30,18 +30,18 @@ import {
   selectCurrentModId,
   selectEditorModalVisibilities,
   selectModMetadataMap,
-} from "../../store/editor/editorSelectors";
-import { actions as editorActions } from "../../store/editor/editorSlice";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import { selectScope } from "@/auth/authSelectors";
-import { generateScopeBrickId } from "../../panes/save/saveHelpers";
+import { generateScopeBrickId } from "@/pageEditor/panes/save/saveHelpers";
 import { RequireScope } from "@/auth/RequireScope";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import notify from "../../../utils/notify";
+import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { object, string } from "yup";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -55,17 +55,17 @@ import ModalLayout from "@/components/ModalLayout";
 import {
   ModalKey,
   type ModMetadataFormState,
-} from "../../store/editor/pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
-import useCreateModFromModComponent from "../../hooks/useCreateModFromModComponent";
-import useCreateModFromMod from "../../hooks/useCreateModFromMod";
+import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
+import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import useIsMounted from "../../../hooks/useIsMounted";
-import useCreateModFromUnsavedMod from "../../hooks/useCreateModFromUnsavedMod";
+import useIsMounted from "@/hooks/useIsMounted";
+import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { DataIntegrityError } from "../../hooks/useBuildAndValidateMod";
+import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.

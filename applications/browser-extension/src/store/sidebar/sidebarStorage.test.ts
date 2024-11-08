@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { initialSidebarState } from "./initialState";
+import { initialSidebarState } from "@/store/sidebar/initialState";
 import {
   STORAGE_KEY,
   getSidebarState,
   saveSidebarState,
-} from "./sidebarStorage";
-import { readReduxStorage, setReduxStorage } from "../../utils/storageUtils";
+} from "@/store/sidebar/sidebarStorage";
+import { readReduxStorage, setReduxStorage } from "@/utils/storageUtils";
 
-jest.mock("../../utils/storageUtils", () => {
+jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
 
   return {

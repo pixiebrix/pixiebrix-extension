@@ -15,31 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApiMock } from "../../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { hookAct, renderHook } from "../testHelpers";
-import useCreateModFromMod from "./useCreateModFromMod";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
-import { actions as modComponentActions } from "../../store/modComponents/modComponentSlice";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { renderHook } from "@/pageEditor/testHelpers";
+import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { array } from "cooky-cutter";
-import useCompareModComponentCounts from "./useCompareModComponentCounts";
-import useCheckModStarterBrickInvariants from "./useCheckModStarterBrickInvariants";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { timestampFactory } from "../../testUtils/factories/stringFactories";
-import { DataIntegrityError } from "./useBuildAndValidateMod";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { act } from "@testing-library/react";
 
 const reportEventMock = jest.mocked(reportEvent);
-jest.mock("../../telemetry/trace");
+jest.mock("@/telemetry/trace");
 
-jest.mock("./useCompareModComponentCounts", () =>
+jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
   jest.fn().mockReturnValue(() => true),
 );
-jest.mock("./useCheckModStarterBrickInvariants", () =>
+jest.mock("@/pageEditor/hooks/useCheckModStarterBrickInvariants", () =>
   jest.fn().mockReturnValue(async () => true),
 );
 
@@ -64,7 +65,7 @@ describe("useCreateModFromMod", () => {
       .onPost(API_PATHS.BRICKS)
       .reply(200, { updated_at: timestampFactory() });
 
-    const { result, act } = renderHook(() => useCreateModFromMod(), {
+    const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentActions.activateMod({
@@ -116,7 +117,7 @@ describe("useCreateModFromMod", () => {
       },
     });
 
-    await hookAct(async () => {
+    await act(async () => {
       await expect(
         result.current.createModFromMod(
           sourceModDefinition,
@@ -153,7 +154,7 @@ describe("useCreateModFromMod", () => {
       },
     });
 
-    await hookAct(async () => {
+    await act(async () => {
       await expect(
         result.current.createModFromMod(
           sourceModDefinition,

@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ensureModComponentFormStatePermissionsFromUserGesture } from "../editorPermissionsHelpers";
-import { type ModMetadataFormState } from "../store/editor/pageEditorTypes";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import reportEvent from "../../telemetry/reportEvent";
+import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
-import { Events } from "../../telemetry/events";
+import { Events } from "@/telemetry/events";
 import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { mapModDefinitionUpsertResponseToModDefinition } from "../utils";
-import useDeleteDraftModComponent from "./useDeleteDraftModComponent";
-import useBuildAndValidateMod from "./useBuildAndValidateMod";
-import { createPrivateSharing } from "../../utils/registryUtils";
-import updateReduxForSavedModDefinition from "./updateReduxForSavedModDefinition";
-import { type AppDispatch } from "../store/store";
-import { selectGetSiblingDraftModComponents } from "../store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { mapModDefinitionUpsertResponseToModDefinition } from "@/pageEditor/utils";
+import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
+import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { type AppDispatch } from "@/pageEditor/store/store";
+import { selectGetSiblingDraftModComponents } from "@/pageEditor/store/editor/editorSelectors";
 
 type UseCreateModFromModReturn = {
   createModFromComponent: (

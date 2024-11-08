@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../testHelpers";
-import useCompareModComponentCounts from "./useCompareModComponentCounts";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { actions as modComponentActions } from "../../store/modComponents/modComponentSlice";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import { renderHook } from "@/pageEditor/testHelpers";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { array } from "cooky-cutter";
 
 describe("useCompareModComponentCounts", () => {

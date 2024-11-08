@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { launchWebAuthFlow } from "./authHelpers";
+import { launchWebAuthFlow } from "@/background/auth/authHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 
 browser.identity = {

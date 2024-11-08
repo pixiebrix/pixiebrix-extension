@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { renderHook } from "@testing-library/react-hooks";
-import useActionGenerators from "./useActionGenerators";
-import quickBarRegistry from "./quickBarRegistry";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import useActionGenerators from "@/components/quickBar/useActionGenerators";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { KBarProvider } from "kbar";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
-jest.mock("./quickBarRegistry");
+jest.mock("@/components/quickBar/quickBarRegistry");
 
 describe("useActionGenerators", () => {
   it("generates once on mount", async () => {

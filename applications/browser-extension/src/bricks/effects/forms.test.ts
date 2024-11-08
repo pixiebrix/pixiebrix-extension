@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { FormFill, SetInputValue } from "./forms";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { FormFill, SetInputValue } from "@/bricks/effects/forms";
 import { BusinessError, NoElementsFoundError } from "@/errors/businessErrors";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const setInputValueBrick = new SetInputValue();
 const formFillBrick = new FormFill();

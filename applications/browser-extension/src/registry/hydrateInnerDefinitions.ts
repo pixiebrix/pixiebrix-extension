@@ -18,15 +18,15 @@
 import { produce } from "immer";
 import objectHash from "object-hash";
 import { cloneDeep, isEmpty, mapValues, pick, pickBy } from "lodash";
-import starterBrickRegistry from "../starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import brickRegistry from "@/bricks/registry";
-import { fromJS as starterBrickFactory } from "../starterBricks/factory";
+import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
 import { fromJS as brickFactory } from "@/bricks/transformers/brickFactory";
 import {
   type ModDefinition,
   type HydratedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type StarterBrickDefinitionLike } from "../starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type ReaderConfig } from "@/bricks/types";
 import {
   INNER_SCOPE,
@@ -40,9 +40,9 @@ import {
 } from "@/types/modComponentTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type Brick } from "@/types/brickTypes";
-import { resolveObj } from "../utils/promiseUtils";
-import { isObject } from "../utils/objectUtils";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { resolveObj } from "@/utils/promiseUtils";
+import { isObject } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type StarterBrickInnerDefinition = Pick<
   StarterBrickDefinitionLike,

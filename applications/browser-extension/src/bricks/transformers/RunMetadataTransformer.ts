@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import { type Schema, SCHEMA_EMPTY_OBJECT } from "../../types/schemaTypes";
-import { validateRegistryId } from "../../types/helpers";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { type UUID } from "../../types/stringTypes";
-import { type Nullishable } from "../../utils/nullishUtils";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type UUID } from "@/types/stringTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type ModMetadata = {
   id: string;

@@ -34,9 +34,9 @@ import { AddLead } from "./salesforce/lead";
 import { RunProcess } from "./uipath/process";
 import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
-import { GoogleSheetsLookup } from "./google/sheets/bricks/lookup";
-import SetCopilotDataEffect from "./automationanywhere/SetCopilotDataEffect";
-import { RunApiTask } from "./automationanywhere/RunApiTask";
+import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
+import SetCopilotDataEffect from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
 
 let registered = false;
 

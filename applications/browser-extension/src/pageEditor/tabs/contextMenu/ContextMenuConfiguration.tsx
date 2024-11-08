@@ -17,12 +17,14 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import TemplateWidget, { type Snippet } from "../../fields/TemplateWidget";
-import MultiSelectWidget from "../../fields/MultiSelectWidget";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import ExtraPermissionsSection from "../ExtraPermissionsSection";
-import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import TemplateWidget, {
+  type Snippet,
+} from "@/pageEditor/fields/TemplateWidget";
+import MultiSelectWidget from "@/pageEditor/fields/MultiSelectWidget";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { useField } from "formik";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 

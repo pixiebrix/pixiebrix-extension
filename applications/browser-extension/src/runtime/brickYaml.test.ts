@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadBrickYaml, dumpBrickYaml } from "./brickYaml";
-import { toExpression } from "../utils/expressionUtils";
+import { loadBrickYaml, dumpBrickYaml } from "@/runtime/brickYaml";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("loadYaml", () => {
   test("deserialize var", async () => {

@@ -16,7 +16,7 @@
  */
 
 import { WorkshopModEditor } from "./modEditor";
-import { BasePageObject } from "../../basePageObject";
+import { BasePageObject } from "end-to-end-tests/pageObjects/basePageObject";
 import { expect } from "@playwright/test";
 
 export class EditWorkshopModPage extends BasePageObject {

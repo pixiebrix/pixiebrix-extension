@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { RegistryId } from "../../types/registryTypes";
-import type { ModVariablesDefinition } from "../../types/modDefinitionTypes";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModVariablesDefinition } from "@/types/modDefinitionTypes";
 import {
   StateNamespaces,
   SyncPolicies,
   type SyncPolicy,
-} from "../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty, pickBy } from "lodash";
-import { tryParseSessionStorageKey } from "../../platform/state/stateHelpers";
-import type { Nullishable } from "../../utils/nullishUtils";
-import { emptyModVariablesDefinitionFactory } from "../../utils/modUtils";
+import { tryParseSessionStorageKey } from "@/platform/state/stateHelpers";
+import type { Nullishable } from "@/utils/nullishUtils";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 import type { Storage } from "webextension-polyfill";
-import { dispatchStateChangeEvent } from "./stateEventHelpers";
+import { dispatchStateChangeEvent } from "@/contentScript/stateController/stateEventHelpers";
 
 const SCHEMA_POLICY_PROP = "x-sync-policy";
 

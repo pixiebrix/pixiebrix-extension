@@ -15,27 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
-import { type RegistryId } from "../../types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { cloneDeep, isEmpty, isEqual, merge, omit, pick } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Except, type JsonObject } from "type-fest";
-import { assertPlatformCapability } from "../../platform/platformContext";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import { assertPlatformCapability } from "@/platform/platformContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 import {
   MergeStrategies,
   type MergeStrategy,
   type StateNamespace,
   StateNamespaces,
-} from "../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 import { getThisFrame } from "webext-messenger";
-import { getSessionStorageKey } from "../../platform/state/stateHelpers";
+import { getSessionStorageKey } from "@/platform/state/stateHelpers";
 import {
   getSyncedVariableNames,
   modSyncPolicies,
-} from "./modVariablePolicyController";
-import { dispatchStateChangeEvent } from "./stateEventHelpers";
+} from "@/contentScript/stateController/modVariablePolicyController";
+import { dispatchStateChangeEvent } from "@/contentScript/stateController/stateEventHelpers";
 
 /**
  * Map from mod component id to its private state.

@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
-import { modComponentFactory } from "../../testUtils/factories/modComponentFactories";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { render } from "@/pageEditor/testHelpers";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import ActivatedModComponentListItem from "@/pageEditor/modListingPanel/ActivatedModComponentListItem";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { screen, waitFor } from "@testing-library/react";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import userEvent from "@testing-library/user-event";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-jest.mock("../starterBricks/adapter", () => {
+jest.mock("@/pageEditor/starterBricks/adapter", () => {
   const actual = jest.requireActual("@/pageEditor/starterBricks/adapter");
   return {
     ...actual,
@@ -34,7 +34,7 @@ jest.mock("../starterBricks/adapter", () => {
   };
 });
 
-jest.mock("../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
 const enableOverlayMock = jest.mocked(enableOverlay);
 const disableOverlayMock = jest.mocked(disableOverlay);

@@ -25,9 +25,9 @@ import {
   nestedPosition,
   type VisitPipelineExtra,
 } from "@/bricks/PipelineVisitor";
-import { AnnotationType } from "../../types/annotationTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { BrickTypes } from "../../runtime/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { BrickTypes } from "@/runtime/runtimeTypes";
 
 /** @internal */
 export const MULTIPLE_RENDERERS_ERROR_MESSAGE =

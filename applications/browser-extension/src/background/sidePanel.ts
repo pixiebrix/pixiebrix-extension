@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { openSidePanel, getSidebarPath } from "../utils/sidePanelUtils";
+import { openSidePanel, getSidebarPath } from "@/utils/sidePanelUtils";
 import type { MessengerMeta } from "webext-messenger";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
   const tabId = this.trace[0]?.tab?.id;

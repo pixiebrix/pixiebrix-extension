@@ -16,7 +16,7 @@
  */
 
 import { type SetRequired } from "type-fest";
-import type { components } from "../../types/swagger";
+import type { components } from "@/types/swagger";
 
 export type RequiredMePartnerResponse = SetRequired<
   components["schemas"]["Me"],

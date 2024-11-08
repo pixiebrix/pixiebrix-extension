@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "../../vendors/bootstrapWithoutRem.css";
-import "../../sidebar/sidebarBootstrapOverrides.scss";
-import "./customForm.css";
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/sidebar/sidebarBootstrapOverrides.scss";
+import "@/bricks/renderers/customForm.css";
 import React, { useEffect, useRef, useState } from "react";
-import { type Schema, type UiSchema } from "../../types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Stylesheets } from "@/components/Stylesheets";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "../../validators/formValidator";
+import validator from "@/validators/formValidator";
 import { type IChangeEvent } from "@rjsf/core";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";

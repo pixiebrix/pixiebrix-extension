@@ -20,7 +20,7 @@ import { useFormikContext } from "formik";
 import { type IntegrationsFormSlice } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import ModIntegrationsContext, {
   type ModIntegrationsContextValue,
-} from "../../mods/ModIntegrationsContext";
+} from "@/mods/ModIntegrationsContext";
 
 const IntegrationsSliceModIntegrationsContextAdapter: React.FC<{
   children: ReactNode;

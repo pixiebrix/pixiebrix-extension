@@ -20,16 +20,16 @@ import { useField } from "formik";
 import {
   type Expression,
   type IntegrationDependencyVarRef,
-} from "../../../types/runtimeTypes";
+} from "@/types/runtimeTypes";
 import useAsyncEffect from "use-async-effect";
 import {
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_OUTPUT_KEY,
-} from "../../../integrations/constants";
+} from "@/integrations/constants";
 
-import { makeVariableExpression } from "../../../utils/variableUtils";
-import pixiebrixIntegrationDependencyFactory from "../../../integrations/util/pixiebrixIntegrationDependencyFactory";
-import { type IntegrationDependency } from "../../../integrations/integrationTypes";
+import { makeVariableExpression } from "@/utils/variableUtils";
+import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 /**
  * Schema-based field for the PixieBrix API (@pixiebrix/api).

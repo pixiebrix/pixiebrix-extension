@@ -16,8 +16,8 @@
  */
 
 import { once } from "lodash";
-import type { Nullishable } from "../../utils/nullishUtils";
-import { tooltipFactory } from "../tooltipDom";
+import type { Nullishable } from "@/utils/nullishUtils";
+import { tooltipFactory } from "@/contentScript/tooltipDom";
 import { render, unmountComponentAtNode } from "react-dom";
 import {
   autoUpdate,
@@ -28,9 +28,9 @@ import {
   shift,
   type VirtualElement,
 } from "@floating-ui/dom";
-import { getCaretCoordinates } from "../../utils/textAreaUtils";
+import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import React, { StrictMode } from "react";
-import SnippetShortcutMenu from "./SnippetShortcutMenu";
+import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
 import { onContextInvalidated } from "webext-events";
 import {
   isContentEditableElement,
@@ -39,13 +39,13 @@ import {
   isTextControlElement,
   type SelectableTextEditorElement,
   type TextEditorElement,
-} from "../../types/inputTypes";
-import { expectContext } from "../../utils/expectContext";
+} from "@/types/inputTypes";
+import { expectContext } from "@/utils/expectContext";
 import { ReusableAbortController } from "abort-utils";
-import { getSelectionRange, waitAnimationFrame } from "../../utils/domUtils";
-import { prefersReducedMotion } from "../../utils/a11yUtils";
-import SnippetRegistry from "./snippetShortcutRegistry";
-import { SNIPPET_SHORTCUT_MENU_READY_ATTRIBUTE } from "../../domConstants";
+import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
+import { prefersReducedMotion } from "@/utils/a11yUtils";
+import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
+import { SNIPPET_SHORTCUT_MENU_READY_ATTRIBUTE } from "@/domConstants";
 
 const COMMAND_KEY = "\\";
 

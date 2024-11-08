@@ -19,14 +19,14 @@ import {
   type SidebarEntries,
   type SidebarEntry,
   type SidebarState,
-} from "../../types/sidebarTypes";
+} from "@/types/sidebarTypes";
 import {
   eventKeyForEntry,
   getOpenPanelEntries,
-} from "./eventKeyUtils";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+} from "@/store/sidebar/eventKeyUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 import { isEqual } from "lodash";
-import type { Nullishable } from "../../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Returns the initial panel entry given a modComponentRef, or undefined if not found.

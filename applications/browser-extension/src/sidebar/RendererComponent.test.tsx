@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { act, render } from "./testHelpers";
-import RendererComponent from "./RendererComponent";
+import { act, render } from "@/sidebar/testHelpers";
+import RendererComponent from "@/sidebar/RendererComponent";
 import { validateRegistryId } from "@/types/helpers";
-import { waitForEffect } from "../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import DocumentView from "@/bricks/renderers/documentView/DocumentView";
 import { screen } from "shadow-dom-testing-library";
 import { SubmitPanelAction } from "@/bricks/errors";
@@ -27,11 +27,11 @@ import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import {
   brickOptionsFactory,
   runMetadataFactory,
-} from "../testUtils/factories/runtimeFactories";
-import { toExpression } from "../utils/expressionUtils";
-import { autoUUIDSequence } from "../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-jest.mock("../contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   runHeadlessPipeline: jest
     .fn()
     .mockRejectedValue(new Error("not implemented")),

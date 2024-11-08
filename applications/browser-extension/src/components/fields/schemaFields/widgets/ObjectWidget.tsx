@@ -19,16 +19,16 @@
 import React, { useCallback, useMemo, useRef } from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form, Table } from "react-bootstrap";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type FieldValidator, useField, useFormikContext } from "formik";
 import { produce } from "immer";
-import SchemaField from "../SchemaField";
-import { getFieldNamesFromPathString } from "../../../../runtime/pathHelpers";
-import { isCustomizableObjectSchema } from "./widgetUtils";
-import { type Schema } from "../../../../types/schemaTypes";
-import { type SafeString } from "../../../../types/stringTypes";
-import { joinName } from "../../../../utils/formUtils";
-import { freshIdentifier } from "../../../../utils/variableUtils";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { getFieldNamesFromPathString } from "@/runtime/pathHelpers";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
+import { type Schema } from "@/types/schemaTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { joinName } from "@/utils/formUtils";
+import { freshIdentifier } from "@/utils/variableUtils";
 
 type PropertyRowProps = {
   name: string;

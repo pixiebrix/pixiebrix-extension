@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentDefinition } from "../../types/modDefinitionTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { type ModComponentDefinition } from "@/types/modDefinitionTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export function isSchemaServicesFormat(
   services: NonNullable<ModComponentDefinition["services"]>,

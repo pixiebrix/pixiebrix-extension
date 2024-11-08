@@ -18,9 +18,9 @@
 import React, { useEffect, useRef } from "react";
 import NodeActionsView, {
   type NodeAction,
-} from "./nodeActions/NodeActionsView";
+} from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import styles from "./PipelineHeaderNode.module.scss";
-import PipelineOffsetView from "./PipelineOffsetView";
+import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";

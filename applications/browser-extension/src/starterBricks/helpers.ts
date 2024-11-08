@@ -16,13 +16,13 @@
  */
 
 import { castArray } from "lodash";
-import initialize from "../vendors/jQueryInitialize";
-import { EXTENSION_POINT_DATA_ATTR } from "../domConstants";
+import initialize from "@/vendors/jQueryInitialize";
+import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { $safeFind } from "../utils/domUtils";
+import { $safeFind } from "@/utils/domUtils";
 import { onAbort } from "abort-utils";
 
-import { isStateChangeEvent } from "../platform/state/stateTypes";
+import { isStateChangeEvent } from "@/platform/state/stateTypes";
 
 /**
  * Attach a callback to be called when a node is removed from the DOM

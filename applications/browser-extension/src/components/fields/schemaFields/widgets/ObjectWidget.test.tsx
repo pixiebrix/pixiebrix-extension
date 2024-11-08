@@ -18,13 +18,13 @@
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] -- TODO: replace with native expect and it.each */
 
 import React from "react";
-import { type Schema } from "../../../../types/schemaTypes";
-import { render, screen, within } from "../../../../pageEditor/testHelpers";
-import ObjectWidget from "./ObjectWidget";
+import { type Schema } from "@/types/schemaTypes";
+import { render, screen, within } from "@/pageEditor/testHelpers";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";
-import registerDefaultWidgets from "./registerDefaultWidgets";
-import { expectToggleOptions } from "../testHelpers";
-import { toExpression } from "../../../../utils/expressionUtils";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
+import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";

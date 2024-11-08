@@ -17,12 +17,12 @@
 
 import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React, { useLayoutEffect, useRef, useState } from "react";
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
-import SnippetShortcutMenu from "./SnippetShortcutMenu";
-import SnippetRegistry from "./snippetShortcutRegistry";
-import { sleep } from "../../utils/timeUtils";
-import type { Nullishable } from "../../utils/nullishUtils";
+import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
+import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
+import { sleep } from "@/utils/timeUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 export default {
   title: "Enhancements/SnippetShortcutMenu",

@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DataPanelTabKey } from "../dataPanelTypes";
-import DataTabPane from "../DataTabPane";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import React from "react";
-import DocumentOutline from "../../../../documentBuilder/outline/DocumentOutline";
+import DocumentOutline from "@/pageEditor/documentBuilder/outline/DocumentOutline";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveNodeInfo,
-} from "../../../../store/editor/editorSelectors";
-import { actions as editorActions } from "../../../../store/editor/editorSlice";
-import { joinPathParts } from "../../../../../utils/formUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
-import useIsSidebarPanelStale from "./useIsSidebarPanelStale";
-import { staleSidePanelAlertElement } from "./DesignTab";
+import useIsSidebarPanelStale from "@/pageEditor/tabs/editTab/dataPanel/tabs/useIsSidebarPanelStale";
+import { staleSidePanelAlertElement } from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
 
 /**
  * Document Builder Outline tab. Introduced to support re-ordering Document Builder elements.

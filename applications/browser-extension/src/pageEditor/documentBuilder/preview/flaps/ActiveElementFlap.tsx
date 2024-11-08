@@ -17,17 +17,17 @@
 
 import React from "react";
 import cx from "classnames";
-import SelectParentIcon from "../../../../icons/select-parent.svg?loadAsComponent";
-import ArrowUpwardIcon from "../../../../icons/arrow-upward.svg?loadAsComponent";
-import ArrowDownwardIcon from "../../../../icons/arrow-downward.svg?loadAsComponent";
-import DuplicateIcon from "../../../../icons/duplicate.svg?loadAsComponent";
-import DeleteIcon from "../../../../icons/delete.svg?loadAsComponent";
-import useDeleteElement from "../../hooks/useDeleteElement";
-import useSelectParentElement from "../../hooks/useSelectParentElement";
-import useMoveWithinParent from "../../hooks/useMoveWithinParent";
+import SelectParentIcon from "@/icons/select-parent.svg?loadAsComponent";
+import ArrowUpwardIcon from "@/icons/arrow-upward.svg?loadAsComponent";
+import ArrowDownwardIcon from "@/icons/arrow-downward.svg?loadAsComponent";
+import DuplicateIcon from "@/icons/duplicate.svg?loadAsComponent";
+import DeleteIcon from "@/icons/delete.svg?loadAsComponent";
+import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
+import useSelectParentElement from "@/pageEditor/documentBuilder/hooks/useSelectParentElement";
+import useMoveWithinParent from "@/pageEditor/documentBuilder/hooks/useMoveWithinParent";
 import styles from "./ActiveElementFlap.module.scss";
 import flapStyles from "./Flaps.module.scss";
-import useDuplicateElement from "../../hooks/useDuplicateElement";
+import useDuplicateElement from "@/pageEditor/documentBuilder/hooks/useDuplicateElement";
 
 type ActiveElementFlapProps = {
   className?: string;

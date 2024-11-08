@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "./stringTypes";
-import { type RegistryId, type SemVerString } from "./registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ContextName } from "webext-detect";
 
 /**

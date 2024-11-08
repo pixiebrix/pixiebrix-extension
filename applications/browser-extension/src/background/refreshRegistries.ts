@@ -16,8 +16,8 @@
  */
 
 import { refreshIntegrationConfigs } from "./integrationConfigLocator";
-import { syncRemotePackages } from "../registry/memoryRegistry";
-import { expectContext } from "../utils/expectContext";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
+import { expectContext } from "@/utils/expectContext";
 
 /**
  * Method to refresh packages and services in the background context.

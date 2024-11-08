@@ -20,7 +20,7 @@ import {
   engineRenderer,
   type RendererOptions,
   type TemplateRenderer,
-} from "./renderers";
+} from "@/runtime/renderers";
 import { mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
 import Mustache from "mustache";
@@ -29,10 +29,10 @@ import {
   isPipelineExpression,
   isTemplateExpression,
   isVarExpression,
-} from "../utils/expressionUtils";
-import { asyncMapValues } from "../utils/promiseUtils";
-import { isObject } from "../utils/objectUtils";
-import { assertNotNullish } from "../utils/nullishUtils";
+} from "@/utils/expressionUtils";
+import { asyncMapValues } from "@/utils/promiseUtils";
+import { isObject } from "@/utils/objectUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type Args = string | UnknownObject | UnknownObject[];
 

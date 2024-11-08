@@ -19,16 +19,16 @@ import {
   brickReducer,
   type IntermediateState,
   type ReduceOptions,
-} from "../../runtime/reducePipeline";
+} from "@/runtime/reducePipeline";
 import { cloneDeep } from "lodash";
-import ConsoleLogger from "../../utils/ConsoleLogger";
-import { type SerializableResponse } from "../../types/messengerTypes";
-import apiVersionOptions from "../../runtime/apiVersionOptions";
-import extendModVariableContext from "../../runtime/extendModVariableContext";
-import { $safeFind } from "../../utils/domUtils";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import { type SerializableResponse } from "@/types/messengerTypes";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { $safeFind } from "@/utils/domUtils";
 import { BusinessError } from "@/errors/businessErrors";
-import { type RunBrickArgs } from "./types";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import { type RunBrickArgs } from "@/contentScript/pageEditor/types";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Run a single brick (e.g., for generating output previews)

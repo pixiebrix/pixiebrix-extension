@@ -15,30 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   type MeTeamMembership,
   transformMeTeamMembershipResponse,
-} from "./MeTeamMembership";
+} from "@/data/model/MeTeamMembership";
 import {
   type MeUserGroupMembership,
   transformMeUserGroupMembershipResponse,
-} from "./MeUserGroupMembership";
+} from "@/data/model/MeUserGroupMembership";
 import {
   type PartnerPrincipal,
   transformPartnerPrincipalResponse,
-} from "./PartnerPrincipal";
+} from "@/data/model/PartnerPrincipal";
 import {
   transformUserMilestoneResponse,
   type UserMilestone,
-} from "./UserMilestone";
+} from "@/data/model/UserMilestone";
 import {
   type UserPartner,
   transformUserPartnerResponse,
-} from "./UserPartner";
-import { validateUUID } from "../../types/helpers";
-import type { components } from "../../types/swagger";
-import { type MeTeam, transformMeTeamResponse } from "./MeTeam";
+} from "@/data/model/UserPartner";
+import { validateUUID } from "@/types/helpers";
+import type { components } from "@/types/swagger";
+import { type MeTeam, transformMeTeamResponse } from "@/data/model/MeTeam";
 
 export type Me = {
   /**

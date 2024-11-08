@@ -41,34 +41,31 @@ import ParseJson from "./ParseJson";
 import ForEach from "./controlFlow/ForEach";
 import IfElse from "./controlFlow/IfElse";
 import TryExcept from "./controlFlow/TryExcept";
-import ForEachElement from "./controlFlow/ForEachElement";
-import { RandomNumber } from "./randomNumber";
-import Retry from "./controlFlow/Retry";
-import DisplayTemporaryInfo from "./temporaryInfo/DisplayTemporaryInfo";
-import TraverseElements from "./traverseElements";
-import { type Brick } from "../../types/brickTypes";
-import SelectElement from "./selectElement";
-import Run from "./controlFlow/Run";
-import ExtensionDiagnostics from "./extensionDiagnostics";
-import { Readable } from "./readable";
-import { SplitText } from "./splitText";
-import MapValues from "./controlFlow/MapValues";
-import ConvertDocument from "./convertDocument";
-import { SearchText } from "./searchText";
-import { WithAsyncModVariable } from "./controlFlow/WithAsyncModVariable";
-import { JavaScriptTransformer } from "./javascript";
-import type { RegistryId, RegistryProtocol } from "../../types/registryTypes";
-import RunBrickByIdTransformer from "./RunBrickByIdTransformer";
-import GetBrickInterfaceTransformer from "./GetBrickInterfaceTransformer";
-import RunMetadataTransformer from "./RunMetadataTransformer";
-import { WithCache } from "./controlFlow/WithCache";
-import LocalPrompt from "./ai/LocalPrompt";
-import LocalChatCompletionTransformer from "./ai/LocalChatCompletion";
-import LocalSummarization from "./ai/LocalSummarization";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
+import { RandomNumber } from "@/bricks/transformers/randomNumber";
+import Retry from "@/bricks/transformers/controlFlow/Retry";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import TraverseElements from "@/bricks/transformers/traverseElements";
+import { type Brick } from "@/types/brickTypes";
+import SelectElement from "@/bricks/transformers/selectElement";
+import Run from "@/bricks/transformers/controlFlow/Run";
+import ExtensionDiagnostics from "@/bricks/transformers/extensionDiagnostics";
+import { Readable } from "@/bricks/transformers/readable";
+import { SplitText } from "@/bricks/transformers/splitText";
+import MapValues from "@/bricks/transformers/controlFlow/MapValues";
+import ConvertDocument from "@/bricks/transformers/convertDocument";
+import { SearchText } from "@/bricks/transformers/searchText";
+import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransformer";
+import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";
+import RunMetadataTransformer from "@/bricks/transformers/RunMetadataTransformer";
+import { WithCache } from "@/bricks/transformers/controlFlow/WithCache";
+import LocalPrompt from "@/bricks/transformers/ai/LocalPrompt";
+import LocalChatCompletionTransformer from "@/bricks/transformers/ai/LocalChatCompletion";
+import LocalSummarization from "@/bricks/transformers/ai/LocalSummarization";
 
-function getAllTransformers(
-  registry: RegistryProtocol<RegistryId, Brick>,
-): Brick[] {
+function getAllTransformers(): Brick[] {
   return [
     new JavaScriptTransformer(),
     new JQTransformer(),
@@ -106,8 +103,8 @@ function getAllTransformers(
     new ExtensionDiagnostics(),
 
     // Reflection/Meta Bricks
-    new RunBrickByIdTransformer(registry),
-    new GetBrickInterfaceTransformer(registry),
+    new RunBrickByIdTransformer(),
+    new GetBrickInterfaceTransformer(),
     new RunMetadataTransformer(),
 
     // Control Flow Bricks

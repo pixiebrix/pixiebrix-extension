@@ -18,7 +18,7 @@
 import type {
   Integration,
   SanitizedIntegrationConfig,
-} from "../../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 
 /**
  * An interactive login that's being deferred until the user initiates the login.

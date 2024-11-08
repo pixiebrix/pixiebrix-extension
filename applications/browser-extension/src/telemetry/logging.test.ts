@@ -21,13 +21,13 @@ import {
   count,
   getLogEntries,
   sweepLogs,
-} from "./logging";
+} from "@/telemetry/logging";
 import {
   logEntryFactory,
   messageContextFactory,
-} from "../testUtils/factories/logFactories";
+} from "@/testUtils/factories/logFactories";
 import { array } from "cooky-cutter";
-import { registryIdFactory } from "../testUtils/factories/stringFactories";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { flagOn } from "@/auth/featureFlagStorage";
 import Reason = chrome.offscreen.Reason;
 import ManifestV3 = chrome.runtime.ManifestV3;
@@ -36,13 +36,13 @@ import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import { waitFor } from "@testing-library/react";
 
 // Disable automatic __mocks__ resolution
-jest.mock("./logging", () => jest.requireActual("./logging.ts"));
+jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 
-jest.mock("../auth/featureFlagStorage", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
-jest.mock("./telemetryHelpers", () => ({
+jest.mock("@/telemetry/telemetryHelpers", () => ({
   ...jest.requireActual("@/telemetry/telemetryHelpers"),
   mapAppUserToTelemetryUser: jest.fn().mockResolvedValue({}),
 }));

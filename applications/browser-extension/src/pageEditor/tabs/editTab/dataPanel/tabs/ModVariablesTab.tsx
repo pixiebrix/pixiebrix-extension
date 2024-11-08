@@ -19,18 +19,18 @@ import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { selectActiveModComponentRef } from "../../../../store/editor/editorSelectors";
+import { selectActiveModComponentRef } from "@/pageEditor/store/editor/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import DataTabPane from "../DataTabPane";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
-import { inspectedTab } from "../../../../context/connection";
-import { resolveObj } from "../../../../../utils/promiseUtils";
-import { StateNamespaces } from "../../../../../platform/state/stateTypes";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { resolveObj } from "@/utils/promiseUtils";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 // We used to expand nodes initially. But makes state hard to read when using async state with long values, e.g.,
 // long ChatGPT responses

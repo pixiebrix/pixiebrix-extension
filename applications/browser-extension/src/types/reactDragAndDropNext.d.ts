@@ -19,7 +19,7 @@
 // Grabbed the old typings from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-beautiful-dnd/v11/index.d.ts
 
 declare module "react-beautiful-dnd-next" {
-  import { type Nullishable } from "../utils/nullishUtils";
+  import { type Nullishable } from "@/utils/nullishUtils";
 
   export type Id = string;
   export type DraggableId = Id;

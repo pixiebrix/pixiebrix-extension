@@ -22,8 +22,8 @@ import {
   ActivateModPage,
   ModsPage,
 } from "../pageObjects/extensionConsole/modsPage";
-import { clickAndWaitForNewPage } from "../utils";
-import { WorkshopPage } from "../pageObjects/extensionConsole/workshop/workshopPage";
+import { clickAndWaitForNewPage } from "end-to-end-tests/utils";
+import { WorkshopPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/workshopPage";
 
 test("create, run, package, and update mod", async ({
   page,

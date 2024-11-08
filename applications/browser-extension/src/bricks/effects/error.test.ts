@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { ErrorEffect } from "./error";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { ErrorEffect } from "@/bricks/effects/error";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ErrorEffect();
 

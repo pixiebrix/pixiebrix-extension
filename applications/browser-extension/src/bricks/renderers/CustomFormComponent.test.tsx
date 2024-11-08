@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CustomFormComponent from "./CustomFormComponent";
+import CustomFormComponent from "@/bricks/renderers/CustomFormComponent";
 import {
   normalizeOutgoingFormData,
   normalizeIncomingFormData,
-} from "./customForm";
+} from "@/bricks/renderers/customForm";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 
 describe("CustomFormComponent", () => {

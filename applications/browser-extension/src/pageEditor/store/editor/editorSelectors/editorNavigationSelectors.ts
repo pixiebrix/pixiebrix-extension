@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { EditorRootState } from "../pageEditorTypes";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -48,5 +48,5 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
 export const selectEditorUpdateKey = ({ editor }: EditorRootState) =>
   editor.selectionSeq;
 
-export const selectIsEditorSidebarExpanded = ({ editor }: EditorRootState) =>
-  editor.isModListExpanded;
+export const selectIsModListingPanelExpanded = ({ editor }: EditorRootState) =>
+  editor.isModListingPanelExpanded;

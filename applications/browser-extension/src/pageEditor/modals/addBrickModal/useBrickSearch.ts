@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Brick } from "../../../types/brickTypes";
+import { type Brick } from "@/types/brickTypes";
 import { useMemo } from "react";
 import { isEmpty, sortBy } from "lodash";
 import Fuse from "fuse.js";
 import {
   type BrickSelectOption,
   type BrickSearchResult,
-} from "./addBrickModalTypes";
-import { TAG_ALL } from "./addBrickModalConstants";
-import { isNullOrBlank } from "../../../utils/stringUtils";
+} from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
+import { TAG_ALL } from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 function mapBrickSelectOption(brick: Brick): BrickSelectOption {
   return {

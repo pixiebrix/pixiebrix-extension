@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "../../../../types/modDefinitionTypes";
-import type { Mod } from "../../../../types/modTypes";
-import { idHasScope, mapModInstanceToUnavailableMod } from "../../../../utils/modUtils";
-import { type ModInstance } from "../../../../types/modInstanceTypes";
-import { type RegistryId } from "../../../../types/registryTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import type { Mod } from "@/types/modTypes";
+import { idHasScope, mapModInstanceToUnavailableMod } from "@/utils/modUtils";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 // Note: Using regular function inputs here instead of an object for better
 // ergonomics when using as the "result function" with reselect selectors.

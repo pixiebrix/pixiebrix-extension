@@ -17,19 +17,19 @@
 
 import React from "react";
 import { Card } from "react-bootstrap";
-import ConnectedFieldTemplate from "../../form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type Schema } from "../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { isEmpty } from "lodash";
-import SchemaField from "./SchemaField";
-import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
-import { joinName } from "../../../utils/formUtils";
-import { inputProperties } from "../../../utils/schemaUtils";
-import FieldAnnotationAlert from "../../annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "../../../types/annotationTypes";
-import { type AsyncState } from "../../../types/sliceTypes";
-import Loader from "../../Loader";
-import ObjectWidget from "./widgets/ObjectWidget";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { joinName } from "@/utils/formUtils";
+import { inputProperties } from "@/utils/schemaUtils";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { AnnotationType } from "@/types/annotationTypes";
+import { type AsyncState } from "@/types/sliceTypes";
+import Loader from "@/components/Loader";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",

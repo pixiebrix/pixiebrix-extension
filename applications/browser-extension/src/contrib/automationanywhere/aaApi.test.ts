@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cachedSearchBots } from "./aaApi";
-import { type RemoteResponse } from "../../types/contract";
+import { cachedSearchBots } from "@/contrib/automationanywhere/aaApi";
+import { type RemoteResponse } from "@/types/contract";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { type SanitizedConfig } from "../../integrations/integrationTypes";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "../../integrations/constants";
-import { sanitizedIntegrationConfigFactory } from "../../testUtils/factories/integrationFactories";
-import { setPlatform } from "../../platform/platformContext";
-import { platformMock } from "../../testUtils/platformMock";
+import { type SanitizedConfig } from "@/integrations/integrationTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { setPlatform } from "@/platform/platformContext";
+import { platformMock } from "@/testUtils/platformMock";
 
 beforeEach(() => {
   setPlatform(platformMock);

@@ -18,13 +18,13 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "../modModalsSelectors";
-import { modModalsSlice } from "../modModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 
-import { MARKETPLACE_URL } from "../../../../../urlConstants";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { MARKETPLACE_URL } from "@/urlConstants";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const EditPublishContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();

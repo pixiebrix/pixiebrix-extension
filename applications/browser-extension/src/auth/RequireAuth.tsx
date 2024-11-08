@@ -19,16 +19,19 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
 import { useGetMeQuery } from "@/data/service/api";
-import { clearCachedAuthSecrets, updateUserData } from "./authStorage";
-import { selectExtensionAuthState, selectUserDataUpdate } from "./authUtils";
-import { authActions } from "./authSlice";
-import { anonAuth } from "./authConstants";
-import { selectIsLoggedIn } from "./authSelectors";
+import { clearCachedAuthSecrets, updateUserData } from "@/auth/authStorage";
+import {
+  selectExtensionAuthState,
+  selectUserDataUpdate,
+} from "@/auth/authUtils";
+import { authActions } from "@/auth/authSlice";
+import { anonAuth } from "@/auth/authConstants";
+import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { type AxiosError } from "axios";
-import useRequiredPartnerAuth from "./useRequiredPartnerAuth";
-import useLinkState from "./useLinkState";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
+import useLinkState from "@/auth/useLinkState";
 import { type Me } from "@/data/model/Me";
-import castError from "../utils/castError";
+import castError from "@/utils/castError";
 import { type Location } from "history";
 
 type RequireAuthProps = {

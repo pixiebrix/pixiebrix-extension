@@ -17,7 +17,7 @@
 
 import { type BrickPipeline } from "@/bricks/types";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
-import { BrickTypes } from "../../../../../runtime/runtimeTypes";
+import { BrickTypes } from "@/runtime/runtimeTypes";
 import { useCallback } from "react";
 
 type LastBrickInfo = {
@@ -36,7 +36,7 @@ export function useGetLastBrickHandling() {
 
       // Don't show append if the last brick is a renderer
       const showAppend =
-        !lastBrick?.block || lastBrick.type !== BrickTypes.RENDERER;
+        !lastBrick?.brick || lastBrick.type !== BrickTypes.RENDERER;
 
       return {
         lastIndex,

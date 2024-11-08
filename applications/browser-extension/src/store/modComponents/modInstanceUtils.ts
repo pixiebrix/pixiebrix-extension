@@ -15,31 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ModInstance, ModInstanceId } from "../../types/modInstanceTypes";
+import type { ModInstance, ModInstanceId } from "@/types/modInstanceTypes";
 import type {
   ActivatedModComponent,
   ModComponentBase,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import { omit, pick, zip } from "lodash";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { uuidv4 } from "../../types/helpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { uuidv4 } from "@/types/helpers";
 import {
   collectIntegrationDependencies,
   collectModOptionsArgs,
   selectModComponentIntegrations,
-} from "./modComponentUtils";
-import { createPrivateSharing } from "../../utils/registryUtils";
+} from "@/store/modComponents/modComponentUtils";
+import { createPrivateSharing } from "@/utils/registryUtils";
 import {
   emptyModOptionsDefinitionFactory,
   emptyModVariablesDefinitionFactory,
-} from "../../utils/modUtils";
-import { assertModComponentNotHydrated } from "../../runtime/runtimeUtils";
-import type { ModComponentDefinition } from "../../types/modDefinitionTypes";
+} from "@/utils/modUtils";
+import { assertModComponentNotHydrated } from "@/runtime/runtimeUtils";
+import type { ModComponentDefinition } from "@/types/modDefinitionTypes";
 import type { SetRequired } from "type-fest";
-import mapModDefinitionToModMetadata from "../../modDefinitions/util/mapModDefinitionToModMetadata";
-import getModDefinitionIntegrationIds from "../../integrations/util/getModDefinitionIntegrationIds";
-import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
-import { type DeploymentMetadata } from "../../types/deploymentTypes";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { type DeploymentMetadata } from "@/types/deploymentTypes";
 
 /**
  * A version of ActivatedModComponent with stronger nullness guarantees to support type evolution in the future.

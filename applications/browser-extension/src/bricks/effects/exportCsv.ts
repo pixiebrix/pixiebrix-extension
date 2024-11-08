@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
-import type { PlatformCapability } from "../../platform/capabilities";
+import type { PlatformCapability } from "@/platform/capabilities";
 import { type JsonPrimitive } from "type-fest";
 
 // Derived from the unexported type in the `export-to-csv` package

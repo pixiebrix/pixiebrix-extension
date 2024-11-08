@@ -20,9 +20,9 @@ import type { LogEntry } from "@/telemetry/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { isErrorObject } from "@/errors/errorHelpers";
-import InputDetail from "./details/InputDetail";
-import OutputDetail from "./details/OutputDetail";
-import getErrorDetails from "../errors/getErrorDetails";
+import InputDetail from "@/components/logViewer/details/InputDetail";
+import OutputDetail from "@/components/logViewer/details/OutputDetail";
+import getErrorDetails from "@/components/errors/getErrorDetails";
 import styles from "./EntryRow.module.scss";
 import cx from "classnames";
 

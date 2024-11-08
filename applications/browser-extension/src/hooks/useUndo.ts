@@ -17,7 +17,7 @@
 
 import { useCallback, useRef } from "react";
 import { isEmpty } from "lodash";
-import useDebouncedEffect from "./useDebouncedEffect";
+import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 const MAX_HISTORY_SIZE = 100;
 

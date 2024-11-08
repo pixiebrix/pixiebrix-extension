@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import { getUserData } from "@/background/messenger/api";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type UserData } from "@/auth/authTypes";
 import { BusinessError } from "@/errors/businessErrors";
 

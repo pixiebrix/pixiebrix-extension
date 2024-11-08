@@ -19,8 +19,8 @@ import {
   type Integration,
   type IntegrationConfigArgs,
   type SanitizedConfig,
-} from "./integrationTypes";
-import { inputProperties } from "../utils/schemaUtils";
+} from "@/integrations/integrationTypes";
+import { inputProperties } from "@/utils/schemaUtils";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",

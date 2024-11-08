@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { compact, isArray, unary } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
 
-import { isNunjucksExpression } from "../../utils/expressionUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { isNunjucksExpression } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 function extractNamedCaptureGroups(pattern: string): string[] {
   // Create new regex on each analysis call to avoid state issues with test

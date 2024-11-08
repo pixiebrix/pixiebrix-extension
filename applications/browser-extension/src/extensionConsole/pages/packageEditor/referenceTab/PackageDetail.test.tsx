@@ -18,9 +18,9 @@
 import React from "react";
 import PackageDetail from "./PackageDetail";
 import { TableRenderer } from "@/bricks/renderers/table";
-import { waitForEffect } from "../../../../testUtils/testHelpers";
-import { render } from "../../../testHelpers";
-import { mockAllApiEndpoints } from "../../../../testUtils/appApiMock";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
 mockAllApiEndpoints();
 

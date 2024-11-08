@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AssignModVariable from "./assignModVariable";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { validateBrickInputOutput } from "../../validators/schemaValidator";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import {
   brickOptionsFactory,
   runMetadataFactory,
-} from "../../testUtils/factories/runtimeFactories";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
-import { MergeStrategies, StateNamespaces } from "../../platform/state/stateTypes";
-import { getPlatform } from "../../platform/platformContext";
+} from "@/testUtils/factories/runtimeFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 const brick = new AssignModVariable();
 

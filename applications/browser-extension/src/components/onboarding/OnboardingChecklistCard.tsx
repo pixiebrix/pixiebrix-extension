@@ -20,7 +20,7 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Card, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./OnboardingChecklistCard.module.scss";
-import Loader from "../Loader";
+import Loader from "@/components/Loader";
 import cx from "classnames";
 
 export const OnboardingStep: React.FunctionComponent<

@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { actions } from "../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { modComponentToFormState } from "../starterBricks/adapter";
-import reportError from "../../telemetry/reportError";
-import { selectSessionId } from "../store/session/sessionSelectors";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import { type UUID } from "../../types/stringTypes";
-import { selectActivatedModComponentsMap } from "../../store/modComponents/modComponentSelectors";
-import { clearModComponentTraces } from "../../telemetry/trace";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
+import reportError from "@/telemetry/reportError";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { type UUID } from "@/types/stringTypes";
+import { selectActivatedModComponentsMap } from "@/store/modComponents/modComponentSelectors";
+import { clearModComponentTraces } from "@/telemetry/trace";
 
 type Config = {
   modComponentId: UUID;

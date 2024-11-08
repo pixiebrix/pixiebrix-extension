@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromJS as deserializeButton } from "./button/buttonStarterBrick";
-import { fromJS as deserializeTrigger } from "./trigger/triggerStarterBrick";
-import { fromJS as deserializeContextMenu } from "./contextMenu/contextMenuStarterBrick";
-import { fromJS as deserializeSidebar } from "./sidebar/sidebarStarterBrick";
-import { fromJS as deserializeQuickBar } from "./quickBar/quickBarStarterBrick";
-import { fromJS as deserializeDynamicQuickBar } from "./dynamicQuickBar/dynamicQuickBarStarterBrick";
+import { fromJS as deserializeButton } from "@/starterBricks/button/buttonStarterBrick";
+import { fromJS as deserializeTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
+import { fromJS as deserializeContextMenu } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import { fromJS as deserializeSidebar } from "@/starterBricks/sidebar/sidebarStarterBrick";
+import { fromJS as deserializeQuickBar } from "@/starterBricks/quickBar/quickBarStarterBrick";
+import { fromJS as deserializeDynamicQuickBar } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import {
   type StarterBrick,
   type StarterBrickType,
 } from "@/types/starterBrickTypes";
-import { type StarterBrickDefinitionLike } from "./types";
-import { getPlatform } from "../platform/platformContext";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { getPlatform } from "@/platform/platformContext";
 import { DefinitionKinds } from "@/types/registryTypes";
-import { type PlatformProtocol } from "../platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 
 type Factory = (
   platform: PlatformProtocol,

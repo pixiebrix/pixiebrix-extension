@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PlatformProtocol } from "./platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import {
   type PlatformCapability,
   PlatformCapabilityNotAvailableError,
-} from "./capabilities";
-import { PlatformBase } from "./platformBase";
+} from "@/platform/capabilities";
+import { PlatformBase } from "@/platform/platformBase";
 import { normalizeSemVerString } from "@/types/helpers";
 
 /**

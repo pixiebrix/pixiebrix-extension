@@ -19,16 +19,16 @@ import { type AutocompleteItem } from "autocompleter";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
-} from "../rootModeHelpers";
+} from "@/bricks/rootModeHelpers";
 import "autocompleter/autocomplete.css";
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   isDocument,
   type BrickArgs,
   type BrickOptions,
-} from "../../types/runtimeTypes";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class AttachAutocomplete extends EffectABC {
   constructor() {

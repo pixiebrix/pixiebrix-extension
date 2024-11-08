@@ -15,27 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "../../../pageEditor/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import JQueryReaderOptions, {
   inferActiveTypeOption,
   typeOptionsFactory,
-} from "./JQueryReaderOptions";
-import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
+} from "@/bricks/transformers/jquery/JQueryReaderOptions";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 // eslint-disable-next-line no-restricted-imports -- using to simplify Formik state for test
 import { Formik } from "formik";
-import { menuItemFormStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { JQueryReader } from "./JQueryReader";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { screen } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
-import devtoolFieldOverrides from "../../../pageEditor/fields/devtoolFieldOverrides";
+import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("../../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
 const getAttributeExamplesMock = jest.mocked(getAttributeExamples);
 

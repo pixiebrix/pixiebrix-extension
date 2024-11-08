@@ -15,28 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import initRestrictUnauthenticatedUrlAccess from "./restrictUnauthenticatedUrlAccess";
+import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { uuidv4 } from "@/types/helpers";
-import { INTERNAL_reset } from "../store/enterprise/managedStorage";
-import reportError from "../telemetry/reportError";
+import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
+import reportError from "@/telemetry/reportError";
 import {
   isLinked,
   TEST_clearListeners,
   TEST_triggerListeners,
 } from "@/auth/authStorage";
-import { waitForEffect } from "../testUtils/testHelpers";
-import { tabFactory } from "../testUtils/factories/browserFactories";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { tabFactory } from "@/testUtils/factories/browserFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../auth/authStorage", () => ({
+jest.mock("@/auth/authStorage", () => ({
   __esModule: true,
   ...jest.requireActual("@/auth/authStorage"),
   isLinked: jest.fn(),
 }));
 
-jest.mock("../utils/extensionUtils", () => ({
+jest.mock("@/utils/extensionUtils", () => ({
   ...jest.requireActual("@/utils/extensionUtils"),
   forEachTab: jest.fn(),
 }));

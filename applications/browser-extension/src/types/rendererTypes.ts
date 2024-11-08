@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "./registryTypes";
-import { type UUID } from "./stringTypes";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { type Except } from "type-fest";
-import { type ModComponentRef } from "./modComponentTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 type BaseRendererPayload = {
   /**

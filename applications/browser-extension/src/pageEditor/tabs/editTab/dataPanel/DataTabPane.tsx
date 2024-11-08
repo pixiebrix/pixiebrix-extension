@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Tab, type TabPaneProps } from "react-bootstrap";
-import dataPanelStyles from "./dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";

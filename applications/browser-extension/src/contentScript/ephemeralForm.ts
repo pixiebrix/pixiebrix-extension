@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { FormDefinition } from "../platform/forms/formTypes";
-import { cancelForm, registerForm } from "../platform/forms/formController";
+import type { FormDefinition } from "@/platform/forms/formTypes";
+import { cancelForm, registerForm } from "@/platform/forms/formController";
 import {
   hideSidebarForm,
   showSidebar,
   showSidebarForm,
   sidePanelOnClose,
-} from "./sidebarController";
+} from "@/contentScript/sidebarController";
 import { uuidv4 } from "@/types/helpers";
-import { isLoadedInIframe } from "../utils/iframeUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
-import { expectContext } from "../utils/expectContext";
-import { showModal } from "./modalDom";
+import { expectContext } from "@/utils/expectContext";
+import { showModal } from "@/contentScript/modalDom";
 import type { Target } from "@/types/messengerTypes";
 import type { ModComponentRef } from "@/types/modComponentTypes";
 

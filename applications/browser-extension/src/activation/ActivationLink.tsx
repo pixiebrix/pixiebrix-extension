@@ -17,14 +17,14 @@
 
 import { type RegistryId } from "@/types/registryTypes";
 import React from "react";
-import notify from "../utils/notify";
+import notify from "@/utils/notify";
 // eslint-disable-next-line no-restricted-imports -- Not actually using Form itself
 import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { writeToClipboard } from "../utils/clipboardUtils";
-import { createActivationUrl } from "./activationLinkUtils";
+import { writeToClipboard } from "@/utils/clipboardUtils";
+import { createActivationUrl } from "@/activation/activationLinkUtils";
 
 type ActivationLinkProps = {
   modId: RegistryId;

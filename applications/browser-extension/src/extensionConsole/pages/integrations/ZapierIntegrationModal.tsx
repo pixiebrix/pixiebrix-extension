@@ -20,10 +20,10 @@ import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import notify from "../../../utils/notify";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
-import { writeToClipboard } from "../../../utils/clipboardUtils";
+import notify from "@/utils/notify";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 import { useGetZapierKeyQuery } from "@/data/service/api";
 
 interface OwnProps {

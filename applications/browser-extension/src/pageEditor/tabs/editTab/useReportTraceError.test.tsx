@@ -17,28 +17,26 @@
  */
 
 import React from "react";
-import {
-  editorSlice,
-  initialState as editorInitialState,
-} from "../../store/editor/editorSlice";
-import runtimeSlice from "../../store/runtime/runtimeSlice";
-import sessionSlice from "../../store/session/sessionSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { initialState as editorInitialState } from "@/store/editorInitialState";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { configureStore } from "@reduxjs/toolkit";
-import { type TraceRecord } from "../../../telemetry/trace";
-import { uuidv4 } from "../../../types/helpers";
-import reportEvent from "../../../telemetry/reportEvent";
-import { renderHook } from "@testing-library/react-hooks";
+import { type TraceRecord } from "@/telemetry/trace";
+import { uuidv4 } from "@/types/helpers";
+import reportEvent from "@/telemetry/reportEvent";
 import useReportTraceError from "./useReportTraceError";
 import { Provider } from "react-redux";
 
 import {
   traceErrorFactory,
   traceRecordFactory,
-} from "../../../testUtils/factories/traceFactories";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/traceFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 // Override the manual mock to support `expect` assertions
-jest.mock("../../../telemetry/reportEvent");
+jest.mock("@/telemetry/reportEvent");
 
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeModComponentId = uuidv4();

@@ -19,19 +19,19 @@ import React, { useState } from "react";
 import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
-import { APPEND_SCHEMA } from "../bricks/append";
+import { APPEND_SCHEMA } from "@/contrib/google/sheets/bricks/append";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import TabField from "./TabField";
+import TabField from "@/contrib/google/sheets/ui/TabField";
 import { isEmpty } from "lodash";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import RequireGoogleSheet from "./RequireGoogleSheet";
+import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import useAsyncEffect from "use-async-effect";
 import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
-import { getHeaders } from "../core/sheetsApi";
+import { getHeaders } from "@/contrib/google/sheets/core/sheetsApi";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   const headerProperties: Record<string, Schema> = Object.fromEntries(

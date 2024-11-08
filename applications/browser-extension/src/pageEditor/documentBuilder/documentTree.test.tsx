@@ -15,25 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { loadBrickYaml } from "../../runtime/brickYaml";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { loadBrickYaml } from "@/runtime/brickYaml";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
 import brickRegistry from "@/bricks/registry";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { buildDocumentBuilderSubtree } from "./documentTree";
 import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
 } from "./documentBuilderTypes";
-import DocumentContext, { initialValue } from "./render/DocumentContext";
-import { toExpression } from "../../utils/expressionUtils";
+import DocumentContext, {
+  initialValue,
+} from "@/pageEditor/documentBuilder/render/DocumentContext";
+import { toExpression } from "@/utils/expressionUtils";
 
 // Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
-jest.mock("../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
 const markdownBlock = new MarkdownRenderer();
 

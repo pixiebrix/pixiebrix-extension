@@ -14,21 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { type UUID } from "./stringTypes";
-import { type RegistryId } from "./registryTypes";
-import { type FormDefinition } from "../platform/forms/formTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type JsonObject } from "type-fest";
 import {
   type RendererErrorPayload,
   type RendererLoadingPayload,
   type RendererRunPayload,
-} from "./rendererTypes";
-import { type MessageContext } from "./loggerTypes";
-import { type ModComponentState } from "../store/modComponents/modComponentTypes";
-import { isObject } from "../utils/objectUtils";
-import { type RunMetadata } from "./runtimeTypes";
-import type { ModActivationConfig } from "./modTypes";
-import type { ModComponentRef } from "./modComponentTypes";
+} from "@/types/rendererTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { isObject } from "@/utils/objectUtils";
+import { type RunMetadata } from "@/types/runtimeTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Entry types supported by the sidebar.

@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickNodeProps } from "../../editTabTypes";
+import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentFormState } from "../../../../store/editor/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
-import { adapterForComponent } from "../../../../starterBricks/adapter";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
-import { type MapOutput, type EditorNodeProps } from "./types";
-import { useMapPipelineToNodes } from "./useMapPipelineToNodes";
-import { useMakeFoundationNode } from "./useMakeFoundationNode";
-import { useGetNodeState } from "./useGetNodeState";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  type MapOutput,
+  type EditorNodeProps,
+} from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
+import { useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
+import { useMakeFoundationNode } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMakeFoundationNode";
+import { useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
 
 const usePipelineNodes = (): {
   foundationNodeProps: BrickNodeProps;

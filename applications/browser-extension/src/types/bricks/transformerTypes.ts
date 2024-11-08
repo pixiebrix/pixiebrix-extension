@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BrickABC } from "../brickTypes";
-import { type BrickArgs, type BrickOptions } from "../runtimeTypes";
+import { BrickABC } from "@/types/brickTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 /**
  * Abstract base class for transformers - bricks that take an input and produce an output.

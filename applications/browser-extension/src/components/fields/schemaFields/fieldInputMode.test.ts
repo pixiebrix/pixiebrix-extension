@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inferInputMode } from "./fieldInputMode";
-import googleSheetIdSchema from "../../../../schemas/googleSheetId.json";
-import { toExpression } from "../../../utils/expressionUtils";
+import { inferInputMode } from "@/components/fields/schemaFields/fieldInputMode";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("test input mode", () => {
   test("variable expression", () => {

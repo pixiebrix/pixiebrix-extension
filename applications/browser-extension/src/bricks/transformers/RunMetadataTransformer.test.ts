@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import RunMetadataTransformer from "./RunMetadataTransformer";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import RunMetadataTransformer from "@/bricks/transformers/RunMetadataTransformer";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import {
   brickOptionsFactory,
   runMetadataFactory,
-} from "../../testUtils/factories/runtimeFactories";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
-import ConsoleLogger from "../../utils/ConsoleLogger";
-import type { SemVerString } from "../../types/registryTypes";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "../../utils/modUtils";
+} from "@/testUtils/factories/runtimeFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import type { SemVerString } from "@/types/registryTypes";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const brick = new RunMetadataTransformer();
 

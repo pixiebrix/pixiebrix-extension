@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import DraftModComponentListItem from "./DraftModComponentListItem";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { render } from "@/pageEditor/testHelpers";
+import DraftModComponentListItem from "@/pageEditor/modListingPanel/DraftModComponentListItem";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("../../modDefinitions/modDefinitionHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
     .fn()
     .mockReturnValue({ data: [], isLoading: false }),

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { ContextBrick } from "../../runtime/pipelineTests/testHelpers";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { AnnotationType } from "../../types/annotationTypes";
-import ConditionAnalysis from "./conditionAnalysis";
-import { toExpression } from "../../utils/expressionUtils";
-import { AnalysisAnnotationActionType } from "../analysisTypes";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { ContextBrick } from "@/runtime/pipelineTests/testHelpers";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
+import { toExpression } from "@/utils/expressionUtils";
+import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 
 describe("conditionAnalysis", () => {

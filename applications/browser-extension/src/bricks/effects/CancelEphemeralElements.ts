@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import * as formController from "../../platform/forms/formController";
-import * as panelController from "../../platform/panels/panelController";
-import { type Schema, SCHEMA_EMPTY_OBJECT } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import * as formController from "@/platform/forms/formController";
+import * as panelController from "@/platform/panels/panelController";
+import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 
-import { validateRegistryId } from "../../types/helpers";
-import { allSettled } from "../../utils/promiseUtils";
+import { validateRegistryId } from "@/types/helpers";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * Cancels all temporary forms/panels showing in the frame.

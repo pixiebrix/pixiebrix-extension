@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getOptionsArgForFieldValue } from "./getOptionsArgForFieldValue";
+import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 
-import { toExpression } from "./expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("getOptionsArgForFieldValue", () => {
   it("returns null when optionsArgs is empty", () => {

@@ -18,8 +18,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { orderBy } from "lodash";
 import { localStorage } from "redux-persist-webextension-storage";
-import { type StorageInterface } from "./StorageInterface";
-import { revertAll } from "./commonActions";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
 import { type KindFilterValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 
 type RecentBrick = {

@@ -23,16 +23,16 @@ import {
   isButtonElement,
   isListElement,
   isPipelineElement,
-} from "./documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { castTextLiteralOrThrow } from "../utils/expressionUtils";
-import { inputProperties } from "../utils/schemaUtils";
-import { joinPathParts } from "../utils/formUtils";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { inputProperties } from "@/utils/schemaUtils";
+import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
@@ -43,7 +43,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import type { UUID } from "@/types/stringTypes";
-import type { ModComponentFormState } from "./starterBricks/formStateTypes";
+import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export function mapModDefinitionUpsertResponseToModDefinition(
   unsavedModDefinition: UnsavedModDefinition,

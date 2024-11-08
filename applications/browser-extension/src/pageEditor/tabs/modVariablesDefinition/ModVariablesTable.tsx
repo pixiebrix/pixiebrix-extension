@@ -21,9 +21,9 @@ import {
   type ModVariableFormValues,
   SYNC_OPTIONS,
   TYPE_OPTIONS,
-} from "./modVariablesDefinitionEditorTypes";
+} from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
 import { Button, Table } from "react-bootstrap";
-import styles from "./ModVariablesTable.module.scss";
+import styles from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesTable.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import { FieldArray } from "formik";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -32,7 +32,7 @@ import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchBut
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { uuidv4 } from "../../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 
 const ModVariablesTable: React.FC<{
   values: ModVariableFormValues;

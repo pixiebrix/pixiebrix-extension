@@ -16,11 +16,11 @@
  */
 
 import { define } from "cooky-cutter";
-import { type Database } from "../../types/contract";
+import { type Database } from "@/types/contract";
 import {
   timestampFactory,
   uuidSequence,
-} from "./stringFactories";
+} from "@/testUtils/factories/stringFactories";
 
 export const databaseFactory = define<Database>({
   id: uuidSequence,

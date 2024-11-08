@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type JsonObject, type RequireExactlyOne } from "type-fest";
 import {
   BusinessError,
@@ -25,17 +25,17 @@ import {
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
-} from "../rootModeHelpers";
+} from "@/bricks/rootModeHelpers";
 import { isEmpty } from "lodash";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { type Logger } from "../../types/loggerTypes";
-import { findSingleElement } from "../../utils/domUtils";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Logger } from "@/types/loggerTypes";
+import { findSingleElement } from "@/utils/domUtils";
 import {
   isFieldElement,
   setFieldValue,
   setFieldsValue,
-} from "../../utils/domFieldUtils";
+} from "@/utils/domFieldUtils";
 
 type FindAndSetValueData = RequireExactlyOne<
   {

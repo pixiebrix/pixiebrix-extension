@@ -18,16 +18,16 @@
 import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
 import { sortBy } from "lodash";
 import { type RemoteIntegrationConfig } from "@/types/contract";
-import { type IntegrationConfig } from "../integrations/integrationTypes";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import useAsyncState from "./useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import useMergeAsyncState from "./useMergeAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { useGetIntegrationAuthsQuery } from "@/data/service/api";
-import getModDefinitionIntegrationIds from "../integrations/util/getModDefinitionIntegrationIds";
-import { type Nullishable } from "../utils/nullishUtils";
-import { readRawConfigurations } from "../integrations/util/readRawConfigurations";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 
 function defaultLabel(label: Nullishable<string>): string {
   const normalized = (label ?? "").trim();

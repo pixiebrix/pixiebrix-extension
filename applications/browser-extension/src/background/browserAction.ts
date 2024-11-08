@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "../mv3/api";
-import { openSidePanel, getSidebarTarget } from "../utils/sidePanelUtils";
+import { browserAction } from "@/mv3/api";
+import { openSidePanel, getSidebarTarget } from "@/utils/sidePanelUtils";
 import { messenger } from "webext-messenger";
 import { type ModComponentRef } from "@/types/modComponentTypes";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Mapping from tabId to the ModComponentRef that set the badge.

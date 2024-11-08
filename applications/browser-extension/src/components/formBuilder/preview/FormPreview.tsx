@@ -19,31 +19,31 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "../../../validators/formValidator";
+import validator from "@/validators/formValidator";
 import { type FieldTemplateProps } from "@rjsf/utils";
 import { type IChangeEvent } from "@rjsf/core";
 import {
   type RJSFSchema,
   type SetActiveField,
-} from "../formBuilderTypes";
+} from "@/components/formBuilder/formBuilderTypes";
 import {
   UI_SCHEMA_ACTIVE,
   UI_WIDGET,
-} from "../schemaFieldNames";
+} from "@/components/formBuilder/schemaFieldNames";
 import { produce } from "immer";
-import { unwrapTemplateExpressions } from "../../fields/fieldUtils";
-import ImageCropWidgetPreview from "./ImageCropWidgetPreview";
-import DescriptionField from "../DescriptionField";
-import RjsfSelectWidget from "../widgets/RjsfSelectWidget";
+import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
+import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
+import RjsfSelectWidget from "@/components/formBuilder/widgets/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
-import databaseSchema from "../../../../schemas/database.json";
-import googleSheetSchema from "../../../../schemas/googleSheetId.json";
+import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type Draft } from "immer";
-import { KEYS_OF_UI_SCHEMA, type Schema } from "../../../types/schemaTypes";
-import { templates } from "../RjsfTemplates";
-import FieldTemplate from "../FieldTemplate";
+import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import { cloneDeep } from "lodash";
-import RichTextWidget from "../widgets/RichTextWidget";
+import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;

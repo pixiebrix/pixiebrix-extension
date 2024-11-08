@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type ModDefinition } from "../../types/modDefinitionTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Form, {
   type RenderBody,
   type RenderSubmit,
@@ -29,16 +29,16 @@ import { Button, Col } from "react-bootstrap";
 import Alert from "@/components/Alert";
 import cx from "classnames";
 import Effect from "@/components/Effect";
-import permissionsDialogImage from "../../../img/example-permissions-dialog.png";
+import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import { type AnyObjectSchema } from "yup";
 import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isUUID } from "../../types/helpers";
+import { isUUID } from "@/types/helpers";
 import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
-import { assertNotNullish, type Nullishable } from "../../utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 type ActivateModInputsProps = {
   mod: ModDefinition;

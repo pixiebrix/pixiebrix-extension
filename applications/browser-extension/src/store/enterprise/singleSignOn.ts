@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 /**
  * Launch the SAML/SSO flow for the browser extension.

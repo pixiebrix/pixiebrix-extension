@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConnectedFieldTemplate from "../../form/ConnectedFieldTemplate";
-import SelectWidget from "../../form/widgets/SelectWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { appApi } from "@/data/service/api";
-import { validateUUID } from "../../../types/helpers";
+import { validateUUID } from "@/types/helpers";
 import { useField } from "formik";
 import React from "react";
-import { type UUID } from "../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import useAsyncEffect from "use-async-effect";
 
 const groupIdFieldName = "groupId";

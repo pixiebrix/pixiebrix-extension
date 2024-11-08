@@ -21,18 +21,18 @@ import type {
   CssSelectorMatch,
   CssSelectorType,
 } from "css-selector-generator/types/types.js";
-import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "../../domConstants";
-import { guessUsefulness } from "../detectRandomString";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
+import { guessUsefulness } from "@/utils/detectRandomString";
 import {
   getSiteSelectorHint,
   SELECTOR_HINTS,
   type SiteSelectorHint,
-} from "./siteSelectorHints";
-import { escapeSingleQuotes, matchesAnyPattern } from "../stringUtils";
-import { $safeFind } from "../domUtils";
-import { type ElementInfo } from "./selectorTypes";
-import { getAttributeSelectorRegex } from "./selectorInferenceUtils";
-import { type Nullishable, assertNotNullish } from "../nullishUtils";
+} from "@/utils/inference/siteSelectorHints";
+import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
+import { $safeFind } from "@/utils/domUtils";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 /** Valid selector that never returns any element (no `<selectnothing>` element exists) */
 const NON_EXISTENT_TAG_NAME = "selectnothing";

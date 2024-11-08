@@ -16,8 +16,8 @@
  */
 
 import { LegacyUserRole } from "@/data/model/UserRole";
-import { uuidv4 } from "../../types/helpers";
-import { type components } from "../../types/swagger";
+import { uuidv4 } from "@/types/helpers";
+import { type components } from "@/types/swagger";
 import { define } from "cooky-cutter";
 
 export const organizationResponseFactory = define<

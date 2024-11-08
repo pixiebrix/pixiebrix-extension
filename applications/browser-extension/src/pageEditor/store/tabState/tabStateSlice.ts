@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4 } from "../../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { waitForContentScript } from "@/background/messenger/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type FrameConnectionState,
   type TabState,
   type TabStateRootState,
-} from "./tabStateTypes";
-import { type EditorRootState } from "../editor/pageEditorTypes";
-import { type ModComponentsRootState } from "../../../store/modComponents/modComponentTypes";
-import { actions } from "../editor/editorSlice";
-import { canAccessTab } from "../../../permissions/permissionsUtils";
+} from "@/pageEditor/store/tabState/tabStateTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
-import reportError from "../../../telemetry/reportError";
-import { inspectedTab } from "../../context/connection";
+import reportError from "@/telemetry/reportError";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,

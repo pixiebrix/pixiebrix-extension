@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { launchSsoFlow } from "./singleSignOn";
+import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
 
 describe("launchSsoFlow", () => {
   it("doesn't hijack active tab", async () => {

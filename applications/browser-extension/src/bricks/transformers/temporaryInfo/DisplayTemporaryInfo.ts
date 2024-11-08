@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
   type BrickOptions,
   type PipelineExpression,
-} from "../../../types/runtimeTypes";
-import { expectContext } from "../../../utils/expectContext";
-import { IS_ROOT_AWARE_BRICK_PROPS } from "../../rootModeHelpers";
+} from "@/types/runtimeTypes";
+import { expectContext } from "@/utils/expectContext";
+import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
 import { type JsonObject } from "type-fest";
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { type Location } from "../../../types/starterBrickTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Location } from "@/types/starterBrickTypes";
 import {
   type RefreshTrigger,
   RefreshTriggers,
   type TemporaryPanelEntryMetadata,
-} from "../../../platform/panels/panelTypes";
+} from "@/platform/panels/panelTypes";
 
 class DisplayTemporaryInfo extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/display");

@@ -17,7 +17,7 @@
 
 import { isEmpty } from "lodash";
 import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
-import { isVarExpression } from "./expressionUtils";
+import { isVarExpression } from "@/utils/expressionUtils";
 
 export function getOptionsArgForFieldValue(
   fieldValue: string | Expression,

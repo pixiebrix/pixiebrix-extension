@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthData } from "../../../integrations/integrationTypes";
-import { expectContext } from "../../../utils/expectContext";
+import { type AuthData } from "@/integrations/integrationTypes";
+import { expectContext } from "@/utils/expectContext";
 import { getPartnerAuthData, setPartnerAuthData } from "@/auth/authStorage";
 import axios, { type AxiosResponse } from "axios";
-import { setCachedAuthData } from "../authStorage";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Refreshes the partner authentication token for the current partner auth session.

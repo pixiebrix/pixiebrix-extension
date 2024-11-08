@@ -15,23 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../pageEditor/testHelpers";
-import useSanitizedIntegrationConfigFormikAdapter from "./useSanitizedIntegrationConfigFormikAdapter";
+import { renderHook } from "@/pageEditor/testHelpers";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
-} from "./integrationTypes";
+} from "@/integrations/integrationTypes";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 import * as backgroundApi from "@/background/messenger/api";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../testUtils/factories/integrationFactories";
-import { validateOutputKey } from "../runtime/runtimeTypes";
-import { makeVariableExpression } from "../utils/variableUtils";
+} from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { makeVariableExpression } from "@/utils/variableUtils";
 import { type Expression, type OutputKey } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { waitFor } from "@testing-library/react";
 
 const integrationId1 = validateRegistryId("test/test-integration-1");
 const integrationId2 = validateRegistryId("test/test-integration-2");
@@ -83,7 +84,7 @@ jest
     throw new Error(`Unknown authId: ${configId}`);
   });
 
-jest.mock("./registry", () => {
+jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
   return {
     // Include __esModule so default export works
@@ -146,7 +147,7 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
           makeVariableExpression(configuredOutputKey);
       }
 
-      const { waitForEffect, result } = renderHook(
+      const { result } = renderHook(
         () =>
           useSanitizedIntegrationConfigFormikAdapter(
             integrationIds,
@@ -155,13 +156,13 @@ describe("useSanitizedIntegrationConfigFormikAdapter", () => {
         { initialValues },
       );
 
-      await waitForEffect();
-
-      if (expectedConfig == null) {
-        expect(result.current.data).toBeNull();
-      } else {
-        expect(result.current.data).toStrictEqual(expectedConfig);
-      }
+      await waitFor(() => {
+        if (expectedConfig == null) {
+          expect(result.current.data).toBeNull();
+        } else {
+          expect(result.current.data).toStrictEqual(expectedConfig);
+        }
+      });
     },
   );
 });

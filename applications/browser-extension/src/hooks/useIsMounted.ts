@@ -18,17 +18,20 @@
 import { useCallback, useEffect, useRef } from "react";
 
 /**
- * Returns a function that returns true if the component is still mounted.
+ * Returns a function that returns true if the component is mounted.
  */
+// Reference implementation https://usehooks-ts.com/react-hook/use-is-mounted
 function useIsMounted(): () => boolean {
-  const isMountedRef = useRef(true);
+  // Must start as false to support double-render/effect in strict mode
+  const isMountedRef = useRef(false);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
       isMountedRef.current = false;
-    },
-    [],
-  );
+    };
+  }, []);
 
   return useCallback(() => isMountedRef.current, []);
 }

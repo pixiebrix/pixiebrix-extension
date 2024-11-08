@@ -17,7 +17,7 @@
 
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import React from "react";
-import { type Schema } from "../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import FormBuilderDemo from "./FormBuilderDemo";
 import { action } from "@storybook/addon-actions";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -26,7 +26,7 @@ import * as yup from "yup";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { type UiSchema } from "@rjsf/utils";
-import { settingsStore } from "../../../testUtils/storyUtils";
+import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 
 const schema: Schema = {

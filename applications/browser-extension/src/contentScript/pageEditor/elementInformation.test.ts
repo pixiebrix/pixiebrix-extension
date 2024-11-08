@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAttributeExamples } from "./elementInformation";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 
 describe("getAttributeExamples", () => {
   it("gets attributes", () => {

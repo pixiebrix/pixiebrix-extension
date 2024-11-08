@@ -23,7 +23,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import slugify from "slugify";
 import { split } from "lodash";
-import { type Nullishable } from "./nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Returns true if the value is a valid internal registry id, i.e., that should not be displayed to the user.

@@ -16,9 +16,9 @@
  */
 
 import { toggleQuickBar } from "@/contentScript/messenger/api";
-import { type Tab } from "../mv3/api";
+import { type Tab } from "@/mv3/api";
 import { type Target } from "@/types/messengerTypes";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { isScriptableUrl } from "webext-content-scripts";
 import { waitForContentScript } from "./contentScript";
 

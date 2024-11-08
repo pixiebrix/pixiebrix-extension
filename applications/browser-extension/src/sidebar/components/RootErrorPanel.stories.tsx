@@ -19,7 +19,7 @@ import React from "react";
 import { type Meta, type StoryFn } from "@storybook/react";
 
 import { BusinessError, NoRendererError } from "@/errors/businessErrors";
-import RootErrorPanel from "./RootErrorPanel";
+import RootErrorPanel from "@/sidebar/components/RootErrorPanel";
 
 export default {
   title: "Panels/RootErrorPanel",

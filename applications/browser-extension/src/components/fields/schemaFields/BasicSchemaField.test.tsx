@@ -18,16 +18,16 @@
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] -- TODO: replace with native expect and it.each */
 
 import React from "react";
-import { render, screen } from "../../../pageEditor/testHelpers";
-import BasicSchemaField from "./BasicSchemaField";
-import { type Schema } from "../../../types/schemaTypes";
+import { render, screen } from "@/pageEditor/testHelpers";
+import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";
+import { type Schema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { fireTextInput } from "../../../testUtils/formHelpers";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { fireTextInput } from "@/testUtils/formHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import { type SchemaFieldProps } from "./propTypes";
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();

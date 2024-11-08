@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "../../../../types/modDefinitionTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
-import { actions as modComponentActions } from "../../../../store/modComponents/modComponentSlice";
-import { deactivateMod } from "../../../../store/deactivateModHelpers";
-import { selectModInstanceMap } from "../../../../store/modComponents/modInstanceSelectors";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
-import { type AppDispatch } from "../../../store";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import { deactivateMod } from "@/store/deactivateModHelpers";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 type ReactivateMod = (modDefinition: ModDefinition) => Promise<void>;
 

@@ -23,26 +23,26 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { type SchemaFieldComponent } from "./propTypes";
-import { makeLabelForSchemaField } from "./schemaFieldUtils";
-import SchemaFieldContext from "./SchemaFieldContext";
+import { type SchemaFieldComponent } from "@/components/fields/schemaFields/propTypes";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { useField, useFormikContext } from "formik";
 import { isEmpty } from "lodash";
 import cx from "classnames";
-import FieldRuntimeContext from "./FieldRuntimeContext";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { getToggleOptions } from "./getToggleOptions";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import useToggleFormField from "@/hooks/useToggleFormField";
-import { getFieldValidator } from "../fieldUtils";
-import { isExpression } from "../../../utils/expressionUtils";
+import { getFieldValidator } from "@/components/fields/fieldUtils";
+import { isExpression } from "@/utils/expressionUtils";
 import useAsyncEffect from "use-async-effect";
-import { type InputModeOption } from "./widgets/templateToggleWidgetTypes";
-import FieldTemplate from "../../form/FieldTemplate";
+import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { useSelector } from "react-redux";
-import { makeFieldAnnotationsForValue } from "../../form/makeFieldAnnotationsForValue";
-import { isNullOrBlank } from "../../../utils/stringUtils";
-import { AnnotationType } from "../../../types/annotationTypes";
+import { makeFieldAnnotationsForValue } from "@/components/form/makeFieldAnnotationsForValue";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { AnnotationType } from "@/types/annotationTypes";
 
 /*
  *  This is a hack to fix the issue where the formik state is not updated correctly when the form is first rendered.

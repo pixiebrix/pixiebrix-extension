@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Args, mapArgs, type MapOptions } from "../../runtime/mapArgs";
+import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
-import extendModVariableContext from "../../runtime/extendModVariableContext";
-import { expectContext } from "../../utils/expectContext";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { expectContext } from "@/utils/expectContext";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Run `mapArgs` in the contentScript.

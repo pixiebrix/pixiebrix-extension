@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateBrickInputOutput } from "../validators/schemaValidator";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import {
   arraySchema,
   castSchema,
@@ -31,9 +31,9 @@ import {
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-} from "./apiVersionOptions";
-import { engineRenderer } from "./renderers";
-import { mapArgs } from "./mapArgs";
+} from "@/runtime/apiVersionOptions";
+import { engineRenderer } from "@/runtime/renderers";
+import { mapArgs } from "@/runtime/mapArgs";
 import { BusinessError } from "@/errors/businessErrors";
 import { isInnerDefinitionRegistryId, validateUUID } from "@/types/helpers";
 import { getElementForReference } from "@/contentScript/elementReference";
@@ -50,16 +50,16 @@ import {
   type ModComponentBase,
   type SerializedModComponent,
 } from "@/types/modComponentTypes";
-import { excludeUndefined } from "../utils/objectUtils";
-import { boolean } from "../utils/typeUtils";
-import { $safeFind } from "../utils/domUtils";
+import { excludeUndefined } from "@/utils/objectUtils";
+import { boolean } from "@/utils/typeUtils";
+import { $safeFind } from "@/utils/domUtils";
 import {
   castTextLiteralOrThrow,
   isExpression,
   isTextLiteralOrNull,
-} from "../utils/expressionUtils";
-import { type Nullishable } from "../utils/nullishUtils";
-import { type BrickType, BrickTypes } from "./runtimeTypes";
+} from "@/utils/expressionUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModViewItem } from "../../../types/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { type TableInstance } from "react-table";
 
 export type ModsPageContentProps = {

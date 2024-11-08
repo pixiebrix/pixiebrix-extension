@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ModDefinition } from "./modDefinitionTypes";
-import type { OptionsArgs } from "./runtimeTypes";
-import type { IntegrationDependency } from "../integrations/integrationTypes";
-import type { Timestamp, UUID } from "./stringTypes";
-import type { DeploymentMetadata } from "./deploymentTypes";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type { OptionsArgs } from "@/types/runtimeTypes";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
+import type { Timestamp, UUID } from "@/types/stringTypes";
+import type { DeploymentMetadata } from "@/types/deploymentTypes";
 import type { SetRequired, Tagged } from "type-fest";
 
 /**

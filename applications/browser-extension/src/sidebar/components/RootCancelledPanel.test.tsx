@@ -17,8 +17,8 @@
 
 import React from "react";
 
-import { render } from "../testHelpers";
-import RootCancelledPanel from "./RootCancelledPanel";
+import { render } from "@/sidebar/testHelpers";
+import RootCancelledPanel from "@/sidebar/components/RootCancelledPanel";
 import { CancelError } from "@/errors/businessErrors";
 
 describe("RootCancelledPanel", () => {

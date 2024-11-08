@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { define } from "cooky-cutter";
 import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
@@ -31,23 +31,26 @@ import {
   toggleQuickBar,
 } from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { RunReason } from "../../types/runtimeTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { RunReason } from "@/types/runtimeTypes";
 
-import { uuidSequence } from "../../testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
-import { getPlatform } from "../../platform/platformContext";
-import { type QuickBarDefinition, type QuickBarConfig } from "./quickBarTypes";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
+import { getPlatform } from "@/platform/platformContext";
+import {
+  type QuickBarDefinition,
+  type QuickBarConfig,
+} from "@/starterBricks/quickBar/quickBarTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
 
-jest.mock("../../auth/featureFlagStorage", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
   restrict: jest.fn().mockReturnValue(false),
 }));

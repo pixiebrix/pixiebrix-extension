@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { valueToAsyncState } from "../../../utils/asyncStateUtils";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 const DEFAULT_LINK_STATE = valueToAsyncState(true);
 const useLinkState = jest.fn(() => DEFAULT_LINK_STATE);

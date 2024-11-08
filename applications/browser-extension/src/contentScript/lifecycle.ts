@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getModComponentState } from "../store/modComponents/modComponentStorage";
-import starterBrickRegistry from "../starterBricks/registry";
-import { updateNavigationId } from "./context";
-import * as sidebar from "./sidebarController";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
+import { updateNavigationId } from "@/contentScript/context";
+import * as sidebar from "@/contentScript/sidebarController";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/bricks/available";
-import reportError from "../telemetry/reportError";
+import reportError from "@/telemetry/reportError";
 import { compact, debounce, groupBy, intersection, uniq } from "lodash";
 import oneEvent from "one-event";
-import { hydrateModComponentInnerDefinitions } from "../registry/hydrateInnerDefinitions";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import { traces } from "@/background/messenger/api";
-import { isDeploymentActive } from "../utils/deploymentUtils";
+import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";
 import {
@@ -37,22 +36,27 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { RunReason } from "@/types/runtimeTypes";
 import { type HydratedModComponent } from "@/types/modComponentTypes";
-import { type SidebarStarterBrickABC } from "../starterBricks/sidebar/sidebarStarterBrick";
-import { getReloadOnNextNavigate, setReloadOnNextNavigate } from "./ready";
+import { type SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
+import {
+  getReloadOnNextNavigate,
+  setReloadOnNextNavigate,
+} from "@/contentScript/ready";
 import {
   allSettled,
   logPromiseDuration,
   pollUntilTruthy,
-} from "../utils/promiseUtils";
-import { $safeFind } from "../utils/domUtils";
+} from "@/utils/promiseUtils";
+import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
-import { ContextMenuStarterBrickABC } from "../starterBricks/contextMenu/contextMenuStarterBrick";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
 import { ReusableAbortController } from "abort-utils";
-import { isLoadedInIframe } from "../utils/iframeUtils";
-import { notifyNavigationComplete } from "./sidebarController";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { notifyNavigationComplete } from "@/contentScript/sidebarController";
 import pDefer from "p-defer";
-import { assertNotNullish } from "../utils/nullishUtils";
-import { selectActivatedModComponents } from "../store/modComponents/modComponentSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+// Can't reference contentScriptPlatform directly because some bricks currently reference this module
+import { getPlatform } from "@/platform/platformContext";
 
 /**
  * True if handling the initial frame load.
@@ -480,7 +484,7 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
         ]) => {
           try {
             const starterBrick =
-              await starterBrickRegistry.lookup(starterBrickId);
+              await getPlatform().registry.starterBricks.lookup(starterBrickId);
 
             // It's tempting to call starterBrick.isAvailable here and skip if it's not available.
             // However, that would cause the starter brick to be unavailable for the entire frame session
@@ -739,4 +743,20 @@ export async function initNavigation() {
     _activatedModComponentStarterBrickMap.clear();
     _draftModComponentStarterBrickMap.clear();
   });
+}
+
+/**
+ * Test helper method to reset lifecycle module state.
+ *
+ * Simpler to use than Jest's isolateModules/resetModules which seem to have gotchas with getPlatform() and other
+ * module-level state.
+ * @internal
+ */
+export function TEST_reset(): void {
+  _initialFrameLoad = true;
+  pendingFrameLoadPromise = null;
+  _runningStarterBricks.clear();
+  _activatedModComponentStarterBrickMap.clear();
+  _draftModComponentStarterBrickMap.clear();
+  lastUrl = undefined;
 }

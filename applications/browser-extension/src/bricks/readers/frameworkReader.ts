@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Read } from "./factory";
-import { type Framework } from "../../pageScript/messenger/constants";
+import { type Read } from "@/bricks/readers/factory";
+import { type Framework } from "@/pageScript/messenger/constants";
 import { getCssSelector } from "css-selector-generator";
 import { castArray, compact } from "lodash";
-import { getComponentData, type ReadPayload } from "../../pageScript/messenger/api";
-import { type SelectorRoot } from "../../types/runtimeTypes";
+import { getComponentData, type ReadPayload } from "@/pageScript/messenger/api";
+import { type SelectorRoot } from "@/types/runtimeTypes";
 import { type JsonObject } from "type-fest";
 
 export type FrameworkConfig = ReadPayload & {

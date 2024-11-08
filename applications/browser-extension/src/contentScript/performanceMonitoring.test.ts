@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDiagnostics } from "./performanceMonitoring";
+import { getDiagnostics } from "@/contentScript/performanceMonitoring";
 
 describe("getDiagnostics", () => {
   it("gets disabled diagnostics", async () => {

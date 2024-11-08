@@ -20,10 +20,10 @@ import {
   type DocumentBuilderComponent,
   type DocumentBuilderElementType,
   type PreviewComponentProps,
-} from "../../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
-import documentTreeStyles from "../documentTree.module.scss";
-import Flaps from "../flaps/Flaps";
+import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
+import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
 
 type BasicProps = PreviewComponentProps & {
   elementType: DocumentBuilderElementType;

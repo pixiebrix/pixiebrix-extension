@@ -17,26 +17,26 @@
 
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { tabStateActions } from "../store/tabState/tabStateSlice";
-import { type AppDispatch, persistor } from "../store/store";
+import { tabStateActions } from "@/pageEditor/store/tabState/tabStateSlice";
+import { type AppDispatch, persistor } from "@/pageEditor/store/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import TabConnectionErrorBanner from "@/pageEditor/components/TabConnectionErrorBanner";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
-import EditorLayout from "./EditorLayout";
+import EditorLayout from "@/pageEditor/layout/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
-} from "../../store/ReduxPersistenceContext";
+} from "@/store/ReduxPersistenceContext";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
-import { InsertPaneProvider } from "../panes/insert/InsertPane";
+import { InsertPaneProvider } from "@/pageEditor/panes/insert/InsertPane";
 import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import useTeamTrialStatus, {
   TeamTrialStatus,
 } from "@/components/teamTrials/useTeamTrialStatus";
-import { navigationEvent } from "../events";
+import { navigationEvent } from "@/pageEditor/events";
 import usePollModLogs from "@/components/logViewer/usePollModLogs";
 
 /**

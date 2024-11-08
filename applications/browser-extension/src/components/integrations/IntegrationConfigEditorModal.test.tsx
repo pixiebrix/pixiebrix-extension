@@ -16,19 +16,19 @@
  */
 
 import React from "react";
-import { fromJS } from "../../integrations/UserDefinedIntegration";
-import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { render, screen } from "@/extensionConsole/testHelpers";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 // FIXME: Use ?loadAsText when supported by Jest https://github.com/jestjs/jest/pull/6282
-import pipedriveYaml from "@/contrib/integrations/pipedrive.yaml";
-import automationAnywhereYaml from "@/contrib/integrations/automation-anywhere.yaml";
-import registerDefaultWidgets from "../fields/schemaFields/widgets/registerDefaultWidgets";
-import { type IntegrationConfig } from "../../integrations/integrationTypes";
+import pipedriveYaml from "@contrib/integrations/pipedrive.yaml";
+import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.yaml";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { within } from "@testing-library/react";
-import { fieldLabel } from "../fields/fieldUtils";
-import { convertSchemaToConfigState } from "./integrationHelpers";
+import { fieldLabel } from "@/components/fields/fieldUtils";
+import { convertSchemaToConfigState } from "@/components/integrations/integrationHelpers";
 import userEvent from "@testing-library/user-event";
 
 beforeAll(() => {

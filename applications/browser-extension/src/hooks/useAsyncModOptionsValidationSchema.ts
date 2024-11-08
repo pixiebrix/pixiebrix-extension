@@ -16,11 +16,11 @@
  */
 
 import { type AnyObjectSchema, object } from "yup";
-import { dereferenceForYup } from "../validators/schemaValidator";
+import { dereferenceForYup } from "@/validators/schemaValidator";
 import { isEmpty, mapValues } from "lodash";
 import { type Schema } from "@/types/schemaTypes";
 import { buildYup } from "schema-to-yup";
-import useAsyncState from "./useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 
 function isEmptySchema(schema: Schema | undefined): boolean {

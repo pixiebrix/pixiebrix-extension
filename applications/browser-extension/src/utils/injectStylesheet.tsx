@@ -16,7 +16,7 @@
  */
 
 import pDefer from "p-defer";
-import { waitAnimationFrame } from "./domUtils";
+import { waitAnimationFrame } from "@/utils/domUtils";
 
 /**
  * Loads a stylesheet URL via `link` tag. Resolves with `link` tag.

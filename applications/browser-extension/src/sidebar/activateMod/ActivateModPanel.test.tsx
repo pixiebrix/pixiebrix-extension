@@ -16,33 +16,33 @@
  */
 
 import React from "react";
-import { useRequiredModDefinitions } from "../../modDefinitions/modDefinitionHooks";
-import { render, screen } from "../testHelpers";
-import ActivateModPanel from "./ActivateModPanel";
-import sidebarSlice from "../../store/sidebar/sidebarSlice";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import { render, screen } from "@/sidebar/testHelpers";
+import ActivateModPanel from "@/sidebar/activateMod/ActivateModPanel";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { valueToAsyncCacheState } from "../../utils/asyncStateUtils";
-import { checkModDefinitionPermissions } from "../../modDefinitions/modDefinitionPermissionsHelpers";
-import { appApiMock, onDeferredGet } from "../../testUtils/appApiMock";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
   modComponentDefinitionFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { sidebarEntryFactory } from "../../testUtils/factories/sidebarEntryFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import {
   marketplaceListingFactory,
   modDefinitionToMarketplacePackage,
-} from "../../testUtils/factories/marketplaceFactories";
-import ActivateMultipleModsPanel from "./ActivateMultipleModsPanel";
-import ErrorBoundary from "../SidebarErrorBoundary";
-import { includesQuickBarStarterBrick } from "../../starterBricks/starterBrickModUtils";
-import { generateIntegrationAndRemoteConfig } from "../../testUtils/factories/integrationFactories";
+} from "@/testUtils/factories/marketplaceFactories";
+import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleModsPanel";
+import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
+import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
+import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
 import { integrationConfigLocator, registry } from "@/background/messenger/api";
-import { clear, find, syncPackages } from "../../registry/packageRegistry";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
 import { type WizardValues } from "@/activation/wizardTypes";
@@ -50,15 +50,15 @@ import useActivateMod, {
   type ActivateResult,
 } from "@/activation/useActivateMod";
 import brickRegistry from "@/bricks/registry";
-import { registryIdFactory } from "../../testUtils/factories/stringFactories";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { INTEGRATIONS_BASE_SCHEMA_URL } from "../../integrations/constants";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
-jest.mock("../../modDefinitions/modDefinitionHooks");
-jest.mock("../sidebarSelectors");
-jest.mock("../../hooks/useQuickbarShortcut");
+jest.mock("@/modDefinitions/modDefinitionHooks");
+jest.mock("@/sidebar/sidebarSelectors");
+jest.mock("@/hooks/useQuickbarShortcut");
 
 const modRegistryId = registryIdFactory();
 
@@ -67,7 +67,7 @@ const checkModDefinitionPermissionsMock = jest.mocked(
   checkModDefinitionPermissions,
 );
 
-jest.mock("../../starterBricks/starterBrickModUtils", () => {
+jest.mock("@/starterBricks/starterBrickModUtils", () => {
   const actualUtils = jest.requireActual(
     "@/starterBricks/starterBrickModUtils",
   );
@@ -83,7 +83,7 @@ const includesQuickBarMock = jest.mocked(includesQuickBarStarterBrick);
 
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
-jest.mock("../../activation/useActivateMod", () => ({
+jest.mock("@/activation/useActivateMod", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(async () => ({ success: true })),
 }));

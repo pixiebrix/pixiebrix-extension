@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "../../../../pageEditor/starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type Draft, produce } from "immer";
 import {
   isDeferExpression,
   isExpression,
   isPipelineExpression,
   isVarExpression,
-} from "../../../../utils/expressionUtils";
+} from "@/utils/expressionUtils";
 import { isEmpty } from "lodash";
-import { makeVariableExpression } from "../../../../utils/variableUtils";
+import { makeVariableExpression } from "@/utils/variableUtils";
 
 export type IntegrationsFormSlice = Pick<
   ModComponentFormState,

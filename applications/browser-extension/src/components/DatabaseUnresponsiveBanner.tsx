@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import Banner from "./banner/Banner";
+import Banner from "@/components/banner/Banner";
 import useAsyncState from "@/hooks/useAsyncState";
-import { count as pingPackageDatabase } from "../registry/packageRegistry";
+import { count as pingPackageDatabase } from "@/registry/packageRegistry";
 import useTimeoutState from "@/hooks/useTimeoutState";
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
-import reportError from "../telemetry/reportError";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import reportError from "@/telemetry/reportError";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const errorBanner = (

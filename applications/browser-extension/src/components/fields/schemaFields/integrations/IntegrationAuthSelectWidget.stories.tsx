@@ -18,9 +18,9 @@
 import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import IntegrationAuthSelectWidget from "./IntegrationAuthSelectWidget";
-import { uuidv4, validateRegistryId } from "../../../../types/helpers";
-import { type UUID } from "../../../../types/stringTypes";
+import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type UUID } from "@/types/stringTypes";
 
 export default {
   title: "Widgets/ServiceSelectWidget",

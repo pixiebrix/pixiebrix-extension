@@ -16,14 +16,14 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useState } from "react";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
-import ConfigErrorBoundary from "./ConfigErrorBoundary";
-import { selectActiveBuilderPreviewElement } from "../store/editor/editorSelectors";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { useField, useFormikContext } from "formik";
 import { partial } from "lodash";
 import {
@@ -31,22 +31,22 @@ import {
   type PostSubmitAction,
   type Storage,
 } from "@/bricks/renderers/customForm";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";
-import FORM_FIELD_TYPE_OPTIONS from "./formFieldTypeOptions";
-import databaseSchema from "../../../schemas/database.json";
-import { joinName } from "../../utils/formUtils";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
+import databaseSchema from "@schemas/database.json";
+import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
-import PipelineToggleField from "./PipelineToggleField";
-import ConnectedCollapsibleFieldSection from "./ConnectedCollapsibleFieldSection";
-import type { PipelineExpression } from "../../types/runtimeTypes";
+import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import type { PipelineExpression } from "@/types/runtimeTypes";
 import { Collapse } from "react-bootstrap";
-import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "../../integrations/constants";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 
-import { StateNamespaces } from "../../platform/state/stateTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { StateNamespaces } from "@/platform/state/stateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const recordIdSchema: Schema = {
   type: "string",

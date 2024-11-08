@@ -16,30 +16,30 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
   echoBrick,
   simpleInput,
   throwBrick,
 } from "./testHelpers";
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { traces } from "@/background/messenger/api";
 import {
   type TraceEntryData,
   type TraceExitData,
   type TraceRecordMeta,
-} from "../../telemetry/trace";
-import ConsoleLogger from "../../utils/ConsoleLogger";
+} from "@/telemetry/trace";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { type BrickPipeline } from "@/bricks/types";
-import { validateOutputKey } from "../runtimeTypes";
-import { type RenderedArgs } from "../../types/runtimeTypes";
-import { toExpression } from "../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { mapModComponentRefToMessageContext } from "../../utils/modUtils";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type RenderedArgs } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
@@ -421,7 +421,7 @@ describe("Tracing disabled", () => {
 
   it("Does not render config if condition is false and tracing is disabled", async () => {
     // XXX: this doesn't appear to be working
-    jest.doMock("../renderers", () => ({
+    jest.doMock("@/runtime/renderers", () => ({
       engineRenderer: jest.fn().mockImplementation(() => {
         throw new Error("should not be called");
       }),

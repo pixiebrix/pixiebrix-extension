@@ -20,8 +20,8 @@ import AsyncRemoteSelectWidget, {
   type AsyncRemoteSelectWidgetProps,
 } from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import type { WorkspaceType } from "./contract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { WorkspaceType } from "@/contrib/automationanywhere/contract";
 import { partial } from "lodash";
 import type { Option } from "@/components/form/widgets/SelectWidget";
 

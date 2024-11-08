@@ -23,11 +23,11 @@ import {
   type DefinitionKinds,
   type RegistryId,
   type VersionedMetadata,
-} from "./registryTypes";
-import { type Schema } from "./schemaTypes";
-import { type Timestamp, type UUID } from "./stringTypes";
+} from "@/types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 import { type Permissions } from "webextension-polyfill";
-import { type OutputKey, type TemplateEngine } from "./runtimeTypes";
+import { type OutputKey, type TemplateEngine } from "@/types/runtimeTypes";
 
 /**
  * A section defining which options are available during mod activation

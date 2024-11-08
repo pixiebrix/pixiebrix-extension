@@ -16,22 +16,22 @@
  */
 
 import { type PipelineFlavor } from "@/bricks/types";
-import { PIPELINE_BRICKS_FIELD_NAME } from "../../../../consts";
-import { FOUNDATION_NODE_ID } from "../../../../store/editor/uiState";
-import { decideFoundationStatus } from "../decideStatus";
-import { type NodeAction } from "../../editorNodes/nodeActions/NodeActionsView";
-import { filterStarterBrickAnalysisAnnotations } from "../../../../utils";
-import { type OutputKey } from "../../../../../types/runtimeTypes";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
+import { decideFoundationStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { filterStarterBrickAnalysisAnnotations } from "@/pageEditor/utils";
+import { type OutputKey } from "@/types/runtimeTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,
-} from "../../../../store/editor/editorSelectors";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { useSelector } from "react-redux";
-import { useCreateNodeActions } from "./useCreateNodeActions";
-import { type useGetNodeState } from "./useGetNodeState";
+import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
 
 type MakeFoundationNodeArgs = {
   pipelineFlavor: PipelineFlavor;

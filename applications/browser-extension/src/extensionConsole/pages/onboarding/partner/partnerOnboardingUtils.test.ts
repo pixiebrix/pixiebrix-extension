@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { normalizeControlRoomUrl } from "./partnerOnboardingUtils";
+import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 
 describe("test normalizeControlRoomUrl", () => {
   it("removes trailing slash", () => {

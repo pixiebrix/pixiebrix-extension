@@ -22,7 +22,7 @@ import {
   getRegistryIdsFromActivateUrlSearchParams,
   isActivationUrl,
   parseModActivationUrlSearchParams,
-} from "./activationLinkUtils";
+} from "@/activation/activationLinkUtils";
 import { validateRegistryId } from "@/types/helpers";
 
 describe("createActivationUrl", () => {

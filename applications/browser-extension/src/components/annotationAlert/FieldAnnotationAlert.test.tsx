@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { render, screen } from "../../pageEditor/testHelpers";
-import FieldAnnotationAlert from "./FieldAnnotationAlert";
-import { AnnotationType } from "../../types/annotationTypes";
-import { type FieldAnnotationAction } from "../form/FieldAnnotation";
+import { render, screen } from "@/pageEditor/testHelpers";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { AnnotationType } from "@/types/annotationTypes";
+import { type FieldAnnotationAction } from "@/components/form/FieldAnnotation";
 
 describe("FieldAnnotationAlert", () => {
   const action: FieldAnnotationAction = {

@@ -17,13 +17,13 @@
 
 import { once } from "lodash";
 import { useEffect, useState } from "react";
-import { SimpleEventTarget } from "../../utils/SimpleEventTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type Tabs } from "webextension-polyfill";
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import {
   getConnectedTabId,
   getConnectedTargetUrl,
-} from "../connectedTarget";
+} from "@/sidebar/connectedTarget";
 
 let lastKnownUrl: string | undefined;
 const urlChanges = new SimpleEventTarget<string>();

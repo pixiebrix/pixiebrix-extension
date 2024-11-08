@@ -21,7 +21,7 @@ import { updatePageEditor } from "./events";
 import {
   allFramesInInspectedTab,
   isCurrentTopFrame,
-} from "./context/connection";
+} from "@/pageEditor/context/connection";
 
 async function onNavigation(target: Target): Promise<void> {
   if (isCurrentTopFrame(target)) {

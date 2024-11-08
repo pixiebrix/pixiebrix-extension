@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderNunjucksTemplate, runUserJs } from "./executor";
+import {
+  renderNunjucksTemplate,
+  runUserJs,
+} from "@/sandbox/messenger/executor";
 import { BusinessError, InvalidTemplateError } from "@/errors/businessErrors";
 
 describe("renderNunjucksTemplate", () => {
@@ -40,7 +43,7 @@ describe("renderNunjucksTemplate", () => {
   });
 
   it("handles non-nunjucks error", async () => {
-    jest.doMock("./executor", () => ({
+    jest.doMock("@/sandbox/messenger/executor", () => ({
       renderString: jest.fn().mockImplementation(() => {
         throw new Error("test");
       }),

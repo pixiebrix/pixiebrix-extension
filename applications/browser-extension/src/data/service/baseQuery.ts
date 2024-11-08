@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import type { NetworkRequestConfig } from "../../types/networkTypes";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { serializeError } from "serialize-error";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { getApiClient, getLinkedApiClient } from "./apiClient";
+import { getApiClient, getLinkedApiClient } from "@/data/service/apiClient";
 
 type QueryArgs = {
   /**

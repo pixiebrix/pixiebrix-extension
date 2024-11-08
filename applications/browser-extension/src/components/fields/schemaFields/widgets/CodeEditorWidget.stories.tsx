@@ -18,10 +18,10 @@
 import React from "react";
 import { type Meta, type StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import { settingsStore } from "../../../../testUtils/storyUtils";
+import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import Form from "../../../form/Form";
-import CodeEditorWidget from "./CodeEditorWidget";
+import Form from "@/components/form/Form";
+import CodeEditorWidget from "@/components/fields/schemaFields/widgets/CodeEditorWidget";
 import { type JSONSchema7 } from "json-schema";
 
 type CodeEditorWidgetPropsAndCustomArgs = React.ComponentProps<

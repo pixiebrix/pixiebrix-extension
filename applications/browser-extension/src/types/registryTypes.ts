@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "./stringTypes";
-import { type ApiVersion } from "./runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import { type SetRequired, type Tagged, type ValueOf } from "type-fest";
-import { type Schema } from "./schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type FeatureFlag } from "@/auth/featureFlags";
 
 /**
@@ -190,7 +190,7 @@ export class DoesNotExistError extends Error {
  * A registry that can look up items by id.
  * @since 1.8.2
  */
-export interface RegistryProtocol<
+export interface Registry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
 > {
@@ -200,9 +200,9 @@ export interface RegistryProtocol<
 /**
  * A registry that can enumerate all items accessible to the user.
  */
-export interface EnumerableRegistryProtocol<
+export interface EnumerableRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
-> extends RegistryProtocol<Id, Item> {
+> extends Registry<Id, Item> {
   all: () => Promise<Item[]>;
 }

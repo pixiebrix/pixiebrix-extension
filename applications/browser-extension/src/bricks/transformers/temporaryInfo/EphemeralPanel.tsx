@@ -24,19 +24,19 @@ import {
 } from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type Target } from "../../../types/messengerTypes";
-import { validateUUID } from "../../../types/helpers";
+import { type Target } from "@/types/messengerTypes";
+import { validateUUID } from "@/types/helpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import PanelBody from "../../../sidebar/PanelBody";
-import useTemporaryPanelDefinition from "./useTemporaryPanelDefinition";
-import { type UUID } from "../../../types/stringTypes";
+import PanelBody from "@/sidebar/PanelBody";
+import useTemporaryPanelDefinition from "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition";
+import { type UUID } from "@/types/stringTypes";
 import { startCase } from "lodash";
-import { type PanelButton } from "../../../types/sidebarTypes";
-import { ClosePanelAction } from "../../errors";
+import { type PanelButton } from "@/types/sidebarTypes";
+import { ClosePanelAction } from "@/bricks/errors";
 import styles from "./EphemeralPanel.module.scss";
 import useReportError from "@/hooks/useReportError";
-import { mapModComponentRefToMessageContext } from "../../../utils/modUtils";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Mode = "modal" | "popover";
 

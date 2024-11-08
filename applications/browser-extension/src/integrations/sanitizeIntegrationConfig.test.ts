@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sanitizeIntegrationConfig } from "./sanitizeIntegrationConfig";
-import automationAnywhere from "@/contrib/integrations/automation-anywhere.yaml";
-import { fromJS } from "./UserDefinedIntegration";
-import type { IntegrationDefinition } from "./integrationTypes";
+import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
+import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import type { IntegrationDefinition } from "@/integrations/integrationTypes";
 
 const aaIntegration = fromJS(
   automationAnywhere as unknown as IntegrationDefinition,

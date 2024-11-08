@@ -21,8 +21,8 @@ import { Card, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { selectSettings } from "../../../store/settings/settingsSelectors";
-import SettingToggle from "./SettingToggle";
+import { selectSettings } from "@/store/settings/settingsSelectors";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const { suggestElements, excludeRandomClasses, performanceTracing } =

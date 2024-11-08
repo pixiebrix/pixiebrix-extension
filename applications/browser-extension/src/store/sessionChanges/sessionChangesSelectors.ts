@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SessionRootState } from "../../pageEditor/store/session/sessionSliceTypes";
-import { type SessionChangesRootState } from "./sessionChangesTypes";
+import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
+import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { createSelector } from "@reduxjs/toolkit";
 
 /**

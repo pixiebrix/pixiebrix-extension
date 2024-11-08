@@ -18,11 +18,11 @@
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import React from "react";
-import { brickTypeSupportsOutputKey } from "../../../../runtime/runtimeUtils";
+import { brickTypeSupportsOutputKey } from "@/runtime/runtimeUtils";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import { type TypedBrickPair } from "@/bricks/registry";
 import { useField } from "formik";
-import { type Nullishable } from "../../../../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Field for output variable name.

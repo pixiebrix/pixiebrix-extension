@@ -18,7 +18,7 @@
 import { useConfiguredDeploymentKey } from "@/auth/deploymentKey";
 import useUserAction from "@/hooks/useUserAction";
 import { type DeploymentKey } from "@/auth/authTypes";
-import { isNullOrBlank } from "../../../utils/stringUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import { CancelError } from "@/errors/businessErrors";
 
 // https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication

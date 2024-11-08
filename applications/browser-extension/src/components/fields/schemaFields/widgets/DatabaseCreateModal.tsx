@@ -17,20 +17,20 @@
 
 import React, { useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
-import Form from "../../../form/Form";
+import Form from "@/components/form/Form";
 import * as yup from "yup";
-import ConnectedFieldTemplate from "../../../form/ConnectedFieldTemplate";
-import Loader from "../../../Loader";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import Loader from "@/components/Loader";
 import {
   useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
   useGetOrganizationsQuery,
 } from "@/data/service/api";
-import SelectWidget from "../../../form/widgets/SelectWidget";
-import DatabaseGroupSelect from "../DatabaseGroupSelect";
-import notify from "../../../../utils/notify";
-import { type UUID } from "../../../../types/stringTypes";
-import { validateUUID } from "../../../../types/helpers";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupSelect";
+import notify from "@/utils/notify";
+import { type UUID } from "@/types/stringTypes";
+import { validateUUID } from "@/types/helpers";
 import { type Team } from "@/data/model/Team";
 import { UserRole } from "@/data/model/UserRole";
 

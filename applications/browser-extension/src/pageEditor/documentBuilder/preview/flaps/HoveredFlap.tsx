@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { type DocumentBuilderElementType } from "../../documentBuilderTypes";
-import documentBuilderElementTypeLabels from "../../elementTypeLabels";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import cx from "classnames";
 import flapStyles from "./Flaps.module.scss";
 

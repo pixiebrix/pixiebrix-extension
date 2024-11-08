@@ -18,7 +18,7 @@
 import { expect } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { uuidv4 } from "../../../../src/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { BasePageObject } from "../../basePageObject";
 
 export class WorkshopModEditor extends BasePageObject {

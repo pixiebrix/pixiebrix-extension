@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UUID } from "../../types/stringTypes";
+import type { UUID } from "@/types/stringTypes";
 import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
-import LoginBanners from "./LoginBanners";
-import type { DeferredLogin } from "./deferredLoginTypes";
-import { MAX_Z_INDEX } from "../../domConstants";
+import LoginBanners from "@/contentScript/integrations/LoginBanners";
+import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
+import { MAX_Z_INDEX } from "@/domConstants";
 
 let bannerContainer: HTMLDivElement | null = null;
 let dismissLogin: ((configId: UUID) => void) | null = null;

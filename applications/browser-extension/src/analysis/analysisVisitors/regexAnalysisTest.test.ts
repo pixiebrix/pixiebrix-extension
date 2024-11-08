@@ -16,10 +16,10 @@
  */
 
 import { type BrickPosition } from "@/bricks/types";
-import RegexAnalysis from "./regexAnalysis";
-import { validateRegistryId } from "../../types/helpers";
+import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
+import { validateRegistryId } from "@/types/helpers";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const position: BrickPosition = {
   path: "test.path",

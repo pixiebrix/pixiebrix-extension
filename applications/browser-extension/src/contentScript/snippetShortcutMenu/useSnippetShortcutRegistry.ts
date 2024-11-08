@@ -17,8 +17,8 @@
 
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useCallback } from "react";
-import type { SnippetShortcut } from "../../platform/platformTypes/snippetShortcutMenuProtocol";
-import type SnippetRegistry from "./snippetShortcutRegistry";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
+import type SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 
 /**
  * React hook to sync React with the shortcut snippet registry.

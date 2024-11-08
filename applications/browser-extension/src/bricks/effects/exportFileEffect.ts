@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import type { BrickArgs } from "../../types/runtimeTypes";
-import type { Schema } from "../../types/schemaTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import type { BrickArgs } from "@/types/runtimeTypes";
+import type { Schema } from "@/types/schemaTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Brick to export a data URL as a file.

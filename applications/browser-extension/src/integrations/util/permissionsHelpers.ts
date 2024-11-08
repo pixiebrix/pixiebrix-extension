@@ -16,12 +16,12 @@
  */
 
 import { type Permissions } from "webextension-polyfill";
-import integrationRegistry from "../registry";
-import { expectContext } from "../../utils/expectContext";
-import { type IntegrationDependency } from "../integrationTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "../constants";
-import findSanitizedIntegrationConfigWithRetry from "./findSanitizedIntegrationConfigWithRetry";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import integrationRegistry from "@/integrations/registry";
+import { expectContext } from "@/utils/expectContext";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import findSanitizedIntegrationConfigWithRetry from "@/integrations/util/findSanitizedIntegrationConfigWithRetry";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Return origin permissions required to use an integration with the given configuration.

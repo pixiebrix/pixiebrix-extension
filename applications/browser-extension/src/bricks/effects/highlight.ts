@@ -16,12 +16,12 @@
  */
 /* eslint-disable unicorn/no-array-callback-reference -- $.find false positives */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { boolean } from "../../utils/typeUtils";
-import { $safeFind } from "../../utils/domUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { boolean } from "@/utils/typeUtils";
+import { $safeFind } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type ColorRule =
   | string

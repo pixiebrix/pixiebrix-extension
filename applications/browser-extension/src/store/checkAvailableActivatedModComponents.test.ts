@@ -16,34 +16,34 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { actions, editorSlice } from "../pageEditor/store/editor/editorSlice";
-import { type EditorRootState } from "../pageEditor/store/editor/pageEditorTypes";
-import { selectModComponentAvailability } from "../pageEditor/store/editor/editorSelectors";
+import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
-import { RemoteButtonStarterBrick } from "../starterBricks/button/buttonStarterBrick";
-import { type StarterBrickDefinitionLike } from "../starterBricks/types";
+import { RemoteButtonStarterBrick } from "@/starterBricks/button/buttonStarterBrick";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
-import { RemoteQuickBarStarterBrick } from "../starterBricks/quickBar/quickBarStarterBrick";
+import { RemoteQuickBarStarterBrick } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
   starterBrickDefinitionFactory,
-} from "../testUtils/factories/modDefinitionFactories";
-import { metadataFactory } from "../testUtils/factories/metadataFactory";
-import { getCurrentInspectedURL } from "../pageEditor/context/connection";
-import { getPlatform } from "../platform/platformContext";
-import { type ButtonDefinition } from "../starterBricks/button/buttonStarterBrickTypes";
-import { type QuickBarDefinition } from "../starterBricks/quickBar/quickBarTypes";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
+import { getPlatform } from "@/platform/platformContext";
+import { type ButtonDefinition } from "@/starterBricks/button/buttonStarterBrickTypes";
+import { type QuickBarDefinition } from "@/starterBricks/quickBar/quickBarTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import modComponentSlice from "./modComponents/modComponentSlice";
-import { type ModComponentsRootState } from "./modComponents/modComponentTypes";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 
-import { selectActivatedModComponents } from "./modComponents/modComponentSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
-jest.mock("../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("../pageEditor/context/connection");
+jest.mock("@/pageEditor/context/connection");
 
 const {
   actions: { activateMod },

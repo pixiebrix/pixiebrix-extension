@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type StaticPanelEntry } from "../../types/sidebarTypes";
+import { type StaticPanelEntry } from "@/types/sidebarTypes";
 
 export const MOD_LAUNCHER: StaticPanelEntry = {
   type: "staticPanel",

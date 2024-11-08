@@ -16,18 +16,18 @@
  */
 
 import React from "react";
-import ConsoleLogger from "../../../utils/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 import {
   type BrickArgsContext,
   type BrickOptions,
   type SelectorRoot,
-} from "../../../types/runtimeTypes";
-import { UNSET_UUID, validateRegistryId } from "../../../types/helpers";
-import { uninitializedPlatform } from "../../../platform/platformContext";
-import { type ModComponentRef } from "../../../types/modComponentTypes";
-import { INNER_SCOPE } from "../../../types/registryTypes";
+} from "@/types/runtimeTypes";
+import { UNSET_UUID, validateRegistryId } from "@/types/helpers";
+import { uninitializedPlatform } from "@/platform/platformContext";
+import { type ModComponentRef } from "@/types/modComponentTypes";
+import { INNER_SCOPE } from "@/types/registryTypes";
 
 type DocumentState = {
   onAction?: (action: { type: string; detail: JsonObject }) => void;

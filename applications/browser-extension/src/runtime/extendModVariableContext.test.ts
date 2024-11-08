@@ -18,12 +18,12 @@
 import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
-} from "./extendModVariableContext";
-import apiVersionOptions from "./apiVersionOptions";
+} from "@/runtime/extendModVariableContext";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { modComponentRefFactory } from "../testUtils/factories/modComponentFactories";
-import { MergeStrategies, StateNamespaces } from "../platform/state/stateTypes";
-import { getPlatform } from "../platform/platformContext";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 describe("createModVariableProxy", () => {
   beforeEach(async () => {

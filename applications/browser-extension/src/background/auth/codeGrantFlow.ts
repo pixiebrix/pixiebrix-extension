@@ -19,18 +19,18 @@ import {
   type AuthData,
   type IntegrationConfig,
   type OAuth2Context,
-} from "../../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
   computeChallenge,
   generateVerifier,
   getRandomString,
-} from "../../vendors/pkce";
+} from "@/vendors/pkce";
 import { BusinessError } from "@/errors/businessErrors";
 import axios, { type AxiosResponse } from "axios";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { setCachedAuthData } from "./authStorage";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { launchWebAuthFlow } from "./authHelpers";
+import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { launchWebAuthFlow } from "@/background/auth/authHelpers";
 
 /**
  * Retrieve the OAuth2 token using the code grant flow.

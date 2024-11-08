@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import migratePersistedState from "./migratePersistedState";
+import migratePersistedState from "@/store/migratePersistedState";
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { omit, pick } from "lodash";
 

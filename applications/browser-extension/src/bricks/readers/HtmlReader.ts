@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { isHTMLElement } from "./frameworkReader";
-import { type Schema } from "../../types/schemaTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { isHTMLElement } from "@/bricks/readers/frameworkReader";
+import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { type SelectorRoot } from "../../types/runtimeTypes";
+import { type SelectorRoot } from "@/types/runtimeTypes";
 
 /**
  * Read HTML from the document or the current element.

@@ -1,13 +1,13 @@
 import React from "react";
-import { type Brick } from "../../../types/brickTypes";
-import { type MarketplaceListing } from "../../../types/contract";
+import { type Brick } from "@/types/brickTypes";
+import { type MarketplaceListing } from "@/types/contract";
 import { Button } from "react-bootstrap";
 import PackageIcon from "@/components/PackageIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 
-import { MARKETPLACE_URL } from "../../../urlConstants";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const BrickDetail: React.FunctionComponent<{
   brick: Brick;

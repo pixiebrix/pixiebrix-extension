@@ -19,12 +19,12 @@ import {
   type ModComponentDefinition,
   type ModDefinition,
 } from "@/types/modDefinitionTypes";
-import { type StarterBrickDefinitionProp } from "./types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import starterBrickRegistry from "./registry";
-import { hydrateModInnerDefinitions } from "../registry/hydrateInnerDefinitions";
-import { QuickBarStarterBrickABC } from "./quickBar/quickBarStarterBrick";
-import { DynamicQuickBarStarterBrickABC } from "./dynamicQuickBar/dynamicQuickBarStarterBrick";
+import starterBrickRegistry from "@/starterBricks/registry";
+import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
+import { DynamicQuickBarStarterBrickABC } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 

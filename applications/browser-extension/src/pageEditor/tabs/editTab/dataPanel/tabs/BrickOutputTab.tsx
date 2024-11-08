@@ -1,27 +1,31 @@
-import DataTabPane from "../DataTabPane";
-import { DataPanelTabKey } from "../dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import Alert from "@/components/Alert";
-import { BrickTypes } from "../../../../../runtime/runtimeTypes";
-import DataTabJsonTree from "../DataTabJsonTree";
-import ErrorDisplay from "../ErrorDisplay";
+import { BrickTypes } from "@/runtime/runtimeTypes";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
 import React from "react";
 import type { ValueOf } from "type-fest";
-import BrickPreview, { usePreviewInfo } from "../../../effect/BrickPreview";
+import BrickPreview, {
+  usePreviewInfo,
+} from "@/pageEditor/tabs/effect/BrickPreview";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeInfo,
   selectNodeDataPanelTabState,
-} from "../../../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
-import ViewModeField, { type ViewModeOption } from "./ViewModeField";
-import useBrickTraceRecord from "./useBrickTraceRecord";
-import type { RootState } from "../../../../store/editor/pageEditorTypes";
+import ViewModeField, {
+  type ViewModeOption,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
+import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { isTraceError } from "../../../../../telemetry/trace";
+import { isTraceError } from "@/telemetry/trace";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const OutputViewModes = {
   Actual: "actual",

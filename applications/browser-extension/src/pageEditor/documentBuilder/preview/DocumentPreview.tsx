@@ -16,7 +16,7 @@
  */
 
 import previewStyles from "./ElementPreview.module.scss";
-import documentTreeStyles from "./documentTree.module.scss";
+import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 import styles from "./DocumentPreview.module.scss";
 import { useField } from "formik";
 import React, {
@@ -25,27 +25,27 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
 import ElementPreview from "./ElementPreview";
-import { ROOT_ELEMENT_TYPES } from "../allowedElementTypes";
+import { ROOT_ELEMENT_TYPES } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import cx from "classnames";
 import { getPreviewValues } from "@/components/fields/fieldUtils";
-import useDocumentPreviewRunBlock from "../../tabs/effect/useDocumentPreviewRunBlock";
+import useDocumentPreviewRunBlock from "@/pageEditor/tabs/effect/useDocumentPreviewRunBlock";
 import { useSelector } from "react-redux";
 import {
   selectActiveNodeId,
   selectParentNodeInfo,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { selectActiveModComponentTraceForBrick } from "../../store/runtime/runtimeSelectors";
+import { selectActiveModComponentTraceForBrick } from "@/pageEditor/store/runtime/runtimeSelectors";
 import ClickableElement from "@/components/ClickableElement";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type DocumentPreviewProps = {
   /**

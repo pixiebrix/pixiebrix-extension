@@ -26,50 +26,65 @@ import {
   type BaseFormStateV6,
   type BaseModComponentStateV1,
   type BaseModComponentStateV2,
-} from "../pageEditor/store/editor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
-  type EditorStateV1,
-  type EditorStateV10,
-  type EditorStateV11,
-  type EditorStateV2,
-  type EditorStateV3,
-  type EditorStateV4,
-  type EditorStateV5,
-  type EditorStateV6,
-  type EditorStateV7,
-  type EditorStateV8,
-  type EditorStateV9,
-} from "../pageEditor/store/editor/pageEditorTypes";
+  type EditorStateMigratedV12,
+  type EditorStateMigratedV1,
+  type EditorStateMigratedV10,
+  type EditorStateMigratedV11,
+  type EditorStateMigratedV2,
+  type EditorStateMigratedV3,
+  type EditorStateMigratedV4,
+  type EditorStateMigratedV5,
+  type EditorStateMigratedV6,
+  type EditorStateMigratedV7,
+  type EditorStateMigratedV8,
+  type EditorStateMigratedV9,
+  type EditorStateSynced,
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import { type Draft, produce } from "immer";
-import { DataPanelTabKey } from "../pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { makeInitialDataTabState } from "../pageEditor/store/editor/uiState";
-import { type BrickConfigurationUIState } from "../pageEditor/store/editor/uiStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { makeInitialDataTabState } from "@/pageEditor/store/editor/uiState";
+import { type BrickConfigurationUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import {
   createNewUnsavedModMetadata,
   emptyModOptionsDefinitionFactory,
   emptyModVariablesDefinitionFactory,
-} from "../utils/modUtils";
+} from "@/utils/modUtils";
 import { type SetOptional } from "type-fest";
+import { initialSyncedState } from "@/store/editorInitialState";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
   // state version to match state type names
   0: (state) => state,
   1: (state) => state,
-  2: (state: EditorStateV1 & PersistedState) => migrateEditorStateV1(state),
-  3: (state: EditorStateV2 & PersistedState) => migrateEditorStateV2(state),
-  4: (state: EditorStateV3 & PersistedState) => migrateEditorStateV3(state),
-  5: (state: EditorStateV4 & PersistedState) => migrateEditorStateV4(state),
-  6: (state: EditorStateV5 & PersistedState) => migrateEditorStateV5(state),
-  7: (state: EditorStateV6 & PersistedState) => migrateEditorStateV6(state),
-  8: (state: EditorStateV7 & PersistedState) => migrateEditorStateV7(state),
-  9: (state: EditorStateV8 & PersistedState) => migrateEditorStateV8(state),
-  10: (state: EditorStateV9 & PersistedState) => migrateEditorStateV9(state),
-  11: (state: EditorStateV10 & PersistedState) => migrateEditorStateV10(state),
+  2: (state: EditorStateMigratedV1 & PersistedState) =>
+    migrateEditorStateV1(state),
+  3: (state: EditorStateMigratedV2 & PersistedState) =>
+    migrateEditorStateV2(state),
+  4: (state: EditorStateMigratedV3 & PersistedState) =>
+    migrateEditorStateV3(state),
+  5: (state: EditorStateMigratedV4 & PersistedState) =>
+    migrateEditorStateV4(state),
+  6: (state: EditorStateMigratedV5 & PersistedState) =>
+    migrateEditorStateV5(state),
+  7: (state: EditorStateMigratedV6 & PersistedState) =>
+    migrateEditorStateV6(state),
+  8: (state: EditorStateMigratedV7 & PersistedState) =>
+    migrateEditorStateV7(state),
+  9: (state: EditorStateMigratedV8 & PersistedState) =>
+    migrateEditorStateV8(state),
+  10: (state: EditorStateMigratedV9 & PersistedState) =>
+    migrateEditorStateV9(state),
+  11: (state: EditorStateMigratedV10 & PersistedState) =>
+    migrateEditorStateV10(state),
+  12: (state: EditorStateMigratedV11 & PersistedState) =>
+    migrateEditorStateV11(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -99,8 +114,8 @@ function migrateFormStateV1(state: BaseFormStateV1): BaseFormStateV2 {
 
 /** @internal */
 export function migrateEditorStateV1(
-  state: EditorStateV1 & PersistedState,
-): EditorStateV2 & PersistedState {
+  state: EditorStateMigratedV1 & PersistedState,
+): EditorStateMigratedV2 & PersistedState {
   return {
     ...state,
     elements: state.elements.map((formState) => migrateFormStateV1(formState)),
@@ -128,7 +143,8 @@ export function migrateEditorStateV2({
   availableDynamicIds,
   isPendingDynamicExtensions,
   ...rest
-}: EditorStateV2 & PersistedState): EditorStateV3 & PersistedState {
+}: EditorStateMigratedV2 & PersistedState): EditorStateMigratedV3 &
+  PersistedState {
   return {
     ...rest,
     activeModComponentId: activeElementId,
@@ -169,7 +185,8 @@ export function migrateEditorStateV3({
   modComponentFormStates,
   deletedModComponentFormStatesByModId,
   ...rest
-}: EditorStateV3 & PersistedState): EditorStateV4 & PersistedState {
+}: EditorStateMigratedV3 & PersistedState): EditorStateMigratedV4 &
+  PersistedState {
   return {
     ...rest,
     modComponentFormStates: modComponentFormStates.map((element) =>
@@ -195,7 +212,8 @@ export function migrateEditorStateV4({
   modComponentFormStates,
   deletedModComponentFormStatesByModId,
   ...rest
-}: EditorStateV4 & PersistedState): EditorStateV5 & PersistedState {
+}: EditorStateMigratedV4 & PersistedState): EditorStateMigratedV5 &
+  PersistedState {
   return {
     ...rest,
     insertingStarterBrickType: inserting,
@@ -213,14 +231,15 @@ export function migrateEditorStateV4({
 export function migrateEditorStateV5({
   insertingStarterBrickType,
   ...rest
-}: EditorStateV5 & PersistedState): EditorStateV6 & PersistedState {
+}: EditorStateMigratedV5 & PersistedState): EditorStateMigratedV6 &
+  PersistedState {
   return rest;
 }
 
 /** @internal */
 export function migrateEditorStateV6(
-  state: EditorStateV6 & PersistedState,
-): EditorStateV7 & PersistedState {
+  state: EditorStateMigratedV6 & PersistedState,
+): EditorStateMigratedV7 & PersistedState {
   // Reset the Data Panel state using the current set of DataPanelTabKeys
   return produce(state, (draft) => {
     for (const uiState of Object.values(draft.brickPipelineUIStateById)) {
@@ -241,8 +260,8 @@ export function migrateEditorStateV6(
 
 /** @internal */
 export function migrateEditorStateV7(
-  state: EditorStateV7 & PersistedState,
-): EditorStateV8 & PersistedState {
+  state: EditorStateMigratedV7 & PersistedState,
+): EditorStateMigratedV8 & PersistedState {
   // Reset the Data Panel state using the current set of DataPanelTabKeys
   return produce(state, (draft) => {
     for (const formState of draft.modComponentFormStates) {
@@ -258,13 +277,13 @@ export function migrateEditorStateV7(
           emptyModVariablesDefinitionFactory();
       }
     }
-  }) as EditorStateV8 & PersistedState;
+  }) as EditorStateMigratedV8 & PersistedState;
 }
 
 /** @internal */
 export function migrateEditorStateV8(
-  state: EditorStateV8 & PersistedState,
-): EditorStateV9 & PersistedState {
+  state: EditorStateMigratedV8 & PersistedState,
+): EditorStateMigratedV9 & PersistedState {
   return produce(state, (draft) => {
     // Don't need to also loop over deletedModComponentFormStatesByModId, because there can't be any standalone
     // mod components in there. (Standalone mods when deleted are removed from the editor state entirely.)
@@ -274,19 +293,19 @@ export function migrateEditorStateV8(
           modName: formState.label,
         });
     }
-  }) as EditorStateV9 & PersistedState;
+  }) as EditorStateMigratedV9 & PersistedState;
 }
 
 /** @internal */
 export function migrateEditorStateV9(
-  state: EditorStateV9 & PersistedState,
-): EditorStateV10 & PersistedState {
+  state: EditorStateMigratedV9 & PersistedState,
+): EditorStateMigratedV10 & PersistedState {
   return produce(
-    state as unknown as EditorStateV10 & PersistedState,
+    state as unknown as EditorStateMigratedV10 & PersistedState,
     (draft) => {
       // Alias the old draft type for deleting old properties
       const oldDraft = draft as unknown as Draft<
-        SetOptional<EditorStateV9, "dirtyModOptionsById">
+        SetOptional<EditorStateMigratedV9, "dirtyModOptionsById">
       >;
 
       // Rename dirtyModOptionsById to dirtyModOptionsDefinitionById
@@ -313,15 +332,15 @@ export function migrateEditorStateV9(
 
 /** @internal */
 export function migrateEditorStateV10(
-  state: EditorStateV10 & PersistedState,
-): EditorStateV11 & PersistedState {
+  state: EditorStateMigratedV10 & PersistedState,
+): EditorStateMigratedV11 & PersistedState {
   return produce(
-    state as unknown as EditorStateV11 & PersistedState,
+    state as unknown as EditorStateMigratedV11 & PersistedState,
     (draft) => {
       // Alias the old draft type for deleting old properties
       const oldDraft = draft as unknown as Draft<
         SetOptional<
-          EditorStateV10,
+          EditorStateMigratedV10,
           | "dirtyModOptionsDefinitionsById"
           | "deletedModComponentFormStatesByModId"
         >
@@ -357,4 +376,34 @@ export function migrateEditorStateV10(
       }
     },
   );
+}
+
+/** @internal */
+export function migrateEditorStateV11(
+  state: EditorStateMigratedV11 & PersistedState,
+): EditorStateMigratedV12 & EditorStateSynced & PersistedState {
+  const {
+    dirty,
+    dirtyModVariablesDefinitionById,
+    isDimensionsWarningDismissed,
+    dirtyModMetadataById,
+    dirtyModOptionsDefinitionById,
+    dirtyModOptionsArgsById,
+    modComponentFormStates,
+    deletedModComponentFormStateIdsByModId,
+    _persist,
+  } = state;
+
+  return {
+    ...initialSyncedState,
+    dirty,
+    dirtyModVariablesDefinitionById,
+    isDimensionsWarningDismissed,
+    dirtyModMetadataById,
+    dirtyModOptionsArgsById,
+    modComponentFormStates,
+    deletedModComponentFormStateIdsByModId,
+    dirtyModOptionsDefinitionById,
+    _persist,
+  };
 }

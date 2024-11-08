@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "../../../telemetry/reportError";
-import { type TemporaryPanelEntry } from "../../../types/sidebarTypes";
+import reportError from "@/telemetry/reportError";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { remove } from "lodash";
-import { type UUID, type TimedSequence } from "../../../types/stringTypes";
-import { getTimedSequence } from "../../../types/helpers";
+import { type UUID, type TimedSequence } from "@/types/stringTypes";
+import { getTimedSequence } from "@/types/helpers";
 
 let lastMessageSeen = getTimedSequence();
 

@@ -21,23 +21,23 @@ import { useAuthOptions } from "@/hooks/useAuthOptions";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../testUtils/factories/integrationFactories";
-import { type SanitizedIntegrationConfig } from "../integrationTypes";
-import { valueToAsyncState } from "../../utils/asyncStateUtils";
+} from "@/testUtils/factories/integrationFactories";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
-import { render, screen, userEvent } from "../../pageEditor/testHelpers";
-import RequireIntegrationConfig from "./RequireIntegrationConfig";
-import { registryIdFactory } from "../../testUtils/factories/stringFactories";
-import { type Schema } from "../../types/schemaTypes";
+import { render, screen, userEvent } from "@/pageEditor/testHelpers";
+import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import { type Schema } from "@/types/schemaTypes";
 import selectEvent from "react-select-event";
 import { act } from "@testing-library/react";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { pipelineFactory } from "../../testUtils/factories/brickFactories";
-import { checkIntegrationAuth } from "../util/checkIntegrationAuth";
-import { makeVariableExpression } from "../../utils/variableUtils";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { pipelineFactory } from "@/testUtils/factories/brickFactories";
+import { checkIntegrationAuth } from "@/integrations/util/checkIntegrationAuth";
+import { makeVariableExpression } from "@/utils/variableUtils";
 
-jest.mock("../../hooks/useAuthOptions");
-jest.mock("../util/checkIntegrationAuth.ts");
+jest.mock("@/hooks/useAuthOptions");
+jest.mock("@/integrations/util/checkIntegrationAuth.ts");
 
 const findSanitizedIntegrationConfigMock = jest.mocked(
   integrationConfigLocator.findSanitizedIntegrationConfig,

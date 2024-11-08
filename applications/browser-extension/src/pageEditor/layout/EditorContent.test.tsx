@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "../testHelpers";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
-import EditorContent from "./EditorContent";
+import EditorContent from "@/pageEditor/layout/EditorContent";
 import { getRunningStarterBricks } from "@/contentScript/messenger/api";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { getCurrentInspectedURL } from "../context/connection";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
-jest.mock("../../permissions/modComponentPermissionsHelpers", () => ({
+jest.mock("@/permissions/modComponentPermissionsHelpers", () => ({
   collectModComponentPermissions: jest.fn().mockResolvedValue({}),
 }));
 
 // Mock to support hook usage in the subtree, not relevant to UI tests here
-jest.mock("../../hooks/useRefreshRegistries");
+jest.mock("@/hooks/useRefreshRegistries");
 
-jest.mock("../context/connection", () => {
+jest.mock("@/pageEditor/context/connection", () => {
   const actual = jest.requireActual("@/pageEditor/context/connection");
   return {
     ...actual,
@@ -39,9 +39,9 @@ jest.mock("../context/connection", () => {
   };
 });
 
-jest.mock("../hooks/useCurrentInspectedUrl");
+jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 
-jest.mock("../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
 describe("error alerting in the UI", () => {
   test("shows error when checkAvailableDraftModComponents fails", async () => {

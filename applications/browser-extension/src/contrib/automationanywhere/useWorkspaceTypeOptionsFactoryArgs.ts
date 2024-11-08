@@ -17,10 +17,10 @@
 
 import useAsyncEffect from "use-async-effect";
 import { isCommunityControlRoom } from "./aaUtils";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { useField } from "formik";
-import type { WorkspaceType } from "./contract";
-import { cachedFetchBotFile } from "./aaApi";
+import type { WorkspaceType } from "@/contrib/automationanywhere/contract";
+import { cachedFetchBotFile } from "@/contrib/automationanywhere/aaApi";
 import { useMemo } from "react";
 
 export type WorkspaceTypeFactoryArgs = {

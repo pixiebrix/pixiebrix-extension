@@ -16,7 +16,7 @@
  */
 
 import { getErrorMessage, onUncaughtError } from "@/errors/errorHelpers";
-import { browserAction } from "../mv3/api";
+import { browserAction } from "@/mv3/api";
 
 let counter = 0;
 let timer: NodeJS.Timeout;

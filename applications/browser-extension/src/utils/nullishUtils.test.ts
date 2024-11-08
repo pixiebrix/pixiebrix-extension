@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assertNotNullish } from "./nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 describe("nullishUtils", () => {
   describe("assertNotNullish", () => {

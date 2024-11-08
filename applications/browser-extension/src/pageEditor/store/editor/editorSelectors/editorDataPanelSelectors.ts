@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { EditorRootState } from "../pageEditorTypes";
-import type { Nullishable } from "../../../../utils/nullishUtils";
-import type { DataPanelTabKey } from "../../../tabs/editTab/dataPanel/dataPanelTypes";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import type { DataPanelTabUIState } from "../uiStateTypes";
-import { selectActiveBrickConfigurationUIState } from "./editorPipelineSelectors";
+import type { DataPanelTabUIState } from "@/pageEditor/store/editor/uiStateTypes";
+import { selectActiveBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSelectors/editorPipelineSelectors";
 
 export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;

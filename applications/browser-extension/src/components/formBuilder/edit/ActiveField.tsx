@@ -2,15 +2,15 @@ import React from "react";
 import {
   type SelectStringOption,
   type SetActiveField,
-} from "../formBuilderTypes";
+} from "@/components/formBuilder/formBuilderTypes";
 import FieldEditor from "./FieldEditor";
 import {
   moveStringInArray,
   getNormalizedUiOrder,
-} from "../formBuilderHelpers";
-import { type Schema } from "../../../types/schemaTypes";
-import FieldTemplate from "../../form/FieldTemplate";
-import LayoutWidget from "../../LayoutWidget";
+} from "@/components/formBuilder/formBuilderHelpers";
+import { type Schema } from "@/types/schemaTypes";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import LayoutWidget from "@/components/LayoutWidget";
 import { findLast } from "lodash";
 import { type FormikErrors } from "formik";
 

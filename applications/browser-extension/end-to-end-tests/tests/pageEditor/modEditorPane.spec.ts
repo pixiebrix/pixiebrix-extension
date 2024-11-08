@@ -19,8 +19,8 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { type PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
-import { sleep } from "../../../src/utils/timeUtils";
+import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
+import { sleep } from "@/utils/timeUtils";
 
 const testModDefinitionName = "simple-sidebar-panel";
 test.use({ modDefinitionNames: [testModDefinitionName] });

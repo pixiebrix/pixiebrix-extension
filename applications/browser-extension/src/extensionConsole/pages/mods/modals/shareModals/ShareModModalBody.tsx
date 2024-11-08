@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import { type UUID } from "../../../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowShareContext } from "../modModalsSelectors";
-import { modModalsSlice } from "../modModalsSlice";
+import { selectShowShareContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import * as Yup from "yup";
 import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -29,7 +29,7 @@ import {
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
 import { type FormikHelpers } from "formik";
-import notify from "../../../../../utils/notify";
+import notify from "@/utils/notify";
 import { produce } from "immer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,15 +40,15 @@ import {
 import ReactSelect from "react-select";
 import styles from "./ShareModals.module.scss";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ActivationLink from "@/activation/ActivationLink";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import Loader from "@/components/Loader";
-import useHasEditPermissions from "./useHasEditPermissions";
-import ModOwnerLabel from "./ModOwnerLabel";
-import useSortOrganizations from "./useSortOrganizations";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
+import ModOwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel";
+import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ShareModFormState = {
   organizations: UUID[];

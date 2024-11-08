@@ -17,7 +17,7 @@
 
 import { type SafeString } from "@/types/stringTypes";
 import type { Expression, OutputKey } from "@/types/runtimeTypes";
-import { toExpression } from "./expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 import { VARIABLE_REFERENCE_PREFIX } from "@/types/runtimeTypes";
 import { trimEnd } from "lodash";
 

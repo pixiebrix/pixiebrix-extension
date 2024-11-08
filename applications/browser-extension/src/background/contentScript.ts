@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isRemoteProcedureCallRequest } from "../utils/legacyMessengerUtils";
-import { expectContext } from "../utils/expectContext";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
+import { expectContext } from "@/utils/expectContext";
 import type { Target } from "@/types/messengerTypes";
 import {
   CONTENT_SCRIPT_READY_NOTIFICATION,

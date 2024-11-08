@@ -18,7 +18,7 @@
 import { isEmpty, negate, type ObjectIterator } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
-import { sleep } from "./timeUtils";
+import { sleep } from "@/utils/timeUtils";
 
 /**
  * Use to accept an abort signal as option object as standard practice.

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sortedFields } from "./schemaFieldUtils";
-import { type Schema } from "../../../types/schemaTypes";
+import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { type Schema } from "@/types/schemaTypes";
 
 describe("sortedFields", () => {
   it("sorts by type first", () => {

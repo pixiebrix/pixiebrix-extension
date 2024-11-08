@@ -19,7 +19,7 @@ import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAl
 import {
   selectActiveNodeInfo,
   selectActiveModComponentAnalysisAnnotationsForPath,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import React from "react";
 
 import { useSelector } from "react-redux";

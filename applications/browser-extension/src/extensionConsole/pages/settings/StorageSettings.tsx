@@ -21,12 +21,12 @@ import { round } from "lodash";
 import {
   count as registrySize,
   recreateDB as recreateBrickDB,
-} from "../../../registry/packageRegistry";
+} from "@/registry/packageRegistry";
 import {
   clearLogs,
   count as logSize,
   recreateDB as recreateLogDB,
-} from "../../../telemetry/logging";
+} from "@/telemetry/logging";
 import {
   clear as clearEvents,
   count as eventsSize,
@@ -40,11 +40,11 @@ import {
   clearTraces,
   count as traceSize,
   recreateDB as recreateTraceDB,
-} from "../../../telemetry/trace";
+} from "@/telemetry/trace";
 import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 import cx from "classnames";
-import styles from "./SettingsCard.module.scss";
-import { type StorageEstimate } from "../../../types/browserTypes";
+import styles from "@/extensionConsole/pages/settings/SettingsCard.module.scss";
+import { type StorageEstimate } from "@/types/browserTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 /**

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isContextInvalidatedError } from "./contextInvalidated";
+import { isContextInvalidatedError } from "@/errors/contextInvalidated";
 
 describe("isContextInvalidatedError", () => {
   const invalidated = new Error("Extension context invalidated.");

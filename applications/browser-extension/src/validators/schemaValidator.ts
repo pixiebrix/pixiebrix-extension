@@ -21,29 +21,29 @@ import {
   Validator,
 } from "@cfworker/json-schema";
 import { type Schema } from "@/types/schemaTypes";
-import integrationRegistry from "../integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { cloneDeep, pickBy, trimEnd } from "lodash";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {
   type FileInfo,
   type ResolverOptions,
 } from "@apidevtools/json-schema-ref-parser/dist/lib/types";
-import draft07 from "../../schemas/draft-07.json";
-import serviceSchema from "../../schemas/service.json";
-import readerSchema from "../../schemas/reader.json";
-import extensionPointSchema from "../../schemas/extensionPoint.json";
-import iconSchema from "../../schemas/icon.json";
-import recipeSchema from "../../schemas/recipe.json";
-import keySchema from "../../schemas/key.json";
-import metadataSchema from "../../schemas/metadata.json";
-import innerDefinitionSchema from "../../schemas/innerDefinition.json";
-import refSchema from "../../schemas/ref.json";
-import componentSchema from "../../schemas/component.json";
-import pipelineSchema from "../../schemas/pipeline.json";
-import databaseSchema from "../../schemas/database.json";
-import elementSchema from "../../schemas/element.json";
-import googleSheetIdSchema from "../../schemas/googleSheetId.json";
-import { inputProperties, minimalSchemaFactory } from "../utils/schemaUtils";
+import draft07 from "@schemas/draft-07.json";
+import serviceSchema from "@schemas/service.json";
+import readerSchema from "@schemas/reader.json";
+import extensionPointSchema from "@schemas/extensionPoint.json";
+import iconSchema from "@schemas/icon.json";
+import recipeSchema from "@schemas/recipe.json";
+import keySchema from "@schemas/key.json";
+import metadataSchema from "@schemas/metadata.json";
+import innerDefinitionSchema from "@schemas/innerDefinition.json";
+import refSchema from "@schemas/ref.json";
+import componentSchema from "@schemas/component.json";
+import pipelineSchema from "@schemas/pipeline.json";
+import databaseSchema from "@schemas/database.json";
+import elementSchema from "@schemas/element.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { inputProperties, minimalSchemaFactory } from "@/utils/schemaUtils";
 import { validateRegistryId } from "@/types/helpers";
 import type { JSONSchema7 } from "json-schema";
 

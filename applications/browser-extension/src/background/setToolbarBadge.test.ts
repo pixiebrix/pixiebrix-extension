@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "../mv3/api";
+import { browserAction } from "@/mv3/api";
 import {
   DEFAULT_BADGE_COLOR,
   setToolbarBadge,
-} from "./toolbarBadge";
-import { messengerMetaFactory } from "../testUtils/factories/messengerFactories";
+} from "@/background/toolbarBadge";
+import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
 
-jest.mock("../mv3/api", () => ({
+jest.mock("@/mv3/api", () => ({
   browserAction: {
     setBadgeBackgroundColor: jest.fn(),
     setBadgeText: jest.fn(),

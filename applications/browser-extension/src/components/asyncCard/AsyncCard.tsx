@@ -1,7 +1,7 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import React from "react";
 import { Card } from "react-bootstrap";
-import Loader from "../Loader";
+import Loader from "@/components/Loader";
 
 type OwnProps = {
   header: React.ReactNode;

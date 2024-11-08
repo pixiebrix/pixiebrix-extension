@@ -14,21 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import styles from "./ActiveSidebarModsList.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveSidebarModsList.module.scss";
 
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import { type Column, useTable } from "react-table";
-import ActiveSidebarModsListItem from "./ActiveSidebarModsListItem";
+import ActiveSidebarModsListItem from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
 import { isEmpty, sortBy } from "lodash";
-import workshopIllustration from "../../../img/workshop.svg";
+import workshopIllustration from "@img/workshop.svg";
 
-import { MARKETPLACE_URL } from "../../urlConstants";
-import { type PanelEntry } from "../../types/sidebarTypes";
+import { MARKETPLACE_URL } from "@/urlConstants";
+import { type PanelEntry } from "@/types/sidebarTypes";
 import { useSelector } from "react-redux";
-import { selectSidebarPanels } from "../sidebarSelectors";
+import { selectSidebarPanels } from "@/sidebar/sidebarSelectors";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
-import { splitStartingEmoji } from "../../utils/stringUtils";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 
 const columns: Array<Column<PanelEntry>> = [
   {

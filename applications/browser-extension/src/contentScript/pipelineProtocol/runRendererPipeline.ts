@@ -1,11 +1,11 @@
-import { reducePipeline } from "../../runtime/reducePipeline";
-import { expectContext } from "../../utils/expectContext";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/bricks/errors";
 import { BusinessError } from "@/errors/businessErrors";
-import { type IntegrationContext } from "../../types/runtimeTypes";
-import { type RendererRunPayload } from "../../types/rendererTypes";
-import { getPlatform } from "../../platform/platformContext";
-import { type RunPipelineParams } from "./types";
+import { type IntegrationContext } from "@/types/runtimeTypes";
+import { type RendererRunPayload } from "@/types/rendererTypes";
+import { getPlatform } from "@/platform/platformContext";
+import { type RunPipelineParams } from "@/contentScript/pipelineProtocol/types";
 
 /**
  * Run a BrickPipeline in the contentScript, passing back the information required to run the renderer

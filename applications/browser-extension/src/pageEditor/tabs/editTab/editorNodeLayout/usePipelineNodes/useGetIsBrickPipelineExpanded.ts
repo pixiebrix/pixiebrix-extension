@@ -17,9 +17,9 @@
 
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { type BrickConfig } from "@/bricks/types";
-import { selectCollapsedNodes } from "../../../../store/editor/editorSelectors";
-import { getSubPipelinesForBrick } from "./helpers";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { selectCollapsedNodes } from "@/pageEditor/store/editor/editorSelectors";
+import { getSubPipelinesForBrick } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { isEmpty } from "lodash";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
@@ -34,7 +34,7 @@ export function useGetIsBrickPipelineExpanded() {
 
   return useCallback(
     ({ brickConfig }: GetIsBrickPipelineExpandedProps) => {
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
 
       const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
       const hasSubPipelines = !isEmpty(subPipelines);

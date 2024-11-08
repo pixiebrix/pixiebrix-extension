@@ -26,30 +26,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
-import { type TraceRecord } from "../../../telemetry/trace";
-import { removeEmptyValues } from "../../starterBricks/base";
+import { type TraceRecord } from "@/telemetry/trace";
+import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBrickPreview } from "@/contentScript/messenger/api";
 import { useField } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import getType from "../../../runtime/getType";
-import { type BrickType, BrickTypes } from "../../../runtime/runtimeTypes";
-import { DataPanelTabKey } from "../editTab/dataPanel/dataPanelTypes";
-import DataTabJsonTree from "../editTab/dataPanel/DataTabJsonTree";
-import { type RegistryId } from "../../../types/registryTypes";
-import { type Brick } from "../../../types/brickTypes";
-import {
-  type ApiVersion,
-  type BrickArgsContext,
-} from "../../../types/runtimeTypes";
-import { type IntegrationDependency } from "../../../integrations/integrationTypes";
-import { type BaseStarterBrickState } from "../../store/editor/baseFormStateTypes";
-import makeIntegrationContextFromDependencies from "../../../integrations/util/makeIntegrationContextFromDependencies";
-import type { FetchableAsyncState } from "../../../types/sliceTypes";
+import getType from "@/runtime/getType";
+import { type BrickType, BrickTypes } from "@/runtime/runtimeTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
+import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import { inspectedTab } from "../../context/connection";
-import { type Nullishable } from "../../../utils/nullishUtils";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { useSelector } from "react-redux";
-import { selectActiveModComponentRef } from "../../store/editor/editorSelectors";
+import { selectActiveModComponentRef } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * Bricks to preview even if there's no trace.

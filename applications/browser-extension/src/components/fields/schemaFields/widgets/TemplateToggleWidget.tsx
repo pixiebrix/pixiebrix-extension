@@ -24,9 +24,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { type FieldInputMode } from "../fieldInputMode";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import WidgetLoadingIndicator from "./WidgetLoadingIndicator";
+import WidgetLoadingIndicator from "@/components/fields/schemaFields/widgets/WidgetLoadingIndicator";
 import useToggleFormField from "@/hooks/useToggleFormField";
 import { useField } from "formik";
 import {
@@ -35,8 +35,8 @@ import {
 } from "./templateToggleWidgetTypes";
 import VarPopup from "./varPopup/VarPopup";
 
-import { isTemplateExpression } from "../../../../utils/expressionUtils";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
+import { isTemplateExpression } from "@/utils/expressionUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export function getOptionForInputMode(
   options: InputModeOption[],

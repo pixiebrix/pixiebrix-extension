@@ -21,7 +21,7 @@ import {
   type SettingsStateV1,
   type SettingsStateV2,
   type SettingsStateV3,
-} from "./settingsTypes";
+} from "@/store/settings/settingsTypes";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed

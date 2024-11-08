@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { PageTitle } from "../../../layout/Page";
+import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form } from "react-bootstrap";

@@ -19,10 +19,10 @@ import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { type SettingsFlags } from "../../../store/settings/settingsTypes";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
-import settingsSlice from "../../../store/settings/settingsSlice";
+import { type SettingsFlags } from "@/store/settings/settingsTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch } from "react-redux";
 
 interface CommonProps {

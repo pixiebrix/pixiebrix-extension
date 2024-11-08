@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import { render } from "../../pageEditor/testHelpers";
-import IdentityTransformerOptions from "./IdentityTransformerOptions";
-import { getExampleBrickConfig } from "../exampleBrickConfigs";
-import IdentityTransformer from "./IdentityTransformer";
-import brickRegistry from "../registry";
+import { render } from "@/pageEditor/testHelpers";
+import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import brickRegistry from "@/bricks/registry";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import registerEditors from "@/contrib/editors";
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   brickRegistry.register([new IdentityTransformer()]);

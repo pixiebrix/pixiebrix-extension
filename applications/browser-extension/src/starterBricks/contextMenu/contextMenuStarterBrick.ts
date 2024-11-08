@@ -32,50 +32,53 @@ import {
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
-import reportError from "../../telemetry/reportError";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import { selectEventData } from "../../telemetry/deployments";
-import { isDeploymentActive } from "../../utils/deploymentUtils";
-import apiVersionOptions from "../../runtime/apiVersionOptions";
+import reportError from "@/telemetry/reportError";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { selectEventData } from "@/telemetry/deployments";
+import { isDeploymentActive } from "@/utils/deploymentUtils";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import { guessSelectedElement } from "../../utils/selectionController";
-import { ContextMenuReader, contextMenuReaderShim } from "./contextMenuReader";
+import { guessSelectedElement } from "@/utils/selectionController";
+import {
+  ContextMenuReader,
+  contextMenuReaderShim,
+} from "@/starterBricks/contextMenu/contextMenuReader";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { type Reader } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { type Brick } from "../../types/brickTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { type Brick } from "@/types/brickTypes";
 import {
   type StarterBrick,
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
-import { type UUID } from "../../types/stringTypes";
-import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
-import pluralize from "../../utils/pluralize";
-import { allSettled } from "../../utils/promiseUtils";
+} from "@/types/starterBrickTypes";
+import { type UUID } from "@/types/stringTypes";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
+import pluralize from "@/utils/pluralize";
+import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
-import type { PlatformCapability } from "../../platform/capabilities";
-import { getPlatform } from "../../platform/platformContext";
-import { getSettingsState } from "../../store/settings/settingsStorage";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { getPlatform } from "@/platform/platformContext";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
-import type { PlatformProtocol } from "../../platform/platformProtocol";
-import { DEFAULT_ACTION_RESULTS } from "../starterBrickConstants";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
 import {
   type ContextMenuTargetMode,
   type ContextMenuConfig,
   type ContextMenuDefinition,
-} from "./contextMenuTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
-} from "../../utils/modUtils";
+} from "@/utils/modUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 

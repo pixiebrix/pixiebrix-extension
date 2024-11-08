@@ -23,7 +23,7 @@ import UrlMatchPatternField, {
 } from "./UrlMatchPatternField";
 import { action } from "@storybook/addon-actions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { editorStore } from "../../testUtils/storyUtils";
+import { editorStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 
 registerDefaultWidgets();

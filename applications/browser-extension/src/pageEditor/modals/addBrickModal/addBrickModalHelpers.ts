@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BRICK_RESULT_COLUMN_COUNT } from "./addBrickModalConstants";
-import { type RegistryId } from "../../../types/registryTypes";
-import { type ItemKeyInput } from "./addBrickModalTypes";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { BRICK_RESULT_COLUMN_COUNT } from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ItemKeyInput } from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export function getFlatArrayIndex({
   rowIndex,

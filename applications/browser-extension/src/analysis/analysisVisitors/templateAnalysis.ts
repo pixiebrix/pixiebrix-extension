@@ -15,18 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Analysis, type AnalysisAnnotation } from "../analysisTypes";
+import {
+  type Analysis,
+  type AnalysisAnnotation,
+} from "@/analysis/analysisTypes";
 import { type BrickPosition } from "@/bricks/types";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import PipelineExpressionVisitor from "@/bricks/PipelineExpressionVisitor";
-import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
-import { type Expression } from "../../types/runtimeTypes";
-import { AnnotationType } from "../../types/annotationTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import {
   isNunjucksExpression,
   isTemplateExpression,
-} from "../../utils/expressionUtils";
-import { validateNunjucksTemplate } from "../../sandbox/messenger/api";
+} from "@/utils/expressionUtils";
+import { validateNunjucksTemplate } from "@/sandbox/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 const TEMPLATE_ERROR_MESSAGE =

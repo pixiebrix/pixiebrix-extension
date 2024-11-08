@@ -19,12 +19,12 @@ import {
   type AuthData,
   type Integration,
   type IntegrationConfig,
-} from "../../integrations/integrationTypes";
-import { expectContext } from "../../utils/expectContext";
+} from "@/integrations/integrationTypes";
+import { expectContext } from "@/utils/expectContext";
 import axios from "axios";
-import { setCachedAuthData } from "./authStorage";
-import { memoizeUntilSettled } from "../../utils/promiseUtils";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { setCachedAuthData } from "@/background/auth/authStorage";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Exchange credentials for a token, and cache the token response.

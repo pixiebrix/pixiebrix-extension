@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { pick } from "lodash";
 
 // Methods imported async in the brick
 import type { ParsedDomain } from "psl";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { isNullOrBlank } from "../../utils/stringUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const URL_PROPERTIES = [
   "port",

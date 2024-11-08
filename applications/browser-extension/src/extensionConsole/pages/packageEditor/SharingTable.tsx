@@ -23,7 +23,7 @@ import { Table } from "react-bootstrap";
 import React from "react";
 import { useField } from "formik";
 import { useGetOrganizationsQuery } from "@/data/service/api";
-import { type UUID } from "../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { type Team } from "@/data/model/Team";
 
 const SharingTable: React.FunctionComponent = () => {

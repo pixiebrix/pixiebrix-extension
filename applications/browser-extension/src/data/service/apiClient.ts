@@ -16,7 +16,7 @@
  */
 
 import axios, { type AxiosError, type AxiosInstance } from "axios";
-import { getBaseURL } from "./baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import {
   addAuthListener,
   clearPartnerAuthData,
@@ -28,10 +28,10 @@ import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
 } from "@/errors/genericErrors";
-import { isUrlRelative } from "../../utils/urlUtils";
+import { isUrlRelative } from "@/utils/urlUtils";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
-import { selectAxiosError } from "./requestErrorUtils";
-import { getURLApiVersion } from "./apiVersioning";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
+import { getURLApiVersion } from "@/data/service/apiVersioning";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { refreshPartnerAuthentication } from "@/background/messenger/api";
 

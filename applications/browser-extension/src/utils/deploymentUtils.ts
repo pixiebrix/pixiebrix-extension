@@ -23,13 +23,13 @@ import { type RegistryId } from "@/types/registryTypes";
 import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
-} from "../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { normalizeSemVerString, validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
-import { PIXIEBRIX_INTEGRATION_ID } from "../integrations/constants";
-import getUnconfiguredComponentIntegrations from "../integrations/util/getUnconfiguredComponentIntegrations";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
-import { getExtensionVersion } from "./extensionUtils";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 import type { ModInstance } from "@/types/modInstanceTypes";
 
 /**

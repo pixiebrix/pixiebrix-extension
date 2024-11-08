@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { ContextBrick } from "../../runtime/pipelineTests/testHelpers";
-import { toExpression } from "../../utils/expressionUtils";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { makeFieldActionForAnnotationAction } from "./makeFieldActionForAnnotationAction";
-import { render } from "../../pageEditor/testHelpers";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { ContextBrick } from "@/runtime/pipelineTests/testHelpers";
+import { toExpression } from "@/utils/expressionUtils";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { makeFieldActionForAnnotationAction } from "@/components/form/makeFieldActionForAnnotationAction";
+import { render } from "@/pageEditor/testHelpers";
 import { useFormikContext } from "formik";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
-import AsyncButton from "../AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { screen, act } from "@testing-library/react";
 
 describe("makeFieldActionForAnnotationAction", () => {

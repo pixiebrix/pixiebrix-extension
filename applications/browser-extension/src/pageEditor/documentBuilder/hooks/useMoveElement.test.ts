@@ -18,9 +18,9 @@
 import {
   arrayMove,
   moveElement,
-} from "./useMoveElement";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
-import { toExpression } from "../../../utils/expressionUtils";
+} from "@/pageEditor/documentBuilder/hooks/useMoveElement";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 const data = {
   id: "@pixiebrix/document",

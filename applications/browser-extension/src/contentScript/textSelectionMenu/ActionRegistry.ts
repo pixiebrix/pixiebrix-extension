@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UUID } from "../../types/stringTypes";
-import type { IconConfig } from "../../types/iconTypes";
-import { splitStartingEmoji } from "../../utils/stringUtils";
-import { SimpleEventTarget } from "../../utils/SimpleEventTarget";
-import type { Nullishable } from "../../utils/nullishUtils";
+import type { UUID } from "@/types/stringTypes";
+import type { IconConfig } from "@/types/iconTypes";
+import { splitStartingEmoji } from "@/utils/stringUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import type { Nullishable } from "@/utils/nullishUtils";
 import type {
   TextSelectionMenuProtocol,
   TextSelectionAction,
-} from "../../platform/platformTypes/textSelectionMenuProtocol";
+} from "@/platform/platformTypes/textSelectionMenuProtocol";
 
 /**
  * A registered text selection action.

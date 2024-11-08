@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "../../utils/expectContext";
-import { getConnectedTarget } from "../../sidebar/connectedTarget";
+import { expectContext } from "@/utils/expectContext";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getCopilotHostData } from "@/contentScript/messenger/api";
-import { type ProcessDataMap, SET_COPILOT_DATA_MESSAGE_TYPE } from "./aaTypes";
+import {
+  type ProcessDataMap,
+  SET_COPILOT_DATA_MESSAGE_TYPE,
+} from "@/contrib/automationanywhere/aaTypes";
 import { type TopLevelFrame } from "webext-messenger";
 
 /**

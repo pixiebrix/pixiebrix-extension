@@ -17,15 +17,15 @@
 
 /// <reference types="@types/dom-chromium-ai" />
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
-import { type PlatformCapability } from "../../../platform/capabilities";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type PlatformCapability } from "@/platform/capabilities";
 import {
   assertAiCapabilities,
   throwIfBusinessError,
-} from "./domAiHelpers";
+} from "@/bricks/transformers/ai/domAiHelpers";
 
 /**
  * Prompt API EPP documentation: https://docs.google.com/document/d/1VG8HIyz361zGduWgNG7R_R8Xkv0OOJ8b5C9QKeCjU0c/

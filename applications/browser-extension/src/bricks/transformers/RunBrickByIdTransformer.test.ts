@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../registry";
-import { echoBrick, throwBrick } from "../../runtime/pipelineTests/testHelpers";
-import RunBrickByIdTransformer from "./RunBrickByIdTransformer";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { InputValidationError } from "../errors";
+import brickRegistry from "@/bricks/registry";
+import { echoBrick, throwBrick } from "@/runtime/pipelineTests/testHelpers";
+import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransformer";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { InputValidationError } from "@/bricks/errors";
 import { BusinessError } from "@/errors/businessErrors";
 
-const brick = new RunBrickByIdTransformer(brickRegistry);
+const brick = new RunBrickByIdTransformer();
 
 beforeEach(() => {
   brickRegistry.clear();

@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import UrlMatchPatternField from "../fields/UrlMatchPatternField";
-import ConnectedCollapsibleFieldSection from "../fields/ConnectedCollapsibleFieldSection";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const ExtraPermissionsSection: React.FunctionComponent = () => (
   <ConnectedCollapsibleFieldSection title="Advanced: Extra Permissions">

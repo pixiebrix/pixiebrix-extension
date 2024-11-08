@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ModComponentFormState } from "../starterBricks/formStateTypes";
-import type { ModComponentBase } from "../../types/modComponentTypes";
-import { actions as modComponentActions } from "../../store/modComponents/modComponentSlice";
-import collectExistingConfiguredDependenciesForMod from "../../integrations/util/collectExistingConfiguredDependenciesForMod";
-import type { ModDefinition } from "../../types/modDefinitionTypes";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import mapModDefinitionToModMetadata from "../../modDefinitions/util/mapModDefinitionToModMetadata";
-import type { RegistryId } from "../../types/registryTypes";
-import { getDraftModComponentId } from "../utils";
-import { type AppDispatch } from "../store/store";
-import { selectGetOptionsArgsForModId } from "../store/editor/editorSelectors";
-import { type RootState } from "../store/editor/pageEditorTypes";
+import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import type { ModComponentBase } from "@/types/modComponentTypes";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
+import type { RegistryId } from "@/types/registryTypes";
+import { getDraftModComponentId } from "@/pageEditor/utils";
+import { type AppDispatch } from "@/pageEditor/store/store";
+import { selectGetOptionsArgsForModId } from "@/pageEditor/store/editor/editorSelectors";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /**
  * Update Redux for a saved mod definition.

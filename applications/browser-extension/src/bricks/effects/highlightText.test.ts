@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import HighlightText from "./highlightText";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import HighlightText from "@/bricks/effects/highlightText";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("ReplaceTextEffect", () => {
   test("can iterate body", () => {

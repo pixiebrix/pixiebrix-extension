@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "../../../../pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import React from "react";
-import FixedInnerObjectWidget from "./FixedInnerObjectWidget";
-import { type Schema } from "../../../../types/schemaTypes";
-import registerDefaultWidgets from "./registerDefaultWidgets";
+import FixedInnerObjectWidget from "@/components/fields/schemaFields/widgets/FixedInnerObjectWidget";
+import { type Schema } from "@/types/schemaTypes";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {
   registerDefaultWidgets();

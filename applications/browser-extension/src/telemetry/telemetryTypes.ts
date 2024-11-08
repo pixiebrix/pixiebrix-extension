@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Events } from "./events";
+import { type Events } from "@/telemetry/events";
 import { type UUID } from "@/types/stringTypes";
 
 /**

@@ -18,19 +18,19 @@
 import React, { useContext } from "react";
 import { type BrickPipeline } from "@/bricks/types";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import DocumentContext from "./DocumentContext";
+import DocumentContext from "@/pageEditor/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
-import { uuidv4 } from "../../../types/helpers";
-import PanelBody from "../../../sidebar/PanelBody";
-import apiVersionOptions from "../../../runtime/apiVersionOptions";
+import { uuidv4 } from "@/types/helpers";
+import PanelBody from "@/sidebar/PanelBody";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
-import { type DynamicPath } from "../documentBuilderTypes";
-import { mapPathToTraceBranches } from "../utils";
-import { getConnectedTarget } from "../../../sidebar/connectedTarget";
-import { type PanelContext } from "../../../types/sidebarTypes";
-import { type RendererRunPayload } from "../../../types/rendererTypes";
+import { type DynamicPath } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { mapPathToTraceBranches } from "@/pageEditor/documentBuilder/utils";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { type PanelContext } from "@/types/sidebarTypes";
+import { type RendererRunPayload } from "@/types/rendererTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import { mapModComponentRefToMessageContext } from "../../../utils/modUtils";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 type BlockElementProps = {
   pipeline: BrickPipeline;

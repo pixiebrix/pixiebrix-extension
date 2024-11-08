@@ -19,9 +19,9 @@ import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Card, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { selectSettings } from "../../../store/settings/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
-import SettingToggle from "./SettingToggle";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const GeneralSettings: React.FunctionComponent = () => {
   const {

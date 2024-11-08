@@ -16,33 +16,34 @@
  */
 
 import React from "react";
-import useSubmitPackage from "./useSubmitPackage";
-import { act, renderHook } from "@testing-library/react-hooks";
+import useSubmitPackage from "@/extensionConsole/pages/packageEditor/useSubmitPackage";
+import { act } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { type AuthState } from "@/auth/authTypes";
 import integrationsSlice, {
   type IntegrationsState,
-} from "../../../integrations/store/integrationsSlice";
-import { type SettingsState } from "../../../store/settings/settingsTypes";
+} from "@/integrations/store/integrationsSlice";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import settingsSlice from "../../../store/settings/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 
 // FIXME: Use ?loadAsText when supported by Jest https://github.com/jestjs/jest/pull/6282
-import pipedriveYaml from "@/contrib/integrations/pipedrive.yaml";
+import pipedriveYaml from "@contrib/integrations/pipedrive.yaml";
 import { appApi } from "@/data/service/api";
-import { brickToYaml } from "../../../utils/objToYaml";
+import { brickToYaml } from "@/utils/objToYaml";
 import testMiddleware, {
   actionTypes,
   resetTestMiddleware,
-} from "../../../testUtils/testMiddleware";
-import notify from "../../../utils/notify";
-import { appApiMock } from "../../../testUtils/appApiMock";
-import { uuidv4 } from "../../../types/helpers";
+} from "@/testUtils/testMiddleware";
+import notify from "@/utils/notify";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { uuidv4 } from "@/types/helpers";
 import { ModalContext } from "@/components/ConfirmationModal";
+import { renderHook } from "@/extensionConsole/testHelpers";
 
-jest.mock("../../../utils/notify");
-jest.mock("../mods/utils/useReactivateMod");
+jest.mock("@/utils/notify");
+jest.mock("@/extensionConsole/pages/mods/utils/useReactivateMod");
 
 const errorMock = jest.mocked(notify.error);
 

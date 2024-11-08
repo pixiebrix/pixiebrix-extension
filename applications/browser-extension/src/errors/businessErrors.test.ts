@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "./businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { InteractiveLoginRequiredError } from "./authErrors";
-import { isSpecificError } from "./errorHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 describe("BusinessError", () => {
   it("records cause", () => {

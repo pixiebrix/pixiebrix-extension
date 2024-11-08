@@ -20,19 +20,16 @@ import { isIntegrationDependencyValueFormat } from "@/components/fields/schemaFi
 import { isEmpty } from "lodash";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { getOptionsArgForFieldValue } from "../../../../utils/getOptionsArgForFieldValue";
-import { getSheetIdIntegrationOutputKey } from "./getSheetIdIntegrationOutputKey";
-import {
-  type Expression,
-  type OptionsArgs,
-} from "../../../../types/runtimeTypes";
-import { type IntegrationDependency } from "../../../../integrations/integrationTypes";
+import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
+import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
+import { type Expression, type OptionsArgs } from "@/types/runtimeTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import hash from "object-hash";
-import { type FetchableAsyncState } from "../../../../types/sliceTypes";
-import { joinName } from "../../../../utils/formUtils";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
+import { joinName } from "@/utils/formUtils";
 import { useContext, useRef } from "react";
-import ModIntegrationsContext from "../../../../mods/ModIntegrationsContext";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { BusinessError } from "@/errors/businessErrors";
 
 async function findSpreadsheetIdFromFieldValue(

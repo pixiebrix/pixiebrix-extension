@@ -21,11 +21,11 @@ import {
   setThemeFavicon,
   type ThemeAssets,
   themeStorage,
-} from "../themes/themeUtils";
-import { initialTheme } from "../themes/themeStore";
-import useAsyncExternalStore from "./useAsyncExternalStore";
+} from "@/themes/themeUtils";
+import { initialTheme } from "@/themes/themeStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { activateTheme } from "@/background/messenger/api";
-import useManagedStorageState from "../store/enterprise/useManagedStorageState";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 
 const themeStorageSubscribe = (callback: () => void) => {
   const abortController = new AbortController();

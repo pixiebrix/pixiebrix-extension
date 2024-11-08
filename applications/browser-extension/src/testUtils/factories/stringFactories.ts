@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId, validateUUID } from "../../types/helpers";
+import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { padStart } from "lodash";
-import { nowTimestamp } from "../../utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 let uuidIndex = 0;
 let registryIndex = 0;

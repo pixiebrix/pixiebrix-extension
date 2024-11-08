@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../registry";
-import { echoBrick } from "../../runtime/pipelineTests/testHelpers";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import GetBrickInterfaceTransformer from "./GetBrickInterfaceTransformer";
+import brickRegistry from "@/bricks/registry";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";
 import { pick } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
-const brick = new GetBrickInterfaceTransformer(brickRegistry);
+const brick = new GetBrickInterfaceTransformer();
 
 beforeEach(() => {
   brickRegistry.clear();

@@ -16,20 +16,20 @@
  */
 
 import React from "react";
-import { render } from "./testHelpers";
-import PanelBody from "./PanelBody";
+import { render } from "@/sidebar/testHelpers";
+import PanelBody from "@/sidebar/PanelBody";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { waitForEffect } from "../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import {
   type RendererErrorPayload,
   type RendererRunPayload,
 } from "@/types/rendererTypes";
 import { screen } from "shadow-dom-testing-library";
-import { modComponentRefFactory } from "../testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "../utils/modUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 const modComponentRef = modComponentRefFactory();
 

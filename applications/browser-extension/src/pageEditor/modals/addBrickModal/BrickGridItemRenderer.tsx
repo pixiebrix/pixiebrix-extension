@@ -16,9 +16,9 @@
  */
 
 import React, { type CSSProperties } from "react";
-import BrickGridItem from "./BrickGridItem";
+import BrickGridItem from "@/pageEditor/modals/addBrickModal/BrickGridItem";
 import { type BrickGridData } from "./addBrickModalTypes";
-import { getFlatArrayIndex } from "./addBrickModalHelpers";
+import { getFlatArrayIndex } from "@/pageEditor/modals/addBrickModal/addBrickModalHelpers";
 
 type ItemRendererProps = {
   columnIndex: number;

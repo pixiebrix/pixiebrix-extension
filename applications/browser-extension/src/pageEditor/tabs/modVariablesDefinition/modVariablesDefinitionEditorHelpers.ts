@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SyncPolicy } from "../../../platform/state/stateTypes";
-import type { ModVariablesDefinition } from "../../../types/modDefinitionTypes";
+import type { SyncPolicy } from "@/platform/state/stateTypes";
+import type { ModVariablesDefinition } from "@/types/modDefinitionTypes";
 import { sortBy } from "lodash";
-import { uuidv4 } from "../../../types/helpers";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
+import { uuidv4 } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   type ModVariable,
   type ModVariableFormValues,
   SYNC_OPTIONS,
   TYPE_OPTIONS,
-} from "./modVariablesDefinitionEditorTypes";
+} from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
 import type { JSONSchema7Definition } from "json-schema";
-import type { Schema } from "../../../types/schemaTypes";
-import type { Nullishable } from "../../../utils/nullishUtils";
-import { isNullOrBlank } from "../../../utils/stringUtils";
+import type { Schema } from "@/types/schemaTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 /**
  * Casts a value to a SyncPolicy, defaulting to "none" if the value is nullish or not recognized.

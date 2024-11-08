@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import { render, screen } from "./testHelpers";
+import { render, screen } from "@/sidebar/testHelpers";
 import DefaultPanel from "./DefaultPanel";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import { activatedModComponentFactory } from "../testUtils/factories/modComponentFactories";
-import { appApiMock } from "../testUtils/appApiMock";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("renders DefaultPanel", () => {

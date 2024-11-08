@@ -16,8 +16,8 @@
  */
 
 import type { Target } from "webext-messenger";
-import { expectContext } from "../../utils/expectContext";
-import type { Nullishable } from "../../utils/nullishUtils";
+import { expectContext } from "@/utils/expectContext";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 // This is true enough for Page Editor purposes because we're editing the rendered frame:
 // https://developer.chrome.com/blog/extension-instantnav

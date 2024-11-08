@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cachePromiseMethod } from "./cachePromise";
+import { cachePromiseMethod } from "@/utils/cachePromise";
 import pDefer, { type DeferredPromise } from "p-defer";
 
 describe("cachePromise", () => {

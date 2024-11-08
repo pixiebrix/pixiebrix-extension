@@ -1,4 +1,4 @@
-import { getAttributeSelectorRegex } from "./selectorInferenceUtils";
+import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
 
 function testAttribute(regex: RegExp, attribute: string) {
   expect(`[${attribute}]`).toMatch(regex);

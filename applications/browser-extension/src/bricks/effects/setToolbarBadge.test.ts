@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SetToolbarBadge from "./setToolbarBadge";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
+import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { setToolbarBadge } from "@/background/messenger/api";
 
 const brick = new SetToolbarBadge();
-jest.mock("../../utils/iframeUtils", () => ({
+jest.mock("@/utils/iframeUtils", () => ({
   isLoadedInIframe: jest.fn(() => false),
 }));
 

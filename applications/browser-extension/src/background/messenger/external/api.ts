@@ -20,10 +20,10 @@
  * TODO: It's not yet using the Messenger: https://github.com/pixiebrix/webext-messenger/issues/6
  */
 
-import { _liftBackground as liftExternal } from "../../externalProtocol";
-import * as local from "./_implementation";
+import { _liftBackground as liftExternal } from "@/background/externalProtocol";
+import * as local from "@/background/messenger/external/_implementation";
 import { getPartnerAuthData } from "@/auth/authStorage";
-import { getExtensionVersion } from "../../../utils/extensionUtils";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
   // Ensure the version we send to the app is a valid semver.

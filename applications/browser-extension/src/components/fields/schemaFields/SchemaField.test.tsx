@@ -18,22 +18,22 @@
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] -- TODO: replace with native expect and it.each */
 
 import React from "react";
-import { render, screen, waitFor, within } from "../../../pageEditor/testHelpers";
-import SchemaField from "./SchemaField";
+import { render, screen, waitFor, within } from "@/pageEditor/testHelpers";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { uniq } from "lodash";
-import { expectToggleOptions } from "./testHelpers";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
-import databaseSchema from "../../../../schemas/database.json";
-import { type Schema } from "../../../types/schemaTypes";
-import { type ApiVersion } from "../../../types/runtimeTypes";
-import { type CustomWidgetRegistry } from "./schemaFieldTypes";
-import { toExpression } from "../../../utils/expressionUtils";
+import databaseSchema from "@schemas/database.json";
+import { type Schema } from "@/types/schemaTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { type CustomWidgetRegistry } from "@/components/fields/schemaFields/schemaFieldTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("../../../hooks/useDatabaseOptions", () => ({
+jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({
     databaseOptions: [],
@@ -41,7 +41,7 @@ jest.mock("../../../hooks/useDatabaseOptions", () => ({
   }),
 }));
 jest.mock(
-  "./widgets/DatabaseCreateModal",
+  "@/components/fields/schemaFields/widgets/DatabaseCreateModal",
   () => ({
     __esModule: true,
     default: jest.fn().mockReturnValue(() => <div>DatabaseCreateModal</div>),

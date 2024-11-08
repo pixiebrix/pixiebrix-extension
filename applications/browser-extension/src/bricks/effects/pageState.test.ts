@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { toExpression } from "../../utils/expressionUtils";
-import { GetPageState, SetPageState } from "./pageState";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
-import {
-  MergeStrategies,
-  StateNamespaces,
-} from "../../platform/state/stateTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
 beforeEach(async () => {
   await TEST_resetStateController();
@@ -63,7 +60,7 @@ describe("@pixiebrix/state/set", () => {
   });
 
   test("deep merge does not append array elements", async () => {
-    const { SetPageState } = await import("./pageState");
+    const { SetPageState } = await import("@/bricks/effects/pageState");
 
     const brick = new SetPageState();
     const brickOptions = brickOptionsFactory();
@@ -102,7 +99,7 @@ describe("@pixiebrix/state/set", () => {
   });
 
   it("returns mod variables", async () => {
-    const { SetPageState } = await import("./pageState");
+    const { SetPageState } = await import("@/bricks/effects/pageState");
     const brick = new SetPageState();
 
     await expect(
@@ -125,7 +122,7 @@ describe("@pixiebrix/state/set", () => {
   });
 
   it("ignores private variables", async () => {
-    const { SetPageState } = await import("./pageState");
+    const { SetPageState } = await import("@/bricks/effects/pageState");
     const brick = new SetPageState();
 
     await expect(

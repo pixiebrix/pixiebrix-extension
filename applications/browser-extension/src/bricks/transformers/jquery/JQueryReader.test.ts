@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JQueryReader } from "./JQueryReader";
+import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const brick = new JQueryReader();
 

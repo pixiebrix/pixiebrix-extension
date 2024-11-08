@@ -16,17 +16,17 @@
  */
 
 import { type Meta, type StoryObj } from "@storybook/react";
-import CssSpacingWidget from "./CssSpacingWidget";
-import type CssClassWidget from "./CssClassWidget";
+import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
+import type CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import { Provider } from "react-redux";
-import { settingsStore } from "../../../../../testUtils/storyUtils";
+import { settingsStore } from "@/testUtils/storyUtils";
 // eslint-disable-next-line no-restricted-imports -- Required for story
 import { Formik, useField } from "formik";
 import { action } from "@storybook/addon-actions";
-import { getCssClassInputFieldOptions } from "../../CssClassField";
+import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 import React from "react";
-import { parseValue } from "./utils";
-import { type Expression } from "../../../../../types/runtimeTypes";
+import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import { type Expression } from "@/types/runtimeTypes";
 
 const Preview: React.VFC = () => {
   const [{ value }] = useField("cssClass");

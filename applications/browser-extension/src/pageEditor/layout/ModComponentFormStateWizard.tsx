@@ -21,18 +21,18 @@ import React, { useState } from "react";
 import { useFormikContext } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm, Nav, Tab } from "react-bootstrap";
-import ReloadToolbar from "../toolbar/ReloadToolbar";
-import { type WizardStep } from "../starterBricks/base";
-import PermissionsToolbar from "../toolbar/PermissionsToolbar";
-import LogsTab, { LOGS_EVENT_KEY } from "../tabs/logs/LogsTab";
-import EditTab from "../tabs/editTab/EditTab";
+import ReloadToolbar from "@/pageEditor/toolbar/ReloadToolbar";
+import { type WizardStep } from "@/pageEditor/starterBricks/base";
+import PermissionsToolbar from "@/pageEditor/toolbar/PermissionsToolbar";
+import LogsTab, { LOGS_EVENT_KEY } from "@/pageEditor/tabs/logs/LogsTab";
+import EditTab from "@/pageEditor/tabs/editTab/EditTab";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 import LogNavItemBadge from "../tabs/logs/NavItemBadge";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
-import { selectActiveModComponentAnalysisAnnotationsForPath } from "../store/editor/editorSelectors";
+import { selectActiveModComponentAnalysisAnnotationsForPath } from "@/pageEditor/store/editor/editorSelectors";
 
 const EDIT_STEP_NAME = "Edit";
 const LOG_STEP_NAME = "Logs";

@@ -17,7 +17,7 @@
 
 import React, { useRef } from "react";
 import { Collapse } from "react-bootstrap";
-import styles from "./CollapsibleFieldSection.module.scss";
+import styles from "@/pageEditor/fields/CollapsibleFieldSection.module.scss";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";

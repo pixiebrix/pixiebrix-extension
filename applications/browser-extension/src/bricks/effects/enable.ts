@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
   $safeFindElementsWithRootMode,
-} from "../rootModeHelpers";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/bricks/rootModeHelpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class EnableEffect extends EffectABC {
   constructor() {

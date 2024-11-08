@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { withoutTrailingSlash } from "../../utils/urlUtils";
+import { withoutTrailingSlash } from "@/utils/urlUtils";
 
 describe("withoutTrailingSlash", () => {
   it.each(["https://app.pixiebrix.com/", "https://app.pixiebrix.com"])(

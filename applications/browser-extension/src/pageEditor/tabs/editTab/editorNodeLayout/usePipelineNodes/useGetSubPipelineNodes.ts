@@ -17,24 +17,24 @@
 
 import { type EditorNodeProps } from "./types";
 import { type PipelineFlavor, type BrickConfig } from "@/bricks/types";
-import { joinPathParts } from "../../../../../utils/formUtils";
+import { joinPathParts } from "@/utils/formUtils";
 import { getBuilderPreviewElementId, getSubPipelinesForBrick } from "./helpers";
-import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "../../../../documentBuilder/preview/ElementPreview";
+import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { type AppDispatch } from "@/extensionConsole/store";
-import { useCreateNodeActions } from "./useCreateNodeActions";
-import { type useGetNodeState } from "./useGetNodeState";
-import { type useMapPipelineToNodes } from "./useMapPipelineToNodes";
-import { type Branch } from "../../../../../types/runtimeTypes";
+import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { type useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
+import { type Branch } from "@/types/runtimeTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "../../../../store/editor/editorSlice";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveNodeId,
-} from "../../../../store/editor/editorSelectors";
-import { type TraceRecord } from "../../../../../telemetry/trace";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { type TraceRecord } from "@/telemetry/trace";
 
 type GetSubPipelineNodesProps = {
   index: number;
@@ -170,7 +170,7 @@ export function useGetSubPipelineNodes() {
 
       const isNodeActive = nodeId === activeNodeId;
 
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
       const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
 
       const nodes: EditorNodeProps[] = [];

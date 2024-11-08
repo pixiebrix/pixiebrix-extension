@@ -1,5 +1,5 @@
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import type { Nullishable } from "../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { isRegistryId } from "@/types/helpers";
 

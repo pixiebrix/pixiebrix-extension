@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JQTransformer } from "./jq";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { InputValidationError } from "../errors";
+import { JQTransformer } from "@/bricks/transformers/jq";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { InputValidationError } from "@/bricks/errors";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { throwIfInvalidInput } from "../../runtime/runtimeUtils";
-import { type RenderedArgs } from "../../types/runtimeTypes";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 import { range } from "lodash";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("smoke tests", () => {
   test("passes input to filter", async () => {

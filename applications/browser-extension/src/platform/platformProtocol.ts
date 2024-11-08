@@ -15,29 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { PlatformCapability } from "./capabilities";
-import type { SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
-import type { Nullishable } from "../utils/nullishUtils";
-import type { FormDefinition } from "./forms/formTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { FormDefinition } from "@/platform/forms/formTypes";
 import type { SemVerString } from "@/types/registryTypes";
-import type { JavaScriptPayload } from "../sandbox/messenger/api";
+import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Logger } from "@/types/loggerTypes";
-import type { AudioProtocol } from "./platformTypes/audioProtocol";
-import type { ClipboardProtocol } from "./platformTypes/clipboardProtocol";
-import type { ContextMenuProtocol } from "./platformTypes/contextMenuProtocol";
-import type { BadgeProtocol } from "./platformTypes/badgeProtocol";
-import type { ToastProtocol } from "./platformTypes/toastProtocol";
-import type { DebuggerProtocol } from "./platformTypes/debuggerProtocol";
-import type { StateProtocol } from "./platformTypes/stateProtocol";
-import type { TemplateProtocol } from "./platformTypes/templateProtocol";
-import type { SnippetShortcutMenuProtocol } from "./platformTypes/snippetShortcutMenuProtocol";
-import type { TextSelectionMenuProtocol } from "./platformTypes/textSelectionMenuProtocol";
-import type { PanelProtocol } from "./platformTypes/panelProtocol";
-import type { QuickBarProtocol } from "./platformTypes/quickBarProtocol";
+import type { AudioProtocol } from "@/platform/platformTypes/audioProtocol";
+import type { ClipboardProtocol } from "@/platform/platformTypes/clipboardProtocol";
+import type { ContextMenuProtocol } from "@/platform/platformTypes/contextMenuProtocol";
+import type { BadgeProtocol } from "@/platform/platformTypes/badgeProtocol";
+import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
+import type { DebuggerProtocol } from "@/platform/platformTypes/debuggerProtocol";
+import type { StateProtocol } from "@/platform/platformTypes/stateProtocol";
+import type { TemplateProtocol } from "@/platform/platformTypes/templateProtocol";
+import type { SnippetShortcutMenuProtocol } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
+import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
+import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
+import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 import type { ModComponentRef } from "@/types/modComponentTypes";
-import type { CaptureProtocol } from "./platformTypes/captureProtocol";
+import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
+import type { RegistryProtocol } from "@/platform/platformTypes/registryProtocol";
 
 /**
  * A protocol for the platform/environment running the mods.
@@ -102,13 +103,18 @@ export interface PlatformProtocol {
   runSandboxedJavascript: (args: JavaScriptPayload) => Promise<unknown>;
 
   /**
-   * Perform an API request.
+   * Perform a (potentially-authenticated) API request.
    * @since 1.8.10
    */
   request: <TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: NetworkRequestConfig,
   ) => Promise<RemoteResponse<TData>>;
+
+  /**
+   * The package registry protocol for the platform.
+   */
+  get registry(): RegistryProtocol;
 
   /**
    * The runtime logger for the platform.

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
-import Icon from "../../icons/Icon";
+import { validateRegistryId } from "@/types/helpers";
+import Icon from "@/icons/Icon";
 import React from "react";
 import {
   type BrickArgs,
@@ -29,8 +29,8 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { uniq } from "lodash";
-import type { CustomAction } from "../../platform/platformTypes/quickBarProtocol";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type ActionConfig = {
   /**

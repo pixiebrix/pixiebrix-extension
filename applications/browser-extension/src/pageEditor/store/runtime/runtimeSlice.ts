@@ -16,9 +16,9 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type UUID } from "../../../types/stringTypes";
-import { type TraceRecord } from "../../../telemetry/trace";
-import { type RuntimeState } from "./runtimeSliceTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type TraceRecord } from "@/telemetry/trace";
+import { type RuntimeState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
 
 const initialState: RuntimeState = {
   modComponentTraces: {},

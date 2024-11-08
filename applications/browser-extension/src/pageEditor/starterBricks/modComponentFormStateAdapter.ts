@@ -17,19 +17,19 @@
 
 import type React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { type Metadata } from "../../types/registryTypes";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
-import { type StarterBrickType } from "../../types/starterBrickTypes";
+import { type Metadata } from "@/types/registryTypes";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
-import { type Target } from "../../types/messengerTypes";
-import { type BaseFormState } from "../store/editor/baseFormStateTypes";
-import { type Nullishable } from "../../utils/nullishUtils";
+} from "@/types/modComponentTypes";
+import { type Target } from "@/types/messengerTypes";
+import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { type FeatureFlag } from "@/auth/featureFlags";
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /**
  * Adapter used to create initial mod component form state in the Page Editor from a starter brick.

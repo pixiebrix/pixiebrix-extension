@@ -17,9 +17,9 @@
 
 import { withIdbErrorHandling } from "./idbUtils";
 import { deleteDB, type IDBPDatabase } from "idb";
-import { reportToApplicationErrorTelemetry } from "../telemetry/reportToApplicationErrorTelemetry";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 
-jest.mock("../telemetry/reportToApplicationErrorTelemetry");
+jest.mock("@/telemetry/reportToApplicationErrorTelemetry");
 jest.mock("idb");
 
 describe("withIdbErrorHandling", () => {

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   type BrickPipelineUIState,
   type BrickConfigurationUIState,
   type DataPanelTabUIState,
-} from "./uiStateTypes";
-import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
+} from "@/pageEditor/store/editor/uiStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 export const FOUNDATION_NODE_ID = "foundation" as UUID;
 

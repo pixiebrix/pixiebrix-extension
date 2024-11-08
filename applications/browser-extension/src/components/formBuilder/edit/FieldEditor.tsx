@@ -22,8 +22,8 @@ import {
   type RJSFSchema,
   type SelectStringOption,
   type SetActiveField,
-} from "../formBuilderTypes";
-import { UI_WIDGET } from "../schemaFieldNames";
+} from "@/components/formBuilder/formBuilderTypes";
+import { UI_WIDGET } from "@/components/formBuilder/schemaFieldNames";
 import {
   FIELD_TYPES_WITHOUT_DEFAULT,
   parseUiType,
@@ -34,30 +34,30 @@ import {
   type UiType,
   type UiTypeExtra,
   validateNextPropertyName,
-} from "../formBuilderHelpers";
-import FieldTemplate from "../../form/FieldTemplate";
+} from "@/components/formBuilder/formBuilderHelpers";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget, {
   type SelectWidgetOnChange,
-} from "../../form/widgets/SelectWidget";
+} from "@/components/form/widgets/SelectWidget";
 import SwitchButtonWidget, {
   type CheckBoxLike,
-} from "../../form/widgets/switchButton/SwitchButtonWidget";
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { uniq, partial } from "lodash";
-import { type SchemaFieldProps } from "../../fields/schemaFields/propTypes";
-import SchemaField from "../../fields/schemaFields/SchemaField";
-import databaseSchema from "../../../../schemas/database.json";
-import googleSheetIdSchema from "../../../../schemas/googleSheetId.json";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import {
   isDatabaseField,
   isGoogleSheetIdField,
-} from "../../fields/schemaFields/fieldTypeCheckers";
-import { type Schema, type SchemaPropertyType } from "../../../types/schemaTypes";
-import { AnnotationType } from "../../../types/annotationTypes";
-import { isNullOrBlank } from "../../../utils/stringUtils";
+} from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
+import { AnnotationType } from "@/types/annotationTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import { Collapse } from "react-bootstrap";
-import { joinName, joinPathParts } from "../../../utils/formUtils";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { joinName, joinPathParts } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",

@@ -19,12 +19,12 @@ import styles from "./ModLauncher.module.scss";
 import React from "react";
 import cx from "classnames";
 import { Navbar } from "react-bootstrap";
-import { ActiveSidebarModsList } from "./ActiveSidebarModsList";
+import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
 import useFlags from "@/hooks/useFlags";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { showWalkthroughModal } from "@/contentScript/messenger/api";
-import { getConnectedTarget } from "../connectedTarget";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const ModLauncher: React.FunctionComponent = () => {

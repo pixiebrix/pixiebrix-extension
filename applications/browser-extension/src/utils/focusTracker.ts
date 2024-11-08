@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SessionValue } from "../mv3/SessionStorage";
+import { SessionValue } from "@/mv3/SessionStorage";
 import {
   registerMethods,
   type MessengerMeta,
   type Sender,
 } from "webext-messenger";
-import { expectContext, forbidContext } from "./expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { onContextInvalidated } from "webext-events";
 import { documentReceivedFocus } from "@/background/messenger/api";

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import CssClassWidget from "./CssClassWidget";
+import CssClassWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssClassWidget";
 import React from "react";
-import { type Expression } from "../../../../../types/runtimeTypes";
-import { render, screen } from "../../../../../pageEditor/testHelpers";
-import registerDefaultWidgets from "../registerDefaultWidgets";
-import { getCssClassInputFieldOptions } from "../../CssClassField";
+import { type Expression } from "@/types/runtimeTypes";
+import { render, screen } from "@/pageEditor/testHelpers";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 import userEvent from "@testing-library/user-event";
 
 const renderWidget = (value: string | Expression) =>

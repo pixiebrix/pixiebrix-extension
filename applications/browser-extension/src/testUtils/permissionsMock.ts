@@ -109,7 +109,7 @@ export function setPermissions(
   extensionPermissions = { origins: [], permissions: [], ...newPermissions };
 }
 
-jest.mock("../modDefinitions/modDefinitionPermissionsHelpers", () => {
+jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/modDefinitions/modDefinitionPermissionsHelpers",
   );
@@ -122,7 +122,7 @@ jest.mock("../modDefinitions/modDefinitionPermissionsHelpers", () => {
   };
 });
 
-jest.mock("../permissions/modComponentPermissionsHelpers", () => {
+jest.mock("@/permissions/modComponentPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/permissions/modComponentPermissionsHelpers",
   );
@@ -138,7 +138,7 @@ jest.mock("../permissions/modComponentPermissionsHelpers", () => {
   };
 });
 
-jest.mock("../permissions/deploymentPermissionsHelpers", () => {
+jest.mock("@/permissions/deploymentPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/permissions/deploymentPermissionsHelpers",
   );
@@ -151,7 +151,7 @@ jest.mock("../permissions/deploymentPermissionsHelpers", () => {
   };
 });
 
-jest.mock("../integrations/util/permissionsHelpers", () => {
+jest.mock("@/integrations/util/permissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/permissions/deploymentPermissionsHelpers",
   );

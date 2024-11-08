@@ -18,7 +18,7 @@
 import { getDefaultRegistry } from "@rjsf/core";
 import { type FieldProps } from "@rjsf/utils";
 import React from "react";
-import { type SchemaDefinition } from "../../../types/schemaTypes";
+import { type SchemaDefinition } from "@/types/schemaTypes";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
 const RjsfSchemaField = getDefaultRegistry().fields.SchemaField!;

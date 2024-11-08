@@ -16,7 +16,7 @@
  */
 
 import { type MigrationManifest, type PersistedState } from "redux-persist";
-import migratePersistedState from "../store/migratePersistedState";
+import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
 import { type SetOptional } from "type-fest";
 import { isObject } from "./objectUtils";

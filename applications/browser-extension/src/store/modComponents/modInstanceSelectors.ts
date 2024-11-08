@@ -17,8 +17,8 @@
 
 import { createSelector } from "@reduxjs/toolkit";
 import { groupBy } from "lodash";
-import { mapActivatedModComponentsToModInstance } from "./modInstanceUtils";
-import type { ModComponentsRootState } from "./modComponentTypes";
+import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
+import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 
 /**
  * Returns all activated mod instances. Includes mod instances corresponding to paused deployments.

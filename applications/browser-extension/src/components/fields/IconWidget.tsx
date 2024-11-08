@@ -16,16 +16,16 @@
  */
 
 import React, { Suspense, lazy } from "react";
-import { type IconOption } from "../../icons/types";
+import { type IconOption } from "@/icons/types";
 import { useField } from "formik";
-import { type CustomFieldWidget } from "../form/FieldTemplate";
-import { type IconLibrary } from "../../types/iconTypes";
+import { type CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const IconSelector = lazy(
   async () =>
     import(
       /* webpackChunkName: "icons" */
-      "../../icons/IconSelector"
+      "@/icons/IconSelector"
     ),
 );
 

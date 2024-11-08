@@ -15,21 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DataPanelTabKey } from "../dataPanelTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import Alert from "@/components/Alert";
-import DataTabJsonTree from "../DataTabJsonTree";
-import { contextAsPlainObject } from "../../../../../runtime/extendModVariableContext";
-import DataTabPane from "../DataTabPane";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import React, { useMemo } from "react";
-import { type TraceRecord } from "../../../../../telemetry/trace";
-import { type Nullishable } from "../../../../../utils/nullishUtils";
+import { type TraceRecord } from "@/telemetry/trace";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { isEmpty, pickBy } from "lodash";
-import ErrorDisplay from "../ErrorDisplay";
+import ErrorDisplay from "@/pageEditor/tabs/editTab/dataPanel/ErrorDisplay";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../../../store/editor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "../../../../store/editor/editorSelectors";
-import ViewModeField, { type ViewModeOption } from "./ViewModeField";
-import useBrickTraceRecord from "./useBrickTraceRecord";
+import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
+import ViewModeField, {
+  type ViewModeOption,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
+import useBrickTraceRecord from "@/pageEditor/tabs/editTab/dataPanel/tabs/useBrickTraceRecord";
 import { type ValueOf } from "type-fest";
 
 const InputViewModes = {

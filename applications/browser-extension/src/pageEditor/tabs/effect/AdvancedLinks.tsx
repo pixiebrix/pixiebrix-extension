@@ -18,15 +18,15 @@
 import styles from "./AdvancedLinks.module.scss";
 
 import { type BrickCondition, type BrickWindow } from "@/bricks/types";
-import { type TemplateEngine } from "../../../types/runtimeTypes";
+import { type TemplateEngine } from "@/types/runtimeTypes";
 import { useField } from "formik";
 import { partial } from "lodash";
 import React, { type MutableRefObject } from "react";
 import { Button } from "react-bootstrap";
-import { isExpression } from "../../../utils/expressionUtils";
-import { joinName } from "../../../utils/formUtils";
-import { windowOptions } from "./configurationConstants";
-import { getConstantConditionOrUndefined } from "../../../runtime/runtimeUtils";
+import { isExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { windowOptions } from "@/pageEditor/tabs/effect/configurationConstants";
+import { getConstantConditionOrUndefined } from "@/runtime/runtimeUtils";
 
 export const DEFAULT_TEMPLATE_ENGINE_VALUE: TemplateEngine = "mustache";
 

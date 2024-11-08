@@ -20,44 +20,44 @@ import VarAnalysis, {
   NO_VARIABLE_PROVIDED_MESSAGE,
   VARIABLE_SHOULD_START_WITH_AT_MESSAGE,
 } from "./varAnalysis";
-import { validateRegistryId } from "../../../types/helpers";
-import { BrickTypes, validateOutputKey } from "../../../runtime/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { BrickTypes, validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import { EchoBrick } from "../../../runtime/pipelineTests/testHelpers";
-import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
-import modRegistry from "../../../modDefinitions/registry";
+import { EchoBrick } from "@/runtime/pipelineTests/testHelpers";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import modRegistry from "@/modDefinitions/registry";
 import brickRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { createNewDocumentBuilderElement } from "../../../pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import {
   type ButtonElement,
   type DocumentBuilderElement,
   type ListElement,
-} from "../../../pageEditor/documentBuilder/documentBuilderTypes";
-import { type Schema } from "../../../types/schemaTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { modMetadataFactory } from "../../../testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   draftModStateFactory,
   formStateFactory,
   triggerFormStateFactory,
-} from "../../../testUtils/factories/pageEditorFactories";
-import { defaultModDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/pageEditorFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../../testUtils/factories/integrationFactories";
-import { brickConfigFactory } from "../../../testUtils/factories/brickFactories";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/integrationFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
-import pixiebrixIntegrationDependencyFactory from "../../../integrations/util/pixiebrixIntegrationDependencyFactory";
+import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
 
 jest
   .mocked(integrationConfigLocator.findSanitizedIntegrationConfig)
@@ -69,7 +69,7 @@ jest
 
 // XXX: should be using actual bricks instead of a single outputSchema across all tests in order to test
 // different outputSchema scenarios
-jest.mock("../../../bricks/registry", () => ({
+jest.mock("@/bricks/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn().mockResolvedValue({
@@ -104,7 +104,7 @@ jest.mock("../../../bricks/registry", () => ({
   },
 }));
 
-jest.mock("../../../modDefinitions/registry");
+jest.mock("@/modDefinitions/registry");
 
 describe("Collecting available vars", () => {
   function mockModWithOptions(optionsSchema: any) {
@@ -470,8 +470,7 @@ describe("Collecting available vars", () => {
           [
             formState.modComponent.brickPipeline[0]!.id,
             {
-              block: {
-                // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
+              brick: {
                 outputSchema,
               },
             },
@@ -819,7 +818,7 @@ describe("Collecting available vars", () => {
             IdentityTransformer.BRICK_ID,
             {
               type: BrickTypes.TRANSFORM,
-              block: new IdentityTransformer(),
+              brick: new IdentityTransformer(),
             },
           ],
         ]),
@@ -1164,7 +1163,7 @@ describe("Collecting available vars", () => {
             CustomFormRenderer.BRICK_ID,
             {
               type: "renderer",
-              block: new CustomFormRenderer(),
+              brick: new CustomFormRenderer(),
             },
           ],
         ]),

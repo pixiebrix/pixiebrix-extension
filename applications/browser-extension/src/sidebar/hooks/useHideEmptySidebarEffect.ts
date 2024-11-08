@@ -17,10 +17,13 @@
 
 import useAsyncEffect from "use-async-effect";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
-import { getConnectedTarget } from "../connectedTarget";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { useSelector } from "react-redux";
-import { selectClosedTabs, selectVisiblePanelCount } from "../sidebarSelectors";
-import { eventKeyForEntry } from "../../store/sidebar/eventKeyUtils";
+import {
+  selectClosedTabs,
+  selectVisiblePanelCount,
+} from "@/sidebar/sidebarSelectors";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.

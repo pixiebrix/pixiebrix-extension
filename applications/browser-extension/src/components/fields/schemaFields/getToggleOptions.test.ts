@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import databaseSchema from "../../../../schemas/database.json";
+import databaseSchema from "@schemas/database.json";
 import { getToggleOptions } from "./getToggleOptions";
 
 describe("Database field", () => {

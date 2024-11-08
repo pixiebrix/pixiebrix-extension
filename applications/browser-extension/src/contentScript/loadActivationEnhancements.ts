@@ -21,7 +21,7 @@
 // https://github.com/pixiebrix/webext-messenger/issues/88
 
 import { initRuntimeLogging } from "@/development/runtimeLogging";
-import { loadActivationEnhancements } from "./loadActivationEnhancementsCore";
+import { loadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;

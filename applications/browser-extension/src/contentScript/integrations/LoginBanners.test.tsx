@@ -17,8 +17,8 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import LoginBanners from "./LoginBanners";
-import { sanitizedIntegrationConfigFactory } from "../../testUtils/factories/integrationFactories";
+import LoginBanners from "@/contentScript/integrations/LoginBanners";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import userEvent from "@testing-library/user-event";
 
 // I couldn't get shadow-dom-testing-library working

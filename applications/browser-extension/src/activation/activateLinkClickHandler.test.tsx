@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import activateLinkClickHandler from "./activateLinkClickHandler";
+import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import { render, screen } from "@testing-library/react";
-import { registryIdFactory } from "../testUtils/factories/stringFactories";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import userEvent from "@testing-library/user-event";
-import { createActivationUrl } from "./activationLinkUtils";
+import { createActivationUrl } from "@/activation/activationLinkUtils";
 
 const callback = jest.fn();
 

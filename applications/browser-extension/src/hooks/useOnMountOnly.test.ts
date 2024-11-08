@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useOnMountOnly from "./useOnMountOnly";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 test("useOnMountOnly", async () => {
   const callback = jest.fn();

@@ -18,17 +18,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Nav, Tab } from "react-bootstrap";
-import useDataPanelActiveTabKey from "./useDataPanelActiveTabKey";
+import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
-import { DataPanelTabKey } from "./dataPanelTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import NodeFormStateTab from "./tabs/NodeFormStateTab";
-import { selectActiveModComponentFormState } from "../../../store/editor/editorSelectors";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
-import { NavItem } from "./BrickDataPanel";
-import StarterBrickInputTab from "./tabs/StarterBrickInputTab";
-import StarterBrickOutputTab from "./tabs/StarterBrickOutputTab";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
+import StarterBrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickInputTab";
+import StarterBrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickOutputTab";
 import { FeatureFlags } from "@/auth/featureFlags";
 
 /**

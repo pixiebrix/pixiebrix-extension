@@ -21,12 +21,12 @@ import { action } from "@storybook/addon-actions";
 import CssClassWidget from "./CssClassWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik, useField } from "formik";
-import { type Expression } from "../../../../../types/runtimeTypes";
-import { getCssClassInputFieldOptions } from "../../CssClassField";
-import { settingsStore } from "../../../../../testUtils/storyUtils";
+import { type Expression } from "@/types/runtimeTypes";
+import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
+import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import { parseValue } from "./utils";
-import { toExpression } from "../../../../../utils/expressionUtils";
+import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const Preview: React.VFC = () => {
   const [{ value }] = useField("cssClass");

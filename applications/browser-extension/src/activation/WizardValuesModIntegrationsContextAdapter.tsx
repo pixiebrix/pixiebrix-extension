@@ -17,8 +17,8 @@
 
 import React from "react";
 import { useFormikContext } from "formik";
-import { type WizardValues } from "./wizardTypes";
-import ModIntegrationsContext from "../mods/ModIntegrationsContext";
+import { type WizardValues } from "@/activation/wizardTypes";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 
 const WizardValuesModIntegrationsContextAdapter: React.FC<{
   children: React.ReactNode;

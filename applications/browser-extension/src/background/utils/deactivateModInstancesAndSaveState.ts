@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeModComponentForEveryTab } from "../removeModComponentForEveryTab";
-import saveModComponentStateAndReloadTabs from "./saveModComponentStateAndReloadTabs";
-import { type EditorState } from "../../pageEditor/store/editor/pageEditorTypes";
-import { saveEditorState } from "../../store/editorStorage";
-import { type ModComponentState } from "../../store/modComponents/modComponentTypes";
-import { allSettled } from "../../utils/promiseUtils";
-import { type ModInstance } from "../../types/modInstanceTypes";
-import deactivateMod from "./deactivateMod";
+import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
+import saveModComponentStateAndReloadTabs from "@/background/utils/saveModComponentStateAndReloadTabs";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { saveEditorState } from "@/store/editorStorage";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { allSettled } from "@/utils/promiseUtils";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import deactivateMod from "@/background/utils/deactivateMod";
 
 async function deactivateModInstancesAndSaveState(
   modInstancesToDeactivate: ModInstance[],

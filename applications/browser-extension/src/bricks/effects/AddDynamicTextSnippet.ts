@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import type {
   BrickArgs,
   BrickOptions,
   PipelineExpression,
-} from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { EffectABC } from "../../types/bricks/effectTypes";
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { initSnippetShortcutMenuController } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import { BusinessError } from "@/errors/businessErrors";
-import { getSettingsState } from "../../store/settings/settingsStorage";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { normalizeShortcut } from "./AddTextSnippets";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { normalizeShortcut } from "@/bricks/effects/AddTextSnippets";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type SnippetArgs = {
   /**

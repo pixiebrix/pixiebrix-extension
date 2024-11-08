@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { type RegistryId } from "../../types/registryTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty, uniq } from "lodash";
-import { isSchemaServicesFormat } from "../../modDefinitions/util/isSchemaServicesFormat";
-import extractIntegrationIdsFromSchema from "./extractIntegrationIdsFromSchema";
-import { type Schema } from "../../types/schemaTypes";
-import { PIXIEBRIX_INTEGRATION_ID } from "../constants";
+import { isSchemaServicesFormat } from "@/modDefinitions/util/isSchemaServicesFormat";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import { type Schema } from "@/types/schemaTypes";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
  * Return an array of unique integration ids used by a mod definition or another collection of mod components

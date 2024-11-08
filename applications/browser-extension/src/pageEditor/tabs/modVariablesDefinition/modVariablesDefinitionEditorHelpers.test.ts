@@ -18,8 +18,8 @@
 import {
   mapDefinitionToFormValues,
   mapFormValuesToDefinition,
-} from "./modVariablesDefinitionEditorHelpers";
-import { uuidv4 } from "../../../types/helpers";
+} from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorHelpers";
+import { uuidv4 } from "@/types/helpers";
 
 describe("mapDefinitionToFormValues", () => {
   it("maps description", () => {

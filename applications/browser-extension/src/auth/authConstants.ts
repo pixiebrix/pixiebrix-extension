@@ -18,7 +18,7 @@
 import { StorageItem } from "webext-storage";
 import { type AuthState } from "./authTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type AuthData } from "../integrations/integrationTypes";
+import { type AuthData } from "@/integrations/integrationTypes";
 
 export const anonAuth: AuthState = Object.freeze({
   userId: undefined,

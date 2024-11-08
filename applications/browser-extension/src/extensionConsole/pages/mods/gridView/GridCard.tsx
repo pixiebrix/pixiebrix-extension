@@ -18,12 +18,12 @@
 import styles from "./GridCard.module.scss";
 
 import React from "react";
-import { type ModViewItem } from "../../../../types/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { Card } from "react-bootstrap";
-import SharingLabel from "../labels/SharingLabel";
-import Status from "../Status";
-import ModsPageActions from "../ModsPageActions";
-import LastUpdatedLabel from "../labels/LastUpdatedLabel";
+import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
+import Status from "@/extensionConsole/pages/mods/Status";
+import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
+import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
 import {
   faCubes,
   faExclamationCircle,

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { readJQuery, type SelectorConfigMap } from "../../readers/jquery";
-import { type BrickConfig } from "../../types";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { readJQuery, type SelectorConfigMap } from "@/bricks/readers/jquery";
+import { type BrickConfig } from "@/bricks/types";
 import { mapValues } from "lodash";
-import { validateRegistryId } from "../../../types/helpers";
-import { isExpression } from "../../../utils/expressionUtils";
+import { validateRegistryId } from "@/types/helpers";
+import { isExpression } from "@/utils/expressionUtils";
 
 export class JQueryReader extends TransformerABC {
   public static BRICK_ID = validateRegistryId("@pixiebrix/jquery-reader");

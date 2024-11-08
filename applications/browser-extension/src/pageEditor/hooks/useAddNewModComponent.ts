@@ -17,35 +17,35 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback } from "react";
-import notify from "../../utils/notify";
-import { actions } from "../store/editor/editorSlice";
-import { internalStarterBrickMetaFactory } from "../starterBricks/base";
+import notify from "@/utils/notify";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type ModComponentFormStateAdapter } from "../starterBricks/modComponentFormStateAdapter";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
-import { type SettingsState } from "../../store/settings/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
 import {
   allFramesInInspectedTab,
   getCurrentInspectedURL,
   inspectedTab,
-} from "../context/connection";
-import { getExampleBrickPipeline } from "../panes/insert/exampleStarterBrickConfigs";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { openSidePanel } from "../../utils/sidePanelUtils";
-import { useInsertPane } from "../panes/insert/InsertPane";
-import { type ModMetadata } from "../../types/modComponentTypes";
-import { createNewUnsavedModMetadata } from "../../utils/modUtils";
+} from "@/pageEditor/context/connection";
+import { getExampleBrickPipeline } from "@/pageEditor/panes/insert/exampleStarterBrickConfigs";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { openSidePanel } from "@/utils/sidePanelUtils";
+import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
+import { type ModMetadata } from "@/types/modComponentTypes";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import {
   selectGetModDraftStateForModId,
   selectModMetadatas,
-} from "../store/editor/editorSelectors";
-import { RunReason } from "../../types/runtimeTypes";
-import { type AppDispatch } from "../store/store";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { RunReason } from "@/types/runtimeTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 export type AddNewModComponent = (
   adapter: ModComponentFormStateAdapter,

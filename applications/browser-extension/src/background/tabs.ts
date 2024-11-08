@@ -16,10 +16,10 @@
  */
 
 import { type Tabs } from "webextension-polyfill";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { type MessengerMeta } from "webext-messenger";
-import { SessionMap } from "../mv3/SessionStorage";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { SessionMap } from "@/mv3/SessionStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type TabId = number;
 

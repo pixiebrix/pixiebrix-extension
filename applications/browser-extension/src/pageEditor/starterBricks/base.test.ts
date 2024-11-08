@@ -23,11 +23,11 @@ import {
 import {
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
+} from "@/types/starterBrickTypes";
 import { type ReaderConfig } from "@/bricks/types";
-import { validateRegistryId } from "../../types/helpers";
-import { starterBrickDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
-import { toExpression } from "../../utils/expressionUtils";
+import { validateRegistryId } from "@/types/helpers";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {

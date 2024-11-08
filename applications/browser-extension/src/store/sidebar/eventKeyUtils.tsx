@@ -19,16 +19,16 @@ import type {
   SidebarEntries,
   SidebarEntry,
   SidebarState,
-} from "../../types/sidebarTypes";
+} from "@/types/sidebarTypes";
 import {
   isModActivationPanelEntry,
   isPanelEntry,
   isStaticPanelEntry,
-} from "../../types/sidebarTypes";
+} from "@/types/sidebarTypes";
 import hash from "object-hash";
 import { sortBy } from "lodash";
-import { type Nullish, type Nullishable } from "../../utils/nullishUtils";
-import { type UUID } from "../../types/stringTypes";
+import { type Nullish, type Nullishable } from "@/utils/nullishUtils";
+import { type UUID } from "@/types/stringTypes";
 
 function eventKeyForEntry(entry: SidebarEntry): string;
 function eventKeyForEntry(entry: Nullish): undefined;

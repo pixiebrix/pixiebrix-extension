@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import UrlPatternWidget from "./UrlPatternWidget";
+import { render } from "@/pageEditor/testHelpers";
+import UrlPatternWidget from "@/pageEditor/components/UrlPatternWidget";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeEach(() => {

@@ -16,9 +16,12 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { featureFlagBrick, simpleInput } from "./testHelpers";
-import { reducePipeline } from "../reducePipeline";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import {
+  featureFlagBrick,
+  simpleInput,
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { TEST_overrideFeatureFlags } from "@/auth/featureFlagStorage";
 
 beforeEach(() => {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freeze } from "../../../utils/objectUtils";
+import { freeze } from "@/utils/objectUtils";
 import { useMemo } from "react";
 
 // Disabled placeholder option to indicate that a user can create an option

@@ -17,22 +17,22 @@
 
 import React from "react";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../../../store/editor/pageEditorTypes";
+import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   selectActiveModComponentFormState,
   selectNodeDataPanelTabState,
-} from "../../../../store/editor/editorSelectors";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import DataTabPane from "../DataTabPane";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import ViewModeField, {
   type ViewModeOption,
-} from "./ViewModeField";
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/ViewModeField";
 import type { ValueOf } from "type-fest";
-import DataTabJsonTree from "../DataTabJsonTree";
-import StarterBrickPreview from "../../../effect/StarterBrickPreview";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
-import { type TraceRecord } from "../../../../../telemetry/trace";
-import { selectGetBrickTraceRecord } from "../../../../store/runtime/runtimeSelectors";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import StarterBrickPreview from "@/pageEditor/tabs/effect/StarterBrickPreview";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type TraceRecord } from "@/telemetry/trace";
+import { selectGetBrickTraceRecord } from "@/pageEditor/store/runtime/runtimeSelectors";
 
 const OutputViewModes = {
   Actual: "actual",

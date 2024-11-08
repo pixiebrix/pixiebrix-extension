@@ -22,7 +22,7 @@
  */
 
 import { type MessageContext } from "@/types/loggerTypes";
-import { getErrorMessage } from "./errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 /**
  * Error indicating the client performed a suspicious operation

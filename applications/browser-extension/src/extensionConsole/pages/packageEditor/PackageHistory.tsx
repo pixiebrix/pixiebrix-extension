@@ -25,7 +25,7 @@ import Select, {
 } from "react-select";
 import DiffEditor from "@/components/DiffEditor";
 import objectHash from "object-hash";
-import { type UUID } from "../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   useGetPackageQuery,
   useListPackageVersionsQuery,

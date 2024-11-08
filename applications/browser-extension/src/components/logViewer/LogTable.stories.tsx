@@ -18,13 +18,13 @@
 import { ContextError } from "@/errors/genericErrors";
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
-import { validateRegistryId, uuidv4 } from "../../types/helpers";
-import LogTable from "./LogTable";
+import { validateRegistryId, uuidv4 } from "@/types/helpers";
+import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
 import { InputValidationError } from "@/bricks/errors";
-import { type Schema } from "../../types/schemaTypes";
-import type { LogEntry } from "../../telemetry/logging";
+import { type Schema } from "@/types/schemaTypes";
+import type { LogEntry } from "@/telemetry/logging";
 
 export default {
   title: "Editor/LogTable",

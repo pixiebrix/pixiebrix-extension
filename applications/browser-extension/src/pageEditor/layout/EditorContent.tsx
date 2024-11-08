@@ -17,26 +17,26 @@
 
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { selectSessionId } from "../store/session/sessionSelectors";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
-import NoTabAccessPane from "../panes/NoTabAccessPane";
-import ModComponentEditorPane from "../panes/ModComponentEditorPane";
-import ModEditorPane from "../panes/ModEditorPane";
-import HomePane from "../panes/HomePane";
+import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
+import ModComponentEditorPane from "@/pageEditor/panes/ModComponentEditorPane";
+import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
+import HomePane from "@/pageEditor/panes/HomePane";
 import {
   selectActiveModComponentId,
   selectActiveModId,
   selectErrorState,
   selectModComponentAvailability,
-} from "../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
-} from "../store/tabState/tabStateSelectors";
+} from "@/pageEditor/store/tabState/tabStateSelectors";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { selectPageEditorDimensions } from "../utils";
+import { selectPageEditorDimensions } from "@/pageEditor/utils";
 import { DefaultErrorComponent } from "@/components/ErrorBoundary";
 
 const EditorContent: React.FC = () => {

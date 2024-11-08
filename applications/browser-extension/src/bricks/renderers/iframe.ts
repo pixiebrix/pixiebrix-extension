@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RendererABC } from "../../types/bricks/rendererTypes";
-import { assumeSafe } from "../../utils/sanitize";
-import { type Schema } from "../../types/schemaTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { type SafeHTML } from "../../types/stringTypes";
+import { RendererABC } from "@/types/bricks/rendererTypes";
+import { assumeSafe } from "@/utils/sanitize";
+import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
 
 export class IFrameRenderer extends RendererABC {
   constructor() {

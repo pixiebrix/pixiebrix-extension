@@ -16,7 +16,7 @@
  */
 
 import { type Target } from "@/types/messengerTypes";
-import { canAccessTab } from "../permissions/permissionsUtils";
+import { canAccessTab } from "@/permissions/permissionsUtils";
 import {
   isScriptableUrl,
   canAccessTab as canInjectTab,

@@ -19,15 +19,15 @@ import {
   type UserDataUpdate,
   type AuthState,
   type OrganizationAuthState,
-} from "./authTypes";
+} from "@/auth/authTypes";
 import { type Me } from "@/data/model/Me";
-import selectAuthUserOrganizations from "./selectAuthUserOrganizations";
+import selectAuthUserOrganizations from "@/auth/selectAuthUserOrganizations";
 import {
   readReduxStorage,
   validateReduxStorageKey,
-} from "../utils/storageUtils";
-import { type Nullishable } from "../utils/nullishUtils";
-import { anonAuth } from "./authConstants";
+} from "@/utils/storageUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { anonAuth } from "@/auth/authConstants";
 import { LegacyUserRole } from "@/data/model/UserRole";
 
 const AUTH_SLICE_STORAGE_KEY = validateReduxStorageKey("persist:authOptions");

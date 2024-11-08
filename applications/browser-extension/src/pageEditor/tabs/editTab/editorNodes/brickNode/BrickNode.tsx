@@ -17,17 +17,20 @@
 
 import React, { useEffect, useRef } from "react";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import BrickNodeContent from "./BrickNodeContent";
+import BrickNodeContent from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNodeContent";
 import styles from "./BrickNode.module.scss";
-import MoveBrickControl from "./MoveBrickControl";
+import MoveBrickControl from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
 import cx from "classnames";
 import { ListGroup } from "react-bootstrap";
-import NodeActionsView from "../nodeActions/NodeActionsView";
-import PipelineOffsetView from "../PipelineOffsetView";
-import TrailingMessage from "../TrailingMessage";
-import { type BrickNodeProps, RunStatus } from "../../editTabTypes";
+import NodeActionsView from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
+import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
+import {
+  type BrickNodeProps,
+  RunStatus,
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "../../../../store/editor/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 const useScrollIntoViewEffect = (
   active = false,

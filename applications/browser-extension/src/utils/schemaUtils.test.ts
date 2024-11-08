@@ -19,7 +19,7 @@ import {
   inputProperties,
   propertiesToSchema,
   unionSchemaDefinitionTypes,
-} from "./schemaUtils";
+} from "@/utils/schemaUtils";
 import type { Schema, SchemaProperties } from "@/types/schemaTypes";
 
 const fooObjectSchema: Schema = {

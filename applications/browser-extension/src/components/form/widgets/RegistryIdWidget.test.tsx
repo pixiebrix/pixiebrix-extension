@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import RegistryIdWidget from "./RegistryIdWidget";
-import { render, screen } from "../../../pageEditor/testHelpers";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { render, screen } from "@/pageEditor/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import userEvent from "@testing-library/user-event";
 import { partition } from "lodash";
 import { LegacyUserRole } from "@/data/model/UserRole";
-import { validateRegistryId } from "../../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   authStateFactory,
   organizationStateFactory,
-} from "../../../testUtils/factories/authFactories";
+} from "@/testUtils/factories/authFactories";
 
 const editorRoles = new Set<number>([
   LegacyUserRole.admin,

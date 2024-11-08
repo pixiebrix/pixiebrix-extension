@@ -18,13 +18,13 @@
 import styles from "./ListItem.module.scss";
 
 import React from "react";
-import SharingLabel from "../labels/SharingLabel";
-import ModsPageActions from "../ModsPageActions";
+import SharingLabel from "@/extensionConsole/pages/mods/labels/SharingLabel";
+import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
 
-import { type ModViewItem } from "../../../../types/modTypes";
-import Status from "../Status";
+import { type ModViewItem } from "@/types/modTypes";
+import Status from "@/extensionConsole/pages/mods/Status";
 import { ListGroup } from "react-bootstrap";
-import LastUpdatedLabel from "../labels/LastUpdatedLabel";
+import LastUpdatedLabel from "@/extensionConsole/pages/mods/labels/LastUpdatedLabel";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import {
   faCubes,

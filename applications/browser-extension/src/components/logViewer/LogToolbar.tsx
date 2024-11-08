@@ -17,13 +17,13 @@
 
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
-import type { MessageLevel } from "../../telemetry/logging";
+import type { MessageLevel } from "@/telemetry/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback } from "react";
-import notify from "../../utils/notify";
-import AsyncButton from "../AsyncButton";
-import Pagination from "../pagination/Pagination";
+import notify from "@/utils/notify";
+import AsyncButton from "@/components/AsyncButton";
+import Pagination from "@/components/pagination/Pagination";
 
 const defaultLevelOptions = ["debug", "info", "warn", "error"] as const;
 

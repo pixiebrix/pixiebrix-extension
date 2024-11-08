@@ -17,14 +17,14 @@
 
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import {
   selectCurrentModId,
   selectEditorModalVisibilities,
-} from "../../store/editor/editorSelectors";
-import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const SaveAsNewModModal: React.FC = () => {
   const dispatch = useDispatch();

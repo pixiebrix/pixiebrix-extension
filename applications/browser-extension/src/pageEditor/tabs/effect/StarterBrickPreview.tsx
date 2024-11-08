@@ -20,25 +20,22 @@ import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runStarterBrickReaderPreview } from "@/contentScript/messenger/api";
-import { adapterForComponent } from "../../starterBricks/adapter";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "@/components/AsyncButton";
-import { isTriggerStarterBrick } from "../../starterBricks/formStateTypes";
-import { DataPanelTabKey } from "../editTab/dataPanel/dataPanelTypes";
-import DataTabJsonTree from "../editTab/dataPanel/DataTabJsonTree";
-import { inspectedTab } from "../../context/connection";
-import {
-  assertNotNullish,
-  type Nullishable,
-} from "../../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../../types/starterBrickTypes";
+import { isTriggerStarterBrick } from "@/pageEditor/starterBricks/formStateTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectGetModDraftStateForModId,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useAsyncEffect } from "use-async-effect";
 
 type PreviewState = {

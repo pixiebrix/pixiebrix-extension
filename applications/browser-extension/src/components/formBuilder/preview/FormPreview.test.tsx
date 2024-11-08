@@ -17,10 +17,10 @@
 
 import testItRenders, {
   type ItRendersOptions,
-} from "../../../testUtils/testItRenders";
+} from "@/testUtils/testItRenders";
 import { type Except } from "type-fest";
 import FormPreview, { type FormPreviewProps } from "./FormPreview";
-import { type Schema, type UiSchema } from "../../../types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 

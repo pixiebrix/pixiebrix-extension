@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
-import { type components } from "../../types/swagger";
+import { type UUID } from "@/types/stringTypes";
+import { type components } from "@/types/swagger";
 import { type SetRequired } from "type-fest";
 
 export type TeamMembershipGroup = {

@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../testHelpers";
+import { renderHook } from "@/pageEditor/testHelpers";
 import useDeleteDraftModComponent from "./useDeleteDraftModComponent";
-import { actions, actions as editorActions } from "../store/editor/editorSlice";
+import {
+  actions,
+  actions as editorActions,
+} from "@/pageEditor/store/editor/editorSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { act } from "@testing-library/react";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -41,7 +45,6 @@ describe("useDeleteModComponent", () => {
     const {
       result: { current: deleteDraftModComponent },
       getReduxStore,
-      act,
     } = renderHook(() => useDeleteDraftModComponent(), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");

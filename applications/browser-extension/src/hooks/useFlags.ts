@@ -22,7 +22,7 @@ import {
   removeAuthListener as removeAuthStorageListener,
 } from "@/auth/authStorage";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
-import { mergeAsyncState } from "../utils/asyncStateUtils";
+import { mergeAsyncState } from "@/utils/asyncStateUtils";
 import {
   type FeatureFlag,
   mapRestrictedFeatureToFeatureFlag,

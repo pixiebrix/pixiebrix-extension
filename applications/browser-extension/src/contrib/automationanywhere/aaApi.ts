@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Logger } from "../../types/loggerTypes";
+import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import {
   type Activity,
@@ -32,29 +32,29 @@ import {
   type ListResponse,
   type RunAsUser,
   type WorkspaceType,
-} from "./contract";
-import { cachePromiseMethod } from "../../utils/cachePromise";
+} from "@/contrib/automationanywhere/contract";
+import { cachePromiseMethod } from "@/utils/cachePromise";
 import {
   interfaceToInputSchema,
   mapBotInput,
   selectBotOutput,
-} from "./aaUtils";
+} from "@/contrib/automationanywhere/aaUtils";
 import {
   type ApiTaskArgs,
   type CommunityBotArgs,
   type EnterpriseBotArgs,
-} from "./aaTypes";
+} from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, partial, sortBy } from "lodash";
-import type { NetworkRequestConfig } from "../../types/networkTypes";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { pollUntilTruthy } from "../../utils/promiseUtils";
-import { isNullOrBlank } from "../../utils/stringUtils";
-import { sleep } from "../../utils/timeUtils";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { sleep } from "@/utils/timeUtils";
 
 // XXX: using the ambient platform object for now. In the future, we might want to wrap all these methods in a class
 // and pass the platform and integration config as a constructor argument
-import { getPlatform } from "../../platform/platformContext";
+import { getPlatform } from "@/platform/platformContext";
 import { type SetRequired } from "type-fest";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html

@@ -19,9 +19,9 @@ import React from "react";
 import {
   type DocumentBuilderComponent,
   type PreviewComponentProps,
-} from "../../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
-import documentTreeStyles from "../documentTree.module.scss";
+import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 
 type UnknownProps = PreviewComponentProps & {
   documentBuilderComponent: DocumentBuilderComponent;

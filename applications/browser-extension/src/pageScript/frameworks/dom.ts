@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isObject } from "../../utils/objectUtils";
+import { isObject } from "@/utils/objectUtils";
 
 export function isNode(x: unknown): x is Node {
   return isObject(x) && "nodeType" in x;

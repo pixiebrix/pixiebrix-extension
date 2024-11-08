@@ -16,7 +16,7 @@
  */
 
 import { type SafeString } from "@/types/stringTypes";
-import { freshIdentifier, stripOptionalChaining } from "./variableUtils";
+import { freshIdentifier, stripOptionalChaining } from "@/utils/variableUtils";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;

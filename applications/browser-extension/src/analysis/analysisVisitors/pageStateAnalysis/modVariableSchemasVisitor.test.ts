@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import ModVariableSchemasVisitor from "./modVariableSchemasVisitor";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   registerBuiltinBricks();

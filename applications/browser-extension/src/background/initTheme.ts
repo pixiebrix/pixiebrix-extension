@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import setToolbarIconFromTheme from "./setToolbarIconFromTheme";
-import { expectContext } from "../utils/expectContext";
-import { getActiveTheme } from "../themes/themeStore";
-import { browserAction } from "../mv3/api";
-import { themeStorage } from "../themes/themeUtils";
-import { allSettled } from "../utils/promiseUtils";
+import setToolbarIconFromTheme from "@/background/setToolbarIconFromTheme";
+import { expectContext } from "@/utils/expectContext";
+import { getActiveTheme } from "@/themes/themeStore";
+import { browserAction } from "@/mv3/api";
+import { themeStorage } from "@/themes/themeUtils";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * Set the toolbar icon based on the current theme settings.

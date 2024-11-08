@@ -29,22 +29,22 @@ import {
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import PublishIcon from "../../../icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
-import { type ModViewItem } from "../../../types/modTypes";
-import { modModalsSlice } from "./modals/modModalsSlice";
+import PublishIcon from "@/icons/arrow-up-from-bracket-solid.svg?loadAsComponent";
+import { type ModViewItem } from "@/types/modTypes";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
-import { deactivateMod } from "../../../store/deactivateModHelpers";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { deactivateMod } from "@/store/deactivateModHelpers";
 import useUserAction from "@/hooks/useUserAction";
 import { useDeletePackageMutation } from "@/data/service/api";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { UI_PATHS } from "@/data/service/urlPaths";
-import useFindModInstance from "../../../mods/hooks/useFindModInstance";
-import { type AppDispatch } from "../../store";
+import useFindModInstance from "@/mods/hooks/useFindModInstance";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 const ModsPageActions: React.FunctionComponent<{
   modViewItem: ModViewItem;

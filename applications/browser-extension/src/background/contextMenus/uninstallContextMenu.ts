@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeMenuId } from "./makeMenuId";
-import { type UUID } from "../../types/stringTypes";
+import { makeMenuId } from "@/background/contextMenus/makeMenuId";
+import { type UUID } from "@/types/stringTypes";
 
 /**
  * Uninstall the contextMenu UI for `modComponentId` from browser context menu on all tabs.

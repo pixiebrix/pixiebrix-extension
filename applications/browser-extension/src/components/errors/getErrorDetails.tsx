@@ -31,8 +31,8 @@ import {
   NoElementsFoundError,
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
-import RemoteApiErrorDetail from "./RemoteApiErrorDetail";
-import InvalidSelectorErrorDetail from "./InvalidSelectorErrorDetail";
+import RemoteApiErrorDetail from "@/components/errors/RemoteApiErrorDetail";
+import InvalidSelectorErrorDetail from "@/components/errors/InvalidSelectorErrorDetail";
 
 type ErrorDetails = {
   title: string;

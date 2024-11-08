@@ -18,9 +18,9 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
-import { uuidSequence } from "../testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type Schema } from "@/types/schemaTypes";
-import { validateOutputKey } from "../runtime/runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 /**
  * The PixieBrix API integration definition registry id.

@@ -18,17 +18,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { persistSettingsConfig } from "../store/settings/settingsStorage";
-import settingsSlice from "../store/settings/settingsSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/data/service/api";
-import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
-} from "./testHelpers";
+} from "@/testUtils/testHelpers";
 import integrationsSlice, {
   type IntegrationsState,
-} from "../integrations/store/integrationsSlice";
+} from "@/integrations/store/integrationsSlice";
 
 function configureCommonStoreForTests(initialState?: {
   auth?: unknown;

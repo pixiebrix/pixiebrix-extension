@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { TraceEntryData, TraceExitData } from "../../telemetry/trace";
-import type { UUID } from "../../types/stringTypes";
+import type { TraceEntryData, TraceExitData } from "@/telemetry/trace";
+import type { UUID } from "@/types/stringTypes";
 
 /**
  * The tracing protocol.

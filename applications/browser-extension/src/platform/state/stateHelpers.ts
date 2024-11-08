@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { RegistryId } from "../../types/registryTypes";
+import type { RegistryId } from "@/types/registryTypes";
 
 /**
  * @file Cross-context helper methods for state protocol.

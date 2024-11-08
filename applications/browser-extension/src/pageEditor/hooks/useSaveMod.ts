@@ -20,33 +20,33 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectGetDraftModComponentsForMod,
   selectGetModDraftStateForModId,
-} from "../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
-import notify from "../../utils/notify";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { type RegistryId } from "../../types/registryTypes";
-import { useAllModDefinitions } from "../../modDefinitions/modDefinitionHooks";
-import { ensureModComponentFormStatePermissionsFromUserGesture } from "../editorPermissionsHelpers";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import type { EditablePackageMetadata } from "../../types/contract";
-import type { ModDefinition } from "../../types/modDefinitionTypes";
+import notify from "@/utils/notify";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { type RegistryId } from "@/types/registryTypes";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import type { EditablePackageMetadata } from "@/types/contract";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 import useBuildAndValidateMod, {
   DataIntegrityError,
-} from "./useBuildAndValidateMod";
+} from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { isInnerDefinitionRegistryId } from "../../types/helpers";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import {
   isModComponentFormState,
   mapModDefinitionUpsertResponseToModDefinition,
-} from "../utils";
-import updateReduxForSavedModDefinition from "./updateReduxForSavedModDefinition";
+} from "@/pageEditor/utils";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import { isSpecificError } from "@/errors/errorHelpers";
-import { type AppDispatch } from "../store/store";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 /** @internal */
 export function isModEditable(

@@ -16,18 +16,18 @@
  */
 
 import React from "react";
-import ListView from "./listView/ListView";
-import GridView from "./gridView/GridView";
+import ListView from "@/extensionConsole/pages/mods/listView/ListView";
+import GridView from "@/extensionConsole/pages/mods/gridView/GridView";
 import { useSelector } from "react-redux";
 import {
   selectActiveTab,
   selectIsLoadingData,
   selectView,
-} from "./modsPageSelectors";
-import OnboardingView from "./onboardingView/OnboardingView";
-import EmptyView from "./emptyView/EmptyView";
-import GetStartedView from "./GetStartedView";
-import { type ModsPageContentProps } from "./modsPageTypes";
+} from "@/extensionConsole/pages/mods/modsPageSelectors";
+import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
+import EmptyView from "@/extensionConsole/pages/mods/emptyView/EmptyView";
+import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 import Loader from "@/components/Loader";
 
 const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({

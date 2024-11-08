@@ -25,19 +25,19 @@ import {
   normalizeShape,
   type RowValues,
   type Shape,
-} from "./append";
-import * as sheets from "../core/sheetsApi";
-import { sanitizedIntegrationConfigFactory } from "../../../../testUtils/factories/integrationFactories";
-import { uuidv4, validateRegistryId } from "../../../../types/helpers";
-import { uuidSequence } from "../../../../testUtils/factories/stringFactories";
-import ConsoleLogger from "../../../../utils/ConsoleLogger";
-import { type BrickArgs, type BrickOptions } from "../../../../types/runtimeTypes";
-import type { SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import type { Spreadsheet } from "../core/types";
+} from "@/contrib/google/sheets/bricks/append";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { produce } from "immer";
 
 // XXX: sheetsApi should likely be mocked at the network level, not the module level
-jest.mock("../core/sheetsApi");
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
 describe("Infer shape", () => {
   it("Infer entries shape", () => {

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { type OmitIndexSignature, type JsonValue } from "type-fest";
-import { type ManualStorageKey } from "../utils/storageUtils";
+import { type ManualStorageKey } from "@/utils/storageUtils";
 import { once } from "lodash";
 import pMemoize from "p-memoize";
 

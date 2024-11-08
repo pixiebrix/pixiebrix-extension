@@ -18,12 +18,12 @@
 import React from "react";
 import { type Meta, type StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import TextWidget from "./TextWidget";
-import { settingsStore } from "../../../../testUtils/storyUtils";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import Form from "../../../form/Form";
-import { type Expression } from "../../../../types/runtimeTypes";
-import { toExpression } from "../../../../utils/expressionUtils";
+import Form from "@/components/form/Form";
+import { type Expression } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 type TextWidgetPropsAndCustomArgs = React.ComponentProps<typeof TextWidget> & {
   exampleValue: string | Expression;

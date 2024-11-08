@@ -32,40 +32,45 @@ import { BRICK_ITEM_FIXED_HEIGHT_PX } from "./BrickGridItem";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
-import TagSearchInput from "./TagSearchInput";
-import TagList, { type TagItem } from "./TagList";
+import TagSearchInput from "@/pageEditor/modals/addBrickModal/TagSearchInput";
+import TagList, {
+  type TagItem,
+} from "@/pageEditor/modals/addBrickModal/TagList";
 import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
 } from "@/data/service/api";
-import { type MarketplaceListing } from "../../../types/contract";
-import BrickDetail from "./BrickDetail";
+import { type MarketplaceListing } from "@/types/contract";
+import BrickDetail from "@/pageEditor/modals/addBrickModal/BrickDetail";
 import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Draft, produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
-import useBrickSearch from "./useBrickSearch";
-import BrickGridItemRenderer from "./BrickGridItemRenderer";
-import groupListingsByTag from "./groupListingsByTag";
-import { actions } from "../../store/editor/editorSlice";
-import { selectEditorModalVisibilities } from "../../store/editor/editorSelectors";
-import { BRICK_RESULT_COLUMN_COUNT, TAG_ALL } from "./addBrickModalConstants";
+import useBrickSearch from "@/pageEditor/modals/addBrickModal/useBrickSearch";
+import BrickGridItemRenderer from "@/pageEditor/modals/addBrickModal/BrickGridItemRenderer";
+import groupListingsByTag from "@/pageEditor/modals/addBrickModal/groupListingsByTag";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  BRICK_RESULT_COLUMN_COUNT,
+  TAG_ALL,
+} from "@/pageEditor/modals/addBrickModal/addBrickModalConstants";
 import {
   type BrickGridData,
   type BrickSelectOption,
-} from "./addBrickModalTypes";
-import { getItemKey } from "./addBrickModalHelpers";
-import useAddBrick from "./useAddBrick";
+} from "@/pageEditor/modals/addBrickModal/addBrickModalTypes";
+import { getItemKey } from "@/pageEditor/modals/addBrickModal/addBrickModalHelpers";
+import useAddBrick from "@/pageEditor/modals/addBrickModal/useAddBrick";
 import useTheme from "@/hooks/useTheme";
-import aaLogo from "../../../../img/aa-logo-small.png";
+import aaLogo from "@img/aa-logo-small.png";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
-import { type RegistryId } from "../../../types/registryTypes";
-import { type Brick } from "../../../types/brickTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import useFlags from "@/hooks/useFlags";
-import { fallbackValue } from "../../../utils/asyncStateUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type TypedBrickMap } from "@/bricks/registry";
 
 const TAG_POPULAR = "Popular";
@@ -221,17 +226,17 @@ const AddBrickModal: React.FC = () => {
     }
 
     let typedBricks = [...allBricks.values()].filter(
-      ({ block }) => block.featureFlag == null || flagOn(block.featureFlag),
+      ({ brick }) => brick.featureFlag == null || flagOn(brick.featureFlag),
     );
 
     if (themeName === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       typedBricks = typedBricks.filter(
         // eslint-disable-next-line security/detect-object-injection -- constant
-        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id),
+        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.brick.id),
       );
     }
 
-    return typedBricks.map(({ block }) => block);
+    return typedBricks.map(({ brick }) => brick);
   }, [allBricks, isLoadingTags, themeName, taggedBrickIds, flagOn]);
 
   const searchResults = useBrickSearch(

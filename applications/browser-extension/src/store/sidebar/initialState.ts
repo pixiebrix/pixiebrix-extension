@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SidebarState } from "../../types/sidebarTypes";
+import { type SidebarState } from "@/types/sidebarTypes";
 
 export const initialSidebarState: SidebarState = {
   panels: [],

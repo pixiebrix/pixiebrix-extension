@@ -16,24 +16,24 @@
  */
 
 import React, { type ReactElement, useCallback, useState } from "react";
-import { type Spreadsheet } from "../core/types";
-import { type Schema } from "../../../../types/schemaTypes";
-import useGoogleAccount from "../core/useGoogleAccount";
-import useSpreadsheetId from "../core/useSpreadsheetId";
+import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
+import { type Schema } from "@/types/schemaTypes";
+import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
+import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import { type AsyncState } from "../../../../types/sliceTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type AsyncState } from "@/types/sliceTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { type Except } from "type-fest";
-import { joinName } from "../../../../utils/formUtils";
+import { joinName } from "@/utils/formUtils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { AnnotationType } from "../../../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { SHEET_FIELD_SCHEMA } from "../core/schemas";
-import { getSpreadsheet } from "../core/sheetsApi";
+import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import { getSpreadsheet } from "@/contrib/google/sheets/core/sheetsApi";
 import { hasCachedAuthData } from "@/background/messenger/api";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;

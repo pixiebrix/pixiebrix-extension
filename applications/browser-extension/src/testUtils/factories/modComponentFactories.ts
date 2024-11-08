@@ -21,20 +21,20 @@ import {
   type ModComponentBase,
   type ModComponentRef,
   type ModMetadata,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import {
   autoUUIDSequence,
   registryIdFactory,
   timestampFactory,
   uuidSequence,
-} from "./stringFactories";
-import { type ApiVersion } from "../../types/runtimeTypes";
-import { validateRegistryId } from "../../types/helpers";
-import { type IntegrationDependency } from "../../integrations/integrationTypes";
-import { personalSharingDefinitionFactory } from "./registryFactories";
-import { metadataFactory } from "./metadataFactory";
-import { DefinitionKinds, type Metadata } from "../../types/registryTypes";
-import { validateTimestamp } from "../../utils/timeUtils";
+} from "@/testUtils/factories/stringFactories";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { DefinitionKinds, type Metadata } from "@/types/registryTypes";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 export const modComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts

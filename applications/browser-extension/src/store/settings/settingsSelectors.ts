@@ -16,8 +16,8 @@
  */
 
 import { createSelector } from "@reduxjs/toolkit";
-import { type SettingsRootState } from "./settingsTypes";
-import { type Nullishable } from "../../utils/nullishUtils";
+import { type SettingsRootState } from "@/store/settings/settingsTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const selectUpdatePromptState = createSelector(
   [

@@ -17,19 +17,19 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import integrationsSlice from "../integrations/store/integrationsSlice";
-import settingsSlice from "../store/settings/settingsSlice";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
-} from "../testUtils/testHelpers";
+} from "@/testUtils/testHelpers";
 import { appApi } from "@/data/service/api";
-import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";
-import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
-import { sessionChangesMiddleware } from "../store/sessionChanges/sessionChangesListenerMiddleware";
-import sessionSlice from "../pageEditor/store/session/sessionSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 
 const configureStoreForTests = () =>
   configureStore({

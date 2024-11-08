@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RunBot } from "./RunBot";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { uuidv4 } from "../../types/helpers";
+import { RunBot } from "@/contrib/automationanywhere/RunBot";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { uuidv4 } from "@/types/helpers";
 import {
   getUserData,
   getCachedAuthData,
@@ -26,18 +26,18 @@ import {
 import {
   type AuthData,
   type SanitizedIntegrationConfig,
-} from "../../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../../integrations/constants";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { setPlatform } from "../../platform/platformContext";
-import { platformMock as platform } from "../../testUtils/platformMock";
-import type { Nullishable } from "../../utils/nullishUtils";
-import type { NetworkRequestConfig } from "../../types/networkTypes";
+} from "@/integrations/constants";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { setPlatform } from "@/platform/platformContext";
+import { platformMock as platform } from "@/testUtils/platformMock";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 
-jest.mock("../../background/messenger/api", () => ({
+jest.mock("@/background/messenger/api", () => ({
   getUserData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   getCachedAuthData: jest.fn().mockRejectedValue(new Error("Not mocked")),
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({

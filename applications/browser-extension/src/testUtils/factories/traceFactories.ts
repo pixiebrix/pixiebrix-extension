@@ -16,12 +16,15 @@
  */
 
 import { define, type FactoryConfig } from "cooky-cutter";
-import { type TraceError, type TraceRecord } from "../../telemetry/trace";
-import { timestampFactory, uuidSequence } from "./stringFactories";
+import { type TraceError, type TraceRecord } from "@/telemetry/trace";
+import {
+  timestampFactory,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
 import objectHash from "object-hash";
-import { type RenderedArgs } from "../../types/runtimeTypes";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
 const TEST_BRICK_ID = validateRegistryId("testing/block-id");
 

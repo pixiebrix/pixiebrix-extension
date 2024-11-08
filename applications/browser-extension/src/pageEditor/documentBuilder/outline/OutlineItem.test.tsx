@@ -22,7 +22,7 @@ import {
   Droppable,
 } from "react-beautiful-dnd-next";
 import { action } from "@storybook/addon-actions";
-import OutlineItem from "./OutlineItem";
+import OutlineItem from "@/pageEditor/documentBuilder/outline/OutlineItem";
 import React from "react";
 import { noop } from "lodash";
 

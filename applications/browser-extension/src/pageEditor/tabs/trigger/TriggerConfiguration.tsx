@@ -17,27 +17,27 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import LocationWidget from "../../fields/LocationWidget";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
-import { type TriggerFormState } from "../../starterBricks/formStateTypes";
-import { getDefaultReportModeForTrigger } from "../../../starterBricks/trigger/triggerStarterBrick";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { getDefaultReportModeForTrigger } from "@/starterBricks/trigger/triggerStarterBrick";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { partial } from "lodash";
-import MatchRulesSection from "../MatchRulesSection";
-import DebounceFieldSet from "./DebounceFieldSet";
-import { type DebounceOptions } from "../../../starterBricks/types";
-import ExtraPermissionsSection from "../ExtraPermissionsSection";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
+import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
+import { type DebounceOptions } from "@/starterBricks/types";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import {
   ReportModes,
   type Trigger,
   Triggers,
-} from "../../../starterBricks/trigger/triggerStarterBrickTypes";
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
 import { useSelector } from "react-redux";
-import { selectKnownEventNamesForActiveModComponent } from "../../store/editor/editorSelectors";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
 import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
-import { joinName } from "../../../utils/formUtils";
+import { joinName } from "@/utils/formUtils";
 
 function supportsSelector(trigger: Trigger) {
   return ![

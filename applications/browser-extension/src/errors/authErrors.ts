@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "./businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Thrown when an interactive login is required to proceed but is not available, e.g., for use with

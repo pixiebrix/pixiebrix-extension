@@ -20,10 +20,10 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
-import { type Expression } from "../../../../types/runtimeTypes";
-import { type Schema } from "../../../../types/schemaTypes";
-import { isExpression, toExpression } from "../../../../utils/expressionUtils";
-import { type Spreadsheet } from "../core/types";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
+import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import useAsyncEffect from "use-async-effect";
 
 const TabField: React.FC<

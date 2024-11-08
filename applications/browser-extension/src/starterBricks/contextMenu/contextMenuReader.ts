@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import selection from "../../utils/selectionController";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import selection from "@/utils/selectionController";
 import { type JsonObject } from "type-fest";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 // XXX: do we need to support SVG here too?
 const MEDIA_TYPE: Record<string, string> = {

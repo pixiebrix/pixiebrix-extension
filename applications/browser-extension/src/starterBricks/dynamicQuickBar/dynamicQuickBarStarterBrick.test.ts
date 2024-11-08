@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { define } from "cooky-cutter";
-import { fromJS } from "./dynamicQuickBarStarterBrick";
+import { fromJS } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import { type BrickPipeline } from "@/bricks/types";
-import { getDocument, RootReader, tick } from "../testHelpers";
+import { getDocument, RootReader, tick } from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -31,24 +31,24 @@ import {
 import defaultActions, {
   pageEditorAction,
 } from "@/components/quickBar/defaultActions";
-import { waitForEffect } from "../../testUtils/testHelpers";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { RunReason } from "../../types/runtimeTypes";
-import { uuidSequence } from "../../testUtils/factories/stringFactories";
-import { starterBrickDefinitionFactory as genericStarterBrickFactory } from "../../testUtils/factories/modDefinitionFactories";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { RunReason } from "@/types/runtimeTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { starterBrickDefinitionFactory as genericStarterBrickFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { act } from "@testing-library/react";
-import { getPlatform } from "../../platform/platformContext";
+import { getPlatform } from "@/platform/platformContext";
 import {
   type DynamicQuickBarDefinition,
   type DynamicQuickBarConfig,
-} from "./dynamicQuickBarTypes";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
+} from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
-jest.mock("../../auth/featureFlagStorage", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
   restrict: jest.fn().mockReturnValue(false),
 }));

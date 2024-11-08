@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { getErrorMessage, selectError } from "@/errors/errorHelpers";
-import { isObject } from "../../../../utils/objectUtils";
+import { isObject } from "@/utils/objectUtils";
 import { deleteCachedAuthData } from "@/background/messenger/api";
-import { type Nullishable } from "../../../../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
-import castError from "../../../../utils/castError";
+import castError from "@/utils/castError";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";

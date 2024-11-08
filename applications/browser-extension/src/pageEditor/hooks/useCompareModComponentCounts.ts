@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnsavedModDefinition } from "../../types/modDefinitionTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useSelector } from "react-redux";
 import { useCallback } from "react";
-import { type RegistryId } from "../../types/registryTypes";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "../store/editor/editorSelectors";
+import { type RegistryId } from "@/types/registryTypes";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors";
 
 /**
  * @returns A function that compares the number of mod components in the redux state and the mod definition

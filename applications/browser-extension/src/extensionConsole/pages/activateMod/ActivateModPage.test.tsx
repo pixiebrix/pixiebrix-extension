@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "../../testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen, waitFor } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -35,7 +35,7 @@ import useActivateMod, {
   type ActivateModFormCallback,
 } from "@/activation/useActivateMod";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
-import ActivateModPage from "./ActivateModPage";
+import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { FeatureFlags } from "@/auth/featureFlags";
 
@@ -51,7 +51,7 @@ jest.mock("@/activation/useActivateMod.ts");
 
 const activateModHookMock = jest.mocked(useActivateMod);
 
-jest.mock("../useRegistryIdParam", () => ({
+jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
   __esModule: true,
   default: jest.fn(() => testModId),
 }));

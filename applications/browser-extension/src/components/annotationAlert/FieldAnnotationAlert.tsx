@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import ErrorIcon from "../../icons/error.svg?loadAsComponent";
-import WarningIcon from "../../icons/warning.svg?loadAsComponent";
-import InfoIcon from "../../icons/info.svg?loadAsComponent";
+import ErrorIcon from "@/icons/error.svg?loadAsComponent";
+import WarningIcon from "@/icons/warning.svg?loadAsComponent";
+import InfoIcon from "@/icons/info.svg?loadAsComponent";
 import cx from "classnames";
 import styles from "./FieldAnnotationAlert.module.scss";
-import AsyncButton from "../AsyncButton";
-import { AnnotationType } from "../../types/annotationTypes";
-import { type FieldAnnotation } from "../form/FieldAnnotation";
+import AsyncButton from "@/components/AsyncButton";
+import { AnnotationType } from "@/types/annotationTypes";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { type ButtonVariant } from "react-bootstrap/types";
 
 const FieldAnnotationAlert: React.FunctionComponent<

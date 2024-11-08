@@ -22,9 +22,9 @@ import {
   type UiSchema,
 } from "@/types/schemaTypes";
 import { castArray, intersection, isEmpty, uniq } from "lodash";
-import { isNullOrBlank } from "./stringUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
-import { type Nullishable } from "./nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Return the names of top-level required properties that are missing or blank in an object.

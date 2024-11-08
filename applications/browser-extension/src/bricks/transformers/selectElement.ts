@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
-} from "../../platform/capabilities";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/platform/capabilities";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import { isContentScriptPlatformProtocol } from "@/contentScript/platform/contentScriptPlatformProtocol";
 
 class SelectElement extends TransformerABC {

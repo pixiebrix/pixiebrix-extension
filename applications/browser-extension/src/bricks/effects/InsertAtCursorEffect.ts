@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { isEmpty } from "lodash";
-import selectionController from "../../utils/selectionController";
-import type { PlatformCapability } from "../../platform/capabilities";
+import selectionController from "@/utils/selectionController";
+import type { PlatformCapability } from "@/platform/capabilities";
 import {
   ExecCommandError,
   insertAtCursorWithCustomEditorSupport,
 } from "@/contentScript/textEditorDom";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { expectContext } from "../../utils/expectContext";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { expectContext } from "@/utils/expectContext";
 import { BusinessError } from "@/errors/businessErrors";
 
 /**

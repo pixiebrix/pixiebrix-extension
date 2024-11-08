@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import DimensionGate from "./DimensionGate";
+import { render } from "@/pageEditor/testHelpers";
+import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 

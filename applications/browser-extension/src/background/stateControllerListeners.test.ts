@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { modComponentRefFactory } from "../testUtils/factories/modComponentFactories";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   getState,
   setState,
   TEST_resetStateController,
 } from "@/contentScript/stateController/stateController";
-import { MergeStrategies, StateNamespaces } from "../platform/state/stateTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 import type { JSONSchema7Definition } from "json-schema";
 import {
   deleteSynchronizedModVariablesForMod,
   deleteSynchronizedModVariablesForTab,
-} from "./stateControllerListeners";
+} from "@/background/stateControllerListeners";
 import { getThisFrame } from "webext-messenger";
 import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
 

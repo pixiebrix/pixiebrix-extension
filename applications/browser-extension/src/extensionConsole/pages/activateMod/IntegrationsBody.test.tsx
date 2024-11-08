@@ -20,32 +20,32 @@ import { useAuthOptions } from "@/hooks/useAuthOptions";
 import {
   type IntegrationDefinition,
   type IntegrationDependency,
-} from "../../../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type AuthOption } from "@/auth/authTypes";
-import { valueToAsyncState } from "../../../utils/asyncStateUtils";
-import { appApiMock } from "../../../testUtils/appApiMock";
-import { validateRegistryId } from "../../../types/helpers";
-import { render } from "../../testHelpers";
-import IntegrationsBody from "./IntegrationsBody";
-import { defaultModDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
-import { autoUUIDSequence } from "../../../testUtils/factories/stringFactories";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { validateRegistryId } from "@/types/helpers";
+import { render } from "@/extensionConsole/testHelpers";
+import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { act, screen } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import {
   generateIntegrationAndRemoteConfig,
   integrationDependencyFactory,
-} from "../../../testUtils/factories/integrationFactories";
-import getModDefinitionIntegrationIds from "../../../integrations/util/getModDefinitionIntegrationIds";
+} from "@/testUtils/factories/integrationFactories";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 import { registry, integrationConfigLocator } from "@/background/messenger/api";
 import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
-import { clear, find, syncPackages } from "../../../registry/packageRegistry";
-import { type ModDefinition } from "../../../types/modDefinitionTypes";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { produce } from "immer";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../../../hooks/useAuthOptions");
-jest.mock("../../../integrations/util/getModDefinitionIntegrationIds");
+jest.mock("@/hooks/useAuthOptions");
+jest.mock("@/integrations/util/getModDefinitionIntegrationIds");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 const getIntegrationIdsMock = jest.mocked(getModDefinitionIntegrationIds);

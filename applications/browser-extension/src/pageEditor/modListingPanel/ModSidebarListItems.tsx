@@ -18,9 +18,9 @@
 import styles from "./ModSidebarListItems.module.scss";
 import React, { useMemo, useState } from "react";
 import { Accordion, Button, FormControl, ListGroup } from "react-bootstrap";
-import { type SidebarItem } from "./common";
-import ModListItem from "./ModListItem";
-import arrangeSidebarItems from "./arrangeSidebarItems";
+import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
+import ModListItem from "@/pageEditor/modListingPanel/ModListItem";
+import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
 import {
   selectActiveModComponentId,
   selectActiveModId,
@@ -28,12 +28,12 @@ import {
   selectModComponentAvailability,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
-} from "../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useSelector } from "react-redux";
 import ModComponentListItem from "./ModComponentListItem";
 import { useDebounce } from "use-debounce";
-import filterSidebarItems from "./filterSidebarItems";
-import { getDraftModComponentId } from "../utils";
+import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
+import { getDraftModComponentId } from "@/pageEditor/utils";
 
 const ModSidebarListItems: React.FunctionComponent = () => {
   const activeModComponentId = useSelector(selectActiveModComponentId);

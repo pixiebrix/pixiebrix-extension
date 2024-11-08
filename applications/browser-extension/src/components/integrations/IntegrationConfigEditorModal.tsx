@@ -17,37 +17,37 @@
 
 import styles from "./IntegrationConfigEditorModal.module.scss";
 
-import optionsRegistry from "../fields/optionsRegistry";
+import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
-import AsyncButton from "../AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { truncate } from "lodash";
 import genericOptionsFactory, {
   type BrickOptionProps,
-} from "../fields/schemaFields/genericOptionsFactory";
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
-import ConnectedFieldTemplate from "../form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldRuntimeContext, {
   type RuntimeContext,
-} from "../fields/schemaFields/FieldRuntimeContext";
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
-} from "../form/Form";
+} from "@/components/form/Form";
 import {
   type Integration,
   type IntegrationConfig,
-} from "../../integrations/integrationTypes";
-import { type UUID } from "../../types/stringTypes";
-import { DEFAULT_RUNTIME_API_VERSION } from "../../runtime/apiVersionOptions";
+} from "@/integrations/integrationTypes";
+import { type UUID } from "@/types/stringTypes";
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import useAsyncState from "@/hooks/useAsyncState";
-import AsyncStateGate from "../AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 import type * as Yup from "yup";
 import {
   createYupValidationSchema,
   validateIntegrationConfig,
-} from "./integrationHelpers";
+} from "@/components/integrations/integrationHelpers";
 
 export type IntegrationConfigEditorModalProps = {
   /**

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentTraces } from "../../../../store/runtime/runtimeSelectors";
-import { type MapPipelineToNodesArgs } from "./useMapPipelineToNodes";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
+import { type MapPipelineToNodesArgs } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
 import {
   filterTracesByCall,
   getLatestBrickCall,
-} from "../../../../../telemetry/traceHelpers";
+} from "@/telemetry/traceHelpers";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 

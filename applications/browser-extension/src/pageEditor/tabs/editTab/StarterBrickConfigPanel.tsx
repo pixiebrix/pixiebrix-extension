@@ -17,25 +17,25 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import ApiVersionField from "../../fields/ApiVersionField";
+import ApiVersionField from "@/pageEditor/fields/ApiVersionField";
 import useFlags from "@/hooks/useFlags";
-import devtoolFieldOverrides from "../../fields/devtoolFieldOverrides";
+import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentAnalysisAnnotationsForPath,
   selectActiveModComponentFormState,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { isInnerDefinitionRegistryId } from "../../../types/helpers";
-import { openShortcutsTab, SHORTCUTS_URL } from "../../../utils/extensionUtils";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../../types/starterBrickTypes";
-import { adapterForComponent } from "../../starterBricks/adapter";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
 import { FeatureFlags } from "@/auth/featureFlags";
 
 const UnconfiguredQuickBarAlert: React.FunctionComponent = () => {

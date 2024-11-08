@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { render } from "../../pageEditor/testHelpers";
-import CommentOptions from "./CommentOptions";
+import { render } from "@/pageEditor/testHelpers";
+import CommentOptions from "@/bricks/effects/CommentOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { screen } from "@testing-library/react";
 

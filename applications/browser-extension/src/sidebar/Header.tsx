@@ -23,8 +23,8 @@ import { faCog, faSync } from "@fortawesome/free-solid-svg-icons";
 import useTheme from "@/hooks/useTheme";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { DEFAULT_THEME } from "../themes/themeTypes";
-import { getExtensionConsoleUrl } from "../utils/extensionUtils";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { FeatureFlags } from "@/auth/featureFlags";
 
 function reloadSidebar() {

@@ -18,9 +18,9 @@
 import React from "react";
 import { type Meta, type StoryObj } from "@storybook/react";
 
-import HomePane from "./HomePane";
+import HomePane from "@/pageEditor/panes/HomePane";
 import { Provider } from "react-redux";
-import { editorStore } from "../../testUtils/storyUtils";
+import { editorStore } from "@/testUtils/storyUtils";
 
 type HomePagePropsAndCustomArgs = React.ComponentProps<typeof HomePane> &
   UnknownObject;

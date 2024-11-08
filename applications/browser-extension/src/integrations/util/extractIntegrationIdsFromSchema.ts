@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "../../types/schemaTypes";
-import { type RegistryId } from "../../types/registryTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const INTEGRATION_ID_URL_REGEX =
   /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;

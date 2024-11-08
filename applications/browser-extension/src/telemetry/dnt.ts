@@ -17,7 +17,7 @@
 
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { boolean } from "../utils/typeUtils";
+import { boolean } from "@/utils/typeUtils";
 import { StorageItem } from "webext-storage";
 
 export const dntConfig = new StorageItem<boolean>("DNT");

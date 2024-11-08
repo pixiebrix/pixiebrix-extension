@@ -16,15 +16,15 @@
  */
 
 import { CachedFunction } from "webext-storage-cache";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 import { getMe } from "@/data/service/backgroundApi";
-import { addAuthListener as addAuthStorageListener } from "./authStorage";
+import { addAuthListener as addAuthStorageListener } from "@/auth/authStorage";
 import {
   type FeatureFlag,
   mapRestrictedFeatureToFeatureFlag,
   type RestrictedFeature,
-} from "./featureFlags";
+} from "@/auth/featureFlags";
 
 /**
  * Fetch the latest feature flags from the server.

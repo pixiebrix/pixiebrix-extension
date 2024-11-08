@@ -21,21 +21,21 @@ import React, { useCallback, useMemo } from "react";
 import { type Column, type Row } from "react-table";
 import { isEqual } from "lodash";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
-import { type RootState } from "../../store";
+import { type RootState } from "@/extensionConsole/store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { deleteCachedAuthData } from "@/background/messenger/api";
-import notify from "../../../utils/notify";
+import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import PackageIcon from "@/components/PackageIcon";
 import {
   type SecretsConfig,
   type Integration,
   type IntegrationConfig,
-} from "../../../integrations/integrationTypes";
-import { type UUID } from "../../../types/stringTypes";
-import { selectIntegrationConfigs } from "../../../integrations/store/integrationsSelectors";
-import { type RegistryId } from "../../../types/registryTypes";
+} from "@/integrations/integrationTypes";
+import { type UUID } from "@/types/stringTypes";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import { type RegistryId } from "@/types/registryTypes";
 
 type TableData = {
   integration: Integration;

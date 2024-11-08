@@ -20,7 +20,7 @@ import {
   containsTemplateExpression,
   isTextLiteralOrNull,
   toExpression,
-} from "./expressionUtils";
+} from "@/utils/expressionUtils";
 
 describe("containsTemplateExpression", () => {
   it("finds simple template expressions", () => {

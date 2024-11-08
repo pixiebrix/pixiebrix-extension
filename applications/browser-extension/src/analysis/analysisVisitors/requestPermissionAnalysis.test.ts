@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import RequestPermissionAnalysis from "./requestPermissionAnalysis";
+import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
-import { AnalysisAnnotationActionType } from "../analysisTypes";
-import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../testUtils/factories/brickFactories";
-import { toExpression } from "../../utils/expressionUtils";
+import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 const containsMock = jest.mocked(browser.permissions.contains);

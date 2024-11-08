@@ -1,5 +1,5 @@
-import { modDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
-import { requiresUserConfiguration } from "./RequireMods";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { requiresUserConfiguration } from "@/sidebar/activateMod/RequireMods";
 
 describe("requiresUserConfiguration", () => {
   it("treats no options as required if required is missing", () => {

@@ -20,16 +20,16 @@ import { render, act, screen } from "@testing-library/react";
 import {
   QUICKBAR_EVENT_NAME,
   QuickBarApp,
-} from "./QuickBarApp";
+} from "@/components/quickBar/QuickBarApp";
 import React from "react";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import selectionController from "../../utils/selectionController";
+import selectionController from "@/utils/selectionController";
 import userEvent from "@testing-library/user-event";
-import quickBarRegistry from "./quickBarRegistry";
-import { type ActionGenerator } from "./quickbarTypes";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
 
 // Could alternatively mock the internal calls, but this is easier if we trust the component
-jest.mock("../Stylesheets", () => ({
+jest.mock("@/components/Stylesheets", () => ({
   __esModule: true,
   Stylesheets({ children }: any) {
     return <>{children}</>;
@@ -47,7 +47,7 @@ jest.mock("kbar", () => {
   };
 });
 
-jest.mock("../../utils/selectionController");
+jest.mock("@/utils/selectionController");
 
 // TODO: fix tests so they properly handle shadow dom events
 jest.mock("react-shadow/emotion", () => ({

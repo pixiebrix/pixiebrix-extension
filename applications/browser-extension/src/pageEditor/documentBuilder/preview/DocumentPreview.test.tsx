@@ -16,28 +16,28 @@
  */
 
 import React, { useState } from "react";
-import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import {
   type DocumentBuilderElement,
   type ListElement,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { fireEvent, screen } from "@testing-library/react";
-import DocumentPreview from "./DocumentPreview";
+import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
 import userEvent from "@testing-library/user-event";
-import { render } from "../../testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { actions } from "../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import brickRegistry from "@/bricks/registry";
-import { waitForEffect } from "../../../testUtils/testHelpers";
-import { type PipelineExpression } from "../../../types/runtimeTypes";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { toExpression } from "../../../utils/expressionUtils";
-import { uuidv4 } from "../../../types/helpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { type PipelineExpression } from "@/types/runtimeTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { uuidv4 } from "@/types/helpers";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {
   const formState = formStateFactory({

@@ -17,8 +17,8 @@
 
 import React from "react";
 import { Table } from "react-bootstrap";
-import type { LogEntry } from "../../telemetry/logging";
-import EntryRow from "./EntryRow";
+import type { LogEntry } from "@/telemetry/logging";
+import EntryRow from "@/components/logViewer/EntryRow";
 import styles from "./LogTable.module.scss";
 
 const LogTable: React.FunctionComponent<{

@@ -1,13 +1,13 @@
-import { checkModDefinitionPermissions } from "./modDefinitionPermissionsHelpers";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import {
   modDefinitionFactory,
   starterBrickDefinitionFactory,
-} from "../testUtils/factories/modDefinitionFactories";
-import starterBrickRegistry from "../starterBricks/registry";
-import { fromJS } from "../starterBricks/factory";
+} from "@/testUtils/factories/modDefinitionFactories";
+import starterBrickRegistry from "@/starterBricks/registry";
+import { fromJS } from "@/starterBricks/factory";
 
 // Mocked by default via testAfterEnv and permissionsMock
-jest.unmock("./modDefinitionPermissionsHelpers");
+jest.unmock("@/modDefinitions/modDefinitionPermissionsHelpers");
 
 const containsMock = jest.mocked(browser.permissions.contains);
 

@@ -20,20 +20,20 @@ import {
   type IntegrationDependency,
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "../../../integrations/integrationTypes";
-import { type ApiVersion, type OptionsArgs } from "../../../types/runtimeTypes";
-import { type UUID } from "../../../types/stringTypes";
-import { type StarterBrickType } from "../../../types/starterBrickTypes";
+} from "@/integrations/integrationTypes";
+import { type ApiVersion, type OptionsArgs } from "@/types/runtimeTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Permissions } from "webextension-polyfill";
 import {
   type ModComponentBase,
   type ModComponentBaseV3,
   type ModMetadata,
-} from "../../../types/modComponentTypes";
-import { type ModVariablesDefinition } from "../../../types/modDefinitionTypes";
+} from "@/types/modComponentTypes";
+import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { type Metadata, type RegistryId } from "../../../types/registryTypes";
-import { type NormalizedAvailability } from "../../../types/availabilityTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
+import { type NormalizedAvailability } from "@/types/availabilityTypes";
 
 /**
  * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import manifestJson from "../manifest.json";
+import manifestJson from "@/manifest.json";
 import {
   openShortcutsTab,
   getExtensionConsoleUrl,
-} from "./extensionUtils";
+} from "@/utils/extensionUtils";
 
 describe("openShortcutsTabs", () => {
   it("defaults to quickbar shortcut", async () => {

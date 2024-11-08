@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAuthHeaders, TEST_setAuthData } from "./authStorage";
-import { deploymentKeyStorage } from "./deploymentKey";
+import { getAuthHeaders, TEST_setAuthData } from "@/auth/authStorage";
+import { deploymentKeyStorage } from "@/auth/deploymentKey";
 import {
   deploymentKeyFactory,
   userTokenFactory,
-} from "../testUtils/factories/authFactories";
+} from "@/testUtils/factories/authFactories";
 
 describe("getAuthHeaders", () => {
   beforeEach(async () => {

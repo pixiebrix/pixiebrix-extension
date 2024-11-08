@@ -42,8 +42,10 @@
   }
 }
 
-.toolbar {
-  border-bottom: 1px solid #ced4da;
+.toolbarButtons {
+  :global(.btn-group) {
+    flex-direction: row;
+  }
 
   :global(.btn) {
     &:global(.active) {
@@ -64,4 +66,10 @@
     border: none;
     box-shadow: none;
   }
+}
+
+.toolbar {
+  border-bottom: 1px solid #ced4da;
+
+  @extend .toolbarButtons;
 }

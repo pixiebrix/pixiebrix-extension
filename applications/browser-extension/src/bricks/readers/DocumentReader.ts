@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
-import { nowTimestamp } from "../../utils/timeUtils";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 class DocumentReader extends ReaderABC {
   override defaultOutputKey = "context";

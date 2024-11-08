@@ -19,9 +19,9 @@ import pDefer from "p-defer";
 import { deleteDB, type IDBPDatabase } from "idb";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ValueOf } from "type-fest";
-import { getReportErrorAdditionalContext } from "../telemetry/reportError";
-import { reportToApplicationErrorTelemetry } from "../telemetry/reportToApplicationErrorTelemetry";
-import castError from "./castError";
+import { getReportErrorAdditionalContext } from "@/telemetry/reportError";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
+import castError from "@/utils/castError";
 import pRetry, { type FailedAttemptError } from "p-retry";
 
 // IDB Connection Error message strings

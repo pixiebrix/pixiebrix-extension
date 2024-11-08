@@ -19,11 +19,11 @@ import {
   type AuthData,
   type IntegrationConfig,
   type OAuth2Context,
-} from "../../integrations/integrationTypes";
-import { getRandomString } from "../../vendors/pkce";
-import { setCachedAuthData } from "./authStorage";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { launchWebAuthFlow } from "./authHelpers";
+} from "@/integrations/integrationTypes";
+import { getRandomString } from "@/vendors/pkce";
+import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { launchWebAuthFlow } from "@/background/auth/authHelpers";
 
 function parseResponseParams(url: URL): UnknownObject {
   const hasSearchParams = [...url.searchParams.keys()].length > 0;

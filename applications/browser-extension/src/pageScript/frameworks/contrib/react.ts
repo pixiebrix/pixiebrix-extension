@@ -19,12 +19,12 @@ import { pickBy } from "lodash";
 import {
   ComponentNotFoundError,
   ignoreNotFound,
-} from "../errors";
+} from "@/pageScript/frameworks/errors";
 import {
   type ReadableComponentAdapter,
   traverse,
-} from "../component";
-import { isNode } from "../dom";
+} from "@/pageScript/frameworks/component";
+import { isNode } from "@/pageScript/frameworks/dom";
 
 // React architecture references:
 // https://github.com/acdlite/react-fiber-architecture

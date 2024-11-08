@@ -23,20 +23,20 @@ import {
   type RegistryId,
   type Sharing,
   type VersionedMetadata,
-} from "./registryTypes";
-import { type Timestamp, type UUID } from "./stringTypes";
+} from "@/types/registryTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type ApiVersion,
   type OptionsArgs,
   type TemplateEngine,
-} from "./runtimeTypes";
+} from "@/types/runtimeTypes";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,
-} from "../integrations/integrationTypes";
-import { isRegistryId, isUUID } from "./helpers";
-import { type DeploymentMetadata } from "./deploymentTypes";
-import { type ModVariablesDefinition } from "./modDefinitionTypes";
+} from "@/integrations/integrationTypes";
+import { isRegistryId, isUUID } from "@/types/helpers";
+import { type DeploymentMetadata } from "@/types/deploymentTypes";
+import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * ModMetadata that includes sharing information.

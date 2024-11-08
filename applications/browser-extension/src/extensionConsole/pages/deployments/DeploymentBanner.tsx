@@ -19,8 +19,8 @@ import React, { useContext } from "react";
 import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
 import Banner from "@/components/banner/Banner";
-import DeploymentModal from "./DeploymentModal";
-import DeploymentsContext from "./DeploymentsContext";
+import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModal";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 /**
  * Banner to install deployments. Always is displayed even if used has snoozed deployment installation.

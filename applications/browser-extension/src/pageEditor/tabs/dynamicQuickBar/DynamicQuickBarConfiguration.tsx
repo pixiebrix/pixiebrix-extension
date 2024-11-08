@@ -17,18 +17,18 @@
 
 import React, { type ChangeEvent } from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import IconWidget from "@/components/fields/IconWidget";
-import ExtraPermissionsSection from "../ExtraPermissionsSection";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { type DynamicQuickBarConfig } from "../../../starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
-import { type DynamicQuickBarFormState } from "../../starterBricks/formStateTypes";
+import { type DynamicQuickBarConfig } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
+import { type DynamicQuickBarFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 const DynamicQuickBarConfiguration: React.FC<{
   isLocked: boolean;

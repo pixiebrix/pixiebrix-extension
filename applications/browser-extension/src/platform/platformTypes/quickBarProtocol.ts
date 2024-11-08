@@ -16,7 +16,7 @@
  */
 
 import type { Action } from "kbar";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * `kbar` action with additional metadata about the source of the action.

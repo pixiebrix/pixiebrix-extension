@@ -16,15 +16,15 @@
  */
 
 import { type ComponentType } from "react";
-import { type SafeHTML, type UUID } from "./stringTypes";
-import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import { type SafeHTML, type UUID } from "@/types/stringTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Primitive, type Tagged } from "type-fest";
-import { type Logger } from "./loggerTypes";
+import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
-import { type PlatformProtocol } from "../platform/platformProtocol";
-import { type Nullishable } from "../utils/nullishUtils";
-import { type ModComponentRef } from "./modComponentTypes";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.

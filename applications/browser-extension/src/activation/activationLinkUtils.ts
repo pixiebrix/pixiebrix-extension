@@ -16,16 +16,16 @@
  */
 
 import type { EncodedJSON } from "@/types/stringTypes";
-import type { Nullishable } from "../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 import type { JsonObject } from "type-fest";
 import type { RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
-import { DEFAULT_SERVICE_URL } from "../urlConstants";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { isEmpty, uniq } from "lodash";
 import deepEquals from "fast-deep-equal";
 import { base64ToString, stringToBase64 } from "uint8array-extras";
-import { isPixieBrixDomain } from "../utils/urlUtils";
+import { isPixieBrixDomain } from "@/utils/urlUtils";
 
 const ACTIVATE_PATH = "/activate";
 

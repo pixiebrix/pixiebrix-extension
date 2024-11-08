@@ -17,7 +17,7 @@
 
 import { type Action, useKBar } from "kbar";
 import React from "react";
-import quickBarRegistry from "./quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 function useActions(): void {

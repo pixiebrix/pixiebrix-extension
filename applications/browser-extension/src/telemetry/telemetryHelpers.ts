@@ -16,7 +16,7 @@
  */
 
 import type { UserData } from "@/auth/authTypes";
-import { type TelemetryUser } from "./telemetryTypes";
+import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { cloneDeep, once } from "lodash";

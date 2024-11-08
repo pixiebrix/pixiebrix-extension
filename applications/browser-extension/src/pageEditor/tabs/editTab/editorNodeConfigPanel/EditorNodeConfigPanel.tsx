@@ -19,17 +19,17 @@ import React from "react";
 import cx from "classnames";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import BrickConfiguration from "../../effect/BrickConfiguration";
+import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import brickRegistry from "@/bricks/registry";
-import getType from "../../../../runtime/getType";
-import AnalysisResult from "../AnalysisResult";
+import getType from "@/runtime/getType";
+import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
-import { selectActiveNodeInfo } from "../../../store/editor/editorSelectors";
+import { selectActiveNodeInfo } from "@/pageEditor/store/editor/editorSelectors";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
-import { MARKETPLACE_URL } from "../../../../urlConstants";
-import CommentsPreview from "./CommentsPreview";
+import { MARKETPLACE_URL } from "@/urlConstants";
+import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import useAsyncState from "@/hooks/useAsyncState";
-import OutputVariableField from "./OutputVariableField";
+import OutputVariableField from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/OutputVariableField";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {
@@ -46,7 +46,7 @@ const EditorNodeConfigPanel: React.FC = () => {
 
     const brick = await brickRegistry.lookup(brickId);
     return {
-      block: brick,
+      brick,
       type: await getType(brick),
     };
   }, [brickId]);
@@ -65,7 +65,7 @@ const EditorNodeConfigPanel: React.FC = () => {
       <AnalysisResult className="mb-3" />
 
       <h6 className="mb-3 d-flex justify-content-between flex-wrap gap-2">
-        {brickInfo?.block.name}
+        {brickInfo?.brick.name}
         {showDocumentationLink && (
           <a
             href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
@@ -82,7 +82,7 @@ const EditorNodeConfigPanel: React.FC = () => {
             name={`${brickFieldName}.label`}
             label="Step Name"
             className="flex-grow-1"
-            placeholder={brickInfo?.block.name}
+            placeholder={brickInfo?.brick.name}
           />
           <OutputVariableField
             brickInfo={brickInfo}

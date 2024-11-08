@@ -18,30 +18,31 @@
 import {
   type PlatformCapability,
   PlatformCapabilityNotAvailableError,
-} from "./capabilities";
+} from "@/platform/capabilities";
 import type { SemVerString } from "@/types/registryTypes";
-import type { FormDefinition } from "./forms/formTypes";
-import type { Nullishable } from "../utils/nullishUtils";
-import type { SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import type { FormDefinition } from "@/platform/forms/formTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
-import type { JavaScriptPayload } from "../sandbox/messenger/api";
+import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Logger } from "@/types/loggerTypes";
-import type { DebuggerProtocol } from "./platformTypes/debuggerProtocol";
-import type { AudioProtocol } from "./platformTypes/audioProtocol";
-import type { StateProtocol } from "./platformTypes/stateProtocol";
-import type { TemplateProtocol } from "./platformTypes/templateProtocol";
-import type { ContextMenuProtocol } from "./platformTypes/contextMenuProtocol";
-import type { BadgeProtocol } from "./platformTypes/badgeProtocol";
-import type { ToastProtocol } from "./platformTypes/toastProtocol";
-import type { TextSelectionMenuProtocol } from "./platformTypes/textSelectionMenuProtocol";
-import type { SnippetShortcutMenuProtocol } from "./platformTypes/snippetShortcutMenuProtocol";
-import type { ClipboardProtocol } from "./platformTypes/clipboardProtocol";
-import type { PlatformProtocol } from "./platformProtocol";
-import type { PanelProtocol } from "./platformTypes/panelProtocol";
-import type { QuickBarProtocol } from "./platformTypes/quickBarProtocol";
+import type { DebuggerProtocol } from "@/platform/platformTypes/debuggerProtocol";
+import type { AudioProtocol } from "@/platform/platformTypes/audioProtocol";
+import type { StateProtocol } from "@/platform/platformTypes/stateProtocol";
+import type { TemplateProtocol } from "@/platform/platformTypes/templateProtocol";
+import type { ContextMenuProtocol } from "@/platform/platformTypes/contextMenuProtocol";
+import type { BadgeProtocol } from "@/platform/platformTypes/badgeProtocol";
+import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
+import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
+import type { SnippetShortcutMenuProtocol } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
+import type { ClipboardProtocol } from "@/platform/platformTypes/clipboardProtocol";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
+import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 import type { ModComponentRef } from "@/types/modComponentTypes";
-import type { CaptureProtocol } from "./platformTypes/captureProtocol";
+import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
+import type { RegistryProtocol } from "@/platform/platformTypes/registryProtocol";
 
 /**
  * Base protocol with no capabilities implemented.
@@ -90,6 +91,13 @@ export class PlatformBase implements PlatformProtocol {
 
   async runSandboxedJavascript(_args: JavaScriptPayload): Promise<unknown> {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "sandbox");
+  }
+
+  get registry(): RegistryProtocol {
+    throw new PlatformCapabilityNotAvailableError(
+      this.platformName,
+      "registry",
+    );
   }
 
   get logger(): Logger {

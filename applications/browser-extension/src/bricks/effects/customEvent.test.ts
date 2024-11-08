@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import CustomEventEffect from "./customEvent";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import CustomEventEffect from "@/bricks/effects/customEvent";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new CustomEventEffect();
 

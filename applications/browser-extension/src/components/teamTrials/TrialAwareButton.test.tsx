@@ -16,14 +16,14 @@
  */
 
 import { render, screen, waitFor } from "@/extensionConsole/testHelpers";
-import { TrialAwareButton } from "./TrialAwareButton";
-import { appApiMock } from "../../testUtils/appApiMock";
-import { registryIdFactory } from "../../testUtils/factories/stringFactories";
+import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import React from "react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { organizationResponseFactory } from "../../testUtils/factories/organizationFactories";
-import { type Timestamp } from "../../types/stringTypes";
+import { organizationResponseFactory } from "@/testUtils/factories/organizationFactories";
+import { type Timestamp } from "@/types/stringTypes";
 
 describe("TrialAwareButton", () => {
   beforeEach(() => {

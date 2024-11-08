@@ -19,7 +19,7 @@ import { type MigrationManifest, type PersistedState } from "redux-persist";
 import {
   type IntegrationConfigV1,
   type IntegrationConfigV2,
-} from "../integrationTypes";
+} from "@/integrations/integrationTypes";
 
 type IntegrationsStateV1 = {
   configured: Record<string, IntegrationConfigV1>;

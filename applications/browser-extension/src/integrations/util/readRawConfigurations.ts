@@ -16,14 +16,14 @@
  */
 
 // @See persistIntegrationsConfig in integrationsSlice.ts
-import type { IntegrationConfig } from "../integrationTypes";
+import type { IntegrationConfig } from "@/integrations/integrationTypes";
 import {
   readReduxStorage,
   validateReduxStorageKey,
-} from "../../utils/storageUtils";
-import { migrations } from "../store/integrationsMigrations";
-import { initialState } from "../store/integrationsSlice";
-import { selectIntegrationConfigs } from "../store/integrationsSelectors";
+} from "@/utils/storageUtils";
+import { migrations } from "@/integrations/store/integrationsMigrations";
+import { initialState } from "@/integrations/store/integrationsSlice";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 
 const INTEGRATIONS_STORAGE_KEY = validateReduxStorageKey(
   "persist:servicesOptions",

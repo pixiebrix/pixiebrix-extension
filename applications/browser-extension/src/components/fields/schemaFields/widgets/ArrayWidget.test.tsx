@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import registerDefaultWidgets from "./registerDefaultWidgets";
-import { type Schema } from "../../../../types/schemaTypes";
-import ArrayWidget from "./ArrayWidget";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type Schema } from "@/types/schemaTypes";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
-import { render, screen, within } from "../../../../pageEditor/testHelpers";
-import { toExpression } from "../../../../utils/expressionUtils";
+import { render, screen, within } from "@/pageEditor/testHelpers";
+import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";

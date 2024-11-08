@@ -21,7 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isEmpty } from "lodash";
-import reportError from "../telemetry/reportError";
+import reportError from "@/telemetry/reportError";
 
 interface DisplayProps {
   /**

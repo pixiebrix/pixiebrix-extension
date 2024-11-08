@@ -16,9 +16,9 @@
  */
 
 import { selectAuth } from "@/auth/authSelectors";
-import useSortOrganizations from "./useSortOrganizations";
-import { type RegistryId } from "../../../../../types/registryTypes";
-import { getScopeAndId } from "../../../../../utils/registryUtils";
+import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
+import { type RegistryId } from "@/types/registryTypes";
+import { getScopeAndId } from "@/utils/registryUtils";
 import { faUser, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";

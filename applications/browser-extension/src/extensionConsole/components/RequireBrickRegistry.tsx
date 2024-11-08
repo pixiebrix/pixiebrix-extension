@@ -18,8 +18,8 @@
 import React from "react";
 import useAsyncState from "@/hooks/useAsyncState";
 import brickRegistry from "@/bricks/registry";
-import integrationRegistry from "../../integrations/registry";
-import starterBrickRegistry from "../../starterBricks/registry";
+import integrationRegistry from "@/integrations/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import type { EmptyObject } from "type-fest";
 

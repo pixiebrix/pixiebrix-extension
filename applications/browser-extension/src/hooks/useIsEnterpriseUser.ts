@@ -17,8 +17,8 @@
 
 import { useSelector } from "react-redux";
 import { selectOrganization } from "@/auth/authSelectors";
-import useTheme from "./useTheme";
-import { DEFAULT_THEME } from "../themes/themeTypes";
+import useTheme from "@/hooks/useTheme";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 function useIsEnterpriseUser() {
   const organization = useSelector(selectOrganization);

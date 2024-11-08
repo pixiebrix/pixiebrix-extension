@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type DocumentBuilderElementType } from "../../documentBuilderTypes";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import HoveredFlap from "./HoveredFlap";
 import ActiveElementFlap from "./ActiveElementFlap";
 

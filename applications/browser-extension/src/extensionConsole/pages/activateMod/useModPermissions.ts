@@ -17,14 +17,14 @@
 
 import useAsyncState from "@/hooks/useAsyncState";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { type ModDefinition } from "../../../types/modDefinitionTypes";
-import { checkModDefinitionPermissions } from "../../../modDefinitions/modDefinitionPermissionsHelpers";
-import { emptyPermissionsFactory } from "../../../permissions/permissionsUtils";
-import { type AsyncState } from "../../../types/sliceTypes";
-import { type PermissionsStatus } from "../../../permissions/permissionsTypes";
-import useRequestPermissionsCallback from "../../../permissions/useRequestPermissionsCallback";
-import useExtensionPermissions from "../../../permissions/useExtensionPermissions";
-import { type IntegrationDependency } from "../../../integrations/integrationTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { type AsyncState } from "@/types/sliceTypes";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 type ModPermissionsState = AsyncState<PermissionsStatus> & {
   /**

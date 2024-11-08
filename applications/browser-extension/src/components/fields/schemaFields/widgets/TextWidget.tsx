@@ -24,24 +24,21 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
 import fitTextarea from "fit-textarea";
 import { trim } from "lodash";
-import FieldRuntimeContext from "../FieldRuntimeContext";
-import { isMustacheOnly } from "../../fieldUtils";
-import { getToggleOptions } from "../getToggleOptions";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { isMustacheOnly } from "@/components/fields/fieldUtils";
+import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import useUndo from "@/hooks/useUndo";
-import { isKeyStringField } from "../fieldTypeCheckers";
-import { type Schema } from "../../../../types/schemaTypes";
-import { type TemplateEngine } from "../../../../types/runtimeTypes";
-import {
-  isTemplateExpression,
-  toExpression,
-} from "../../../../utils/expressionUtils";
-import { trimEndOnce } from "../../../../utils/stringUtils";
+import { isKeyStringField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { type Schema } from "@/types/schemaTypes";
+import { type TemplateEngine } from "@/types/runtimeTypes";
+import { isTemplateExpression, toExpression } from "@/utils/expressionUtils";
+import { trimEndOnce } from "@/utils/stringUtils";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
   const options = getToggleOptions({

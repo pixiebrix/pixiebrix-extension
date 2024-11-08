@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "../../types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { useParams } from "react-router";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
 /**
  * Search the React-Router dynamic route parameters for a :registryId param, convert it into a RegistryId, and return it.

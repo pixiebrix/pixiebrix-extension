@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { WaitElementEffect } from "./wait";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { WaitElementEffect } from "@/bricks/effects/wait";
 import { BusinessError } from "@/errors/businessErrors";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeAll(() => {
   requestIdleCallback.mock();

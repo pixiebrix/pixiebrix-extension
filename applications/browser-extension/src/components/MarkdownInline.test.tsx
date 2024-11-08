@@ -16,7 +16,7 @@
  */
 import { render } from "@testing-library/react";
 import React from "react";
-import MarkdownInline from "./MarkdownInline";
+import MarkdownInline from "@/components/MarkdownInline";
 
 describe("MarkdownInline", () => {
   it("renders without p tag", () => {

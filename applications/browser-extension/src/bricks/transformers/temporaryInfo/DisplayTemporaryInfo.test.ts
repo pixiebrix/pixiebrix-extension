@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DisplayTemporaryInfo from "./DisplayTemporaryInfo";
-import brickRegistry from "../../registry";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import brickRegistry from "@/bricks/registry";
 import {
   ContextBrick,
   contextBrick,
@@ -24,16 +24,16 @@ import {
   simpleInput,
   teapotBrick,
   throwBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { DocumentRenderer } from "../../renderers/document";
-import { getExampleBrickConfig } from "../../exampleBrickConfigs";
-import { reducePipeline } from "../../../runtime/reducePipeline";
+} from "@/runtime/pipelineTests/testHelpers";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {
   isRendererErrorPayload,
   type PanelPayload,
   type TemporaryPanelEntry,
-} from "../../../types/sidebarTypes";
+} from "@/types/sidebarTypes";
 import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
@@ -42,31 +42,31 @@ import {
   cancelTemporaryPanelsForModComponent,
   updatePanelDefinition,
   waitForTemporaryPanel,
-} from "../../../platform/panels/panelController";
-import ConsoleLogger from "../../../utils/ConsoleLogger";
-import { tick } from "../../../starterBricks/testHelpers";
+} from "@/platform/panels/panelController";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import { tick } from "@/starterBricks/testHelpers";
 import pDefer from "p-defer";
-import { type RendererErrorPayload } from "../../../types/rendererTypes";
-import { contextAsPlainObject } from "../../../runtime/extendModVariableContext";
+import { type RendererErrorPayload } from "@/types/rendererTypes";
+import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
-import { isLoadedInIframe } from "../../../utils/iframeUtils";
-import { modComponentRefFactory } from "../../../testUtils/factories/modComponentFactories";
-import { mapModComponentRefToMessageContext } from "../../../utils/modUtils";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
-} from "../../../platform/state/stateTypes";
-import { RefreshTriggers } from "../../../platform/panels/panelTypes";
-import { getPlatform } from "../../../platform/platformContext";
+} from "@/platform/state/stateTypes";
+import { RefreshTriggers } from "@/platform/panels/panelTypes";
+import { getPlatform } from "@/platform/platformContext";
 
-jest.mock("../../../contentScript/modalDom");
-jest.mock("../../../contentScript/sidebarController");
-jest.mock("../../../platform/panels/panelController");
-jest.mock("../../../utils/iframeUtils");
+jest.mock("@/contentScript/modalDom");
+jest.mock("@/contentScript/sidebarController");
+jest.mock("@/platform/panels/panelController");
+jest.mock("@/utils/iframeUtils");
 
 const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
 const renderer = new DocumentRenderer();

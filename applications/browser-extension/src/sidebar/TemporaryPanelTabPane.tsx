@@ -17,22 +17,22 @@
 
 import React, { useCallback } from "react";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "../store/sidebar/eventKeyUtils";
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { Tab } from "react-bootstrap";
-import PanelBody from "./PanelBody";
+import PanelBody from "@/sidebar/PanelBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
-import ErrorBoundary from "./SidebarErrorBoundary";
-import resolveTemporaryPanel from "../store/sidebar/thunks/resolveTemporaryPanel";
-import { type AppDispatch } from "./store";
-import UnavailableOverlay from "./UnavailableOverlay";
-import removeTemporaryPanel from "../store/sidebar/thunks/removeTemporaryPanel";
+import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
+import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
+import { type AppDispatch } from "@/sidebar/store";
+import UnavailableOverlay from "@/sidebar/UnavailableOverlay";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 
-import { mapModComponentRefToMessageContext } from "../utils/modUtils";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
 
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
 // This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646

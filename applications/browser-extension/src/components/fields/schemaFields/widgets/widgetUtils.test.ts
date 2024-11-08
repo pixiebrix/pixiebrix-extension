@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isCustomizableObjectSchema } from "./widgetUtils";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 
 describe("isCustomizableObjectSchema", () => {
   it("empty schema is customizable", () => {

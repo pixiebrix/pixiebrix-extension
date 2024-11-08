@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import defaultFieldFactory from "./defaultFieldFactory";
-import CssSpacingWidget from "./widgets/cssClassWidgets/CssSpacingWidget";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
+import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 
 const CssSpacingField = defaultFieldFactory(CssSpacingWidget);
 export default CssSpacingField;

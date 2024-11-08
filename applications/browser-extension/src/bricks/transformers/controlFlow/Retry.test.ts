@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   simpleInput,
   throwBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { reducePipeline } from "../../../runtime/reducePipeline";
-import Retry from "./Retry";
-import { toExpression } from "../../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import Retry from "@/bricks/transformers/controlFlow/Retry";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const retryBlock = new Retry();
 

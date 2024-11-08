@@ -18,8 +18,8 @@
 import {
   isSelectField,
   isIntegrationDependencyValueFormat,
-} from "./fieldTypeCheckers";
-import { toExpression } from "../../../utils/expressionUtils";
+} from "@/components/fields/schemaFields/fieldTypeCheckers";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("isServiceValue", () => {
   it("null is service value", () => {

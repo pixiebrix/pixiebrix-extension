@@ -22,10 +22,10 @@ import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
   DOCUMENT_BUILDER_ELEMENT_TYPES,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import styles from "./AddElementAction.module.scss";
-import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
-import documentBuilderElementTypeLabels from "../elementTypeLabels";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import cx from "classnames";
 
 type AddElementActionProps = {

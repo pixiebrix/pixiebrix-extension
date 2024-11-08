@@ -28,8 +28,8 @@ import {
   showTemporaryPanel,
   updateTemporaryPanel,
   navigationComplete,
-} from "../protocol";
-import { expectContext } from "../../utils/expectContext";
+} from "@/sidebar/protocol";
+import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
 
 expectContext("sidebar");

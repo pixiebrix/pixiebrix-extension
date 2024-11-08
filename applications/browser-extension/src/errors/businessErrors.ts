@@ -18,7 +18,7 @@
 import { truncate } from "lodash";
 import { type AxiosResponse } from "axios";
 import { type RegistryId } from "@/types/registryTypes";
-import { JQUERY_INVALID_SELECTOR_ERROR } from "./knownErrorMessages";
+import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 
 /**
  * @file ONLY KEEP ACTUAL ERRORS IN HERE.

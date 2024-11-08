@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getValidationErrMessages } from "../fields/fieldUtils";
+import { getValidationErrMessages } from "@/components/fields/fieldUtils";
 import {
   type IntegrationConfig,
   type Integration,
-} from "../../integrations/integrationTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { isRequired } from "../../utils/schemaUtils";
+} from "@/integrations/integrationTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { isRequired } from "@/utils/schemaUtils";
 import {
   dereferenceForYup,
   validateIntegrationConfiguration,
-} from "../../validators/schemaValidator";
+} from "@/validators/schemaValidator";
 import { type FormikValues, type FormikErrors } from "formik";
 import { cloneDeep, set } from "lodash";
 import { buildYup } from "schema-to-yup";

@@ -17,8 +17,8 @@
 
 import { type Menus } from "webextension-polyfill";
 import { type UUID } from "@/types/stringTypes";
-import notify from "../utils/notify";
-import { getReloadOnNextNavigate } from "./ready";
+import notify from "@/utils/notify";
+import { getReloadOnNextNavigate } from "@/contentScript/ready";
 
 type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 

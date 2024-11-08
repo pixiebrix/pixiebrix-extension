@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { absoluteApiUrl } from "./apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 
 // Disable automatic __mocks__ resolution #6799
-jest.mock("./apiClient", () =>
+jest.mock("@/data/service/apiClient", () =>
   jest.requireActual("./apiClient.ts"),
 );
 

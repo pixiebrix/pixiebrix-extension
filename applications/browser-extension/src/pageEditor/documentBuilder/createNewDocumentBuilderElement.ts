@@ -19,11 +19,11 @@ import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
 } from "./documentBuilderTypes";
-import { uuidv4, validateRegistryId } from "../../types/helpers";
-import { type DeferExpression } from "../../types/runtimeTypes";
-import { toExpression } from "../../utils/expressionUtils";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type DeferExpression } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
-import { StateNamespaces } from "../../platform/state/stateTypes";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const documentBuilderElementExtras: Record<"form", DocumentBuilderElementType> =
   {

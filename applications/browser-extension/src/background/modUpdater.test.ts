@@ -22,40 +22,40 @@ import {
   getActivatedMarketplaceModVersions,
   updateMod,
   updateModsIfForceUpdatesAvailable,
-} from "./modUpdater";
-import reportError from "../telemetry/reportError";
+} from "@/background/modUpdater";
+import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,
   saveModComponentState,
-} from "../store/modComponents/modComponentStorage";
+} from "@/store/modComponents/modComponentStorage";
 import {
   modMetadataFactory,
   activatedModComponentFactory,
-} from "../testUtils/factories/modComponentFactories";
+} from "@/testUtils/factories/modComponentFactories";
 import type { SemVerString } from "@/types/registryTypes";
 import {
   modDefinitionWithVersionedStarterBrickFactory,
   defaultModDefinitionFactory,
-} from "../testUtils/factories/modDefinitionFactories";
-import { getEditorState } from "../store/editorStorage";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { getEditorState } from "@/store/editorStorage";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import {
   personalSharingDefinitionFactory,
   publicSharingDefinitionFactory,
-} from "../testUtils/factories/registryFactories";
+} from "@/testUtils/factories/registryFactories";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
-import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import {
   personalDeploymentMetadataFactory,
   teamDeploymentMetadataFactory,
-} from "../testUtils/factories/modInstanceFactories";
+} from "@/testUtils/factories/modInstanceFactories";
 
 const axiosMock = new MockAdapter(axios);
-jest.mock("../telemetry/reportError");
-jest.mock("../contentScript/messenger/api");
-jest.mock("./contextMenus/uninstallContextMenu");
+jest.mock("@/telemetry/reportError");
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/background/contextMenus/uninstallContextMenu");
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 

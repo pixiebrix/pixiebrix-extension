@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TimestampReader from "./TimestampReader";
+import TimestampReader from "@/bricks/readers/TimestampReader";
 
 describe("TimestampReader", () => {
   test("generates equivalent timestamps", async () => {

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import OutlineItem from "./OutlineItem";
+import OutlineItem from "@/pageEditor/documentBuilder/outline/OutlineItem";
 import { action } from "@storybook/addon-actions";
 import {
   DragDropContext,

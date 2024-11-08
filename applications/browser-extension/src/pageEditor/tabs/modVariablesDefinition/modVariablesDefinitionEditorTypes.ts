@@ -1,4 +1,4 @@
-import type { SyncPolicy } from "../../../platform/state/stateTypes";
+import type { SyncPolicy } from "@/platform/state/stateTypes";
 import type { JSONSchema7TypeName } from "json-schema";
 
 export type ModVariable = {

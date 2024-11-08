@@ -22,11 +22,11 @@ import { selectExtraContext } from "@/data/service/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { allowsTrack } from "./dnt";
+import { allowsTrack } from "@/telemetry/dnt";
 
-import { mapAppUserToTelemetryUser } from "./telemetryHelpers";
-import { ensureOffscreenDocument } from "../tinyPages/offscreenDocumentController";
-import type { RecordErrorMessage } from "../tinyPages/offscreenProtocol";
+import { mapAppUserToTelemetryUser } from "@/telemetry/telemetryHelpers";
+import { ensureOffscreenDocument } from "@/tinyPages/offscreenDocumentController";
+import type { RecordErrorMessage } from "@/tinyPages/offscreenProtocol";
 import type { MessageContext } from "@/types/loggerTypes";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";

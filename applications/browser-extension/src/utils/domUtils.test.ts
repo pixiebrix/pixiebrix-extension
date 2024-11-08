@@ -20,7 +20,7 @@ import {
   isSingleHtmlElementString,
   isValidSelector,
   runOnDocumentVisible,
-} from "./domUtils";
+} from "@/utils/domUtils";
 
 let hidden = false;
 

@@ -19,13 +19,13 @@ import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as editorActions } from "../../store/editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   selectActiveModComponentFormState,
   selectEditorModalVisibilities,
   getModalDataSelector,
   selectModMetadataMap,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import Form, {
   type OnSubmit,
@@ -33,10 +33,10 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { object, string } from "yup";
-import { type RegistryId } from "../../../types/registryTypes";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import { ModalKey } from "../../store/editor/pageEditorTypes";
-import { type AppDispatch } from "../../store/store";
+import { type RegistryId } from "@/types/registryTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type FormState = {
   modId: RegistryId | null;

@@ -23,7 +23,7 @@ import {
   mergeAsyncState,
   uninitializedAsyncStateFactory,
   valueToAsyncState,
-} from "./asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 import { type AsyncState } from "@/types/sliceTypes";
 
 describe("asyncStateUtils", () => {

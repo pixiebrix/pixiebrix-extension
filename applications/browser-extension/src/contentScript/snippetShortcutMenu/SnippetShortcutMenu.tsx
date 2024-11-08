@@ -22,9 +22,9 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import useSnippetShortcutRegistry from "./useSnippetShortcutRegistry";
-import { type TextEditorElement } from "../../types/inputTypes";
-import useKeyboardQuery from "./useKeyboardQuery";
+import useSnippetShortcutRegistry from "@/contentScript/snippetShortcutMenu/useSnippetShortcutRegistry";
+import { type TextEditorElement } from "@/types/inputTypes";
+import useKeyboardQuery from "@/contentScript/snippetShortcutMenu/useKeyboardQuery";
 import cx from "classnames";
 import stylesUrl from "./SnippetShortcutMenu.scss?loadAsUrl";
 import {
@@ -32,23 +32,26 @@ import {
   snippetShortcutMenuSlice,
   type MenuState,
   selectSelectedSnippetShortcut,
-} from "./snippetShortcutMenuSlice";
-import { getElementText } from "../../utils/editorUtils";
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuSlice";
+import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
-import { normalizePreview, replaceAtCommandKey } from "./snippetShortcutUtils";
-import type { SnippetShortcut } from "../../platform/platformTypes/snippetShortcutMenuProtocol";
+import {
+  normalizePreview,
+  replaceAtCommandKey,
+} from "@/contentScript/snippetShortcutMenu/snippetShortcutUtils";
+import type { SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
   faCaretUp,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import type SnippetRegistry from "./snippetShortcutRegistry";
+import type SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
 
 type MenuActionCallbacks = {
   onHide: () => void;

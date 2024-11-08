@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeDraftModComponentsByModId } from "./editorStorage";
-import { actions as modComponentActions } from "./modComponents/modComponentSlice";
+import { removeDraftModComponentsByModId } from "@/store/editorStorage";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import {
   clearLog,
   deleteSynchronizedModVariables,
@@ -25,7 +25,7 @@ import {
 import { uniq } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { forbidContext } from "../utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { type AppDispatch } from "@/extensionConsole/store";
 
 /**

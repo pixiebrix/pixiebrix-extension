@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import { render } from "./testHelpers";
-import Sidebar from "./Sidebar";
+import { render } from "@/extensionConsole/testHelpers";
+import Sidebar from "@/extensionConsole/Sidebar";
 import {
   mockAuthenticatedMeApiResponse,
   resetMeApiMocks,
-} from "../testUtils/userMock";
+} from "@/testUtils/userMock";
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { waitForEffect } from "../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("Sidebar", () => {
   beforeEach(async () => {

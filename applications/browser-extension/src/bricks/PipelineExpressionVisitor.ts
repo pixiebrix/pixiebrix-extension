@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPosition, PipelineFlavor } from "./types";
+import {
+  type BrickConfig,
+  type BrickPosition,
+  PipelineFlavor,
+} from "@/bricks/types";
 import { type Expression } from "@/types/runtimeTypes";
 import PipelineVisitor, {
   nestedPosition,
@@ -24,9 +28,9 @@ import PipelineVisitor, {
 import {
   isDocumentBuilderElementArray,
   type DocumentBuilderElement,
-} from "../pageEditor/documentBuilder/documentBuilderTypes";
-import { isExpression, isPipelineExpression } from "../utils/expressionUtils";
-import { joinPathParts } from "../utils/formUtils";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import { joinPathParts } from "@/utils/formUtils";
 import { BusinessError } from "@/errors/businessErrors";
 
 export type VisitDocumentBuilderElementArgs = {

@@ -18,7 +18,7 @@
 import {
   proxyResponseToAxiosResponse,
   selectRemoteResponseErrorMessage,
-} from "./proxyUtils";
+} from "@/background/proxyUtils";
 
 describe("selectRemoteResponseErrorMessage", () => {
   it("prefers top-level message", () => {

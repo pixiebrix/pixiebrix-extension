@@ -20,18 +20,18 @@ import {
   showModActivationInSidebar,
   showSidebar,
   sidePanelOnClose,
-} from "./sidebarController";
+} from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/authStorage";
 import {
   getActivatingMods,
   setActivatingMods,
 } from "@/background/messenger/external/_implementation";
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
-import { isLoadedInIframe } from "../utils/iframeUtils";
-import { getActivatedModIds } from "../store/modComponents/modComponentStorage";
-import { DEFAULT_SERVICE_URL } from "../urlConstants";
-import { allSettled } from "../utils/promiseUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { getActivatedModIds } from "@/store/modComponents/modComponentStorage";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { allSettled } from "@/utils/promiseUtils";
 import type { ModActivationConfig } from "@/types/modTypes";
 import {
   getNextUrlFromActivateUrl,
@@ -40,7 +40,7 @@ import {
 import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,
-} from "./activationConstants";
+} from "@/contentScript/activationConstants";
 
 let listener: EventListener | null;
 

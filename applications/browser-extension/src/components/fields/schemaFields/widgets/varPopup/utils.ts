@@ -16,7 +16,7 @@
  */
 
 import { type VirtualElement } from "@floating-ui/dom";
-import { getCaretCoordinates } from "../../../../../utils/textAreaUtils";
+import { getCaretCoordinates } from "@/utils/textAreaUtils";
 /**
  * Get a virtual element for the line that the caret is on.
  * Essentially a box that has the same position and dimensions as the line that the caret is on.

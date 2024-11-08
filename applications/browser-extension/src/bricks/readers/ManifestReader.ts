@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 class ManifestReader extends ReaderABC {
   override defaultOutputKey = "manifest";

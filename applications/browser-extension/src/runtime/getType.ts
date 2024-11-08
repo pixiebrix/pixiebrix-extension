@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickType } from "./runtimeTypes";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { type PackageInstance } from "@/types/registryTypes";
-import { type Nullishable } from "../utils/nullishUtils";
-import { isObject } from "../utils/objectUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { isObject } from "@/utils/objectUtils";
 
 function canInferType(
   brick: unknown,

@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { waitForContentScript } from "./contentScript";
+import { waitForContentScript } from "@/background/contentScript";
 import {
   CONTENT_SCRIPT_READY_NOTIFICATION,
   isTargetReady,
 } from "@/contentScript/ready";
-import { SimpleEventTarget } from "../utils/SimpleEventTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { TEST_setContext } from "webext-detect";
 import { type Runtime, type Tabs } from "webextension-polyfill";
 
 TEST_setContext("background");
 
-jest.mock("../contentScript/ready");
+jest.mock("@/contentScript/ready");
 
 let messageEvents:
   | SimpleEventTarget<{ message: unknown; sender: Runtime.MessageSender }>

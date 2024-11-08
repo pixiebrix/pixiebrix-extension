@@ -18,7 +18,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
-import { selectScope } from "./authSelectors";
+import { selectScope } from "@/auth/authSelectors";
 
 type RequireScopeProps = {
   // A flag to opt out of the scope check but still have the RequireScope component in the tree.

@@ -18,7 +18,7 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 
-import IDBErrorDisplay from "./IDBErrorDisplay";
+import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 export default {

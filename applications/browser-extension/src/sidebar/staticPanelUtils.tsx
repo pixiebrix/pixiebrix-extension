@@ -4,7 +4,7 @@ const ModLauncher = lazy(
   async () =>
     import(
       /* webpackChunkName: "ModLauncher" */
-      "./modLauncher/ModLauncher"
+      "@/sidebar/modLauncher/ModLauncher"
     ),
 );
 

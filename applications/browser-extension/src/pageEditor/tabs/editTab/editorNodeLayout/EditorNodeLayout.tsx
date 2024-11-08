@@ -17,16 +17,16 @@
 
 import React from "react";
 import { ListGroup } from "react-bootstrap";
-import BrickNode from "../editorNodes/brickNode/BrickNode";
+import BrickNode from "@/pageEditor/tabs/editTab/editorNodes/brickNode/BrickNode";
 import PipelineHeaderNode, {
   type PipelineHeaderNodeProps,
-} from "../editorNodes/PipelineHeaderNode";
+} from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import PipelineFooterNode, {
   type PipelineFooterNodeProps,
-} from "../editorNodes/PipelineFooterNode";
-import { type BrickNodeProps } from "../editTabTypes";
-import { FOUNDATION_NODE_ID } from "../../../store/editor/uiState";
-import usePipelineNodes from "./usePipelineNodes";
+} from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
+import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
+import usePipelineNodes from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes";
 
 const EditorNodeLayout: React.FC = () => {
   const { foundationNodeProps, nodes } = usePipelineNodes();

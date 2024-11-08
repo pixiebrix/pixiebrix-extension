@@ -19,13 +19,13 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { useCallback, useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import useIsMounted from "./useIsMounted";
+import useIsMounted from "@/hooks/useIsMounted";
 import { once } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import {
   loadingAsyncStateFactory,
   valueToAsyncState,
-} from "../utils/asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);

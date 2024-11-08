@@ -16,18 +16,18 @@
  */
 
 import React from "react";
-import { RendererABC } from "../../types/bricks/rendererTypes";
-import { validateRegistryId } from "../../types/helpers";
+import { RendererABC } from "@/types/bricks/rendererTypes";
+import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
   type BrickOptions,
   type ComponentRef,
-} from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   DOCUMENT_BUILDER_ELEMENT_TYPES,
   type DocumentBuilderElement,
-} from "../../pageEditor/documentBuilder/documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type DocumentViewProps } from "./documentView/DocumentViewProps";
 

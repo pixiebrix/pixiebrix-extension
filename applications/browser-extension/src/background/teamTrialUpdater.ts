@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import deactivateModInstancesAndSaveState from "./utils/deactivateModInstancesAndSaveState";
+import deactivateModInstancesAndSaveState from "@/background/utils/deactivateModInstancesAndSaveState";
 import { type Team } from "@/data/model/Team";
 import { getTeams } from "@/data/service/backgroundApi";
-import { getEditorState } from "../store/editorStorage";
-import { getModComponentState } from "../store/modComponents/modComponentStorage";
-import { getScopeAndId } from "../utils/registryUtils";
-import { selectModInstances } from "../store/modComponents/modInstanceSelectors";
+import { getEditorState } from "@/store/editorStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
+import { getScopeAndId } from "@/utils/registryUtils";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "@/types/modInstanceTypes";
 
 async function getTeamsWithTrials() {

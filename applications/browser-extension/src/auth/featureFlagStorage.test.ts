@@ -25,15 +25,15 @@ import {
   TEST_overrideFeatureFlags,
 } from "./featureFlagStorage";
 
-import { appApiMock } from "../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import {
   TEST_clearListeners as clearAuthStorageListeners,
   TEST_setAuthData,
   TEST_triggerListeners,
-} from "./authStorage";
-import { tokenAuthDataFactory } from "../testUtils/factories/authFactories";
+} from "@/auth/authStorage";
+import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
-import { featureFlagFactory } from "../testUtils/factories/featureFlagFactories";
+import { featureFlagFactory } from "@/testUtils/factories/featureFlagFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const testFlag = featureFlagFactory("test-flag");

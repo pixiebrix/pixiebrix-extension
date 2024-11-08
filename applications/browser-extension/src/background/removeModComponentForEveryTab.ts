@@ -20,11 +20,11 @@ import {
   removeSidebars,
   removeDraftModComponents,
 } from "@/contentScript/messenger/api";
-import { forEachTab } from "../utils/extensionUtils";
+import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
-import { clearModComponentTraces } from "../telemetry/trace";
-import { clearLog } from "../telemetry/logging";
+import { clearModComponentTraces } from "@/telemetry/trace";
+import { clearLog } from "@/telemetry/logging";
 
 export async function removeModComponentForEveryTab(
   modComponentId: UUID,

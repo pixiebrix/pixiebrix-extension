@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "../mv3/api";
-import type { ThemeAssets } from "../themes/themeUtils";
-import { DEFAULT_THEME } from "../themes/themeTypes";
-import { loadImageData } from "../utils/canvasUtils";
+import { browserAction } from "@/mv3/api";
+import type { ThemeAssets } from "@/themes/themeUtils";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { loadImageData } from "@/utils/canvasUtils";
 
 export default async function setToolbarIconFromTheme({
   logo,

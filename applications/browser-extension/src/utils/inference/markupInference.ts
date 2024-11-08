@@ -19,13 +19,13 @@ import {
   EXTENSION_POINT_DATA_ATTR,
   PANEL_FRAME_ID,
   PIXIEBRIX_DATA_ATTR,
-} from "../../domConstants";
+} from "@/domConstants";
 import { BUTTON_TAGS, UNIQUE_ATTRIBUTES } from "./selectorInference";
 import { compact, intersection, unary, uniq } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { isNullOrBlank, matchesAnyPattern } from "../stringUtils";
-import { mostCommonElement } from "../arrayUtils";
-import { assertNotNullish } from "../nullishUtils";
+import { isNullOrBlank, matchesAnyPattern } from "@/utils/stringUtils";
+import { mostCommonElement } from "@/utils/arrayUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg", "img"];

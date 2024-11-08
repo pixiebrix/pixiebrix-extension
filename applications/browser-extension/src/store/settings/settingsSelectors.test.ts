@@ -16,9 +16,9 @@
  */
 
 import MockDate from "mockdate";
-import { selectUpdatePromptState } from "./settingsSelectors";
-import settingsSlice from "./settingsSlice";
-import { type SettingsState } from "./settingsTypes";
+import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 
 describe("selectUpdatePromptState", () => {
   it("calculates time remaining", () => {

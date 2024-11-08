@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import CreatableAutosuggest from "./CreatableAutosuggest";
+import CreatableAutosuggest from "@/pageEditor/fields/creatableAutosuggest/CreatableAutosuggest";
 import {
   faHandPeace,
   faHandshake,

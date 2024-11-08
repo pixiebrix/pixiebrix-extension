@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@/themes/colors";
+@import "@/themes/colors.scss";
 
 .tab-content > .active.full-height {
   display: flex; /* Overrides Tab.Content’ "block" when active */

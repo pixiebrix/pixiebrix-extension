@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import DataTabPane from "../DataTabPane";
-import { DataPanelTabKey } from "../dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 const StarterBrickInputTab: React.FC = () => (
   <DataTabPane eventKey={DataPanelTabKey.Input}>

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TraverseElements from "./traverseElements";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import TraverseElements from "@/bricks/transformers/traverseElements";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new TraverseElements();
 

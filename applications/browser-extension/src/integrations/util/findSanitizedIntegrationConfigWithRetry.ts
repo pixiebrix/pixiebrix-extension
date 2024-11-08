@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "../../types/registryTypes";
-import { type UUID } from "../../types/stringTypes";
-import { type SanitizedIntegrationConfig } from "../integrationTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
-import { memoizeUntilSettled } from "../../utils/promiseUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 async function _findWithRetry(
   integrationId: RegistryId,

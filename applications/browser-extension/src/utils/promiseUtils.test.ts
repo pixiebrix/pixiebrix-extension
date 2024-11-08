@@ -22,7 +22,7 @@ import {
   retryWithJitter,
   asyncMapValues,
   pollUntilTruthy,
-} from "./promiseUtils";
+} from "@/utils/promiseUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import pDefer from "p-defer";
 

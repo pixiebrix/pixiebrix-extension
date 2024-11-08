@@ -19,7 +19,7 @@ import { serializeError } from "serialize-error";
 import {
   ClientRequestError,
   RemoteServiceError,
-} from "./clientRequestErrors";
+} from "@/errors/clientRequestErrors";
 import axios, { AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 

@@ -19,51 +19,51 @@ import {
   DefinitionKinds,
   INNER_SCOPE,
   type Metadata,
-} from "../../types/registryTypes";
+} from "@/types/registryTypes";
 import { castArray, isEmpty } from "lodash";
 import {
   assertStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
-} from "../../starterBricks/types";
+} from "@/starterBricks/types";
 import {
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
+} from "@/types/starterBrickTypes";
 import type React from "react";
-import { createSitePattern, SITES_PATTERN } from "../../permissions/patterns";
+import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
 import {
   normalizeSemVerString,
   uuidv4,
   validateRegistryId,
-} from "../../types/helpers";
+} from "@/types/helpers";
 import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
-import { hasInnerStarterBrickRef } from "../../registry/hydrateInnerDefinitions";
+import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
-import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
-import { type ApiVersion } from "../../types/runtimeTypes";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
-import { type UUID } from "../../types/stringTypes";
-import { isExpression } from "../../utils/expressionUtils";
-import { isNullOrBlank } from "../../utils/stringUtils";
-import { deepPickBy, freeze } from "../../utils/objectUtils";
+} from "@/types/modComponentTypes";
+import { type UUID } from "@/types/stringTypes";
+import { isExpression } from "@/utils/expressionUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { deepPickBy, freeze } from "@/utils/objectUtils";
 import {
   type BaseFormState,
   type BaseModComponentState,
   type SingleLayerReaderConfig,
-} from "../store/editor/baseFormStateTypes";
+} from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type Availability,
   type NormalizedAvailability,
-} from "../../types/availabilityTypes";
+} from "@/types/availabilityTypes";
 import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
 
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 export interface WizardStep {
   step: string;

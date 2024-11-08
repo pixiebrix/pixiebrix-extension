@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4 } from "../../../types/helpers";
-import { UUID } from "../../../types/stringTypes";
+import { uuidv4 } from "@/types/helpers";
+import { UUID } from "@/types/stringTypes";
 import { StorageItem } from "webext-storage";
 
 export const getUUID = jest.fn().mockResolvedValue(uuidv4());

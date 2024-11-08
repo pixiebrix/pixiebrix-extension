@@ -16,17 +16,17 @@
  */
 
 import { ContextError } from "@/errors/genericErrors";
-import { hydrateModComponentInnerDefinitions } from "../../registry/hydrateInnerDefinitions";
-import { ContextMenuStarterBrickABC } from "../../starterBricks/contextMenu/contextMenuStarterBrick";
-import { type ContextMenuConfig } from "../../starterBricks/contextMenu/contextMenuTypes";
-import { selectEventData } from "../../telemetry/deployments";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import { type ContextMenuConfig } from "@/starterBricks/contextMenu/contextMenuTypes";
+import { selectEventData } from "@/telemetry/deployments";
 import {
   type ModComponentBase,
   type HydratedModComponent,
-} from "../../types/modComponentTypes";
-import { expectContext } from "../../utils/expectContext";
-import { allSettled } from "../../utils/promiseUtils";
-import starterBrickRegistry from "../../starterBricks/registry";
+} from "@/types/modComponentTypes";
+import { expectContext } from "@/utils/expectContext";
+import { allSettled } from "@/utils/promiseUtils";
+import starterBrickRegistry from "@/starterBricks/registry";
 
 /**
  * Add context menu items to the Chrome context menu on all tabs, in anticipation that on Page Load, the content

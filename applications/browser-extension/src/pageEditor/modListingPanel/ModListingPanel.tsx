@@ -18,7 +18,7 @@
 import styles from "./ModListingPanel.module.scss";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Collapse as BootstrapCollapse } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
-import { selectIsEditorSidebarExpanded } from "../store/editor/editorSelectors";
+import { selectIsModListingPanelExpanded } from "@/pageEditor/store/editor/editorSelectors";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import NewModButton from "./NewModButton";
@@ -54,7 +54,7 @@ const CollapsedElement: React.FC<
 const ModListingPanel: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const isExpanded = useSelector(selectIsEditorSidebarExpanded);
+  const isExpanded = useSelector(selectIsModListingPanelExpanded);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =

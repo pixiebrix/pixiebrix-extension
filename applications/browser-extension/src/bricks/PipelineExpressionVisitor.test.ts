@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentRenderer } from "./renderers/document";
-import { type BrickPosition, type BrickPipeline } from "./types";
-import { createNewDocumentBuilderElement } from "../pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { type BrickPosition, type BrickPipeline } from "@/bricks/types";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import { type Expression } from "@/types/runtimeTypes";
-import { PIPELINE_BRICKS_FIELD_NAME } from "../pageEditor/consts";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
-import { brickConfigFactory } from "../testUtils/factories/brickFactories";
-import { toExpression } from "../utils/expressionUtils";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 function getTestBlock() {
   return brickConfigFactory({

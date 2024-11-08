@@ -20,18 +20,18 @@
  * an interface for React's useExternalStore
  */
 
-import { type ManagedStorageState } from "./managedStorageTypes";
+import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
 import { isEmpty, once } from "lodash";
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import pMemoize, { pMemoizeClear } from "p-memoize";
-import { pollUntilTruthy } from "../../utils/promiseUtils";
-import { SimpleEventTarget } from "../../utils/SimpleEventTarget";
-import type { Nullishable } from "../../utils/nullishUtils";
+import { pollUntilTruthy } from "@/utils/promiseUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import type { Nullishable } from "@/utils/nullishUtils";
 import { mergeSignals, ReusableAbortController } from "abort-utils";
 import { StorageItem } from "webext-storage";
-import type { Timestamp } from "../../types/stringTypes";
+import type { Timestamp } from "@/types/stringTypes";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { nowTimestamp } from "../../utils/timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 
 // 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,

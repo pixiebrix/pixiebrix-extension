@@ -20,8 +20,8 @@ import { registerMethods } from "webext-messenger";
 import {
   setTemporaryPanelNonce,
   updateTemporaryPanel,
-} from "../receiverProtocol";
-import { expectContext } from "../../../../utils/expectContext";
+} from "@/bricks/transformers/temporaryInfo/receiverProtocol";
+import { expectContext } from "@/utils/expectContext";
 
 expectContext("extension");
 

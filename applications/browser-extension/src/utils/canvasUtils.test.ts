@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { blobToImageData, loadImageData } from "./canvasUtils";
+import { blobToImageData, loadImageData } from "@/utils/canvasUtils";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 

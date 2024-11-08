@@ -16,11 +16,11 @@
  */
 
 import { getIn, useFormikContext } from "formik";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import getElementCollectionName from "../edit/getElementCollectionName";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import getElementCollectionName from "@/pageEditor/documentBuilder/edit/getElementCollectionName";
 import { produce } from "immer";
 import { useCallback } from "react";
-import { assignBrickInstanceIdsInPlace } from "../../starterBricks/pipelineMapping";
+import { assignBrickInstanceIdsInPlace } from "@/pageEditor/starterBricks/pipelineMapping";
 
 /**
  * Hook to duplicate a Document Builder element.

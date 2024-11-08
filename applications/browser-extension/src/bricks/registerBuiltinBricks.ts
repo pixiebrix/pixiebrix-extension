@@ -20,8 +20,8 @@ import getAllTransformers from "./transformers/getAllTransformers";
 import getAllRenderers from "./renderers/getAllRenderers";
 import getAllReaders, {
   registerReaderFactories,
-} from "./readers/getAllReaders";
-import brickRegistry from "./registry";
+} from "@/bricks/readers/getAllReaders";
+import brickRegistry from "@/bricks/registry";
 
 let registered = false;
 
@@ -33,7 +33,7 @@ function registerBuiltinBricks(): void {
   }
 
   brickRegistry.register([
-    ...getAllTransformers(brickRegistry),
+    ...getAllTransformers(),
     ...getAllEffects(),
     ...getAllRenderers(),
     ...getAllReaders(),

@@ -16,17 +16,17 @@
  */
 
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
-import { readManagedStorage } from "../store/enterprise/managedStorage";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { addAuthListener, isLinked } from "@/auth/authStorage";
 import { validateUUID } from "@/types/helpers";
 import { type UUID } from "@/types/stringTypes";
 import { testMatchPatterns } from "@/bricks/available";
-import { SessionValue } from "../mv3/SessionStorage";
-import reportError from "../telemetry/reportError";
+import { SessionValue } from "@/mv3/SessionStorage";
+import reportError from "@/telemetry/reportError";
 import type { Tabs } from "webextension-polyfill";
-import { forEachTab } from "../utils/extensionUtils";
+import { forEachTab } from "@/utils/extensionUtils";
 import { getApiClient } from "@/data/service/apiClient";
-import { DEFAULT_SERVICE_URL } from "../urlConstants";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { StorageItem } from "webext-storage";
 import { API_PATHS } from "@/data/service/urlPaths";
 

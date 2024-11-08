@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { uniq } from "lodash";
-import { $safeFind } from "../../utils/domUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 // Adapted from https://github.com/refined-github/refined-github/blob/main/source/helpers/get-text-nodes.ts
 function getTextNodes(roots: Node[]): Text[] {

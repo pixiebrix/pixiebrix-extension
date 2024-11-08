@@ -21,16 +21,16 @@
 
 import { linkExtension } from "@/auth/authStorage";
 import { type TokenAuthData } from "@/auth/authTypes";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
-import { activateWelcomeModsInBackground } from "../api";
-import reportError from "../../../telemetry/reportError";
-import { validateRegistryId } from "../../../types/helpers";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { activateWelcomeModsInBackground } from "@/background/messenger/api";
+import reportError from "@/telemetry/reportError";
+import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
-import { getExtensionConsoleUrl } from "../../../utils/extensionUtils";
-import type { Nullishable } from "../../../utils/nullishUtils";
-import type { ModActivationConfig } from "../../../types/modTypes";
-import { type ActivateModsResult } from "../../welcomeMods";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { ModActivationConfig } from "@/types/modTypes";
+import { type ActivateModsResult } from "@/background/welcomeMods";
 import { UI_PATHS } from "@/data/service/urlPaths";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;

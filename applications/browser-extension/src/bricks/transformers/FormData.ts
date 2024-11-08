@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { compact } from "lodash";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
-} from "../rootModeHelpers";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/bricks/rootModeHelpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 function isCheckbox(
   element: HTMLInputElement | HTMLTextAreaElement,

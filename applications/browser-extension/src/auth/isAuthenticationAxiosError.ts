@@ -16,7 +16,7 @@
  */
 
 import type { AxiosError } from "axios";
-import { isObject } from "../utils/objectUtils";
+import { isObject } from "@/utils/objectUtils";
 
 const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 

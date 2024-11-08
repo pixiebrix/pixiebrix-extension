@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { useSyncExternalStore } from "use-sync-external-store/shim";
-import type { Nullishable } from "../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 // Using the string instead of the Selection object because the reference didn't seem to change on getSelection
 type TextSelection = string;

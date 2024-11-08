@@ -20,7 +20,7 @@ import React from "react";
 import selectEvent from "react-select-event";
 import SelectWidget, { type Option } from "./SelectWidget";
 import { type GroupBase } from "react-select";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("options", () => {
   const options: Option[] = [

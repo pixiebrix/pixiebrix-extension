@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { realConsole } from "@/development/runtimeLogging";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type Level = "debug" | "info" | "warn" | "error";
 

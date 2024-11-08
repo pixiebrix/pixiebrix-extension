@@ -16,10 +16,10 @@
  */
 
 import { useDispatch } from "react-redux";
-import { type AppDispatch } from "../../../../store/store";
-import { actions } from "../../../../store/editor/editorSlice";
+import { type AppDispatch } from "@/pageEditor/store/store";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useCallback } from "react";
-import { type UUID } from "../../../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 
 type NodeMovementProps = {
   nodeId: UUID;

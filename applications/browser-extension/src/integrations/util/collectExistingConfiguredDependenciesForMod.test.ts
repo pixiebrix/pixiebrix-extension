@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import collectExistingConfiguredDependenciesForMod from "./collectExistingConfiguredDependenciesForMod";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   registryIdFactory,
   uuidSequence,
-} from "../../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/stringFactories";
 import {
   activatedModComponentFactory,
   modMetadataFactory,
-} from "../../testUtils/factories/modComponentFactories";
-import { integrationDependencyFactory } from "../../testUtils/factories/integrationFactories";
+} from "@/testUtils/factories/modComponentFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
 describe("collectExistingConfiguredDependenciesForMod", () => {
   it("returns all integration dependencies when mod definition matches activated components", () => {

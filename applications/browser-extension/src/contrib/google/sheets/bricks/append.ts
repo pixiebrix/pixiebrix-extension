@@ -16,26 +16,23 @@
  */
 
 import { isEmpty, isEqual, unary, uniq } from "lodash";
-import { validateRegistryId } from "../../../../types/helpers";
-import { normalizeHeader } from "../core/sheetsHelpers";
-import * as sheets from "../core/sheetsApi";
+import { validateRegistryId } from "@/types/helpers";
+import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
   SHEET_INTEGRATION_SCHEMA,
-} from "../core/schemas";
-import { type Schema } from "../../../../types/schemaTypes";
-import { EffectABC } from "../../../../types/bricks/effectTypes";
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import {
-  type BrickArgs,
-  type BrickOptions,
-} from "../../../../types/runtimeTypes";
-import { type SpreadsheetTarget } from "../core/sheetsApi";
-import { isNullOrBlank } from "../../../../utils/stringUtils";
-import { isObject } from "../../../../utils/objectUtils";
-import { propertiesToSchema } from "../../../../utils/schemaUtils";
-import { INTEGRATIONS_BASE_SCHEMA_URL } from "../../../../integrations/constants";
+} from "@/contrib/google/sheets/core/schemas";
+import { type Schema } from "@/types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { isObject } from "@/utils/objectUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 import { type SetRequired } from "type-fest";
 
 type CellValue = string | number | null;

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 class TimestampReader extends ReaderABC {
   override defaultOutputKey = "instant";

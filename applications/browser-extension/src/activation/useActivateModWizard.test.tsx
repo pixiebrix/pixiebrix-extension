@@ -17,42 +17,42 @@
 
 import useActivateModWizard, {
   wizardStateFactory,
-} from "./useActivateModWizard";
+} from "@/activation/useActivateModWizard";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
-import { valueToAsyncState } from "../utils/asyncStateUtils";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import * as Yup from "yup";
 
 import {
   autoUUIDSequence,
   uuidSequence,
-} from "../testUtils/factories/stringFactories";
-import { defaultModDefinitionFactory } from "../testUtils/factories/modDefinitionFactories";
-import { propertiesToSchema } from "../utils/schemaUtils";
-import { makeDatabasePreviewName } from "./modOptionsHelpers";
+} from "@/testUtils/factories/stringFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
 import {
   FeatureFlags,
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
-import { publicSharingDefinitionFactory } from "../testUtils/factories/registryFactories";
+import { publicSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
-import { appApiMock } from "../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import { waitFor } from "@testing-library/react";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { type WizardStep } from "./wizardTypes";
+import { type WizardStep } from "@/activation/wizardTypes";
 
-jest.mock("../components/integrations/AuthWidget", () => {});
+jest.mock("@/components/integrations/AuthWidget", () => {});
 
-jest.mock("../hooks/useDatabaseOptions", () => ({
+jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,
   default: jest.fn(() => valueToAsyncState([])),
 }));
 
 const useDatabaseOptionsMock = jest.mocked(useDatabaseOptions);
 
-jest.mock("../hooks/useAsyncModOptionsValidationSchema", () => ({
+jest.mock("@/hooks/useAsyncModOptionsValidationSchema", () => ({
   __esModule: true,
   default: jest.fn(() => valueToAsyncState({})),
 }));

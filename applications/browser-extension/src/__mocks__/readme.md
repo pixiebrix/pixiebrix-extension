@@ -18,7 +18,7 @@ To do that, use `jest.mock` and `jest.requireActual` to change the resolution, f
 
 ```js
 // Disable automatic __mocks__ resolution #6799
-jest.mock("applications/browser-extension/src/__mocks__/@/telemetry/logging", () => jest.requireActual("./logging.ts"));
+jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 ```
 
 Note that you can't use `@/` in `requireActual` as that will likely still use the auto-mock.

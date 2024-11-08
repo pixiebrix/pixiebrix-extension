@@ -33,32 +33,32 @@ import {
   type FrameworkAdapter,
   CKEDITOR_SET_VALUE,
   CKEDITOR_INSERT_TEXT,
-} from "./messenger/constants";
-import adapters from "./frameworks/adapters";
+} from "@/pageScript/messenger/constants";
+import adapters from "@/pageScript/frameworks/adapters";
 import {
   type ReadPayload,
   type PathSpec,
   type ReadOptions,
   type WritePayload,
-} from "./messenger/api";
+} from "@/pageScript/messenger/api";
 import {
   type ReadableComponentAdapter,
   traverse,
-} from "./frameworks/component";
-import { elementInfo } from "./elementInfo";
+} from "@/pageScript/frameworks/component";
+import { elementInfo } from "@/pageScript/elementInfo";
 import {
   getPropByPath,
   noopProxy,
   type ReadProxy,
-} from "../runtime/pathHelpers";
+} from "@/runtime/pathHelpers";
 import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
 import * as ckeditor from "@/contrib/ckeditor/ckeditorProtocol";
-import { awaitValue } from "../utils/promiseUtils";
-import { findSingleElement } from "../utils/domUtils";
+import { awaitValue } from "@/utils/promiseUtils";
+import { findSingleElement } from "@/utils/domUtils";
 import { uuidv4 } from "@/types/helpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
-import { type ElementInfo } from "../utils/inference/selectorTypes";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");

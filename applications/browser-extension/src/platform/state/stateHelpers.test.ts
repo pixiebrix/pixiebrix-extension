@@ -18,8 +18,8 @@
 import {
   getSessionStorageKey,
   tryParseSessionStorageKey,
-} from "./stateHelpers";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+} from "@/platform/state/stateHelpers";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("tryParseSessionStorageKey", () => {
   it("round trips a key", () => {

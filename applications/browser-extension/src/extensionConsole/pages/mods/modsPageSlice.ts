@@ -18,9 +18,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Filters, type SortingRule } from "react-table";
 import { localStorage } from "redux-persist-webextension-storage";
-import { type StorageInterface } from "../../../store/StorageInterface";
-import { revertAll } from "../../../store/commonActions";
-import { type ModViewItem } from "../../../types/modTypes";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { revertAll } from "@/store/commonActions";
+import { type ModViewItem } from "@/types/modTypes";
 
 type View = "list" | "grid";
 

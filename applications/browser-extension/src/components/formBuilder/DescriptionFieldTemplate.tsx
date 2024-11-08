@@ -17,7 +17,7 @@
 
 import React from "react";
 import cx from "classnames";
-import MarkdownLazy from "../Markdown";
+import MarkdownLazy from "@/components/Markdown";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;

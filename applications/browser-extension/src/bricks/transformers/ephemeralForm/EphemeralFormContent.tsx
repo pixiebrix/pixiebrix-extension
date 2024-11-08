@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "../../../vendors/bootstrapWithoutRem.css";
-import "../../../sidebar/sidebarBootstrapOverrides.scss";
-import "../../renderers/customForm.css";
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/sidebar/sidebarBootstrapOverrides.scss";
+import "@/bricks/renderers/customForm.css";
 import React from "react";
-import validator from "../../../validators/formValidator";
+import validator from "@/validators/formValidator";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { cancelForm, resolveForm } from "@/contentScript/messenger/api";
-import { type Target } from "../../../types/messengerTypes";
+import { type Target } from "@/types/messengerTypes";
 import { cloneDeep } from "lodash";
-import { type FormDefinition } from "../../../platform/forms/formTypes";
-import { type UUID } from "../../../types/stringTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
+import { type UUID } from "@/types/stringTypes";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";

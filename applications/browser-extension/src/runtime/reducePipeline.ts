@@ -18,18 +18,18 @@
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, omit, once } from "lodash";
 import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
-import { hideNotification, showNotification } from "../utils/notify";
+import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
-import { engineRenderer } from "./renderers";
-import { type TraceExitData, type TraceRecordMeta } from "../telemetry/trace";
+import { engineRenderer } from "@/runtime/renderers";
+import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject, type SetRequired } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
-import { mapArgs } from "./mapArgs";
+import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-} from "./apiVersionOptions";
+} from "@/runtime/apiVersionOptions";
 import {
   type BrickConfig,
   type BrickPipeline,
@@ -40,13 +40,13 @@ import {
   selectBrickRootElement,
   shouldRunBrick,
   throwIfInvalidInput,
-} from "./runtimeUtils";
-import ConsoleLogger from "../utils/ConsoleLogger";
+} from "@/runtime/runtimeUtils";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import {
   BrickTypes,
   type ResolvedBrickConfig,
   unsafeAssumeValidArg,
-} from "./runtimeTypes";
+} from "@/runtime/runtimeTypes";
 import { type RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import {
   BusinessError,
@@ -55,54 +55,28 @@ import {
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/types/sidebarTypes";
-import { getLoggingConfig } from "../telemetry/logging";
+import { getLoggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgs,
   type BrickArgsContext,
-  type SelectorRoot,
-  type RenderedArgs,
   type IntegrationContext,
   type OptionsArgs,
   type PipelineExpression,
+  type RenderedArgs,
   type RunMetadata,
+  type SelectorRoot,
 } from "@/types/runtimeTypes";
-import { isPipelineClosureExpression } from "../utils/expressionUtils";
-import extendModVariableContext from "./extendModVariableContext";
-import { isObject } from "../utils/objectUtils";
-import type {
-  RegistryId,
-  RegistryProtocol,
-  SemVerString,
-} from "@/types/registryTypes";
-import type { Brick } from "@/types/brickTypes";
-import getType from "./getType";
-import { getPlatform } from "../platform/platformContext";
-import { type Nullishable, assertNotNullish } from "../utils/nullishUtils";
-import { nowTimestamp } from "../utils/timeUtils";
+import { isPipelineClosureExpression } from "@/utils/expressionUtils";
+import extendModVariableContext from "@/runtime/extendModVariableContext";
+import { isObject } from "@/utils/objectUtils";
+import type { SemVerString } from "@/types/registryTypes";
+import getType from "@/runtime/getType";
+import { getPlatform } from "@/platform/platformContext";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 import { flagOn } from "@/auth/featureFlagStorage";
-import castError from "../utils/castError";
-
-// Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
-  async lookup(): Promise<Brick> {
-    throw new Error(
-      "Runtime was not initialized. Call initRuntime before running mods.",
-    );
-  },
-};
-
-/**
- * Initialize the runtime with the given brick registry.
- * @param registry brick registry to use for looking up bricks
- * @since 1.8.2 introduced to eliminate circular dependency between runtime and registry
- */
-export function initRuntime(
-  registry: RegistryProtocol<RegistryId, Brick>,
-): void {
-  brickRegistry = registry;
-}
+import castError from "@/utils/castError";
 
 /**
  * CommonOptions for running pipelines and bricks
@@ -294,7 +268,7 @@ function getPipelineLexicalEnvironment({
 async function resolveBrickConfig(
   config: BrickConfig,
 ): Promise<ResolvedBrickConfig> {
-  const brick = await brickRegistry.lookup(config.id);
+  const brick = await getPlatform().registry.bricks.lookup(config.id);
   return {
     config,
     brick,
@@ -322,8 +296,8 @@ async function executeBrickWithValidatedProps(
   };
 
   const request: RunBrickRequest = {
-    blockId: config.id,
-    blockArgs: args,
+    brickId: config.id,
+    brickArgs: args,
     options: {
       ...commonOptions,
       meta: options.trace,

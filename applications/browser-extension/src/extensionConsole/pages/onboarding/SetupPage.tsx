@@ -17,26 +17,26 @@
 
 import React from "react";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
-import DefaultSetupCard from "./DefaultSetupCard";
+import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/data/service/baseService";
 import { useSelector } from "react-redux";
-import { selectSettings } from "../../../store/settings/settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import Loader from "@/components/Loader";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
-import PartnerSetupCard from "./partner/PartnerSetupCard";
+import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { useLocation } from "react-router";
 import { clearIntegrationRegistry } from "@/background/messenger/api";
-import notify from "../../../utils/notify";
-import { syncRemotePackages } from "../../../registry/memoryRegistry";
+import notify from "@/utils/notify";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
 import useAsyncState from "@/hooks/useAsyncState";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../../../integrations/constants";
-import integrationRegistry from "../../../integrations/registry";
-import reportError from "../../../telemetry/reportError";
+} from "@/integrations/constants";
+import integrationRegistry from "@/integrations/registry";
+import reportError from "@/telemetry/reportError";
 import useReportError from "@/hooks/useReportError";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { type EmptyObject } from "type-fest";
 
 const Layout: React.FunctionComponent<React.PropsWithChildren<EmptyObject>> = ({

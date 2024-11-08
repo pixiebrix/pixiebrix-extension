@@ -16,33 +16,33 @@
  */
 
 import React from "react";
-import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
-import { render, screen } from "../../pageEditor/testHelpers";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { render, screen } from "@/pageEditor/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import BotOptions from "./BotOptions";
-import useSanitizedIntegrationConfigFormikAdapter from "../../integrations/useSanitizedIntegrationConfigFormikAdapter";
+import BotOptions from "@/contrib/automationanywhere/BotOptions";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { type SanitizedConfig } from "../../integrations/integrationTypes";
+import { type SanitizedConfig } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
-import { valueToAsyncState } from "../../utils/asyncStateUtils";
-import { menuItemFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../testUtils/factories/integrationFactories";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "../../integrations/constants";
-import { toExpression } from "../../utils/expressionUtils";
-import { RunBot } from "./RunBot";
+} from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
+import { toExpression } from "@/utils/expressionUtils";
+import { RunBot } from "@/contrib/automationanywhere/RunBot";
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,
 );
 
-jest.mock("../../integrations/useSanitizedIntegrationConfigFormikAdapter");
-jest.mock("../../hooks/useAuthOptions");
-jest.mock("../../contentScript/messenger/api");
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
+jest.mock("@/hooks/useAuthOptions");
+jest.mock("@/contentScript/messenger/api");
 
 function makeBaseState() {
   return menuItemFormStateFactory(

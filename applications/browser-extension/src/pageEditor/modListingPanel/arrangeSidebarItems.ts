@@ -16,11 +16,11 @@
  */
 
 import { sortBy } from "lodash";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import { type UUID } from "../../types/stringTypes";
-import { type ModComponentBase } from "../../types/modComponentTypes";
-import { type RegistryId } from "../../types/registryTypes";
-import { type SidebarItem } from "./common";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
 
 type ArrangeSidebarItemsArgs = {
   modComponentFormStates: ModComponentFormState[];

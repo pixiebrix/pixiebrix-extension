@@ -27,8 +27,8 @@ import {
   filterOptionsByVariable,
   filterVarMapByVariable,
   moveMenuOption,
-} from "./menuFilters";
-import getMenuOptions from "./getMenuOptions";
+} from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import getMenuOptions from "@/components/fields/schemaFields/widgets/varPopup/getMenuOptions";
 
 describe("filterVarMapByVariable", () => {
   it("filters top-level", () => {

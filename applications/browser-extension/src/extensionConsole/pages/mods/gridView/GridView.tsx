@@ -24,13 +24,13 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { type ModViewItem } from "../../../../types/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import { VariableSizeList as List } from "react-window";
 import GridCard from "./GridCard";
 import { type Row } from "react-table";
-import ListGroupHeader from "../listView/ListGroupHeader";
-import GridCardErrorBoundary from "./GridCardErrorBoundary";
-import { type ModsPageContentProps } from "../modsPageTypes";
+import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHeader";
+import GridCardErrorBoundary from "@/extensionConsole/pages/mods/gridView/GridCardErrorBoundary";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
 
 /**
  *  Expands `react-table` rows recursively in chunks of

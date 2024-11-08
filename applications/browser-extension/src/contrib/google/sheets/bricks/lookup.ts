@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { zip } from "lodash";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
   SHEET_INTEGRATION_SCHEMA,
-} from "../core/schemas";
-import { type Schema } from "../../../../types/schemaTypes";
-import { TransformerABC } from "../../../../types/bricks/transformerTypes";
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
+} from "@/contrib/google/sheets/core/schemas";
+import { type Schema } from "@/types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import {
-  type BrickArgs,
-  type BrickOptions,
-} from "../../../../types/runtimeTypes";
-import { getAllRows, type SpreadsheetTarget } from "../core/sheetsApi";
-import { isNullOrBlank } from "../../../../utils/stringUtils";
+  getAllRows,
+  type SpreadsheetTarget,
+} from "@/contrib/google/sheets/core/sheetsApi";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
-import { INTEGRATIONS_BASE_SCHEMA_URL } from "../../../../integrations/constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
   "@pixiebrix/google/sheets-lookup",

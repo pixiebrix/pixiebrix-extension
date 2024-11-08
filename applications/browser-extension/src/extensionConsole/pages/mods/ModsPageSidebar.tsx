@@ -18,7 +18,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { type TableInstance } from "react-table";
-import { type ModViewItem } from "../../../types/modTypes";
+import { type ModViewItem } from "@/types/modTypes";
 import useFlags from "@/hooks/useFlags";
 import {
   useGetMeQuery,
@@ -30,9 +30,9 @@ import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
 import useMilestones from "@/hooks/useMilestones";
-import { type RegistryId } from "../../../types/registryTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
-import { MARKETPLACE_URL } from "../../../urlConstants";
+import { MARKETPLACE_URL } from "@/urlConstants";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 
 type ModsPageSidebarProps = {

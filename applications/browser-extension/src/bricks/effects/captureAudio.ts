@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { validateRegistryId } from "../../types/helpers";
-import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import {
-  minimalSchemaFactory,
-  propertiesToSchema,
-} from "../../utils/schemaUtils";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { minimalSchemaFactory, propertiesToSchema } from "@/utils/schemaUtils";
 import { DEEPGRAM_INTEGRATION_ID } from "@/contrib/deepgram/deepgramTypes";
 import { FeatureFlags } from "@/auth/featureFlags";
 

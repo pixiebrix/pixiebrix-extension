@@ -4,14 +4,14 @@ import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { isEmpty, partial } from "lodash";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { useField, useFormikContext } from "formik";
-import { type TriggerFormState } from "../../starterBricks/formStateTypes";
-import { type DebounceOptions } from "../../../starterBricks/types";
-import { joinName } from "../../../utils/formUtils";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type DebounceOptions } from "@/starterBricks/types";
+import { joinName } from "@/utils/formUtils";
 
 const DebounceFieldSet: React.FC<{
   isLocked: boolean;

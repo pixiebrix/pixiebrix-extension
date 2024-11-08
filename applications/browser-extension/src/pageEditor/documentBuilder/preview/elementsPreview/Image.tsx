@@ -20,13 +20,13 @@ import {
   type DocumentBuilderComponent,
   type DocumentBuilderElementType,
   type PreviewComponentProps,
-} from "../../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import cx from "classnames";
-import documentTreeStyles from "../documentTree.module.scss";
+import documentTreeStyles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 import { isEmpty } from "lodash";
-import Flaps from "../flaps/Flaps";
-import { canParseUrl } from "../../../../utils/urlUtils";
+import Flaps from "@/pageEditor/documentBuilder/preview/flaps/Flaps";
+import { canParseUrl } from "@/utils/urlUtils";
 
 type ImageProps = PreviewComponentProps & {
   elementType: DocumentBuilderElementType;

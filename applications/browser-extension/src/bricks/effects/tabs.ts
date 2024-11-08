@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { focusTab, closeTab } from "@/background/messenger/api";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
-} from "../../platform/capabilities";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class ActivateTabEffect extends EffectABC {
   constructor() {

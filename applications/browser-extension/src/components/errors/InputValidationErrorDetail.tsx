@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type InputValidationError } from "@/bricks/errors";
-import JsonTree from "../jsonTree/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./ErrorDetail.module.scss";
 
 const InputValidationErrorDetail: React.FunctionComponent<{

@@ -16,7 +16,7 @@
  */
 
 import { type Runtime } from "webextension-polyfill";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import {
   errorTabDoesntExist,
   errorTargetClosedEarly,
@@ -27,13 +27,13 @@ import { type Target } from "@/types/messengerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { canAccessTab } from "../permissions/permissionsUtils";
-import { allSettled } from "../utils/promiseUtils";
-import { TOP_LEVEL_FRAME_ID } from "../domConstants";
-import { forEachTab } from "../utils/extensionUtils";
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
-import { isRemoteProcedureCallRequest } from "../utils/legacyMessengerUtils";
+import { canAccessTab } from "@/permissions/permissionsUtils";
+import { allSettled } from "@/utils/promiseUtils";
+import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
+import { forEachTab } from "@/utils/extensionUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 import { tabToOpener, tabToTarget } from "./tabs";
 
 // Arbitrary number of tabs above which performance *might* be degraded

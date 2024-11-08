@@ -16,27 +16,27 @@
  */
 
 import { useCreateModDefinitionMutation } from "@/data/service/api";
-import useDeactivateMod from "./useDeactivateMod";
-import { type ModMetadataFormState } from "../store/editor/pageEditorTypes";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   selectGetDraftModComponentsForMod,
   selectGetModDraftStateForModId,
-} from "../store/editor/editorSelectors";
-import reportEvent from "../../telemetry/reportEvent";
-import { type ModDefinition } from "../../types/modDefinitionTypes";
+} from "@/pageEditor/store/editor/editorSelectors";
+import reportEvent from "@/telemetry/reportEvent";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Events } from "../../telemetry/events";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import useBuildAndValidateMod from "./useBuildAndValidateMod";
-import { ensureModComponentFormStatePermissionsFromUserGesture } from "../editorPermissionsHelpers";
+import { Events } from "@/telemetry/events";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import {
   isModComponentFormState,
   mapModDefinitionUpsertResponseToModDefinition,
-} from "../utils";
-import { createPrivateSharing } from "../../utils/registryUtils";
-import updateReduxForSavedModDefinition from "./updateReduxForSavedModDefinition";
-import { type AppDispatch } from "../store/store";
+} from "@/pageEditor/utils";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 type UseCreateModFromModReturn = {
   createModFromMod: (

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SubmitPanelEffect from "./submitPanel";
-import { SubmitPanelAction } from "../errors";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import SubmitPanelEffect from "@/bricks/effects/submitPanel";
+import { SubmitPanelAction } from "@/bricks/errors";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
 describe("SubmitPanelEffect", () => {
   test("defaults detail to empty object", async () => {

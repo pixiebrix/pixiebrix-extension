@@ -16,14 +16,14 @@
  */
 
 import { type Permissions } from "webextension-polyfill";
-import { type Schema } from "./schemaTypes";
-import { type UUID } from "./stringTypes";
-import { type HydratedModComponent } from "./modComponentTypes";
-import { type RunArgs } from "./runtimeTypes";
-import { type Brick } from "./brickTypes";
-import { type Reader } from "./bricks/readerTypes";
-import { type PackageInstance } from "./registryTypes";
-import { type PlatformCapability } from "../platform/capabilities";
+import { type Schema } from "@/types/schemaTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { type RunArgs } from "@/types/runtimeTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
+import { type PackageInstance } from "@/types/registryTypes";
+import { type PlatformCapability } from "@/platform/capabilities";
 import { type ValueOf } from "type-fest";
 
 /**

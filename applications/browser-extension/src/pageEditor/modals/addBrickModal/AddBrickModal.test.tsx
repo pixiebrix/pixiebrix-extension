@@ -16,26 +16,26 @@
  */
 
 import React from "react";
-import { render, screen } from "../../testHelpers";
-import AddBrickModal from "./AddBrickModal";
-import { actions } from "../../store/editor/editorSlice";
+import { render, screen } from "@/pageEditor/testHelpers";
+import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
 import { array } from "cooky-cutter";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   featureFlagBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { appApiMock } from "../../../testUtils/appApiMock";
+} from "@/runtime/pipelineTests/testHelpers";
+import { appApiMock } from "@/testUtils/appApiMock";
 import {
   addBrickLocationFactory,
   formStateFactory,
-} from "../../../testUtils/factories/pageEditorFactories";
+} from "@/testUtils/factories/pageEditorFactories";
 import {
   marketplaceListingFactory,
   marketplaceTagFactory,
-} from "../../../testUtils/factories/marketplaceFactories";
+} from "@/testUtils/factories/marketplaceFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 // Need at least one item so callers see the registry as initialized

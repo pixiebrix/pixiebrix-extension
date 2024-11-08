@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { type SchemaFieldProps } from "./propTypes";
-import ConnectedFieldTemplate from "../../form/ConnectedFieldTemplate";
-import SwitchButtonWidget from "../../form/widgets/switchButton/SwitchButtonWidget";
-import { makeLabelForSchemaField } from "./schemaFieldUtils";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { connect, getIn } from "formik";
-import { type FieldProps } from "../../form/FieldTemplate";
+import { type FieldProps } from "@/components/form/FieldTemplate";
 import { type FormikContextType } from "formik";
 
 /**

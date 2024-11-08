@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { RegistryId } from "../../../types/registryTypes";
-import { expectContext } from "../../../utils/expectContext";
-import integrationRegistry from "../../../integrations/registry";
-import { integrationConfigLocator as serviceLocator } from "../../integrationConfigLocator";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import launchOAuth2Flow from "../launchOAuth2Flow";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "../../../integrations/constants";
-import { canParseUrl } from "../../../utils/urlUtils";
+import type { RegistryId } from "@/types/registryTypes";
+import { expectContext } from "@/utils/expectContext";
+import integrationRegistry from "@/integrations/registry";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import { canParseUrl } from "@/utils/urlUtils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { setPartnerAuthData } from "@/auth/authStorage";
 import { stringToBase64 } from "uint8array-extras";
 import { getApiClient } from "@/data/service/apiClient";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
-import { removeOAuth2Token } from "../../messenger/api";
+import { removeOAuth2Token } from "@/background/messenger/api";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 /**

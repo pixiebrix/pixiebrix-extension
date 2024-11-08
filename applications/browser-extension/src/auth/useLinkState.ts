@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { addAuthListener, removeAuthListener, isLinked } from "./authStorage";
+import {
+  addAuthListener,
+  removeAuthListener,
+  isLinked,
+} from "@/auth/authStorage";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
 

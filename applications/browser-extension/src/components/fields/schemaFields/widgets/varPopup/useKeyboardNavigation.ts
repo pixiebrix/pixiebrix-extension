@@ -21,7 +21,7 @@ import {
   defaultMenuOption,
   type MenuOptions,
   moveMenuOption,
-} from "./menuFilters";
+} from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { isEqual } from "lodash";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 

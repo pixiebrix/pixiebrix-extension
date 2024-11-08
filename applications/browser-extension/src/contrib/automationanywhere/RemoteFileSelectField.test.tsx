@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sanitizedIntegrationConfigFactory } from "../../testUtils/factories/integrationFactories";
-import { render, screen, userEvent } from "../../pageEditor/testHelpers";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { render, screen, userEvent } from "@/pageEditor/testHelpers";
 import { waitFor } from "@testing-library/react";
 import selectEvent from "react-select-event";
 import React from "react";
-import RemoteFileSelectField from "./RemoteFileSelectField";
-import { type WorkspaceType } from "./contract";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import RemoteFileSelectField from "@/contrib/automationanywhere/RemoteFileSelectField";
+import { type WorkspaceType } from "@/contrib/automationanywhere/contract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 const bots1 = [
   {

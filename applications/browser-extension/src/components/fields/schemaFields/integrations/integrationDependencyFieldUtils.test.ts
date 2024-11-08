@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../../../types/stringTypes";
-import { type ModComponentFormState } from "../../../../pageEditor/starterBricks/formStateTypes";
-import { validateRegistryId, validateUUID } from "../../../../types/helpers";
+import { type UUID } from "@/types/stringTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
-import { emptyPermissionsFactory } from "../../../../permissions/permissionsUtils";
-import { createNewDocumentBuilderElement } from "../../../../pageEditor/documentBuilder/createNewDocumentBuilderElement";
-import { type ListElement } from "../../../../pageEditor/documentBuilder/documentBuilderTypes";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { type ListElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 
-import { uuidSequence } from "../../../../testUtils/factories/stringFactories";
-import { formStateFactory } from "../../../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../../../testUtils/factories/brickFactories";
-import { integrationDependencyFactory } from "../../../../testUtils/factories/integrationFactories";
-import { validateOutputKey } from "../../../../runtime/runtimeTypes";
-import { toExpression } from "../../../../utils/expressionUtils";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 import { normalizeAvailability } from "@/bricks/available";
-import { StarterBrickTypes } from "../../../../types/starterBrickTypes";
-import { createNewUnsavedModMetadata } from "../../../../utils/modUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {

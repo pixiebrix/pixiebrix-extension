@@ -15,28 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, { fixActiveTabOnRemoveInPlace } from "./sidebarSlice";
-import { eventKeyForEntry } from "./eventKeyUtils";
+import sidebarSlice, {
+  fixActiveTabOnRemoveInPlace,
+} from "@/store/sidebar/sidebarSlice";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
 } from "@/contentScript/messenger/api";
-import { sidebarEntryFactory } from "../../testUtils/factories/sidebarEntryFactories";
-import type { SidebarState } from "../../types/sidebarTypes";
-import { uuidv4, validateRegistryId } from "../../types/helpers";
-import { MOD_LAUNCHER } from "./constants";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import type { SidebarState } from "@/types/sidebarTypes";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Draft } from "immer";
 
 import { configureStore } from "@reduxjs/toolkit";
-import addFormPanel from "./thunks/addFormPanel";
-import addTemporaryPanel from "./thunks/addTemporaryPanel";
-import removeTemporaryPanel from "./thunks/removeTemporaryPanel";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
-jest.mock("../../sidebar/messenger/api");
-jest.mock("../../contentScript/messenger/api");
-jest.mock("../../bricks/transformers/temporaryInfo/messenger/api");
+jest.mock("@/sidebar/messenger/api");
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
 const closeTemporaryPanelMock = jest.mocked(closeTemporaryPanel);

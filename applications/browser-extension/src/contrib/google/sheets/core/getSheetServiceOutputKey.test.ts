@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSheetIdIntegrationOutputKey } from "./getSheetIdIntegrationOutputKey";
+import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
 
-import { toExpression } from "../../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("getSheetServiceOutputKey", () => {
   test("abc", () => {

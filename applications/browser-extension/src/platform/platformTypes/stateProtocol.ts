@@ -18,12 +18,12 @@
 import type {
   MergeStrategy,
   StateNamespace,
-} from "../state/stateTypes";
+} from "@/platform/state/stateTypes";
 import type { Except, JsonObject } from "type-fest";
-import type { ModComponentRef } from "../../types/modComponentTypes";
-import type { RegistryId } from "../../types/registryTypes";
-import type { ModVariablesDefinition } from "../../types/modDefinitionTypes";
-import type { Nullishable } from "../../utils/nullishUtils";
+import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModVariablesDefinition } from "@/types/modDefinitionTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * The variable store/state for the platform.

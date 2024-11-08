@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { isCommunityControlRoom } from "./aaUtils";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { WORKSPACE_OPTIONS } from "./util";
+import { WORKSPACE_OPTIONS } from "@/contrib/automationanywhere/util";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const WorkspaceTypeField: React.FC<{

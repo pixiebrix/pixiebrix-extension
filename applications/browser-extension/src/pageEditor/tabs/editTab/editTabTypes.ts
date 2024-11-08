@@ -24,11 +24,11 @@
  * For instance, it doesn't have a `length` property.
  */
 
-import { type MoveBrickControlProps } from "./editorNodes/brickNode/MoveBrickControl";
-import { type NodeAction } from "./editorNodes/nodeActions/NodeActionsView";
+import { type MoveBrickControlProps } from "@/pageEditor/tabs/editTab/editorNodes/brickNode/MoveBrickControl";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import type React from "react";
-import { type OutputKey } from "../../../types/runtimeTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
 
 // eslint-disable-next-line @typescript-eslint/no-use-before-define -- circular definition
 type FormikError = string | FormikErrorTree;

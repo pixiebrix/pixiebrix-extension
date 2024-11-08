@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { forbidContext } from "../utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 
 const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 

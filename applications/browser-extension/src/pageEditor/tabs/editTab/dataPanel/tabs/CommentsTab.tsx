@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useContext } from "react";
-import { DataPanelTabKey } from "../dataPanelTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
-import { Events } from "../../../../../telemetry/events";
-import reportEvent from "../../../../../telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { type Schema } from "../../../../../types/schemaTypes";
-import DataTabPane from "../DataTabPane";
+import { type Schema } from "@/types/schemaTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
 import { useSelector } from "react-redux";
 import {
   selectActiveNodeEventData,
   selectActiveNodeInfo,
-} from "../../../../store/editor/editorSelectors";
-import { joinPathParts } from "../../../../../utils/formUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { joinPathParts } from "@/utils/formUtils";
 
 const commentsSchema: Schema = { type: "string" };
 

@@ -29,16 +29,16 @@ import {
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { TriggerStarterBrickABC } from "../starterBricks/trigger/triggerStarterBrick";
-import { ButtonStarterBrickABC } from "../starterBricks/button/buttonStarterBrick";
-import { ContextMenuStarterBrickABC } from "../starterBricks/contextMenu/contextMenuStarterBrick";
-import { SidebarStarterBrickABC } from "../starterBricks/sidebar/sidebarStarterBrick";
-import getType from "../runtime/getType";
-import { type BrickType } from "../runtime/runtimeTypes";
+import { TriggerStarterBrickABC } from "@/starterBricks/trigger/triggerStarterBrick";
+import { ButtonStarterBrickABC } from "@/starterBricks/button/buttonStarterBrick";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
+import getType from "@/runtime/getType";
+import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata, type PackageInstance } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import MarketplaceListingIcon from "./MarketplaceListingIcon";
-import { type Nullishable } from "../utils/nullishUtils";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 function getDefaultPackageIcon(
   packageInstance: PackageInstance,

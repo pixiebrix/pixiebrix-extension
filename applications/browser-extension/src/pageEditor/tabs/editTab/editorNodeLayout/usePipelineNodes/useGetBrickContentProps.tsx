@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickNodeContentProps } from "../../editTabTypes";
+import { type BrickNodeContentProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 import { type BrickConfig } from "@/bricks/types";
-import { filterAnnotationsByBrickPath } from "../../../../utils";
-import { type TraceRecord } from "../../../../../telemetry/trace";
+import { filterAnnotationsByBrickPath } from "@/pageEditor/utils";
+import { type TraceRecord } from "@/telemetry/trace";
 import React, { useCallback } from "react";
 import PackageIcon from "@/components/PackageIcon";
-import { decideBrickStatus } from "../decideStatus";
-import { getBrickPipelineNodeSummary } from "../nodeSummary";
-import { isNullOrBlank } from "../../../../../utils/stringUtils";
+import { decideBrickStatus } from "@/pageEditor/tabs/editTab/editorNodeLayout/decideStatus";
+import { getBrickPipelineNodeSummary } from "@/pageEditor/tabs/editTab/editorNodeLayout/nodeSummary";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentFormState,
   selectPipelineMap,
-} from "../../../../store/editor/editorSelectors";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { useSelector } from "react-redux";
-import { useGetIsBrickPipelineExpanded } from "./useGetIsBrickPipelineExpanded";
+import { useGetIsBrickPipelineExpanded } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetIsBrickPipelineExpanded";
 
 type BrickContentProps = {
   brickConfig: BrickConfig;
@@ -60,7 +60,7 @@ export function useGetBrickContentProps() {
       brickConfig,
       traceRecord,
     }: BrickContentProps): BrickNodeContentProps => {
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
 
       if (isLoadingBricks || !brick) {
         return { brickLabel: "Loading..." };

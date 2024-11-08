@@ -17,8 +17,8 @@
 
 import { ping } from "@/background/messenger/api";
 import { isContextInvalidatedError } from "@/errors/contextInvalidated";
-import { isLoadedInIframe } from "../utils/iframeUtils";
-import { getSettingsState } from "../store/settings/settingsStorage";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 
 const PING_INTERVAL_MS = 5 * 1000;
 const PING_WARNING_THRESHOLD_MS = 150;

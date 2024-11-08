@@ -19,9 +19,9 @@ import { useGetOrganizationsQuery } from "@/data/service/api";
 import useFlags from "@/hooks/useFlags";
 import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { selectActiveTab } from "../modsPageSelectors";
-import { useAllModDefinitions } from "../../../../modDefinitions/modDefinitionHooks";
-import DeploymentsContext from "../../deployments/DeploymentsContext";
+import { selectActiveTab } from "@/extensionConsole/pages/mods/modsPageSelectors";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 
 export type OnboardingType =

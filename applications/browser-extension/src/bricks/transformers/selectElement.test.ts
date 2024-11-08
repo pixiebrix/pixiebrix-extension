@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SelectElement from "./selectElement";
+import SelectElement from "@/bricks/transformers/selectElement";
 import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { CancelError } from "@/errors/businessErrors";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-jest.mock("../../contentScript/pageEditor/elementPicker");
+jest.mock("@/contentScript/pageEditor/elementPicker");
 
 const userSelectElementMock = jest.mocked(userSelectElement);
 

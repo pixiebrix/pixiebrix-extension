@@ -16,13 +16,13 @@
  */
 
 import React, { useMemo } from "react";
-import { type ModDefinition } from "../../../types/modDefinitionTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
 
-import { DEFAULT_RUNTIME_API_VERSION } from "../../../runtime/apiVersionOptions";
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isUUID } from "../../types/helpers";
+import { isUUID } from "@/types/helpers";
 import { createNewDocumentBuilderElement } from "./createNewDocumentBuilderElement";
 import { DOCUMENT_BUILDER_ELEMENT_TYPES } from "./documentBuilderTypes";
 import { type BrickPipeline } from "@/bricks/types";
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 test.each(
   DOCUMENT_BUILDER_ELEMENT_TYPES.filter(

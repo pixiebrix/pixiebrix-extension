@@ -16,8 +16,8 @@
  */
 
 import { TableRenderer } from "./table";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("parse compile error", () => {
   test("null data", async () => {

@@ -16,7 +16,7 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
   echoBrick,
@@ -24,12 +24,12 @@ import {
   throwBrick,
 } from "./testHelpers";
 import { sendDeploymentAlert } from "@/background/messenger/api";
-import { type ApiVersion } from "../../types/runtimeTypes";
-import { uuidv4 } from "../../types/helpers";
+import { type ApiVersion } from "@/types/runtimeTypes";
+import { uuidv4 } from "@/types/helpers";
 import { serializeError } from "serialize-error";
 import { ContextError } from "@/errors/genericErrors";
-import { extraEmptyModStateContext } from "../extendModVariableContext";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();

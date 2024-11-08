@@ -19,11 +19,11 @@ import React from "react";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./BrickNodeContent.module.scss";
-import OutputKeyView from "../OutputKeyView";
+import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import {
   type BrickNodeContentProps,
   RunStatus,
-} from "../../editTabTypes";
+} from "@/pageEditor/tabs/editTab/editTabTypes";
 
 function isFontAwesomeIcon(
   maybeIcon: IconProp | React.ReactNode,

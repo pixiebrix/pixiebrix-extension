@@ -21,7 +21,7 @@ import userEvent from "@testing-library/user-event";
 import CustomFormComponent, {
   type CustomFormComponentProps,
 } from "@/bricks/renderers/CustomFormComponent";
-import { type Schema } from "../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 describe("RichTextWidget", () => {
   const user = userEvent.setup({

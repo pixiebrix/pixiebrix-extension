@@ -17,19 +17,19 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import settingsSlice from "../store/settings/settingsSlice";
-import { modModalsSlice } from "./pages/mods/modals/modModalsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
-} from "../testUtils/testHelpers";
-import modsPageSlice from "./pages/mods/modsPageSlice";
-import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
+} from "@/testUtils/testHelpers";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { appApi } from "@/data/service/api";
-import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";
-import integrationsSlice from "../integrations/store/integrationsSlice";
-import workshopSlice from "../store/workshopSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import workshopSlice from "@/store/workshopSlice";
 
 const configureStoreForTests = () =>
   configureStore({

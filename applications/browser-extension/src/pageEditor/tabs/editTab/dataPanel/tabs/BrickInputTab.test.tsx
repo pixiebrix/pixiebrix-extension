@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "../../../../testHelpers";
-import BrickInputTab from "./BrickInputTab";
-import { actions as editorActions } from "../../../../store/editor/editorSlice";
-import runtimeSlice from "../../../../store/runtime/runtimeSlice";
-import { formStateWithTraceDataFactory } from "../../../../../testUtils/factories/pageEditorFactories";
+import { render } from "@/pageEditor/testHelpers";
+import BrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { Tab } from "react-bootstrap";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import { type ModComponentFormState } from "../../../../starterBricks/formStateTypes";
-import { type TraceRecord } from "../../../../../telemetry/trace";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type TraceRecord } from "@/telemetry/trace";
 import { serializeError } from "serialize-error";
 
 function renderInputDataTab(

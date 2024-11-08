@@ -16,9 +16,9 @@
  */
 
 import { useSelector } from "react-redux";
-import type { RegistryId } from "../../types/registryTypes";
-import type { ModInstance } from "../../types/modInstanceTypes";
-import { selectModInstanceMap } from "../../store/modComponents/modInstanceSelectors";
+import type { RegistryId } from "@/types/registryTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 /**
  * Hook to the activated mod instance for a given mod, or undefined if the mod is not activated on the device.

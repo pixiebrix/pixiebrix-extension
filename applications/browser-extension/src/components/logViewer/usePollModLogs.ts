@@ -20,7 +20,7 @@ import {
   logActions,
   type LogDispatch,
   stopPollLogs,
-} from "./logSlice";
+} from "@/components/logViewer/logSlice";
 import { useDispatch } from "react-redux";
 
 /**

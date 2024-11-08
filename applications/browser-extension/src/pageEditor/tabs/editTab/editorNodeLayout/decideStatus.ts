@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RunStatus } from "../editTabTypes";
-import { type TraceRecord } from "../../../../telemetry/trace";
+import { RunStatus } from "@/pageEditor/tabs/editTab/editTabTypes";
+import { type TraceRecord } from "@/telemetry/trace";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
-import { AnnotationType } from "../../../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 type DecideBlockStatusArgs = {
   brickAnnotations: AnalysisAnnotation[];

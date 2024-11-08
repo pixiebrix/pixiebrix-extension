@@ -15,20 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPosition, PipelineFlavor } from "./types";
+import {
+  type BrickConfig,
+  type BrickPosition,
+  PipelineFlavor,
+} from "@/bricks/types";
 import { type UUID } from "@/types/stringTypes";
-import { type TypedBrickPair } from "./registry";
-import { DocumentRenderer } from "./renderers/document";
-import { getDocumentBuilderPipelinePaths } from "../pageEditor/utils";
+import { type TypedBrickPair } from "@/bricks/registry";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { getDocumentBuilderPipelinePaths } from "@/pageEditor/utils";
 import { get } from "lodash";
 import {
   getRootPipelineFlavor,
   getSubPipelineFlavor,
-} from "./brickFilterHelpers";
+} from "@/bricks/brickFilterHelpers";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { PIPELINE_BRICKS_FIELD_NAME } from "../pageEditor/consts";
-import { isPipelineExpression } from "../utils/expressionUtils";
-import { joinPathParts } from "../utils/formUtils";
+import { PIPELINE_BRICKS_FIELD_NAME } from "@/pageEditor/consts";
+import { isPipelineExpression } from "@/utils/expressionUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 export const ROOT_POSITION = Object.freeze({
   path: PIPELINE_BRICKS_FIELD_NAME,

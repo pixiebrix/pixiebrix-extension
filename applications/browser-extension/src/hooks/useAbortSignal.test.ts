@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useAbortSignal from "./useAbortSignal";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 it("returns the initial state of the signal", () => {
   const active = renderHook(() => useAbortSignal(new AbortController().signal));

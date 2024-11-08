@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ModDefinition } from "./modDefinitionTypes";
-import type { Deployment } from "./contract";
-import type { UUID } from "./stringTypes";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type { Deployment } from "@/types/contract";
+import type { UUID } from "@/types/stringTypes";
 
 /**
  * A deployment and its associated mod definition (for exact package and version).

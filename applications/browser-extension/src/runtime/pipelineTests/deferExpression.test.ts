@@ -16,10 +16,10 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { deferBrick, simpleInput } from "./testHelpers";
-import { toExpression } from "../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();

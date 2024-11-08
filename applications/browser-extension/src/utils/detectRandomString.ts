@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import detectRandomString from "../vendors/randomStringDetection/detector";
+import detectRandomString from "@/vendors/randomStringDetection/detector";
 import { isEqual, round, uniq } from "lodash";
 
 // Checks, in order:

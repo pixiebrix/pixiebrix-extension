@@ -17,43 +17,43 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { render } from "../../testHelpers";
-import ModOptionsArgsEditor from "./ModOptionsArgsEditor";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
+import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArgsEditor";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import {
   useAllModDefinitions,
   useOptionalModDefinition,
-} from "../../../modDefinitions/modDefinitionHooks";
-import { type ModDefinition } from "../../../types/modDefinitionTypes";
-import databaseSchema from "../../../../schemas/database.json";
-import googleSheetIdSchema from "../../../../schemas/googleSheetId.json";
+} from "@/modDefinitions/modDefinitionHooks";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import databaseSchema from "@schemas/database.json";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
 import {
   valueToAsyncCacheState,
   valueToAsyncState,
-} from "../../../utils/asyncStateUtils";
-import { defaultModDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
+} from "@/utils/asyncStateUtils";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import selectEvent from "react-select-event";
-import { sanitizedIntegrationConfigFactory } from "../../../testUtils/factories/integrationFactories";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
-import { validateRegistryId } from "../../../types/helpers";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { validateRegistryId } from "@/types/helpers";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import { getAllSpreadsheets } from "@/contrib/google/sheets/core/sheetsApi";
-import { actions as editorActions } from "../../store/editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
-jest.mock("../../../modDefinitions/modDefinitionHooks");
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
 // XXX: sheetsApi should likely be mocked at the network level, not the module level
-jest.mock("../../../contrib/google/sheets/core/sheetsApi");
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
-jest.mock("../../../hooks/useFlags", () => ({
+jest.mock("@/hooks/useFlags", () => ({
   __esModule: true,
   default: () => ({
     flagOff: () => false,
   }),
 }));
 
-jest.mock("../../../contrib/google/sheets/core/useGoogleAccount");
+jest.mock("@/contrib/google/sheets/core/useGoogleAccount");
 
 const useGoogleAccountMock = jest.mocked(useGoogleAccount);
 

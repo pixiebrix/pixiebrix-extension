@@ -16,13 +16,13 @@
  */
 
 import { isEmpty } from "lodash";
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { type Schema } from "../../types/schemaTypes";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
-import type { PlatformProtocol } from "../../platform/platformProtocol";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Schema } from "@/types/schemaTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 interface GeocodedAddress {
   state?: string;

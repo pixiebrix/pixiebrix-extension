@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationsState } from "./integrationsSlice";
-import { type IntegrationConfig } from "../integrationTypes";
+import { type IntegrationsState } from "@/integrations/store/integrationsSlice";
+import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { createSelector } from "@reduxjs/toolkit";
 
 export const selectIntegrationConfigs = createSelector(

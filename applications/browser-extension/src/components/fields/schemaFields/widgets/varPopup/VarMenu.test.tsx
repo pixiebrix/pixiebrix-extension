@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render, screen } from "../../../../../pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 import React, { type MutableRefObject } from "react";
-import VarMenu from "./VarMenu";
+import VarMenu from "@/components/fields/schemaFields/widgets/varPopup/VarMenu";
 import {
   draftModStateFactory,
   formStateFactory,
-} from "../../../../../testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "../../../../../pageEditor/store/editor/editorSlice";
-import { waitForEffect } from "../../../../../testUtils/testHelpers";
+} from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import analysisSlice from "@/analysis/analysisSlice";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";

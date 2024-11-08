@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type TemplateEngine,
   type BrickArgs,
   type BrickOptions,
-} from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import Mustache from "mustache";
 import { BusinessError } from "@/errors/businessErrors";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Transformer that fills a template using the current context.

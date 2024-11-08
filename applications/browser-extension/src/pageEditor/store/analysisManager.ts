@@ -22,11 +22,11 @@ import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
 import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
-import { type UUID } from "../../types/stringTypes";
-import { type TraceRecord } from "../../telemetry/trace";
+import { type UUID } from "@/types/stringTypes";
+import { type TraceRecord } from "@/telemetry/trace";
 import { isAnyOf, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "./editor/pageEditorTypes";
-import { actions as editorActions } from "./editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import runtimeSlice from "./runtime/runtimeSlice";
 import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
@@ -39,17 +39,17 @@ import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalys
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentRef,
-} from "./editor/editorSelectors";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import { selectGetDraftFormStatesPromiseForModId } from "../starterBricks/adapter";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { selectGetDraftFormStatesPromiseForModId } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
-import { inspectedTab } from "../context/connection";
+import { inspectedTab } from "@/pageEditor/context/connection";
 import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
-import { StateNamespaces } from "../../platform/state/stateTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { StateNamespaces } from "@/platform/state/stateTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const runtimeActions = runtimeSlice.actions;
 

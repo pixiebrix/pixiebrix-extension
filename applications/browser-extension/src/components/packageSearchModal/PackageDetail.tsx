@@ -1,12 +1,12 @@
 import React from "react";
-import { type MarketplaceListing } from "../../types/contract";
+import { type MarketplaceListing } from "@/types/contract";
 import { Button } from "react-bootstrap";
-import PackageIcon from "../PackageIcon";
+import PackageIcon from "@/components/PackageIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import SchemaTree from "../schemaTree/SchemaTree";
-import { type PackageInstance } from "../../types/registryTypes";
-import { MARKETPLACE_URL } from "../../urlConstants";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
+import { type PackageInstance } from "@/types/registryTypes";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 type PackageDetailProps<Instance extends PackageInstance> = {
   packageInstance: Instance;

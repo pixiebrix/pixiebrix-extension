@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { reloadFrameMods } from "@/contentScript/lifecycle";
-import { expectContext } from "../../utils/expectContext";
-import { EffectABC } from "../../types/bricks/effectTypes";
+import { expectContext } from "@/utils/expectContext";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { type JsonObject } from "type-fest";
 
 export class ReactivateEffect extends EffectABC {

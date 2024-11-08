@@ -16,13 +16,10 @@
  */
 
 import { type BrickPipeline } from "@/bricks/types";
-import { type ApiVersionOptions } from "../../runtime/apiVersionOptions";
-import { type UUID } from "../../types/stringTypes";
-import { type MessageContext } from "../../types/loggerTypes";
-import {
-  type RunMetadata,
-  type BrickArgsContext,
-} from "../../types/runtimeTypes";
+import { type ApiVersionOptions } from "@/runtime/apiVersionOptions";
+import { type UUID } from "@/types/stringTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RunMetadata, type BrickArgsContext } from "@/types/runtimeTypes";
 
 export type RunPipelineParams = {
   nonce: UUID;

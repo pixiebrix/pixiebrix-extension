@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import * as session from "@/contentScript/context";
 import { getExtensionAuth } from "@/auth/authStorage";
 import { type JsonObject } from "type-fest";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 class SessionReader extends ReaderABC {
   override defaultOutputKey = "session";

@@ -16,15 +16,15 @@
  */
 
 import { mapValues, pickBy } from "lodash";
-import { type BrickConfig, type BrickPipeline } from "./types";
-import brickRegistry from "./registry";
-import pipelineSchema from "../../schemas/pipeline.json";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import brickRegistry from "@/bricks/registry";
+import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Brick } from "@/types/brickTypes";
 import BrickIdVisitor from "@/analysis/analysisVisitors/brickIdVisitor";
-import { removeUndefined } from "../utils/objectUtils";
-import { toExpression } from "../utils/expressionUtils";
+import { removeUndefined } from "@/utils/objectUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 /**
  * Return true if the given registry id corresponds to a built-in package.

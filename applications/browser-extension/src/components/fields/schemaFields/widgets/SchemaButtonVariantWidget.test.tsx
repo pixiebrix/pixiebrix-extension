@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import SchemaButtonVariantWidget from "./SchemaButtonVariantWidget";
-import { render, screen } from "../../../../pageEditor/testHelpers";
-import { type Schema } from "../../../../types/schemaTypes";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { type Schema } from "@/types/schemaTypes";
 // eslint-disable-next-line no-restricted-imports -- Required for testing
 import { Formik } from "formik";
 import selectEvent from "react-select-event";

@@ -16,33 +16,33 @@
  */
 
 import React from "react";
-import SetupPage from "./SetupPage";
+import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import { act, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import userEvent from "@testing-library/user-event";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import {
   INTERNAL_reset as resetManagedStorage,
   readManagedStorage,
-} from "../../../store/enterprise/managedStorage";
-import { render } from "../../testHelpers";
-import settingsSlice from "../../../store/settings/settingsSlice";
+} from "@/store/enterprise/managedStorage";
+import { render } from "@/extensionConsole/testHelpers";
+import settingsSlice from "@/store/settings/settingsSlice";
 import {
   mockAnonymousMeApiResponse,
   mockAuthenticatedMeApiResponse,
-} from "../../../testUtils/userMock";
-import { meWithPartnerApiResponseFactory } from "../../../testUtils/factories/authFactories";
-import notify from "../../../utils/notify";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "../../../integrations/constants";
+} from "@/testUtils/userMock";
+import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
+import notify from "@/utils/notify";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
-import reportError from "../../../telemetry/reportError";
+import reportError from "@/telemetry/reportError";
 
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.
-jest.mock("../../../utils/notify");
-jest.mock("../../../telemetry/reportError");
-jest.mock("../../../auth/deploymentKey");
+jest.mock("@/utils/notify");
+jest.mock("@/telemetry/reportError");
+jest.mock("@/auth/deploymentKey");
 
 const notifySuccessMock = jest.mocked(notify.success);
 const notifyWarnMock = jest.mocked(notify.warning);
@@ -59,7 +59,7 @@ jest.mock("p-memoize", () => {
   };
 });
 
-jest.mock("../../../data/service/baseService", () => ({
+jest.mock("@/data/service/baseService", () => ({
   getBaseURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 

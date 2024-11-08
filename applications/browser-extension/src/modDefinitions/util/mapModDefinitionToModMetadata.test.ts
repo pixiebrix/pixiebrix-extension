@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import mapModDefinitionToModMetadata from "./mapModDefinitionToModMetadata";
-import { modDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 describe("mapModDefinitionToModMetadata", () => {
   it("picks metadata correctly for mod definition", () => {

@@ -15,15 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { buildNewMod, type ModParts } from "../panes/save/saveHelpers";
-import reportEvent from "../../telemetry/reportEvent";
+import {
+  buildNewMod,
+  type ModParts,
+} from "@/pageEditor/panes/save/saveHelpers";
+import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
-import { Events } from "../../telemetry/events";
+import { Events } from "@/telemetry/events";
 import { BusinessError } from "@/errors/businessErrors";
-import useCheckModStarterBrickInvariants from "./useCheckModStarterBrickInvariants";
-import useCompareModComponentCounts from "./useCompareModComponentCounts";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { type JsonObject } from "type-fest";
-import { type UnsavedModDefinition } from "../../types/modDefinitionTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 type UseBuildAndValidateModReturn = {
   buildAndValidateMod: (modParts: ModParts) => Promise<UnsavedModDefinition>;

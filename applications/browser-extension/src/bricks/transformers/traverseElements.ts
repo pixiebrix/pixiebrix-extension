@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type ElementReference,
-} from "../../types/runtimeTypes";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const traversalTypes = [
   "closest",

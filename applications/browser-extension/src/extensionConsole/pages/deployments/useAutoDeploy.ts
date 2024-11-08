@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { activateDeployments } from "./activateDeployments";
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
-import useModPermissions from "../../../mods/hooks/useModPermissions";
-import notify from "../../../utils/notify";
+import useModPermissions from "@/mods/hooks/useModPermissions";
+import notify from "@/utils/notify";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
-import type { ActivatableDeployment } from "../../../types/deploymentTypes";
-import type { Nullishable } from "../../../utils/nullishUtils";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
-import type { ModInstance } from "../../../types/modInstanceTypes";
-import { type AppDispatch } from "../../store";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 type UseAutoDeployReturn = {
   /**

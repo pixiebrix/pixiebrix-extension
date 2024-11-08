@@ -27,15 +27,15 @@ import {
   type DocumentBuilderElement,
   isButtonElement,
   isListElement,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import AddElementAction from "./AddElementAction";
-import { getAllowedChildTypes } from "../allowedElementTypes";
+import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
-import { SCROLL_TO_HEADER_NODE_EVENT } from "../../tabs/editTab/editorNodes/PipelineHeaderNode";
+import { SCROLL_TO_HEADER_NODE_EVENT } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { useDispatch, useSelector } from "react-redux";
-import { actions } from "../../store/editor/editorSlice";
-import { selectActiveNodeId } from "../../store/editor/editorSelectors";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectActiveNodeId } from "@/pageEditor/store/editor/editorSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT =
   "scroll-to-document-preview-element";

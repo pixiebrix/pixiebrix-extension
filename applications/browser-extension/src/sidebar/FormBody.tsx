@@ -20,7 +20,7 @@ import { type FormPanelEntry } from "@/types/sidebarTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { getConnectedTarget } from "./connectedTarget";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 
 import { createFrameSource } from "@/contentScript/ephemeralForm";
 

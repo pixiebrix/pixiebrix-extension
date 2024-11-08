@@ -24,37 +24,37 @@ import {
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import { persistModComponentOptionsConfig } from "../store/modComponents/modComponentStorage";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
-import { persistSettingsConfig } from "../store/settings/settingsStorage";
-import settingsSlice from "../store/settings/settingsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/data/service/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
   type IntegrationsState,
   persistIntegrationsConfig,
-} from "../integrations/store/integrationsSlice";
-import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
-import { boolean } from "../utils/typeUtils";
+} from "@/integrations/store/integrationsSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { boolean } from "@/utils/typeUtils";
 import defaultMiddlewareConfig, {
   defaultCreateStateSyncMiddlewareConfig,
-} from "../store/defaultMiddlewareConfig";
-import { sessionChangesMiddleware } from "../store/sessionChanges/sessionChangesListenerMiddleware";
+} from "@/store/defaultMiddlewareConfig";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
 import {
   persistSessionChangesConfig,
   sessionChangesSlice,
   sessionChangesStateSyncActions,
-} from "../store/sessionChanges/sessionChangesSlice";
-import sessionSlice from "../pageEditor/store/session/sessionSlice";
+} from "@/store/sessionChanges/sessionChangesSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { type AuthState } from "@/auth/authTypes";
-import { type ModDefinitionsState } from "../modDefinitions/modDefinitionsTypes";
-import { type SessionState } from "../pageEditor/store/session/sessionSliceTypes";
-import { type SessionChangesState } from "../store/sessionChanges/sessionChangesTypes";
-import { type SettingsState } from "../store/settings/settingsTypes";
+import { type ModDefinitionsState } from "@/modDefinitions/modDefinitionsTypes";
+import { type SessionState } from "@/pageEditor/store/session/sessionSliceTypes";
+import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import { type SidebarState } from "@/types/sidebarTypes";
-import { persistSidebarConfig } from "../store/sidebar/sidebarStorage";
+import { persistSidebarConfig } from "@/store/sidebar/sidebarStorage";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

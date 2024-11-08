@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "../../types/runtimeTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
-import { extraEmptyModStateContext } from "../extendModVariableContext";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();

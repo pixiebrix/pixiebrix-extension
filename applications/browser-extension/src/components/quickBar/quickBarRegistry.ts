@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
-import { type RegistryId } from "../../types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import { pull, remove } from "lodash";
 import {
   type ActionGenerator,
   type GeneratorArgs,
-} from "./quickbarTypes";
-import { allSettled } from "../../utils/promiseUtils";
+} from "@/components/quickBar/quickbarTypes";
+import { allSettled } from "@/utils/promiseUtils";
 import { ReusableAbortController } from "abort-utils";
 import type {
   CustomAction,
   QuickBarProtocol,
-} from "../../platform/platformTypes/quickBarProtocol";
-import { SimpleEventTarget } from "../../utils/SimpleEventTarget";
+} from "@/platform/platformTypes/quickBarProtocol";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 class QuickBarRegistry implements QuickBarProtocol {
   /**

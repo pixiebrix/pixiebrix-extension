@@ -24,7 +24,7 @@ import {
   type FormControlProps,
   InputGroup,
 } from "react-bootstrap";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -17,9 +17,9 @@
 
 import { isUnavailableMod, normalizeModOptionsDefinition } from "./modUtils";
 import { type UnavailableMod } from "@/types/modTypes";
-import { defaultModDefinitionFactory } from "../testUtils/factories/modDefinitionFactories";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
-import { freeze } from "./objectUtils";
+import { freeze } from "@/utils/objectUtils";
 
 describe("isUnavailableMod", () => {
   it("returns false for a recipe definition", () => {

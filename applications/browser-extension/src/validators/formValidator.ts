@@ -16,7 +16,7 @@
  */
 
 import { type OutputUnit, type Schema, Validator } from "@cfworker/json-schema";
-import draft07 from "../../schemas/draft-07.json";
+import draft07 from "@schemas/draft-07.json";
 
 import {
   createErrorHandler,
@@ -39,7 +39,7 @@ import {
   type GenericObjectType,
 } from "@rjsf/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * A RJSF FormValidator that uses @cfworker/json-schema for validation that works in contexts that disallow

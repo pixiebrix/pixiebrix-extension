@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import properEvent from "proper-event";
 import { type JsonObject } from "type-fest";
-import { type UiSchema, type Schema } from "../../types/schemaTypes";
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { validateRegistryId } from "../../types/helpers";
-import type { PlatformCapability } from "../../platform/capabilities";
+import { type UiSchema, type Schema } from "@/types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { validateRegistryId } from "@/types/helpers";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 class CustomEventEffect extends EffectABC {
   public static BRICK_ID = validateRegistryId("@pixiebrix/event");

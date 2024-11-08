@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Nullishable } from "../../utils/nullishUtils";
-import type { ModComponentRef } from "../../types/modComponentTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { ModComponentRef } from "@/types/modComponentTypes";
 
 /**
  * Protocol for a badge displayed in the context. For the extension, corresponds to the browser action badge.

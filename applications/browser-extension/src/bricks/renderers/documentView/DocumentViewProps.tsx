@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentBuilderElement } from "../../../pageEditor/documentBuilder/documentBuilderTypes";
-import { type SubmitPanelAction } from "../../errors";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import {
   type BrickArgsContext,
   type BrickOptions,
   type RunMetadata,
-} from "../../../types/runtimeTypes";
+} from "@/types/runtimeTypes";
 
 export type DocumentViewProps = {
   /**

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useDeriveAsyncState from "./useDeriveAsyncState";
-import { renderHook } from "@testing-library/react-hooks";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import pDefer from "p-defer";
-import useAsyncState from "./useAsyncState";
-import { waitForEffect } from "../testUtils/testHelpers";
+import useAsyncState from "@/hooks/useAsyncState";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
+import { waitFor } from "@testing-library/react";
 
 describe("useDeriveAsyncState", () => {
   it("should handle empty args", async () => {
@@ -36,17 +36,17 @@ describe("useDeriveAsyncState", () => {
       isUninitialized: true,
     });
 
-    await wrapper.waitForNextUpdate();
-
-    expect(wrapper.result.current).toEqual({
-      isFetching: false,
-      isLoading: false,
-      currentData: 42,
-      data: 42,
-      error: undefined,
-      isError: false,
-      isSuccess: true,
-      isUninitialized: false,
+    await waitFor(() => {
+      expect(wrapper.result.current).toEqual({
+        isFetching: false,
+        isLoading: false,
+        currentData: 42,
+        data: 42,
+        error: undefined,
+        isError: false,
+        isSuccess: true,
+        isUninitialized: false,
+      });
     });
   });
 
@@ -71,29 +71,29 @@ describe("useDeriveAsyncState", () => {
 
     dependency.resolve(42);
 
-    await waitForEffect();
-
-    expect(wrapper.result.current).toEqual({
-      isFetching: false,
-      isLoading: false,
-      currentData: 42,
-      data: 42,
-      error: undefined,
-      isError: false,
-      isSuccess: true,
-      isUninitialized: false,
+    await waitFor(() => {
+      expect(wrapper.result.current).toEqual({
+        isFetching: false,
+        isLoading: false,
+        currentData: 42,
+        data: 42,
+        error: undefined,
+        isError: false,
+        isSuccess: true,
+        isUninitialized: false,
+      });
     });
   });
 
   it("should handle upstream error", async () => {
     const dependency = pDefer<number>();
 
-    const wrapper = renderHook(() => {
+    const { result } = renderHook(() => {
       const state = useAsyncState(dependency.promise, []);
       return useDeriveAsyncState(state, async (x: number) => x);
     });
 
-    expect(wrapper.result.current).toEqual({
+    expect(result.current).toEqual({
       isFetching: true,
       isLoading: true,
       currentData: undefined,
@@ -106,17 +106,17 @@ describe("useDeriveAsyncState", () => {
 
     dependency.reject(new Error("Test Error"));
 
-    await waitForEffect();
-
-    expect(wrapper.result.current).toEqual({
-      isFetching: false,
-      isLoading: false,
-      currentData: undefined,
-      data: undefined,
-      error: expect.toBeObject(),
-      isError: true,
-      isSuccess: false,
-      isUninitialized: false,
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        isFetching: false,
+        isLoading: false,
+        currentData: undefined,
+        data: undefined,
+        error: expect.toBeObject(),
+        isError: true,
+        isSuccess: false,
+        isUninitialized: false,
+      });
     });
   });
 });

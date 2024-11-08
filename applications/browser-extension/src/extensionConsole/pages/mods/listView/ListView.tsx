@@ -19,10 +19,10 @@ import React, { createRef, useCallback, useEffect, useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import ListItem from "./ListItem";
 import { VariableSizeList as List } from "react-window";
-import ListGroupHeader from "./ListGroupHeader";
-import ListItemErrorBoundary from "./ListItemErrorBoundary";
-import { type ModsPageContentProps } from "../modsPageTypes";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
+import ListGroupHeader from "@/extensionConsole/pages/mods/listView/ListGroupHeader";
+import ListItemErrorBoundary from "@/extensionConsole/pages/mods/listView/ListItemErrorBoundary";
+import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/modsPageTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ROW_HEIGHT_PX = 90;
 const HEADER_ROW_HEIGHT_PX = 43;

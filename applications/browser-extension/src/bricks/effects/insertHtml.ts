@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import sanitize from "../../utils/sanitize";
-import { PIXIEBRIX_DATA_ATTR } from "../../domConstants";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import sanitize from "@/utils/sanitize";
+import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { escape } from "lodash";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import { $safeFind } from "../../utils/domUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { validateRegistryId } from "../../types/helpers";
+import { $safeFind } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { validateRegistryId } from "@/types/helpers";
 
 type Position = "before" | "prepend" | "append" | "after";
 

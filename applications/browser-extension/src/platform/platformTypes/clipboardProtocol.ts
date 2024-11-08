@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { writeToClipboard } from "../../utils/clipboardUtils";
+import type { writeToClipboard } from "@/utils/clipboardUtils";
 
 /**
  * Protocol for writing to the clipboard.

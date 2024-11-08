@@ -18,7 +18,7 @@
 import React from "react";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import LayoutWidget from "@/components/LayoutWidget";
-import useMoveWithinParent from "../hooks/useMoveWithinParent";
+import useMoveWithinParent from "@/pageEditor/documentBuilder/hooks/useMoveWithinParent";
 
 type MoveElementProps = {
   documentBodyName: string;

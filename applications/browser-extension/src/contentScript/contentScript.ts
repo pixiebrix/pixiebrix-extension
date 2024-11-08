@@ -22,9 +22,12 @@
 import "./contentScript.scss";
 import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
-import { getContentScriptState, setContentScriptState } from "./ready";
+import {
+  getContentScriptState,
+  setContentScriptState,
+} from "@/contentScript/ready";
 import { onContextInvalidated } from "webext-events";
-import { logPromiseDuration } from "../utils/promiseUtils";
+import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { type Runtime } from "webextension-polyfill";
 

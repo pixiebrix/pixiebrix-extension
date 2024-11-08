@@ -16,12 +16,12 @@
  */
 
 import { flagOn } from "@/auth/featureFlagStorage";
-import { reportToApplicationErrorTelemetry } from "./reportToApplicationErrorTelemetry";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 import { serializeError } from "serialize-error";
 import Reason = chrome.offscreen.Reason;
 import { FeatureFlags, type FeatureFlag } from "@/auth/featureFlags";
 
-jest.mock("../auth/featureFlagStorage", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
@@ -36,7 +36,7 @@ global.chrome = {
   },
 };
 
-jest.mock("./telemetryHelpers", () => ({
+jest.mock("@/telemetry/telemetryHelpers", () => ({
   ...jest.requireActual("@/telemetry/telemetryHelpers"),
   mapAppUserToTelemetryUser: jest.fn().mockResolvedValue({}),
 }));

@@ -16,9 +16,9 @@
  */
 
 import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
-import { type PipelineFooterNodeProps } from "../../editorNodes/PipelineFooterNode";
-import { type PipelineHeaderNodeProps } from "../../editorNodes/PipelineHeaderNode";
-import { type BrickNodeProps } from "../../editTabTypes";
+import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
+import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
+import { type BrickNodeProps } from "@/pageEditor/tabs/editTab/editTabTypes";
 
 export type EditorNodeProps =
   | (BrickNodeProps & { type: "brick"; key: string })

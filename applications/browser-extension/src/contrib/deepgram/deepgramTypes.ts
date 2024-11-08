@@ -18,9 +18,9 @@
 import type {
   IntegrationConfig,
   SecretsConfig,
-} from "../../integrations/integrationTypes";
-import { assertNotNullish, type Nullishable } from "../../utils/nullishUtils";
-import { validateRegistryId } from "../../types/helpers";
+} from "@/integrations/integrationTypes";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { validateRegistryId } from "@/types/helpers";
 
 export const DEEPGRAM_INTEGRATION_ID = validateRegistryId("deepgram/api");
 

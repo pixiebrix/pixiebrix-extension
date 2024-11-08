@@ -21,16 +21,16 @@ import React, { useMemo } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import marketplaceImage from "../../../../../img/marketplace.svg";
+import marketplaceImage from "@img/marketplace.svg";
 import useOnboarding, {
   type OnboardingType,
-} from "./useOnboarding";
-import modsPageSlice from "../modsPageSlice";
+} from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useDispatch } from "react-redux";
-import workshopImage from "../../../../../img/workshop.svg";
-import { MODS_PAGE_TABS } from "../ModsPageSidebar";
+import workshopImage from "@img/workshop.svg";
+import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 
-import { MARKETPLACE_URL } from "../../../../urlConstants";
+import { MARKETPLACE_URL } from "@/urlConstants";
 
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">

@@ -17,26 +17,26 @@
 
 import { useGetMeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
-import { selectAuth } from "./authSelectors";
-import { selectIntegrationConfigs } from "../integrations/store/integrationsSelectors";
-import { selectSettings } from "../store/settings/settingsSelectors";
+import { selectAuth } from "@/auth/authSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
-import { type SettingsState } from "../store/settings/settingsTypes";
-import useManagedStorageState from "../store/enterprise/useManagedStorageState";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../integrations/constants";
-import useLinkState from "./useLinkState";
-import usePartnerAuthData from "./usePartnerAuthData";
-import { type Nullishable } from "../utils/nullishUtils";
+} from "@/integrations/constants";
+import useLinkState from "@/auth/useLinkState";
+import usePartnerAuthData from "@/auth/usePartnerAuthData";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { type UserPartner } from "@/data/model/UserPartner";
 import { type ControlRoom } from "@/data/model/ControlRoom";
 import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getDeploymentKey } from "./deploymentKey";
-import { getExtensionToken } from "./authStorage";
+import { getDeploymentKey } from "@/auth/deploymentKey";
+import { getExtensionToken } from "@/auth/authStorage";
 
 /**
  * Map from partner keys to partner service IDs

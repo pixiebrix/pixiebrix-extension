@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentState } from "./modComponentTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
 
 export const initialState: ModComponentState = {
   activatedModComponents: [],

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateUUID } from "../../types/helpers";
-import { type Timestamp, type UUID } from "../../types/stringTypes";
-import { type components } from "../../types/swagger";
+import { validateUUID } from "@/types/helpers";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type components } from "@/types/swagger";
 import { type SetRequired } from "type-fest";
 
 export type TeamMembershipUser = {

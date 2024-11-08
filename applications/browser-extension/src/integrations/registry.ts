@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "../registry/memoryRegistry";
-import { fromJS } from "./UserDefinedIntegration";
-import { type IntegrationABC } from "./integrationTypes";
+import BaseRegistry from "@/registry/memoryRegistry";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import { type IntegrationABC } from "@/integrations/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static

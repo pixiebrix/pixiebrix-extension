@@ -16,7 +16,7 @@
  */
 
 import { define } from "cooky-cutter";
-import { type SiteSelectorHint } from "../../utils/inference/siteSelectorHints";
+import { type SiteSelectorHint } from "@/utils/inference/siteSelectorHints";
 
 export const siteSelectorHintFactory = define<SiteSelectorHint>({
   siteName: "testSite",

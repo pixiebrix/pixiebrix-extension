@@ -18,20 +18,20 @@
 import { Card } from "react-bootstrap";
 import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import notify from "../../../utils/notify";
-import { clearPackages } from "../../../registry/memoryRegistry";
+import notify from "@/utils/notify";
+import { clearPackages } from "@/registry/memoryRegistry";
 import { clearLogs } from "@/background/messenger/api";
-import { sessionChangesActions } from "../../../store/sessionChanges/sessionChangesSlice";
+import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
 import AsyncButton from "@/components/AsyncButton";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useModals } from "@/components/ConfirmationModal";
 import { type Permissions } from "webextension-polyfill";
 import { extractAdditionalPermissions } from "webext-permissions";
-import { selectSessionId } from "../../../pageEditor/store/session/sessionSelectors";
-import { revertAll } from "../../../store/commonActions";
-import ReduxPersistenceContext from "../../../store/ReduxPersistenceContext";
-import { allSettled } from "../../../utils/promiseUtils";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import { revertAll } from "@/store/commonActions";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import { allSettled } from "@/utils/promiseUtils";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 
 async function revokeAllAdditionalPermissions() {

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "../../../types/schemaTypes";
-import { isLabelledEnumField } from "./fieldTypeCheckers";
+import { type Schema } from "@/types/schemaTypes";
+import { isLabelledEnumField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { compact, uniqBy } from "lodash";
-import { type StringOptionsType } from "./widgets/SchemaSelectWidget";
+import { type StringOptionsType } from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 
 /**
  * Return the options for a SelectWidget based on the schema and user input.

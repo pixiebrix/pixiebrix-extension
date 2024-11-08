@@ -16,7 +16,7 @@
  */
 
 import { type CssSelectorMatch } from "css-selector-generator/types/types.js";
-import { getAttributeSelectorRegex } from "./selectorInferenceUtils";
+import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
 
 /**
  * A template/stencil for generating selectors on an application.

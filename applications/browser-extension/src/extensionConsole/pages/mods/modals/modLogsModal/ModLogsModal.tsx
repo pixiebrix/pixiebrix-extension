@@ -22,9 +22,9 @@ import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import LogCard from "@/components/logViewer/LogCard";
 import { logActions } from "@/components/logViewer/logSlice";
-import { modModalsSlice } from "../modModalsSlice";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import ModalLayout from "@/components/ModalLayout";
-import { selectShowLogsContext } from "../modModalsSelectors";
+import { selectShowLogsContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 
 const ModLogsModal: React.FunctionComponent = () => {
   const dispatch = useDispatch();

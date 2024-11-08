@@ -16,12 +16,12 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { partial } from "lodash";
 import React from "react";
-import databaseSchema from "../../../schemas/database.json";
-import { joinName } from "../../utils/formUtils";
-import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "../../integrations/constants";
+import databaseSchema from "@schemas/database.json";
+import { joinName } from "@/utils/formUtils";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
 
 const keySchema: Schema = {
   type: "string",

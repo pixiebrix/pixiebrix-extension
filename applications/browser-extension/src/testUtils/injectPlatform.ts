@@ -16,24 +16,18 @@
  */
 
 /**
- * @file Test utilities for injecting registries into the runtime.
- * @since 1.8.2 inject the brick registry into the runtime
+ * @file Test utilities for injecting platform into the runtime.
  * @since 1.8.10 set the ambient platform dynamically
  */
 
-import brickRegistry from "@/bricks/registry";
-import { initRuntime } from "../runtime/reducePipeline";
-import { setPlatform } from "../platform/platformContext";
-
-// Since 1.8.2, the runtime is decoupled from the brick registry.
-initRuntime(brickRegistry);
+import { setPlatform } from "@/platform/platformContext";
 
 // Use beforeEach so individual tests can cleanly override the ambient platform
 beforeEach(async () => {
   // Use contentScriptPlatform as the default because it covers the most functionality
   // Perform dynamic import to ensure the mocks defined in the test file take precedence.
   const { default: contentScriptPlatform } = await import(
-    "../contentScript/contentScriptPlatform"
+    "@/contentScript/contentScriptPlatform"
   );
 
   // Since 1.8.10, we set an ambient platform

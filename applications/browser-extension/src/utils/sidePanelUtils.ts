@@ -18,7 +18,7 @@
 /** @file This file contains utilities to deal with the sidePanel from other contexts */
 
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { forbidContext, isBrowserSidebarTopFrame } from "./expectContext";
+import { forbidContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
 import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect";
 import { type ModComponentRef } from "@/types/modComponentTypes";

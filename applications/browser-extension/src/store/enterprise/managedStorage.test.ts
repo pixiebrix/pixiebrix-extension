@@ -20,8 +20,8 @@ import {
   INTERNAL_reset,
   readManagedStorage,
   readManagedStorageByKey,
-} from "./managedStorage";
-import { timestampFactory } from "../../testUtils/factories/stringFactories";
+} from "@/store/enterprise/managedStorage";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
 
 beforeEach(async () => {
   jest.clearAllMocks();

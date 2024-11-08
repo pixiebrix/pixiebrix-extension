@@ -19,17 +19,17 @@ import React, { useContext, useState } from "react";
 import { type BrickPipeline } from "@/bricks/types";
 import AsyncButton, { type AsyncButtonProps } from "@/components/AsyncButton";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
-import { uuidv4 } from "../../../types/helpers";
-import DocumentContext from "./DocumentContext";
+import { uuidv4 } from "@/types/helpers";
+import DocumentContext from "@/pageEditor/documentBuilder/render/DocumentContext";
 import { type Except } from "type-fest";
-import apiVersionOptions from "../../../runtime/apiVersionOptions";
-import { type DynamicPath } from "../documentBuilderTypes";
-import { getConnectedTarget } from "../../../sidebar/connectedTarget";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { type DynamicPath } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/bricks/errors";
 import cx from "classnames";
-import { boolean } from "../../../utils/typeUtils";
-import { mapPathToTraceBranches } from "../utils";
+import { boolean } from "@/utils/typeUtils";
+import { mapPathToTraceBranches } from "@/pageEditor/documentBuilder/utils";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BrickPipeline;

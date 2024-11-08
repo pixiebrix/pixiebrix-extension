@@ -22,18 +22,18 @@ import Form, { type OnSubmit } from "./Form";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import ConnectedFieldTemplate from "./ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, {
   type Option,
-} from "./widgets/SelectWidget";
+} from "@/components/form/widgets/SelectWidget";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form as BootstrapForm } from "react-bootstrap";
 import { type CustomFieldWidget } from "./FieldTemplate";
-import createMenuListWithAddButton from "./widgets/createMenuListWithAddButton";
+import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
 import { range } from "lodash";
 import SwitchButtonWidget from "./widgets/switchButton/SwitchButtonWidget";
 import { Provider } from "react-redux";
-import { editorStore } from "../../testUtils/storyUtils";
+import { editorStore } from "@/testUtils/storyUtils";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",

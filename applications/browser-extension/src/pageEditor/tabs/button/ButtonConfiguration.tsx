@@ -17,19 +17,21 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TemplateWidget, { type Snippet } from "../../fields/TemplateWidget";
-import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
+import TemplateWidget, {
+  type Snippet,
+} from "@/pageEditor/fields/TemplateWidget";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
 import IconWidget from "@/components/fields/IconWidget";
-import LocationWidget from "../../fields/LocationWidget";
+import LocationWidget from "@/pageEditor/fields/LocationWidget";
 import SelectWidget, {
   type Option,
 } from "@/components/form/widgets/SelectWidget";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import MatchRulesSection from "../MatchRulesSection";
-import ExtraPermissionsSection from "../ExtraPermissionsSection";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
 import { useField } from "formik";
 import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
 const buttonSnippets: Snippet[] = [

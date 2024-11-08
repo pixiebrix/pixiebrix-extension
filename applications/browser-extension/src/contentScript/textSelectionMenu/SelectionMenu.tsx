@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./SelectionMenu.scss";
+import "@/contentScript/textSelectionMenu/SelectionMenu.scss";
 import React from "react";
-import Icon from "../../icons/Icon";
-import { splitStartingEmoji } from "../../utils/stringUtils";
+import Icon from "@/icons/Icon";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 import { truncate } from "lodash";
 import useDocumentSelection from "@/hooks/useDocumentSelection";
-import type { Nullishable } from "../../utils/nullishUtils";
-import { getSelection } from "../../utils/selectionController";
-import { type RegisteredAction } from "./ActionRegistry";
-import type ActionRegistry from "./ActionRegistry";
-import useActionRegistry from "./useActionRegistry";
+import type { Nullishable } from "@/utils/nullishUtils";
+import { getSelection } from "@/utils/selectionController";
+import { type RegisteredAction } from "@/contentScript/textSelectionMenu/ActionRegistry";
+import type ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import useActionRegistry from "@/contentScript/textSelectionMenu/useActionRegistry";
 
 const ICON_SIZE_PX = 16;
 

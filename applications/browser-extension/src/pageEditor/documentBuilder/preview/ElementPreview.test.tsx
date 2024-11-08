@@ -20,19 +20,21 @@ import {
   DOCUMENT_BUILDER_ELEMENT_TYPES,
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
-} from "../documentBuilderTypes";
-import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
-import ElementPreview, { type ElementPreviewProps } from "./ElementPreview";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import ElementPreview, {
+  type ElementPreviewProps,
+} from "@/pageEditor/documentBuilder/preview/ElementPreview";
 import { fireEvent, screen } from "@testing-library/react";
 import { defaultBrickConfig } from "@/bricks/util";
 import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
-import { type PipelineExpression } from "../../../types/runtimeTypes";
-import { render } from "../../testHelpers";
-import { actions } from "../../store/editor/editorSlice";
+import { type PipelineExpression } from "@/types/runtimeTypes";
+import { render } from "@/pageEditor/testHelpers";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../../testUtils/factories/brickFactories";
-import { validateRegistryId } from "../../../types/helpers";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { validateRegistryId } from "@/types/helpers";
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 

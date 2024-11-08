@@ -17,13 +17,13 @@
 
 import React, { useMemo } from "react";
 import { uniq } from "lodash";
-import { selectOptionalPermissions } from "../../../permissions/permissionsUtils";
+import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
 import useReportError from "@/hooks/useReportError";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type AsyncState } from "../../../types/sliceTypes";
-import { type PermissionsStatus } from "../../../permissions/permissionsTypes";
+import { type AsyncState } from "@/types/sliceTypes";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import { defaultInitialValue } from "../../../utils/asyncStateUtils";
+import { defaultInitialValue } from "@/utils/asyncStateUtils";
 
 const noRequiredPermissions = {
   hasPermissions: true,

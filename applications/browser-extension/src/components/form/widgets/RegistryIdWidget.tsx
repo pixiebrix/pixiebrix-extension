@@ -22,15 +22,15 @@ import { selectEditableScopes, selectScope } from "@/auth/authSelectors";
 import SelectWidget, {
   type Option,
   type SelectWidgetOnChange,
-} from "./SelectWidget";
-import { type RegistryId } from "../../../types/registryTypes";
+} from "@/components/form/widgets/SelectWidget";
+import { type RegistryId } from "@/types/registryTypes";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import styles from "./RegistryIdWidget.module.scss";
 import { type StylesConfig } from "react-select";
-import { getScopeAndId } from "../../../utils/registryUtils";
+import { getScopeAndId } from "@/utils/registryUtils";
 import useAsyncEffect from "use-async-effect";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const emptyObject = {} as const;
 

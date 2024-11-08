@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Nullishable } from "../../../utils/nullishUtils";
-import type { IconStringDefinition } from "../../../types/contract";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { IconStringDefinition } from "@/types/contract";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 export function useAsyncIcon(

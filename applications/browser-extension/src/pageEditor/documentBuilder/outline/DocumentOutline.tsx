@@ -17,7 +17,7 @@
 
 import { useField } from "formik";
 import React, { useCallback, useMemo, useState } from "react";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import Tree, {
   type ItemId,
   type RenderItemParams,
@@ -25,14 +25,16 @@ import Tree, {
   type TreeSourcePosition,
 } from "@atlaskit/tree";
 import { useDispatch, useSelector } from "react-redux";
-import { type RootState } from "../../store/editor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "../../store/editor/editorSelectors";
-import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
-import { actions } from "../../store/editor/editorSlice";
-import { selectTreeData } from "./outlineHelpers";
-import OutlineItem, { LEVEL_PADDING_PX } from "./OutlineItem";
-import useMoveElement from "../hooks/useMoveElement";
-import useDeleteElement from "../hooks/useDeleteElement";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { selectTreeData } from "@/pageEditor/documentBuilder/outline/outlineHelpers";
+import OutlineItem, {
+  LEVEL_PADDING_PX,
+} from "@/pageEditor/documentBuilder/outline/OutlineItem";
+import useMoveElement from "@/pageEditor/documentBuilder/hooks/useMoveElement";
+import useDeleteElement from "@/pageEditor/documentBuilder/hooks/useDeleteElement";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 type DocumentOutlineProps = {

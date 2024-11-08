@@ -21,18 +21,18 @@ import {
   createSitePattern,
   HTTPS_PATTERN,
   SITES_PATTERN,
-} from "../../../../permissions/patterns";
+} from "@/permissions/patterns";
 import { useField, useFormikContext } from "formik";
-import { LinkButton } from "../../../LinkButton";
-import ArrayWidget from "./ArrayWidget";
-import FieldRuntimeContext from "../FieldRuntimeContext";
-import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "../../../../pageEditor/starterBricks/base";
+import { LinkButton } from "@/components/LinkButton";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 import {
   type Shortcut,
   type UrlMatchPatternWidgetProps,
 } from "./urlMatchPatternWidgetTypes";
-import { type ModComponentFormState } from "../../../../pageEditor/starterBricks/formStateTypes";
-import { getCurrentInspectedURL } from "../../../../pageEditor/context/connection";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;

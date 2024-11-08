@@ -16,9 +16,9 @@
  */
 
 import { uniqBy } from "lodash";
-import { type AttributeExample } from "./types";
+import { type AttributeExample } from "@/contentScript/pageEditor/types";
 
-import { $safeFind } from "../../utils/domUtils";
+import { $safeFind } from "@/utils/domUtils";
 
 /**
  * Returns attributes available an _any_ of the elements matching the selector. Returns the first example per attribute.

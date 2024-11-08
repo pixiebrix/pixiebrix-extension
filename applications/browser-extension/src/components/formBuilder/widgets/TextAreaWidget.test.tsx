@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import TextAreaWidget from "./TextAreaWidget";
-import { render, screen } from "../../../sidebar/testHelpers";
-import RjsfSubmitContext from "../RjsfSubmitContext";
+import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
+import { render, screen } from "@/sidebar/testHelpers";
+import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import userEvent from "@testing-library/user-event";
 
 describe("TextAreaWidget", () => {

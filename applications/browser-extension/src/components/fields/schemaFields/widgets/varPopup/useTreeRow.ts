@@ -16,7 +16,7 @@
  */
 
 import { type MutableRefObject, useEffect } from "react";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * A hack to make JSON Tree rows clickable/highlightable.

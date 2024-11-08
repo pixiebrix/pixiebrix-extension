@@ -18,20 +18,17 @@
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
-} from "../../starterBricks/types";
-import { type StarterBrickType } from "../../types/starterBrickTypes";
+} from "@/starterBricks/types";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type Except } from "type-fest";
 import {
   type ButtonDefinition,
   type ButtonStarterBrickConfig,
-} from "../../starterBricks/button/buttonStarterBrickTypes";
-import { type ElementInfo } from "../../utils/inference/selectorTypes";
-import { type ModComponentBase } from "../../types/modComponentTypes";
-import { type UUID } from "../../types/stringTypes";
-import {
-  type ApiVersion,
-  type BrickArgsContext,
-} from "../../types/runtimeTypes";
+} from "@/starterBricks/button/buttonStarterBrickTypes";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 
 export interface DraftModComponent<

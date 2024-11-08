@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MemoryRegistry from "../registry/memoryRegistry";
-import { fromJS } from "./transformers/brickFactory";
-import { type BrickType } from "../runtime/runtimeTypes";
-import getType from "../runtime/getType";
+import MemoryRegistry from "@/registry/memoryRegistry";
+import { fromJS } from "@/bricks/transformers/brickFactory";
+import { type BrickType } from "@/runtime/runtimeTypes";
+import getType from "@/runtime/getType";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { partial } from "lodash";
-import { allSettled } from "../utils/promiseUtils";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
- * A brick along with inferred/calculated information
+ * A brick along with its inferred/calculated information
  */
 export type TypedBrickPair = {
-  block: Brick;
+  brick: Brick;
   type: BrickType | null;
 };
 
@@ -68,7 +68,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
         //  this module? getType references the brickRegistry in order to calculate the type for composite bricks
         //  that are defined as a pipeline of other blocks.
         typeCache.set(item.id, {
-          block: item,
+          brick: item,
           type: await getType(item),
         });
       }),
@@ -102,7 +102,6 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
 
 /**
  * The singleton brick registry instance
- * @see initRuntime
  */
 const registry = new BrickRegistry();
 

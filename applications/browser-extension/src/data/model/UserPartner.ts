@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
-import { validateUUID } from "../../types/helpers";
-import { type ThemeName } from "../../themes/themeTypes";
-import { isValidThemeName } from "../../themes/themeUtils";
-import { type RequiredMePartnerResponse } from "../service/responseTypeHelpers";
+import { type UUID } from "@/types/stringTypes";
+import { validateUUID } from "@/types/helpers";
+import { type ThemeName } from "@/themes/themeTypes";
+import { isValidThemeName } from "@/themes/themeUtils";
+import { type RequiredMePartnerResponse } from "@/data/service/responseTypeHelpers";
 
 export type UserPartner = {
   readonly partnerId: UUID;

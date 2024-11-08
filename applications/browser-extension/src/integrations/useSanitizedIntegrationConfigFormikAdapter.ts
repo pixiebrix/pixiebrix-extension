@@ -19,16 +19,16 @@ import { useField, useFormikContext } from "formik";
 import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
-} from "./integrationTypes";
+} from "@/integrations/integrationTypes";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { uniq } from "lodash";
-import { PIXIEBRIX_INTEGRATION_ID } from "./constants";
-import { type Nullishable } from "../utils/nullishUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { type Expression } from "@/types/runtimeTypes";
-import { makeVariableExpression } from "../utils/variableUtils";
+import { makeVariableExpression } from "@/utils/variableUtils";
 
 /**
  * Look up integrations in the current formik context, and return the current

@@ -16,14 +16,14 @@
  */
 
 import { define } from "cooky-cutter";
-import { type Sharing } from "../../types/registryTypes";
-import { type UUID } from "../../types/stringTypes";
-import { type EditablePackageMetadata } from "../../types/contract";
+import { type Sharing } from "@/types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type EditablePackageMetadata } from "@/types/contract";
 import {
   autoUUIDSequence,
   registryIdFactory,
   timestampFactory,
-} from "./stringFactories";
+} from "@/testUtils/factories/stringFactories";
 
 export const personalSharingDefinitionFactory = define<Sharing>({
   public: false,

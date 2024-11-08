@@ -17,7 +17,7 @@
 
 import BaseInputTemplate, {
   type StrictBaseInputTemplateProps,
-} from "./BaseInputTemplate";
+} from "@/components/formBuilder/BaseInputTemplate";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type JSONSchema7 } from "json-schema";

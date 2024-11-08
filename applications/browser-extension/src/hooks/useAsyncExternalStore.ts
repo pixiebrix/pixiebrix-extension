@@ -22,11 +22,11 @@ import {
   loadingAsyncStateFactory,
   uninitializedAsyncStateFactory,
   valueToAsyncState,
-} from "../utils/asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4, validateUUID } from "@/types/helpers";
 import deepEquals from "fast-deep-equal";
-import { SimpleEventTarget } from "../utils/SimpleEventTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type Subscribe = (callback: () => void) => () => void;
 

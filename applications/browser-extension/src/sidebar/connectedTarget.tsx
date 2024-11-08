@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext, isBrowserSidebarTopFrame } from "../utils/expectContext";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { expectContext, isBrowserSidebarTopFrame } from "@/utils/expectContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { once } from "lodash";
 import { getTopLevelFrame, type TopLevelFrame } from "webext-messenger";
 import { getTabUrl } from "webext-tools";

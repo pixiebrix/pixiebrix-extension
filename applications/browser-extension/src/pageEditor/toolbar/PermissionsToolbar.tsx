@@ -20,15 +20,15 @@ import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { useDebounce } from "use-debounce";
-import notify from "../../utils/notify";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import notify from "@/utils/notify";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import {
   emptyPermissionsFactory,
   ensurePermissionsFromUserGesture,
-} from "../../permissions/permissionsUtils";
-import { calculatePermissionsForModComponentFormState } from "../editorPermissionsHelpers";
-import { fallbackValue } from "../../utils/asyncStateUtils";
+} from "@/permissions/permissionsUtils";
+import { calculatePermissionsForModComponentFormState } from "@/pageEditor/editorPermissionsHelpers";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type Permissions } from "webextension-polyfill";
 
 const fallbackState = {

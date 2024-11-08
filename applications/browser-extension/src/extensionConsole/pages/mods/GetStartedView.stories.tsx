@@ -19,17 +19,19 @@ import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import modsPageSlice, { persistModsConfig } from "./modsPageSlice";
+import modsPageSlice, {
+  persistModsConfig,
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 import { appApi } from "@/data/service/api";
-import GetStartedView from "./GetStartedView";
+import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
-import { modDefinitionsSlice } from "../../../modDefinitions/modDefinitionsSlice";
-import { valueToAsyncCacheState } from "../../../utils/asyncStateUtils";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { publicSharingDefinitionFactory } from "../../../testUtils/factories/registryFactories";
-import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
+import { publicSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { Milestones } from "@/data/model/UserMilestone";
 
 export default {

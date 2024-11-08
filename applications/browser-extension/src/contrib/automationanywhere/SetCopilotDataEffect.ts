@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
-import { type Schema } from "../../types/schemaTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { EffectABC } from "../../types/bricks/effectTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { setPartnerCopilotData } from "@/background/messenger/api";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type ProcessDataMap = Record<string, UnknownObject>;
 

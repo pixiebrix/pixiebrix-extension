@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Integration, type IntegrationConfig } from "./integrationTypes";
+import {
+  type Integration,
+  type IntegrationConfig,
+} from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";

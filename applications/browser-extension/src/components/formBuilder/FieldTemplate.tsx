@@ -23,10 +23,10 @@ import { type FieldTemplateProps } from "@rjsf/utils";
 import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
-import { type SetActiveField } from "./formBuilderTypes";
-import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
+import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 import { noop, uniq } from "lodash";
-import { freeze } from "../../utils/objectUtils";
+import { freeze } from "@/utils/objectUtils";
 
 interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
   // Only used in the FormPreview

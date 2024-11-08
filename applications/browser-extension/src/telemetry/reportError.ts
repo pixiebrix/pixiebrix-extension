@@ -19,7 +19,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { backgroundTarget as bg, getNotifier } from "webext-messenger";
 import { serializeError } from "serialize-error";
 import { selectError, shouldErrorBeIgnored } from "@/errors/errorHelpers";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { getContextName } from "webext-detect";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 

@@ -16,8 +16,8 @@
  */
 
 import type React from "react";
-import { type BrickOptionProps } from "./schemaFields/genericOptionsFactory";
-import { type RegistryId } from "../../types/registryTypes";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { type RegistryId } from "@/types/registryTypes";
 
 /**
  * Mapping from brick id to brick editor.

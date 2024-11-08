@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import {
   type TreeDestinationPosition,
   type TreeSourcePosition,
 } from "@atlaskit/tree";
 import { produce } from "immer";
 import { getIn, useField } from "formik";
-import { getAllowedChildTypes } from "../allowedElementTypes";
+import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElementTypes";
 import { useCallback } from "react";
 import useReduxState from "@/hooks/useReduxState";
-import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
-import { actions as editorActions } from "../../store/editor/editorSlice";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 /**
  * @see https://stackoverflow.com/a/6470794/402560

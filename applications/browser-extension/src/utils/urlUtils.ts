@@ -16,7 +16,7 @@
  */
 
 import { BusinessError } from "@/errors/businessErrors";
-import { isNullOrBlank } from "./stringUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import { type Nullishable, assertNotNullish } from "./nullishUtils";
 
 const SPACE_ENCODED_VALUE = "%20";

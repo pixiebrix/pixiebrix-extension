@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registry, removeOAuth2Token } from "../../messenger/api";
-import oauth2IntegrationDefinition from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
-import { launchAuthIntegration } from "./launchAuthIntegration";
-import { appApiMock } from "../../../testUtils/appApiMock";
-import { validateRegistryId } from "../../../types/helpers";
-import { readRawConfigurations } from "../../../integrations/util/readRawConfigurations";
+import { registry, removeOAuth2Token } from "@/background/messenger/api";
+import oauth2IntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { validateRegistryId } from "@/types/helpers";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 import {
   integrationConfigFactory,
   secretsConfigFactory,
-} from "../../../testUtils/factories/integrationFactories";
-import launchOAuth2Flow from "../launchOAuth2Flow";
-import { type Metadata } from "../../../types/registryTypes";
+} from "@/testUtils/factories/integrationFactories";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { type Metadata } from "@/types/registryTypes";
 import { setPartnerAuthData } from "@/auth/authStorage";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../../../integrations/util/readRawConfigurations");
+jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 
 const integrationMetaData = oauth2IntegrationDefinition.metadata as Metadata;
@@ -41,10 +41,10 @@ jest.mocked(registry.find).mockResolvedValue({
   config: oauth2IntegrationDefinition,
 } as any);
 
-jest.mock("../launchOAuth2Flow");
+jest.mock("@/background/auth/launchOAuth2Flow");
 const launchOAuth2FlowMock = jest.mocked(launchOAuth2Flow);
 
-jest.mock("../../../auth/authStorage");
+jest.mock("@/auth/authStorage");
 const setPartnerAuthDataMock = jest.mocked(setPartnerAuthData);
 const removeOAuth2TokenMock = jest.mocked(removeOAuth2Token);
 

@@ -17,15 +17,15 @@
 
 import React from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
-import { selectSessionId } from "../store/session/sessionSelectors";
-import paintbrush from "../../../img/paintbrush.svg";
-import bgIllustration from "../../../img/home-pane-bg-illustration.png";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import paintbrush from "@img/paintbrush.svg";
+import bgIllustration from "@img/home-pane-bg-illustration.png";
 
-import styles from "./HomePane.module.scss";
-import { inspectedTab } from "../context/connection";
+import styles from "@/pageEditor/panes/HomePane.module.scss";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const TEMPLATE_TELEMETRY_SOURCE = "home_pane";
 

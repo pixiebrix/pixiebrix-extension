@@ -19,10 +19,10 @@ import { createContext } from "react";
 import {
   type CustomWidgetRegistry,
   type CustomFieldDefinitions,
-} from "./schemaFieldTypes";
-import SchemaButtonVariantWidget from "./widgets/SchemaButtonVariantWidget";
-import { SchemaCustomEventWidget } from "./widgets/SchemaCustomEventWidget";
-import CodeEditorWidget from "./widgets/CodeEditorWidget";
+} from "@/components/fields/schemaFields/schemaFieldTypes";
+import SchemaButtonVariantWidget from "@/components/fields/schemaFields/widgets/SchemaButtonVariantWidget";
+import { SchemaCustomEventWidget } from "@/components/fields/schemaFields/widgets/SchemaCustomEventWidget";
+import CodeEditorWidget from "@/components/fields/schemaFields/widgets/CodeEditorWidget";
 
 export const customWidgets: CustomWidgetRegistry = {
   SchemaButtonVariantWidget,

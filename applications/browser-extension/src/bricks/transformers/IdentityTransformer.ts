@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { isPlainObject, mapValues } from "lodash";
-import { isExpression } from "../../utils/expressionUtils";
+import { isExpression } from "@/utils/expressionUtils";
 
 class IdentityTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/identity");

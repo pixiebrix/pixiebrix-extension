@@ -26,7 +26,7 @@ export default async function getSvgIcon({
   color = "#ae87e8",
 }: Partial<IconConfig> = {}): Promise<string> {
   const { icons } = await import(
-    /* webpackChunkName: "iconLibrary" */ "./list"
+    /* webpackChunkName: "iconLibrary" */ "@/icons/list"
   );
 
   const libraryCache = icons.get(library);

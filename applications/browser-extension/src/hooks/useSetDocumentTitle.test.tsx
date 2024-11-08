@@ -16,7 +16,7 @@
  */
 
 import { renderHook } from "@/extensionConsole/testHelpers";
-import useSetDocumentTitle from "./useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 
 const TEST_TITLE = "Test Page";
 

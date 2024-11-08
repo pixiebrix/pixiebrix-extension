@@ -21,7 +21,7 @@ import { Badge, Button, ButtonGroup, Nav, Tab } from "react-bootstrap";
 import { type ButtonVariant, type Variant } from "react-bootstrap/types";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { freeze } from "../../utils/objectUtils";
+import { freeze } from "@/utils/objectUtils";
 import type { FeatureFlag } from "@/auth/featureFlags";
 import useFlags from "@/hooks/useFlags";
 

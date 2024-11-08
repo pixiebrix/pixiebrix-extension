@@ -25,48 +25,50 @@ import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
-import { type ModComponentsRootState } from "../store/modComponents/modComponentTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import integrationsSlice, {
   persistIntegrationsConfig,
   type ServicesRootState,
-} from "../integrations/store/integrationsSlice";
+} from "@/integrations/store/integrationsSlice";
 import {
   type ModModalsRootState,
   modModalsSlice,
-} from "./pages/mods/modals/modModalsSlice";
+} from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/data/service/api";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import settingsSlice from "../store/settings/settingsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import workshopSlice, {
   persistWorkshopConfig,
   type WorkshopRootState,
-} from "../store/workshopSlice";
-import { persistModComponentOptionsConfig } from "../store/modComponents/modComponentStorage";
-import { persistSettingsConfig } from "../store/settings/settingsStorage";
-import { type SettingsRootState } from "../store/settings/settingsTypes";
-import modsPageSlice, { persistModsConfig } from "./pages/mods/modsPageSlice";
+} from "@/store/workshopSlice";
+import { persistModComponentOptionsConfig } from "@/store/modComponents/modComponentStorage";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import { type SettingsRootState } from "@/store/settings/settingsTypes";
+import modsPageSlice, {
+  persistModsConfig,
+} from "@/extensionConsole/pages/mods/modsPageSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type AuthRootState } from "@/auth/authTypes";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import { type ModsPageRootState } from "./pages/mods/modsPageSelectors";
-import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
-import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";
-import sessionSlice from "../pageEditor/store/session/sessionSlice";
+import { type ModsPageRootState } from "@/extensionConsole/pages/mods/modsPageSelectors";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import {
   persistSessionChangesConfig,
   sessionChangesSlice,
   sessionChangesStateSyncActions,
-} from "../store/sessionChanges/sessionChangesSlice";
-import { sessionChangesMiddleware } from "../store/sessionChanges/sessionChangesListenerMiddleware";
+} from "@/store/sessionChanges/sessionChangesSlice";
+import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import { createStateSyncMiddleware } from "redux-state-sync";
-import { type SessionRootState } from "../pageEditor/store/session/sessionSliceTypes";
-import { type SessionChangesRootState } from "../store/sessionChanges/sessionChangesTypes";
-import { boolean } from "../utils/typeUtils";
+import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
+import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
+import { boolean } from "@/utils/typeUtils";
 import defaultMiddlewareConfig, {
   defaultCreateStateSyncMiddlewareConfig,
-} from "../store/defaultMiddlewareConfig";
+} from "@/store/defaultMiddlewareConfig";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

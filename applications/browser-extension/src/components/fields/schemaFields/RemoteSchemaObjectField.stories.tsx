@@ -23,11 +23,11 @@ import { Button } from "react-bootstrap";
 import { action } from "@storybook/addon-actions";
 import RemoteSchemaObjectField, {
   type RemoteSchemaObjectFieldProps,
-} from "./RemoteSchemaObjectField";
-import { settingsStore } from "../../../testUtils/storyUtils";
+} from "@/components/fields/schemaFields/RemoteSchemaObjectField";
+import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
-import { valueToAsyncState } from "../../../utils/asyncStateUtils";
-import { type Schema } from "../../../types/schemaTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { type Schema } from "@/types/schemaTypes";
 
 export default {
   title: "Fields/RemoteSchemaObjectField",

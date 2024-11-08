@@ -21,12 +21,12 @@ import {
   faCheck,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import JsonTree from "../jsonTree/JsonTree";
-import { selectAbsoluteUrl } from "../../utils/urlUtils";
+import JsonTree from "@/components/jsonTree/JsonTree";
+import { selectAbsoluteUrl } from "@/utils/urlUtils";
 import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
 import useAsyncState from "@/hooks/useAsyncState";
-import AsyncStateGate from "../AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 import { type AxiosError } from "axios";
 
 function tryParse(value: unknown): unknown {

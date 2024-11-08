@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata } from "../../types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -29,30 +29,30 @@ import {
   removeEmptyValues,
   selectStarterBrickAvailability,
   cleanIsAvailable,
-} from "./base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
 import {
   getDefaultReportModeForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
   TriggerStarterBrickABC,
-} from "../../starterBricks/trigger/triggerStarterBrick";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
-import { getDomain } from "../../permissions/patterns";
+} from "@/starterBricks/trigger/triggerStarterBrick";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
-import TriggerConfiguration from "../tabs/trigger/TriggerConfiguration";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
+import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { ReportModes } from "../../starterBricks/trigger/triggerStarterBrickTypes";
+} from "@/types/modComponentTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { ReportModes } from "@/starterBricks/trigger/triggerStarterBrickTypes";
 
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   starterBrickMetadata,

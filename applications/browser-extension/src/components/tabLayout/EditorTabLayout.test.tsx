@@ -19,9 +19,9 @@ import React from "react";
 import EditorTabLayout, {
   type ActionButton,
   type TabItem,
-} from "./EditorTabLayout";
+} from "@/components/tabLayout/EditorTabLayout";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { render } from "../../pageEditor/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 
 function getTabItem(name: string, badgeCount?: number): TabItem {
   if (badgeCount) {

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TrialCallToActionLink from "./TrialCallToActionLink";
-import useGetAllTeamScopes from "./useGetAllTeamScopes";
+import TrialCallToActionLink from "@/components/teamTrials/TrialCallToActionLink";
+import useGetAllTeamScopes from "@/components/teamTrials/useGetAllTeamScopes";
 import useTeamTrialStatus, {
   TeamTrialStatus,
-} from "./useTeamTrialStatus";
-import { type RegistryId } from "../../types/registryTypes";
+} from "@/components/teamTrials/useTeamTrialStatus";
+import { type RegistryId } from "@/types/registryTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";

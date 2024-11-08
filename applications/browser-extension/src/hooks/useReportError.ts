@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "../telemetry/reportError";
-import { usePreviousValue } from "./usePreviousValue";
+import reportError from "@/telemetry/reportError";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
  * React hook to report an error if it's different from the previous error.

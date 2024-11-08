@@ -16,16 +16,16 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
-import { normalizeSemVerString } from "../../types/helpers";
+import { normalizeSemVerString } from "@/types/helpers";
 import { TEST_setContext } from "webext-detect";
-import { toExpression } from "../../utils/expressionUtils";
-import { DefinitionKinds } from "../../types/registryTypes";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 TEST_setContext("contentScript");
 

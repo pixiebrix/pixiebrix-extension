@@ -17,15 +17,15 @@
 
 import React from "react";
 import { useWindowSize } from "@/hooks/useWindowSize";
-import { selectIsDimensionsWarningDismissed } from "../store/editor/editorSelectors";
+import { selectIsDimensionsWarningDismissed } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Col, Row } from "react-bootstrap";
-import { editorSlice } from "../store/editor/editorSlice";
-import devtoolsToolbarScreenshot from "../../../img/devtools-pixiebrix-toolbar-screenshot.png";
-import devtoolsDockingContextMenu from "../../../img/devtools-docking-context-menu.png";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import devtoolsToolbarScreenshot from "@img/devtools-pixiebrix-toolbar-screenshot.png";
+import devtoolsDockingContextMenu from "@img/devtools-docking-context-menu.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import devtoolsDockBottomIcon from "../../../img/devtools-dock-bottom-icon.svg";
+import devtoolsDockBottomIcon from "@img/devtools-dock-bottom-icon.svg";
 import { type EmptyObject } from "type-fest";
 
 export const GatePanel: React.FunctionComponent = () => {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { render, screen } from "@testing-library/react";
-import CollapsibleFieldSection from "./CollapsibleFieldSection";
+import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import React from "react";
 import userEvent from "@testing-library/user-event";
 

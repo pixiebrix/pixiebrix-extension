@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import "../../vendors/bootstrapWithoutRem.css";
+import "@/vendors/bootstrapWithoutRem.css";
 import "bootstrap-switch-button-react/src/style.css";
 import styles from "./SelectionToolPopover.module.scss";
 
@@ -22,9 +22,9 @@ import React, { type ChangeEvent, useEffect, useState } from "react";
 import Draggable from "react-draggable";
 import SwitchButtonWidget, {
   type CheckBoxLike,
-} from "../form/widgets/switchButton/SwitchButtonWidget";
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { Button, FormLabel } from "react-bootstrap";
-import pluralize from "../../utils/pluralize";
+import pluralize from "@/utils/pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripHorizontal } from "@fortawesome/free-solid-svg-icons";
 

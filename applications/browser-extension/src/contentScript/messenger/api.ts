@@ -17,7 +17,7 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
-import { forEachTab } from "../../utils/extensionUtils";
+import { forEachTab } from "@/utils/extensionUtils";
 
 const queueReloadFrameMods = getNotifier("QUEUE_RELOAD_FRAME_MODS");
 

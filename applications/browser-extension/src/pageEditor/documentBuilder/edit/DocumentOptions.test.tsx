@@ -16,24 +16,24 @@
  */
 
 import React from "react";
-import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { render, screen } from "../../testHelpers";
-import { actions } from "../../store/editor/editorSlice";
-import { type IntegrationDependency } from "../../../integrations/integrationTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../../testUtils/factories/brickFactories";
-import { integrationDependencyFactory } from "../../../testUtils/factories/integrationFactories";
-import { validateOutputKey } from "../../../runtime/runtimeTypes";
-import { toExpression } from "../../../utils/expressionUtils";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 import { within } from "@testing-library/react";
-import DocumentOptions from "./DocumentOptions";
+import DocumentOptions from "@/pageEditor/documentBuilder/edit/DocumentOptions";
 
 beforeAll(() => {
   registerDefaultWidgets();

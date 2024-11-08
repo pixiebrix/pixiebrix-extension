@@ -19,13 +19,13 @@ import { doesUrlMatchPatterns, isValidPattern } from "webext-patterns";
 import { castArray } from "lodash";
 import { type Entries } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
-import { $safeFind } from "../utils/domUtils";
-import { isLoadedInIframe } from "../utils/iframeUtils";
+import { $safeFind } from "@/utils/domUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import {
   type Availability,
   type NormalizedAvailability,
 } from "@/types/availabilityTypes";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export function normalizeAvailability(
   availability: Availability,

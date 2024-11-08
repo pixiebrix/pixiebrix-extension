@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseRegistry from "../registry/memoryRegistry";
+import BaseRegistry from "@/registry/memoryRegistry";
 import produce from "immer";
 import {
   type Schema,
@@ -24,7 +24,7 @@ import {
 } from "@/types/schemaTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { normalizeModOptionsDefinition } from "../utils/modUtils";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 type UnnormalizedOptionsDefinition = {
   schema: Schema | SchemaProperties;

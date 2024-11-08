@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
-import { checkExtensionPermissions } from "../../permissions/modComponentPermissionsHelpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { checkExtensionPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import useAsyncState from "@/hooks/useAsyncState";
-import { fallbackValue } from "../../utils/asyncStateUtils";
-import { type PermissionsStatus } from "../../permissions/permissionsTypes";
-import useExtensionPermissions from "../../permissions/useExtensionPermissions";
-import useRequestPermissionsCallback from "../../permissions/useRequestPermissionsCallback";
-import type { ModInstance } from "../../types/modInstanceTypes";
-import { mapModInstanceToActivatedModComponents } from "../../store/modComponents/modInstanceUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import useExtensionPermissions from "@/permissions/useExtensionPermissions";
+import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCallback";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 // By default, assume the extension has required permissions.
 const noRequiredPermissionsStatus: PermissionsStatus = {

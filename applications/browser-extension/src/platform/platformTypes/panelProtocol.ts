@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { RegistryId } from "../../types/registryTypes";
-import type { UUID } from "../../types/stringTypes";
-import type { ModComponentRef } from "../../types/modComponentTypes";
-import type { PanelPayload } from "../../types/sidebarTypes";
-import type { SimpleEventTarget } from "../../utils/SimpleEventTarget";
-import type { RunArgs } from "../../types/runtimeTypes";
-import type { TemporaryPanelDefinition } from "../panels/panelTypes";
+import type { RegistryId } from "@/types/registryTypes";
+import type { UUID } from "@/types/stringTypes";
+import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { PanelPayload } from "@/types/sidebarTypes";
+import type { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import type { RunArgs } from "@/types/runtimeTypes";
+import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { JsonObject } from "type-fest";
 
 /**

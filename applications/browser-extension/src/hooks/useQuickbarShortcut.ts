@@ -16,7 +16,7 @@
  */
 
 import chromeP from "webext-polyfill-kinda";
-import useAsyncState from "./useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 
 function useQuickbarShortcut(): {
   shortcut: string | undefined;

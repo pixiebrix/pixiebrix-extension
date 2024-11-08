@@ -2,13 +2,13 @@ import React, { useContext } from "react";
 import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useField } from "formik";
-import { joinName } from "../../utils/formUtils";
-import { isTextLiteralOrNull } from "../../utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { isTextLiteralOrNull } from "@/utils/expressionUtils";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
-import CommentEffect from "./comment";
+import CommentEffect from "@/bricks/effects/comment";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { type Expression } from "../../types/runtimeTypes";
+import { type Expression } from "@/types/runtimeTypes";
 
 /**
  * Page Editor fields for the @pixiebrix/comment brick.

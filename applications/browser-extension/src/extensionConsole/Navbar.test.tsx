@@ -17,10 +17,10 @@
 
 import React from "react";
 import { MemoryRouter } from "react-router";
-import Navbar from "./Navbar";
-import { render } from "./testHelpers";
-import { THEME_LOGOS } from "../themes/themeUtils";
-import { type ThemeName } from "../themes/themeTypes";
+import Navbar from "@/extensionConsole/Navbar";
+import { render } from "@/extensionConsole/testHelpers";
+import { THEME_LOGOS } from "@/themes/themeUtils";
+import { type ThemeName } from "@/themes/themeTypes";
 
 const renderNavbar = () => {
   // There doesn't seem to be significant testable differences between

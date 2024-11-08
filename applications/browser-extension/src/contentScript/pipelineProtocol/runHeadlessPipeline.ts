@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RunPipelineParams } from "./types";
-import { getPlatform } from "../../platform/platformContext";
-import { reducePipeline } from "../../runtime/reducePipeline";
-import { type IntegrationContext } from "../../types/runtimeTypes";
-import { expectContext } from "../../utils/expectContext";
+import { type RunPipelineParams } from "@/contentScript/pipelineProtocol/types";
+import { getPlatform } from "@/platform/platformContext";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import { type IntegrationContext } from "@/types/runtimeTypes";
+import { expectContext } from "@/utils/expectContext";
 
 /**
  * Run a pipeline in headless mode.

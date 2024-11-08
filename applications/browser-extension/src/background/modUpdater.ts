@@ -17,29 +17,29 @@
 
 import type { PackageVersionUpdates } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import reportError from "../telemetry/reportError";
+import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,
   saveModComponentState,
-} from "../store/modComponents/modComponentStorage";
+} from "@/store/modComponents/modComponentStorage";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { isEmpty } from "lodash";
 import { queueReloadModEveryTab } from "@/contentScript/messenger/api";
-import { getEditorState, saveEditorState } from "../store/editorStorage";
-import type { EditorState } from "../pageEditor/store/editor/pageEditorTypes";
-import type { ModComponentState } from "../store/modComponents/modComponentTypes";
-import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
+import type { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { FeatureFlags } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
-import deactivateMod from "./utils/deactivateMod";
+import deactivateMod from "@/background/utils/deactivateMod";
 import {
   selectModInstanceMap,
   selectModInstances,
-} from "../store/modComponents/modInstanceSelectors";
+} from "@/store/modComponents/modInstanceSelectors";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 

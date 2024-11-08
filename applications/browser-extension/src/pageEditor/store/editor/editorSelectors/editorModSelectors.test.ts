@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorRootState } from "../pageEditorTypes";
-import { type ModComponentsRootState } from "../../../../store/modComponents/modComponentTypes";
-import { initialState as editorInitialState } from "../editorSlice";
-import { type ActivatedModComponent } from "../../../../types/modComponentTypes";
-import { type ModComponentFormState } from "../../../starterBricks/formStateTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import { initialState as editorInitialState } from "@/store/editorInitialState";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   activatedModComponentFactory,
   modMetadataFactory,
-} from "../../../../testUtils/factories/modComponentFactories";
-import { modComponentToFormState } from "../../../starterBricks/adapter";
-import { formStateFactory } from "../../../../testUtils/factories/pageEditorFactories";
+} from "@/testUtils/factories/modComponentFactories";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
   type InnerDefinitionRef,
   DefinitionKinds,
-} from "../../../../types/registryTypes";
-import { starterBrickDefinitionFactory } from "../../../../testUtils/factories/modDefinitionFactories";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "./editorModSelectors";
+} from "@/types/registryTypes";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors/editorModSelectors";
 
 let starterBrickCount = 0;
 function newStarterBrickId(): InnerDefinitionRef {

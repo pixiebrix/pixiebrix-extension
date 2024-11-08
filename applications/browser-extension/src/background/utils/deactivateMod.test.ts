@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import deactivateMod from "./deactivateMod";
-import { getEditorState } from "../../store/editorStorage";
+import deactivateMod from "@/background/utils/deactivateMod";
+import { getEditorState } from "@/store/editorStorage";
 import {
   saveModComponentState,
   getModComponentState,
-} from "../../store/modComponents/modComponentStorage";
+} from "@/store/modComponents/modComponentStorage";
 import {
   modMetadataFactory,
   activatedModComponentFactory,
-} from "../../testUtils/factories/modComponentFactories";
-import { type ModInstance } from "../../types/modInstanceTypes";
-import { modInstanceFactory } from "../../testUtils/factories/modInstanceFactories";
-import { mapModInstanceToActivatedModComponents } from "../../store/modComponents/modInstanceUtils";
+} from "@/testUtils/factories/modComponentFactories";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 describe("deactivateMod", () => {
   let modToDeactivate: ModInstance;

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLocalISOString, ParseDate } from "./parseDate";
+import { getLocalISOString, ParseDate } from "@/bricks/transformers/parseDate";
 import { register, type TimeZone, unregister } from "timezone-mock";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { validateBrickInputOutput } from "../../validators/schemaValidator";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { BusinessError } from "@/errors/businessErrors";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const refDate = "2021-12-07T06:17:09.258Z";
 

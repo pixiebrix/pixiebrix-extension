@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { debouncedActivateWelcomeMods } from "./welcomeMods";
+import { debouncedActivateWelcomeMods } from "@/background/welcomeMods";
 import {
   getModComponentState,
   saveModComponentState,
-} from "../store/modComponents/modComponentStorage";
+} from "@/store/modComponents/modComponentStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { isLinked } from "@/auth/authStorage";
@@ -28,27 +28,27 @@ import { uuidv4 } from "@/types/helpers";
 import {
   activatedModComponentFactory,
   modMetadataFactory,
-} from "../testUtils/factories/modComponentFactories";
+} from "@/testUtils/factories/modComponentFactories";
 import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
-} from "../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import {
   meApiResponseFactory,
   meOrganizationApiResponseFactory,
-} from "../testUtils/factories/authFactories";
-import { remoteIntegrationConfigurationFactory } from "../testUtils/factories/integrationFactories";
+} from "@/testUtils/factories/authFactories";
+import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 import {
   getSidebarState,
   saveSidebarState,
-} from "../store/sidebar/sidebarStorage";
-import { MOD_LAUNCHER } from "../store/sidebar/constants";
+} from "@/store/sidebar/sidebarStorage";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import {
   eventKeyForEntry,
   getEventKeyForPanel,
-} from "../store/sidebar/eventKeyUtils";
+} from "@/store/sidebar/eventKeyUtils";
 import produce from "immer";
-import { type StarterBrickDefinitionProp } from "../starterBricks/types";
+import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import {
   type StarterBrickType,
@@ -57,10 +57,10 @@ import {
 import {
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
   PIXIEBRIX_INTEGRATION_ID,
-} from "../integrations/constants";
-import { databaseFactory } from "../testUtils/factories/databaseFactories";
-import { autoUUIDSequence } from "../testUtils/factories/stringFactories";
-import { getBuiltInIntegrationConfigs } from "./getBuiltInIntegrationConfigs";
+} from "@/integrations/constants";
+import { databaseFactory } from "@/testUtils/factories/databaseFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
@@ -73,7 +73,7 @@ import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("../auth/authStorage", () => ({
+jest.mock("@/auth/authStorage", () => ({
   async getAuthHeaders() {
     return {};
   },
@@ -81,11 +81,11 @@ jest.mock("../auth/authStorage", () => ({
   addListener: jest.fn(),
 }));
 
-jest.mock("../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("./refreshRegistries");
 
 // This comes up in the extensions slice redux-persist migrations that run when mod component state is loaded
-jest.mock("../auth/authUtils", () => {
+jest.mock("@/auth/authUtils", () => {
   const actual = jest.requireActual("@/auth/authUtils");
   return {
     ...actual,

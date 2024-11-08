@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import EmotionShadowRoot from "../EmotionShadowRoot";
-import { Stylesheets } from "../Stylesheets";
-import bootstrap from "../../vendors/bootstrapWithoutRem.css?loadAsUrl";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import { Stylesheets } from "@/components/Stylesheets";
+import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import React, { StrictMode } from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
-import { ActionButton } from "./ActionButton";
-import store, { persistor } from "./store";
+import { ActionButton } from "@/components/floatingActions/ActionButton";
+import store, { persistor } from "@/components/floatingActions/store";
 import Draggable from "react-draggable";
-import dragIcon from "../../icons/drag-handle.svg";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import dragIcon from "@/icons/drag-handle.svg";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
-import { selectSettings } from "../../store/settings/settingsSelectors";
-import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "./floatingActionsConstants";
+import { selectSettings } from "@/store/settings/settingsSelectors";
+import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { PersistGate } from "redux-persist/integration/react";
-import Loader from "../Loader";
+import Loader from "@/components/Loader";
 
 // Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;

@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setComponentData } from "../../pageScript/messenger/api";
+import { setComponentData } from "@/pageScript/messenger/api";
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   type PlatformCapability,
   PAGE_SCRIPT_CAPABILITIES,
-} from "../../platform/capabilities";
+} from "@/platform/capabilities";
 
 export class SetVueValues extends EffectABC {
   constructor() {

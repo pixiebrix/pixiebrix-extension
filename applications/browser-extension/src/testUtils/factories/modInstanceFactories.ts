@@ -16,15 +16,15 @@
  */
 
 import { define } from "cooky-cutter";
-import type { ModInstance } from "../../types/modInstanceTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
 import {
   autoUUIDSequence,
   timestampFactory,
-} from "./stringFactories";
-import { modDefinitionFactory } from "./modDefinitionFactories";
-import { nowTimestamp } from "../../utils/timeUtils";
-import { organizationStateFactory } from "./authFactories";
-import { generateModInstanceId } from "../../store/modComponents/modInstanceUtils";
+} from "@/testUtils/factories/stringFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { nowTimestamp } from "@/utils/timeUtils";
+import { organizationStateFactory } from "@/testUtils/factories/authFactories";
+import { generateModInstanceId } from "@/store/modComponents/modInstanceUtils";
 
 export const personalDeploymentMetadataFactory = define<
   ModInstance["deploymentMetadata"]

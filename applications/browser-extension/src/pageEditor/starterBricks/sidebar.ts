@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata } from "../../types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -32,23 +32,23 @@ import {
   removeEmptyValues,
   selectStarterBrickAvailability,
   ALL_SITES_AVAILABILITY,
-} from "./base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
-import { SidebarStarterBrickABC } from "../../starterBricks/sidebar/sidebarStarterBrick";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { SidebarStarterBrickABC } from "@/starterBricks/sidebar/sidebarStarterBrick";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import SidebarConfiguration from "../tabs/sidebar/SidebarConfiguration";
-import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
+import SidebarConfiguration from "@/pageEditor/tabs/sidebar/SidebarConfiguration";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
 import {
   type SidebarConfig,
   type SidebarDefinition,
-} from "../../starterBricks/sidebar/sidebarStarterBrickTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   modMetadata,

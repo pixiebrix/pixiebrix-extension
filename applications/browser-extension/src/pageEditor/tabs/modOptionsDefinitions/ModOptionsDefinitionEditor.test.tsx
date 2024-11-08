@@ -17,17 +17,17 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { render } from "../../testHelpers";
-import ModOptionsDefinitionEditor from "./ModOptionsDefinitionEditor";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
+import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import userEvent from "@testing-library/user-event";
-import { defaultModDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
-import { editorSlice } from "../../store/editor/editorSlice";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 
-jest.mock("../../../hooks/useFlags", () =>
+jest.mock("@/hooks/useFlags", () =>
   jest.fn().mockReturnValue({
     flagOn: jest.fn().mockReturnValue(true),
   }),

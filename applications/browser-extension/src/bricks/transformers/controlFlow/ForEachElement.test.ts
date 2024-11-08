@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../registry";
-import {
-  echoBrick,
-  simpleInput,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { reducePipeline } from "../../../runtime/reducePipeline";
+import brickRegistry from "@/bricks/registry";
+import { echoBrick, simpleInput } from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEachElement from "./ForEachElement";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { toExpression } from "../../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const forEachBlock = new ForEachElement();
 

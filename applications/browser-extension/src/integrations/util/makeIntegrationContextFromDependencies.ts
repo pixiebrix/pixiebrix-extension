@@ -17,20 +17,20 @@
 
 /* eslint-disable security/detect-object-injection -- multiple places use the same constructed key value, not user input */
 
-import { type IntegrationDependency } from "../integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import {
   type IntegrationDependencyVarRef,
   type IntegrationContext,
   type IntegrationContextValue,
-} from "../../types/runtimeTypes";
-import findSanitizedIntegrationConfigWithRetry from "./findSanitizedIntegrationConfigWithRetry";
+} from "@/types/runtimeTypes";
+import findSanitizedIntegrationConfigWithRetry from "@/integrations/util/findSanitizedIntegrationConfigWithRetry";
 import { pickBy } from "lodash";
-import { type UUID } from "../../types/stringTypes";
-import { type RegistryId } from "../../types/registryTypes";
-import { type Nullishable } from "../../utils/nullishUtils";
-import { PIXIEBRIX_INTEGRATION_ID } from "../constants";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { NotConfiguredError } from "@/errors/businessErrors";
-import { pixiebrixConfigurationFactory } from "./pixiebrixConfigurationFactory";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
 
 async function dependencyContextValue({
   integrationId,

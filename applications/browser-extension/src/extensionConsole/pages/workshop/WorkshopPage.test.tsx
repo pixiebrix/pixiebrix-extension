@@ -18,15 +18,15 @@
 import WorkshopPage, {
   useEnrichPackageMetadata,
   useSearchOptions,
-} from "./WorkshopPage";
-import { render, renderHook } from "../../testHelpers";
-import { editablePackageMetadataFactory } from "../../../testUtils/factories/registryFactories";
+} from "@/extensionConsole/pages/workshop/WorkshopPage";
+import { render, renderHook } from "@/extensionConsole/testHelpers";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 import React from "react";
 import { screen } from "@testing-library/react";
-import { authStateFactory } from "../../../testUtils/factories/authFactories";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { authStateFactory } from "@/testUtils/factories/authFactories";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { authSlice } from "@/auth/authSlice";
-import { appApiMock } from "../../../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { MemoryRouter } from "react-router";
 import { API_PATHS } from "@/data/service/urlPaths";
 

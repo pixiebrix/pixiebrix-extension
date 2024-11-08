@@ -19,7 +19,7 @@
 import React, { useState } from "react";
 import { type RenderItemParams } from "@atlaskit/tree";
 import cx from "classnames";
-import styles from "./DocumentOutline.module.scss";
+import styles from "@/pageEditor/documentBuilder/outline/DocumentOutline.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -27,10 +27,10 @@ import {
   faSquare,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import documentBuilderElementTypeLabels from "../elementTypeLabels";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { type TreeItem } from "@atlaskit/tree/types";
-import { acceptDrop } from "../hooks/useMoveElement";
+import { acceptDrop } from "@/pageEditor/documentBuilder/hooks/useMoveElement";
 import { UnstyledButton } from "@/components/UnstyledButton";
 
 export const LEVEL_PADDING_PX = 15;

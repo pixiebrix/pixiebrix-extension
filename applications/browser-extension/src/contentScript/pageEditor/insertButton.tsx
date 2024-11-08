@@ -17,14 +17,14 @@
 
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { userSelectElement } from "./elementPicker";
-import * as pageScript from "../../pageScript/messenger/api";
-import { findContainer } from "../../utils/inference/selectorInference";
-import { PRIVATE_ATTRIBUTES_SELECTOR } from "../../domConstants";
-import { type ButtonSelectionResult } from "./types";
-import { inferButtonHTML } from "../../utils/inference/markupInference";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+import * as pageScript from "@/pageScript/messenger/api";
+import { findContainer } from "@/utils/inference/selectorInference";
+import { PRIVATE_ATTRIBUTES_SELECTOR } from "@/domConstants";
+import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
+import { inferButtonHTML } from "@/utils/inference/markupInference";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 const DEFAULT_ACTION_CAPTION = "Action";
 

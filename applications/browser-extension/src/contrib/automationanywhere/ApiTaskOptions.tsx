@@ -18,22 +18,22 @@
 import React from "react";
 import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
-import { joinName } from "../../utils/formUtils";
-import RequireIntegrationConfig from "../../integrations/components/RequireIntegrationConfig";
-import { RUN_API_TASK_INPUT_SCHEMA } from "./RunApiTask";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { joinName } from "@/utils/formUtils";
+import RequireIntegrationConfig from "@/integrations/components/RequireIntegrationConfig";
+import { RUN_API_TASK_INPUT_SCHEMA } from "@/contrib/automationanywhere/RunApiTask";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { useField } from "formik";
-import { type WorkspaceType } from "./contract";
+import { type WorkspaceType } from "@/contrib/automationanywhere/contract";
 import { type AsyncSelectStatusMessage } from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import RemoteFileInputArguments from "./RemoteFileInputArguments";
-import useWorkspaceTypeOptionsFactoryArgs from "./useWorkspaceTypeOptionsFactoryArgs";
-import WorkspaceTypeField from "./WorkspaceTypeField";
-import FolderIdConfigAlert from "./FolderIdConfigAlert";
-import AwaitResultField from "./AwaitResultField";
-import RemoteFileSelectField from "./RemoteFileSelectField";
-import { cachedSearchApiTasks } from "./aaApi";
+import RemoteFileInputArguments from "@/contrib/automationanywhere/RemoteFileInputArguments";
+import useWorkspaceTypeOptionsFactoryArgs from "@/contrib/automationanywhere/useWorkspaceTypeOptionsFactoryArgs";
+import WorkspaceTypeField from "@/contrib/automationanywhere/WorkspaceTypeField";
+import FolderIdConfigAlert from "@/contrib/automationanywhere/FolderIdConfigAlert";
+import AwaitResultField from "@/contrib/automationanywhere/AwaitResultField";
+import RemoteFileSelectField from "@/contrib/automationanywhere/RemoteFileSelectField";
+import { cachedSearchApiTasks } from "@/contrib/automationanywhere/aaApi";
 
 const TasksLoadingMessage: AsyncSelectStatusMessage = () => (
   <span>Searching tasks...</span>

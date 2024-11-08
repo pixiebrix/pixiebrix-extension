@@ -18,18 +18,18 @@
 import {
   transformTeamMembershipResponse,
   type TeamMembership,
-} from "./TeamMemberships";
+} from "@/data/model/TeamMemberships";
 import {
   transformTeamThemeResponse,
   type TeamTheme,
-} from "./TeamTheme";
+} from "@/data/model/TeamTheme";
 import {
   type UserRoleType,
   transformUserRoleResponse,
-} from "./UserRole";
-import { validateUUID } from "../../types/helpers";
-import { type Timestamp, type UUID } from "../../types/stringTypes";
-import { type components } from "../../types/swagger";
+} from "@/data/model/UserRole";
+import { validateUUID } from "@/types/helpers";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type components } from "@/types/swagger";
 
 export type Team = {
   /**

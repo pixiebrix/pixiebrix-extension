@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema } from "../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   type Execution,
   type Interface,
   type OutputValue,
   type TableValue,
   type Variable,
-} from "./contract";
+} from "@/contrib/automationanywhere/contract";
 import { type JSONSchema7Type } from "json-schema";
 import { mapValues, zipWith } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
-import { boolean } from "../../utils/typeUtils";
-import { type Nullishable } from "../../utils/nullishUtils";
+import { boolean } from "@/utils/typeUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const COMMUNITY_CONTROL_ROOM_REGEX =
   /^(https:\/\/)?community\d*\.\S+\.automationanywhere\.digital\/?$/;

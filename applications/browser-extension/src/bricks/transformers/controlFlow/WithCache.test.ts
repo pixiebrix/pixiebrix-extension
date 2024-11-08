@@ -15,28 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Brick } from "../../../types/brickTypes";
-import type { Expression } from "../../../types/runtimeTypes";
-import { toExpression } from "../../../utils/expressionUtils";
-import { modComponentRefFactory } from "../../../testUtils/factories/modComponentFactories";
-import { getPlatform } from "../../../platform/platformContext";
-import { StateNamespaces } from "../../../platform/state/stateTypes";
-import { WithCache } from "./WithCache";
+import type { Brick } from "@/types/brickTypes";
+import type { Expression } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { getPlatform } from "@/platform/platformContext";
+import { StateNamespaces } from "@/platform/state/stateTypes";
+import { WithCache } from "@/bricks/transformers/controlFlow/WithCache";
 import pDefer, { type DeferredPromise } from "p-defer";
 import {
   DeferredEchoBrick,
   simpleInput,
   throwBrick,
   echoBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import brickRegistry from "../../registry";
+} from "@/runtime/pipelineTests/testHelpers";
+import brickRegistry from "@/bricks/registry";
 import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
-import { reducePipeline } from "../../../runtime/reducePipeline";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
-import { tick } from "../../../starterBricks/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { tick } from "@/starterBricks/testHelpers";
 import { CancelError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
-import { sleep } from "../../../utils/timeUtils";
+import { sleep } from "@/utils/timeUtils";
 
 const withCacheBrick = new WithCache();
 

@@ -18,13 +18,13 @@
 import {
   getAllModComponentDefinitionsWithType,
   getModComponentIdsForModComponentDefinitions,
-} from "./starterBrickModUtils";
+} from "@/starterBricks/starterBrickModUtils";
 import {
   defaultModDefinitionFactory,
   modComponentDefinitionFactory,
-} from "../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { activatedModComponentFactory } from "../testUtils/factories/modComponentFactories";
+import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("starterBrickModUtils", () => {
   describe("getAllModComponenetDefinitionsWithType", () => {

@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   transformUserRoleResponse,
   type UserRoleType,
-} from "./UserRole";
+} from "@/data/model/UserRole";
 import {
   type ControlRoom,
   transformControlRoomResponse,
-} from "./ControlRoom";
-import { validateUUID } from "../../types/helpers";
-import { type RequiredMeTeamMembershipResponse } from "../service/responseTypeHelpers";
+} from "@/data/model/ControlRoom";
+import { validateUUID } from "@/types/helpers";
+import { type RequiredMeTeamMembershipResponse } from "@/data/service/responseTypeHelpers";
 
 export type MeTeamMembership = {
   /**

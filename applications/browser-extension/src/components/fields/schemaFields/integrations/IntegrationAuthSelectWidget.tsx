@@ -18,7 +18,7 @@
 import React from "react";
 import SelectWidget, {
   type SelectWidgetProps,
-} from "../../../form/widgets/SelectWidget";
+} from "@/components/form/widgets/SelectWidget";
 import { type AuthOption } from "@/auth/authTypes";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

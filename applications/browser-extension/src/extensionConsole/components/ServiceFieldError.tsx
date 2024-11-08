@@ -17,7 +17,7 @@
 
 import React from "react";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 const ServiceFieldError: React.FC<{
   servicesError: string | Array<string | Record<string, string>> | undefined;

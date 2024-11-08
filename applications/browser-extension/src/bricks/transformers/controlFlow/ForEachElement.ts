@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type PipelineExpression,
-} from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { validateRegistryId } from "../../../types/helpers";
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
 import { castArray } from "lodash";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { validateOutputKey } from "../../../runtime/runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
-import { $safeFind } from "../../../utils/domUtils";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
+import { $safeFind } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ForEachElement extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/for-each-element");

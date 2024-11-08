@@ -1,4 +1,4 @@
-import type { UUID, Timestamp } from "./stringTypes";
+import type { UUID, Timestamp } from "@/types/stringTypes";
 export interface paths {
   "/api/audit/organizations/{id}/": {
     parameters: {

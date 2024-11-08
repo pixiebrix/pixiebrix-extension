@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import SaveButton from "./SaveButton";
+import SaveButton from "@/pageEditor/modListingPanel/SaveButton";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 
 export default {

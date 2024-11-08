@@ -18,22 +18,22 @@
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectShowPublishContext } from "../modModalsSelectors";
-import { modModalsSlice } from "../modModalsSlice";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
+import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
 } from "@/data/service/api";
-import notify from "../../../../../utils/notify";
+import notify from "@/utils/notify";
 import { produce } from "immer";
 import ActivationLink from "@/activation/ActivationLink";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import PublishContentLayout from "./PublishContentLayout";
 
-import { MARKETPLACE_URL } from "../../../../../urlConstants";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { MARKETPLACE_URL } from "@/urlConstants";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const PublishModContent: React.FunctionComponent = () => {
   const dispatch = useDispatch();

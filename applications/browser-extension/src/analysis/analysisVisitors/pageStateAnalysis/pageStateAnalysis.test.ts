@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
-import PageStateAnalysis from "./pageStateAnalysis";
-import { AnnotationType } from "../../../types/annotationTypes";
-import { registryIdFactory } from "../../../testUtils/factories/stringFactories";
+import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
+import { AnnotationType } from "@/types/annotationTypes";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { type BaseFormState } from "../../../pageEditor/store/editor/baseFormStateTypes";
+import { type BaseFormState } from "@/pageEditor/store/editor/baseFormStateTypes";
 
-import { StateNamespaces } from "../../../platform/state/stateTypes";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 describe("PageStateAnalysis", () => {
   it.each([SetPageState.BRICK_ID, GetPageState.BRICK_ID])(

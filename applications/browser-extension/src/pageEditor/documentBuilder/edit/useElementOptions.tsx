@@ -20,13 +20,13 @@ import {
   isButtonElement,
   isListElement,
   isPipelineElement,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import React, { useMemo } from "react";
-import ListOptions from "./ListOptions";
+import ListOptions from "@/pageEditor/documentBuilder/edit/ListOptions";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import getElementEditSchemas from "./getElementEditSchemas";
-import PipelineOptions from "./PipelineOptions";
-import ButtonOptions from "./ButtonOptions";
+import getElementEditSchemas from "@/pageEditor/documentBuilder/edit/getElementEditSchemas";
+import PipelineOptions from "@/pageEditor/documentBuilder/edit/PipelineOptions";
+import ButtonOptions from "@/pageEditor/documentBuilder/edit/ButtonOptions";
 
 const useElementOptions = (
   documentBuilderElement: DocumentBuilderElement,

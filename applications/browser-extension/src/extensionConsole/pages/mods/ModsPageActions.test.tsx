@@ -17,20 +17,20 @@
 
 import React from "react";
 import { useHistory } from "react-router";
-import { deactivateMod } from "../../../store/deactivateModHelpers";
-import { render, screen } from "../../testHelpers";
-import ModsPageActions from "./ModsPageActions";
-import { modViewItemFactory } from "../../../testUtils/factories/modViewItemFactory";
-import { appApiMock } from "../../../testUtils/appApiMock";
-import { userEvent } from "../../../pageEditor/testHelpers";
-import { type ModActionsEnabled } from "../../../types/modTypes";
-import { type RootState } from "../../store";
+import { deactivateMod } from "@/store/deactivateModHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
+import ModsPageActions from "@/extensionConsole/pages/mods/ModsPageActions";
+import { modViewItemFactory } from "@/testUtils/factories/modViewItemFactory";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { userEvent } from "@/pageEditor/testHelpers";
+import { type ModActionsEnabled } from "@/types/modTypes";
+import { type RootState } from "@/extensionConsole/store";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-} from "../../../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import { array } from "cooky-cutter";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("react-router", () => {
@@ -41,11 +41,11 @@ jest.mock("react-router", () => {
   };
 });
 
-jest.mock("../../../store/deactivateModHelpers", () => ({
+jest.mock("@/store/deactivateModHelpers", () => ({
   deactivateMod: jest.fn(),
 }));
 
-jest.mock("../../../components/ConfirmationModal", () => {
+jest.mock("@/components/ConfirmationModal", () => {
   const actual = jest.requireActual("@/components/ConfirmationModal");
   return {
     ...actual,

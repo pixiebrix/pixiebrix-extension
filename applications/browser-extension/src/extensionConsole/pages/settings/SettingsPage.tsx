@@ -16,18 +16,18 @@
  */
 
 import React from "react";
-import Page from "../../../layout/Page";
+import Page from "@/layout/Page";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
-import PrivacySettings from "./PrivacySettings";
-import LoggingSettings from "./LoggingSettings";
-import FactoryResetSettings from "./FactoryResetSettings";
-import AdvancedSettings from "./AdvancedSettings";
-import ExperimentalSettings from "./ExperimentalSettings";
+import PrivacySettings from "@/extensionConsole/pages/settings/PrivacySettings";
+import LoggingSettings from "@/extensionConsole/pages/settings/LoggingSettings";
+import FactoryResetSettings from "@/extensionConsole/pages/settings/FactoryResetSettings";
+import AdvancedSettings from "@/extensionConsole/pages/settings/AdvancedSettings";
+import ExperimentalSettings from "@/extensionConsole/pages/settings/ExperimentalSettings";
 import useFlags from "@/hooks/useFlags";
 import { selectOrganization } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
-import StorageSettings from "./StorageSettings";
-import GeneralSettings from "./GeneralSettings";
+import StorageSettings from "@/extensionConsole/pages/settings/StorageSettings";
+import GeneralSettings from "@/extensionConsole/pages/settings/GeneralSettings";
 import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
 import { type EmptyObject } from "type-fest";
 

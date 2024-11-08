@@ -17,15 +17,18 @@
 
 import React, { type ChangeEvent, useContext, useEffect } from "react";
 import Select, { type MultiValue } from "react-select";
-import { type MultiSelectLike, type Option } from "./SelectWidget";
-import { type SanitizedIntegrationConfig } from "../../../integrations/integrationTypes";
-import { type OptionsFactory } from "./RemoteSelectWidget";
+import {
+  type MultiSelectLike,
+  type Option,
+} from "@/components/form/widgets/SelectWidget";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
-import type { CustomFieldWidgetProps } from "../FieldTemplate";
-import { useOptionsResolver } from "./useOptionsResolver";
-import FieldTemplateLocalErrorContext from "./FieldTemplateLocalErrorContext";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import type { CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type RemoteMultiSelectWidgetProps<TOption extends Option<TOption["value"]>> =
   CustomFieldWidgetProps<Array<TOption["value"]>, MultiSelectLike<TOption>> & {

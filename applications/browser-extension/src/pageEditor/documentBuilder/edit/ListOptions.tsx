@@ -20,18 +20,18 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { getAllowedChildTypes } from "../allowedElementTypes";
-import documentBuilderElementTypeLabels from "../elementTypeLabels";
+import { getAllowedChildTypes } from "@/pageEditor/documentBuilder/allowedElementTypes";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import {
   type DocumentBuilderElementType,
   type ListElement,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import { produce } from "immer";
-import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import { useField } from "formik";
-import { joinName } from "../../../utils/formUtils";
+import { joinName } from "@/utils/formUtils";
 
 type ListOptionsProps = {
   elementName: string;

@@ -16,12 +16,12 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import settingsSlice from "../store/settings/settingsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/data/service/api";
-import { editorSlice } from "../pageEditor/store/editor/editorSlice";
-import sessionSlice from "../pageEditor/store/session/sessionSlice";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 
 export function settingsStore() {
   return configureStore({

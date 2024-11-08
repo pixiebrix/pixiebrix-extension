@@ -16,9 +16,9 @@
  */
 
 import { type SetRequired, type JsonObject } from "type-fest";
-import { BrickABC, type Brick } from "../brickTypes";
-import { type BrickArgs, type SelectorRoot } from "../runtimeTypes";
-import { type Schema } from "../schemaTypes";
+import { BrickABC, type Brick } from "@/types/brickTypes";
+import { type BrickArgs, type SelectorRoot } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A block that can read data from a page or part of the page.

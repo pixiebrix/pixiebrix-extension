@@ -18,7 +18,7 @@
 import React, { type ComponentProps, useCallback } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import AsyncButton from "./AsyncButton";
-import { ModalProvider, useModals } from "./ConfirmationModal";
+import { ModalProvider, useModals } from "@/components/ConfirmationModal";
 
 export default {
   title: "Components/ConfirmationModal",

@@ -16,19 +16,22 @@
  */
 
 import { define, derive, extend, type FactoryConfig } from "cooky-cutter";
-import { type Brick } from "../../types/brickTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { type UUID } from "../../types/stringTypes";
-import { registryIdSequence, uuidSequence } from "./stringFactories";
-import { normalizeSemVerString } from "../../types/helpers";
-import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
-import { minimalSchemaFactory } from "../../utils/schemaUtils";
+import { type UUID } from "@/types/stringTypes";
+import {
+  registryIdSequence,
+  uuidSequence,
+} from "@/testUtils/factories/stringFactories";
+import { normalizeSemVerString } from "@/types/helpers";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
-import { metadataFactory } from "./metadataFactory";
-import type { Reader } from "../../types/bricks/readerTypes";
-import type { PackageConfigDetail } from "../../types/contract";
-import type { ModDefinition } from "../../types/modDefinitionTypes";
-import { DefinitionKinds } from "../../types/registryTypes";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import type { Reader } from "@/types/bricks/readerTypes";
+import type { PackageConfigDetail } from "@/types/contract";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
+import { DefinitionKinds } from "@/types/registryTypes";
 
 export const brickFactory = define<Brick>({
   id: registryIdSequence,

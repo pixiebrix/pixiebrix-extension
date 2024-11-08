@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { COMPONENT_READER_ID } from "./transformers/component/ComponentReader";
-import { FormTransformer } from "./transformers/ephemeralForm/formTransformer";
-import { CustomFormRenderer } from "./renderers/customForm";
-import { createNewDocumentBuilderElement } from "../pageEditor/documentBuilder/createNewDocumentBuilderElement";
-import DisplayTemporaryInfo from "./transformers/temporaryInfo/DisplayTemporaryInfo";
-import { DocumentRenderer } from "./renderers/document";
-import { type BrickConfig } from "./types";
+import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
+import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { createNewDocumentBuilderElement } from "@/pageEditor/documentBuilder/createNewDocumentBuilderElement";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { type BrickConfig } from "@/bricks/types";
 import { uuidv4 } from "@/types/helpers";
-import { defaultBrickConfig } from "./util";
+import { defaultBrickConfig } from "@/bricks/util";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { JavaScriptTransformer } from "./transformers/javascript";
-import IdentityTransformer from "./transformers/IdentityTransformer";
-import { minimalUiSchemaFactory } from "../utils/schemaUtils";
-import { toExpression } from "../utils/expressionUtils";
-import CommentEffect from "./effects/comment";
-import AddDynamicTextSnippet from "./effects/AddDynamicTextSnippet";
-import { validateOutputKey } from "../runtime/runtimeTypes";
-import AddTextSnippets from "./effects/AddTextSnippets";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
+import { toExpression } from "@/utils/expressionUtils";
+import CommentEffect from "@/bricks/effects/comment";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 
-import { MergeStrategies, StateNamespaces } from "../platform/state/stateTypes";
-import IfElse from "./transformers/controlFlow/IfElse";
-import AssignModVariable from "./effects/assignModVariable";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 
 /**
  * Get an example brick config for a given brick id.

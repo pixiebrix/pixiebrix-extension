@@ -18,7 +18,7 @@
 import {
   type InitialValues,
   reduceModComponentPipeline,
-} from "../../runtime/reducePipeline";
+} from "@/runtime/reducePipeline";
 import {
   type CustomEventOptions,
   type DebounceOptions,
@@ -28,45 +28,45 @@ import {
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/bricks/available";
 import Mustache from "mustache";
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import { shouldModComponentRunForStateChange } from "../helpers";
+import { shouldModComponentRunForStateChange } from "@/starterBricks/helpers";
 import { cloneDeep, debounce, remove } from "lodash";
-import apiVersionOptions from "../../runtime/apiVersionOptions";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { type Schema } from "../../types/schemaTypes";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { type Brick } from "../../types/brickTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
-import { type UUID } from "../../types/stringTypes";
-import { type RunArgs, RunReason } from "../../types/runtimeTypes";
-import { type Reader } from "../../types/bricks/readerTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
 import {
   type StarterBrick,
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
-import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
+} from "@/types/starterBrickTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { ReusableAbortController } from "abort-utils";
-import type { PlatformCapability } from "../../platform/capabilities";
-import type { PlatformProtocol } from "../../platform/platformProtocol";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   type SidebarDefinition,
   type SidebarConfig,
   type Trigger,
   SidebarTriggers,
-} from "./sidebarStarterBrickTypes";
-import { assertNotNullish, type Nullishable } from "../../utils/nullishUtils";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
-} from "../../utils/modUtils";
-import { STATE_CHANGE_JS_EVENT_TYPE } from "../../platform/state/stateTypes";
+} from "@/utils/modUtils";
+import { STATE_CHANGE_JS_EVENT_TYPE } from "@/platform/state/stateTypes";
 
 export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConfig> {
   abstract get trigger(): Trigger;

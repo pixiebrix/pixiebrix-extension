@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { boolean } from "../../utils/typeUtils";
-import type { PlatformCapability } from "../../platform/capabilities";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { boolean } from "@/utils/typeUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class SendSimpleSlackMessage extends EffectABC {
   constructor() {

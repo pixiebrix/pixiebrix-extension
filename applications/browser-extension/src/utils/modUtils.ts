@@ -37,17 +37,17 @@ import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
   propertiesToSchema,
-} from "./schemaUtils";
+} from "@/utils/schemaUtils";
 import { cloneDeep, isEmpty, mapValues, sortBy } from "lodash";
-import { isNullOrBlank } from "./stringUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import {
   type Schema,
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
 import { produce } from "immer";
-import { isStarterBrickDefinitionLike } from "../starterBricks/types";
-import { normalizeStarterBrickDefinitionProp } from "../starterBricks/starterBrickUtils";
+import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
+import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
 import {
@@ -55,9 +55,9 @@ import {
   uuidv4,
   validateRegistryId,
 } from "@/types/helpers";
-import { nowTimestamp } from "./timeUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 import { type ModInstance } from "@/types/modInstanceTypes";
-import { createPrivateSharing } from "./registryUtils";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 /**
  * Returns the ModComponentRef for a given mod component.

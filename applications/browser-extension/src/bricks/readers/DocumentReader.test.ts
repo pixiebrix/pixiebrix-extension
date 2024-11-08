@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DocumentReader from "./DocumentReader";
+import DocumentReader from "@/bricks/readers/DocumentReader";
 
 const brick = new DocumentReader();
 

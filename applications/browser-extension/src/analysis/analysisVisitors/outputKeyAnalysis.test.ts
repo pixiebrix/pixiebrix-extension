@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-import OutputKeyAnalysis from "./outputKeyAnalysis";
-import { ContextBrick } from "../../runtime/pipelineTests/testHelpers";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { AnnotationType } from "../../types/annotationTypes";
+import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
+import { ContextBrick } from "@/runtime/pipelineTests/testHelpers";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 
 describe("outputKeyAnalysis", () => {
   it("no warning", async () => {

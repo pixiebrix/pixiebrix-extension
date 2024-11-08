@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WizardStep, type WizardValues } from "./wizardTypes";
+import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import type React from "react";
 import { mapValues } from "lodash";
 import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
@@ -34,28 +34,28 @@ import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import { isPrimitive } from "../utils/typeUtils";
-import { PIXIEBRIX_INTEGRATION_ID } from "../integrations/constants";
-import getUnconfiguredComponentIntegrations from "../integrations/util/getUnconfiguredComponentIntegrations";
-import { makeDatabasePreviewName } from "./modOptionsHelpers";
+import { isPrimitive } from "@/utils/typeUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import { makeDatabasePreviewName } from "@/activation/modOptionsHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import useOrganizationActivationPolicy, {
   type OrganizationActivationPolicyResult,
-} from "./useOrganizationActivationPolicy";
-import PersonalDeploymentField from "./PersonalDeploymentField";
+} from "@/activation/useOrganizationActivationPolicy";
+import PersonalDeploymentField from "@/activation/PersonalDeploymentField";
 import useFlags from "@/hooks/useFlags";
 import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
-import type { IntegrationDependency } from "../integrations/integrationTypes";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
-import { freeze } from "../utils/objectUtils";
-import { fallbackValue } from "../utils/asyncStateUtils";
+import { freeze } from "@/utils/objectUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 import type { ModInstance } from "@/types/modInstanceTypes";
-import useFindModInstance from "../mods/hooks/useFindModInstance";
+import useFindModInstance from "@/mods/hooks/useFindModInstance";
 import {
   hasDefinedModOptions,
   normalizeModOptionsDefinition,
-} from "../utils/modUtils";
-import { getIsPersonalDeployment } from "../store/modComponents/modInstanceUtils";
+} from "@/utils/modUtils";
+import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },

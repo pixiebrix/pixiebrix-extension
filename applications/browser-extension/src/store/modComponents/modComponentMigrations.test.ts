@@ -20,17 +20,17 @@ import {
   createModMetadataForStandaloneComponent,
   inferModComponentStateVersion,
   migrateStandaloneComponentsToMods,
-} from "./modComponentMigrations";
+} from "@/store/modComponents/modComponentMigrations";
 import {
   activatedModComponentFactory,
   modComponentConfigFactory,
   modMetadataFactory,
-} from "../../testUtils/factories/modComponentFactories";
+} from "@/testUtils/factories/modComponentFactories";
 import {
   autoUUIDSequence,
   timestampFactory,
   uuidSequence,
-} from "../../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/stringFactories";
 import { omit, toLower } from "lodash";
 import {
   type ModComponentStateV0,
@@ -41,27 +41,27 @@ import {
   type ModComponentStateV5,
   type ModComponentStateV6,
   type ModComponentStateVersions,
-} from "./modComponentTypes";
+} from "@/store/modComponents/modComponentTypes";
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import {
   type ActivatedModComponentV1,
   type ActivatedModComponentV2,
   type SerializedModComponentV1,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import { produce } from "immer";
 import type {
   IntegrationDependency,
   IntegrationDependencyV1,
   IntegrationDependencyV2,
-} from "../../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import type { FactoryConfig } from "cooky-cutter/dist/define";
 import { array, define } from "cooky-cutter";
-import type { ApiVersion } from "../../types/runtimeTypes";
-import { validateRegistryId } from "../../types/helpers";
+import type { ApiVersion } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 const testUserScope = "@test-user";
 
-jest.mock("../../auth/authUtils", () => {
+jest.mock("@/auth/authUtils", () => {
   const actual = jest.requireActual("@/auth/authUtils");
   return {
     ...actual,

@@ -24,41 +24,41 @@ import {
   type VisitPipelineExtra,
 } from "@/bricks/PipelineVisitor";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
-import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
-import { getVariableKeyForSubPipeline } from "../../../pageEditor/utils";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { getVariableKeyForSubPipeline } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
-import { type Analysis, type AnalysisAnnotation } from "../../analysisTypes";
+import {
+  type Analysis,
+  type AnalysisAnnotation,
+} from "@/analysis/analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
-import { type TraceRecord } from "../../../telemetry/trace";
+import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
-import modRegistry from "../../../modDefinitions/registry";
+import modRegistry from "@/modDefinitions/registry";
 import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
   isDocumentBuilderElementArray,
   type ListElement,
-} from "../../../pageEditor/documentBuilder/documentBuilderTypes";
-import { fromJS } from "../../../starterBricks/factory";
-import { type Schema } from "../../../types/schemaTypes";
-import {
-  type Expression,
-  type TemplateEngine,
-} from "../../../types/runtimeTypes";
-import { AnnotationType } from "../../../types/annotationTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { fromJS } from "@/starterBricks/factory";
+import { type Schema } from "@/types/schemaTypes";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import {
   isDeferExpression,
   isExpression,
   isNunjucksExpression,
   isVarExpression,
-} from "../../../utils/expressionUtils";
-import { MOD_VARIABLE_REFERENCE } from "../../../runtime/extendModVariableContext";
-import { joinPathParts } from "../../../utils/formUtils";
-import makeIntegrationContextFromDependencies from "../../../integrations/util/makeIntegrationContextFromDependencies";
-import { getOutputReference, isOutputKey } from "../../../runtime/runtimeTypes";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+} from "@/utils/expressionUtils";
+import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
+import { joinPathParts } from "@/utils/formUtils";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
+import { getOutputReference, isOutputKey } from "@/runtime/runtimeTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { BusinessError } from "@/errors/businessErrors";
-import { adapterForComponent } from "../../../pageEditor/starterBricks/adapter";
-import { isInnerDefinitionRegistryId } from "../../../types/helpers";
-import { type DraftModState } from "../../../pageEditor/store/editor/pageEditorTypes";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 /** @internal */
 export const INVALID_VARIABLE_GENERIC_MESSAGE = "Invalid variable name";
@@ -437,7 +437,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * @param blockConfig the block configuration
    */
   private safeGetOutputSchema(blockConfig: BrickConfig): Schema {
-    const block = this.allBlocks.get(blockConfig.id)?.block;
+    const block = this.allBlocks.get(blockConfig.id)?.brick;
 
     if (!block) {
       return {};
@@ -641,7 +641,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
       const block = extra.parentNode?.id
         ? this.allBlocks.get(extra.parentNode.id)
         : null;
-      const variableSchema = block?.block.getPipelineVariableSchema?.(
+      const variableSchema = block?.brick.getPipelineVariableSchema?.(
         extra.parentNode,
         extra.pipelinePropName,
       );

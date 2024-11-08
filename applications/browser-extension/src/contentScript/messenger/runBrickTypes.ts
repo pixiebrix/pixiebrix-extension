@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MessageContext } from "../../types/loggerTypes";
-import { type RegistryId } from "../../types/registryTypes";
-import { type BrickArgs, type RunMetadata } from "../../types/runtimeTypes";
-import { type Availability } from "../../types/availabilityTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type BrickArgs, type RunMetadata } from "@/types/runtimeTypes";
+import { type Availability } from "@/types/availabilityTypes";
 
 /**
  * @see BrickOptions
@@ -43,7 +43,7 @@ export interface RemoteBrickOptions {
 export interface RunBrickRequest {
   sourceTabId?: number;
   nonce?: string;
-  blockId: RegistryId;
-  blockArgs?: BrickArgs;
+  brickId: RegistryId;
+  brickArgs?: BrickArgs;
   options: RemoteBrickOptions;
 }

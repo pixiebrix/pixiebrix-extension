@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useMilestones from "./useMilestones";
-import { renderHook } from "../testUtils/renderWithCommonStore";
+import useMilestones from "@/hooks/useMilestones";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 import { authSlice } from "@/auth/authSlice";
-import { appApiMock } from "../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { selectExtensionAuthState } from "@/auth/authUtils";
-import { meApiResponseFactory } from "../testUtils/factories/authFactories";
+import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { transformUserMilestoneResponse } from "@/data/model/UserMilestone";
 import { type components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
-import { milestoneFactory } from "../testUtils/factories/milestoneFactories";
+import { milestoneFactory } from "@/testUtils/factories/milestoneFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const renderUseMilestones = (

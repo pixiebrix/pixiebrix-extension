@@ -21,9 +21,9 @@ import cx from "classnames";
 // TODO: Refactor to properly share styles across components (e.g. full component inheritance);
 //   the "packageEditor/referenceTab/PackageResult" component probably doesn't expect to also affect a global component
 import styles from "@/extensionConsole/pages/packageEditor/referenceTab/PackageResult.module.scss";
-import PackageIcon from "../PackageIcon";
-import { OfficialBadge } from "../OfficialBadge";
-import { type PackageInstance } from "../../types/registryTypes";
+import PackageIcon from "@/components/PackageIcon";
+import { OfficialBadge } from "@/components/OfficialBadge";
+import { type PackageInstance } from "@/types/registryTypes";
 
 type PackageResultProps<Instance extends PackageInstance> = {
   packageInstance: Instance;

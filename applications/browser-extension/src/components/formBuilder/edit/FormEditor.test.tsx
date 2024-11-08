@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Schema, type UiSchema } from "../../../types/schemaTypes";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import testItRenders, {
   type ItRendersOptions,
-} from "../../../testUtils/testItRenders";
+} from "@/testUtils/testItRenders";
 import {
   fireEvent,
   render,
   screen,
   userEvent,
   within,
-} from "../../../pageEditor/testHelpers";
+} from "@/pageEditor/testHelpers";
 import React from "react";
 import { type Except } from "type-fest";
 import {
@@ -34,18 +34,18 @@ import {
   fireTextInput,
   fireFormSubmit,
   selectSchemaFieldInputMode,
-} from "../../../testUtils/formHelpers";
-import { type RJSFSchema } from "../formBuilderTypes";
+} from "@/testUtils/formHelpers";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import FormEditor, { type FormEditorProps } from "./FormEditor";
 import {
   initAddingFieldCases,
   initOneFieldSchemaCase,
   initRenamingCases,
-} from "../testHelpers";
+} from "@/components/formBuilder/testHelpers";
 import selectEvent from "react-select-event";
-import registerDefaultWidgets from "../../fields/schemaFields/widgets/registerDefaultWidgets";
-import FORM_FIELD_TYPE_OPTIONS from "../../../pageEditor/fields/formFieldTypeOptions";
-import { toExpression } from "../../../utils/expressionUtils";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
+import { toExpression } from "@/utils/expressionUtils";
 import { remove } from "lodash";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";

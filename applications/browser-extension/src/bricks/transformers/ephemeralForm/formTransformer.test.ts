@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormTransformer } from "./formTransformer";
-import { toExpression } from "../../../utils/expressionUtils";
-import { unsafeAssumeValidArg } from "../../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
-import { isLoadedInIframe } from "../../../utils/iframeUtils";
+import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { toExpression } from "@/utils/expressionUtils";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { cancelAll } from "../../../platform/forms/formController";
+import { cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
 import { showModal } from "@/contentScript/modalDom";
 
-jest.mock("../../../utils/iframeUtils");
-jest.mock("../../../contentScript/modalDom");
+jest.mock("@/utils/iframeUtils");
+jest.mock("@/contentScript/modalDom");
 
 const showModalMock = jest.mocked(showModal);
 

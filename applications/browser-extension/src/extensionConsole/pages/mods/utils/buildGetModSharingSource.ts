@@ -16,15 +16,11 @@
  */
 
 import type { AuthUserOrganization } from "@/auth/authTypes";
-import type {
-  Mod,
-  SharingSource,
-  SharingType,
-} from "../../../../types/modTypes";
-import { idHasScope } from "../../../../utils/modUtils";
-import { type RegistryId } from "../../../../types/registryTypes";
-import { type ModInstance } from "../../../../types/modInstanceTypes";
-import { getIsPersonalDeployment } from "../../../../store/modComponents/modInstanceUtils";
+import type { Mod, SharingSource, SharingType } from "@/types/modTypes";
+import { idHasScope } from "@/utils/modUtils";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
 
 export default function buildGetModSharingSource(
   userScope: string,

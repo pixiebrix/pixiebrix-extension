@@ -19,15 +19,15 @@ import {
   type ApiVersion,
   type BrickOptions,
   type RunMetadata,
-} from "../../types/runtimeTypes";
+} from "@/types/runtimeTypes";
 import { define, derive } from "cooky-cutter";
-import ConsoleLogger from "../../utils/ConsoleLogger";
+import ConsoleLogger from "@/utils/ConsoleLogger";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
-import { modComponentRefFactory } from "./modComponentFactories";
-import { mapModComponentRefToMessageContext } from "../../utils/modUtils";
-import type { ReduceOptions } from "../../runtime/reducePipeline";
-import apiVersionOptions from "../../runtime/apiVersionOptions";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { mapModComponentRefToMessageContext } from "@/utils/modUtils";
+import type { ReduceOptions } from "@/runtime/reducePipeline";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const runMetadataFactory = define<RunMetadata>({
   runId: null,

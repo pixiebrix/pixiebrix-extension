@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AlertEffect } from "./alert";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { validateBrickInputOutput } from "../../validators/schemaValidator";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { platformMock } from "../../testUtils/platformMock";
+import { AlertEffect } from "@/bricks/effects/alert";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { platformMock } from "@/testUtils/platformMock";
 
 const brick = new AlertEffect();
 

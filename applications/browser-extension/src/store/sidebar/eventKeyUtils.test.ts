@@ -18,12 +18,12 @@
 import {
   defaultEventKey,
   eventKeyForEntry,
-} from "./eventKeyUtils";
-import { uuidv4, validateRegistryId } from "../../types/helpers";
-import { type SidebarEntries, type SidebarState } from "../../types/sidebarTypes";
-import { sidebarEntryFactory } from "../../testUtils/factories/sidebarEntryFactories";
-import { MOD_LAUNCHER } from "./constants";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+} from "@/store/sidebar/eventKeyUtils";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type SidebarEntries, type SidebarState } from "@/types/sidebarTypes";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 describe("defaultEventKey", () => {
   it("returns undefined no content", () => {

@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { isEmpty } from "lodash";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import useAsyncState from "@/hooks/useAsyncState";
-import { cachedFetchFolder } from "./aaApi";
+import { cachedFetchFolder } from "@/contrib/automationanywhere/aaApi";
 
 const FolderIdConfigAlert: React.FC<{
   controlRoomConfig: SanitizedIntegrationConfig;

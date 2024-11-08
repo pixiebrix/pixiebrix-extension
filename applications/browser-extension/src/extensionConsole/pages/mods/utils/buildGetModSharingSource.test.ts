@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import buildGetModSharingSource from "./buildGetModSharingSource";
-import { modDefinitionFactory } from "../../../../testUtils/factories/modDefinitionFactories";
-import { modMetadataFactory } from "../../../../testUtils/factories/modComponentFactories";
-import { validateRegistryId } from "../../../../types/helpers";
-import { organizationStateFactory } from "../../../../testUtils/factories/authFactories";
+import buildGetModSharingSource from "@/extensionConsole/pages/mods/utils/buildGetModSharingSource";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { validateRegistryId } from "@/types/helpers";
+import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 import {
   modInstanceFactory,
   personalDeploymentMetadataFactory,
   teamDeploymentMetadataFactory,
-} from "../../../../testUtils/factories/modInstanceFactories";
-import { createPrivateSharing } from "../../../../utils/registryUtils";
+} from "@/testUtils/factories/modInstanceFactories";
+import { createPrivateSharing } from "@/utils/registryUtils";
 import {
   personalSharingDefinitionFactory,
   publicSharingDefinitionFactory,
   teamSharingDefinitionFactory,
-} from "../../../../testUtils/factories/registryFactories";
+} from "@/testUtils/factories/registryFactories";
 
 const userScope = "my-test-user";
 

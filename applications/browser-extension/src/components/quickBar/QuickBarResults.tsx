@@ -18,8 +18,8 @@
 import React, { forwardRef, useMemo } from "react";
 import { type ActionId, type ActionImpl, KBarResults, useMatches } from "kbar";
 import { theme, groupNameStyle } from "./quickBarTheme";
-import { useGetActionNameAndIcon } from "./utils";
-import { type Nullishable } from "../../utils/nullishUtils";
+import { useGetActionNameAndIcon } from "@/components/quickBar/utils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const ResultItem = forwardRef(
   (

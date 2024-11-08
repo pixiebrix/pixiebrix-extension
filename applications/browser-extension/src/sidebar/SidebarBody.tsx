@@ -18,9 +18,9 @@
 import React from "react";
 import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
-import RestrictedUrlPopupApp from "../tinyPages/RestrictedUrlPopupApp";
+import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
-import { getReasonByUrl as getRestrictedReasonByUrl } from "../tinyPages/restrictedUrlPopupUtils";
+import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import useTeamTrialStatus, {

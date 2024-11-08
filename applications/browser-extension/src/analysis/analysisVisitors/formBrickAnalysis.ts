@@ -22,8 +22,8 @@ import {
   PipelineFlavor,
 } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { FORM_MODAL_ID } from "../../pageEditor/fields/FormModalOptions";
-import { AnnotationType } from "../../types/annotationTypes";
+import { FORM_MODAL_ID } from "@/pageEditor/fields/FormModalOptions";
+import { AnnotationType } from "@/types/annotationTypes";
 
 class FormBrickAnalysis extends AnalysisVisitorABC {
   get id() {

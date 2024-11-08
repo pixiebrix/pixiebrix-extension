@@ -21,11 +21,11 @@ import {
   stopWaitingForTemporaryPanels,
   waitForTemporaryPanel,
   resolveTemporaryPanel,
-} from "../../../platform/panels/panelController";
-import { uuidv4 } from "../../../types/helpers";
+} from "@/platform/panels/panelController";
+import { uuidv4 } from "@/types/helpers";
 import { CancelError } from "@/errors/businessErrors";
 
-import { sidebarEntryFactory } from "../../../testUtils/factories/sidebarEntryFactories";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 describe("temporaryPanelProtocol", () => {
   it("getPanelDefinition if panel is not defined", async () => {

@@ -20,9 +20,9 @@ import {
   type PanelListener,
   removeListener,
   updateTemporaryPanel,
-} from "./receiverProtocol";
-import { type TemporaryPanelEntry } from "../../../types/sidebarTypes";
-import { validateTimedSequence } from "../../../types/helpers";
+} from "@/bricks/transformers/temporaryInfo/receiverProtocol";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
+import { validateTimedSequence } from "@/types/helpers";
 
 describe("receiverProtocol", () => {
   test("add/remove listener", async () => {

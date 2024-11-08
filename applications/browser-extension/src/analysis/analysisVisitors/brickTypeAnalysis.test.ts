@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BrickTypeAnalysis from "./brickTypeAnalysis";
+import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import brickRegistry from "@/bricks/registry";
 import CommentEffect from "@/bricks/effects/comment";
-import { sidebarPanelFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import CancelEffect from "@/bricks/effects/CancelEffect";

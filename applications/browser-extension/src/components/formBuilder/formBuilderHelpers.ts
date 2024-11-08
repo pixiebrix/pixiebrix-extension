@@ -18,18 +18,18 @@
 import { type RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { type Draft, produce } from "immer";
-import databaseSchema from "../../../schemas/database.json";
-import googleSheetSchema from "../../../schemas/googleSheetId.json";
+import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
 import { compact } from "lodash";
 import {
   KEYS_OF_UI_SCHEMA,
   type Schema,
   type SchemaDefinition,
   type SchemaPropertyType,
-} from "../../types/schemaTypes";
-import { type SafeString } from "../../types/stringTypes";
-import { freshIdentifier } from "../../utils/variableUtils";
-import { minimalSchemaFactory } from "../../utils/schemaUtils";
+} from "@/types/schemaTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const DEFAULT_FIELD_TYPE = "string";
 

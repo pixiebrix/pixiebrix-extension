@@ -17,7 +17,7 @@
 
 import React, { type ChangeEvent } from "react";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { type CustomFieldWidget } from "../../FieldTemplate";
+import { type CustomFieldWidget } from "@/components/form/FieldTemplate";
 import styles from "./SwitchButtonWidget.module.scss";
 
 export type CheckBoxLike = {

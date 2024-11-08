@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { joinName } from "./formUtils";
+import { joinName } from "@/utils/formUtils";
 
 describe("joinName", () => {
   test("rejects no paths", () => {

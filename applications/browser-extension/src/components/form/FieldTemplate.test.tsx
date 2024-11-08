@@ -21,7 +21,7 @@ import FieldTemplate, {
   type CustomFieldWidget,
   type FieldProps,
 } from "./FieldTemplate";
-import { fireTextInput } from "../../testUtils/formHelpers";
+import { fireTextInput } from "@/testUtils/formHelpers";
 
 describe("FieldTemplate", () => {
   const testLabel = "Test label";

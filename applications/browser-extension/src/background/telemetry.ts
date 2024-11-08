@@ -16,29 +16,26 @@
  */
 
 import { debounce, throttle, uniq } from "lodash";
-import { getModComponentState } from "../store/modComponents/modComponentStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
 } from "@/data/service/apiClient";
-import { allowsTrack } from "../telemetry/dnt";
+import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import {
   DATABASE_NAME,
   deleteDatabase,
   IDB_OPERATION,
   withIdbErrorHandling,
-} from "../utils/idbUtils";
-import { browserVersion, detectBrowser } from "../vendors/mixpanelBrowser";
-import { count as registrySize } from "../registry/packageRegistry";
-import { count as logSize } from "../telemetry/logging";
-import { count as traceSize } from "../telemetry/trace";
-import { getUUID } from "../telemetry/telemetryHelpers";
-import {
-  getExtensionVersion,
-  getTabsWithAccess,
-} from "../utils/extensionUtils";
-import { type TelemetryEvent } from "../telemetry/telemetryTypes";
+} from "@/utils/idbUtils";
+import { browserVersion, detectBrowser } from "@/vendors/mixpanelBrowser";
+import { count as registrySize } from "@/registry/packageRegistry";
+import { count as logSize } from "@/telemetry/logging";
+import { count as traceSize } from "@/telemetry/trace";
+import { getUUID } from "@/telemetry/telemetryHelpers";
+import { getExtensionVersion, getTabsWithAccess } from "@/utils/extensionUtils";
+import { type TelemetryEvent } from "@/telemetry/telemetryTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;

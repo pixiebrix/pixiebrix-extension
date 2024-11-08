@@ -3,8 +3,8 @@ import {
   interfaceToInputSchema,
   isCommunityControlRoom,
   selectBotOutput,
-} from "./aaUtils";
-import { type Execution } from "./contract";
+} from "@/contrib/automationanywhere/aaUtils";
+import { type Execution } from "@/contrib/automationanywhere/contract";
 
 describe("isCommunityControlRoom", () => {
   test.each([

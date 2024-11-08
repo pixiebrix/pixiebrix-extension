@@ -16,16 +16,16 @@
  */
 
 import React from "react";
-import { actions } from "../../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import DataTabJsonTree from "./DataTabJsonTree";
 import userEvent from "@testing-library/user-event";
-import { cleanup, perf } from "../../../../vendors/reactPerformanceTesting/perf";
-import { type RenderCountField } from "../../../../vendors/reactPerformanceTesting/perfTypes";
+import { cleanup, perf } from "@/vendors/reactPerformanceTesting/perf";
+import { type RenderCountField } from "@/vendors/reactPerformanceTesting/perfTypes";
 import { act, screen } from "@testing-library/react";
-import { render } from "../../../testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import * as sinonTimers from "@sinonjs/fake-timers";
-import { formStateFactory } from "../../../../testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 const data = {
   name: "test",

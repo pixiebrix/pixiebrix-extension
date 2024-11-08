@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry, { type TypedBrickMap } from "../registry";
-import type { AsyncState } from "../../types/sliceTypes";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
+import type { AsyncState } from "@/types/sliceTypes";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
 function subscribe(callback: () => void) {

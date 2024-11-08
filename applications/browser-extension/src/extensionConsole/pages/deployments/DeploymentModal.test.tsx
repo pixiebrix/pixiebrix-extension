@@ -17,19 +17,19 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import DeploymentModal from "./DeploymentModal";
+import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice, {
   initialSettingsState,
-} from "../../../store/settings/settingsSlice";
+} from "@/store/settings/settingsSlice";
 import MockDate from "mockdate";
-import { type SettingsState } from "../../../store/settings/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 import { authSlice } from "@/auth/authSlice";
-import { useExtensionUpdateAvailable } from "../UpdateBanner";
+import { useExtensionUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
 import { type AuthState } from "@/auth/authTypes";
 
-jest.mock("../UpdateBanner");
+jest.mock("@/extensionConsole/pages/UpdateBanner");
 
 browser.runtime.reload = jest.fn();
 

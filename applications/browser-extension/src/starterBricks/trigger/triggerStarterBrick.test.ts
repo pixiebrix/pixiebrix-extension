@@ -25,40 +25,40 @@ import {
   InvalidContextReader,
   RootReader,
   tick,
-} from "../testHelpers";
+} from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
 import {
   fromJS,
   getDefaultAllowInactiveFramesForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
-} from "./triggerStarterBrick";
+} from "@/starterBricks/trigger/triggerStarterBrick";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { RunReason } from "../../types/runtimeTypes";
-import { uuidSequence } from "../../testUtils/factories/stringFactories";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { RunReason } from "@/types/runtimeTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   throwBrick,
   ThrowBrick,
   ThrowTwiceBrick,
-} from "../../runtime/pipelineTests/testHelpers";
-import { showNotification } from "../../utils/notify";
+} from "@/runtime/pipelineTests/testHelpers";
+import { showNotification } from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
-import reportError from "../../telemetry/reportError";
-import reportEvent from "../../telemetry/reportEvent";
+import reportError from "@/telemetry/reportError";
+import reportEvent from "@/telemetry/reportEvent";
 import { screen, waitFor } from "@testing-library/react";
 import {
   ReportModes,
   type Trigger,
   Triggers,
-} from "./triggerStarterBrickTypes";
-import { getPlatform } from "../../platform/platformContext";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
-import { metadataFactory } from "../../testUtils/factories/metadataFactory";
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import { getPlatform } from "@/platform/platformContext";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { mockIntersectionObserver } from "jsdom-testing-mocks";
 
 const intersectionObserverMock = mockIntersectionObserver();
@@ -73,7 +73,7 @@ Object.defineProperty(document, "hidden", {
   },
 });
 
-jest.mock("../../errors/contextInvalidated", () => {
+jest.mock("@/errors/contextInvalidated", () => {
   const actual = jest.requireActual("@/errors/contextInvalidated");
   return {
     ...actual,
@@ -81,7 +81,7 @@ jest.mock("../../errors/contextInvalidated", () => {
   };
 });
 
-jest.mock("../../utils/notify");
+jest.mock("@/utils/notify");
 
 const reportErrorMock = jest.mocked(reportError);
 const reportEventMock = jest.mocked(reportEvent);

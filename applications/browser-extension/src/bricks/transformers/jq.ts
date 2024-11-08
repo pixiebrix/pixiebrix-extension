@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { InputValidationError } from "../errors";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { InputValidationError } from "@/bricks/errors";
 import { getErrorMessage, isErrorObject } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { isNullOrBlank } from "../../utils/stringUtils";
-import { retryWithJitter } from "../../utils/promiseUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { retryWithJitter } from "@/utils/promiseUtils";
 import { type JsonValue } from "type-fest";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const jqStacktraceRegexp = /jq: error \(at \/dev\/stdin:0\): (?<message>.*)/;
 

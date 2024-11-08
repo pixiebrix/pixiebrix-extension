@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RequiredMeMilestoneResponse } from "../service/responseTypeHelpers";
+import { type RequiredMeMilestoneResponse } from "@/data/service/responseTypeHelpers";
 
 import { type ValueOf } from "type-fest";
 

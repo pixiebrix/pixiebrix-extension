@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import NonScriptablePage from "./NonScriptablePage";
-import { render } from "../testHelpers";
+import NonScriptablePage from "@/pageEditor/panes/NonScriptablePage";
+import { render } from "@/pageEditor/testHelpers";
 
 describe("NonScriptablePage", () => {
   it("renders", () => {

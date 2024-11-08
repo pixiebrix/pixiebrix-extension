@@ -18,15 +18,15 @@
 import React, { useCallback } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { selectEditorModalVisibilities } from "../../store/editor/editorSelectors";
-import { actions } from "../../store/editor/editorSlice";
+import { selectEditorModalVisibilities } from "@/pageEditor/store/editor/editorSelectors";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { type EditorRootState } from "../../store/editor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import JSZip from "jszip";
 import download from "downloadjs";
 
-import { selectActivatedModComponents } from "../../../store/modComponents/modComponentSelectors";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
 
 const DiagnosticDataButton: React.FC = () => {
   const activatedModComponents = useSelector(selectActivatedModComponents);

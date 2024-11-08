@@ -19,14 +19,14 @@ import React from "react";
 import AsyncButton from "@/components/AsyncButton";
 import EmotionShadowRoot, { styleReset } from "@/components/EmotionShadowRoot";
 import { Alert } from "react-bootstrap";
-import bootstrapUrl from "../../vendors/bootstrapWithoutRem.css?loadAsUrl";
+import bootstrapUrl from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import stylesUrl from "./LoginBanners.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
-import type { DeferredLogin } from "./deferredLoginTypes";
+import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
 import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import notify from "../../utils/notify";
+import notify from "@/utils/notify";
 
 const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({
   integration,

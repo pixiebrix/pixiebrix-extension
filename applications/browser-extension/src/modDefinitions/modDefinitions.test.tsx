@@ -17,23 +17,23 @@
 
 import React, { useEffect } from "react";
 import { useAllModDefinitions } from "./modDefinitionHooks";
-import useSaveMod from "../pageEditor/hooks/useSaveMod";
-import { act, render } from "../pageEditor/testHelpers";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
+import { act, render } from "@/pageEditor/testHelpers";
 import { validateSchema } from "@/extensionConsole/pages/packageEditor/validate";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { registry as messengerRegistry } from "@/background/messenger/api";
-import * as localRegistry from "../registry/packageRegistry";
+import * as localRegistry from "@/registry/packageRegistry";
 import pDefer from "p-defer";
-import { defaultInitialValue } from "../utils/asyncStateUtils";
-import { appApiMock } from "../testUtils/appApiMock";
-import { defaultModDefinitionFactory } from "../testUtils/factories/modDefinitionFactories";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
+import { defaultInitialValue } from "@/utils/asyncStateUtils";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AsyncState } from "@/types/sliceTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../contentScript/messenger/api");
-jest.mock("../components/ConfirmationModal", () => ({
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
   useModals: () => ({
     showConfirmation: jest.fn().mockResolvedValue(true),

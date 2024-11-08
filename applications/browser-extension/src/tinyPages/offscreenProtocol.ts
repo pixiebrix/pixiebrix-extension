@@ -16,10 +16,10 @@
  */
 
 import type { SerializedError } from "@/types/messengerTypes";
-import type { TelemetryUser } from "../telemetry/telemetryTypes";
+import type { TelemetryUser } from "@/telemetry/telemetryTypes";
 import type { MessageContext } from "@/types/loggerTypes";
 import type { SemVerString } from "@/types/registryTypes";
-import type { Nullishable } from "../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 export type RecordErrorMessage = {
   target: "offscreen-doc";

@@ -17,8 +17,8 @@
 
 import React from "react";
 import { render } from "react-dom";
-import IsolatedComponent from "../IsolatedComponent";
-import type Component from "./SelectionToolPopover";
+import IsolatedComponent from "@/components/IsolatedComponent";
+import type Component from "@/components/selectionToolPopover/SelectionToolPopover";
 
 export default function showSelectionToolPopover({
   rootElement,
@@ -32,7 +32,7 @@ export default function showSelectionToolPopover({
       lazy={async () =>
         import(
           /* webpackChunkName: "isolated/SelectionToolPopover" */
-          "./SelectionToolPopover"
+          "@/components/selectionToolPopover/SelectionToolPopover"
         )
       }
       factory={(SelectionToolPopover) => <SelectionToolPopover {...props} />}

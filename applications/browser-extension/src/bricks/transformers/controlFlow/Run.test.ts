@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../registry";
+import brickRegistry from "@/bricks/registry";
 import {
   DeferredEchoBrick,
   echoBrick,
   simpleInput,
   throwBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { reducePipeline } from "../../../runtime/reducePipeline";
-import Run from "./Run";
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import Run from "@/bricks/transformers/controlFlow/Run";
 import pDefer from "p-defer";
-import { toExpression } from "../../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const runBlock = new Run();
 

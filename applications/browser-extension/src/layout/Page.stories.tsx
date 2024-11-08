@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import Page from "./Page";
+import Page from "@/layout/Page";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { Button } from "react-bootstrap";
 

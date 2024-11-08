@@ -27,16 +27,16 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import useDeleteDraftModComponent from "../hooks/useDeleteDraftModComponent";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import useDeleteDraftModComponent from "@/pageEditor/hooks/useDeleteDraftModComponent";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectGetSiblingDraftModComponents,
   selectModComponentIsDirty,
-} from "../store/editor/editorSelectors";
-import useClearModComponentChanges from "../hooks/useClearModComponentChanges";
-import { actions } from "../store/editor/editorSlice";
-import { type AppDispatch } from "../store/store";
+} from "@/pageEditor/store/editor/editorSelectors";
+import useClearModComponentChanges from "@/pageEditor/hooks/useClearModComponentChanges";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type AppDispatch } from "@/pageEditor/store/store";
 
 const ModComponentActionMenu: React.FC<{
   modComponentFormState: ModComponentFormState;

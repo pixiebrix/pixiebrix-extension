@@ -23,41 +23,47 @@ import {
   updateSidebar,
   removeModComponents as removeSidebars,
   getReservedPanelEntries,
-} from "../sidebarController";
-import { handleMenuAction } from "../contextMenus";
+} from "@/contentScript/sidebarController";
+import { handleMenuAction } from "@/contentScript/contextMenus";
 import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "../../platform/forms/formController";
+} from "@/platform/forms/formController";
 import { checkAvailable } from "@/bricks/available";
-import notify from "../../utils/notify";
-import { getState, setState } from "../stateController/stateController";
+import notify from "@/utils/notify";
+import {
+  getState,
+  setState,
+} from "@/contentScript/stateController/stateController";
 import {
   cancelTemporaryPanels,
   getPanelDefinition,
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
-} from "../../platform/panels/panelController";
-import { closeWalkthroughModal } from "../walkthroughModalProtocol";
+} from "@/platform/panels/panelController";
+import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
 import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
-import { cancelSelect } from "../pageEditor/elementPicker";
-import { reloadActivationEnhancements } from "../loadActivationEnhancementsCore";
-import { getAttributeExamples } from "../pageEditor/elementInformation";
-import selectElement from "../pageEditor/selectElement";
-import { insertButton } from "../pageEditor/insertButton";
-import { disableOverlay, enableOverlay } from "../pageEditor/draft/overlay";
-import { runMapArgs } from "../pipelineProtocol/runMapArgs";
+import { cancelSelect } from "@/contentScript/pageEditor/elementPicker";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+import selectElement from "@/contentScript/pageEditor/selectElement";
+import { insertButton } from "@/contentScript/pageEditor/insertButton";
+import {
+  disableOverlay,
+  enableOverlay,
+} from "@/contentScript/pageEditor/draft/overlay";
+import { runMapArgs } from "@/contentScript/pipelineProtocol/runMapArgs";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
-import { showBannerFromConfig } from "../integrations/deferredLoginController";
-import { runBrickPreview } from "../pageEditor/runBrickPreview";
-import { runBrick } from "../executor";
-import { runHeadlessPipeline } from "../pipelineProtocol/runHeadlessPipeline";
-import { runRendererBrick } from "../pageEditor/runRendererBrick";
-import { runRendererPipeline } from "../pipelineProtocol/runRendererPipeline";
-import { runStarterBrickReaderPreview } from "../pageEditor/draft/runStarterBrickReaderPreview";
+import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController";
+import { runBrickPreview } from "@/contentScript/pageEditor/runBrickPreview";
+import { runBrick } from "@/contentScript/executor";
+import { runHeadlessPipeline } from "@/contentScript/pipelineProtocol/runHeadlessPipeline";
+import { runRendererBrick } from "@/contentScript/pageEditor/runRendererBrick";
+import { runRendererPipeline } from "@/contentScript/pipelineProtocol/runRendererPipeline";
+import { runStarterBrickReaderPreview } from "@/contentScript/pageEditor/draft/runStarterBrickReaderPreview";
 import {
   activatePrerenderedTab,
   ensureStarterBricksInstalled,
@@ -66,10 +72,10 @@ import {
   reloadFrameMods,
   removeActivatedModComponent,
   removeDraftModComponents,
-} from "../lifecycle";
-import { updateDraftModComponent } from "../pageEditor/draft/updateDraftModComponent";
-import { resetTab } from "../pageEditor/resetTab";
-import { emitAudioEvent } from "../audio";
+} from "@/contentScript/lifecycle";
+import { updateDraftModComponent } from "@/contentScript/pageEditor/draft/updateDraftModComponent";
+import { resetTab } from "@/contentScript/pageEditor/resetTab";
+import { emitAudioEvent } from "@/contentScript/audio";
 
 declare global {
   interface MessengerMethods {

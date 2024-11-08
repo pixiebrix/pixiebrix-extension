@@ -15,19 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { activateDeployments } from "./activateDeployments";
-import useAutoDeploy from "./useAutoDeploy";
-import { renderHook } from "../../testHelpers";
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
+import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import useFlags from "@/hooks/useFlags";
-import useModPermissions from "../../../mods/hooks/useModPermissions";
-import { activatableDeploymentFactory } from "../../../testUtils/factories/deploymentFactories";
-import type { ActivatableDeployment } from "../../../types/deploymentTypes";
-import { modInstanceFactory } from "../../../testUtils/factories/modInstanceFactories";
-import { type AppDispatch } from "../../store";
+import useModPermissions from "@/mods/hooks/useModPermissions";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { type AppDispatch } from "@/extensionConsole/store";
+import { waitForValueToChange } from "@/testUtils/renderHookHelpers";
+import { array } from "cooky-cutter";
+import pDefer from "p-defer";
 
-jest.mock("../../../mods/hooks/useModPermissions");
-jest.mock("../../../hooks/useFlags");
-jest.mock("./activateDeployments");
+jest.mock("@/mods/hooks/useModPermissions");
+jest.mock("@/hooks/useFlags");
+jest.mock("@/extensionConsole/pages/deployments/activateDeployments");
 
 const mockHooks = ({
   restricted = true,
@@ -39,7 +42,7 @@ const mockHooks = ({
   activateDeploymentsResponse?: (dispatch: AppDispatch) => Promise<void>;
 } = {}) => {
   jest.mocked(useFlags).mockImplementation(() => ({
-    ...jest.requireActual("../../../hooks/useFlags"),
+    ...jest.requireActual("@/hooks/useFlags"),
     restrict: () => restricted,
   }));
 
@@ -105,7 +108,7 @@ describe("useAutoDeploy", () => {
       const modInstances = [modInstanceFactory(), modInstanceFactory()];
       const extensionUpdateRequired = false;
 
-      const { result, waitForValueToChange } = renderHook(() =>
+      const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
           modInstances,
@@ -133,7 +136,7 @@ describe("useAutoDeploy", () => {
       const modInstances = [modInstanceFactory(), modInstanceFactory()];
       const extensionUpdateRequired = false;
 
-      const { result, waitForValueToChange } = renderHook(() =>
+      const { result } = renderHook(() =>
         useAutoDeploy({
           activatableDeployments,
           modInstances,
@@ -149,25 +152,21 @@ describe("useAutoDeploy", () => {
     });
 
     it("should only attempt to activate deployments once", async () => {
-      const promise = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, 1000);
-      });
+      const deferredPromise = pDefer<void>();
 
       mockHooks({
         async activateDeploymentsResponse() {
-          await promise;
+          await deferredPromise.promise;
         },
       });
 
       const activatableDeployment: ActivatableDeployment =
         activatableDeploymentFactory();
 
-      const modInstances = [modInstanceFactory(), modInstanceFactory()];
+      const modInstances = array(modInstanceFactory, 2)();
       const extensionUpdateRequired = false;
 
-      const { result, rerender, waitForValueToChange } = renderHook(
+      const { result, rerender } = renderHook(
         ({ activatableDeployments }) =>
           useAutoDeploy({
             activatableDeployments,
@@ -184,6 +183,8 @@ describe("useAutoDeploy", () => {
       rerender({ activatableDeployments: [activatableDeployment] });
 
       expect(activateDeployments).toHaveBeenCalledTimes(1);
+
+      deferredPromise.resolve();
 
       await waitForValueToChange(() => result.current.isAutoDeploying);
 

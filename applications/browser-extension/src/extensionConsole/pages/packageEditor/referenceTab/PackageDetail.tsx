@@ -29,13 +29,13 @@ import {
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
-import { type Schema } from "../../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import PackageIcon from "@/components/PackageIcon";
-import { writeToClipboard } from "../../../../utils/clipboardUtils";
-import { type PackageInstance } from "../../../../types/registryTypes";
-import { MARKETPLACE_URL } from "../../../../urlConstants";
-import { type Nullishable } from "../../../../utils/nullishUtils";
+import { writeToClipboard } from "@/utils/clipboardUtils";
+import { type PackageInstance } from "@/types/registryTypes";
+import { MARKETPLACE_URL } from "@/urlConstants";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";

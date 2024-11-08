@@ -16,21 +16,21 @@
  */
 
 import React, { useContext, useEffect } from "react";
-import ModsPageTableLayout from "./ModsPageTableLayout";
+import ModsPageTableLayout from "@/extensionConsole/pages/mods/ModsPageTableLayout";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
-import { ErrorDisplay } from "../../../layout/ErrorDisplay";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
+import { ErrorDisplay } from "@/layout/ErrorDisplay";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import Modals from "./modals/Modals";
-import { useAllModDefinitions } from "../../../modDefinitions/modDefinitionHooks";
+import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import {
   useGetEditablePackagesQuery,
   useGetFeatureFlagsQuery,
   useGetMarketplaceListingsQuery,
 } from "@/data/service/api";
-import DeploymentsContext from "../deployments/DeploymentsContext";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import { useDispatch } from "react-redux";
-import modsPageSlice from "./modsPageSlice";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 
 const ModsPage: React.FunctionComponent = () => {
   useSetDocumentTitle("Mods");

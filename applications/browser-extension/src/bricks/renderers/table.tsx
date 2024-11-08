@@ -15,14 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RendererABC } from "../../types/bricks/rendererTypes";
-import makeDataTable, { type ColumnDefinition, type Row } from "./dataTable";
+import { RendererABC } from "@/types/bricks/rendererTypes";
+import makeDataTable, {
+  type ColumnDefinition,
+  type Row,
+} from "@/bricks/renderers/dataTable";
 import { BusinessError } from "@/errors/businessErrors";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type SafeHTML } from "../../types/stringTypes";
-import { isNullOrBlank } from "../../utils/stringUtils";
-import { isObject } from "../../utils/objectUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type SafeHTML } from "@/types/stringTypes";
+import { isNullOrBlank } from "@/utils/stringUtils";
+import { isObject } from "@/utils/objectUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 function makeLinkRenderer(href: string) {
   return (value: unknown, row: Row) => {

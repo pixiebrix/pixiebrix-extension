@@ -20,9 +20,9 @@ import { render } from "@testing-library/react";
 import React from "react";
 import EphemeralForm from "./EphemeralForm";
 import { screen } from "shadow-dom-testing-library";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
-jest.mock("../../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
 const getFormDefinitionMock = jest.mocked(getFormDefinition);
 

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../../types/stringTypes";
-import { type RuntimeState } from "./runtimeSliceTypes";
-import { isTraceError, type TraceRecord } from "../../../telemetry/trace";
-import { type EditorState } from "../editor/pageEditorTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RuntimeState } from "@/pageEditor/store/runtime/runtimeSliceTypes";
+import { isTraceError, type TraceRecord } from "@/telemetry/trace";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import { getLatestBrickCall } from "../../../telemetry/traceHelpers";
+import { getLatestBrickCall } from "@/telemetry/traceHelpers";
 import {
   selectActiveModComponentId,
   selectActiveNodeId,

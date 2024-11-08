@@ -16,25 +16,25 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { type SchemaFieldProps } from "../../propTypes";
-import { type InputModeOption } from "../templateToggleWidgetTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { type InputModeOption } from "@/components/fields/schemaFields/widgets/templateToggleWidgetTypes";
 import styles from "./CssSpacingWidget.module.scss";
-import { UnstyledButton } from "../../../../UnstyledButton";
+import { UnstyledButton } from "@/components/UnstyledButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import {
   calculateNextSpacing,
   extractSpacing,
   parseValue,
-} from "./utils";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
 import {
   type Spacing,
   type Value,
-} from "./types";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/types";
 import { useField } from "formik";
 
 import Select from "react-select";
-import { type Option } from "../../../../form/widgets/SelectWidget";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 import cx from "classnames";
 
 export interface CssSpacingWidgetControls {

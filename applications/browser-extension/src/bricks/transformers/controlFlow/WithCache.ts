@@ -15,30 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { uuidv4, validateRegistryId } from "../../../types/helpers";
-import { type Schema } from "../../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type PipelineExpression,
-} from "../../../types/runtimeTypes";
+} from "@/types/runtimeTypes";
 import { deserializeError, serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
-import { isNullOrBlank } from "../../../utils/stringUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 import { isEmpty } from "lodash";
 import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
-import { type BrickConfig } from "../../types";
-import { castTextLiteralOrThrow } from "../../../utils/expressionUtils";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
+import { type BrickConfig } from "@/bricks/types";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   MergeStrategies,
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
-} from "../../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 import { ContextError } from "@/errors/genericErrors";
 import pDefer from "p-defer";
-import type { UUID } from "../../../types/stringTypes";
+import type { UUID } from "@/types/stringTypes";
 
 type Args = {
   body: PipelineExpression;

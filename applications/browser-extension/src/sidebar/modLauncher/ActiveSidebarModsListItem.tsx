@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ActiveSidebarModsListItem.module.scss";
+import styles from "@/sidebar/modLauncher/ActiveSidebarModsListItem.module.scss";
 
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
-import { type PanelEntry } from "../../types/sidebarTypes";
+import { type PanelEntry } from "@/types/sidebarTypes";
 import { useDispatch, useSelector } from "react-redux";
-import sidebarSlice from "../../store/sidebar/sidebarSlice";
-import { selectEventData } from "../../telemetry/deployments";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import { eventKeyForEntry } from "../../store/sidebar/eventKeyUtils";
-import { MOD_LAUNCHER } from "../../store/sidebar/constants";
-import { splitStartingEmoji } from "../../utils/stringUtils";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { selectEventData } from "@/telemetry/deployments";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
-import { DEFAULT_TEXT_ICON_COLOR } from "../../icons/constants";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
-import { type ActivatedModComponent } from "../../types/modComponentTypes";
-import { selectModComponentFromEventKey } from "../sidebarSelectors";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { selectModComponentFromEventKey } from "@/sidebar/sidebarSelectors";
 
 /**
  * Returns the emoji icon and title for a given heading

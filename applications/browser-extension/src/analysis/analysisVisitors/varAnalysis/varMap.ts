@@ -16,7 +16,7 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
-import { stripOptionalChaining } from "../../../utils/variableUtils";
+import { stripOptionalChaining } from "@/utils/variableUtils";
 
 export enum VarExistence {
   MAYBE = "MAYBE",

@@ -16,12 +16,12 @@
  */
 
 import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
-import notify from "../utils/notify";
+import notify from "@/utils/notify";
 import {
   parseModActivationUrlSearchParams,
   isActivationUrl,
-} from "./activationLinkUtils";
-import { DEFAULT_SERVICE_URL } from "../urlConstants";
+} from "@/activation/activationLinkUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 export default function activateLinkClickHandler(
   event: MouseEvent,

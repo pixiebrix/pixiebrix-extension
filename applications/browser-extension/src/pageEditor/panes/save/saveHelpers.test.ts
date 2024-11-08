@@ -18,40 +18,40 @@
 import {
   buildNewMod,
   generateScopeBrickId,
-} from "./saveHelpers";
-import { validateRegistryId } from "../../../types/helpers";
+} from "@/pageEditor/panes/save/saveHelpers";
+import { validateRegistryId } from "@/types/helpers";
 import {
   internalStarterBrickMetaFactory,
   lookupStarterBrick,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "../../starterBricks/base";
+} from "@/pageEditor/starterBricks/base";
 import { produce } from "immer";
 import { range, uniq } from "lodash";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
-} from "../../../starterBricks/types";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import { validateOutputKey } from "../../../runtime/runtimeTypes";
+} from "@/starterBricks/types";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   DefinitionKinds,
   type InnerDefinitionRef,
-} from "../../../types/registryTypes";
-import { type UnsavedModDefinition } from "../../../types/modDefinitionTypes";
-import { type SerializedModComponent } from "../../../types/modComponentTypes";
-import { modComponentFactory } from "../../../testUtils/factories/modComponentFactories";
+} from "@/types/registryTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import { type SerializedModComponent } from "@/types/modComponentTypes";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   starterBrickDefinitionFactory,
   starterBrickInnerDefinitionFactory,
   versionedModDefinitionWithHydratedModComponents,
-} from "../../../testUtils/factories/modDefinitionFactories";
-import { integrationDependencyFactory } from "../../../testUtils/factories/integrationFactories";
-import { normalizeModDefinition } from "../../../utils/modUtils";
-import { adapter } from "../../starterBricks/adapter";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { normalizeModDefinition } from "@/utils/modUtils";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
 import { array } from "cooky-cutter";
 
-jest.mock("../../starterBricks/base", () => ({
+jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
   lookupStarterBrick: jest.fn(),
 }));

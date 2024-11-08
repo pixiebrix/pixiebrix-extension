@@ -16,14 +16,14 @@
  */
 
 import { localStorage } from "redux-persist-webextension-storage";
-import { type StorageInterface } from "../StorageInterface";
-import { type SidebarState } from "../../types/sidebarTypes";
+import { type StorageInterface } from "@/store/StorageInterface";
+import { type SidebarState } from "@/types/sidebarTypes";
 import {
   readReduxStorage,
   setReduxStorage,
   validateReduxStorageKey,
-} from "../../utils/storageUtils";
-import { initialSidebarState } from "./initialState";
+} from "@/utils/storageUtils";
+import { initialSidebarState } from "@/store/sidebar/initialState";
 
 /** @internal */
 export const STORAGE_KEY = validateReduxStorageKey("persist:sidebar");

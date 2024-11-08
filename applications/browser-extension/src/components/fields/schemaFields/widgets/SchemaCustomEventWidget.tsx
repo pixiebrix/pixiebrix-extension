@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SchemaSelectWidget from "./SchemaSelectWidget";
-import { selectKnownEventNamesForActiveModComponent } from "../../../../pageEditor/store/editor/editorSelectors";
-import { type SchemaFieldProps } from "../propTypes";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { selectKnownEventNamesForActiveModComponent } from "@/pageEditor/store/editor/editorSelectors";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
 import { useSelector } from "react-redux";
 

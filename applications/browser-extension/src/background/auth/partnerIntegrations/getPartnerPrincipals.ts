@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PartnerPrincipal } from "./types";
-import { expectContext } from "../../../utils/expectContext";
+import { type PartnerPrincipal } from "@/background/auth/partnerIntegrations/types";
+import { expectContext } from "@/utils/expectContext";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../../../integrations/constants";
+} from "@/integrations/constants";
 import { compact, flatten } from "lodash";
-import { integrationConfigLocator as serviceLocator } from "../../integrationConfigLocator";
-import { canParseUrl } from "../../../utils/urlUtils";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
+import { canParseUrl } from "@/utils/urlUtils";
 
 /**
  * Return principals for configured remote partner integrations.

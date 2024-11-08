@@ -18,11 +18,11 @@
 import React from "react";
 import SelectorSelectorWidget, {
   type SelectorSelectorProps,
-} from "./SelectorSelectorWidget";
-import { type Schema } from "../../types/schemaTypes";
+} from "@/pageEditor/fields/SelectorSelectorWidget";
+import { type Schema } from "@/types/schemaTypes";
 import OptionIcon from "@/components/fields/schemaFields/optionIcon/OptionIcon";
 import { type CustomFieldDefinitions } from "@/components/fields/schemaFields/schemaFieldTypes";
-import { isTemplateExpression } from "../../utils/expressionUtils";
+import { isTemplateExpression } from "@/utils/expressionUtils";
 import { customWidgets } from "@/components/fields/schemaFields/SchemaFieldContext";
 
 const ClearableSelectorWidget: React.FunctionComponent<

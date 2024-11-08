@@ -16,25 +16,28 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { actions, actions as editorActions } from "../store/editor/editorSlice";
+import {
+  actions,
+  actions as editorActions,
+} from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import ErrorBoundary from "@/components/ErrorBoundary";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Effect from "@/components/Effect";
-import ModComponentFormStateWizard from "../layout/ModComponentFormStateWizard";
+import ModComponentFormStateWizard from "@/pageEditor/layout/ModComponentFormStateWizard";
 import { logActions } from "@/components/logViewer/logSlice";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveModComponentFormState,
   selectEditorUpdateKey,
-} from "../store/editor/editorSelectors";
-import IntegrationsSliceModIntegrationsContextAdapter from "../../integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import useRegisterDraftModInstanceOnAllFrames from "../hooks/useRegisterDraftModInstanceOnAllFrames";
+} from "@/pageEditor/store/editor/editorSelectors";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
-import type { EditorRootState } from "../store/editor/pageEditorTypes";
-import type { AppDispatch } from "../store/store";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import type { AppDispatch } from "@/pageEditor/store/store";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor

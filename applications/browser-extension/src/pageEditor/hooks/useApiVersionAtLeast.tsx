@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "../../types/runtimeTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import { useField } from "formik";
 import { useContext } from "react";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { isApiVersionAtLeast } from "../../runtime/runtimeUtils";
+import { isApiVersionAtLeast } from "@/runtime/runtimeUtils";
 
 function useApiVersionAtLeast(atLeast: ApiVersion): boolean {
   const [{ value: formValuesApiVersion }] = useField<ApiVersion>("apiVersion");

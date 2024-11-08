@@ -16,7 +16,10 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { setInspectedTabId, inspectedTab } from "./connection";
+import {
+  setInspectedTabId,
+  inspectedTab,
+} from "@/pageEditor/context/connection";
 import useAsyncState from "@/hooks/useAsyncState";
 import { queryTabs } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";

@@ -17,7 +17,7 @@
 
 /** @file CKEditor methods that call JS methods on the CKEditor instance */
 
-import { forbidContext } from "../../utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { BusinessError } from "@/errors/businessErrors";
 
 /**

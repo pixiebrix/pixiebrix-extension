@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DocumentBuilderElementType } from "./documentBuilderTypes";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 
 const documentBuilderElementTypeLabels: Record<
   DocumentBuilderElementType,

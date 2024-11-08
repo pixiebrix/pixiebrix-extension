@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import IntegrationConfigLocator from "../integrations/integrationConfigLocator";
-import { expectContext } from "../utils/expectContext";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
+import IntegrationConfigLocator from "@/integrations/integrationConfigLocator";
+import { expectContext } from "@/utils/expectContext";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 /**
  * Singleton IntegrationConfigLocator instance.

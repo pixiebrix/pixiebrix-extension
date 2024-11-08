@@ -17,10 +17,10 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import PaginatedTable from "./PaginatedTable";
+import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { type Column } from "react-table";
 import { MemoryRouter } from "react-router";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 describe("initialRecord", () => {
   it("renders empty table", () => {

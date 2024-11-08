@@ -16,17 +16,20 @@
  */
 
 import { useField } from "formik";
-import useSanitizedIntegrationConfigFormikAdapter from "../../integrations/useSanitizedIntegrationConfigFormikAdapter";
-import { UIPATH_SERVICE_IDS } from "./process";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
+import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { useMemo } from "react";
-import { releaseSchema } from "./typeUtils";
-import { optionalFactory } from "../remoteOptionUtils";
+import { releaseSchema } from "@/contrib/uipath/typeUtils";
+import { optionalFactory } from "@/contrib/remoteOptionUtils";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type ODataResponseData, type Release } from "./uipathContract";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import cachePromise from "../../utils/cachePromise";
+import {
+  type ODataResponseData,
+  type Release,
+} from "@/contrib/uipath/uipathContract";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import cachePromise from "@/utils/cachePromise";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getPlatform } from "../../platform/platformContext";
+import { getPlatform } from "@/platform/platformContext";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
 

@@ -17,11 +17,11 @@
 
 import { type BrickPosition } from "@/bricks/types";
 import TemplateAnalysis from "./templateAnalysis";
-import { toExpression } from "../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
-import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../testUtils/factories/brickFactories";
-import { type Expression } from "../../types/runtimeTypes";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { type Expression } from "@/types/runtimeTypes";
 
 const position: BrickPosition = {
   path: "test.path.property",

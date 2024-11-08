@@ -16,7 +16,7 @@
  */
 // See similar file in the App codebase
 
-import { API_PATHS } from "./urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // See REST_FRAMEWORK["DEFAULT_VERSION"] in the Django settings
 const DEFAULT_API_VERSION = "1.0";

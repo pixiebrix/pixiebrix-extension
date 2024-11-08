@@ -19,7 +19,7 @@ import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import OnboardingChecklistCard, {
   OnboardingStep,
-} from "./OnboardingChecklistCard";
+} from "@/components/onboarding/OnboardingChecklistCard";
 
 export default {
   title: "Components/OnboardingChecklistCard",

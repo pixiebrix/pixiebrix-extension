@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { type IntegrationDependency } from "../integrationTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { groupBy, isEmpty } from "lodash";
-import { isSchemaServicesFormat } from "../../modDefinitions/util/isSchemaServicesFormat";
-import { type Schema } from "../../types/schemaTypes";
-import extractIntegrationIdsFromSchema from "./extractIntegrationIdsFromSchema";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { type OutputKey } from "../../types/runtimeTypes";
-import { type RegistryId } from "../../types/registryTypes";
+import { isSchemaServicesFormat } from "@/modDefinitions/util/isSchemaServicesFormat";
+import { type Schema } from "@/types/schemaTypes";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
   return Object.entries(services.properties ?? {}).flatMap(([key, schema]) => {

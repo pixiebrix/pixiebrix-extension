@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Expression } from "../../types/runtimeTypes";
+import { type Expression } from "@/types/runtimeTypes";
 import {
   fieldLabel,
   getPreviewValues,
   isMustacheOnly,
-} from "./fieldUtils";
-import { toExpression } from "../../utils/expressionUtils";
+} from "@/components/fields/fieldUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 test("returns value for an expression", () => {
   const expectedValue = "nunjucks template with var {{@data}}";

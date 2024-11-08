@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getUUID, uuidStorage } from "../telemetry/telemetryHelpers";
-import useAsyncExternalStore from "./useAsyncExternalStore";
+import { getUUID, uuidStorage } from "@/telemetry/telemetryHelpers";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
 import type { UUID } from "@/types/stringTypes";
 

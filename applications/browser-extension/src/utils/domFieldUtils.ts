@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setCKEditorData } from "../pageScript/messenger/api";
+import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
-import { boolean } from "./typeUtils";
+import { boolean } from "@/utils/typeUtils";
 import { isDraftJsField, setDraftJs } from "@/contrib/draftjs/draftJsDom";
 
 export type FieldElement =

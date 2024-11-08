@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { loadImageAsBase64 } from "../../utils/imageUtils";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { loadImageAsBase64 } from "@/utils/imageUtils";
 
 export class ImageReader extends ReaderABC {
   override defaultOutputKey = "image";

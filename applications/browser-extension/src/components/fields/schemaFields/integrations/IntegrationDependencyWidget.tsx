@@ -16,39 +16,36 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import { type SchemaFieldProps } from "../propTypes";
-import { PACKAGE_REGEX } from "../../../../types/helpers";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { PACKAGE_REGEX } from "@/types/helpers";
 import { type AuthOption } from "@/auth/authTypes";
 import {
   type IntegrationsFormSlice,
   produceExcludeUnusedDependencies,
-} from "./integrationDependencyFieldUtils";
+} from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { isEmpty, isEqual, unset } from "lodash";
-import { type SelectWidgetOnChange } from "../../../form/widgets/SelectWidget";
-import IntegrationAuthSelectWidget from "./IntegrationAuthSelectWidget";
+import { type SelectWidgetOnChange } from "@/components/form/widgets/SelectWidget";
+import IntegrationAuthSelectWidget from "@/components/fields/schemaFields/integrations/IntegrationAuthSelectWidget";
 import {
   type Expression,
   type IntegrationDependencyVarRef,
   type OutputKey,
-} from "../../../../types/runtimeTypes";
-import { type RegistryId } from "../../../../types/registryTypes";
-import { type SafeString, type UUID } from "../../../../types/stringTypes";
-import { type IntegrationDependency } from "../../../../integrations/integrationTypes";
-import {
-  freshIdentifier,
-  makeVariableExpression,
-} from "../../../../utils/variableUtils";
+} from "@/types/runtimeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { freshIdentifier, makeVariableExpression } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
-import reportEvent from "../../../../telemetry/reportEvent";
-import { Events } from "../../../../telemetry/events";
-import extractIntegrationIdsFromSchema from "../../../../integrations/util/extractIntegrationIdsFromSchema";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
-import { type FieldAnnotation } from "../../../form/FieldAnnotation";
-import { freeze } from "../../../../utils/objectUtils";
-import { fallbackValue } from "../../../../utils/asyncStateUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
+import { freeze } from "@/utils/objectUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 export type IntegrationDependencyWidgetProps = SchemaFieldProps & {
   /** Set the value of the field on mount to the integration auth already selected, or the only available credential (default=true) */

@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../../../testHelpers";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import useReactivateMod from "./useReactivateMod";
-import { actions as modComponentActions } from "../../../../store/modComponents/modComponentSlice";
-import { deactivateMod } from "../../../../store/deactivateModHelpers";
-import { type ModComponentsRootState } from "../../../../store/modComponents/modComponentTypes";
-import { defaultModDefinitionFactory } from "../../../../testUtils/factories/modDefinitionFactories";
-import { selectActivatedModComponents } from "../../../../store/modComponents/modComponentSelectors";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import { deactivateMod } from "@/store/deactivateModHelpers";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { act } from "@testing-library/react";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -32,7 +33,6 @@ test("deactivates mod components", async () => {
 
   const {
     result: { current: reactivateMod },
-    act,
     getReduxStore,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
@@ -64,7 +64,6 @@ test("dispatches activate mod action", async () => {
 
   const {
     result: { current: reactivateMod },
-    act,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(

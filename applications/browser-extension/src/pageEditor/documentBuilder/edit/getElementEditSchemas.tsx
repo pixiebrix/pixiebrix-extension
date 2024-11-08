@@ -16,11 +16,11 @@
  */
 
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { type DocumentBuilderElementType } from "../documentBuilderTypes";
+import { type DocumentBuilderElementType } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import React from "react";
-import { VALID_HEADER_TAGS } from "../allowedElementTypes";
-import { joinName } from "../../../utils/formUtils";
-import { type UiSchema } from "../../../types/schemaTypes";
+import { VALID_HEADER_TAGS } from "@/pageEditor/documentBuilder/allowedElementTypes";
+import { joinName } from "@/utils/formUtils";
+import { type UiSchema } from "@/types/schemaTypes";
 
 function getClassNameEdit(
   elementName: string,

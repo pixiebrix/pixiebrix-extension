@@ -23,7 +23,7 @@ import {
   checkAvailable,
   normalizeAvailability,
   testMatchPatterns,
-} from "./available";
+} from "@/bricks/available";
 
 describe("normalizeAvailability", () => {
   it("adds missing", () => {

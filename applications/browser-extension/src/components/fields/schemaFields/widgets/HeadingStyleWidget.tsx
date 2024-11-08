@@ -17,11 +17,11 @@
 
 import React from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import cx from "classnames";
 import styles from "./HeadingStyleWidget.module.scss";
 import { useField } from "formik";
-import { VALID_HEADER_TAGS } from "../../../../pageEditor/documentBuilder/allowedElementTypes";
+import { VALID_HEADER_TAGS } from "@/pageEditor/documentBuilder/allowedElementTypes";
 
 const HeadingStyleWidget: React.FunctionComponent<SchemaFieldProps> = (
   props,

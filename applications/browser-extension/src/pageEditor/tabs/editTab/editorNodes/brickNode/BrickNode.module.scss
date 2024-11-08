@@ -16,7 +16,7 @@
  */
 
 @use "sass:math";
-@import "@/pageEditor/tabs/editTab/editTabVariables";
+@import "@/pageEditor/tabs/editTab/editTabVariables.scss";
 
 $closedHandleHeight: 28px;
 $closedHandleWidth: 24px;

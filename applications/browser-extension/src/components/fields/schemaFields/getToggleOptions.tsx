@@ -8,7 +8,7 @@ import {
 } from "./widgets/templateToggleWidgetTypes";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
-import { type CustomFieldToggleMode } from "./schemaFieldTypes";
+import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
 import {
   isDatabaseField,
   isGoogleSheetIdField,
@@ -21,10 +21,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
-import { IntegrationDependencyFieldDescription } from "./integrations/IntegrationDependencyField";
-import { isCustomizableObjectSchema } from "./widgets/widgetUtils";
-import { type Schema } from "../../../types/schemaTypes";
-import { isTemplateExpression, toExpression } from "../../../utils/expressionUtils";
+import { IntegrationDependencyFieldDescription } from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
+import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
+import { type Schema } from "@/types/schemaTypes";
+import { isTemplateExpression, toExpression } from "@/utils/expressionUtils";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;

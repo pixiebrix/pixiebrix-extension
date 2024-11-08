@@ -19,15 +19,15 @@ import React from "react";
 import { Badge, Dropdown, DropdownButton } from "react-bootstrap";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useAddNewModComponent from "../hooks/useAddNewModComponent";
+import useAddNewModComponent from "@/pageEditor/hooks/useAddNewModComponent";
 import { useSelector } from "react-redux";
-import { selectTabHasPermissions } from "../store/tabState/tabStateSelectors";
+import { selectTabHasPermissions } from "@/pageEditor/store/tabState/tabStateSelectors";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import reportEvent from "../../telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectSessionId } from "../store/session/sessionSelectors";
-import { inspectedTab } from "../context/connection";
-import { useAvailableFormStateAdapters } from "../starterBricks/adapter";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { useAvailableFormStateAdapters } from "@/pageEditor/starterBricks/adapter";
 
 const TEMPLATE_TELEMETRY_SOURCE = "starter_brick_menu";
 

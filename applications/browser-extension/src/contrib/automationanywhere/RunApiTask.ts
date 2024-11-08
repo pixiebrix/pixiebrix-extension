@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { validateRegistryId } from "../../types/helpers";
-import { type Schema } from "../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../../integrations/constants";
+} from "@/integrations/constants";
 import {
   DEFAULT_MAX_WAIT_MILLIS,
   pollEnterpriseResult,
   runApiTask,
-} from "./aaApi";
-import { type ApiTaskArgs } from "./aaTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
+} from "@/contrib/automationanywhere/aaApi";
+import { type ApiTaskArgs } from "@/contrib/automationanywhere/aaTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { minimalSchemaFactory } from "../../utils/schemaUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import { type SetRequired } from "type-fest";
 
 export const RUN_API_TASK_INPUT_SCHEMA: SetRequired<Schema, "properties"> = {

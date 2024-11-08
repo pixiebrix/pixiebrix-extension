@@ -19,7 +19,7 @@
 import yaml from "js-yaml";
 import { produce } from "immer";
 import { isPlainObject } from "lodash";
-import { toExpression } from "../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 import { type ExpressionType } from "@/types/runtimeTypes";
 import { type BrickPipeline } from "@/bricks/types";
 

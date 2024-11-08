@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema, SCHEMA_EMPTY_OBJECT } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import * as sidebarController from "@/contentScript/sidebarController";
-import { logPromiseDuration } from "../../utils/promiseUtils";
+import { logPromiseDuration } from "@/utils/promiseUtils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
-} from "../../platform/capabilities";
-import { expectContext } from "../../utils/expectContext";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { validateRegistryId } from "../../types/helpers";
+} from "@/platform/capabilities";
+import { expectContext } from "@/utils/expectContext";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { validateRegistryId } from "@/types/helpers";
 
 export class ShowSidebar extends EffectABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/sidebar/show");

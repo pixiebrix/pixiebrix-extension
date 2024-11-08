@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { waitForEffect } from "../../../../testUtils/testHelpers";
-import { render } from "../../../testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import { screen } from "@testing-library/react";
-import { actions as editorActions } from "../../../store/editor/editorSlice";
-import runtimeSlice from "../../../store/runtime/runtimeSlice";
-import StarterBrickDataPanel from "./StarterBrickDataPanel";
-import { formStateWithTraceDataFactory } from "../../../../testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
+import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("StarterBrickDataPanel", () => {
   it("renders with form state and trace data", async () => {

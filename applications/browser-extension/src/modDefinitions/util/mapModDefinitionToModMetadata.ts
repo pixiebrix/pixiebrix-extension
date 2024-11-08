@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import { type ModComponentBase } from "../../types/modComponentTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { pick } from "lodash";
 
 /**

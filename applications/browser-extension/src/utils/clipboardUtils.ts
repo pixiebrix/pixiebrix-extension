@@ -19,7 +19,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
-import { isPromiseFulfilled } from "./promiseUtils";
+import { isPromiseFulfilled } from "@/utils/promiseUtils";
 import { writeToClipboardInFocusedDocument } from "@/background/messenger/api";
 
 export type ContentType = "infer" | "text" | "image";

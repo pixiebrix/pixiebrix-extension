@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { snippetShortcutMenuSlice } from "./snippetShortcutMenuSlice";
-import { type SnippetShortcut } from "../../platform/platformTypes/snippetShortcutMenuProtocol";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
+import { snippetShortcutMenuSlice } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuSlice";
+import { type SnippetShortcut } from "@/platform/platformTypes/snippetShortcutMenuProtocol";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 describe("snippetShortcutMenuSlice", () => {
   it.each(["test", "TeSt"])("case matches query: %s", (query) => {

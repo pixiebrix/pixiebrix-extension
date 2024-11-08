@@ -17,13 +17,13 @@
 
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import AsyncStateGate, { StandardError } from "./AsyncStateGate";
-import { valueToAsyncState } from "../utils/asyncStateUtils";
+import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import {
   queryErrorFactory,
   queryLoadingFactory,
   queryUninitializedFactory,
-} from "../testUtils/rtkQueryFactories";
+} from "@/testUtils/rtkQueryFactories";
 
 describe("AsyncStateGate", () => {
   it("renders loader on uninitialized", () => {

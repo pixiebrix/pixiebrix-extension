@@ -27,7 +27,7 @@ import { DataPanel } from "./dataPanel";
 import { ModEditorPane } from "./modEditorPane";
 import { ModifiesModFormState } from "./utils";
 import { CreateModModal } from "./createModModal";
-import { DeactivateModModal } from "./deactivateModModal";
+import { DeactivateModModal } from "end-to-end-tests/pageObjects/pageEditor/deactivateModModal";
 import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 class EditorPane extends BasePageObject {

@@ -18,16 +18,16 @@
 import {
   type TeamMembershipGroup,
   transformTeamMemberGroupsResponse,
-} from "./TeamMembershipGroups";
+} from "@/data/model/TeamMembershipGroups";
 import {
   transformTeamMemberUserResponse,
   type TeamMembershipUser,
-} from "./TeamMembershipUser";
+} from "@/data/model/TeamMembershipUser";
 import {
   type UserRoleType,
   transformUserRoleResponse,
-} from "./UserRole";
-import { type components } from "../../types/swagger";
+} from "@/data/model/UserRole";
+import { type components } from "@/types/swagger";
 
 export type TeamMembership = {
   membershipId?: number;

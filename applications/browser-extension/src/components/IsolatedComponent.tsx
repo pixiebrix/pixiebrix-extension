@@ -20,8 +20,8 @@
 import cssText from "./IsolatedComponent.scss?loadAsText";
 
 import React, { Suspense, useMemo } from "react";
-import { Stylesheets } from "./Stylesheets";
-import EmotionShadowRoot from "./EmotionShadowRoot";
+import { Stylesheets } from "@/components/Stylesheets";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import isolatedComponentList from "./isolatedComponentList";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";

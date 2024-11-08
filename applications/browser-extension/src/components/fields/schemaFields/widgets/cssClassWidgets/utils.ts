@@ -16,17 +16,17 @@
  */
 
 import { compact, partition, uniq } from "lodash";
-import { type Expression, type TemplateEngine } from "../../../../../types/runtimeTypes";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import {
   isTemplateExpression,
   isVarExpression,
   toExpression,
-} from "../../../../../utils/expressionUtils";
+} from "@/utils/expressionUtils";
 import {
   type ClassFlag,
   type Value,
   type Spacing,
-} from "./types";
+} from "@/components/fields/schemaFields/widgets/cssClassWidgets/types";
 
 /**
  * Return utility classes from the value

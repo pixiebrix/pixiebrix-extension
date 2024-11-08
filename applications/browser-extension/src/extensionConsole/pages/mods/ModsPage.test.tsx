@@ -16,37 +16,37 @@
  */
 
 import React from "react";
-import { render, screen } from "../../testHelpers";
-import ModsPage from "./ModsPage";
-import modsPageSlice from "./modsPageSlice";
+import { render, screen } from "@/extensionConsole/testHelpers";
+import ModsPage from "@/extensionConsole/pages/mods/ModsPage";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
-import { appApiMock } from "../../../testUtils/appApiMock";
-import { DeploymentsProvider } from "../deployments/DeploymentsContext";
-import useAutoDeploy from "../deployments/useAutoDeploy";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import {
   useAllModDefinitions,
   useOptionalModDefinition,
-} from "../../../modDefinitions/modDefinitionHooks";
+} from "@/modDefinitions/modDefinitionHooks";
 import {
   errorToAsyncCacheState,
   loadingAsyncCacheStateFactory,
   valueToAsyncCacheState,
-} from "../../../utils/asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { MODS_PAGE_TABS } from "./ModsPageSidebar";
-import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
-import { modMetadataFactory } from "../../../testUtils/factories/modComponentFactories";
-import { actions as modComponentActions } from "../../../store/modComponents/modComponentSlice";
-import useOnboarding from "./onboardingView/useOnboarding";
+import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import useOnboarding from "@/extensionConsole/pages/mods/onboardingView/useOnboarding";
 
-jest.mock("../../../modDefinitions/modDefinitionHooks");
+jest.mock("@/modDefinitions/modDefinitionHooks");
 const useAllModDefinitionsMock = jest.mocked(useAllModDefinitions);
 const useOptionalModDefinitionMock = jest.mocked(useOptionalModDefinition);
 
-jest.mock("../deployments/useAutoDeploy");
+jest.mock("@/extensionConsole/pages/deployments/useAutoDeploy");
 const useAutoDeployMock = jest.mocked(useAutoDeploy);
 
-jest.mock("./onboardingView/useOnboarding");
+jest.mock("@/extensionConsole/pages/mods/onboardingView/useOnboarding");
 const useOnboardingMock = jest.mocked(useOnboarding);
 
 describe("ModsPage", () => {

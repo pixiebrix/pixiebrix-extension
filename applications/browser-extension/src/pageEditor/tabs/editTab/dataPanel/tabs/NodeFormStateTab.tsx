@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import DataTabPane from "../DataTabPane";
-import DataTabJsonTree from "../DataTabJsonTree";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 /**
  * Developer-only data panel tab for viewing the underlying brick configuration JSON.

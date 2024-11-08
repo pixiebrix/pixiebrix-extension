@@ -17,7 +17,7 @@
 
 import { type Page, expect } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../../constants";
-import { EditWorkshopModPage } from "./editWorkshopModPage";
+import { EditWorkshopModPage } from "end-to-end-tests/pageObjects/extensionConsole/workshop/editWorkshopModPage";
 import { CreateWorkshopModPage } from "./createWorkshopModPage";
 import { BasePageObject } from "../../basePageObject";
 

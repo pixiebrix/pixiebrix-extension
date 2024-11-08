@@ -16,7 +16,7 @@
  */
 
 import React, { type ElementType } from "react";
-import BlockElement from "./render/BlockElement";
+import BlockElement from "@/pageEditor/documentBuilder/render/BlockElement";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {
@@ -27,21 +27,18 @@ import {
   type DynamicPath,
   type PipelineElementConfig,
 } from "./documentBuilderTypes";
-import ButtonElement from "./render/ButtonElement";
-import ListElement from "./render/ListElement";
+import ButtonElement from "@/pageEditor/documentBuilder/render/ButtonElement";
+import ListElement from "@/pageEditor/documentBuilder/render/ListElement";
 import { BusinessError } from "@/errors/businessErrors";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
-import { VALID_HEADER_TAGS } from "./allowedElementTypes";
-import {
-  isExpression,
-  isPipelineExpression,
-} from "../../utils/expressionUtils";
-import { boolean } from "../../utils/typeUtils";
-import { joinPathParts } from "../../utils/formUtils";
-import Icon from "../../icons/Icon";
+import { VALID_HEADER_TAGS } from "@/pageEditor/documentBuilder/allowedElementTypes";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import { boolean } from "@/utils/typeUtils";
+import { joinPathParts } from "@/utils/formUtils";
+import Icon from "@/icons/Icon";
 import cx from "classnames";
-import styles from "./preview/documentTree.module.scss";
+import styles from "@/pageEditor/documentBuilder/preview/documentTree.module.scss";
 
 // Legacy header components, where each header type was a separate element
 const HEADER_COMPONENTS = {

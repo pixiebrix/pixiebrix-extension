@@ -16,44 +16,44 @@
  */
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
-import PushOptions from "./zapier/PushOptions";
-import ProcessOptions from "./uipath/ProcessOptions";
-import AppendSpreadsheetOptions from "./google/sheets/ui/AppendSpreadsheetOptions";
-import { ZAPIER_ID } from "./zapier/push";
-import { UIPATH_ID } from "./uipath/process";
-import { GOOGLE_SHEETS_APPEND_ID } from "./google/sheets/bricks/append";
-import BotOptions from "./automationanywhere/BotOptions";
-import { RunBot } from "./automationanywhere/RunBot";
+import PushOptions from "@/contrib/zapier/PushOptions";
+import ProcessOptions from "@/contrib/uipath/ProcessOptions";
+import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
+import { ZAPIER_ID } from "@/contrib/zapier/push";
+import { UIPATH_ID } from "@/contrib/uipath/process";
+import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/bricks/append";
+import BotOptions from "@/contrib/automationanywhere/BotOptions";
+import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import FormModalOptions, {
   FORM_MODAL_ID,
-} from "../pageEditor/fields/FormModalOptions";
-import FormRendererOptions from "../pageEditor/fields/FormRendererOptions";
-import { GOOGLE_SHEETS_LOOKUP_ID } from "./google/sheets/bricks/lookup";
-import LookupSpreadsheetOptions from "./google/sheets/ui/LookupSpreadsheetOptions";
+} from "@/pageEditor/fields/FormModalOptions";
+import FormRendererOptions from "@/pageEditor/fields/FormRendererOptions";
+import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/bricks/lookup";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
   DATABASE_GET_ID,
-} from "../pageEditor/fields/DatabaseGetOptions";
+} from "@/pageEditor/fields/DatabaseGetOptions";
 import DatabasePutOptions, {
   DATABASE_PUT_ID,
-} from "../pageEditor/fields/DatabasePutOptions";
-import DocumentOptions from "../pageEditor/documentBuilder/edit/DocumentOptions";
+} from "@/pageEditor/fields/DatabasePutOptions";
+import DocumentOptions from "@/pageEditor/documentBuilder/edit/DocumentOptions";
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
-} from "../pageEditor/fields/RemoteMethodOptions";
+} from "@/pageEditor/fields/RemoteMethodOptions";
 import { ALERT_EFFECT_ID } from "@/bricks/effects/alert";
-import AlertOptions from "../pageEditor/fields/AlertOptions";
+import AlertOptions from "@/pageEditor/fields/AlertOptions";
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
-import AssignModVariableOptions from "../pageEditor/fields/AssignModVariableOptions";
+import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
 import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { RunApiTask } from "./automationanywhere/RunApiTask";
-import ApiTaskOptions from "./automationanywhere/ApiTaskOptions";
+import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
+import ApiTaskOptions from "@/contrib/automationanywhere/ApiTaskOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.

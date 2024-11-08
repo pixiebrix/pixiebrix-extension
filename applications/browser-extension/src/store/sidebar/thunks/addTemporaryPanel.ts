@@ -16,13 +16,13 @@
  */
 
 import { cancelTemporaryPanel } from "@/contentScript/messenger/api";
-import { getConnectedTarget } from "../../../sidebar/connectedTarget";
-import { eventKeyForEntry } from "../eventKeyUtils";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import {
   type SidebarState,
   type TemporaryPanelEntry,
-} from "../../../types/sidebarTypes";
-import { type UUID } from "../../../types/stringTypes";
+} from "@/types/sidebarTypes";
+import { type UUID } from "@/types/stringTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { partition } from "lodash";
 

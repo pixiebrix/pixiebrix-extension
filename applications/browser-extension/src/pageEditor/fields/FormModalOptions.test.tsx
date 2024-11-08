@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import FormModalOptions from "./FormModalOptions";
+import { render } from "@/pageEditor/testHelpers";
+import FormModalOptions from "@/pageEditor/fields/FormModalOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { screen } from "@testing-library/react";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();

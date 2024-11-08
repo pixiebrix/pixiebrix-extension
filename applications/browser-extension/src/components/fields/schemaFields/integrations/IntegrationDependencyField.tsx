@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import { type Schema } from "../../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import FieldTemplate from "../../../form/FieldTemplate";
-import { makeLabelForSchemaField } from "../schemaFieldUtils";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 import IntegrationDependencyWidget, {
   type IntegrationDependencyWidgetProps,
-} from "./IntegrationDependencyWidget";
-import reportEvent from "../../../../telemetry/reportEvent";
-import { Events } from "../../../../telemetry/events";
-import { getExtensionConsoleUrl } from "../../../../utils/extensionUtils";
+} from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 export const IntegrationDependencyFieldDescription: React.FC<{
   schema: Schema;

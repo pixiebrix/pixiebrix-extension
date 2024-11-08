@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import {
   type BrickConfig,
   type BrickPipeline,
@@ -27,12 +27,9 @@ import PipelineVisitor, {
   ROOT_POSITION,
   type VisitResolvedBlockExtra,
 } from "@/bricks/PipelineVisitor";
-import pipelineSchema from "../../../schemas/pipeline.json";
+import pipelineSchema from "@schemas/pipeline.json";
 import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
-import {
-  isPipelineExpression,
-  toExpression,
-} from "../../utils/expressionUtils";
+import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
   constructor(private readonly blockMap: TypedBrickMap) {
@@ -57,7 +54,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
         this.blockMap,
       );
     } else {
-      const propertiesSchema = typedBlock.block?.inputSchema?.properties ?? {};
+      const propertiesSchema = typedBlock.brick?.inputSchema?.properties ?? {};
       const emptySubPipelineProperties = Object.entries(propertiesSchema)
         .filter(
           ([prop, fieldSchema]) =>

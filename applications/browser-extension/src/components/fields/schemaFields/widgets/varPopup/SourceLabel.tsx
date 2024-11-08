@@ -1,5 +1,5 @@
 import React from "react";
-import { type NodeInfo } from "../../../../../pageEditor/store/editor/uiStateTypes";
+import { type NodeInfo } from "@/pageEditor/store/editor/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
 import { type TypedBrickMap } from "@/bricks/registry";
@@ -48,7 +48,7 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
       } else {
         label =
           brickConfig.label ??
-          allBricks.get(brickConfig.id)?.block?.name ??
+          allBricks.get(brickConfig.id)?.brick?.name ??
           source;
       }
     }

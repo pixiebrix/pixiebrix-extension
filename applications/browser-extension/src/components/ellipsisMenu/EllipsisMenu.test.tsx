@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import EllipsisMenu, { type EllipsisMenuItem } from "./EllipsisMenu";
-import { userEvent } from "../../pageEditor/testHelpers";
+import { userEvent } from "@/pageEditor/testHelpers";
 
 describe("EllipsisMenu", () => {
   const mockItems: EllipsisMenuItem[] = [

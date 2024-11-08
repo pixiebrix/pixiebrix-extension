@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import InsertAtCursorEffect from "./InsertAtCursorEffect";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { BusinessError } from "@/errors/businessErrors";
 
 const brick = new InsertAtCursorEffect();

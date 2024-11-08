@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../registry";
+import brickRegistry from "@/bricks/registry";
 import {
   simpleInput,
   teapotBrick,
   throwBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { reducePipeline } from "../../../runtime/reducePipeline";
-import TryExcept from "./TryExcept";
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 
-import { toExpression } from "../../../utils/expressionUtils";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const tryExceptBlock = new TryExcept();
 

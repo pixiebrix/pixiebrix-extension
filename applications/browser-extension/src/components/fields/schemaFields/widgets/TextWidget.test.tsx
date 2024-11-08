@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import registerDefaultWidgets from "./registerDefaultWidgets";
-import { type Schema } from "../../../../types/schemaTypes";
-import { render, screen } from "../../../../pageEditor/testHelpers";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type Schema } from "@/types/schemaTypes";
+import { render, screen } from "@/pageEditor/testHelpers";
 import TextWidget, {
   isVarLike,
   isVarValue,
-} from "./TextWidget";
+} from "@/components/fields/schemaFields/widgets/TextWidget";
 import userEvent from "@testing-library/user-event";
-import { toExpression } from "../../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";

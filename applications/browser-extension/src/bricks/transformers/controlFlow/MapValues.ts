@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { validateOutputKey } from "../../../runtime/runtimeTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type OutputKey,
   type PipelineExpression,
   VARIABLE_REFERENCE_PREFIX,
-} from "../../../types/runtimeTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { type Schema } from "../../../types/schemaTypes";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
+} from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class MapValues extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/map");

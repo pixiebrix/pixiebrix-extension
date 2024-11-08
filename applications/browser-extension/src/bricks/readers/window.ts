@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { withReadWindow } from "../../pageScript/messenger/api";
-import { registerFactory } from "./factory";
+import { withReadWindow } from "@/pageScript/messenger/api";
+import { registerFactory } from "@/bricks/readers/factory";
 import { type JsonObject } from "type-fest";
-import { isObject } from "../../utils/objectUtils";
+import { isObject } from "@/utils/objectUtils";
 
 type PathSpecObj = Record<string, string>;
 export type PathSpec = string | PathSpecObj;

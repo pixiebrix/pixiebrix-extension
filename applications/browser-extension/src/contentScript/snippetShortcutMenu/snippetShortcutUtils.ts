@@ -19,11 +19,11 @@ import {
   isNativeField,
   isSelectableTextControlElement,
   type SelectableTextEditorElement,
-} from "../../types/inputTypes";
-import { getSelectionRange, waitAnimationFrame } from "../../utils/domUtils";
-import { expectContext } from "../../utils/expectContext";
-import { insertAtCursorWithCustomEditorSupport } from "../textEditorDom";
-import type { Nullishable } from "../../utils/nullishUtils";
+} from "@/types/inputTypes";
+import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
+import { expectContext } from "@/utils/expectContext";
+import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Replaces the text at the current command + query with the given text

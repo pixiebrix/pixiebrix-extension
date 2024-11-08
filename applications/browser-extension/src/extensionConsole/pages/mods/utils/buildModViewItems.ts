@@ -21,15 +21,15 @@ import type {
   ModVersionStatus,
   ModViewItem,
   SharingSource,
-} from "../../../../types/modTypes";
-import type { ModsPageUserPermissions } from "../modsPageTypes";
-import type { RegistryId } from "../../../../types/registryTypes";
+} from "@/types/modTypes";
+import type { ModsPageUserPermissions } from "@/extensionConsole/pages/mods/modsPageTypes";
+import type { RegistryId } from "@/types/registryTypes";
 import type {
   EditablePackageMetadata,
   MarketplaceListing,
-} from "../../../../types/contract";
-import { MARKETPLACE_URL } from "../../../../urlConstants";
-import { isUnavailableMod } from "../../../../utils/modUtils";
+} from "@/types/contract";
+import { MARKETPLACE_URL } from "@/urlConstants";
+import { isUnavailableMod } from "@/utils/modUtils";
 
 export type BuildModViewItemsInputs = {
   mods: Mod[];

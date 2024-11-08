@@ -20,9 +20,9 @@ import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "@/types/starterBrickTypes";
-import InsertButtonPane from "./InsertButtonPane";
-import useEscapeHandler from "../../hooks/useEscapeHandler";
-import { inspectedTab } from "../../context/connection";
+import InsertButtonPane from "@/pageEditor/panes/insert/InsertButtonPane";
+import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
+import { inspectedTab } from "@/pageEditor/context/connection";
 import { cancelSelect } from "@/contentScript/messenger/api";
 import { type EmptyObject } from "type-fest";
 

@@ -18,13 +18,13 @@
 import {
   findContainer,
   inferMultiElementSelector,
-} from "../../utils/inference/selectorInference";
-import * as pageScript from "../../pageScript/messenger/api";
-import { type SelectMode } from "./types";
+} from "@/utils/inference/selectorInference";
+import * as pageScript from "@/pageScript/messenger/api";
+import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { NoElementsFoundError } from "@/errors/businessErrors";
-import { $safeFind, findSingleElement } from "../../utils/domUtils";
-import inferSingleElementSelector from "../../utils/inference/inferSingleElementSelector";
-import { type ElementInfo } from "../../utils/inference/selectorTypes";
+import { $safeFind, findSingleElement } from "@/utils/domUtils";
+import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { userSelectElement } from "./elementPicker";
 
 export default async function selectElement({

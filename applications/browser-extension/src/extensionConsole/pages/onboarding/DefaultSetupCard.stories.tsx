@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import DefaultSetupCard from "./DefaultSetupCard";
+import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 
 export default {
   title: "Onboarding/Setup/DefaultSetupCard",

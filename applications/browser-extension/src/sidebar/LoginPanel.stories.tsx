@@ -18,11 +18,11 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 
-import LoginPanel from "./LoginPanel";
+import LoginPanel from "@/sidebar/LoginPanel";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import settingsSlice from "../store/settings/settingsSlice";
-import integrationsSlice from "../integrations/store/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/data/service/api";
 

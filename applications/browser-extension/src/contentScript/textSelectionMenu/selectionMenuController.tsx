@@ -16,10 +16,10 @@
  */
 
 import { debounce, once } from "lodash";
-import type { Nullishable } from "../../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 import { render, unmountComponentAtNode } from "react-dom";
 import React, { StrictMode } from "react";
-import { tooltipFactory } from "../tooltipDom";
+import { tooltipFactory } from "@/contentScript/tooltipDom";
 import {
   autoUpdate,
   computePosition,
@@ -29,16 +29,16 @@ import {
   shift,
   type VirtualElement,
 } from "@floating-ui/dom";
-import { getCaretCoordinates } from "../../utils/textAreaUtils";
-import { expectContext } from "../../utils/expectContext";
+import { getCaretCoordinates } from "@/utils/textAreaUtils";
+import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
-import { isNativeField } from "../../types/inputTypes";
+import { isNativeField } from "@/types/inputTypes";
 import { onAbort, ReusableAbortController } from "abort-utils";
-import { prefersReducedMotion } from "../../utils/a11yUtils";
-import { getSelectionRange } from "../../utils/domUtils";
-import { snapWithin } from "../../utils/mathUtils";
-import ActionRegistry from "./ActionRegistry";
-import { SELECTION_MENU_READY_ATTRIBUTE } from "../../domConstants";
+import { prefersReducedMotion } from "@/utils/a11yUtils";
+import { getSelectionRange } from "@/utils/domUtils";
+import { snapWithin } from "@/utils/mathUtils";
+import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import { SELECTION_MENU_READY_ATTRIBUTE } from "@/domConstants";
 import IsolatedComponent from "@/components/IsolatedComponent";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
@@ -171,7 +171,7 @@ function createSelectionMenu(): HTMLElement {
         lazy={async () =>
           import(
             /* webpackChunkName: "isolated/SelectionMenu" */
-            "./SelectionMenu"
+            "@/contentScript/textSelectionMenu/SelectionMenu"
           )
         }
         factory={(SelectionMenu) => (

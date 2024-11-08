@@ -16,9 +16,9 @@
  */
 
 import { once } from "lodash";
-import { logPromiseDuration } from "../../utils/promiseUtils";
-import injectScriptTag from "../../utils/injectScriptTag";
-import { expectContext } from "../../utils/expectContext";
+import { logPromiseDuration } from "@/utils/promiseUtils";
+import injectScriptTag from "@/utils/injectScriptTag";
+import { expectContext } from "@/utils/expectContext";
 
 type SendScriptMessage<TReturn = unknown, TPayload = unknown> = (
   payload: TPayload,

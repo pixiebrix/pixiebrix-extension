@@ -25,7 +25,7 @@ import React, {
 import { Form, type FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
 /**

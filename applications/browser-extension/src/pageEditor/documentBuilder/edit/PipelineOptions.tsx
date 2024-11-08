@@ -17,7 +17,7 @@
 
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import React from "react";
-import { joinPathParts } from "../../../utils/formUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 type PipelineOptionsProps = {
   elementName: string;

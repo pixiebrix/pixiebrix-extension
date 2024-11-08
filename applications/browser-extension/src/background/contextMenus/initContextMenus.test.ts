@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import starterBrickRegistry from "../../starterBricks/registry";
-import { fromJS } from "../../starterBricks/contextMenu/contextMenuStarterBrick";
-import * as backgroundApi from "../messenger/api";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
-import { type ModComponentBase } from "../../types/modComponentTypes";
+import starterBrickRegistry from "@/starterBricks/registry";
+import { fromJS } from "@/starterBricks/contextMenu/contextMenuStarterBrick";
+import * as backgroundApi from "@/background/messenger/api";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import chromeP from "webext-polyfill-kinda";
 import { TEST_setContext } from "webext-detect";
-import { modComponentFactory } from "../../testUtils/factories/modComponentFactories";
-import { starterBrickDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
-import { getPlatform } from "../../platform/platformContext";
+import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { getPlatform } from "@/platform/platformContext";
 import {
   type ContextMenuDefinition,
   type ContextMenuConfig,
-} from "../../starterBricks/contextMenu/contextMenuTypes";
-import { ensureContextMenu } from "./ensureContextMenu";
-import { preloadContextMenus } from "./preloadContextMenus";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/starterBricks/contextMenu/contextMenuTypes";
+import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 TEST_setContext("background");
 

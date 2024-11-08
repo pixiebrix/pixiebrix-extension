@@ -21,7 +21,7 @@ import { deserializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { isEmpty, sortBy } from "lodash";
 import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { reportToErrorService } from "@/data/service/errorService";
 import { ContextError } from "@/errors/genericErrors";
 import { type MessengerMeta } from "webext-messenger";
@@ -34,12 +34,12 @@ import {
   IDB_OPERATION,
   isMaybeTemporaryIDBError,
   withIdbErrorHandling,
-} from "../utils/idbUtils";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
+} from "@/utils/idbUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
-import { reportToApplicationErrorTelemetry } from "./reportToApplicationErrorTelemetry";
+import { reportToApplicationErrorTelemetry } from "@/telemetry/reportToApplicationErrorTelemetry";
 
 const ENTRY_OBJECT_STORE = "entries";
 const DB_VERSION_NUMBER = 4;

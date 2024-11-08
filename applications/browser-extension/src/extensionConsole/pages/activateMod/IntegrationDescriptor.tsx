@@ -18,8 +18,8 @@
 import styles from "./IntegrationsBody.module.scss";
 
 import React, { useMemo } from "react";
-import { type IntegrationDefinition } from "../../../integrations/integrationTypes";
-import { type RegistryId } from "../../../types/registryTypes";
+import { type IntegrationDefinition } from "@/integrations/integrationTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 const IntegrationDescriptor: React.FunctionComponent<{
   integrationConfigs?: IntegrationDefinition[];

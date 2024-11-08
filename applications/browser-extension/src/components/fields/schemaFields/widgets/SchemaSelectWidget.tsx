@@ -17,16 +17,16 @@
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import Select, { type SelectInstance, type Options } from "react-select";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty, uniq } from "lodash";
 import { useField } from "formik";
 import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
-import { isExpression } from "../../../../utils/expressionUtils";
-import { mapSchemaToOptions } from "../selectFieldUtils";
+import { isExpression } from "@/utils/expressionUtils";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 import Creatable from "react-select/creatable";
-import useAddCreatablePlaceholder from "../../../form/widgets/useAddCreatablePlaceholder";
-import reportEvent from "../../../../telemetry/reportEvent";
-import { Events } from "../../../../telemetry/events";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 export type StringOption = {
   label?: string;

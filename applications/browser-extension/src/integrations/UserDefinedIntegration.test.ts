@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import automationAnywhere from "@/contrib/integrations/automation-anywhere.yaml";
-import automationAnywhereOAuth2 from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
-import googleOAuth2Pkce from "@/contrib/integrations/google-oauth2-pkce.yaml";
-import greenhouse from "@/contrib/integrations/greenhouse.yaml";
-import { fromJS } from "./UserDefinedIntegration";
+import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
+import automationAnywhereOAuth2 from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import googleOAuth2Pkce from "@contrib/integrations/google-oauth2-pkce.yaml";
+import greenhouse from "@contrib/integrations/greenhouse.yaml";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { BusinessError } from "@/errors/businessErrors";
 import {
   type SanitizedConfig,
   type SecretsConfig,
   type IntegrationDefinition,
-} from "./integrationTypes";
+} from "@/integrations/integrationTypes";
 import { stringToBase64 } from "uint8array-extras";
 import { set } from "lodash";
 

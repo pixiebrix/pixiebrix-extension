@@ -17,19 +17,19 @@
 
 import { waitFor } from "@testing-library/react";
 import { useAuthOptions } from "./useAuthOptions";
-import { appApiMock } from "../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { renderHook } from "@/extensionConsole/testHelpers";
-import { readRawConfigurations } from "../integrations/util/readRawConfigurations";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import {
   integrationConfigFactory,
   remoteIntegrationConfigurationFactory,
-} from "../testUtils/factories/integrationFactories";
-import { meOrganizationApiResponseFactory } from "../testUtils/factories/authFactories";
+} from "@/testUtils/factories/integrationFactories";
+import { meOrganizationApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { uuidv4 } from "@/types/helpers";
 
-jest.mock("../integrations/util/readRawConfigurations");
+jest.mock("@/integrations/util/readRawConfigurations");
 
 describe("useAuthOptions", () => {
   const userId = uuidv4();

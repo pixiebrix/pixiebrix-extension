@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isPageEditorTopFrame } from "../utils/expectContext";
+import { isPageEditorTopFrame } from "@/utils/expectContext";
 import { getErrorMessage, getRootCause } from "./errorHelpers";
-import { CONTEXT_INVALIDATED_ERROR } from "./knownErrorMessages";
+import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
 
 /**
  * Notification id to avoid displaying multiple notifications at once.
@@ -40,7 +40,7 @@ export async function notifyContextInvalidated(): Promise<void> {
   // https://github.com/pixiebrix/pixiebrix-extension/pull/6234
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4058#issuecomment-1217391772
   const { default: notify } = await import(
-    /* webpackChunkName: "notify" */ "../utils/notify"
+    /* webpackChunkName: "notify" */ "@/utils/notify"
   );
 
   notify.error({

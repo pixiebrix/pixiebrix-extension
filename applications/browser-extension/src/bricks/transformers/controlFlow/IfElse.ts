@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type PipelineExpression,
-} from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { boolean } from "../../../utils/typeUtils";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
+} from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { boolean } from "@/utils/typeUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class IfElse extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/if-else");

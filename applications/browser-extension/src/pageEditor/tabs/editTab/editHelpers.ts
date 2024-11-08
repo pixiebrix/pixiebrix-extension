@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import getType from "../../../runtime/getType";
+import getType from "@/runtime/getType";
 import {
   type BrickConfig,
   type BrickPipeline,
   type BrickPosition,
 } from "@/bricks/types";
-import { type PipelineMap } from "../../store/editor/uiStateTypes";
+import { type PipelineMap } from "@/pageEditor/store/editor/uiStateTypes";
 import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/bricks/PipelineVisitor";
-import { type OutputKey } from "../../../types/runtimeTypes";
-import { type Brick } from "../../../types/brickTypes";
-import { type SafeString } from "../../../types/stringTypes";
-import { freshIdentifier } from "../../../utils/variableUtils";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import { brickTypeSupportsOutputKey } from "../../../runtime/runtimeUtils";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { brickTypeSupportsOutputKey } from "@/runtime/runtimeUtils";
 
 /**
  * Default brick output key, if the brick doesn't define its own default output key.

@@ -17,20 +17,20 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import MatchRulesSection from "../MatchRulesSection";
+import UrlMatchPatternField from "@/pageEditor/fields/UrlMatchPatternField";
+import { makeLockableFieldProps } from "@/pageEditor/fields/makeLockableFieldProps";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { partial } from "lodash";
-import DebounceFieldSet from "../trigger/DebounceFieldSet";
+import DebounceFieldSet from "@/pageEditor/tabs/trigger/DebounceFieldSet";
 import {
   SidebarTriggers,
   type Trigger,
-} from "../../../starterBricks/sidebar/sidebarStarterBrickTypes";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
 import { useField, useFormikContext } from "formik";
-import { type TriggerFormState } from "../../starterBricks/formStateTypes";
-import { type DebounceOptions } from "../../../starterBricks/types";
-import ExtraPermissionsSection from "../ExtraPermissionsSection";
-import { joinName } from "../../../utils/formUtils";
+import { type TriggerFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type DebounceOptions } from "@/starterBricks/types";
+import ExtraPermissionsSection from "@/pageEditor/tabs/ExtraPermissionsSection";
+import { joinName } from "@/utils/formUtils";
 
 const SidebarConfiguration: React.FC<{
   isLocked: boolean;

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
@@ -24,48 +24,48 @@ import {
 import {
   getModComponentState,
   saveModComponentState,
-} from "../store/modComponents/modComponentStorage";
+} from "@/store/modComponents/modComponentStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { type ModComponentState } from "../store/modComponents/modComponentTypes";
-import reportError from "../telemetry/reportError";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import reportError from "@/telemetry/reportError";
 import { debounce } from "lodash";
 import { refreshRegistries } from "./refreshRegistries";
 import type { Database } from "@/types/contract";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
-import { type IntegrationDependency } from "../integrations/integrationTypes";
-import getUnconfiguredComponentIntegrations from "../integrations/util/getUnconfiguredComponentIntegrations";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import {
   getSidebarState,
   saveSidebarState,
-} from "../store/sidebar/sidebarStorage";
+} from "@/store/sidebar/sidebarStorage";
 import {
   getAllModComponentDefinitionsWithType,
   getModComponentIdsForModComponentDefinitions,
-} from "../starterBricks/starterBrickModUtils";
+} from "@/starterBricks/starterBrickModUtils";
 import { type SidebarState } from "@/types/sidebarTypes";
-import { getEventKeyForPanel } from "../store/sidebar/eventKeyUtils";
+import { getEventKeyForPanel } from "@/store/sidebar/eventKeyUtils";
 import { type UUID } from "@/types/stringTypes";
 import {
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
-} from "../integrations/constants";
+} from "@/integrations/constants";
 import {
   autoCreateDatabaseOptionsArgsInPlace,
   makeDatabasePreviewName,
 } from "@/activation/modOptionsHelpers";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import { isRequired } from "../utils/schemaUtils";
+import { isRequired } from "@/utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
-import { getBuiltInIntegrationConfigs } from "./getBuiltInIntegrationConfigs";
+import { getBuiltInIntegrationConfigs } from "@/background/getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { restrict } from "@/auth/featureFlagStorage";
 import { RestrictedFeatures } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { selectModInstanceMap } from "../store/modComponents/modInstanceSelectors";
-import { mapModInstanceToActivatedModComponents } from "../store/modComponents/modInstanceUtils";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
 const { reducer: modComponentReducer, actions: modComponentActions } =

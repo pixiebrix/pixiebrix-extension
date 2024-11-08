@@ -16,14 +16,14 @@
  */
 
 import properEvent from "proper-event";
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
   $safeFindElementsWithRootMode,
-} from "../rootModeHelpers";
-import { DOM_EVENTS } from "../../types/browserTypes";
+} from "@/bricks/rootModeHelpers";
+import { DOM_EVENTS } from "@/types/browserTypes";
 
 export class ElementEvent extends EffectABC {
   constructor() {

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { SubmitPanelAction } from "../errors";
+import { SubmitPanelAction } from "@/bricks/errors";
 
 class SubmitPanelEffect extends EffectABC {
   constructor() {

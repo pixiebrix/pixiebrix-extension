@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "../testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import ConnectedCollapsibleFieldSection from "./ConnectedCollapsibleFieldSection";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { screen } from "@testing-library/react";
 
 // :shrug: toBeVisible checks currently don't work with our CollapsibleFieldSection component because we're using

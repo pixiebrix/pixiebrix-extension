@@ -18,7 +18,7 @@
 import {
   selectActiveModComponentFormState,
   selectGetModDraftStateForModId,
-} from "../pageEditor/store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import {
   type AnyAction,
   createListenerMiddleware,
@@ -32,7 +32,7 @@ import {
   type TypedActionCreator,
 } from "@reduxjs/toolkit/dist/listenerMiddleware/types";
 import { type Analysis } from "./analysisTypes";
-import { type RootState } from "../pageEditor/store/editor/pageEditorTypes";
+import { type RootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import { debounce } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";

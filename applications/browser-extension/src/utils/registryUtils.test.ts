@@ -20,9 +20,9 @@ import {
   generatePackageId,
   getScopeAndId,
   isInternalRegistryId,
-} from "./registryUtils";
+} from "@/utils/registryUtils";
 import { validateRegistryId } from "@/types/helpers";
-import { createNewUnsavedModMetadata } from "./modUtils";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 
 describe("isInternalRegistryId", () => {
   it("returns true for internal registry ids", () => {

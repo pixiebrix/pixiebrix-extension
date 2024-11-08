@@ -16,7 +16,7 @@
  */
 
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type WorkspaceType } from "./contract";
+import { type WorkspaceType } from "@/contrib/automationanywhere/contract";
 
 export const WORKSPACE_OPTIONS: Array<Option<WorkspaceType>> = [
   { value: "public", label: "Public" },

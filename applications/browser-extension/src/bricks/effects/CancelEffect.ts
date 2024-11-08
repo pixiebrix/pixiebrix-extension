@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { CancelError } from "@/errors/businessErrors";
-import { type Schema } from "../../types/schemaTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
-import { validateRegistryId } from "../../types/helpers";
+import { type Schema } from "@/types/schemaTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 class CancelEffect extends EffectABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/cancel");

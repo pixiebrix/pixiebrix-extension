@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import { URL_INPUT_SPEC } from "../transformers/url";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { URL_INPUT_SPEC } from "@/bricks/transformers/url";
 import {
   LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
   makeURL,
-} from "../../utils/urlUtils";
-import type { PlatformCapability } from "../../platform/capabilities";
+} from "@/utils/urlUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class NavigateURLEffect extends EffectABC {
   constructor() {

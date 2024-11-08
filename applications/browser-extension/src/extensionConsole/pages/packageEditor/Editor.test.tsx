@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useOpenEditorTab } from "./Editor";
-import { editablePackageMetadataFactory } from "../../../testUtils/factories/registryFactories";
-import { getExtensionConsoleUrl } from "../../../utils/extensionUtils";
-import { validateRegistryId } from "../../../types/helpers";
-import notify from "../../../utils/notify";
+import { useOpenEditorTab } from "@/extensionConsole/pages/packageEditor/Editor";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { validateRegistryId } from "@/types/helpers";
+import notify from "@/utils/notify";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { renderHook } from "../../testHelpers";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);

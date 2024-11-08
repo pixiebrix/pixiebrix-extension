@@ -18,14 +18,14 @@
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { AnnotationType } from "../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import {
   containsTemplateExpression,
   isTemplateExpression,
-} from "../../utils/expressionUtils";
-import { joinPathParts } from "../../utils/formUtils";
+} from "@/utils/expressionUtils";
+import { joinPathParts } from "@/utils/formUtils";
 
 /**
  * Returns the regex literal pattern, or null if the regex is a variable or template expression

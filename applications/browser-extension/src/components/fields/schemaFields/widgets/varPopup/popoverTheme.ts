@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { jsonTreeTheme } from "../../../../../themes/light";
+import { jsonTreeTheme } from "@/themes/light";
 import { type Theme } from "react-base16-styling";
 
 export const popoverTheme: Theme = {

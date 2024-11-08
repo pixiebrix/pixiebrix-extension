@@ -18,15 +18,15 @@
 import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import { handleMenuAction, notify } from "@/contentScript/messenger/api";
-import { waitForContentScript } from "../contentScript";
-import { expectContext } from "../../utils/expectContext";
-import { getModComponentState } from "../../store/modComponents/modComponentStorage";
-import { hydrateModComponentInnerDefinitions } from "../../registry/hydrateInnerDefinitions";
-import { type UUID } from "../../types/stringTypes";
-import { allSettled } from "../../utils/promiseUtils";
-import { MENU_PREFIX } from "./makeMenuId";
-import { preloadContextMenus } from "./preloadContextMenus";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { waitForContentScript } from "@/background/contentScript";
+import { expectContext } from "@/utils/expectContext";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import { type UUID } from "@/types/stringTypes";
+import { allSettled } from "@/utils/promiseUtils";
+import { MENU_PREFIX } from "@/background/contextMenus/makeMenuId";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 // This constant must be high enough to give Chrome time to inject the content script. waitForContentScript can take
 // >= 1 seconds because it also waits for the content script to be ready

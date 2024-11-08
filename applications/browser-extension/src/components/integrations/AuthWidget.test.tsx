@@ -17,9 +17,9 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import AuthWidget from "./AuthWidget";
-import { generateIntegrationAndRemoteConfig } from "../../testUtils/factories/integrationFactories";
-import { appApiMock } from "../../testUtils/appApiMock";
+import AuthWidget from "@/components/integrations/AuthWidget";
+import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
 import {
   screen,
   waitFor,
@@ -27,16 +27,16 @@ import {
   within,
 } from "@testing-library/react";
 import { type AuthOption } from "@/auth/authTypes";
-import { uuidSequence } from "../../testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { clear, find, syncPackages } from "../../registry/packageRegistry";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { integrationConfigLocator, registry } from "@/background/messenger/api";
 import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
-import registerDefaultWidgets from "../fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { produce } from "immer";
-import { userEvent } from "../../pageEditor/testHelpers";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { userEvent } from "@/pageEditor/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 const { remoteConfig, integrationDefinition } =

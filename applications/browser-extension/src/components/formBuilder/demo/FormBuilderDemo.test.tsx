@@ -22,22 +22,18 @@ import {
   fireTextInput,
   RJSF_SCHEMA_PROPERTY_NAME,
   selectSchemaFieldInputMode,
-} from "../../../testUtils/formHelpers";
-import { waitForEffect } from "../../../testUtils/testHelpers";
-import {
-  render,
-  type RenderResult,
-  screen,
-} from "../../../pageEditor/testHelpers";
+} from "@/testUtils/formHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render, type RenderResult, screen } from "@/pageEditor/testHelpers";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
-import registerDefaultWidgets from "../../fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FormBuilderDemo from "./FormBuilderDemo";
 import { type RJSFSchema } from "../formBuilderTypes";
 import userEvent from "@testing-library/user-event";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
-import { type Schema, type UiSchema } from "../../../types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 
 let exampleFormSchema: RJSFSchema;
 let defaultFieldName: string;

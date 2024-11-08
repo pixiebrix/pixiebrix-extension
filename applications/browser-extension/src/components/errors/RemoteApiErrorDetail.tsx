@@ -17,9 +17,9 @@
 
 import React from "react";
 import { type ProxiedResponse } from "@/errors/businessErrors";
-import styles from "./ErrorDetail.module.scss";
+import styles from "@/components/errors/ErrorDetail.module.scss";
 import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
-import JsonTree from "../jsonTree/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 
 /**
  * Component for showing error details for a remote API proxied via PixieBrix.

@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { type LogEntry } from "../../../telemetry/logging";
-import JsonTree from "../../jsonTree/JsonTree";
+import { type LogEntry } from "@/telemetry/logging";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import { type SetRequired } from "type-fest";
 
 const OutputDetail: React.FunctionComponent<{

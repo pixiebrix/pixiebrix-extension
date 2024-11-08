@@ -19,33 +19,33 @@ import { array, define, derive, extend } from "cooky-cutter";
 import {
   type ModComponentDefinition,
   type ModDefinition,
-} from "../../types/modDefinitionTypes";
+} from "@/types/modDefinitionTypes";
 import {
   DefinitionKinds,
   type InnerDefinitionRef,
   type InnerDefinitions,
   type RegistryId,
-} from "../../types/registryTypes";
-import { type OutputKey } from "../../types/runtimeTypes";
-import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
+} from "@/types/registryTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { type BrickPipeline } from "@/bricks/types";
-import { personalSharingDefinitionFactory } from "./registryFactories";
-import { isRegistryId, validateRegistryId } from "../../types/helpers";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { isRegistryId, validateRegistryId } from "@/types/helpers";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
-} from "../../starterBricks/types";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { DEFAULT_STARTER_BRICK_VAR } from "../../pageEditor/starterBricks/base";
-import { type SafeString } from "../../types/stringTypes";
+} from "@/starterBricks/types";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { DEFAULT_STARTER_BRICK_VAR } from "@/pageEditor/starterBricks/base";
+import { type SafeString } from "@/types/stringTypes";
 import {
   remoteIntegrationConfigurationFactory,
   remoteIntegrationServiceFactory,
-} from "./integrationFactories";
-import { freshIdentifier } from "../../utils/variableUtils";
-import { metadataFactory } from "./metadataFactory";
-import { type Availability } from "../../types/availabilityTypes";
-import { validateTimestamp } from "../../utils/timeUtils";
+} from "@/testUtils/factories/integrationFactories";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { type Availability } from "@/types/availabilityTypes";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 export const modComponentDefinitionFactory = define<ModComponentDefinition>({
   id: "extensionPoint" as InnerDefinitionRef,

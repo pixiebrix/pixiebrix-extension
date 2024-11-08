@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ParseDataUrl } from "./parseDataUrl";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { ParseDataUrl } from "@/bricks/transformers/parseDataUrl";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 
 const block = new ParseDataUrl();
 

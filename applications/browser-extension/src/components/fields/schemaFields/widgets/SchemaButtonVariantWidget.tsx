@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import Select, {
   type OptionProps,
@@ -26,8 +26,8 @@ import Select, {
 import { Button } from "react-bootstrap";
 import styles from "./SchemaButtonVariantWidget.module.scss";
 import cx from "classnames";
-import { type StringOption } from "./SchemaSelectWidget";
-import { mapSchemaToOptions } from "../selectFieldUtils";
+import { type StringOption } from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
+import { mapSchemaToOptions } from "@/components/fields/schemaFields/selectFieldUtils";
 
 const OptionComponent = ({
   innerProps,

@@ -1,15 +1,15 @@
 import React from "react";
-import { render } from "../../testHelpers";
-import TriggerConfiguration from "./TriggerConfiguration";
-import { actions as editorActions } from "../../store/editor/editorSlice";
-import { triggerFormStateFactory } from "../../../testUtils/factories/pageEditorFactories";
+import { render } from "@/pageEditor/testHelpers";
+import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import { uuidv4 } from "../../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 
 beforeAll(() => {
   registerBuiltinBricks();

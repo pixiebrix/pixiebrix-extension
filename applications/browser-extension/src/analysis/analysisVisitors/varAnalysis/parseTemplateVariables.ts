@@ -19,7 +19,7 @@
 // The logic here is heavily based on the nunjucks-variable-parser
 // https://github.com/archersado/nunjucks-variable-parser
 
-import { addPathPart } from "../../../runtime/pathHelpers";
+import { addPathPart } from "@/runtime/pathHelpers";
 // @ts-expect-error -- The typings of nunjucks do not expose parser and nodes
 import { parser, nodes } from "nunjucks";
 

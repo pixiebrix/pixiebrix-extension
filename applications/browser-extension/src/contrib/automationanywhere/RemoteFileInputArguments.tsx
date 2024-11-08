@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { useField } from "formik";
 import useAsyncState from "@/hooks/useAsyncState";
-import { cachedFetchSchema } from "./aaApi";
+import { cachedFetchSchema } from "@/contrib/automationanywhere/aaApi";
 import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 
 const RemoteFileInputArguments: React.FC<{

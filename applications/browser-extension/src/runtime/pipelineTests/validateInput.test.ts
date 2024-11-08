@@ -15,34 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ApiVersion } from "../../types/runtimeTypes";
+import { type ApiVersion } from "@/types/runtimeTypes";
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/bricks/errors";
-import { validateOutputKey } from "../runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
-import { extraEmptyModStateContext } from "../extendModVariableContext";
-import { BrickABC } from "../../types/brickTypes";
-import { validateRegistryId } from "../../types/helpers";
-import integrationRegistry from "../../integrations/registry";
-import { fromJS } from "../../integrations/UserDefinedIntegration";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { BrickABC } from "@/types/brickTypes";
+import { validateRegistryId } from "@/types/helpers";
+import integrationRegistry from "@/integrations/registry";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import {
   keyAuthIntegrationDefinitionFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../testUtils/factories/integrationFactories";
-import { metadataFactory } from "../../testUtils/factories/metadataFactory";
+} from "@/testUtils/factories/integrationFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { ContextError } from "@/errors/genericErrors";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
-import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import type {
   SanitizedConfig,
   SanitizedIntegrationConfig,
-} from "../../integrations/integrationTypes";
-import { toExpression } from "../../utils/expressionUtils";
+} from "@/integrations/integrationTypes";
+import { toExpression } from "@/utils/expressionUtils";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import apiVersionOptions from "../apiVersionOptions";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const locateMock = jest.mocked(
   integrationConfigLocator.findSanitizedIntegrationConfig,

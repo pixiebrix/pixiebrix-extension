@@ -19,10 +19,10 @@ import React from "react";
 import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
-} from "../documentBuilderTypes";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import getPreviewComponentDefinition from "./getPreviewComponentDefinition";
 import { render, screen } from "@testing-library/react";
-import documentBuilderElementTypeLabels from "../elementTypeLabels";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 
 test.each(["container", "row", "column"])(
   "shows name of an empty %s",

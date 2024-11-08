@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 /**
  * Runtime event type for setting Co-Pilot data

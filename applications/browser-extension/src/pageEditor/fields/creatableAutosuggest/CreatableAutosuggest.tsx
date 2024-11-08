@@ -32,7 +32,7 @@ import cx from "classnames";
 import { noop } from "lodash";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
-import { type Nullishable } from "../../../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export interface SuggestionTypeBase {
   value: string;

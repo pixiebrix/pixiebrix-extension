@@ -20,15 +20,15 @@ import {
   AUTH_METHODS,
   type SettingsFlags,
   type SettingsState,
-} from "./settingsTypes";
-import { DEFAULT_THEME } from "../../themes/themeTypes";
-import { type RegistryId } from "../../types/registryTypes";
-import { isRegistryId } from "../../types/helpers";
-import { revertAll } from "../commonActions";
+} from "@/store/settings/settingsTypes";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { isRegistryId } from "@/types/helpers";
+import { revertAll } from "@/store/commonActions";
 import { activateTheme } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect } from "react";
-import { selectSettings } from "./settingsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 
 export const initialSettingsState: SettingsState = {
   nextUpdate: null,

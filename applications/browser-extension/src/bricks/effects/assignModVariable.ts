@@ -1,6 +1,6 @@
-import { type Schema } from "../../types/schemaTypes";
-import { validateRegistryId } from "../../types/helpers";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject, type JsonPrimitive } from "type-fest";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";

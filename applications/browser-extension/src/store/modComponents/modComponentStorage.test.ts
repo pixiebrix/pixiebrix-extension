@@ -18,19 +18,19 @@
 import {
   createMigrationsManifest,
   inferModComponentStateVersion,
-} from "./modComponentMigrations";
-import { initialState } from "./modComponentSliceInitialState";
+} from "@/store/modComponents/modComponentMigrations";
+import { initialState } from "@/store/modComponents/modComponentSliceInitialState";
 import {
   getModComponentState,
   persistModComponentOptionsConfig,
-} from "./modComponentStorage";
-import { getMaxMigrationsVersion } from "../migratePersistedState";
+} from "@/store/modComponents/modComponentStorage";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 import {
   readReduxStorage,
   validateReduxStorageKey,
-} from "../../utils/storageUtils";
+} from "@/utils/storageUtils";
 
-jest.mock("../../utils/storageUtils", () => {
+jest.mock("@/utils/storageUtils", () => {
   const actual = jest.requireActual("@/utils/storageUtils");
 
   return {
@@ -44,7 +44,7 @@ const inferModComponentStateVersionMock = jest.mocked(
   inferModComponentStateVersion,
 );
 
-jest.mock("../../auth/authUtils", () => {
+jest.mock("@/auth/authUtils", () => {
   const actual = jest.requireActual("@/auth/authUtils");
   return {
     ...actual,

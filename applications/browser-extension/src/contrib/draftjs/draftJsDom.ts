@@ -21,7 +21,7 @@
  * - See example for regression testing at {@link https://pbx.vercel.app/advanced-fields/}
  */
 
-import { sleep } from "../../utils/timeUtils";
+import { sleep } from "@/utils/timeUtils";
 
 /**
  * Insert text into a Draft.js field at the cursor.

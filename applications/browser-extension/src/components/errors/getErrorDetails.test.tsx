@@ -16,7 +16,7 @@
  */
 
 import { render, screen } from "@testing-library/react";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import getErrorDetails from "./getErrorDetails";
 import { type ErrorObject } from "serialize-error";
 

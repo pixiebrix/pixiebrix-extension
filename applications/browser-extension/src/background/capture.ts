@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assertNotNullish, type Nullishable } from "../utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { type MessengerMeta, type Sender } from "webext-messenger";
-import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type JsonObject } from "type-fest";
 import { emitAudioEvent } from "@/contentScript/messenger/api";
-import { TOP_LEVEL_FRAME_ID } from "../domConstants";
+import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import {
   ensureOffscreenDocument,
   getRecordingTabId,
-} from "../tinyPages/offscreenDocumentController";
-import { integrationConfigLocator } from "./integrationConfigLocator";
+} from "@/tinyPages/offscreenDocumentController";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import {
   type StartAudioCaptureMessage,
   type StopAudioCaptureMessage,
-} from "../tinyPages/offscreenProtocol";
+} from "@/tinyPages/offscreenProtocol";
 import { assertDeepgramIntegrationConfig } from "@/contrib/deepgram/deepgramTypes";
 import { BusinessError } from "@/errors/businessErrors";
 

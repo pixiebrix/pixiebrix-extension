@@ -18,7 +18,7 @@
 import React from "react";
 import styles from "./Icon.module.scss";
 import useAsyncState from "@/hooks/useAsyncState";
-import getSvgIcon from "./getSvgIcon";
+import getSvgIcon from "@/icons/getSvgIcon";
 import cx from "classnames";
 import { type IconLibrary } from "@/types/iconTypes";
 

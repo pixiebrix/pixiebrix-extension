@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModsPageState } from "./modsPageSlice";
+import { type ModsPageState } from "@/extensionConsole/pages/mods/modsPageSlice";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectAllModDefinitions } from "../../../modDefinitions/modDefinitionsSelectors";
+import { selectAllModDefinitions } from "@/modDefinitions/modDefinitionsSelectors";
 import { appApi } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
-import buildModsList from "./utils/buildModsList";
-import buildGetModActivationStatus from "./utils/buildGetModActivationStatus";
-import buildGetModVersionStatus from "./utils/buildGetModVersionStatus";
-import buildGetModSharingSource from "./utils/buildGetModSharingSource";
-import buildGetCanEditModScope from "./utils/buildGetCanEditModScope";
-import { buildModViewItems } from "./utils/buildModViewItems";
+import buildModsList from "@/extensionConsole/pages/mods/utils/buildModsList";
+import buildGetModActivationStatus from "@/extensionConsole/pages/mods/utils/buildGetModActivationStatus";
+import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
+import buildGetModSharingSource from "@/extensionConsole/pages/mods/utils/buildGetModSharingSource";
+import buildGetCanEditModScope from "@/extensionConsole/pages/mods/utils/buildGetCanEditModScope";
+import { buildModViewItems } from "@/extensionConsole/pages/mods/utils/buildModViewItems";
 import {
   FeatureFlags,
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
 } from "@/auth/featureFlags";
-import { selectModInstanceMap } from "../../../store/modComponents/modInstanceSelectors";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 export type ModsPageRootState = {
   modsPage: ModsPageState;

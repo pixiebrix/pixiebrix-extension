@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Mod, type ModActivationStatus } from "../../../../types/modTypes";
-import { type RegistryId } from "../../../../types/registryTypes";
-import { type ModInstance } from "../../../../types/modInstanceTypes";
+import { type Mod, type ModActivationStatus } from "@/types/modTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
 
 export default function buildGetModActivationStatus(
   modInstanceMap: Map<RegistryId, ModInstance>,

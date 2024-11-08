@@ -21,12 +21,12 @@ import {
   type AuthData,
   type Integration,
   type IntegrationConfig,
-} from "../../integrations/integrationTypes";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import implicitGrantFlow from "./implicitGrantFlow";
-import codeGrantFlow from "./codeGrantFlow";
-import { memoizeUntilSettled } from "../../utils/promiseUtils";
+} from "@/integrations/integrationTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import implicitGrantFlow from "@/background/auth/implicitGrantFlow";
+import codeGrantFlow from "@/background/auth/codeGrantFlow";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 /**
  * Perform the OAuth2 flow for the given integration.

@@ -17,19 +17,19 @@
 
 import axios, { type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
-import integrationRegistry from "../integrations/registry";
+import integrationRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
-import { integrationConfigLocator } from "./integrationConfigLocator";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { isEmpty } from "lodash";
-import launchOAuth2Flow from "./auth/launchOAuth2Flow";
-import { expectContext } from "../utils/expectContext";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
   selectRemoteResponseErrorMessage,
-} from "./proxyUtils";
+} from "@/background/proxyUtils";
 import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import {
   BusinessError,
@@ -47,21 +47,24 @@ import {
   type IntegrationConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
-} from "../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type MessageContext } from "@/types/loggerTypes";
-import refreshPKCEToken from "./refreshToken";
-import reportError from "../telemetry/reportError";
-import { assertProtocolUrl, isUrlRelative } from "../utils/urlUtils";
-import { ensureJsonObject } from "../utils/objectUtils";
-import { deleteCachedAuthData, getCachedAuthData } from "./auth/authStorage";
-import { getToken } from "./auth/getToken";
+import refreshPKCEToken from "@/background/refreshToken";
+import reportError from "@/telemetry/reportError";
+import { assertProtocolUrl, isUrlRelative } from "@/utils/urlUtils";
+import { ensureJsonObject } from "@/utils/objectUtils";
+import {
+  deleteCachedAuthData,
+  getCachedAuthData,
+} from "@/background/auth/authStorage";
+import { getToken } from "@/background/auth/getToken";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
-} from "../integrations/constants";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
-import { pixiebrixConfigurationFactory } from "../integrations/util/pixiebrixConfigurationFactory";
-import { type Nullishable } from "../utils/nullishUtils";
+} from "@/integrations/constants";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
 import { API_PATHS } from "@/data/service/urlPaths";

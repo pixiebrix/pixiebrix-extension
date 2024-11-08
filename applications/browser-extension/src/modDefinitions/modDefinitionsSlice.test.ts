@@ -19,12 +19,12 @@ import { serializeError } from "serialize-error";
 import { initialState, modDefinitionsActions } from "./modDefinitionsSlice";
 import { type ModDefinitionsRootState } from "./modDefinitionsTypes";
 import modDefinitionsRegistry from "./registry";
-import { syncRemotePackages } from "../registry/memoryRegistry";
-import { defaultModDefinitionFactory } from "../testUtils/factories/modDefinitionFactories";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
 jest.mock("./registry");
 
-jest.mock("../registry/memoryRegistry", () => ({
+jest.mock("@/registry/memoryRegistry", () => ({
   __esModule: true,
   ...jest.requireActual("@/registry/memoryRegistry"),
   syncRemotePackages: jest.fn(),

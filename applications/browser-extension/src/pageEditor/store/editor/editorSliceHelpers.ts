@@ -16,20 +16,20 @@
  */
 
 import { type Draft } from "immer";
-import { type EditorState } from "./pageEditorTypes";
-import { type UUID } from "../../../types/stringTypes";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickConfigurationUIState,
   makeInitialBrickPipelineUIState,
-} from "./uiState";
-import { getPipelineMap } from "../../tabs/editTab/editHelpers";
-import { type BrickPipelineUIState } from "./uiStateTypes";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import { clearModComponentTraces } from "../../../telemetry/trace";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+} from "@/pageEditor/store/editor/uiState";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
+import { type BrickPipelineUIState } from "@/pageEditor/store/editor/uiStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { clearModComponentTraces } from "@/telemetry/trace";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { remove } from "lodash";
-import { selectGetModComponentFormStateByModComponentId } from "./editorSelectors";
+import { selectGetModComponentFormStateByModComponentId } from "@/pageEditor/store/editor/editorSelectors";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 

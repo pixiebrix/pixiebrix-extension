@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SanitizedIntegrationConfig } from "../../../integrations/integrationTypes";
-import type { Option } from "./SelectWidget";
-import type { FetchableAsyncState } from "../../../types/sliceTypes";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { Option } from "@/components/form/widgets/SelectWidget";
+import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import isPromise from "is-promise";
 import { BusinessError } from "@/errors/businessErrors";
-import { type OptionsFactory } from "./RemoteSelectWidget";
+import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
 
 export function useOptionsResolver<T>(
   config: SanitizedIntegrationConfig | null,

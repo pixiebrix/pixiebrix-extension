@@ -20,8 +20,8 @@ import { type JsonObject } from "type-fest";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import { wasContextInvalidated } from "webext-events";
 import { recordLog } from "@/background/messenger/api";
-import { expectContext } from "../utils/expectContext";
-import reportError from "./reportError";
+import { expectContext } from "@/utils/expectContext";
+import reportError from "@/telemetry/reportError";
 
 /**
  * A Logger that logs messages through the background page (which can make calls to Application error telemetry)

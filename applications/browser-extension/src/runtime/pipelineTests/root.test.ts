@@ -16,20 +16,20 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { echoBrick, simpleInput } from "./testHelpers";
-import { reducePipeline } from "../reducePipeline";
+import { echoBrick, simpleInput } from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { ReaderABC } from "../../types/bricks/readerTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
 import {
   type ApiVersion,
   type BrickArgs,
   type BrickOptions,
   type SelectorRoot,
-} from "../../types/runtimeTypes";
-import { BrickABC } from "../../types/brickTypes";
-import { toExpression } from "../../utils/expressionUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+} from "@/types/runtimeTypes";
+import { BrickABC } from "@/types/brickTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 class RootAwareBlock extends BrickABC {
   constructor() {

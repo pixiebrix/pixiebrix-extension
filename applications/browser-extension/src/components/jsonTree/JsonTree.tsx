@@ -16,7 +16,7 @@
  */
 
 import { type CommonExternalProps, JSONTree } from "react-json-tree";
-import { jsonTreeTheme as theme } from "../../themes/light";
+import { jsonTreeTheme as theme } from "@/themes/light";
 import React, {
   type ReactNode,
   useCallback,
@@ -25,8 +25,8 @@ import React, {
   useState,
 } from "react";
 import { useDebounce } from "use-debounce";
-import FieldTemplate from "../form/FieldTemplate";
-import Loader from "../Loader";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import Loader from "@/components/Loader";
 import { useLabelRenderer } from "./treeHooks";
 import {
   get,
@@ -44,11 +44,11 @@ import { type Styling, type Theme } from "react-base16-styling";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import notify from "../../utils/notify";
+import notify from "@/utils/notify";
 import safeJsonStringify from "json-stringify-safe";
 import styles from "./JsonTree.module.scss";
-import AsyncButton from "../AsyncButton";
-import { writeToClipboard } from "../../utils/clipboardUtils";
+import AsyncButton from "@/components/AsyncButton";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 
 const SEARCH_DEBOUNCE_MS = 100;
 

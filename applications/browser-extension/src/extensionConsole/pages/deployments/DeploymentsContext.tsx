@@ -19,11 +19,11 @@ import React, { useCallback } from "react";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
-} from "../../../permissions/permissionsUtils";
+} from "@/permissions/permissionsUtils";
 import { useDispatch, useSelector } from "react-redux";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
-import notify from "../../../utils/notify";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import notify from "@/utils/notify";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
@@ -31,31 +31,31 @@ import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
   selectActivatedDeployments,
-} from "../../../utils/deploymentUtils";
-import settingsSlice from "../../../store/settings/settingsSlice";
-import { checkDeploymentPermissions } from "../../../permissions/deploymentPermissionsHelpers";
-import { logPromiseDuration } from "../../../utils/promiseUtils";
+} from "@/utils/deploymentUtils";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import { logPromiseDuration } from "@/utils/promiseUtils";
 import {
   getExtensionVersion,
   reloadIfNewVersionIsReady,
-} from "../../../utils/extensionUtils";
-import useAutoDeploy from "./useAutoDeploy";
-import { activateDeployments } from "./activateDeployments";
+} from "@/utils/extensionUtils";
+import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
-import { fetchDeploymentModDefinitions } from "../../../modDefinitions/modDefinitionRawApiCalls";
+import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { isEqual } from "lodash";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import type { ActivatedDeployment, Deployment } from "../../../types/contract";
+import type { ActivatedDeployment, Deployment } from "@/types/contract";
 import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
-import type { ActivatableDeployment } from "../../../types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Permissions } from "webextension-polyfill";
-import useDeactivateUnassignedDeploymentsEffect from "./useDeactivateUnassignedDeploymentsEffect";
-import { valueToAsyncState } from "../../../utils/asyncStateUtils";
+import useDeactivateUnassignedDeploymentsEffect from "@/extensionConsole/pages/deployments/useDeactivateUnassignedDeploymentsEffect";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { RestrictedFeatures } from "@/auth/featureFlags";
-import { selectModInstances } from "../../../store/modComponents/modInstanceSelectors";
-import type { ModInstance } from "../../../types/modInstanceTypes";
-import { type AppDispatch } from "../../store";
+import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
+import type { ModInstance } from "@/types/modInstanceTypes";
+import { type AppDispatch } from "@/extensionConsole/store";
 import { type EmptyObject } from "type-fest";
 
 export type DeploymentsState = {

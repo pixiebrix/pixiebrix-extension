@@ -19,7 +19,7 @@ import { useField } from "formik";
 import React from "react";
 import SelectorSelectorWidget, {
   type SelectorSelectorProps,
-} from "./SelectorSelectorWidget";
+} from "@/pageEditor/fields/SelectorSelectorWidget";
 
 const LocationWidget: React.FC<SelectorSelectorProps> = ({
   selectMode = "container",

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
-import { modComponentDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import getModDefinitionIntegrationIds from "./getModDefinitionIntegrationIds";
+import { validateRegistryId } from "@/types/helpers";
+import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
-import { INTEGRATIONS_BASE_SCHEMA_URL } from "../constants";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 describe("getModDefinitionIntegrationIds", () => {
   it("works with record services formats", () => {

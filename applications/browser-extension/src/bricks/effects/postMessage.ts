@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { $safeFindElementsWithRootMode } from "../rootModeHelpers";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
 import { PropError } from "@/errors/businessErrors";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 class PostMessageEffect extends EffectABC {
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage

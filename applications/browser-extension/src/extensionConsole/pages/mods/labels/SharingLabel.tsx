@@ -29,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
-import { type SharingSource, type SharingType } from "../../../../types/modTypes";
+import { type SharingSource, type SharingType } from "@/types/modTypes";
 
 const sharingIcons = {
   Personal: faEyeSlash,

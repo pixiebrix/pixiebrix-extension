@@ -16,8 +16,8 @@
  */
 
 import React, { Suspense } from "react";
-import { type SchemaFieldProps } from "../propTypes";
-import AceEditor from "../../../AceEditor";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import AceEditor from "@/components/AceEditor";
 import { useField } from "formik";
 
 const CodeEditorWidget: React.VFC<SchemaFieldProps> = ({ name }) => {

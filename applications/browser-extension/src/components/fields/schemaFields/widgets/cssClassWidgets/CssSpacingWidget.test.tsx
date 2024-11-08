@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { type Expression } from "../../../../../types/runtimeTypes";
-import { render, screen } from "../../../../../pageEditor/testHelpers";
-import registerDefaultWidgets from "../registerDefaultWidgets";
-import CssSpacingWidget from "./CssSpacingWidget";
+import { type Expression } from "@/types/runtimeTypes";
+import { render, screen } from "@/pageEditor/testHelpers";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import CssSpacingWidget from "@/components/fields/schemaFields/widgets/cssClassWidgets/CssSpacingWidget";
 import selectEvent from "react-select-event";
 import userEvent from "@testing-library/user-event";
-import { getCssClassInputFieldOptions } from "../../CssClassField";
+import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/CssClassField";
 
 const renderWidget = (value: string | Expression) =>
   render(

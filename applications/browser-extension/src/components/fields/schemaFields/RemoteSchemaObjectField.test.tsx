@@ -18,16 +18,16 @@
 /* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] -- TODO: replace with native expect and it.each */
 
 import React from "react";
-import { type Schema } from "../../../types/schemaTypes";
-import { render, screen } from "../../../pageEditor/testHelpers";
-import RemoteSchemaObjectField from "./RemoteSchemaObjectField";
-import { expectToggleOptions } from "./testHelpers";
+import { type Schema } from "@/types/schemaTypes";
+import { render, screen } from "@/pageEditor/testHelpers";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import {
   errorToAsyncState,
   loadingAsyncStateFactory,
   valueToAsyncState,
-} from "../../../utils/asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();

@@ -17,13 +17,13 @@
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type Permissions } from "webextension-polyfill";
-import { hydrateModComponentInnerDefinitions } from "../registry/hydrateInnerDefinitions";
-import starterBrickRegistry from "../starterBricks/registry";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { castArray, compact } from "lodash";
-import { mergePermissions } from "./permissionsUtils";
+import { mergePermissions } from "@/permissions/permissionsUtils";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { collectIntegrationOriginPermissions } from "../integrations/util/permissionsHelpers";
-import { type PermissionsStatus } from "./permissionsTypes";
+import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 type PermissionOptions = {
   /**

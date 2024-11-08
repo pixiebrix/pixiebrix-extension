@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isOutputKey } from "./runtimeTypes";
+import { isOutputKey } from "@/runtime/runtimeTypes";
 
 describe("isOutputKey", () => {
   it.each(["a", "ab"])("returns true for valid output key %s", (outputKey) => {

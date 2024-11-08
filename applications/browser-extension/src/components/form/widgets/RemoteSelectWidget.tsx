@@ -16,17 +16,20 @@
  */
 
 import React, { useContext, useEffect } from "react";
-import SelectWidget, { type Option, type SelectLike } from "./SelectWidget";
-import { type SanitizedIntegrationConfig } from "../../../integrations/integrationTypes";
-import { type CustomFieldWidgetProps } from "../FieldTemplate";
+import SelectWidget, {
+  type Option,
+  type SelectLike,
+} from "@/components/form/widgets/SelectWidget";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
 import useReportError from "@/hooks/useReportError";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { useOptionsResolver } from "./useOptionsResolver";
-import FieldTemplateLocalErrorContext from "./FieldTemplateLocalErrorContext";
+import { useOptionsResolver } from "@/components/form/widgets/useOptionsResolver";
+import FieldTemplateLocalErrorContext from "@/components/form/widgets/FieldTemplateLocalErrorContext";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedIntegrationConfig,

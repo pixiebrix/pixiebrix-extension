@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
-import RichTextEditor from "../../richTextEditor/RichTextEditor";
+import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
 
 const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   id,

@@ -18,10 +18,10 @@
 import {
   KIND_SCHEMAS,
   validatePackageDefinition,
-} from "../../../validators/schemaValidator";
+} from "@/validators/schemaValidator";
 import { type ValidationResult } from "@cfworker/json-schema";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { loadBrickYaml } from "../../../runtime/brickYaml";
+import { loadBrickYaml } from "@/runtime/brickYaml";
 
 type PartialSchema = {
   kind?: string;

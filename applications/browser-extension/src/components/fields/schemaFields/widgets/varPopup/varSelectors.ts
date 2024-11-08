@@ -19,7 +19,7 @@ import { selectKnownVars } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentId,
   selectActiveNodeInfo,
-} from "../../../../../pageEditor/store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { createSelector } from "@reduxjs/toolkit";
 
 export const selectKnownVarsForActiveNode = createSelector(

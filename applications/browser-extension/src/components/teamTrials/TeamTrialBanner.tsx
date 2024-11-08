@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Banner from "../banner/Banner";
-import TrialCallToActionLink from "./TrialCallToActionLink";
+import Banner from "@/components/banner/Banner";
+import TrialCallToActionLink from "@/components/teamTrials/TrialCallToActionLink";
 import useTeamTrialStatus, {
   TeamTrialStatus,
-} from "./useTeamTrialStatus";
+} from "@/components/teamTrials/useTeamTrialStatus";
 import React from "react";
 import { Collapse } from "react-bootstrap";
 

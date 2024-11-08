@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { integrationConfigFactory } from "../../testUtils/factories/integrationFactories";
-import { registryIdFactory } from "../../testUtils/factories/stringFactories";
+import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import {
   type IntegrationABC,
   type OAuth2Context,
   type SecretsConfig,
-} from "../../integrations/integrationTypes";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import launchOAuth2Flow from "./launchOAuth2Flow";
-import codeGrantFlow from "./codeGrantFlow";
+} from "@/integrations/integrationTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import codeGrantFlow from "@/background/auth/codeGrantFlow";
 
-jest.mock("./codeGrantFlow");
-jest.mock("./implicitGrantFlow");
+jest.mock("@/background/auth/codeGrantFlow");
+jest.mock("@/background/auth/implicitGrantFlow");
 
 const codeGrantFlowMock = jest.mocked(codeGrantFlow);
 const reportEventMock = jest.mocked(reportEvent);

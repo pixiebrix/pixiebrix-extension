@@ -19,8 +19,8 @@ import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { persistSettingsConfig } from "../../store/settings/settingsStorage";
-import settingsSlice from "../../store/settings/settingsSlice";
+import { persistSettingsConfig } from "@/store/settings/settingsStorage";
+import settingsSlice from "@/store/settings/settingsSlice";
 
 const conditionalMiddleware: Middleware[] = [];
 if (typeof createLogger === "function") {

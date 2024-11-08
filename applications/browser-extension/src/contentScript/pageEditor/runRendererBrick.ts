@@ -18,17 +18,17 @@
 import { serializeError } from "serialize-error";
 
 import { CancelError, NoRendererError } from "@/errors/businessErrors";
-import { uuidv4 } from "../../types/helpers";
-import { type PanelPayload } from "../../types/sidebarTypes";
+import { uuidv4 } from "@/types/helpers";
+import { type PanelPayload } from "@/types/sidebarTypes";
 import { HeadlessModeError } from "@/bricks/errors";
-import { showTemporarySidebarPanel } from "../sidebarController";
-import { waitForTemporaryPanel } from "../../platform/panels/panelController";
-import { type UUID } from "../../types/stringTypes";
-import { createFrameSource } from "../ephemeralPanel";
-import { showModal } from "../modalDom";
-import { runBrickPreview } from "./runBrickPreview";
-import { type RunBrickArgs } from "./types";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
+import { waitForTemporaryPanel } from "@/platform/panels/panelController";
+import { type UUID } from "@/types/stringTypes";
+import { createFrameSource } from "@/contentScript/ephemeralPanel";
+import { showModal } from "@/contentScript/modalDom";
+import { runBrickPreview } from "@/contentScript/pageEditor/runBrickPreview";
+import { type RunBrickArgs } from "@/contentScript/pageEditor/types";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 type Location = "modal" | "panel";
 

@@ -16,16 +16,16 @@
  */
 
 import React from "react";
-import { waitForEffect } from "../../../../../testUtils/testHelpers";
-import { render } from "../../../../testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import ModVariablesTab from "./ModVariablesTab";
-import { actions } from "../../../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { getPageState } from "@/contentScript/messenger/api";
-import { type ModComponentFormState } from "../../../../starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { Tab } from "react-bootstrap";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import { modMetadataFactory } from "../../../../../testUtils/factories/modComponentFactories";
-import { formStateFactory } from "../../../../../testUtils/factories/pageEditorFactories";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 const getPageStateMock = jest.mocked(getPageState);
 

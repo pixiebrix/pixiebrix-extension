@@ -28,30 +28,30 @@ import {
   validateRegistryId,
   normalizeSemVerString,
 } from "@/types/helpers";
-import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
-import { validateOutputKey } from "../runtime/runtimeTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   activatedModComponentFactory,
   modComponentFactory,
-} from "../testUtils/factories/modComponentFactories";
-import { modComponentDefinitionFactory } from "../testUtils/factories/modDefinitionFactories";
-import { sanitizedIntegrationConfigFactory } from "../testUtils/factories/integrationFactories";
+} from "@/testUtils/factories/modComponentFactories";
+import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
   deploymentFactory,
   activatableDeploymentFactory,
-} from "../testUtils/factories/deploymentFactories";
+} from "@/testUtils/factories/deploymentFactories";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
-} from "../integrations/constants";
-import getModDefinitionIntegrationIds from "../integrations/util/getModDefinitionIntegrationIds";
-import { getExtensionVersion } from "./extensionUtils";
-import { validateTimestamp } from "./timeUtils";
+} from "@/integrations/constants";
+import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { getExtensionVersion } from "@/utils/extensionUtils";
+import { validateTimestamp } from "@/utils/timeUtils";
 import {
   modInstanceFactory,
   teamDeploymentMetadataFactory,
-} from "../testUtils/factories/modInstanceFactories";
-import { mapActivatedModComponentsToModInstance } from "../store/modComponents/modInstanceUtils";
+} from "@/testUtils/factories/modInstanceFactories";
+import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(

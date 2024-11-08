@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { isObject } from "@/utils/objectUtils";
 import { mapValues } from "lodash";
-import { castTextLiteralOrThrow } from "../../utils/expressionUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   MergeStrategies,
   type MergeStrategy,
   type StateNamespace,
   StateNamespaces,
-} from "../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 
 /**
  * Namespace options for use in oneOf.

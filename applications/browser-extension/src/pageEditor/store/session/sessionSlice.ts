@@ -16,8 +16,8 @@
  */
 
 import { createSlice } from "@reduxjs/toolkit";
-import { uuidv4 } from "../../../types/helpers";
-import { type SessionState } from "./sessionSliceTypes";
+import { uuidv4 } from "@/types/helpers";
+import { type SessionState } from "@/pageEditor/store/session/sessionSliceTypes";
 
 /** @internal */
 export const initialState: SessionState = {

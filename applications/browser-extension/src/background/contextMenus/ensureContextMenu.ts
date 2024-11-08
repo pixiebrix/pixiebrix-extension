@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeMenuId } from "./makeMenuId";
-import { type SelectionMenuOptions } from "../../platform/platformTypes/contextMenuProtocol";
-import { expectContext } from "../../utils/expectContext";
-import { memoizeUntilSettled } from "../../utils/promiseUtils";
+import { makeMenuId } from "@/background/contextMenus/makeMenuId";
+import { type SelectionMenuOptions } from "@/platform/platformTypes/contextMenuProtocol";
+import { expectContext } from "@/utils/expectContext";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import chromeP from "webext-polyfill-kinda";
 import { type Menus } from "webextension-polyfill";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Register a context menu item on all tabs.

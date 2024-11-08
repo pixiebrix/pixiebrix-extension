@@ -17,7 +17,7 @@
 
 import { useKBar } from "kbar";
 import { useEffect, useRef } from "react";
-import quickBarRegistry from "./quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 /**

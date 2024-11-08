@@ -19,16 +19,16 @@ import {
   type ModDefinition,
   type HydratedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
-import { type IntegrationDependency } from "../integrations/integrationTypes";
-import { hydrateModInnerDefinitions } from "../registry/hydrateInnerDefinitions";
-import { mergePermissions } from "../permissions/permissionsUtils";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import { hydrateModInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import { mergePermissions } from "@/permissions/permissionsUtils";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
-import starterBrickRegistry from "../starterBricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { collectIntegrationOriginPermissions } from "../integrations/util/permissionsHelpers";
-import { collectModComponentPermissions } from "../permissions/modComponentPermissionsHelpers";
-import { type PermissionsStatus } from "../permissions/permissionsTypes";
+import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
+import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import type { Manifest } from "webextension-polyfill/namespaces/manifest";
 
 async function collectModComponentDefinitionPermissions(

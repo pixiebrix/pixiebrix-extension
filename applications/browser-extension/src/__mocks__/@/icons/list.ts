@@ -16,7 +16,7 @@
  */
 
 // https://raw.githubusercontent.com/twbs/icons/main/icons/exclamation-triangle.svg -- bootstrap icon triangle
-import { IconLibrary } from "../../../types/iconTypes";
+import { IconLibrary } from "@/types/iconTypes";
 
 const icon =
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">\n' +

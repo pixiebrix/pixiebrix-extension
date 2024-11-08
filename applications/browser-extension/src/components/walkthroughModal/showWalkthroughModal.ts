@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { getThisFrame } from "webext-messenger";
 import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { showModal } from "@/contentScript/modalDom";
 
 const showWalkthroughModal = async () => {

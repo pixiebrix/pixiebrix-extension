@@ -17,19 +17,19 @@
 
 import type React from "react";
 import { useCallback } from "react";
-import { generateFreshOutputKey } from "../../tabs/editTab/editHelpers";
+import { generateFreshOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import { compact, get } from "lodash";
-import { actions } from "../../store/editor/editorSlice";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getModalDataSelector,
   selectActiveModComponentFormState,
   selectGetModDraftStateForModId,
   selectPipelineMap,
-} from "../../store/editor/editorSelectors";
-import { selectSessionId } from "../../store/session/sessionSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import { type BrickConfig } from "@/bricks/types";
 import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
@@ -37,11 +37,11 @@ import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
 import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
 import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
-import { type OutputKey } from "../../../types/runtimeTypes";
-import { type Brick } from "../../../types/brickTypes";
-import { joinPathParts } from "../../../utils/formUtils";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import { ModalKey } from "../../store/editor/pageEditorTypes";
+import { type OutputKey } from "@/types/runtimeTypes";
+import { type Brick } from "@/types/brickTypes";
+import { joinPathParts } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
 
 type TestAddBrickResult = {
   error?: React.ReactNode;

@@ -16,7 +16,7 @@
  */
 
 import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
-import { messengerLogging } from "../messengerLogging";
+import { messengerLogging } from "@/development/messengerLogging";
 
 export default function useMessengerLogging(): [
   boolean | undefined,

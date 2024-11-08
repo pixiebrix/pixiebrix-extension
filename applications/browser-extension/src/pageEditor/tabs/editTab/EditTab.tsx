@@ -17,22 +17,22 @@
 
 import React from "react";
 import { Collapse, Tab } from "react-bootstrap";
-import EditorNodeLayout from "./editorNodeLayout/EditorNodeLayout";
-import EditorNodeConfigPanel from "./editorNodeConfigPanel/EditorNodeConfigPanel";
+import EditorNodeLayout from "@/pageEditor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
+import EditorNodeConfigPanel from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BrickDataPanel from "./dataPanel/BrickDataPanel";
-import useModComponentTrace from "../../hooks/useModComponentTrace";
-import StarterBrickDataPanel from "./dataPanel/StarterBrickDataPanel";
+import BrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
+import useModComponentTrace from "@/pageEditor/hooks/useModComponentTrace";
+import StarterBrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/StarterBrickDataPanel";
 import { useDispatch, useSelector } from "react-redux";
-import { FOUNDATION_NODE_ID } from "../../store/editor/uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import {
   selectActiveNodeId,
   selectIsDataPanelExpanded,
   selectPipelineMap,
-} from "../../store/editor/editorSelectors";
-import useApiVersionAtLeast from "../../hooks/useApiVersionAtLeast";
-import UnsupportedRuntimeVersion from "./UnsupportedRuntimeVersion";
+} from "@/pageEditor/store/editor/editorSelectors";
+import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
+import UnsupportedRuntimeVersion from "@/pageEditor/tabs/editTab/UnsupportedRuntimeVersion";
 import TooltipIconButton from "@/components/TooltipIconButton";
 import {
   faAngleDoubleLeft,
@@ -43,7 +43,7 @@ import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import StarterBrickConfigPanel from "./StarterBrickConfigPanel";
 import { type UUID } from "@/types/stringTypes";
-import { actions } from "../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { assertNotNullish } from "@/utils/nullishUtils";
 

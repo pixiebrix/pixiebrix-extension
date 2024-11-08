@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthUserOrganization } from "./authTypes";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type AuthUserOrganization } from "@/auth/authTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { type MeTeamMembership } from "@/data/model/MeTeamMembership";
 import { convertToUserRole } from "@/data/model/UserRole";
 

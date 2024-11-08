@@ -24,36 +24,36 @@ import { isEmpty } from "lodash";
 import styles from "./ModOptionsDefinitionEditor.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
-import dataPanelStyles from "../editTab/dataPanel/dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
-import FORM_FIELD_TYPE_OPTIONS from "../../fields/formFieldTypeOptions";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectDirtyModOptionsDefinitionForModId,
-} from "../../store/editor/editorSelectors";
-import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "../../starterBricks/base";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "@/pageEditor/starterBricks/base";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import {
   type ModDefinition,
   type ModOptionsDefinition,
-} from "../../../types/modDefinitionTypes";
-import { actions } from "../../store/editor/editorSlice";
+} from "@/types/modDefinitionTypes";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import Effect from "@/components/Effect";
-import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { type Schema } from "../../../types/schemaTypes";
-import { emptyModOptionsDefinitionFactory } from "../../../utils/modUtils";
-import { DataPanelTabKey } from "../editTab/dataPanel/dataPanelTypes";
-import DataTabPane from "../editTab/dataPanel/DataTabPane";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import { type AsyncState } from "../../../types/sliceTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { type AsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
-import { type RegistryId } from "../../../types/registryTypes";
-import { valueToAsyncState } from "../../../utils/asyncStateUtils";
+import { type RegistryId } from "@/types/registryTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import AsyncStateGate from "@/components/AsyncStateGate";
 
 const fieldTypes = [

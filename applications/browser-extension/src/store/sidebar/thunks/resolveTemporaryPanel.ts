@@ -17,9 +17,9 @@
 
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { resolveTemporaryPanel as resolveTemporaryPanelMessenger } from "@/contentScript/messenger/api";
-import { getConnectedTarget } from "../../../sidebar/connectedTarget";
-import { type SidebarState } from "../../../types/sidebarTypes";
-import { type UUID } from "../../../types/stringTypes";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { type SidebarState } from "@/types/sidebarTypes";
+import { type UUID } from "@/types/stringTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { partition } from "lodash";
 

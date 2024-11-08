@@ -15,26 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApiMock } from "../../../testUtils/appApiMock";
-import tokenIntegrationDefinition from "@/contrib/integrations/automation-anywhere.yaml";
-import oauthIntegrationDefinition from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
-import { syncRemotePackages } from "../../../registry/memoryRegistry";
-import { integrationConfigLocator as serviceLocator } from "../../integrationConfigLocator";
-import { getPartnerPrincipals } from "./getPartnerPrincipals";
+import { appApiMock } from "@/testUtils/appApiMock";
+import tokenIntegrationDefinition from "@contrib/integrations/automation-anywhere.yaml";
+import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
+import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
 import {
   integrationConfigFactory,
   secretsConfigFactory,
-} from "../../../testUtils/factories/integrationFactories";
+} from "@/testUtils/factories/integrationFactories";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../../../integrations/constants";
-import { registry } from "../../messenger/api";
-import { type RegistryId } from "../../../types/registryTypes";
-import { readRawConfigurations } from "../../../integrations/util/readRawConfigurations";
+} from "@/integrations/constants";
+import { registry } from "@/background/messenger/api";
+import { type RegistryId } from "@/types/registryTypes";
+import { readRawConfigurations } from "@/integrations/util/readRawConfigurations";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../../../integrations/registry", () => {
+jest.mock("@/integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");
   return {
     // Include __esModule so default export works
@@ -58,7 +58,7 @@ jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {
   } as any;
 });
 
-jest.mock("../../../integrations/util/readRawConfigurations");
+jest.mock("@/integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);
 
 describe("getPartnerPrincipals", () => {

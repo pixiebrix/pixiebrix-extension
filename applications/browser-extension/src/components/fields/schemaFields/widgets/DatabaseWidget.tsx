@@ -22,15 +22,15 @@ import DatabaseCreateModal from "./DatabaseCreateModal";
 import SelectWidget, {
   type Option,
   type SelectLike,
-} from "../../../form/widgets/SelectWidget";
-import createMenuListWithAddButton from "../../../form/widgets/createMenuListWithAddButton";
-import FieldRuntimeContext from "../FieldRuntimeContext";
-import { type UUID } from "../../../../types/stringTypes";
-import { type Expression } from "../../../../types/runtimeTypes";
-import { type SchemaFieldProps } from "../propTypes";
+} from "@/components/form/widgets/SelectWidget";
+import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { type UUID } from "@/types/stringTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useIsMounted from "@/hooks/useIsMounted";
-import { isUUID } from "../../../../types/helpers";
-import { isExpression, toExpression } from "../../../../utils/expressionUtils";
+import { isUUID } from "@/types/helpers";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,

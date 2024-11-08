@@ -18,13 +18,13 @@
 import React from "react";
 import BrickConfiguration from "./BrickConfiguration";
 import brickRegistry from "@/bricks/registry";
-import { echoBrick } from "../../../runtime/pipelineTests/testHelpers";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
 import { screen } from "@testing-library/react";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { render } from "../../testHelpers";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
-import { actions } from "../../store/editor/editorSlice";
+import { render } from "@/pageEditor/testHelpers";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import {
   contextMenuFormStateFactory,
   formStateFactory,
@@ -32,14 +32,14 @@ import {
   quickbarFormStateFactory,
   sidebarPanelFormStateFactory,
   triggerFormStateFactory,
-} from "../../../testUtils/factories/pageEditorFactories";
+} from "@/testUtils/factories/pageEditorFactories";
 import {
   brickConfigFactory,
   brickFactory,
-} from "../../../testUtils/factories/brickFactories";
+} from "@/testUtils/factories/brickFactories";
 import CommentEffect from "@/bricks/effects/comment";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
-import { StarterBrickTypes } from "../../../types/starterBrickTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 beforeAll(() => {
   registerDefaultWidgets();

@@ -20,11 +20,8 @@ import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
 import { isEmpty, startCase } from "lodash";
-import { type Schema, type SchemaDefinition } from "../../types/schemaTypes";
-import {
-  isExpression,
-  isTemplateExpression,
-} from "../../utils/expressionUtils";
+import { type Schema, type SchemaDefinition } from "@/types/schemaTypes";
+import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 
 /**
  * Acronyms to capitalize in field labels.

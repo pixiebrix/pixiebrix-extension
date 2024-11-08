@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TraceAnalysis from "./traceAnalysis";
+import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
 import { serializeError } from "serialize-error";
-import { throwIfInvalidInput } from "../../runtime/runtimeUtils";
+import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { JQTransformer } from "@/bricks/transformers/jq";
 import { BusinessError } from "@/errors/businessErrors";
-import { type RenderedArgs } from "../../types/runtimeTypes";
+import { type RenderedArgs } from "@/types/runtimeTypes";
 
 describe("TraceAnalysis.mapErrorAnnotations", () => {
   test("handles invalid field value", async () => {

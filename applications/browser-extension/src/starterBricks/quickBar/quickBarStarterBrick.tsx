@@ -19,7 +19,7 @@ import React from "react";
 import {
   type InitialValues,
   reduceModComponentPipeline,
-} from "../../runtime/reducePipeline";
+} from "@/runtime/reducePipeline";
 import {
   type Manifest,
   type Menus,
@@ -32,45 +32,45 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
-import reportError from "../../telemetry/reportError";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import { selectEventData } from "../../telemetry/deployments";
-import apiVersionOptions from "../../runtime/apiVersionOptions";
+import reportError from "@/telemetry/reportError";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { selectEventData } from "@/telemetry/deployments";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import Icon from "../../icons/Icon";
-import { guessSelectedElement } from "../../utils/selectionController";
+import Icon from "@/icons/Icon";
+import { guessSelectedElement } from "@/utils/selectionController";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import {
   type StarterBrick,
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
-import { type Reader } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { type Brick } from "../../types/brickTypes";
-import { type UUID } from "../../types/stringTypes";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
-import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
-import pluralize from "../../utils/pluralize";
-import { allSettled } from "../../utils/promiseUtils";
-import type { PlatformCapability } from "../../platform/capabilities";
-import type { PlatformProtocol } from "../../platform/platformProtocol";
-import { DEFAULT_ACTION_RESULTS } from "../starterBrickConstants";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/types/starterBrickTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type UUID } from "@/types/stringTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
+import pluralize from "@/utils/pluralize";
+import { allSettled } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   type QuickBarDefinition,
   type QuickBarConfig,
   type QuickBarTargetMode,
-} from "./quickBarTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
+} from "@/starterBricks/quickBar/quickBarTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
-} from "../../utils/modUtils";
+} from "@/utils/modUtils";
 
 export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarConfig> {
   static isQuickBarStarterBrick(
@@ -137,7 +137,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   async install(): Promise<boolean> {
     const { initQuickBarApp } = await import(
       /* webpackChunkName: "quickBarApp" */
-      "../../components/quickBar/QuickBarApp"
+      "@/components/quickBar/QuickBarApp"
     );
 
     await initQuickBarApp();

@@ -17,62 +17,62 @@
 
 import { type Deployment } from "@/types/contract";
 import { uniq } from "lodash";
-import reportError from "../telemetry/reportError";
-import { getUUID } from "../telemetry/telemetryHelpers";
+import reportError from "@/telemetry/reportError";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
-import reportEvent from "../telemetry/reportEvent";
+import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
-import { getExtensionVersion } from "../utils/extensionUtils";
+import { getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
-import type { ModComponentState } from "../store/modComponents/modComponentTypes";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import { getModComponentState } from "../store/modComponents/modComponentStorage";
-import { expectContext } from "../utils/expectContext";
+import type { ModComponentState } from "@/store/modComponents/modComponentTypes";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
+import { expectContext } from "@/utils/expectContext";
 import {
   getSettingsState,
   saveSettingsState,
-} from "../store/settings/settingsStorage";
-import { isUpdateAvailable } from "./installer";
+} from "@/store/settings/settingsStorage";
+import { isUpdateAvailable } from "@/background/installer";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
   findLocalDeploymentConfiguredIntegrationDependencies,
   makeUpdatedFilter,
   mergeDeploymentIntegrationDependencies,
   selectActivatedDeployments,
-} from "../utils/deploymentUtils";
-import { selectUpdatePromptState } from "../store/settings/settingsSelectors";
-import settingsSlice from "../store/settings/settingsSlice";
-import { getEditorState, saveEditorState } from "../store/editorStorage";
-import { type EditorState } from "../pageEditor/store/editor/pageEditorTypes";
+} from "@/utils/deploymentUtils";
+import { selectUpdatePromptState } from "@/store/settings/settingsSelectors";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { getEditorState, saveEditorState } from "@/store/editorStorage";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
-import { launchSsoFlow } from "../store/enterprise/singleSignOn";
-import { readManagedStorage } from "../store/enterprise/managedStorage";
+import { launchSsoFlow } from "@/store/enterprise/singleSignOn";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { checkDeploymentPermissions } from "../permissions/deploymentPermissionsHelpers";
-import { Events } from "../telemetry/events";
+import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
+import { Events } from "@/telemetry/events";
 import type { Manifest } from "webextension-polyfill";
-import { fetchDeploymentModDefinitions } from "../modDefinitions/modDefinitionRawApiCalls";
-import { integrationConfigLocator } from "./messenger/api";
+import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
 import { getMe } from "@/data/service/backgroundApi";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { SessionValue } from "../mv3/SessionStorage";
+import { SessionValue } from "@/mv3/SessionStorage";
 import { FeatureFlags } from "@/auth/featureFlags";
 import { API_PATHS } from "@/data/service/urlPaths";
-import deactivateMod from "./utils/deactivateMod";
-import deactivateModInstancesAndSaveState from "./utils/deactivateModInstancesAndSaveState";
+import deactivateMod from "@/background/utils/deactivateMod";
+import deactivateModInstancesAndSaveState from "@/background/utils/deactivateModInstancesAndSaveState";
 import saveModComponentStateAndReloadTabs, {
   type ReloadOptions,
-} from "./utils/saveModComponentStateAndReloadTabs";
+} from "@/background/utils/saveModComponentStateAndReloadTabs";
 import {
   selectModInstanceMap,
   selectModInstances,
-} from "../store/modComponents/modInstanceSelectors";
+} from "@/store/modComponents/modInstanceSelectors";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: modComponentReducer, actions: modComponentActions } =

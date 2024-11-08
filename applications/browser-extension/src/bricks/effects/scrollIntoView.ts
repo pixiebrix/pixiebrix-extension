@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { $safeFindElementsWithRootMode } from "../rootModeHelpers";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
 
-import { assertSingleElement } from "../../utils/domUtils";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { assertSingleElement } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ScrollIntoViewEffect extends EffectABC {
   constructor() {

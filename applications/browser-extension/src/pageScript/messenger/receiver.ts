@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cleanValue } from "../../utils/objectUtils";
-import { type Handler } from "../../utils/legacyMessengerUtils";
+import { cleanValue } from "@/utils/objectUtils";
+import { type Handler } from "@/utils/legacyMessengerUtils";
 
 type AttachHandler = (type: string, handler: Handler) => void;
 

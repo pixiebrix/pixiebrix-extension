@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import { waitForEffect } from "../../../../testUtils/testHelpers";
-import { render, screen } from "../../../testHelpers";
-import BrickDataPanel from "./BrickDataPanel";
-import runtimeSlice from "../../../store/runtime/runtimeSlice";
-import { actions as editorActions } from "../../../store/editor/editorSlice";
-import { DataPanelTabKey } from "./dataPanelTypes";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
+import BrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import bricksRegistry from "@/bricks/registry";
-import { echoBrick } from "../../../../runtime/pipelineTests/testHelpers";
-import { formStateWithTraceDataFactory } from "../../../../testUtils/factories/pageEditorFactories";
-import reportEvent from "../../../../telemetry/reportEvent";
-import { Events } from "../../../../telemetry/events";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
+import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorFactories";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 // Need at least one item so callers see the registry as initialized
 bricksRegistry.register([echoBrick]);

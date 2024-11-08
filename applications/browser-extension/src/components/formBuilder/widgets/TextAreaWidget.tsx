@@ -24,12 +24,12 @@ import React, {
 } from "react";
 import { type WidgetProps } from "@rjsf/utils";
 import { isNumber } from "lodash";
-import RjsfSubmitContext from "../RjsfSubmitContext";
+import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { Button } from "react-bootstrap";
 import styles from "./TextAreaWidget.module.scss";
 import cx from "classnames";
-import Icon from "../../../icons/Icon";
-import { type IconValue } from "../../fields/IconWidget";
+import Icon from "@/icons/Icon";
+import { type IconValue } from "@/components/fields/IconWidget";
 
 type SubmitToolbar =
   | {

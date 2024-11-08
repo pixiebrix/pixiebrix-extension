@@ -16,22 +16,22 @@
  */
 
 import React from "react";
-import Tabs from "./Tabs";
-import { render, screen, waitFor, within } from "./testHelpers";
+import Tabs from "@/sidebar/Tabs";
+import { render, screen, waitFor, within } from "@/sidebar/testHelpers";
 import { type SidebarEntries, type SidebarEntry } from "@/types/sidebarTypes";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
-import { sidebarEntryFactory } from "../testUtils/factories/sidebarEntryFactories";
-import { MOD_LAUNCHER } from "../store/sidebar/constants";
-import { waitForEffect } from "../testUtils/testHelpers";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/api";
-import { eventKeyForEntry } from "../store/sidebar/eventKeyUtils";
-import { mockAllApiEndpoints } from "../testUtils/appApiMock";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 
 mockAllApiEndpoints();
 
-jest.mock("../contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   ...jest.requireActual("@/contentScript/messenger/api"),
   getReservedSidebarEntries: jest.fn(),
 }));

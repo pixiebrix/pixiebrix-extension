@@ -18,16 +18,16 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { selectShowPublishContext } from "../modModalsSelectors";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ShareModals.module.scss";
-import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { RequireScope } from "@/auth/RequireScope";
-import ModOwnerLabel from "./ModOwnerLabel";
-import useHasEditPermissions from "./useHasEditPermissions";
-import useSortOrganizations from "./useSortOrganizations";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import ModOwnerLabel from "@/extensionConsole/pages/mods/modals/shareModals/ModOwnerLabel";
+import useHasEditPermissions from "@/extensionConsole/pages/mods/modals/shareModals/useHasEditPermissions";
+import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type PublishContentLayoutProps = React.PropsWithChildren<{
   title: string;

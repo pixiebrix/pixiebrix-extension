@@ -18,10 +18,10 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { selectShowPublishContext } from "../modModalsSelectors";
+import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
 import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const PublishedContent: React.FunctionComponent = () => {
   const publishContext = useSelector(selectShowPublishContext);

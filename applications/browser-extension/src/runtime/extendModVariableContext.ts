@@ -15,16 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import apiVersionOptions, { type ApiVersionOptions } from "./apiVersionOptions";
+import apiVersionOptions, {
+  type ApiVersionOptions,
+} from "@/runtime/apiVersionOptions";
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import {
   assertPlatformCapability,
   getPlatform,
-} from "../platform/platformContext";
+} from "@/platform/platformContext";
 import { type ModComponentRef } from "@/types/modComponentTypes";
 import { type Except } from "type-fest";
-import { StateNamespaces } from "../platform/state/stateTypes";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 /**
  * Variable for accessing the mod Page State.

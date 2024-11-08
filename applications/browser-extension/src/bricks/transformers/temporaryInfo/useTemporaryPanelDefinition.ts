@@ -16,18 +16,18 @@
  */
 
 import { getPanelDefinition } from "@/contentScript/messenger/api";
-import { type UUID } from "../../../types/stringTypes";
-import { type TemporaryPanelEntry } from "../../../types/sidebarTypes";
-import { type Target } from "../../../types/messengerTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
+import { type Target } from "@/types/messengerTypes";
 import { useEffect, useState } from "react";
 import {
   addListener,
   type PanelListener,
   removeListener,
-} from "./receiverProtocol";
-import { validateUUID } from "../../../types/helpers";
+} from "@/bricks/transformers/temporaryInfo/receiverProtocol";
+import { validateUUID } from "@/types/helpers";
 import useAsyncState from "@/hooks/useAsyncState";
-import { type Nullishable } from "../../../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type PanelDefinition = {
   /**

@@ -21,31 +21,31 @@ import {
   showInstallPage,
   getAvailableVersion,
   setAvailableVersion,
-} from "./installer";
+} from "@/background/installer";
 import * as auth from "@/auth/authStorage";
-import { integrationConfigLocator } from "./integrationConfigLocator";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
 import { uuidv4 } from "@/types/helpers";
-import { waitForEffect } from "../testUtils/testHelpers";
-import { INTERNAL_reset as resetManagedStorage } from "../store/enterprise/managedStorage";
-import { userPartnerFactory } from "../testUtils/factories/authFactories";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
+import { userPartnerFactory } from "@/testUtils/factories/authFactories";
 
 const APP_BASE_URL = "https://app.pixiebrix.com";
 
-jest.mock("../data/service/baseService", () => ({
+jest.mock("@/data/service/baseService", () => ({
   // Can't use APP_BASE_URL because it's not defined yet when Jest defines the mock
   getBaseURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
-jest.mock("../auth/authStorage", () => ({
+jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(false),
   getExtensionToken: jest.fn().mockResolvedValue(null),
   getUserData: jest.fn().mockResolvedValue(null),
   addListener: jest.fn(),
 }));
 
-jest.mock("./telemetry");
+jest.mock("@/background/telemetry");
 
-jest.mock("./integrationConfigLocator", () => ({
+jest.mock("@/background/integrationConfigLocator", () => ({
   integrationConfigLocator: {
     findAllSanitizedConfigsForIntegration: jest.fn().mockResolvedValue([]),
   },

@@ -20,10 +20,10 @@
 import {
   findLocalDeploymentConfiguredIntegrationDependencies,
   type FindAllSanitizedConfigsForIntegration,
-} from "../utils/deploymentUtils";
-import { checkModDefinitionPermissions } from "../modDefinitions/modDefinitionPermissionsHelpers";
-import { type PermissionsStatus } from "./permissionsTypes";
-import { type IntegrationDependency } from "../integrations/integrationTypes";
+} from "@/utils/deploymentUtils";
+import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
+import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import type { Manifest } from "webextension-polyfill";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 

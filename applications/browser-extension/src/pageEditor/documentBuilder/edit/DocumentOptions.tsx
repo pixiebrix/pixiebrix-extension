@@ -17,19 +17,19 @@
 
 import React from "react";
 import { useField } from "formik";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
-import ConfigErrorBoundary from "../../fields/ConfigErrorBoundary";
-import { joinName } from "../../../utils/formUtils";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
-import ElementEditor from "./ElementEditor";
-import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import ElementEditor from "@/pageEditor/documentBuilder/edit/ElementEditor";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { DOCUMENT_SCHEMA } from "@/bricks/renderers/document";
-import { type Schema } from "../../../types/schemaTypes";
-import { UncollapsibleFieldSection } from "../../fields/CollapsibleFieldSection";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { type Schema } from "@/types/schemaTypes";
+import { UncollapsibleFieldSection } from "@/pageEditor/fields/CollapsibleFieldSection";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const DocumentOptions: React.FC<{
   name: string;

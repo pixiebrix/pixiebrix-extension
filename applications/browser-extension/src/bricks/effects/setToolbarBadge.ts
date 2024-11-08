@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { isLoadedInIframe } from "../../utils/iframeUtils";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class SetToolbarBadge extends EffectABC {
   constructor() {

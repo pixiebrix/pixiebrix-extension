@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { expectContext } from "../utils/expectContext";
-import { renderWidget } from "../utils/reactUtils";
+import { expectContext } from "@/utils/expectContext";
+import { renderWidget } from "@/utils/reactUtils";
 import useScrollLock from "@/hooks/useScrollLock";
 import useAbortSignal from "@/hooks/useAbortSignal";
 

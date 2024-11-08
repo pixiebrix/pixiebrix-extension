@@ -17,8 +17,8 @@
 
 import React from "react";
 import { useDispatch } from "react-redux";
-import { editorSlice } from "../store/editor/editorSlice";
-import home from "../../../img/home.svg";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import home from "@img/home.svg";
 
 import styles from "./HomeButton.module.scss";
 import { Button } from "react-bootstrap";

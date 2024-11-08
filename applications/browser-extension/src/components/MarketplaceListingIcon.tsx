@@ -18,11 +18,11 @@
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useGetMarketplaceListingQuery } from "@/data/service/api";
-import { useAsyncIcon } from "./asyncIcon";
+import { useAsyncIcon } from "@/components/asyncIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import styles from "./MarketplaceListingModIcon.module.scss";
-import { DEFAULT_TEXT_ICON_COLOR } from "../icons/constants";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const MarketplaceListingIcon: React.FC<{

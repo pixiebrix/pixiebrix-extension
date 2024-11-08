@@ -26,10 +26,10 @@ import {
   type ModDefinitionsState,
 } from "./modDefinitionsTypes";
 import modDefinitionRegistry from "./registry";
-import { syncRemotePackages } from "../registry/memoryRegistry";
-import { revertAll } from "../store/commonActions";
+import { syncRemotePackages } from "@/registry/memoryRegistry";
+import { revertAll } from "@/store/commonActions";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { setErrorOnState, setValueOnState } from "../utils/asyncStateUtils";
+import { setErrorOnState, setValueOnState } from "@/utils/asyncStateUtils";
 
 /** @internal */
 export const initialState: ModDefinitionsState = Object.freeze({

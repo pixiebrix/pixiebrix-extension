@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "../telemetry/reportError";
+import reportError from "@/telemetry/reportError";
 import {
   type ActivatePanelOptions,
   type ModActivationPanelEntry,
@@ -23,7 +23,7 @@ import {
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { type FormDefinition } from "../platform/forms/formTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID, type TimedSequence } from "@/types/stringTypes";
 import { sortBy } from "lodash";
 import { getTimedSequence } from "@/types/helpers";

@@ -16,15 +16,15 @@
  */
 
 import { define } from "cooky-cutter";
-import { type SidebarItem } from "./common";
+import { type SidebarItem } from "@/pageEditor/modListingPanel/common";
 import {
   modComponentFactory,
   modMetadataFactory,
-} from "../../testUtils/factories/modComponentFactories";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import filterSidebarItems from "./filterSidebarItems";
-import { validateRegistryId } from "../../types/helpers";
-import { uuidSequence } from "../../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import filterSidebarItems from "@/pageEditor/modListingPanel/filterSidebarItems";
+import { validateRegistryId } from "@/types/helpers";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 const modSidebarItemFactory = define<SidebarItem>({
   modMetadata: modMetadataFactory,

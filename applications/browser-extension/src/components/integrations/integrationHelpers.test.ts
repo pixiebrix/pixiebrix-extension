@@ -18,7 +18,7 @@
 import {
   convertInstanceLocationToFormikPath,
   convertSchemaErrorsToFormikErrors,
-} from "./integrationHelpers";
+} from "@/components/integrations/integrationHelpers";
 import { type OutputUnit } from "@cfworker/json-schema";
 
 describe("integrationHelpers", () => {

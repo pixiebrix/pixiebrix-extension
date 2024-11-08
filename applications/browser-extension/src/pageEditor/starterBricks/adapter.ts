@@ -15,31 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "../../types/modComponentTypes";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { registry } from "@/background/messenger/api";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import {
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
-import buttonModComponent from "./button";
-import quickBarActionModComponent from "./quickBar";
-import triggerModComponent from "./trigger";
-import contextMenuModComponent from "./contextMenu";
-import sidebarPanelModComponent from "./sidebar";
-import dynamicQuickBarModComponent from "./dynamicQuickBar";
-import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
-import { hasInnerStarterBrickRef } from "../../registry/hydrateInnerDefinitions";
-import { type ModComponentFormState } from "./formStateTypes";
+} from "@/types/starterBrickTypes";
+import buttonModComponent from "@/pageEditor/starterBricks/button";
+import quickBarActionModComponent from "@/pageEditor/starterBricks/quickBar";
+import triggerModComponent from "@/pageEditor/starterBricks/trigger";
+import contextMenuModComponent from "@/pageEditor/starterBricks/contextMenu";
+import sidebarPanelModComponent from "@/pageEditor/starterBricks/sidebar";
+import dynamicQuickBarModComponent from "@/pageEditor/starterBricks/dynamicQuickBar";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
+import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type DraftModComponent } from "@/contentScript/pageEditor/types";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { compact, memoize, sortBy } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { type DraftModState } from "../store/editor/pageEditorTypes";
-import { selectGetDraftModComponentsForMod } from "../store/editor/editorSelectors";
-import { type RegistryId } from "../../types/registryTypes";
-import { isModComponentBase } from "../utils";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { selectGetDraftModComponentsForMod } from "@/pageEditor/store/editor/editorSelectors";
+import { type RegistryId } from "@/types/registryTypes";
+import { isModComponentBase } from "@/pageEditor/utils";
 import { createSelector } from "@reduxjs/toolkit";
 
 const ADAPTERS = new Map<StarterBrickType, ModComponentFormStateAdapter>([

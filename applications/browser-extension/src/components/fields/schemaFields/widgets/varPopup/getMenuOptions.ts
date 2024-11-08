@@ -23,8 +23,8 @@ import {
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { isEmpty, merge } from "lodash";
 import { type UnknownRecord, type JsonObject } from "type-fest";
-import { excludeIntegrationVariables } from "./menuFilters";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { excludeIntegrationVariables } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Convert every node in the existence tree which IS_ARRAY to an array

@@ -16,8 +16,8 @@
  */
 
 import type React from "react";
-import { type Brick } from "../../../types/brickTypes";
-import { type RegistryId } from "../../../types/registryTypes";
+import { type Brick } from "@/types/brickTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
 export type BrickSearchResult = Brick & {
   isPopular?: boolean;

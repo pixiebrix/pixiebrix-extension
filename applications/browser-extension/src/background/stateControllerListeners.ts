@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { tryParseSessionStorageKey } from "../platform/state/stateHelpers";
+import { tryParseSessionStorageKey } from "@/platform/state/stateHelpers";
 import type { RegistryId } from "@/types/registryTypes";
 
 /**

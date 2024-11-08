@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const elementsCollectionRegexp =
   /((?<collectionName>.*)\.)?(?<elementIndex>\d+)/;

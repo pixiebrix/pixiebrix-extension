@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata } from "../../types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -32,25 +32,25 @@ import {
   removeEmptyValues,
   selectStarterBrickAvailability,
   ALL_SITES_AVAILABILITY,
-} from "./base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
-import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type DynamicQuickBarFormState } from "./formStateTypes";
-import { DynamicQuickBarStarterBrickABC } from "../../starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
-import DynamicQuickBarConfiguration from "../tabs/dynamicQuickBar/DynamicQuickBarConfiguration";
-import { type SingleLayerReaderConfig } from "../store/editor/baseFormStateTypes";
+import { DynamicQuickBarStarterBrickABC } from "@/starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
+import DynamicQuickBarConfiguration from "@/pageEditor/tabs/dynamicQuickBar/DynamicQuickBarConfiguration";
+import { type SingleLayerReaderConfig } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
   type DynamicQuickBarDefinition,
   type DynamicQuickBarConfig,
-} from "../../starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { FeatureFlags } from "@/auth/featureFlags";
 
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   modMetadata,

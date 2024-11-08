@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getExtensionConsoleUrl } from "../utils/extensionUtils";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_RESTRICTED_URL,

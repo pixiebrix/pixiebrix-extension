@@ -18,20 +18,20 @@
 import React from "react";
 import PanelContent from "./PanelContent";
 import { render } from "../testHelpers";
-import { navigationEvent } from "../events";
-import { tabStateActions } from "../store/tabState/tabStateSlice";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { navigationEvent } from "@/pageEditor/events";
+import { tabStateActions } from "@/pageEditor/store/tabState/tabStateSlice";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import {
   starterBrickDefinitionFactory,
   starterBrickDefinitionPropFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-jest.mock("../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("redux-persist/integration/react", () => ({
   __esModule: true,

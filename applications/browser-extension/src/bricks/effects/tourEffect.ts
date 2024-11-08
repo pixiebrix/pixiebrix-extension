@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import injectStylesheet from "../../utils/injectStylesheet";
-import stylesheetUrl from "../../vendors/intro.js/introjs.scss?loadAsUrl";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import injectStylesheet from "@/utils/injectStylesheet";
+import stylesheetUrl from "@/vendors/intro.js/introjs.scss?loadAsUrl";
 import pDefer from "p-defer";
 import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
-import { IS_ROOT_AWARE_BRICK_PROPS } from "../rootModeHelpers";
-import { validateRegistryId } from "../../types/helpers";
+import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
+import { validateRegistryId } from "@/types/helpers";
 import { isEmpty } from "lodash";
-import { $safeFind } from "../../utils/domUtils";
+import { $safeFind } from "@/utils/domUtils";
 import { type TooltipPosition } from "intro.js/src/core/steps";
-import { propertiesToSchema } from "../../utils/schemaUtils";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type Step = {
   title: string;

@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Reader, ReaderABC } from "../../types/bricks/readerTypes";
+import { type Reader, ReaderABC } from "@/types/bricks/readerTypes";
 import { type JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
-import selectionController from "../../utils/selectionController";
-import { KEYBOARD_TRIGGERS, type Trigger } from "./triggerStarterBrickTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { ensureJsonObject, isObject } from "../../utils/objectUtils";
+import selectionController from "@/utils/selectionController";
+import {
+  KEYBOARD_TRIGGERS,
+  type Trigger,
+} from "@/starterBricks/trigger/triggerStarterBrickTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 
 export function pickEventProperties(nativeEvent: Event): JsonObject {
   if (nativeEvent instanceof KeyboardEvent) {

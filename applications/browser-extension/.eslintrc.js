@@ -135,6 +135,18 @@ module.exports = {
             message:
               'Use this instead: import EmotionShadowRoot from "@/components/EmotionShadowRoot"',
           },
+          {
+            group: ["@testing-library/react-hooks"],
+            importNames: ["renderHook"],
+            message:
+              'Use this instead: import { renderHook } from "@/testUtils/renderWithCommonStore", or the context-specific testHelpers file',
+          },
+          {
+            group: ["@testing-library/react-hooks"],
+            importNames: ["act"],
+            message:
+              'Use this instead: import { act } from "@testing-library/react"',
+          },
         ],
       }),
     ],

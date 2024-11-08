@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectActiveModComponentFormState } from "../../../../store/editor/editorSelectors";
+import { selectActiveModComponentFormState } from "@/pageEditor/store/editor/editorSelectors";
 import React from "react";
 import { useSelector } from "react-redux";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import DataTabPane from "../DataTabPane";
-import DataTabJsonTree from "../DataTabJsonTree";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Developer-only data panel tab for viewing the underlying mod component form state JSON. Used to debug mod component

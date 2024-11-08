@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
-import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { EffectABC } from "../../types/bricks/effectTypes";
+import { validateRegistryId } from "@/types/helpers";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 import { initSnippetShortcutMenuController } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
-import { getSettingsState } from "../../store/settings/settingsStorage";
-import type { PlatformCapability } from "../../platform/capabilities";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Regex for likely command keys to strip from shortcut definitions

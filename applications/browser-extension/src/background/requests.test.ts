@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getCachedAuthData } from "./auth/authStorage";
-import launchOAuth2Flow from "./auth/launchOAuth2Flow";
-import { authDataFactory } from "../testUtils/factories/authFactories";
-import { getOAuth2AuthData } from "./requests";
-import { type Integration } from "../integrations/integrationTypes";
+import { getCachedAuthData } from "@/background/auth/authStorage";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { authDataFactory } from "@/testUtils/factories/authFactories";
+import { getOAuth2AuthData } from "@/background/requests";
+import { type Integration } from "@/integrations/integrationTypes";
 import {
   integrationConfigFactory,
   sanitizedIntegrationConfigFactory,
-} from "../testUtils/factories/integrationFactories";
-import { registryIdFactory } from "../testUtils/factories/stringFactories";
+} from "@/testUtils/factories/integrationFactories";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
-jest.mock("./auth/authStorage.ts");
-jest.mock("./auth/launchOAuth2Flow");
+jest.mock("@/background/auth/authStorage.ts");
+jest.mock("@/background/auth/launchOAuth2Flow");
 
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const launchOAuth2FlowMock = jest.mocked(launchOAuth2Flow);

@@ -26,7 +26,7 @@ import { getTabUrl, type Target } from "webext-tools";
 import {
   isPermissionsStatus,
   type PermissionsStatus,
-} from "./permissionsTypes";
+} from "@/permissions/permissionsTypes";
 
 /**
  * Returns an empty-set of permissions.

@@ -16,7 +16,7 @@
  */
 
 import { createContext } from "react";
-import { type IntegrationDependency } from "../integrations/integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
 export type ModIntegrationsContextValue = {
   integrationDependencies: IntegrationDependency[];

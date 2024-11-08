@@ -17,23 +17,23 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import EphemeralPanel from "./EphemeralPanel";
-import { uuidv4 } from "../../../types/helpers";
-import useTemporaryPanelDefinition from "./useTemporaryPanelDefinition";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import EphemeralPanel from "@/bricks/transformers/temporaryInfo/EphemeralPanel";
+import { uuidv4 } from "@/types/helpers";
+import useTemporaryPanelDefinition from "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 
-import { sidebarEntryFactory } from "../../../testUtils/factories/sidebarEntryFactories";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("./useTemporaryPanelDefinition");
+jest.mock("@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition");
 
-jest.mock("../../../contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("../../../sidebar/PanelBody", () => ({
+jest.mock("@/sidebar/PanelBody", () => ({
   __esModule: true,
   default: jest.fn(() => <div data-testid="panel-body"></div>),
 }));

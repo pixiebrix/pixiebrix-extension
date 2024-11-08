@@ -22,7 +22,7 @@ import {
   isChrome,
   isChromium,
   isMsEdge,
-} from "../utils";
+} from "end-to-end-tests/utils";
 import { BasePageObject } from "./basePageObject";
 import { type SupportedChannel } from "../../playwright.config";
 

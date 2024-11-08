@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { JavaScriptTransformer } from "./javascript";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { platformMock as platform } from "../../testUtils/platformMock";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { platformMock as platform } from "@/testUtils/platformMock";
 import { extend } from "cooky-cutter";
 
 const brick = new JavaScriptTransformer();

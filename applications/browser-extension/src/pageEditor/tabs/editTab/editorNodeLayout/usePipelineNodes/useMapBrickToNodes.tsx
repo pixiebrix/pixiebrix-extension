@@ -22,28 +22,34 @@ import {
   getLatestBrickCall,
 } from "@/telemetry/traceHelpers";
 import { isEmpty } from "lodash";
-import { type Branch } from "../../../../../types/runtimeTypes";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
-import { type MapOutput, type EditorNodeProps } from "./types";
-import { getBuilderPreviewElementId, getSubPipelinesForBrick } from "./helpers";
+import { type Branch } from "@/types/runtimeTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  type MapOutput,
+  type EditorNodeProps,
+} from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
+import {
+  getBuilderPreviewElementId,
+  getSubPipelinesForBrick,
+} from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/helpers";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveModComponentFormState,
   selectActiveNodeId,
   selectCollapsedNodes,
-} from "../../../../store/editor/editorSelectors";
-import { selectActiveModComponentTraces } from "../../../../store/runtime/runtimeSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { useSelector } from "react-redux";
-import useApiVersionAtLeast from "../../../../hooks/useApiVersionAtLeast";
+import useApiVersionAtLeast from "@/pageEditor/hooks/useApiVersionAtLeast";
 import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
-import { useCreateNodeActions } from "./useCreateNodeActions";
-import { type useGetNodeState } from "./useGetNodeState";
-import { type useGetSubPipelineNodes } from "./useGetSubPipelineNodes";
-import { useGetBrickContentProps } from "./useGetBrickContentProps";
-import { useGetNodeMovement } from "./useGetNodeMovement";
-import { type useMapPipelineToNodes } from "./useMapPipelineToNodes";
-import { type NodeAction } from "../../editorNodes/nodeActions/NodeActionsView";
-import { type TraceRecord } from "../../../../../telemetry/trace";
+import { useCreateNodeActions } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useCreateNodeActions";
+import { type useGetNodeState } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeState";
+import { type useGetSubPipelineNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetSubPipelineNodes";
+import { useGetBrickContentProps } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetBrickContentProps";
+import { useGetNodeMovement } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useGetNodeMovement";
+import { type useMapPipelineToNodes } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/useMapPipelineToNodes";
+import { type NodeAction } from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
+import { type TraceRecord } from "@/telemetry/trace";
 
 type BrickNodeContext = {
   isNodeActive: boolean;
@@ -207,7 +213,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       const { instanceId } = brickConfig;
       assertNotNullish(instanceId, "instanceId is required");
 
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
       const isNodeActive = instanceId === activeNodeId;
 
       const subPipelines = getSubPipelinesForBrick(brick, brickConfig);

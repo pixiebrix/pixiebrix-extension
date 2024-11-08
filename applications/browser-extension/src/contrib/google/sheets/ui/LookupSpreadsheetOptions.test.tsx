@@ -17,42 +17,45 @@
 
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { waitForEffect } from "../../../../testUtils/testHelpers";
-import LookupSpreadsheetOptions from "./LookupSpreadsheetOptions";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import { act, screen } from "@testing-library/react";
-import { validateRegistryId } from "../../../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
-import { render } from "../../../../pageEditor/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import {
   integrationConfigLocator,
   hasCachedAuthData,
 } from "@/background/messenger/api";
-import { autoUUIDSequence } from "../../../../testUtils/factories/stringFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../../../testUtils/factories/integrationFactories";
-import { type FileList, type Spreadsheet } from "../core/types";
+} from "@/testUtils/factories/integrationFactories";
+import {
+  type FileList,
+  type Spreadsheet,
+} from "@/contrib/google/sheets/core/types";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { type AuthOption } from "@/auth/authTypes";
-import { validateOutputKey } from "../../../../runtime/runtimeTypes";
-import { valueToAsyncState } from "../../../../utils/asyncStateUtils";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type FormikValues } from "formik";
-import IntegrationsSliceModIntegrationsContextAdapter from "../../../../integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
-import { toExpression } from "../../../../utils/expressionUtils";
+import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import { toExpression } from "@/utils/expressionUtils";
 import {
   getAllSpreadsheets,
   getHeaders,
   getSpreadsheet,
-} from "../core/sheetsApi";
+} from "@/contrib/google/sheets/core/sheetsApi";
 
 const findSanitizedIntegrationConfigMock = jest.mocked(
   integrationConfigLocator.findSanitizedIntegrationConfig,
 );
 
 // XXX: sheetsApi should likely be mocked at the network level, not the module level
-jest.mock("../core/sheetsApi");
-jest.mock("../../../../hooks/useAuthOptions");
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
+jest.mock("@/hooks/useAuthOptions");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import ParseJson from "./ParseJson";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import ParseJson from "@/bricks/transformers/ParseJson";
 import { BusinessError } from "@/errors/businessErrors";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 describe("ParseJson block", () => {
   test("Parse object", async () => {

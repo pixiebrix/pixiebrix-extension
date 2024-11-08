@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSessionId } from "../store/session/sessionSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
 import {
   type ConfirmationModalProps,
   useModals,
 } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import notify from "../../utils/notify";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import notify from "@/utils/notify";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
-import { allFramesInInspectedTab } from "../context/connection";
-import { selectActivatedModComponentsMap } from "../../store/modComponents/modComponentSelectors";
-import { selectGetSiblingDraftModComponents } from "../store/editor/editorSelectors";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import { selectActivatedModComponentsMap } from "@/store/modComponents/modComponentSelectors";
+import { selectGetSiblingDraftModComponents } from "@/pageEditor/store/editor/editorSelectors";
 
 type DeleteConfig = {
   modComponentId: UUID;

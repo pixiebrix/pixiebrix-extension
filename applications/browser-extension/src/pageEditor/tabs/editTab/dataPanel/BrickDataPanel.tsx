@@ -17,28 +17,28 @@
 
 import React, { useEffect, useRef } from "react";
 import { Nav, Tab } from "react-bootstrap";
-import dataPanelStyles from "./dataPanelTabs.module.scss";
+import dataPanelStyles from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTabs.module.scss";
 import { useSelector } from "react-redux";
-import useDataPanelActiveTabKey from "./useDataPanelActiveTabKey";
+import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import {
   selectActiveNodeEventData,
   selectActiveNodeInfo,
-} from "../../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import NodeFormStateTab from "./tabs/NodeFormStateTab";
-import CommentsTab from "./tabs/CommentsTab";
-import reportEvent from "../../../../telemetry/reportEvent";
-import { Events } from "../../../../telemetry/events";
-import BrickInputTab from "./tabs/BrickInputTab";
-import BrickOutputTab from "./tabs/BrickOutputTab";
+import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import BrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab";
+import BrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickOutputTab";
 import DesignTab, {
   shouldShowDocumentDesign,
   shouldShowFormDesign,
-} from "./tabs/DesignTab";
-import OutlineTab from "./tabs/OutlineTab";
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/DesignTab";
+import OutlineTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/OutlineTab";
 import { FeatureFlags } from "@/auth/featureFlags";
 
 export const NavItem: React.FC<{

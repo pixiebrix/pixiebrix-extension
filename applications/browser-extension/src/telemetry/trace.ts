@@ -33,8 +33,8 @@ import {
   deleteDatabase,
   IDB_OPERATION,
   withIdbErrorHandling,
-} from "../utils/idbUtils";
-import { type Nullishable } from "../utils/nullishUtils";
+} from "@/utils/idbUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const ENTRY_OBJECT_STORE = "traces";
 const DB_VERSION_NUMBER = 4;

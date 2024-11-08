@@ -18,7 +18,7 @@
 import React from "react";
 import { useCurrentEditor } from "@tiptap/react";
 import Select from "react-select";
-import { type Option } from "../../form/widgets/SelectWidget";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Level } from "@tiptap/extension-heading";
 
 const headingLevels: Level[] = [1, 2, 3, 4, 5, 6];

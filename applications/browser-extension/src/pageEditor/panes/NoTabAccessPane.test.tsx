@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import NoTabAccessPane from "./NoTabAccessPane";
-import { render, screen } from "../testHelpers";
-import useCurrentInspectedUrl from "../hooks/useCurrentInspectedUrl";
+import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
+import { render, screen } from "@/pageEditor/testHelpers";
+import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { waitFor } from "@testing-library/react";
 
-jest.mock("../hooks/useCurrentInspectedUrl");
+jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 
 describe("PermissionsPane", () => {
   it("renders", () => {

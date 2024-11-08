@@ -20,7 +20,7 @@ import {
   SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { inputProperties as httpInputProperties } from "@/bricks/transformers/remoteMethod";
-import extractIntegrationIdsFromSchema from "./extractIntegrationIdsFromSchema";
+import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
 
 describe("extractIntegrationIdsFromSchema", () => {
   it("errors by default if not found", () => {

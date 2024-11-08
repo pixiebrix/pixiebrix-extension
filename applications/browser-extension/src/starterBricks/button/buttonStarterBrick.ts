@@ -35,22 +35,22 @@ import {
 } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type Permissions } from "webextension-polyfill";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { getNavigationId } from "@/contentScript/context";
-import getSvgIcon from "../../icons/getSvgIcon";
-import { selectEventData } from "../../telemetry/deployments";
+import getSvgIcon from "@/icons/getSvgIcon";
+import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions, {
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-} from "../../runtime/apiVersionOptions";
-import { engineRenderer } from "../../runtime/renderers";
-import { mapArgs } from "../../runtime/mapArgs";
+} from "@/runtime/apiVersionOptions";
+import { engineRenderer } from "@/runtime/renderers";
+import { mapArgs } from "@/runtime/mapArgs";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import sanitize from "../../utils/sanitize";
-import { EXTENSION_POINT_DATA_ATTR } from "../../domConstants";
-import reportError from "../../telemetry/reportError";
-import pluralize from "../../utils/pluralize";
+import sanitize from "@/utils/sanitize";
+import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
+import reportError from "@/telemetry/reportError";
+import pluralize from "@/utils/pluralize";
 import {
   BusinessError,
   CancelError,
@@ -59,43 +59,43 @@ import {
 } from "@/errors/businessErrors";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
-import { type Schema } from "../../types/schemaTypes";
-import { type HydratedModComponent } from "../../types/modComponentTypes";
-import { type Brick } from "../../types/brickTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { type HydratedModComponent } from "@/types/modComponentTypes";
+import { type Brick } from "@/types/brickTypes";
 import { type JsonObject } from "type-fest";
 import {
   type RunArgs,
   RunReason,
   type SelectorRoot,
-} from "../../types/runtimeTypes";
+} from "@/types/runtimeTypes";
 import {
   type StarterBrick,
   StarterBrickTypes,
-} from "../../types/starterBrickTypes";
-import { type UUID } from "../../types/stringTypes";
-import { type Reader } from "../../types/bricks/readerTypes";
-import initialize from "../../vendors/jQueryInitialize";
-import { $safeFind, isSingleHtmlElementString } from "../../utils/domUtils";
-import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
+} from "@/types/starterBrickTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Reader } from "@/types/bricks/readerTypes";
+import initialize from "@/vendors/jQueryInitialize";
+import { $safeFind, isSingleHtmlElementString } from "@/utils/domUtils";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
 import { ReusableAbortController, onAbort } from "abort-utils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
-} from "../../platform/capabilities";
-import type { PlatformProtocol } from "../../platform/platformProtocol";
-import { DEFAULT_ACTION_RESULTS } from "../starterBrickConstants";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+} from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   type ButtonStarterBrickConfig,
   type AttachMode,
   type ButtonDefinition,
   type ButtonTargetMode,
-} from "./buttonStarterBrickTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
+} from "@/starterBricks/button/buttonStarterBrickTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import {
   getModComponentRef,
   mapModComponentToMessageContext,
-} from "../../utils/modUtils";
+} from "@/utils/modUtils";
 
 const DATA_ATTR = "data-pb-uuid";
 

@@ -17,16 +17,16 @@
 
 import { useField } from "formik";
 import React from "react";
-import { type DocumentBuilderElement } from "../documentBuilderTypes";
+import { type DocumentBuilderElement } from "@/pageEditor/documentBuilder/documentBuilderTypes";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
-import documentBuilderElementTypeLabels from "../elementTypeLabels";
-import useElementOptions from "./useElementOptions";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
+import useElementOptions from "@/pageEditor/documentBuilder/edit/useElementOptions";
 import { useSelector } from "react-redux";
-import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
-import { getProperty } from "../../../utils/objectUtils";
-import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
-import { joinName } from "../../../utils/formUtils";
+import { selectActiveBuilderPreviewElement } from "@/pageEditor/store/editor/editorSelectors";
+import { getProperty } from "@/utils/objectUtils";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
 import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
 
 type ElementEditorProps = {

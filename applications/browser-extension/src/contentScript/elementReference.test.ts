@@ -19,7 +19,7 @@ import {
   getElementForReference,
   getReferenceForElement,
   getSelectorForElement,
-} from "./elementReference";
+} from "@/contentScript/elementReference";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type ElementReference } from "@/types/runtimeTypes";

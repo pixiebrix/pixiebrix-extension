@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ActionRegistry from "./ActionRegistry";
-import { uuidv4 } from "../../types/helpers";
+import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import { uuidv4 } from "@/types/helpers";
 
 describe("actionRegistry", () => {
   it("sets emoji from title", () => {

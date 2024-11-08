@@ -1,18 +1,18 @@
-import { initPerformanceMonitoring } from "./performance";
-import { getDNT } from "./dnt";
+import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { getDNT } from "@/telemetry/dnt";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { getBaseURL } from "@/data/service/baseService";
 import { datadogRum } from "@datadog/browser-rum";
 import { readAuthData } from "@/auth/authStorage";
 
-jest.mock("./dnt");
-jest.mock("../auth/featureFlagStorage");
-jest.mock("../data/service/baseService");
-jest.mock("../auth/authStorage");
+jest.mock("@/telemetry/dnt");
+jest.mock("@/auth/featureFlagStorage");
+jest.mock("@/data/service/baseService");
+jest.mock("@/auth/authStorage");
 jest.mock("@datadog/browser-rum");
 
 // Disable the automock for telemetryHelpers
-jest.mock("./telemetryHelpers", () =>
+jest.mock("@/telemetry/telemetryHelpers", () =>
   jest.requireActual("./telemetryHelpers.ts"),
 );
 

@@ -18,12 +18,12 @@
 import styles from "./FormBuilderDemo.module.scss";
 
 import React, { useState } from "react";
-import FormEditor from "../edit/FormEditor";
-import FormIntroFields from "../edit/FormIntroFields";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import FormPreview from "../preview/FormPreview";
 import { useField } from "formik";
-import { type RJSFSchema } from "../formBuilderTypes";
-import FORM_FIELD_TYPE_OPTIONS from "../../../pageEditor/fields/formFieldTypeOptions";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 
 /**
  * Demo component that shows the form editor and preview side by side, for use with Storybook and

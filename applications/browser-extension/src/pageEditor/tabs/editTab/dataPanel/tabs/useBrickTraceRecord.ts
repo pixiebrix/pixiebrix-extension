@@ -1,11 +1,11 @@
-import type { Nullishable } from "../../../../../utils/nullishUtils";
-import type { TraceRecord } from "../../../../../telemetry/trace";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { TraceRecord } from "@/telemetry/trace";
 import { useSelector } from "react-redux";
 import {
   selectActiveNodeId,
   selectActiveNodeInfo,
-} from "../../../../store/editor/editorSelectors";
-import { selectActiveModComponentTraces } from "../../../../store/runtime/runtimeSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModComponentTraces } from "@/pageEditor/store/runtime/runtimeSelectors";
 import { useMemo } from "react";
 import { isEqual, omit } from "lodash";
 

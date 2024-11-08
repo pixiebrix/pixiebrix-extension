@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { EditorRootState } from "../pageEditorTypes";
-import { DataPanelTabKey } from "../../../tabs/editTab/dataPanel/dataPanelTypes";
-import { selectNodeDataPanelTabState } from "./editorDataPanelSelectors";
+import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors/editorDataPanelSelectors";
 
 /**
  * @file Selectors for the Form Builder and Document Builder Design view.

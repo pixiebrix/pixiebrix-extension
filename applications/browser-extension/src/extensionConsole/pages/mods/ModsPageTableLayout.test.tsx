@@ -16,22 +16,22 @@
  */
 
 import React from "react";
-import { act, render, screen } from "../../testHelpers";
-import ModsPageTableLayout from "./ModsPageTableLayout";
-import { waitForEffect } from "../../../testUtils/testHelpers";
-import modsPageSlice from "./modsPageSlice";
+import { act, render, screen } from "@/extensionConsole/testHelpers";
+import ModsPageTableLayout from "@/extensionConsole/pages/mods/ModsPageTableLayout";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
-import { mockAuthenticatedMeApiResponse } from "../../../testUtils/userMock";
-import { appApiMock, onDeferredGet } from "../../../testUtils/appApiMock";
+import { mockAuthenticatedMeApiResponse } from "@/testUtils/userMock";
+import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   meApiResponseFactory,
   meOrganizationApiResponseFactory,
-} from "../../../testUtils/factories/authFactories";
-import { DeploymentsProvider } from "../deployments/DeploymentsContext";
-import useAutoDeploy from "../deployments/useAutoDeploy";
+} from "@/testUtils/factories/authFactories";
+import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { API_PATHS } from "@/data/service/urlPaths";
 
-jest.mock("../../../modDefinitions/modDefinitionHooks", () => ({
+jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
@@ -40,7 +40,7 @@ jest.mock("../../../modDefinitions/modDefinitionHooks", () => ({
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));
 
-jest.mock("../deployments/useAutoDeploy");
+jest.mock("@/extensionConsole/pages/deployments/useAutoDeploy");
 jest.mocked(useAutoDeploy).mockReturnValue({ isAutoDeploying: false });
 
 describe("ModsPageTableLayout", () => {

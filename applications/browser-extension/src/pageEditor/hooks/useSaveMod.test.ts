@@ -14,39 +14,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { hookAct, renderHook } from "../testHelpers";
-import useSaveMod, { isModEditable } from "./useSaveMod";
-import { validateRegistryId } from "../../types/helpers";
-import { appApiMock } from "../../testUtils/appApiMock";
-import { editablePackageMetadataFactory } from "../../testUtils/factories/registryFactories";
-import notify from "../../utils/notify";
-import { defaultModDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
-import { type SemVerString } from "../../types/registryTypes";
-import modDefinitionRegistry from "../../modDefinitions/registry";
-import { loadBrickYaml } from "../../runtime/brickYaml";
-import { type ModDefinition } from "../../types/modDefinitionTypes";
-import type { components } from "../../types/swagger";
+import { renderHook } from "@/pageEditor/testHelpers";
+import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
+import { validateRegistryId } from "@/types/helpers";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
+import notify from "@/utils/notify";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { type SemVerString } from "@/types/registryTypes";
+import modDefinitionRegistry from "@/modDefinitions/registry";
+import { loadBrickYaml } from "@/runtime/brickYaml";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import type { components } from "@/types/swagger";
 import {
   actions as editorActions,
   editorSlice,
-} from "../store/editor/editorSlice";
+} from "@/pageEditor/store/editor/editorSlice";
 import type {
   EditablePackageMetadata,
   PackageUpsertResponse,
-} from "../../types/contract";
-import modComponentSlice from "../../store/modComponents/modComponentSlice";
-import { type UUID } from "../../types/stringTypes";
+} from "@/types/contract";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { type UUID } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { createNewUnsavedModMetadata } from "../../utils/modUtils";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { createPrivateSharing } from "../../utils/registryUtils";
-import { timestampFactory } from "../../testUtils/factories/stringFactories";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { createPrivateSharing } from "@/utils/registryUtils";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { act } from "@testing-library/react";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 const modId = validateRegistryId("@test/mod");
 
-jest.mock("../../utils/notify");
-jest.mock("../../contentScript/messenger/api");
+jest.mock("@/utils/notify");
+jest.mock("@/contentScript/messenger/api");
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -105,7 +107,7 @@ describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {
     const { modDefinition } = setupModDefinitionMocks();
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -119,7 +121,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -142,7 +144,7 @@ describe("useSaveMod", () => {
       },
     });
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -156,7 +158,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -185,7 +187,7 @@ describe("useSaveMod", () => {
   it("saves dirty options", async () => {
     const { modDefinition } = setupModDefinitionMocks();
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -212,7 +214,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -244,7 +246,7 @@ describe("useSaveMod", () => {
   it("saves dirty mod variable definitions", async () => {
     const { modDefinition } = setupModDefinitionMocks();
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+    const { result } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
           modComponentSlice.actions.activateMod({
@@ -267,7 +269,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(modId);
     });
 
@@ -300,30 +302,27 @@ describe("useSaveMod", () => {
       modName: "Test Mod",
     });
 
-    const { result, waitForEffect, getReduxStore } = renderHook(
-      () => useSaveMod(),
-      {
-        setupRedux(dispatch, { store }) {
-          jest.spyOn(store, "dispatch");
+    const { result, getReduxStore } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch, { store }) {
+        jest.spyOn(store, "dispatch");
 
-          dispatch(
-            editorActions.addModComponentFormState(
-              formStateFactory({
-                formStateConfig: {
-                  modMetadata: temporaryModMetadata,
-                },
-              }),
-            ),
-          );
-        },
+        dispatch(
+          editorActions.addModComponentFormState(
+            formStateFactory({
+              formStateConfig: {
+                modMetadata: temporaryModMetadata,
+              },
+            }),
+          ),
+        );
       },
-    );
+    });
 
     await waitForEffect();
 
     const { dispatch } = getReduxStore();
 
-    await hookAct(async () => {
+    await act(async () => {
       await result.current(temporaryModMetadata.id);
     });
 

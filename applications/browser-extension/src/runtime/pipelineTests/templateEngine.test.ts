@@ -16,14 +16,14 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickConfig } from "@/bricks/types";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { selectSpecificError } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { toExpression } from "../../utils/expressionUtils";
-import { type TemplateEngine } from "../../types/runtimeTypes";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
+import { type TemplateEngine } from "@/types/runtimeTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();

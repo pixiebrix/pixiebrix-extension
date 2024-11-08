@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_UNKNOWN,
-} from "./restrictedUrlPopupConstants";
-import { isBrowserSidebarTopFrame } from "../utils/expectContext";
-import { getExtensionConsoleUrl } from "../utils/extensionUtils";
+} from "@/tinyPages/restrictedUrlPopupConstants";
+import { isBrowserSidebarTopFrame } from "@/utils/expectContext";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 // TODO: Move to utils folder after the isBrowserSidebar condition is dropped

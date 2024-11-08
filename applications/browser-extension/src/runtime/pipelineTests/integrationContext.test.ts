@@ -16,36 +16,36 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import {
   contextBrick,
   echoBrick,
   identityBrick,
   simpleInput,
 } from "./testHelpers";
-import { validateOutputKey } from "../runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import { uuidv4, validateRegistryId } from "../../types/helpers";
-import { type ApiVersion, type TemplateEngine } from "../../types/runtimeTypes";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 import {
   type IntegrationDependency,
   type SanitizedConfig,
-} from "../../integrations/integrationTypes";
-import { extraEmptyModStateContext } from "../extendModVariableContext";
+} from "@/integrations/integrationTypes";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
-} from "../../testUtils/factories/integrationFactories";
+} from "@/testUtils/factories/integrationFactories";
 import {
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_OUTPUT_KEY,
-} from "../../integrations/constants";
-import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
-import { toExpression } from "../../utils/expressionUtils";
-import { pixiebrixConfigurationFactory } from "../../integrations/util/pixiebrixConfigurationFactory";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
-import pixiebrixIntegrationDependencyFactory from "../../integrations/util/pixiebrixIntegrationDependencyFactory";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+} from "@/integrations/constants";
+import makeIntegrationContextFromDependencies from "@/integrations/util/makeIntegrationContextFromDependencies";
+import { toExpression } from "@/utils/expressionUtils";
+import { pixiebrixConfigurationFactory } from "@/integrations/util/pixiebrixConfigurationFactory";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import pixiebrixIntegrationDependencyFactory from "@/integrations/util/pixiebrixIntegrationDependencyFactory";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();

@@ -17,7 +17,7 @@
 
 import type React from "react";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import type { IntegrationDependency } from "../integrations/integrationTypes";
+import type { IntegrationDependency } from "@/integrations/integrationTypes";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 
 export type WizardStep = {

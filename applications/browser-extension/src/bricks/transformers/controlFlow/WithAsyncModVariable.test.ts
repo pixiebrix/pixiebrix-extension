@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { WithAsyncModVariable } from "./WithAsyncModVariable";
+import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import {
   DeferredEchoBrick,
   simpleInput,
   throwBrick,
-} from "../../../runtime/pipelineTests/testHelpers";
-import { reducePipeline } from "../../../runtime/reducePipeline";
-import brickRegistry from "../../registry";
+} from "@/runtime/pipelineTests/testHelpers";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import brickRegistry from "@/bricks/registry";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { tick } from "../../../starterBricks/testHelpers";
-import { type Brick } from "../../../types/brickTypes";
-import { type UUID } from "../../../types/stringTypes";
-import { type Expression } from "../../../types/runtimeTypes";
-import { toExpression } from "../../../utils/expressionUtils";
-import { modComponentRefFactory } from "../../../testUtils/factories/modComponentFactories";
-import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
-import { StateNamespaces } from "../../../platform/state/stateTypes";
-import { getPlatform } from "../../../platform/platformContext";
+import { tick } from "@/starterBricks/testHelpers";
+import { type Brick } from "@/types/brickTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { StateNamespaces } from "@/platform/state/stateTypes";
+import { getPlatform } from "@/platform/platformContext";
 import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();

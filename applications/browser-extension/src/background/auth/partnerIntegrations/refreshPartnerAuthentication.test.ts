@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import refreshPartnerAuthentication from "./refreshPartnerAuthentication";
+import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
 import { type PartnerAuthData } from "@/auth/authTypes";
-import { uuidSequence } from "../../../testUtils/factories/stringFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { getPartnerAuthData, setPartnerAuthData } from "@/auth/authStorage";
-import { setCachedAuthData } from "../authStorage";
+import { setCachedAuthData } from "@/background/auth/authStorage";
 
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("../../../auth/authStorage");
+jest.mock("@/auth/authStorage");
 
 const getPartnerAuthDataMock = jest.mocked(getPartnerAuthData);
 const setPartnerAuthDataMock = jest.mocked(setPartnerAuthData);
 
-jest.mock("../authStorage");
+jest.mock("@/background/auth/authStorage");
 
 const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 

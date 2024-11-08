@@ -18,8 +18,8 @@
 import {
   reloadFrameMods,
   removeDraftModComponents,
-} from "../lifecycle";
-import { stopInspectingNativeHandler } from "./elementPicker";
+} from "@/contentScript/lifecycle";
+import { stopInspectingNativeHandler } from "@/contentScript/pageEditor/elementPicker";
 
 export async function resetTab(): Promise<void> {
   stopInspectingNativeHandler();

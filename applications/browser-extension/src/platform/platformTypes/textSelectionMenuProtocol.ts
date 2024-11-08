@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Nullishable } from "../../utils/nullishUtils";
-import type { IconConfig } from "../../types/iconTypes";
-import type { UUID } from "../../types/stringTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { IconConfig } from "@/types/iconTypes";
+import type { UUID } from "@/types/stringTypes";
 
 export type TextSelectionAction = {
   /**

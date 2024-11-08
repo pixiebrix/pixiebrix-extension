@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SchemaField from "../../fields/schemaFields/SchemaField";
-import { type SchemaFieldProps } from "../../fields/schemaFields/propTypes";
-import { joinName } from "../../../utils/formUtils";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { joinName } from "@/utils/formUtils";
 import React, { useMemo } from "react";
 
 /**

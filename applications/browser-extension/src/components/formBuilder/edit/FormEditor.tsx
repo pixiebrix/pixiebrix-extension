@@ -21,7 +21,7 @@ import {
   type RJSFSchema,
   type SelectStringOption,
   type SetActiveField,
-} from "../formBuilderTypes";
+} from "@/components/formBuilder/formBuilderTypes";
 import { Button } from "react-bootstrap";
 import {
   DEFAULT_FIELD_TYPE,
@@ -29,15 +29,15 @@ import {
   normalizeSchema,
   getNormalizedUiOrder,
   replaceStringInArray,
-} from "../formBuilderHelpers";
-import { UI_ORDER } from "../schemaFieldNames";
+} from "@/components/formBuilder/formBuilderHelpers";
+import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { type Schema } from "../../../types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
-import { joinName } from "../../../utils/formUtils";
+import { joinName } from "@/utils/formUtils";
 import { ActiveField } from "./ActiveField";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type FormEditorProps = {
   /**

@@ -24,33 +24,33 @@ import type {
   SidebarEntry,
   SidebarState,
   StaticPanelEntry,
-} from "../../types/sidebarTypes";
+} from "@/types/sidebarTypes";
 import {
   type ActionReducerMapBuilder,
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   defaultEventKey,
   eventKeyForEntry,
-} from "./eventKeyUtils";
+} from "@/store/sidebar/eventKeyUtils";
 import { remove, sortBy } from "lodash";
 import { castDraft } from "immer";
 import {
   eventKeyExists,
   findInitialPanelEntry,
   getVisiblePanelCount,
-} from "./sidebarUtils";
-import { MOD_LAUNCHER } from "./constants";
-import { type Nullishable } from "../../utils/nullishUtils";
-import addFormPanel from "./thunks/addFormPanel";
-import addTemporaryPanel from "./thunks/addTemporaryPanel";
-import removeTemporaryPanel from "./thunks/removeTemporaryPanel";
-import resolveTemporaryPanel from "./thunks/resolveTemporaryPanel";
-import { initialSidebarState } from "./initialState";
-import removeFormPanel from "./thunks/removeFormPanel";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+} from "@/store/sidebar/sidebarUtils";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import { type Nullishable } from "@/utils/nullishUtils";
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
+import { initialSidebarState } from "@/store/sidebar/initialState";
+import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 
 function findNextActiveKey(
   state: SidebarState,

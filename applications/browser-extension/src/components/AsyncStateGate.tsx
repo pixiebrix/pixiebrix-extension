@@ -16,11 +16,11 @@
  */
 
 import React, { type PropsWithoutRef } from "react";
-import Loader from "./Loader";
+import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
-import { isFetchableAsyncState } from "../utils/asyncStateUtils";
+import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate

@@ -17,16 +17,16 @@
 
 import React from "react";
 import { Tab } from "react-bootstrap";
-import CommentsTab from "./CommentsTab";
-import { render, screen } from "../../../../testHelpers";
-import { menuItemFormStateFactory } from "../../../../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../../../../testUtils/factories/brickFactories";
+import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import userEvent from "@testing-library/user-event";
-import reportEvent from "../../../../../telemetry/reportEvent";
-import { Events } from "../../../../../telemetry/events";
-import { modMetadataFactory } from "../../../../../testUtils/factories/modComponentFactories";
-import { DataPanelTabKey } from "../dataPanelTypes";
-import { actions as editorActions } from "../../../../store/editor/editorSlice";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 
 const reportEventMock = jest.mocked(reportEvent);
 

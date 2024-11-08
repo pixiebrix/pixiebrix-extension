@@ -22,17 +22,17 @@ import {
   useGetMarketplaceListingsQuery,
   useGetPackageQuery,
   useUpdatePackageMutation,
-} from "./api";
-import { renderHook } from "@testing-library/react-hooks";
+} from "@/data/service/api";
 import { Provider } from "react-redux";
 import React from "react";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { uuidv4 } from "../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { act } from "react-dom/test-utils";
-import { waitForEffect } from "../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import { isPlainObject } from "lodash";
-import { appApiMock } from "../../testUtils/appApiMock";
-import { type RegistryId } from "../../types/registryTypes";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { type RegistryId } from "@/types/registryTypes";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 function testStore() {
   return configureStore({

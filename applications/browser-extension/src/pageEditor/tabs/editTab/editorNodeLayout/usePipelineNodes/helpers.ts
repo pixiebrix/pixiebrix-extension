@@ -24,15 +24,15 @@ import {
 import {
   type DocumentBuilderElement,
   isButtonElement,
-} from "../../../../documentBuilder/documentBuilderTypes";
-import { type SubPipeline } from "./types";
+} from "@/pageEditor/documentBuilder/documentBuilderTypes";
+import { type SubPipeline } from "@/pageEditor/tabs/editTab/editorNodeLayout/usePipelineNodes/types";
 import {
   getDocumentBuilderPipelinePaths,
   getPipelinePropNames,
   getVariableKeyForSubPipeline,
-} from "../../../../utils";
-import { type Brick } from "../../../../../types/brickTypes";
-import { joinPathParts, joinName } from "../../../../../utils/formUtils";
+} from "@/pageEditor/utils";
+import { type Brick } from "@/types/brickTypes";
+import { joinPathParts, joinName } from "@/utils/formUtils";
 import { isEmpty, get } from "lodash";
 
 export function getBuilderPreviewElementId(

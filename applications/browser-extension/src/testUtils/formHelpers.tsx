@@ -19,7 +19,7 @@
 import { Form, Formik, type FormikValues } from "formik";
 import React, { type PropsWithChildren } from "react";
 import { fireEvent, screen, within } from "@testing-library/react";
-import { waitForEffect } from "./testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 

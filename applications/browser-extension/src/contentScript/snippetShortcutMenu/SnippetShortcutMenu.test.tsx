@@ -1,8 +1,8 @@
 import React, { type ComponentPropsWithoutRef } from "react";
 import { render, screen } from "@testing-library/react";
-import SnippetShortcutMenu from "./SnippetShortcutMenu";
-import SnippetRegistry from "./snippetShortcutRegistry";
-import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
+import SnippetShortcutMenu from "@/contentScript/snippetShortcutMenu/SnippetShortcutMenu";
+import SnippetRegistry from "@/contentScript/snippetShortcutMenu/snippetShortcutRegistry";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({

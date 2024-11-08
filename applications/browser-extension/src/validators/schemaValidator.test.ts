@@ -19,22 +19,22 @@ import {
   dereferenceForYup,
   validateBrickInputOutput,
   validatePackageDefinition,
-} from "./schemaValidator";
-import { loadBrickYaml } from "../runtime/brickYaml";
-import serviceText from "@/contrib/raw/hunter.txt";
-import jqueryReaderDefinition from "@/contrib/readers/apartments-reader.yaml";
-import emptyJQueryReaderDefinition from "@/contrib/readers/empty-jquery-reader.yaml";
-import emberJsReaderDefinition from "@/contrib/readers/linkedin-organization-reader.yaml";
-import windowReader from "@/contrib/readers/trello-card-reader.yaml";
-import reactReader from "@/contrib/readers/redfin-reader.yaml";
+} from "@/validators/schemaValidator";
+import { loadBrickYaml } from "@/runtime/brickYaml";
+import serviceText from "@contrib/raw/hunter.txt";
+import jqueryReaderDefinition from "@contrib/readers/apartments-reader.yaml";
+import emptyJQueryReaderDefinition from "@contrib/readers/empty-jquery-reader.yaml";
+import emberJsReaderDefinition from "@contrib/readers/linkedin-organization-reader.yaml";
+import windowReader from "@contrib/readers/trello-card-reader.yaml";
+import reactReader from "@contrib/readers/redfin-reader.yaml";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { timestampFactory } from "../testUtils/factories/stringFactories";
-import { personalSharingDefinitionFactory } from "../testUtils/factories/registryFactories";
-import { keyAuthIntegrationDefinitionFactory } from "../testUtils/factories/integrationFactories";
-import integrationRegistry from "../integrations/registry";
-import { fromJS } from "../integrations/UserDefinedIntegration";
-import { metadataFactory } from "../testUtils/factories/metadataFactory";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integrationFactories";
+import integrationRegistry from "@/integrations/registry";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
 beforeEach(() => {
   integrationRegistry.clear();

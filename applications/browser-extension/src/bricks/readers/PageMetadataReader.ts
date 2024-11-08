@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderABC } from "../../types/bricks/readerTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { ReaderABC } from "@/types/bricks/readerTypes";
+import { type Schema } from "@/types/schemaTypes";
 
 export class PageMetadataReader extends ReaderABC {
   override defaultOutputKey = "metadata";
@@ -39,7 +39,7 @@ export class PageMetadataReader extends ReaderABC {
 
   async read() {
     const { getMetadata } = await import(
-      /* webpackChunkName: "page-metadata-parser" */ "../../vendors/page-metadata-parser/parser"
+      /* webpackChunkName: "page-metadata-parser" */ "@/vendors/page-metadata-parser/parser"
     );
     return getMetadata(document, location.href);
   }

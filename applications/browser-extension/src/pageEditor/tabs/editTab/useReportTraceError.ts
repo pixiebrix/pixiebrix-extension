@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectTraceErrors } from "../../store/runtime/runtimeSelectors";
-import { selectSessionId } from "../../store/session/sessionSelectors";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
+import { selectTraceErrors } from "@/pageEditor/store/runtime/runtimeSelectors";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { usePreviousValue } from "@/hooks/usePreviousValue";
 

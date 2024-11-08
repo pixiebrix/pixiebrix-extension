@@ -1,16 +1,16 @@
-import type { RegistryId } from "../../../types/registryTypes";
+import type { RegistryId } from "@/types/registryTypes";
 import { useSelector } from "react-redux";
-import { selectGetDraftFormStatesPromiseForModId } from "../../starterBricks/adapter";
+import { selectGetDraftFormStatesPromiseForModId } from "@/pageEditor/starterBricks/adapter";
 import useAsyncState from "@/hooks/useAsyncState";
-import type { ModVariable } from "./modVariablesDefinitionEditorTypes";
+import type { ModVariable } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
 import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { reduce } from "lodash";
 import {
   minimalSchemaFactory,
   unionSchemaDefinitionTypes,
-} from "../../../utils/schemaUtils";
-import { mapDefinitionToFormValues } from "./modVariablesDefinitionEditorHelpers";
-import type { AsyncState } from "../../../types/sliceTypes";
+} from "@/utils/schemaUtils";
+import { mapDefinitionToFormValues } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorHelpers";
+import type { AsyncState } from "@/types/sliceTypes";
 
 /**
  * Returns the inferred mod variables for the given mod id.

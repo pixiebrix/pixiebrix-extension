@@ -16,13 +16,13 @@
  */
 
 import { define } from "cooky-cutter";
-import { type ModActionsEnabled, type ModViewItem } from "../../types/modTypes";
-import { normalizeSemVerString } from "../../types/helpers";
-import { nowTimestamp } from "../../utils/timeUtils";
+import { type ModActionsEnabled, type ModViewItem } from "@/types/modTypes";
+import { normalizeSemVerString } from "@/types/helpers";
+import { nowTimestamp } from "@/utils/timeUtils";
 import {
   autoUUIDSequence,
   registryIdFactory,
-} from "./stringFactories";
+} from "@/testUtils/factories/stringFactories";
 
 export const modViewItemFactory = define<ModViewItem>({
   activatedModVersion: normalizeSemVerString("1.0.0"),

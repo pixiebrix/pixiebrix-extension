@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import TeamTrialBanner from "./TeamTrialBanner";
+import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import { render, screen, waitFor } from "@/extensionConsole/testHelpers";
-import { organizationResponseFactory } from "../../testUtils/factories/organizationFactories";
-import { type Timestamp } from "../../types/stringTypes";
+import { organizationResponseFactory } from "@/testUtils/factories/organizationFactories";
+import { type Timestamp } from "@/types/stringTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
-import { appApiMock } from "../../testUtils/appApiMock";
+import { appApiMock } from "@/testUtils/appApiMock";
 
 describe("TeamTrialBanner", () => {
   const today = new Date().getDate();

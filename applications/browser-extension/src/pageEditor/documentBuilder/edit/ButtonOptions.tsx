@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import getElementEditSchemas from "./getElementEditSchemas";
+import getElementEditSchemas from "@/pageEditor/documentBuilder/edit/getElementEditSchemas";
 import PipelineOptions from "./PipelineOptions";
 
 type ButtonOptionsProps = {

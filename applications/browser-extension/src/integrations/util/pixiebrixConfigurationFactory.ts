@@ -18,11 +18,11 @@
 import type {
   SanitizedConfig,
   SanitizedIntegrationConfig,
-} from "../integrationTypes";
+} from "@/integrations/integrationTypes";
 import {
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
   PIXIEBRIX_INTEGRATION_ID,
-} from "../constants";
+} from "@/integrations/constants";
 
 export function pixiebrixConfigurationFactory(): SanitizedIntegrationConfig {
   return {

@@ -16,7 +16,7 @@
  */
 
 import { toPath } from "lodash";
-import { getPathFromArray } from "../../../../../runtime/pathHelpers";
+import { getPathFromArray } from "@/runtime/pathHelpers";
 
 const varRegex = /(?<varName>@(\.|\w|(\[\d+])|(\[("|')[\s\w]+("|')]))*)/g;
 

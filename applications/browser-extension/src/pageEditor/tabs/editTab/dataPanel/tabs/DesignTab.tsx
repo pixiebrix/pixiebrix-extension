@@ -15,26 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DataTabPane from "../DataTabPane";
-import { DataPanelTabKey } from "../dataPanelTypes";
+import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import Alert from "@/components/Alert";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import type { RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
-import DocumentPreview from "../../../../documentBuilder/preview/DocumentPreview";
+import DocumentPreview from "@/pageEditor/documentBuilder/preview/DocumentPreview";
 import React, { type MutableRefObject } from "react";
 import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveNodeInfo,
-} from "../../../../store/editor/editorSelectors";
-import { actions as editorActions } from "../../../../store/editor/editorSlice";
-import { joinPathParts } from "../../../../../utils/formUtils";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { joinPathParts } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { type RegistryId } from "../../../../../types/registryTypes";
-import useIsSidebarPanelStale from "./useIsSidebarPanelStale";
+import { type RegistryId } from "@/types/registryTypes";
+import useIsSidebarPanelStale from "@/pageEditor/tabs/editTab/dataPanel/tabs/useIsSidebarPanelStale";
 
 /**
  * Return true if the brick uses the Form Builder

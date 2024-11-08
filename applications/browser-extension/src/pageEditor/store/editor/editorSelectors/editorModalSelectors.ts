@@ -19,7 +19,7 @@ import {
   type EditorRootState,
   type ModalDefinition,
   ModalKey,
-} from "../pageEditorTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
 import type { Selector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 

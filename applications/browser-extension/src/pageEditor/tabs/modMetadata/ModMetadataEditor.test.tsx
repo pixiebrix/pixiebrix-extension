@@ -15,27 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "../../testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import ModMetadataEditor from "./ModMetadataEditor";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "../../store/editor/editorSlice";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
+import ModMetadataEditor from "@/pageEditor/tabs/modMetadata/ModMetadataEditor";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import {
   activatedModComponentFactory,
   modMetadataFactory,
-} from "../../../testUtils/factories/modComponentFactories";
-import { type ModMetadata } from "../../../types/modComponentTypes";
+} from "@/testUtils/factories/modComponentFactories";
+import { type ModMetadata } from "@/types/modComponentTypes";
 import { screen } from "@testing-library/react";
-import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
-import { waitForEffect } from "../../../testUtils/testHelpers";
-import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
-import { valueToAsyncState } from "../../../utils/asyncStateUtils";
-import { type SemVerString } from "../../../types/registryTypes";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import { type SemVerString } from "@/types/registryTypes";
 
 // :shrug: ideally would mock the definitions returned from the server. But that's more complicated than it's worth,
 // because you can't just mock the /api/registry/bricks/ endpoint due to the way our tests mock the background worker
-jest.mock("../../../modDefinitions/modDefinitionHooks");
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
 const useOptionalModDefinitionMock = jest.mocked(useOptionalModDefinition);
 

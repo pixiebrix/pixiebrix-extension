@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentFormState } from "./starterBricks/formStateTypes";
-import { fromJS as starterBrickFactory } from "../starterBricks/factory";
-import { collectModComponentPermissions } from "../permissions/modComponentPermissionsHelpers";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { fromJS as starterBrickFactory } from "@/starterBricks/factory";
+import { collectModComponentPermissions } from "@/permissions/modComponentPermissionsHelpers";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
-} from "../permissions/permissionsUtils";
-import notify from "../utils/notify";
+} from "@/permissions/permissionsUtils";
+import notify from "@/utils/notify";
 import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
-import { adapterForComponent } from "./starterBricks/adapter";
-import { emptyModVariablesDefinitionFactory } from "../utils/modUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { emptyModVariablesDefinitionFactory } from "@/utils/modUtils";
 
 export async function calculatePermissionsForModComponentFormState(
   modComponentFormState: ModComponentFormState,

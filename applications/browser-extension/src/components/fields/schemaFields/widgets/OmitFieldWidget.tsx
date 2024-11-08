@@ -18,7 +18,7 @@
 import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, type FormControlProps } from "react-bootstrap";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 const OmitFieldWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   schema,

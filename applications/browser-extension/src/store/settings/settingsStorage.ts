@@ -16,18 +16,18 @@
  */
 
 import { localStorage } from "redux-persist-webextension-storage";
-import { type SettingsState } from "./settingsTypes";
-import { expectContext } from "../../utils/expectContext";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+import { expectContext } from "@/utils/expectContext";
 import {
   readReduxStorage,
   setReduxStorage,
   validateReduxStorageKey,
-} from "../../utils/storageUtils";
-import { initialSettingsState } from "./settingsSlice";
-import { type StorageInterface } from "../StorageInterface";
+} from "@/utils/storageUtils";
+import { initialSettingsState } from "@/store/settings/settingsSlice";
+import { type StorageInterface } from "@/store/StorageInterface";
 import { createMigrate } from "redux-persist";
-import { migrations } from "./settingsMigrations";
-import { getMaxMigrationsVersion } from "../migratePersistedState";
+import { migrations } from "@/store/settings/settingsMigrations";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
 
 const SETTINGS_STORAGE_KEY = validateReduxStorageKey("persist:settings");
 

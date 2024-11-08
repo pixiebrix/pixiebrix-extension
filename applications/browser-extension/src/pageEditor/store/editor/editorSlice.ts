@@ -20,7 +20,7 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { FOUNDATION_NODE_ID } from "./uiState";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type BrickConfig } from "@/bricks/types";
 import {
   type AddBrickLocation,
@@ -29,12 +29,12 @@ import {
   type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
-} from "./pageEditorTypes";
-import { uuidv4 } from "../../../types/helpers";
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, compact, get, pull, uniq } from "lodash";
-import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { getInvalidPath } from "../../../utils/debugUtils";
+import { getInvalidPath } from "@/utils/debugUtils";
 import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,
@@ -47,70 +47,51 @@ import {
 import {
   isQuickBarStarterBrick,
   type ModComponentFormState,
-} from "../../starterBricks/formStateTypes";
-import reportError from "../../../telemetry/reportError";
+} from "@/pageEditor/starterBricks/formStateTypes";
+import reportError from "@/telemetry/reportError";
 import {
   markModComponentFormStateAsDeleted,
   setActiveModComponentId,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
-} from "./editorSliceHelpers";
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import { type Draft, produce } from "immer";
-import { normalizePipelineForEditor } from "../../starterBricks/pipelineMapping";
-import { type ModComponentsRootState } from "../../../store/modComponents/modComponentTypes";
+import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import {
   checkAvailable,
   getRunningStarterBricks,
 } from "@/contentScript/messenger/api";
-import { hydrateModComponentInnerDefinitions } from "../../../registry/hydrateInnerDefinitions";
-import { QuickBarStarterBrickABC } from "../../../starterBricks/quickBar/quickBarStarterBrick";
+import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
+import { QuickBarStarterBrickABC } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { testMatchPatterns } from "@/bricks/available";
 import { serializeError } from "serialize-error";
-import { type StorageInterface } from "../../../store/StorageInterface";
+import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
 import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
-import { type UUID } from "../../../types/stringTypes";
-import { type RegistryId } from "../../../types/registryTypes";
+import { type UUID } from "@/types/stringTypes";
+import { type RegistryId } from "@/types/registryTypes";
 import {
   type ModOptionsDefinition,
   type ModVariablesDefinition,
-} from "../../../types/modDefinitionTypes";
+} from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../../types/modComponentTypes";
-import { type OptionsArgs } from "../../../types/runtimeTypes";
-import { createMigrate } from "redux-persist";
-import { migrations } from "../../../store/editorMigrations";
-import { type BaseStarterBrickState } from "./baseFormStateTypes";
-import { getCurrentInspectedURL, inspectedTab } from "../../context/connection";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-
-/** @internal */
-export const initialState: EditorState = {
-  selectionSeq: 0,
-  activeModComponentId: null,
-  activeModId: null,
-  expandedModId: null,
-  error: null,
-  modComponentFormStates: [],
-  dirty: {},
-  brickPipelineUIStateById: {},
-  dirtyModMetadataById: {},
-  dirtyModOptionsDefinitionById: {},
-  dirtyModVariablesDefinitionById: {},
-  dirtyModOptionsArgsById: {},
-  visibleModal: null,
-  deletedModComponentFormStateIdsByModId: {},
-  availableActivatedModComponentIds: [],
-  isPendingAvailableActivatedModComponents: false,
-  availableDraftModComponentIds: [],
-  isPendingDraftModComponents: false,
-  isModListExpanded: true,
-  isDataPanelExpanded: true,
-  isDimensionsWarningDismissed: false,
-  isVariablePopoverVisible: false,
-};
+} from "@/types/modComponentTypes";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { createMigrate, type PersistConfig } from "redux-persist";
+import { migrations } from "@/store/editorMigrations";
+import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
+import {
+  getCurrentInspectedURL,
+  inspectedTab,
+} from "@/pageEditor/context/connection";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import {
+  initialEphemeralState,
+  initialState,
+} from "@/store/editorInitialState";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -414,7 +395,7 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ isExpanded: boolean }>,
     ) {
-      state.isModListExpanded = payload.isExpanded;
+      state.isModListingPanelExpanded = payload.isExpanded;
     },
 
     ///
@@ -894,7 +875,7 @@ export const editorSlice = createSlice({
     },
 
     clearCopiedBrickConfig(state) {
-      delete state.copiedBrick;
+      state.copiedBrick = null;
     },
 
     ///
@@ -1081,14 +1062,14 @@ export const actions = {
   checkActiveModComponentAvailability,
 };
 
-export const persistEditorConfig = {
+export const persistEditorConfig: PersistConfig<EditorState> = {
   key: "editor",
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 11,
+  version: 12,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: ["inserting", "isVarPopoverVisible", "visibleModal"],
+  blacklist: Object.keys(initialEphemeralState),
 };
 
 function validateActiveModComponentId(state: Draft<EditorState>) {

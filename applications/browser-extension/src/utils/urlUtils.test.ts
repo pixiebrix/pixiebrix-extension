@@ -22,7 +22,7 @@ import {
   selectAbsoluteUrl,
   isUrlRelative,
   isPixieBrixDomain,
-} from "./urlUtils";
+} from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
   test("parses HTTPS URLs", () => {

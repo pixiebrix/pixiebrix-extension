@@ -18,9 +18,9 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import { showMySidePanel } from "../sidePanel";
-import { waitForContentScript } from "../contentScript";
-import initTheme from "../initTheme";
+import { showMySidePanel } from "@/background/sidePanel";
+import { waitForContentScript } from "@/background/contentScript";
+import initTheme from "@/background/initTheme";
 import {
   addTraceEntry,
   addTraceExit,
@@ -32,18 +32,18 @@ import {
   forwardAudioCaptureEvent,
   startAudioCapture,
   stopAudioCapture,
-} from "../capture";
+} from "@/background/capture";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
   hasCachedAuthData,
   removeOAuth2Token,
-} from "../auth/authStorage";
-import { setToolbarBadge } from "../toolbarBadge";
+} from "@/background/auth/authStorage";
+import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
-import writeToClipboardInFocusedContext from "../clipboard";
-import * as packageRegistry from "../../registry/packageRegistry";
-import integrationRegistry from "../../integrations/registry";
+import writeToClipboardInFocusedContext from "@/background/clipboard";
+import * as packageRegistry from "@/registry/packageRegistry";
+import integrationRegistry from "@/integrations/registry";
 import { getUserData } from "@/auth/authStorage";
 import {
   clearModComponentDebugLogs,
@@ -56,36 +56,36 @@ import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 import {
   integrationConfigLocator,
   refreshIntegrationConfigs,
-} from "../integrationConfigLocator";
-import { closeTab, focusTab, openTab } from "../tabs";
-import launchInteractiveOAuth2Flow from "../auth/launchInteractiveOAuth2Flow";
-import { performConfiguredRequest } from "../requests";
-import { getAvailableVersion } from "../installer";
+} from "@/background/integrationConfigLocator";
+import { closeTab, focusTab, openTab } from "@/background/tabs";
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
+import { performConfiguredRequest } from "@/background/requests";
+import { getAvailableVersion } from "@/background/installer";
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "../telemetry";
-import { ensureContextMenu } from "../contextMenus/ensureContextMenu";
-import { uninstallContextMenu } from "../contextMenus/uninstallContextMenu";
-import { setCopilotProcessData } from "../partnerHandlers";
+} from "@/background/telemetry";
+import { ensureContextMenu } from "@/background/contextMenus/ensureContextMenu";
+import { uninstallContextMenu } from "@/background/contextMenus/uninstallContextMenu";
+import { setCopilotProcessData } from "@/background/partnerHandlers";
 import {
   requestRunInAllFrames,
   requestRunInOtherTabs,
   requestRunInOpener,
   requestRunInTarget,
   requestRunInTop,
-} from "../executor";
-import { preloadContextMenus } from "../contextMenus/preloadContextMenus";
-import { removeModComponentForEveryTab } from "../removeModComponentForEveryTab";
-import { debouncedActivateWelcomeMods as activateWelcomeMods } from "../welcomeMods";
-import { launchAuthIntegration } from "../auth/partnerIntegrations/launchAuthIntegration";
-import { getPartnerPrincipals } from "../auth/partnerIntegrations/getPartnerPrincipals";
-import refreshPartnerAuthentication from "../auth/partnerIntegrations/refreshPartnerAuthentication";
+} from "@/background/executor";
+import { preloadContextMenus } from "@/background/contextMenus/preloadContextMenus";
+import { removeModComponentForEveryTab } from "@/background/removeModComponentForEveryTab";
+import { debouncedActivateWelcomeMods as activateWelcomeMods } from "@/background/welcomeMods";
+import { launchAuthIntegration } from "@/background/auth/partnerIntegrations/launchAuthIntegration";
+import { getPartnerPrincipals } from "@/background/auth/partnerIntegrations/getPartnerPrincipals";
+import refreshPartnerAuthentication from "@/background/auth/partnerIntegrations/refreshPartnerAuthentication";
 import { getMe } from "@/data/service/backgroundApi";
-import { deleteSynchronizedModVariablesForMod } from "../stateControllerListeners";
+import { deleteSynchronizedModVariablesForMod } from "@/background/stateControllerListeners";
 
 expectContext("background");
 

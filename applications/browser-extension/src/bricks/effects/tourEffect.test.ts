@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TourEffect } from "./tourEffect";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { TourEffect } from "@/bricks/effects/tourEffect";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { CancelError, PropError } from "@/errors/businessErrors";
-import { tick } from "../../starterBricks/testHelpers";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { tick } from "@/starterBricks/testHelpers";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new TourEffect();
 

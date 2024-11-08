@@ -17,17 +17,17 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type EditorState } from "../pageEditor/store/editor/pageEditorTypes";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   readReduxStorage,
   setReduxStorage,
   validateReduxStorageKey,
-} from "../utils/storageUtils";
-import { migrations } from "./editorMigrations";
-import { getMaxMigrationsVersion } from "./migratePersistedState";
-import { selectModComponentFormStates } from "../pageEditor/store/editor/editorSelectors";
-import { editorSlice } from "../pageEditor/store/editor/editorSlice";
-import { assertEditorInvariants } from "../pageEditor/store/editor/editorInvariantMiddleware";
+} from "@/utils/storageUtils";
+import { migrations } from "@/store/editorMigrations";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { selectModComponentFormStates } from "@/pageEditor/store/editor/editorSelectors";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { assertEditorInvariants } from "@/pageEditor/store/editor/editorInvariantMiddleware";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:editor");
 

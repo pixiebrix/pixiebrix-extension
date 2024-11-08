@@ -16,10 +16,10 @@
  */
 
 import * as ckeditorDom from "@/contrib/ckeditor/ckeditorDom";
-import * as pageScript from "../pageScript/messenger/api";
-import { getSelectorForElement } from "./elementReference";
-import { expectContext } from "../utils/expectContext";
-import focusController from "../utils/focusController";
+import * as pageScript from "@/pageScript/messenger/api";
+import { getSelectorForElement } from "@/contentScript/elementReference";
+import { expectContext } from "@/utils/expectContext";
+import focusController from "@/utils/focusController";
 import {
   insertIntoDraftJs,
   isDraftJsField,

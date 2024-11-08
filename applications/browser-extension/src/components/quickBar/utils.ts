@@ -17,7 +17,7 @@
 
 import { type Action } from "kbar";
 import { useMemo } from "react";
-import { splitStartingEmoji } from "../../utils/stringUtils";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 
 export function useGetActionNameAndIcon({ name, icon }: Action) {
   return useMemo(() => {

@@ -23,8 +23,8 @@ import {
 } from "@/types/sliceTypes";
 import memoizeOne from "memoize-one";
 import { useCallback, useMemo } from "react";
-import { mergeAsyncState } from "../utils/asyncStateUtils";
-import useMemoCompare from "./useMemoCompare";
+import { mergeAsyncState } from "@/utils/asyncStateUtils";
+import useMemoCompare from "@/hooks/useMemoCompare";
 import deepEquals from "fast-deep-equal";
 
 /**

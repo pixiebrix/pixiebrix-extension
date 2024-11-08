@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from "react";
-import { PageTitle } from "../../../layout/Page";
+import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form } from "react-bootstrap";
@@ -30,18 +30,18 @@ import useSubmitPackage from "./useSubmitPackage";
 import { useDispatch, useSelector } from "react-redux";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
-import workshopSlice from "../../../store/workshopSlice";
-import useLogContext from "./useLogContext";
-import { loadBrickYaml } from "../../../runtime/brickYaml";
+import workshopSlice from "@/store/workshopSlice";
+import useLogContext from "@/extensionConsole/pages/packageEditor/useLogContext";
+import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
-import { type Package } from "../../../types/contract";
+import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/data/service/api";
 import useIsMounted from "@/hooks/useIsMounted";
-import { type UUID } from "../../../types/stringTypes";
-import { type Definition, DefinitionKinds } from "../../../types/registryTypes";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import castError from "../../../utils/castError";
-import { selectModInstanceMap } from "../../../store/modComponents/modInstanceSelectors";
+import { type UUID } from "@/types/stringTypes";
+import { type Definition, DefinitionKinds } from "@/types/registryTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import castError from "@/utils/castError";
+import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
 
 const { touchPackage } = workshopSlice.actions;
 

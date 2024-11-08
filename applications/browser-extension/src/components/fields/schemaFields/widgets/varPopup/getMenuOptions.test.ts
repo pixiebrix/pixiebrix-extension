@@ -29,8 +29,8 @@ import { type JsonObject } from "type-fest";
 import {
   draftModStateFactory,
   formStateFactory,
-} from "../../../../../testUtils/factories/pageEditorFactories";
-import { brickConfigFactory } from "../../../../../testUtils/factories/brickFactories";
+} from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 beforeAll(() => {

@@ -29,13 +29,13 @@ import {
 import { type RJSFSchema } from "./formBuilderTypes";
 import { initRenamingCases } from "./testHelpers";
 import { UI_WIDGET } from "./schemaFieldNames";
-import databaseSchema from "../../../schemas/database.json";
-import googleSheetSchema from "../../../schemas/googleSheetId.json";
-import { KEYS_OF_UI_SCHEMA, type Schema } from "../../types/schemaTypes";
+import databaseSchema from "@schemas/database.json";
+import googleSheetSchema from "@schemas/googleSheetId.json";
+import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
-} from "../../utils/schemaUtils";
+} from "@/utils/schemaUtils";
 
 describe("replaceStringInArray", () => {
   let array: string[];

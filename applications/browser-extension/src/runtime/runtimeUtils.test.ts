@@ -18,8 +18,8 @@
 import {
   getConstantConditionOrUndefined,
   isApiVersionAtLeast,
-} from "./runtimeUtils";
-import { toExpression } from "../utils/expressionUtils";
+} from "@/runtime/runtimeUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("isApiVersionAtLeast()", () => {
   test("v2 is at least v1", () => {

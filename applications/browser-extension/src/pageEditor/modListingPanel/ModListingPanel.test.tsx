@@ -15,22 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { render } from "../testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import React from "react";
-import ModListingPanel from "./ModListingPanel";
+import ModListingPanel from "@/pageEditor/modListingPanel/ModListingPanel";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { actions as modComponentActions } from "../../store/modComponents/modComponentSlice";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { createNewUnsavedModMetadata } from "../../utils/modUtils";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import { array } from "cooky-cutter";
-import mapModDefinitionToModMetadata from "../../modDefinitions/util/mapModDefinitionToModMetadata";
+import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 
 /**
  * Helper to click the 3-dot menu for an item in the mod listing pane.

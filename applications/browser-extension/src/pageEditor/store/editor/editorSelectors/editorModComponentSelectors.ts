@@ -20,12 +20,12 @@ import type {
   EditorRootState,
   EditorState,
   RootState,
-} from "../pageEditorTypes";
-import type { ModComponentsRootState } from "../../../../store/modComponents/modComponentTypes";
-import type { ActivatedModComponent } from "../../../../types/modComponentTypes";
-import { selectActivatedModComponents } from "../../../../store/modComponents/modComponentSelectors";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
-import type { UUID } from "../../../../types/stringTypes";
+} from "@/pageEditor/store/editor/pageEditorTypes";
+import type { ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
+import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import type { UUID } from "@/types/stringTypes";
 import { memoize } from "lodash";
 
 /**

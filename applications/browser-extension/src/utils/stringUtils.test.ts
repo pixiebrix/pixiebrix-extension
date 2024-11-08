@@ -21,7 +21,7 @@ import {
   smartAppendPeriod,
   splitStartingEmoji,
   trimEndOnce,
-} from "./stringUtils";
+} from "@/utils/stringUtils";
 
 describe("string utilities", () => {
   test("splitStartingEmoji", () => {

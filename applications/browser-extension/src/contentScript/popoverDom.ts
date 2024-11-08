@@ -19,13 +19,13 @@ import { createPopper, type Instance as PopperInstance } from "@popperjs/core";
 import { type IFrameComponent, iframeResizer } from "iframe-resizer";
 import { trimEnd } from "lodash";
 import popoverStyleUrl from "./popover.scss?loadAsUrl";
-import injectStylesheet from "../utils/injectStylesheet";
+import injectStylesheet from "@/utils/injectStylesheet";
 import { uuidv4, validateUUID } from "@/types/helpers";
-import { setTemporaryOverlayPanel } from "./ephemeralPanelController";
+import { setTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelController";
 import { html } from "code-tag";
-import { setAnimationFrameInterval } from "../utils/domUtils";
-import { ensureTooltipsContainer } from "./tooltipDom";
-import { expectContext } from "../utils/expectContext";
+import { setAnimationFrameInterval } from "@/utils/domUtils";
+import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
+import { expectContext } from "@/utils/expectContext";
 
 // https://popper.js.org/docs/v2/constructors/
 export type Placement =

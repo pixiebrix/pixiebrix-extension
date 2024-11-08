@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useContext } from "react";
-import { uuidv4 } from "../../../../types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { launchAuthIntegration } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
@@ -26,22 +26,22 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIntegrationConfigs } from "../../../../integrations/store/integrationsSelectors";
-import integrationsSlice from "../../../../integrations/store/integrationsSlice";
-import { selectSettings } from "../../../../store/settings/settingsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { type FormikHelpers } from "formik";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isEqual } from "lodash";
-import { normalizeControlRoomUrl } from "./partnerOnboardingUtils";
+import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
 import { useHistory, useLocation } from "react-router";
-import { collectIntegrationOriginPermissions } from "../../../../integrations/util/permissionsHelpers";
-import { ensurePermissionsFromUserGesture } from "../../../../permissions/permissionsUtils";
-import ReduxPersistenceContext from "../../../../store/ReduxPersistenceContext";
+import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
+import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import {
   type IntegrationConfig,
   type SecretsConfig,
-} from "../../../../integrations/integrationTypes";
-import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "../../../../integrations/constants";
+} from "@/integrations/integrationTypes";
+import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 const { upsertIntegrationConfig } = integrationsSlice.actions;
 

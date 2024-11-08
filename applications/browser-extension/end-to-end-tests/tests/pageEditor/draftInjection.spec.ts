@@ -19,10 +19,10 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { type PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
+import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
 import { getSidebarPage } from "../../utils";
-import { sleep } from "../../../src/utils/timeUtils";
-import { FloatingActionButton } from "../../pageObjects/floatingActionButton";
+import { sleep } from "@/utils/timeUtils";
+import { FloatingActionButton } from "end-to-end-tests/pageObjects/floatingActionButton";
 
 test("#9381: inject non-selected/active sidebar", async ({
   page,

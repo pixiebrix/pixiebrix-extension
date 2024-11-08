@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import bricksRegistry from "./registry";
+import bricksRegistry from "@/bricks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/api";
-import { echoBrick } from "../runtime/pipelineTests/testHelpers";
-import { type PackageVersion, parsePackage } from "../registry/packageRegistry";
+import { echoBrick } from "@/runtime/pipelineTests/testHelpers";
+import { type PackageVersion, parsePackage } from "@/registry/packageRegistry";
 import {
   brickDefinitionFactory,
   readerBrickFactory,
-} from "../testUtils/factories/brickFactories";
+} from "@/testUtils/factories/brickFactories";
 import { array } from "cooky-cutter";
-import type { BrickDefinition } from "./transformers/brickFactory";
+import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
 import type { RegistryId } from "@/types/registryTypes";
 
 const backgroundGetByKindsMock = jest.mocked(backgroundRegistry.getByKinds);
@@ -55,7 +55,7 @@ describe("bricksMap", () => {
     const typedBrick = typedBricks.get(brick.id);
 
     expect(typedBrick!.type).toBe("reader");
-    expect(typedBrick!.block).toBe(brick);
+    expect(typedBrick!.brick).toBe(brick);
   });
 
   test("returns bricks of multiple registrations", async () => {
@@ -66,7 +66,7 @@ describe("bricksMap", () => {
 
     for (const brick of bricks) {
       expect(enrichedBlocks.get(brick.id)!.type).toBe("reader");
-      expect(enrichedBlocks.get(brick.id)!.block).toBe(brick);
+      expect(enrichedBlocks.get(brick.id)!.brick).toBe(brick);
     }
   });
 

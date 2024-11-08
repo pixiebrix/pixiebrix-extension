@@ -19,7 +19,7 @@ import styles from "./NonScriptablePage.module.scss";
 
 import React from "react";
 import { Col, Row, Container } from "react-bootstrap";
-import workshopImage from "../../../img/workshop.svg";
+import workshopImage from "@img/workshop.svg";
 
 const GetStarted: React.FunctionComponent = () => (
   <>

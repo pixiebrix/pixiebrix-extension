@@ -23,9 +23,9 @@ import type { UUID } from "@/types/stringTypes";
 import type { OptionsArgs } from "@/types/runtimeTypes";
 import type { Schema } from "@/types/schemaTypes";
 import type { Deployment, DeploymentPayload } from "@/types/contract";
-import { getIsPersonalDeployment } from "../store/modComponents/modInstanceUtils";
-import { PIXIEBRIX_INTEGRATION_ID } from "../integrations/constants";
-import notify from "../utils/notify";
+import { getIsPersonalDeployment } from "@/store/modComponents/modInstanceUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import notify from "@/utils/notify";
 import {
   appApi,
   useCreateUserDeploymentMutation,
@@ -33,7 +33,7 @@ import {
 } from "@/data/service/api";
 import { useCallback } from "react";
 import { type ModInstance } from "@/types/modInstanceTypes";
-import type { WizardValues } from "./wizardTypes";
+import type { WizardValues } from "@/activation/wizardTypes";
 
 /**
  * Returns the default database name for an auto-created database.

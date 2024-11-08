@@ -20,11 +20,11 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/bricks/PipelineVisitor";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import { castTextLiteralOrThrow } from "../../../utils/expressionUtils";
+import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 import {
   isTriggerStarterBrick,
   type ModComponentFormState,
-} from "../../../pageEditor/starterBricks/formStateTypes";
+} from "@/pageEditor/starterBricks/formStateTypes";
 
 export type EventNameAnalysisResult = {
   /**

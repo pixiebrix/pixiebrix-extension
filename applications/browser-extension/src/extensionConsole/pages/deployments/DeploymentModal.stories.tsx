@@ -18,11 +18,11 @@
 import React, { type ComponentProps } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
-import DeploymentModal from "./DeploymentModal";
+import DeploymentModal from "@/extensionConsole/pages/deployments/DeploymentModal";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
-import settingsSlice from "../../../store/settings/settingsSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
 import { appApi } from "@/data/service/api";
 

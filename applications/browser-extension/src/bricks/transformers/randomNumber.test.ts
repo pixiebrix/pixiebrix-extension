@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { RandomNumber } from "./randomNumber";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { RandomNumber } from "@/bricks/transformers/randomNumber";
 
 describe("random number", () => {
   it("returns a random integer", async () => {

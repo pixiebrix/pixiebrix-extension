@@ -17,7 +17,7 @@
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
-import { type MessageConfig } from "../../utils/notify";
+import { type MessageConfig } from "@/utils/notify";
 import { type Manifest, type Menus } from "webextension-polyfill";
 
 export type ContextMenuConfig = {

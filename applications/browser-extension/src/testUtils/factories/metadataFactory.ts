@@ -16,8 +16,8 @@
  */
 
 import { define } from "cooky-cutter";
-import type { VersionedMetadata } from "../../types/registryTypes";
-import { validateRegistryId, normalizeSemVerString } from "../../types/helpers";
+import type { VersionedMetadata } from "@/types/registryTypes";
+import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
 
 export const metadataFactory = define<VersionedMetadata>({
   id: (n: number) => validateRegistryId(`test/mod-${n}`),

@@ -17,7 +17,7 @@
 
 // Browsers also add base styling for [popover] attribute. E.g., Chrome adds a system border.
 
-@import "@/themes/colors";
+@import "@/themes/colors.scss";
 
 .toolbar {
   background-color: $S0;

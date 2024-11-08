@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SanitizedIntegrationConfig } from "../integrationTypes";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../constants";
+} from "@/integrations/constants";
 import { checkConfigAuth } from "@/contrib/automationanywhere/aaApi";
 
 export async function checkIntegrationAuth(

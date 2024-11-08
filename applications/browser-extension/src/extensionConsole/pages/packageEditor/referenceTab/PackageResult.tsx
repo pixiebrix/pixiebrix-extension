@@ -28,12 +28,9 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { find as findPackage } from "../../../../registry/packageRegistry";
+import { find as findPackage } from "@/registry/packageRegistry";
 import { type Team } from "@/data/model/Team";
-import {
-  type PackageInstance,
-  type Sharing,
-} from "../../../../types/registryTypes";
+import { type PackageInstance, type Sharing } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 
 type SharingTagProps<T extends PackageInstance> = {

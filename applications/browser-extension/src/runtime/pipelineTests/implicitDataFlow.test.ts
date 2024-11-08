@@ -16,9 +16,9 @@
  */
 
 import brickRegistry from "@/bricks/registry";
-import { reducePipeline } from "../reducePipeline";
+import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BrickPipeline } from "@/bricks/types";
-import { validateOutputKey } from "../runtimeTypes";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   arrayBrick,
   contextBrick,
@@ -27,9 +27,9 @@ import {
   simpleInput,
   teapotBrick,
 } from "./testHelpers";
-import { type ApiVersion, type OutputKey } from "../../types/runtimeTypes";
-import { extraEmptyModStateContext } from "../extendModVariableContext";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
+import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 beforeEach(() => {
   brickRegistry.clear();

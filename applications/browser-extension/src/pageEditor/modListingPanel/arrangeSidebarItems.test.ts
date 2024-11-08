@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModComponentBase } from "../../types/modComponentTypes";
-import arrangeSidebarItems from "./arrangeSidebarItems";
+import { type ModComponentBase } from "@/types/modComponentTypes";
+import arrangeSidebarItems from "@/pageEditor/modListingPanel/arrangeSidebarItems";
 import {
   modComponentFactory,
   modMetadataFactory,
-} from "../../testUtils/factories/modComponentFactories";
-import { menuItemFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
+} from "@/testUtils/factories/modComponentFactories";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 // Mods
 const modMetadataFoo = modMetadataFactory({

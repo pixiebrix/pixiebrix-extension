@@ -17,7 +17,10 @@
  */
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type AnalysisState, type AnalysisAnnotation } from "./analysisTypes";
+import {
+  type AnalysisState,
+  type AnalysisAnnotation,
+} from "@/analysis/analysisTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type ErrorObject } from "serialize-error";
 import { type UUID } from "@/types/stringTypes";

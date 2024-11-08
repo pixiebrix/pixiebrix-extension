@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderExplicit, renderImplicit } from "./mapArgs";
+import { renderExplicit, renderImplicit } from "@/runtime/mapArgs";
 import Mustache from "mustache";
-import { engineRenderer } from "./renderers";
-import apiVersionOptions from "./apiVersionOptions";
-import { toExpression } from "../utils/expressionUtils";
+import { engineRenderer } from "@/runtime/renderers";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { toExpression } from "@/utils/expressionUtils";
 import { type TemplateEngine } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 

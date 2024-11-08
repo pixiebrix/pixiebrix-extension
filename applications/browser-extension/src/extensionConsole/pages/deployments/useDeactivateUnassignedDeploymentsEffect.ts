@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deactivateUnassignedModComponents } from "./activateDeployments";
+import { deactivateUnassignedModComponents } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import type { ModInstance } from "../../../types/modInstanceTypes";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 function useDeactivateUnassignedDeploymentsEffect(
   unassignedModInstances: ModInstance[],

@@ -1,9 +1,9 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { uuidv4 } from "../../types/helpers";
-import { waitForEffect } from "../../testUtils/testHelpers";
-import { rectFactory } from "../../testUtils/factories/domFactories";
-import type * as controllerModule from "./selectionMenuController";
+import { uuidv4 } from "@/types/helpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { rectFactory } from "@/testUtils/factories/domFactories";
+import type * as controllerModule from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 document.body.innerHTML =
   '<div><span data-testid="span">Here\'s some text</span></div>';
@@ -27,7 +27,7 @@ describe("selectionMenuController", () => {
   beforeEach(async () => {
     jest.resetModules();
     module = await import(
-      "./selectionMenuController"
+      "@/contentScript/textSelectionMenu/selectionMenuController"
     );
   });
 

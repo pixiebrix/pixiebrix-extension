@@ -16,9 +16,9 @@
  */
 
 import { BasePageObject } from "../basePageObject";
-import { type UUID } from "../../../src/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { ModifiesModFormState } from "./utils";
-import { uuidv4 } from "../../../src/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 
 export class CreateModModal extends BasePageObject {
   modIdInput = this.getByTestId("registryId-id-id");

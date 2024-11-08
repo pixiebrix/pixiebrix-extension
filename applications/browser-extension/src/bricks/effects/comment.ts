@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
-import { type Schema } from "../../types/schemaTypes";
-import { EffectABC } from "../../types/bricks/effectTypes";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { validateRegistryId } from "@/types/helpers";
+import { type Schema } from "@/types/schemaTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class CommentEffect extends EffectABC {
   // Use an effect so PixieBrix doesn't show an output

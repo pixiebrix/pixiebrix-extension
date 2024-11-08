@@ -15,27 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "../../types/helpers";
-import { isCommunityControlRoom } from "./aaUtils";
+import { validateRegistryId } from "@/types/helpers";
+import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import {
   DEFAULT_MAX_WAIT_MILLIS,
   pollEnterpriseResult,
   runCommunityBot,
   runEnterpriseBot,
-} from "./aaApi";
-import { type BotArgs, type EnterpriseBotArgs } from "./aaTypes";
+} from "@/contrib/automationanywhere/aaApi";
+import {
+  type BotArgs,
+  type EnterpriseBotArgs,
+} from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { cloneDeep } from "lodash";
 import { getCachedAuthData, getUserData } from "@/background/messenger/api";
-import { type Schema, type SchemaProperties } from "../../types/schemaTypes";
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
+import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
-} from "../../integrations/constants";
-import { urlsMatch } from "../../utils/urlUtils";
-import { minimalSchemaFactory } from "../../utils/schemaUtils";
+} from "@/integrations/constants";
+import { urlsMatch } from "@/utils/urlUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {

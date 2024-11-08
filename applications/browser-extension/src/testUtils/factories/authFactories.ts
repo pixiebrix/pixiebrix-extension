@@ -25,10 +25,10 @@ import {
   type TokenAuthData,
   type UserData,
 } from "@/auth/authTypes";
-import { uuidSequence } from "./stringFactories";
-import { type AuthData } from "../../integrations/integrationTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { type AuthData } from "@/integrations/integrationTypes";
 import { type UserMilestone } from "@/data/model/UserMilestone";
-import type { components } from "../../types/swagger";
+import type { components } from "@/types/swagger";
 import { type UserPartner } from "@/data/model/UserPartner";
 import {
   type RequiredMeTeamResponse,

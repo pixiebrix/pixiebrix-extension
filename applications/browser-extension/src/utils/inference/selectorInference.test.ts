@@ -28,7 +28,7 @@ import {
   sortBySelector,
 } from "./selectorInference";
 import { uniq } from "lodash";
-import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "../../domConstants";
+import { EXTENSION_POINT_DATA_ATTR, PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { html } from "code-tag";
 
 declare global {

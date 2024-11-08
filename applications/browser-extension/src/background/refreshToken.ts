@@ -16,21 +16,21 @@
  */
 
 import axios from "axios";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import {
   type Integration,
   type SanitizedIntegrationConfig,
-} from "../integrations/integrationTypes";
-import { integrationConfigLocator as serviceLocator } from "./integrationConfigLocator";
+} from "@/integrations/integrationTypes";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import {
   getCachedAuthData,
   setCachedAuthData,
-} from "./auth/authStorage";
+} from "@/background/auth/authStorage";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   PIXIEBRIX_INTEGRATION_ID,
-} from "../integrations/constants";
-import { assertNotNullish } from "../utils/nullishUtils";
+} from "@/integrations/constants";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.

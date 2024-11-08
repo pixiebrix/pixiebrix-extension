@@ -16,9 +16,9 @@
  */
 
 import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
-import { readManagedStorageByKey } from "../store/enterprise/managedStorage";
+import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 import { StorageItem } from "webext-storage";
-import { type DeploymentKey } from "./authTypes";
+import { type DeploymentKey } from "@/auth/authTypes";
 
 /**
  * User-configured deployment key. Overrides the managed storage deployment key (if any)

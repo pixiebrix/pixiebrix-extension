@@ -25,7 +25,7 @@ import {
 } from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { type KeyPath, type ShouldExpandNodeInitially } from "react-json-tree";
 import { getIn } from "formik";
-import { assertNotNullish } from "../../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Array of [source, varMap] tuples

@@ -16,10 +16,10 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { type EditorRootState } from "../pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentsRootState } from "./modComponents/modComponentTypes";
-import { actions, editorSlice } from "../pageEditor/store/editor/editorSlice";
-import modComponentSlice from "./modComponents/modComponentSlice";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
+import { actions, editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { checkAvailable } from "@/contentScript/messenger/api";
@@ -29,15 +29,15 @@ import {
   checkAvailable as backgroundCheckAvailable,
   normalizeAvailability,
 } from "@/bricks/available";
-import { selectModComponentAvailability } from "../pageEditor/store/editor/editorSelectors";
+import { selectModComponentAvailability } from "@/pageEditor/store/editor/editorSelectors";
 import { produce } from "immer";
-import { menuItemFormStateFactory } from "../testUtils/factories/pageEditorFactories";
-import { getCurrentInspectedURL } from "../pageEditor/context/connection";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 import { type Availability } from "@/types/availabilityTypes";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-jest.mock("../contentScript/messenger/api");
-jest.mock("../pageEditor/context/connection");
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/pageEditor/context/connection");
 
 const { reducer: modComponentReducer } = modComponentSlice;
 

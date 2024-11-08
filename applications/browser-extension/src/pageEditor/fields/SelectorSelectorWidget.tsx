@@ -18,16 +18,16 @@
 import styles from "./SelectorSelectorWidget.module.scss";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import notify from "../../utils/notify";
+import notify from "@/utils/notify";
 import { isEmpty, uniqBy } from "lodash";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import CreatableAutosuggest, {
   type SuggestionTypeBase,
-} from "./creatableAutosuggest/CreatableAutosuggest";
-import SelectorListItem from "./selectorListItem/SelectorListItem";
-import { type Framework } from "../../pageScript/messenger/constants";
+} from "@/pageEditor/fields/creatableAutosuggest/CreatableAutosuggest";
+import SelectorListItem from "@/pageEditor/fields/selectorListItem/SelectorListItem";
+import { type Framework } from "@/pageScript/messenger/constants";
 import { useField } from "formik";
 import {
   disableOverlay,
@@ -37,19 +37,19 @@ import {
 } from "@/contentScript/messenger/api";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
-import { type SettingsState } from "../../store/settings/settingsTypes";
-import { sortBySelector } from "../../utils/inference/selectorInference";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+import { sortBySelector } from "@/utils/inference/selectorInference";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { CancelError } from "@/errors/businessErrors";
-import { type Expression } from "../../types/runtimeTypes";
+import { type Expression } from "@/types/runtimeTypes";
 import {
   castTextLiteralOrThrow,
   isTextLiteralOrNull,
-} from "../../utils/expressionUtils";
+} from "@/utils/expressionUtils";
 import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
-import { type ElementInfo } from "../../utils/inference/selectorTypes";
-import { inspectedTab } from "../context/connection";
-import { type Nullishable } from "../../utils/nullishUtils";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;

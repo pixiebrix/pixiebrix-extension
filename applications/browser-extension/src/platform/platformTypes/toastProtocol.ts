@@ -16,7 +16,7 @@
  */
 
 import type { RequireAtLeastOne } from "type-fest";
-import type { Notification } from "../../utils/notificationTypes";
+import type { Notification } from "@/utils/notificationTypes";
 
 /**
  * Protocol for showing toasts to the user

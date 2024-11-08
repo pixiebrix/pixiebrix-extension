@@ -22,7 +22,7 @@ import { PropertyTableRenderer } from "./propertyTable";
 import { CustomFormRenderer } from "./customForm";
 import { TableRenderer } from "./table";
 import { DocumentRenderer } from "./document";
-import { type Brick } from "../../types/brickTypes";
+import { type Brick } from "@/types/brickTypes";
 
 function getAllRenderers(): Brick[] {
   return [

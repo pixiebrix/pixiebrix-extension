@@ -16,7 +16,7 @@
  */
 
 import React, { type ChangeEvent, useState, useMemo } from "react";
-import { type CustomFieldWidgetProps } from "../FieldTemplate";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import Select, {
   type GroupBase,
   type SelectComponentsConfig,
@@ -24,7 +24,7 @@ import Select, {
   type StylesConfig,
 } from "react-select";
 import Creatable from "react-select/creatable";
-import useAddCreatablePlaceholder from "./useAddCreatablePlaceholder";
+import useAddCreatablePlaceholder from "@/components/form/widgets/useAddCreatablePlaceholder";
 
 // Type of the Select options
 export type Option<TValue = string | null> = {

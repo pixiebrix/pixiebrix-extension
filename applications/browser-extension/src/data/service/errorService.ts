@@ -16,32 +16,35 @@
  */
 
 import { debounce } from "lodash";
-import { maybeGetLinkedApiClient } from "./apiClient";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import {
   hasSpecificErrorCause,
   selectSpecificError,
 } from "@/errors/errorHelpers";
-import { allowsTrack } from "../../telemetry/dnt";
-import { uuidv4 } from "../../types/helpers";
+import { allowsTrack } from "@/telemetry/dnt";
+import { uuidv4 } from "@/types/helpers";
 import { getUserData } from "@/auth/authStorage";
-import { isAppRequestError, selectAxiosError } from "./requestErrorUtils";
-import { type ErrorItem } from "../../types/contract";
-import { expectContext } from "../../utils/expectContext";
+import {
+  isAppRequestError,
+  selectAxiosError,
+} from "@/data/service/requestErrorUtils";
+import { type ErrorItem } from "@/types/contract";
+import { expectContext } from "@/utils/expectContext";
 import {
   BusinessError,
   CancelError,
   RequestSupersededError,
 } from "@/errors/businessErrors";
-import { type SerializedError } from "../../types/messengerTypes";
-import { type SemVerString } from "../../types/registryTypes";
-import { type MessageContext } from "../../types/loggerTypes";
-import { isObject } from "../../utils/objectUtils";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type SemVerString } from "@/types/registryTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { isObject } from "@/utils/objectUtils";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { selectAbsoluteUrl } from "../../utils/urlUtils";
-import { getExtensionVersion } from "../../utils/extensionUtils";
-import { nowTimestamp } from "../../utils/timeUtils";
+import { selectAbsoluteUrl } from "@/utils/urlUtils";
+import { getExtensionVersion } from "@/utils/extensionUtils";
+import { nowTimestamp } from "@/utils/timeUtils";
 import { FeatureFlags, OrganizationFlags } from "@/auth/featureFlags";
-import { API_PATHS } from "./urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

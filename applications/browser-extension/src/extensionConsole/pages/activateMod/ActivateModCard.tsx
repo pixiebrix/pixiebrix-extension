@@ -30,20 +30,20 @@ import useMilestones from "@/hooks/useMilestones";
 import Form, { type OnSubmit, type RenderBody } from "@/components/form/Form";
 import { type WizardValues } from "@/activation/wizardTypes";
 import Alert from "@/components/Alert";
-import notify from "../../../utils/notify";
-import modsPageSlice from "../mods/modsPageSlice";
-import { MODS_PAGE_TABS } from "../mods/ModsPageSidebar";
+import notify from "@/utils/notify";
+import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
+import { MODS_PAGE_TABS } from "@/extensionConsole/pages/mods/ModsPageSidebar";
 import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 import Markdown from "@/components/Markdown";
-import { getModActivationInstructions } from "../../../utils/modUtils";
-import { type ModDefinition } from "../../../types/modDefinitionTypes";
-import { isInternalRegistryId } from "../../../utils/registryUtils";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { getModActivationInstructions } from "@/utils/modUtils";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { isInternalRegistryId } from "@/utils/registryUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { Milestones } from "@/data/model/UserMilestone";
 import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
-import castError from "../../../utils/castError";
+import castError from "@/utils/castError";
 import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 
 const WizardHeader: React.VoidFunctionComponent<{

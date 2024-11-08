@@ -18,11 +18,11 @@
 import {
   formStateFactory,
   triggerFormStateFactory,
-} from "../../../testUtils/factories/pageEditorFactories";
+} from "@/testUtils/factories/pageEditorFactories";
 import CustomEventEffect from "@/bricks/effects/customEvent";
-import CollectEventNamesVisitor from "./collectEventNamesVisitor";
+import CollectEventNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
 
-import { toExpression } from "../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("collectEventNamesAnalysis", () => {
   it("collects event name from literal", () => {

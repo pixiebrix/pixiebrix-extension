@@ -17,24 +17,24 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
-import modComponentSlice from "../store/modComponents/modComponentSlice";
-import integrationsSlice from "../integrations/store/integrationsSlice";
-import settingsSlice from "../store/settings/settingsSlice";
-import { editorSlice } from "./store/editor/editorSlice";
-import sessionSlice from "./store/session/sessionSlice";
-import runtimeSlice from "./store/runtime/runtimeSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import settingsSlice from "@/store/settings/settingsSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import sessionSlice from "@/pageEditor/store/session/sessionSlice";
+import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import { logSlice } from "@/components/logViewer/logSlice";
 import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
-} from "../testUtils/testHelpers";
+} from "@/testUtils/testHelpers";
 import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./store/analysisManager";
-import { tabStateSlice } from "./store/tabState/tabStateSlice";
+import { tabStateSlice } from "@/pageEditor/store/tabState/tabStateSlice";
 import { appApi } from "@/data/service/api";
-import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
-import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";
-import editorInvariantMiddleware from "./store/editor/editorInvariantMiddleware";
+import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
+import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
+import editorInvariantMiddleware from "@/pageEditor/store/editor/editorInvariantMiddleware";
 
 const configureStoreForTests = () =>
   configureStore({
@@ -71,5 +71,4 @@ export * from "@testing-library/react";
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
 export { renderHookWithWrappers as renderHook };
-export { act as hookAct } from "@testing-library/react-hooks";
 export { userEvent } from "@testing-library/user-event";

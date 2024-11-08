@@ -17,15 +17,15 @@
 
 /// <reference types="@types/dom-chromium-ai" />
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { validateRegistryId } from "../../../types/helpers";
-import { propertiesToSchema } from "../../../utils/schemaUtils";
-import { type PlatformCapability } from "../../../platform/capabilities";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type PlatformCapability } from "@/platform/capabilities";
 import {
   assertAiCapabilities,
   throwIfBusinessError,
-} from "./domAiHelpers";
+} from "@/bricks/transformers/ai/domAiHelpers";
 
 // Copied from @types/dom-chromium-ai because they're not exported
 type AISummarizerType = "tl;dr" | "key-points" | "teaser" | "headline";

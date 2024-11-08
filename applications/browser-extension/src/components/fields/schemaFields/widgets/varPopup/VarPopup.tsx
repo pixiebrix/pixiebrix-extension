@@ -16,16 +16,16 @@
  */
 
 import React, { useCallback, useEffect } from "react";
-import { type FieldInputMode } from "../../fieldInputMode";
+import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import {
   getFullVariableName,
   replaceLikelyVariable,
 } from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
 import fitTextarea from "fit-textarea";
-import useAttachPopup from "./useAttachPopup";
-import reportEvent from "../../../../../telemetry/reportEvent";
-import { Events } from "../../../../../telemetry/events";
+import useAttachPopup from "@/components/fields/schemaFields/widgets/varPopup/useAttachPopup";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 type VarPopupProps = {
   /**

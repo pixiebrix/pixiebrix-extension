@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UUID } from "../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import {
   type ControlRoom,
   transformControlRoomResponse,
-} from "./ControlRoom";
+} from "@/data/model/ControlRoom";
 import {
   type TeamTheme,
   transformTeamThemeResponse,
-} from "./TeamTheme";
-import { type components } from "../../types/swagger";
-import { validateUUID } from "../../types/helpers";
+} from "@/data/model/TeamTheme";
+import { type components } from "@/types/swagger";
+import { validateUUID } from "@/types/helpers";
 import { type SetRequired } from "type-fest";
 
 export type MeTeam = {

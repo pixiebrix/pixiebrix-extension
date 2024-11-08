@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AddQuickBarAction from "./AddQuickBarAction";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import AddQuickBarAction from "@/bricks/effects/AddQuickBarAction";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import {
   brickOptionsFactory,
   runMetadataFactory,
-} from "../../testUtils/factories/runtimeFactories";
-import { platformMock } from "../../testUtils/platformMock";
-import { modComponentRefFactory } from "../../testUtils/factories/modComponentFactories";
+} from "@/testUtils/factories/runtimeFactories";
+import { platformMock } from "@/testUtils/platformMock";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 const brick = new AddQuickBarAction();
 

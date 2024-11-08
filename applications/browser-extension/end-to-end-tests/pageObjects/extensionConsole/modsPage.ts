@@ -18,8 +18,8 @@
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "../constants";
 import { BasePageObject } from "../basePageObject";
-import { validateRegistryId } from "../../../src/types/helpers";
-import { API_PATHS, UI_PATHS } from "../../../src/data/service/urlPaths";
+import { validateRegistryId } from "@/types/helpers";
+import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 import { DEFAULT_TIMEOUT } from "../../../playwright.config";
 
 export class ModTableItem extends BasePageObject {

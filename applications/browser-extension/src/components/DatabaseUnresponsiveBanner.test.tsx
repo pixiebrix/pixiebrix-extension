@@ -18,11 +18,11 @@
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
 import { act, screen } from "@testing-library/react";
-import { count } from "../registry/packageRegistry";
-import DatabaseUnresponsiveBanner from "./DatabaseUnresponsiveBanner";
+import { count } from "@/registry/packageRegistry";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import pDefer from "p-defer";
 
-jest.mock("../registry/packageRegistry");
+jest.mock("@/registry/packageRegistry");
 
 beforeEach(async () => {
   jest.useFakeTimers();

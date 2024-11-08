@@ -20,7 +20,7 @@ import {
   mapObject,
   isUnknownObjectArray,
   assertObject,
-} from "./objectUtils";
+} from "@/utils/objectUtils";
 import { BusinessError } from "@/errors/businessErrors";
 
 describe("removeUndefined", () => {

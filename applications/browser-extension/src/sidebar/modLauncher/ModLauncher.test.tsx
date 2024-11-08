@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
-import ModLauncher from "./ModLauncher";
+import { render } from "@/sidebar/testHelpers";
+import ModLauncher from "@/sidebar/modLauncher/ModLauncher";
 import { screen } from "@testing-library/react";
-import sidebarSlice from "../../store/sidebar/sidebarSlice";
-import { sidebarEntryFactory } from "../../testUtils/factories/sidebarEntryFactories";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
+import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
-import { mockAllApiEndpoints } from "../../testUtils/appApiMock";
+import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
 mockAllApiEndpoints();
 

@@ -18,7 +18,7 @@
 import React from "react";
 import { useField } from "formik";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { type SchemaFieldProps } from "../propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useAsyncEffect from "use-async-effect";
 
 const BooleanWidget: React.FC<SchemaFieldProps> = ({ name, focusInput }) => {

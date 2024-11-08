@@ -15,16 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readManagedStorage } from "../store/enterprise/managedStorage";
-import { expectContext } from "../utils/expectContext";
-import { getThemeLogo, isValidThemeName, type ThemeAssets } from "./themeUtils";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import { expectContext } from "@/utils/expectContext";
+import {
+  getThemeLogo,
+  isValidThemeName,
+  type ThemeAssets,
+} from "@/themes/themeUtils";
 import { isUUID } from "@/types/helpers";
 import { getApiClient } from "@/data/service/apiClient";
-import reportError from "../telemetry/reportError";
-import { DEFAULT_THEME } from "./themeTypes";
-import { getSettingsState } from "../store/settings/settingsStorage";
+import reportError from "@/telemetry/reportError";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { components } from "@/types/swagger";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { getMe } from "@/data/service/backgroundApi";
 import { API_PATHS } from "@/data/service/urlPaths";
 

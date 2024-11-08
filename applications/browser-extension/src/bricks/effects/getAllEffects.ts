@@ -30,7 +30,7 @@ import { HideEffect } from "./hide";
 import { ExportCsv } from "./exportCsv";
 import { HideSidebar, ShowSidebar, ToggleSidebar } from "./sidebarEffects";
 import CancelEffect from "./CancelEffect";
-import CancelEphemeralElements from "./CancelEphemeralElements";
+import CancelEphemeralElements from "@/bricks/effects/CancelEphemeralElements";
 import { ErrorEffect } from "./error";
 import { ShowEffect } from "./show";
 import { ConfettiEffect } from "./confetti";
@@ -40,28 +40,28 @@ import { ReactivateEffect } from "./reactivate";
 import { SoundEffect } from "./sound";
 import { DisableEffect } from "./disable";
 import { EnableEffect } from "./enable";
-import InsertHtml from "./insertHtml";
-import CustomEventEffect from "./customEvent";
-import ReplaceTextEffect from "./replaceText";
-import HighlightText from "./highlightText";
-import ScrollIntoViewEffect from "./scrollIntoView";
-import AddQuickBarAction from "./AddQuickBarAction";
-import ToggleQuickbarEffect from "./ToggleQuickbarEffect";
-import SubmitPanelEffect from "./submitPanel";
-import { type Brick } from "../../types/brickTypes";
-import PostMessageEffect from "./postMessage";
-import AssignModVariable from "./assignModVariable";
-import CommentEffect from "./comment";
-import SetToolbarBadge from "./setToolbarBadge";
-import InsertAtCursorEffect from "./InsertAtCursorEffect";
-import AddDynamicTextSnippet from "./AddDynamicTextSnippet";
-import AddTextSnippets from "./AddTextSnippets";
-import ExportFileEffect from "./exportFileEffect";
+import InsertHtml from "@/bricks/effects/insertHtml";
+import CustomEventEffect from "@/bricks/effects/customEvent";
+import ReplaceTextEffect from "@/bricks/effects/replaceText";
+import HighlightText from "@/bricks/effects/highlightText";
+import ScrollIntoViewEffect from "@/bricks/effects/scrollIntoView";
+import AddQuickBarAction from "@/bricks/effects/AddQuickBarAction";
+import ToggleQuickbarEffect from "@/bricks/effects/ToggleQuickbarEffect";
+import SubmitPanelEffect from "@/bricks/effects/submitPanel";
+import { type Brick } from "@/types/brickTypes";
+import PostMessageEffect from "@/bricks/effects/postMessage";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
+import CommentEffect from "@/bricks/effects/comment";
+import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
+import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
+import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
+import ExportFileEffect from "@/bricks/effects/exportFileEffect";
 import {
   StartCaptureAudioEffect,
   StopCaptureAudioEffect,
-} from "./captureAudio";
-import TelemetryEffect from "./TelemetryEffect";
+} from "@/bricks/effects/captureAudio";
+import TelemetryEffect from "@/bricks/effects/TelemetryEffect";
 
 function getAllEffects(): Brick[] {
   return [

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import DatabaseOptions, {
   type DatabaseGetPutOptionsProps,
 } from "./DatabaseOptions";

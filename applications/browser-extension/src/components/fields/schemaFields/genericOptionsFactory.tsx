@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { type Schema, type UiSchema } from "../../../types/schemaTypes";
+import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { isEmpty } from "lodash";
-import SchemaField from "./SchemaField";
-import { sortedFields } from "./schemaFieldUtils";
-import { joinName } from "../../../utils/formUtils";
-import { inputProperties } from "../../../utils/schemaUtils";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
+import { joinName } from "@/utils/formUtils";
+import { inputProperties } from "@/utils/schemaUtils";
 
 export type BrickOptionProps = {
   /**

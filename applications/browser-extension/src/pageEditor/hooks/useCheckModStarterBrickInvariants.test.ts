@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
   starterBrickDefinitionFactory,
-} from "../../testUtils/factories/modDefinitionFactories";
+} from "@/testUtils/factories/modDefinitionFactories";
 import {
   type ModComponentDefinition,
   type ModDefinition,
-} from "../../types/modDefinitionTypes";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+} from "@/types/modDefinitionTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
-import { modComponentToFormState } from "../starterBricks/adapter";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
-import { renderHook } from "../testHelpers";
-import useCheckModStarterBrickInvariants from "./useCheckModStarterBrickInvariants";
-import { actions as modComponentActions } from "../../store/modComponents/modComponentSlice";
-import { actions as editorActions } from "../store/editor/editorSlice";
+import { renderHook } from "@/pageEditor/testHelpers";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import {
   type InnerDefinitionRef,
   type InnerDefinitions,
   DefinitionKinds,
-} from "../../types/registryTypes";
+} from "@/types/registryTypes";
 
 let starterBrickCount = 0;
 function newStarterBrickId(): InnerDefinitionRef {

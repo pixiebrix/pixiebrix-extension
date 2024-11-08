@@ -19,7 +19,7 @@ import { expect, test } from "../../fixtures/testBase";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 import { ActivateModPage } from "../../pageObjects/extensionConsole/modsPage";
-import { type PageEditorPage } from "../../pageObjects/pageEditor/pageEditorPage";
+import { type PageEditorPage } from "end-to-end-tests/pageObjects/pageEditor/pageEditorPage";
 import { type ModListItem } from "../../pageObjects/pageEditor/modListingPanel";
 
 const testModDefinitionName = "brick-actions";

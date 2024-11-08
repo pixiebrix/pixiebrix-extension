@@ -17,18 +17,18 @@
 
 import React from "react";
 import { type Except, type JsonObject } from "type-fest";
-import { validateRegistryId } from "../../types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import { isEmpty, isPlainObject, set } from "lodash";
-import { getConnectedTarget } from "../../sidebar/connectedTarget";
-import { type UUID } from "../../types/stringTypes";
-import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { type UUID } from "@/types/stringTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
   type Schema,
   SCHEMA_ALLOW_ANY,
   type UiSchema,
-} from "../../types/schemaTypes";
+} from "@/types/schemaTypes";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -44,14 +44,14 @@ import { isExpression } from "@/utils/expressionUtils";
 import { getPlatform } from "@/platform/platformContext";
 import IsolatedComponent from "@/components/IsolatedComponent";
 import { type CustomFormComponentProps } from "./CustomFormComponent";
-import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "../../integrations/constants";
-import { assumeNotNullish_UNSAFE } from "../../utils/nullishUtils";
-import { type ModComponentRef } from "../../types/modComponentTypes";
+import { PIXIEBRIX_INTEGRATION_FIELD_SCHEMA } from "@/integrations/constants";
+import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
+import { type ModComponentRef } from "@/types/modComponentTypes";
 import {
   MergeStrategies,
   type StateNamespace,
   StateNamespaces,
-} from "../../platform/state/stateTypes";
+} from "@/platform/state/stateTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 
 interface DatabaseResult {

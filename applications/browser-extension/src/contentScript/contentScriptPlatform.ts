@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PlatformProtocol } from "../platform/platformProtocol";
-import { hideNotification, showNotification } from "../utils/notify";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { hideNotification, showNotification } from "@/utils/notify";
 import {
   clearModComponentDebugLogs,
   ensureContextMenu,
@@ -27,44 +27,54 @@ import {
   traces,
   uninstallContextMenu,
 } from "@/background/messenger/api";
-import { getState, setState } from "./stateController/stateController";
+import {
+  getState,
+  setState,
+} from "@/contentScript/stateController/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
-import { expectContext } from "../utils/expectContext";
-import type { PlatformCapability } from "../platform/capabilities";
-import { getReferenceForElement } from "./elementReference";
-import { ephemeralForm } from "./ephemeralForm";
-import { ephemeralPanel } from "./ephemeralPanel";
+import { expectContext } from "@/utils/expectContext";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { getReferenceForElement } from "@/contentScript/elementReference";
+import { ephemeralForm } from "@/contentScript/ephemeralForm";
+import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
 import type { ElementReference } from "@/types/runtimeTypes";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
   runUserJs,
   validateNunjucksTemplate,
-} from "../sandbox/messenger/api";
+} from "@/sandbox/messenger/api";
 import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
-import { registerHandler } from "./contextMenus";
-import { writeToClipboard } from "../utils/clipboardUtils";
-import { snippetRegistry } from "./snippetShortcutMenu/snippetShortcutMenuController";
-import BackgroundLogger from "../telemetry/BackgroundLogger";
-import * as sidebarController from "./sidebarController";
+import { registerHandler } from "@/contentScript/contextMenus";
+import { writeToClipboard } from "@/utils/clipboardUtils";
+import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import * as sidebarController from "@/contentScript/sidebarController";
 import type { UUID } from "@/types/stringTypes";
-import { PlatformBase } from "../platform/platformBase";
-import type { SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import { PlatformBase } from "@/platform/platformBase";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
-import { deferLogin } from "./integrations/deferredLoginController";
-import { selectionMenuActionRegistry } from "./textSelectionMenu/selectionMenuController";
-import { getExtensionVersion } from "../utils/extensionUtils";
-import { registerModVariables } from "./stateController/modVariablePolicyController";
-import type { ContentScriptPlatformProtocol } from "./platform/contentScriptPlatformProtocol";
+import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
+import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import { getExtensionVersion } from "@/utils/extensionUtils";
+import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
+import type { ContentScriptPlatformProtocol } from "@/contentScript/platform/contentScriptPlatformProtocol";
+import brickRegistry from "@/bricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 
 /**
  * @file Platform definition for mods running in a content script
  * @see PlatformProtocol
  */
+
+expectContext(
+  "contentScript",
+  "contentScriptPlatform imported directly/indirectly from another context",
+);
 
 async function playSound(sound: string): Promise<void> {
   const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));
@@ -76,7 +86,7 @@ async function userSelectElementRefs(): Promise<ElementReference[]> {
   // The picker uses `bootstrap-switch-button`, which does a `window` check on load and breaks
   // the MV3 background worker. Lazy-loading it keeps the background worker from breaking.
   const { userSelectElement } = await import(
-    /* webpackChunkName: "editorContentScript" */ "./pageEditor/elementPicker"
+    /* webpackChunkName: "editorContentScript" */ "@/contentScript/pageEditor/elementPicker"
   );
 
   const { elements } = await userSelectElement();
@@ -97,6 +107,7 @@ class ContentScriptPlatform
   }
 
   override capabilities: PlatformCapability[] = [
+    "registry",
     "dom",
     "pageScript",
     "contentScript",
@@ -163,6 +174,13 @@ class ContentScriptPlatform
   override form = ephemeralForm;
 
   override runSandboxedJavascript = runUserJs;
+
+  override get registry(): PlatformProtocol["registry"] {
+    return {
+      bricks: brickRegistry,
+      starterBricks: starterBrickRegistry,
+    };
+  }
 
   override get templates(): PlatformProtocol["templates"] {
     return {

@@ -29,11 +29,11 @@ import {
   toErrorResponse,
   isErrorResponse,
   type RemoteProcedureCallRequest,
-} from "../utils/legacyMessengerUtils";
-import { RuntimeNotFoundError } from "../utils/extensionUtils";
-import { getChromeExtensionId } from "../store/browserExtensionIdStorage";
+} from "@/utils/legacyMessengerUtils";
+import { RuntimeNotFoundError } from "@/utils/extensionUtils";
+import { getChromeExtensionId } from "@/store/browserExtensionIdStorage";
 import { type SerializableResponse } from "@/types/messengerTypes";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 

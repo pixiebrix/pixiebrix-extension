@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { render } from "./testHelpers";
-import FormBody from "./FormBody";
-import { waitForEffect } from "../testUtils/testHelpers";
-import { formEntryFactory } from "../testUtils/factories/sidebarEntryFactories";
+import { render } from "@/sidebar/testHelpers";
+import FormBody from "@/sidebar/FormBody";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { formEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
-jest.mock("../contentScript/ephemeralForm", () => ({
+jest.mock("@/contentScript/ephemeralForm", () => ({
   createFrameSource: jest.fn(() => new URL("https://www.testUrl.com")),
 }));
 

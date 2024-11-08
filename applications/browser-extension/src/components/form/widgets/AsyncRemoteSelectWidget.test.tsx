@@ -17,13 +17,13 @@
 
 import selectEvent from "react-select-event";
 import React from "react";
-import AsyncRemoteSelectWidget from "./AsyncRemoteSelectWidget";
-import { waitForEffect } from "../../../testUtils/testHelpers";
+import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelectWidget";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
-import { sleep } from "../../../utils/timeUtils";
-import { render, screen } from "../../../pageEditor/testHelpers";
-import ConnectedFieldTemplate from "../ConnectedFieldTemplate";
+import { sleep } from "@/utils/timeUtils";
+import { render, screen } from "@/pageEditor/testHelpers";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 jest.mock("use-debounce", () => ({
   useDebouncedCallback: jest.fn((fn) => fn),

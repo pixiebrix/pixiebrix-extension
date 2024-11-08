@@ -15,37 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useBuildAndValidateMod from "./useBuildAndValidateMod";
+import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import {
   internalStarterBrickMetaFactory,
   lookupStarterBrick,
-} from "../starterBricks/base";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import { hookAct, renderHook } from "../testHelpers";
+} from "@/pageEditor/starterBricks/base";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { renderHook } from "@/pageEditor/testHelpers";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
-} from "../../starterBricks/types";
+} from "@/starterBricks/types";
 import modComponentSlice, {
   actions as modComponentActions,
-} from "../../store/modComponents/modComponentSlice";
+} from "@/store/modComponents/modComponentSlice";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
   versionedModDefinitionWithHydratedModComponents,
-} from "../../testUtils/factories/modDefinitionFactories";
-import { type UnsavedModDefinition } from "../../types/modDefinitionTypes";
+} from "@/testUtils/factories/modDefinitionFactories";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import produce from "immer";
-import { type ModComponentState } from "../../store/modComponents/modComponentTypes";
-import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { array } from "cooky-cutter";
-import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
-import { actions as editorActions } from "../store/editor/editorSlice";
-import { normalizeModDefinition } from "../../utils/modUtils";
-import { DefinitionKinds } from "../../types/registryTypes";
-import { adapter } from "../starterBricks/adapter";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { normalizeModDefinition } from "@/utils/modUtils";
+import { DefinitionKinds } from "@/types/registryTypes";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { act } from "@testing-library/react";
 
-jest.mock("../starterBricks/base", () => ({
+jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
   lookupStarterBrick: jest.fn(),
 }));
@@ -145,7 +146,7 @@ describe("useBuildAndValidateMod", () => {
         },
       });
 
-      await hookAct(async () => {
+      await act(async () => {
         const actualModDefinition = await result.current.buildAndValidateMod({
           sourceModDefinition: modDefinition,
           draftModComponents: [
@@ -205,7 +206,7 @@ describe("useBuildAndValidateMod", () => {
 
     const state = getReduxStore().getState().options as ModComponentState;
 
-    await hookAct(async () => {
+    await act(async () => {
       await expect(
         result.current.buildAndValidateMod({
           sourceModDefinition: activatedModDefinition,

@@ -24,11 +24,11 @@ import {
   type SidebarEntry,
   type StaticPanelEntry,
   type TemporaryPanelEntry,
-} from "../../types/sidebarTypes";
-import { validateRegistryId } from "../../types/helpers";
-import { uuidSequence } from "./stringFactories";
-import { type FormDefinition } from "../../platform/forms/formTypes";
-import { modComponentRefFactory } from "./modComponentFactories";
+} from "@/types/sidebarTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { type FormDefinition } from "@/platform/forms/formTypes";
+import { modComponentRefFactory } from "@/testUtils/factories/modComponentFactories";
 
 const activateModPanelEntryFactory = define<ModActivationPanelEntry>({
   type: "activateMods",

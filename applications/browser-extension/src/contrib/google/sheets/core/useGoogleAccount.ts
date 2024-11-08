@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import { type FetchableAsyncState } from "../../../../types/sliceTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import { useContext, useEffect } from "react";
-import ModIntegrationsContext from "../../../../mods/ModIntegrationsContext";
-import { validateRegistryId } from "../../../../types/helpers";
-import reportError from "../../../../telemetry/reportError";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
+import { validateRegistryId } from "@/types/helpers";
+import reportError from "@/telemetry/reportError";
 import { oauth2Storage } from "@/auth/authConstants";
 import { isEmpty } from "lodash";
 

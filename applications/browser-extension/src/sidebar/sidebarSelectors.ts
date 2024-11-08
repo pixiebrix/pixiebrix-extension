@@ -20,11 +20,11 @@ import {
   type SidebarRootState,
 } from "@/types/sidebarTypes";
 import { isEmpty, memoize } from "lodash";
-import { eventKeyForEntry } from "../store/sidebar/eventKeyUtils";
-import { getVisiblePanelCount } from "../store/sidebar/sidebarUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
+import { getVisiblePanelCount } from "@/store/sidebar/sidebarUtils";
 import { createSelector } from "@reduxjs/toolkit";
-import { type Nullishable } from "../utils/nullishUtils";
-import { selectActivatedModComponentsMap } from "../store/modComponents/modComponentSelectors";
+import { type Nullishable } from "@/utils/nullishUtils";
+import { selectActivatedModComponentsMap } from "@/store/modComponents/modComponentSelectors";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&

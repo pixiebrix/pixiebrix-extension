@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { render } from "../testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import MatchRulesSection from "./MatchRulesSection";
+import MatchRulesSection from "@/pageEditor/tabs/MatchRulesSection";
 import { set } from "lodash";
 
 beforeEach(() => {

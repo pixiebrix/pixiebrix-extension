@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import setToolbarIconFromTheme from "./setToolbarIconFromTheme";
+import setToolbarIconFromTheme from "@/background/setToolbarIconFromTheme";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { browserAction } from "../mv3/api";
+import { browserAction } from "@/mv3/api";
 
-jest.mock("../mv3/api", () => ({
+jest.mock("@/mv3/api", () => ({
   browserAction: {
     setIcon: jest.fn(),
   },

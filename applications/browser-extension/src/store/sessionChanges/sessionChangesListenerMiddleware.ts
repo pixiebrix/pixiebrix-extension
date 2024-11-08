@@ -16,10 +16,10 @@
  */
 
 import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
-import { type SessionRootState } from "../../pageEditor/store/session/sessionSliceTypes";
-import { sessionChangesActions } from "./sessionChangesSlice";
-import { actions as editorActions } from "../../pageEditor/store/editor/editorSlice";
-import { actions as modComponentActions } from "../modComponents/modComponentSlice";
+import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
+import { sessionChangesActions } from "@/store/sessionChanges/sessionChangesSlice";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { actions as modComponentActions } from "@/store/modComponents/modComponentSlice";
 
 const sessionChangesListenerMiddleware = createListenerMiddleware();
 sessionChangesListenerMiddleware.startListening({

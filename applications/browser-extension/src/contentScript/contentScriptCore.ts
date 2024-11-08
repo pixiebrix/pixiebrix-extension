@@ -25,7 +25,6 @@ import registerExternalMessenger from "@/background/messenger/external/registrat
 import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBricks from "@/contrib/registerContribBricks";
-import brickRegistry from "@/bricks/registry";
 import { initNavigation } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { initToaster } from "@/utils/notify";
@@ -38,7 +37,6 @@ import { onUncaughtError } from "@/errors/errorHelpers";
 import initFloatingActions from "@/components/floatingActions/initFloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
-import { initRuntime } from "@/runtime/reducePipeline";
 import { setPlatform } from "@/platform/platformContext";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
@@ -76,9 +74,6 @@ export async function init(): Promise<void> {
   registerBuiltinBricks();
   registerContribBricks();
   markDocumentAsFocusableByUser();
-  // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
-  // Since 1.8.10, we inject the platform into the runtime
-  initRuntime(brickRegistry);
   initDeferredLoginController();
 
   initTelemetry();

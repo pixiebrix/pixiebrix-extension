@@ -32,22 +32,19 @@ import {
 import {
   modComponentRefFactory,
   modMetadataFactory,
-} from "../../testUtils/factories/modComponentFactories";
+} from "@/testUtils/factories/modComponentFactories";
 import brickRegistry from "@/bricks/registry";
-import { sleep } from "../../utils/timeUtils";
-import { getPlatform } from "../../platform/platformContext";
+import { sleep } from "@/utils/timeUtils";
+import { getPlatform } from "@/platform/platformContext";
 import {
   type SidebarConfig,
   type SidebarDefinition,
   SidebarTriggers,
-} from "./sidebarStarterBrickTypes";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import {
-  MergeStrategies,
-  StateNamespaces,
-} from "../../platform/state/stateTypes";
+} from "@/starterBricks/sidebar/sidebarStarterBrickTypes";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
+import { MergeStrategies, StateNamespaces } from "@/platform/state/stateTypes";
 
-jest.mock("../../contentScript/sidebarController", () => ({
+jest.mock("@/contentScript/sidebarController", () => ({
   ...jest.requireActual("@/contentScript/sidebarController"),
   isSidePanelOpen: jest.fn(),
 }));

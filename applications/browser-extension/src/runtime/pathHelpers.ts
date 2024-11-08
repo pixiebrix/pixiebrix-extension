@@ -17,8 +17,8 @@
 
 import { identity, toPath, trimEnd } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { cleanValue, isObject } from "../utils/objectUtils";
-import { joinName } from "../utils/formUtils";
+import { cleanValue, isObject } from "@/utils/objectUtils";
+import { joinName } from "@/utils/formUtils";
 
 // First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;

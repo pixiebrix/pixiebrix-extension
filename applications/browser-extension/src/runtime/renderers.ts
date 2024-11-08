@@ -18,12 +18,12 @@
 import { type TemplateEngine } from "@/types/runtimeTypes";
 import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
-import { getPropByPath } from "./pathHelpers";
+import { getPropByPath } from "@/runtime/pathHelpers";
 import { type JsonObject } from "type-fest";
-import { containsTemplateExpression } from "../utils/expressionUtils";
+import { containsTemplateExpression } from "@/utils/expressionUtils";
 // XXX: should this be using the platform from reducePipeline?
-import { getPlatform } from "../platform/platformContext";
-import { assertNotNullish, type Nullishable } from "../utils/nullishUtils";
+import { getPlatform } from "@/platform/platformContext";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 
 export type AsyncTemplateRenderer = (
   template: Nullishable<string>,

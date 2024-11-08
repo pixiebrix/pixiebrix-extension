@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { lastFocusedTarget } from "../utils/focusTracker";
+import { lastFocusedTarget } from "@/utils/focusTracker";
 import {
   type Sender,
   type Target,
   type PageTarget,
   getMethod,
 } from "webext-messenger";
-import { type ClipboardText } from "../utils/clipboardUtils";
+import { type ClipboardText } from "@/utils/clipboardUtils";
 
 // `WRITE_TO_CLIPBOARD` can be handled by multiple contexts, that's why it's here and not in their /api.ts files
 const writeToClipboardInTarget = getMethod("WRITE_TO_CLIPBOARD");

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PromiseCancelled } from "./genericErrors";
-import castError from "../utils/castError";
+import { PromiseCancelled } from "@/errors/genericErrors";
+import castError from "@/utils/castError";
 
 /**
  * Creates a new promise that's rejected if isCancelled returns true.

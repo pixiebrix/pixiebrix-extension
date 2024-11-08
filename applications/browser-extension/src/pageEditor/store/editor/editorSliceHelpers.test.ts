@@ -15,30 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorState } from "./pageEditorTypes";
-import {
-  editorSlice,
-  initialState,
-} from "./editorSlice";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
 import {
   FOUNDATION_NODE_ID,
   makeInitialBrickPipelineUIState,
   makeInitialBrickConfigurationUIState,
-} from "./uiState";
-import { getPipelineMap } from "../../tabs/editTab/editHelpers";
+} from "@/pageEditor/store/editor/uiState";
+import { getPipelineMap } from "@/pageEditor/tabs/editTab/editHelpers";
 import {
   ensureBrickPipelineUIState,
   ensureBrickConfigurationUIState,
   markModComponentFormStateAsDeleted,
   setActiveNodeId,
   syncBrickConfigurationUIStates,
-} from "./editorSliceHelpers";
+} from "@/pageEditor/store/editor/editorSliceHelpers";
 import { produce } from "immer";
 import {
   type BrickPipelineUIState,
   type BrickConfigurationUIState,
-} from "./uiStateTypes";
-import { uuidv4 } from "../../../types/helpers";
+} from "@/pageEditor/store/editor/uiStateTypes";
+import { uuidv4 } from "@/types/helpers";
 import {
   selectActiveModComponentId,
   selectActiveNodeId,
@@ -48,9 +45,10 @@ import {
   selectDirtyModOptionsDefinitionForModId,
   selectModComponentFormStates,
   selectExpandedModId,
-} from "./editorSelectors";
-import { modMetadataFactory } from "../../../testUtils/factories/modComponentFactories";
-import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { initialState } from "@/store/editorInitialState";
 
 describe("ensureBrickPipelineUIState", () => {
   test("does not affect existing ui state", () => {
@@ -264,7 +262,7 @@ describe("setActiveNodeId", () => {
   });
 });
 
-jest.mock("../../../telemetry/trace");
+jest.mock("@/telemetry/trace");
 
 describe("removeModComponentFormState", () => {
   test("removes active formState and clears all associated data", () => {

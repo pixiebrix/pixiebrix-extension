@@ -16,9 +16,9 @@
  */
 
 import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
-import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type OptionalOptionsFactory<T = unknown> = (
   config: Nullishable<SanitizedIntegrationConfig>,

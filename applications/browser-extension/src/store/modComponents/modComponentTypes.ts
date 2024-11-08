@@ -20,7 +20,7 @@ import {
   type ActivatedModComponentV2,
   type ActivatedModComponentV4,
   type SerializedModComponentV1,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 
 /**
  * @deprecated - Do not use versioned state types directly

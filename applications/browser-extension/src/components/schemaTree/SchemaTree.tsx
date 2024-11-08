@@ -18,7 +18,7 @@
 import styles from "./SchemaTree.module.scss";
 
 import React, { useMemo } from "react";
-import { DESCRIPTION_ALLOWED_TAGS, type Schema } from "../../types/schemaTypes";
+import { DESCRIPTION_ALLOWED_TAGS, type Schema } from "@/types/schemaTypes";
 import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import {
@@ -34,8 +34,8 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { isIntegrationDependencyField } from "../fields/schemaFields/fieldTypeCheckers";
-import MarkdownInline from "../MarkdownInline";
+import { isIntegrationDependencyField } from "@/components/fields/schemaFields/fieldTypeCheckers";
+import MarkdownInline from "@/components/MarkdownInline";
 
 type SchemaTreeRow = {
   name: string;

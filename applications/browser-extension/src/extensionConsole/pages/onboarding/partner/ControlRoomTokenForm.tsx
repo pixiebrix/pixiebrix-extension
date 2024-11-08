@@ -17,10 +17,10 @@
 
 import * as Yup from "yup";
 import React, { useContext } from "react";
-import integrationsSlice from "../../../../integrations/store/integrationsSlice";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { uuidv4 } from "../../../../types/helpers";
-import notify from "../../../../utils/notify";
+import { uuidv4 } from "@/types/helpers";
+import notify from "@/utils/notify";
 import { integrationConfigLocator } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
@@ -29,16 +29,16 @@ import Form, {
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
-import { normalizeControlRoomUrl } from "./partnerOnboardingUtils";
-import { selectIntegrationConfigs } from "../../../../integrations/store/integrationsSelectors";
-import { selectSettings } from "../../../../store/settings/settingsSelectors";
+import { normalizeControlRoomUrl } from "@/extensionConsole/pages/onboarding/partner/partnerOnboardingUtils";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
+import { selectSettings } from "@/store/settings/settingsSelectors";
 import { isEmpty } from "lodash";
-import ReduxPersistenceContext from "../../../../store/ReduxPersistenceContext";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import {
   type IntegrationConfig,
   type SecretsConfig,
-} from "../../../../integrations/integrationTypes";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "../../../../integrations/constants";
+} from "@/integrations/integrationTypes";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
 type ControlRoomConfiguration = {
   controlRoomUrl: string;

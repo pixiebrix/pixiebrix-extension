@@ -18,7 +18,7 @@
 import React, { type ReactElement } from "react";
 import { type BrickConfig } from "@/bricks/types";
 import CommentEffect from "@/bricks/effects/comment";
-import { isNullOrBlank } from "../../../../utils/stringUtils";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 import styles from "./nodeSummary.module.scss";
 

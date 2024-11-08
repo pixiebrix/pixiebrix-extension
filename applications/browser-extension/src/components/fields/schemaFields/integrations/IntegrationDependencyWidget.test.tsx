@@ -17,28 +17,28 @@
 
 import IntegrationDependencyWidget, {
   defaultOutputKey,
-} from "./IntegrationDependencyWidget";
-import { uuidv4, validateRegistryId } from "../../../../types/helpers";
-import { validateOutputKey } from "../../../../runtime/runtimeTypes";
+} from "@/components/fields/schemaFields/integrations/IntegrationDependencyWidget";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 import React from "react";
-import { render } from "../../../../pageEditor/testHelpers";
-import registerDefaultWidgets from "../widgets/registerDefaultWidgets";
-import { type Schema } from "../../../../types/schemaTypes";
-import { type SchemaFieldProps } from "../propTypes";
+import { render } from "@/pageEditor/testHelpers";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { type Schema } from "@/types/schemaTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 // eslint-disable-next-line no-restricted-imports -- test
 import { Formik } from "formik";
 import { useAuthOptions } from "@/hooks/useAuthOptions";
-import { waitForEffect } from "../../../../testUtils/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 import {
   loadingAsyncStateFactory,
   valueToAsyncState,
-} from "../../../../utils/asyncStateUtils";
+} from "@/utils/asyncStateUtils";
 import selectEvent from "react-select-event";
 import { act, screen } from "@testing-library/react";
 
-import { toExpression } from "../../../../utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("../../../../hooks/useAuthOptions");
+jest.mock("@/hooks/useAuthOptions");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 

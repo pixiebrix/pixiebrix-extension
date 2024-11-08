@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
-import { validateRegistryId } from "../../../types/helpers";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { validateRegistryId } from "@/types/helpers";
 import {
   parseDomTable,
   getAllTables,
   type ParsingOptions,
-} from "../../../utils/parseDomTable";
+} from "@/utils/parseDomTable";
 import {
   parseDefinitionList,
   getAllDefinitionLists,
-} from "../../../utils/parseDefinitionList";
-import { findSingleElement } from "../../../utils/domUtils";
+} from "@/utils/parseDefinitionList";
+import { findSingleElement } from "@/utils/domUtils";
 
 const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
 const TABLE_READER_ALL_ID = validateRegistryId("@pixiebrix/table-reader-all");

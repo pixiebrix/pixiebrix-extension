@@ -19,15 +19,15 @@ import {
   DEFAULT_THEME,
   type ThemeName,
   THEME_NAMES,
-} from "./themeTypes";
-import betaLogo from "../../img/beta-logo.svg";
-import betaLogoSmall from "../../img/beta-logo-small.svg";
-import logo from "../../img/logo.svg";
-import logoSmall from "../../img/logo-small.svg";
-import aaLogo from "../../img/aa-logo.svg";
-import aaLogoSmall from "../../img/aa-logo-small.png";
+} from "@/themes/themeTypes";
+import betaLogo from "@img/beta-logo.svg";
+import betaLogoSmall from "@img/beta-logo-small.svg";
+import logo from "@img/logo.svg";
+import logoSmall from "@img/logo-small.svg";
+import aaLogo from "@img/aa-logo.svg";
+import aaLogoSmall from "@img/aa-logo-small.png";
 import { StorageItem } from "webext-storage";
-import { type Nullishable } from "../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const isValidThemeName = (
   themeName: Nullishable<string>,

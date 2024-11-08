@@ -22,10 +22,10 @@ import {
   MultipleElementsFoundError,
   NoElementsFoundError,
 } from "@/errors/businessErrors";
-import { sleep } from "./timeUtils";
+import { sleep } from "@/utils/timeUtils";
 import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 import pDefer, { type DeferredPromise } from "p-defer";
-import type { Nullishable } from "./nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element if it's

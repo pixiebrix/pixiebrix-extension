@@ -18,13 +18,13 @@
 import React from "react";
 import NodeActionsView, {
   type NodeAction,
-} from "./nodeActions/NodeActionsView";
+} from "@/pageEditor/tabs/editTab/editorNodes/nodeActions/NodeActionsView";
 import cx from "classnames";
 import styles from "./PipelineFooterNode.module.scss";
-import OutputKeyView from "./OutputKeyView";
-import PipelineOffsetView from "./PipelineOffsetView";
-import { type OutputKey } from "../../../../types/runtimeTypes";
-import TrailingMessage from "./TrailingMessage";
+import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
+import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
+import { type OutputKey } from "@/types/runtimeTypes";
+import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
 import ClickableElement from "@/components/ClickableElement";
 
 export type PipelineFooterNodeProps = {

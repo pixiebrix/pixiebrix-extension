@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type Schema } from "../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type Schema } from "@/types/schemaTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
-import { minimalSchemaFactory } from "../../utils/schemaUtils";
-import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
 export class ScreenshotTab extends TransformerABC {
   constructor() {

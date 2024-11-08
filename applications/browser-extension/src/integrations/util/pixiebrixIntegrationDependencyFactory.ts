@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type IntegrationDependency } from "../integrationTypes";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import {
   PIXIEBRIX_INTEGRATION_CONFIG_ID,
   PIXIEBRIX_INTEGRATION_ID,
   PIXIEBRIX_OUTPUT_KEY,
-} from "../constants";
+} from "@/integrations/constants";
 
 export default function pixiebrixIntegrationDependencyFactory(): IntegrationDependency {
   return {

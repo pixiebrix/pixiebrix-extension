@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { render, screen } from "../../testHelpers";
-import OptionsBody from "./OptionsBody";
+import { render, screen } from "@/extensionConsole/testHelpers";
+import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {

@@ -16,14 +16,14 @@
  */
 
 import { datadogRum } from "@datadog/browser-rum";
-import { getDNT } from "./dnt";
+import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/data/service/baseService";
-import { forbidContext } from "../utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { addAuthListener, readAuthData } from "@/auth/authStorage";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
-} from "./telemetryHelpers";
+} from "@/telemetry/telemetryHelpers";
 import type { UserData } from "@/auth/authTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 import { FeatureFlags } from "@/auth/featureFlags";

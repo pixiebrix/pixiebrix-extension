@@ -17,35 +17,35 @@
 
 import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
-import { actions } from "../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ListGroup } from "react-bootstrap";
-import { getLabel } from "./common";
+import { getLabel } from "@/pageEditor/modListingPanel/common";
 import {
   ModComponentIcon,
   NotAvailableIcon,
   UnsavedChangesIcon,
-} from "./ModComponentIcons";
-import { type UUID } from "../../types/stringTypes";
+} from "@/pageEditor/modListingPanel/ModComponentIcons";
+import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
   enableOverlay,
   updateSidebar,
 } from "@/contentScript/messenger/api";
-import { openSidePanel } from "../../utils/sidePanelUtils";
+import { openSidePanel } from "@/utils/sidePanelUtils";
 import cx from "classnames";
-import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
-import { selectSessionId } from "../store/session/sessionSelectors";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { selectSessionId } from "@/pageEditor/store/session/sessionSelectors";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   selectActiveModComponentFormState,
   selectActiveModId,
   selectModComponentIsDirty,
-} from "../store/editor/editorSelectors";
-import ModComponentActionMenu from "./ModComponentActionMenu";
-import { inspectedTab } from "../context/connection";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/pageEditor/store/editor/editorSelectors";
+import ModComponentActionMenu from "@/pageEditor/modListingPanel/ModComponentActionMenu";
+import { inspectedTab } from "@/pageEditor/context/connection";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
 type DraftModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;

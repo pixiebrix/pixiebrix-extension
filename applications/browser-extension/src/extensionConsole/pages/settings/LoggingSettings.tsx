@@ -24,9 +24,9 @@ import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Loader from "@/components/Loader";
 import AsyncButton from "@/components/AsyncButton";
 import useUserAction from "@/hooks/useUserAction";
-import { clearTraces } from "../../../telemetry/trace";
-import { clearLogs } from "../../../telemetry/logging";
-import SettingToggle from "./SettingToggle";
+import { clearTraces } from "@/telemetry/trace";
+import { clearLogs } from "@/telemetry/logging";
+import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 import useMessengerLogging from "@/development/hooks/useMessengerLogging";
 
 const LoggingSettings: React.FunctionComponent = () => {

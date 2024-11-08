@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "../mv3/api";
+import { browserAction } from "@/mv3/api";
 import { type MessengerMeta } from "webext-messenger";
 import { type ModComponentRef } from "@/types/modComponentTypes";
-import { setTabBadgeModComponentRef } from "./browserAction";
-import { assertNotNullish } from "../utils/nullishUtils";
+import { setTabBadgeModComponentRef } from "@/background/browserAction";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Browsers will set the badge text color to white or black depending on the background color for accessible contrast.

@@ -19,9 +19,9 @@ import styles from "./QuickAdd.module.scss";
 
 import React from "react";
 import { Card } from "react-bootstrap";
-import PackageIcon from "../PackageIcon";
+import PackageIcon from "@/components/PackageIcon";
 import cx from "classnames";
-import { type PackageInstance } from "../../types/registryTypes";
+import { type PackageInstance } from "@/types/registryTypes";
 
 type OwnProps<Instance extends PackageInstance> = {
   onSelect: (packageInstance: Instance) => void;

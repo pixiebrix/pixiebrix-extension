@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import getUnconfiguredComponentIntegrations from "./getUnconfiguredComponentIntegrations";
-import { validateRegistryId } from "../../types/helpers";
-import { modComponentDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { INTEGRATIONS_BASE_SCHEMA_URL } from "../constants";
+import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import { validateRegistryId } from "@/types/helpers";
+import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { INTEGRATIONS_BASE_SCHEMA_URL } from "@/integrations/constants";
 
 describe("getUnconfiguredComponentIntegrations", () => {
   it("returns empty if no integrations", () => {

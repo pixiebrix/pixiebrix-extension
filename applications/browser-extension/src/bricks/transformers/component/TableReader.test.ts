@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TableReader } from "./TableReader";
-import brickRegistry from "../../registry";
-import { type BrickConfig } from "../../types";
+import { TableReader } from "@/bricks/transformers/component/TableReader";
+import brickRegistry from "@/bricks/registry";
+import { type BrickConfig } from "@/bricks/types";
 import {
   unsafeAssumeValidArg,
   validateOutputKey,
-} from "../../../runtime/runtimeTypes";
-import { brickOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
+} from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const tableReaderBlock = new TableReader();
 

@@ -18,12 +18,12 @@
 import {
   tokenAuthDataFactory,
   meApiResponseFactory,
-} from "./factories/authFactories";
-import { appApiMock } from "./appApiMock";
+} from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/authStorage";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import useLinkState from "@/auth/useLinkState";
-import { valueToAsyncState } from "../utils/asyncStateUtils";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
 import { API_PATHS } from "@/data/service/urlPaths";

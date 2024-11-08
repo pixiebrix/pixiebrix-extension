@@ -20,13 +20,13 @@ import { addAuthListener } from "@/auth/authStorage";
 import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
 import { datadogLogs } from "@datadog/browser-logs";
-import type { Nullishable } from "../utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
-} from "./telemetryHelpers";
-import { type TelemetryUser } from "./telemetryTypes";
+} from "@/telemetry/telemetryHelpers";
+import { type TelemetryUser } from "@/telemetry/telemetryTypes";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;

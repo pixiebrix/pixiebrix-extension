@@ -20,49 +20,49 @@ import {
   type InnerDefinitionRef,
   type InnerDefinitions,
   type RegistryId,
-} from "../../../types/registryTypes";
+} from "@/types/registryTypes";
 import {
   isInnerDefinitionRegistryId,
   normalizeSemVerString,
   PACKAGE_REGEX,
   validateRegistryId,
-} from "../../../types/helpers";
+} from "@/types/helpers";
 import { compact, uniqBy } from "lodash";
 import { produce } from "immer";
-import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import {
   DEFAULT_STARTER_BRICK_VAR,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-} from "../../starterBricks/base";
+} from "@/pageEditor/starterBricks/base";
 import {
   type ModComponentDefinition,
   type ModDefinition,
   type ModOptionsDefinition,
   type ModVariablesDefinition,
   type UnsavedModDefinition,
-} from "../../../types/modDefinitionTypes";
+} from "@/types/modDefinitionTypes";
 import {
   type ModComponentBase,
   type SerializedModComponent,
-} from "../../../types/modComponentTypes";
-import { type SafeString } from "../../../types/stringTypes";
-import { type ModMetadataFormState } from "../../store/editor/pageEditorTypes";
-import { freshIdentifier } from "../../../utils/variableUtils";
+} from "@/types/modComponentTypes";
+import { type SafeString } from "@/types/stringTypes";
+import { type ModMetadataFormState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
 import {
   emptyModVariablesDefinitionFactory,
   normalizeModOptionsDefinition,
-} from "../../../utils/modUtils";
+} from "@/utils/modUtils";
 import {
   isStarterBrickDefinitionLike,
   type StarterBrickDefinitionLike,
-} from "../../../starterBricks/types";
-import { isInnerDefinitionEqual } from "../../../starterBricks/starterBrickUtils";
-import { adapterForComponent } from "../../starterBricks/adapter";
-import { mapModComponentBaseToModComponentDefinition } from "../../../store/modComponents/modInstanceUtils";
+} from "@/starterBricks/types";
+import { isInnerDefinitionEqual } from "@/starterBricks/starterBrickUtils";
+import { adapterForComponent } from "@/pageEditor/starterBricks/adapter";
+import { mapModComponentBaseToModComponentDefinition } from "@/store/modComponents/modInstanceUtils";
 import {
   getDraftModComponentId,
   isModComponentFormState,
-} from "../../utils";
+} from "@/pageEditor/utils";
 import type { Except } from "type-fest";
 
 /**

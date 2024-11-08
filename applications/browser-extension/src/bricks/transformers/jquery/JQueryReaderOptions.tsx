@@ -22,9 +22,9 @@ import { useField } from "formik";
 import {
   type ChildrenSelector,
   type SingleSelector,
-} from "../../readers/jquery";
+} from "@/bricks/readers/jquery";
 import { Button, FormControl } from "react-bootstrap";
-import { type SafeString } from "../../../types/stringTypes";
+import { type SafeString } from "@/types/stringTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
@@ -37,22 +37,16 @@ import SelectWidget, {
 } from "@/components/form/widgets/SelectWidget";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
-import { fallbackValue } from "../../../utils/asyncStateUtils";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AttributeExample } from "@/contentScript/pageEditor/types";
-import CollapsibleFieldSection from "../../../pageEditor/fields/CollapsibleFieldSection";
+import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import cx from "classnames";
-import {
-  type Expression,
-  type TemplateEngine,
-} from "../../../types/runtimeTypes";
-import {
-  isTemplateExpression,
-  isVarExpression,
-} from "../../../utils/expressionUtils";
-import { joinName } from "../../../utils/formUtils";
-import { freshIdentifier } from "../../../utils/variableUtils";
+import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import { joinName } from "@/utils/formUtils";
+import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
-import { inspectedTab } from "../../../pageEditor/context/connection";
+import { inspectedTab } from "@/pageEditor/context/connection";
 import { type SetOptional } from "type-fest";
 
 /**

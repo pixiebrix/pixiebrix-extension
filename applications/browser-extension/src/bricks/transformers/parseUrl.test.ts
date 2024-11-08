@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UrlParser } from "./parseUrl";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { UrlParser } from "@/bricks/transformers/parseUrl";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
 
 describe("parseUrl", () => {

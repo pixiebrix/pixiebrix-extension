@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type TraceRecord } from "./trace";
+import { type TraceRecord } from "@/telemetry/trace";
 import { isEqual, reverse, sortBy } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import { type Branch } from "@/types/runtimeTypes";

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useAutoFocusConfiguration from "./useAutoFocusConfiguration";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 jest.useFakeTimers();
 

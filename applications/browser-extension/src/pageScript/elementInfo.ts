@@ -16,8 +16,8 @@
  */
 
 import { uniq } from "lodash";
-import { inferSelectorsIncludingStableAncestors } from "../utils/inference/selectorInference";
-import { type ElementInfo } from "../utils/inference/selectorTypes";
+import { inferSelectorsIncludingStableAncestors } from "@/utils/inference/selectorInference";
+import { type ElementInfo } from "@/utils/inference/selectorTypes";
 
 export async function elementInfo(
   element: HTMLElement | null,

@@ -20,24 +20,24 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
   selectGetModVariablesDefinitionForModId,
-} from "../../store/editor/editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
-import { actions } from "../../store/editor/editorSlice";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import styles from "./ModVariablesDefinitionEditor.module.scss";
 import Form, { type RenderBody } from "@/components/form/Form";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import {
   mapDefinitionToFormValues,
   mapFormValuesToDefinition,
-} from "./modVariablesDefinitionEditorHelpers";
-import { type ModVariableFormValues } from "./modVariablesDefinitionEditorTypes";
-import useInferredModVariablesQuery from "./useInferredModVariablesQuery";
+} from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorHelpers";
+import { type ModVariableFormValues } from "@/pageEditor/tabs/modVariablesDefinition/modVariablesDefinitionEditorTypes";
+import useInferredModVariablesQuery from "@/pageEditor/tabs/modVariablesDefinition/useInferredModVariablesQuery";
 import * as Yup from "yup";
 import useReportError from "@/hooks/useReportError";
-import { isOutputKey } from "../../../runtime/runtimeTypes";
-import ModVariablesTable from "./ModVariablesTable";
+import { isOutputKey } from "@/runtime/runtimeTypes";
+import ModVariablesTable from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesTable";
 
 const validationSchema = Yup.object().shape({
   variables: Yup.array().of(

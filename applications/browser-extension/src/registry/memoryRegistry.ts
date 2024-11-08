@@ -17,17 +17,17 @@
 
 import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import {
   type DefinitionKind,
   DoesNotExistError,
-  type EnumerableRegistryProtocol,
+  type EnumerableRegistry,
   type RegistryId,
   type RegistryItem,
 } from "@/types/registryTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
-import { SimpleEventTarget } from "../utils/SimpleEventTarget";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type Source =
   // From the remote brick registry
@@ -68,7 +68,7 @@ export const clearPackages = async () => {
 class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
-> implements EnumerableRegistryProtocol<Id, Item>
+> implements EnumerableRegistry<Id, Item>
 {
   /**
    * Registered built-in items. Used to keep track of built-ins across cache clears.

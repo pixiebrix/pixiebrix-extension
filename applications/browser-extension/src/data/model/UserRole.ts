@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RequiredTeamRoleResponse } from "../service/responseTypeHelpers";
+import { type RequiredTeamRoleResponse } from "@/data/service/responseTypeHelpers";
 import { type ValueOf } from "type-fest";
 
 export enum LegacyUserRole {

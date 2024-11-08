@@ -24,14 +24,14 @@ import {
   type SanitizedConfig,
   type SanitizedIntegrationConfig,
   type SecretsConfig,
-} from "../../integrations/integrationTypes";
-import { uuidSequence } from "./stringFactories";
-import { validateRegistryId } from "../../types/helpers";
-import { type RemoteIntegrationConfig } from "../../types/contract";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { type Schema } from "../../types/schemaTypes";
-import { metadataFactory } from "./metadataFactory";
-import { type DefinitionKind, DefinitionKinds } from "../../types/registryTypes";
+} from "@/integrations/integrationTypes";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { validateRegistryId } from "@/types/helpers";
+import { type RemoteIntegrationConfig } from "@/types/contract";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { type DefinitionKind, DefinitionKinds } from "@/types/registryTypes";
 
 export const sanitizedIntegrationConfigFactory =
   define<SanitizedIntegrationConfig>({

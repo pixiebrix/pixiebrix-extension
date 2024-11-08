@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportEvent from "../telemetry/reportEvent";
-import { Events } from "../telemetry/events";
-import { expectContext } from "../utils/expectContext";
-import sidebarInThisTab from "../sidebar/messenger/api";
-import * as contentScriptApi from "./messenger/api";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import { expectContext } from "@/utils/expectContext";
+import sidebarInThisTab from "@/sidebar/messenger/api";
+import * as contentScriptApi from "@/contentScript/messenger/api";
 import { isEmpty, throttle } from "lodash";
 import { signalFromEvent } from "abort-utils";
-import { SimpleEventTarget } from "../utils/SimpleEventTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -36,20 +36,20 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { getTemporaryPanelSidebarEntries } from "../platform/panels/panelController";
-import { getFormPanelSidebarEntries } from "../platform/forms/formController";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
+import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelController";
+import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { focusCaptureDialog } from "./focusCaptureDialog";
-import { isLoadedInIframe } from "../utils/iframeUtils";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/api";
 import { getTopLevelFrame, messenger } from "webext-messenger";
 import {
   getSidebarTargetForCurrentTab,
   isUserGestureRequiredError,
-} from "../utils/sidePanelUtils";
+} from "@/utils/sidePanelUtils";
 import pRetry from "p-retry";
-import { hideNotification, showNotification } from "../utils/notify";
+import { hideNotification, showNotification } from "@/utils/notify";
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.

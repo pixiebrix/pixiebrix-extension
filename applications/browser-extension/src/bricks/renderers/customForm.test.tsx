@@ -21,30 +21,30 @@ import { screen } from "shadow-dom-testing-library";
 import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "../../validators/formValidator";
+import validator from "@/validators/formValidator";
 import {
   CustomFormRenderer,
   normalizeIncomingFormData,
   normalizeOutgoingFormData,
 } from "./customForm";
 import userEvent from "@testing-library/user-event";
-import { type Schema } from "../../types/schemaTypes";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import { type Schema } from "@/types/schemaTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
-import { toExpression } from "../../utils/expressionUtils";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import {
   TEST_resetStateController,
   getState,
   setState,
 } from "@/contentScript/stateController/stateController";
-import type { Target } from "../../types/messengerTypes";
-import { StateNamespaces } from "../../platform/state/stateTypes";
+import type { Target } from "@/types/messengerTypes";
+import { StateNamespaces } from "@/platform/state/stateTypes";
 
 const brick = new CustomFormRenderer();
 
 // CustomForm uses @/contentScript/messenger/api instead of the platform API
-jest.mock("../../contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/api", () => ({
   getPageState: jest.fn(async (_: Target, args: any) => getState(args)),
   setPageState: jest.fn(async (_: Target, args: any) => setState(args)),
 }));

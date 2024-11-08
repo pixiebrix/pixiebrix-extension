@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import { modViewItemFactory } from "../../../testUtils/factories/modViewItemFactory";
-import { render, screen } from "../../testHelpers";
-import Status from "./Status";
-import type { ModActionsEnabled, SharingSource } from "../../../types/modTypes";
-import useModPermissions from "../../../mods/hooks/useModPermissions";
+import { modViewItemFactory } from "@/testUtils/factories/modViewItemFactory";
+import { render, screen } from "@/extensionConsole/testHelpers";
+import Status from "@/extensionConsole/pages/mods/Status";
+import type { ModActionsEnabled, SharingSource } from "@/types/modTypes";
+import useModPermissions from "@/mods/hooks/useModPermissions";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("react-router", () => {
@@ -31,7 +31,7 @@ jest.mock("react-router", () => {
   };
 });
 
-jest.mock("../../../mods/hooks/useModPermissions", () => ({
+jest.mock("@/mods/hooks/useModPermissions", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue({
     hasPermissions: true,

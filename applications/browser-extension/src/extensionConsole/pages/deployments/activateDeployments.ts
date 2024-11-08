@@ -16,18 +16,18 @@
  */
 
 import { integrationConfigLocator } from "@/background/messenger/api";
-import modComponentSlice from "../../../store/modComponents/modComponentSlice";
-import { Events } from "../../../telemetry/events";
-import reportEvent from "../../../telemetry/reportEvent";
-import { mergeDeploymentIntegrationDependencies } from "../../../utils/deploymentUtils";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { Events } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
-import type { ActivatableDeployment } from "../../../types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
 } from "@/contentScript/messenger/api";
-import { type AppDispatch, persistor } from "../../store";
-import type { ModInstance } from "../../../types/modInstanceTypes";
+import { type AppDispatch, persistor } from "@/extensionConsole/store";
+import type { ModInstance } from "@/types/modInstanceTypes";
 
 const { actions } = modComponentSlice;
 

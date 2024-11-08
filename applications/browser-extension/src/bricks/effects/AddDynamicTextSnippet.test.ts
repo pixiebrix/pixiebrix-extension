@@ -16,16 +16,16 @@
  */
 
 import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
-import AddDynamicTextSnippet from "./AddDynamicTextSnippet";
-import brickRegistry from "../registry";
-import { simpleInput } from "../../runtime/pipelineTests/testHelpers";
-import { toExpression } from "../../utils/expressionUtils";
-import { reducePipeline } from "../../runtime/reducePipeline";
-import { validateRegistryId } from "../../types/helpers";
-import IdentityTransformer from "../transformers/IdentityTransformer";
-import { getExampleBrickConfig } from "../exampleBrickConfigs";
-import { validateOutputKey } from "../../runtime/runtimeTypes";
-import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
+import brickRegistry from "@/bricks/registry";
+import { simpleInput } from "@/runtime/pipelineTests/testHelpers";
+import { toExpression } from "@/utils/expressionUtils";
+import { reducePipeline } from "@/runtime/reducePipeline";
+import { validateRegistryId } from "@/types/helpers";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { reduceOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();

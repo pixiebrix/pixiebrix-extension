@@ -18,8 +18,8 @@
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
-import { type ModComponentFormState } from "../starterBricks/formStateTypes";
+} from "@/types/modComponentTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 export type ModComponentSidebarItem = ModComponentBase | ModComponentFormState;
 

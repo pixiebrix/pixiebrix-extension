@@ -18,13 +18,13 @@
 import { coerce as semVerCoerce, valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 
-import { type TimedSequence, type UUID } from "./stringTypes";
+import { type TimedSequence, type UUID } from "@/types/stringTypes";
 import { v4, validate } from "uuid";
 import {
   INNER_SCOPE,
   type RegistryId,
   type SemVerString,
-} from "./registryTypes";
+} from "@/types/registryTypes";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BrickABC } from "../brickTypes";
+import { BrickABC } from "@/types/brickTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type RendererOutput,
-} from "../runtimeTypes";
-import type { PlatformCapability } from "../../platform/capabilities";
+} from "@/types/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export abstract class RendererABC extends BrickABC {
   abstract render(

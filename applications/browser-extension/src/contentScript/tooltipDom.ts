@@ -18,7 +18,7 @@
 import {
   MAX_Z_INDEX,
   PIXIEBRIX_TOOLTIPS_CONTAINER_CLASS,
-} from "../domConstants";
+} from "@/domConstants";
 import { onContextInvalidated } from "webext-events";
 
 /**

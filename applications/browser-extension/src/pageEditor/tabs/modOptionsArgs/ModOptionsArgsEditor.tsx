@@ -22,8 +22,8 @@ import {
   selectDirtyModOptionsDefinitionForModId,
   selectGetDraftModComponentsForMod,
   selectGetOptionsArgsForModId,
-} from "../../store/editor/editorSelectors";
-import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
+} from "@/pageEditor/store/editor/editorSelectors";
+import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory, {
   type BrickOptionProps,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -35,23 +35,20 @@ import Form from "@/components/form/Form";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import Effect from "@/components/Effect";
-import { actions } from "../../store/editor/editorSlice";
-import { type OptionsArgs } from "../../../types/runtimeTypes";
-import { DEFAULT_RUNTIME_API_VERSION } from "../../../runtime/apiVersionOptions";
-import ModIntegrationsContext from "../../../mods/ModIntegrationsContext";
-import { emptyModOptionsDefinitionFactory } from "../../../utils/modUtils";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
+import { type OptionsArgs } from "@/types/runtimeTypes";
+import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
+import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
-import { assertNotNullish } from "../../../utils/nullishUtils";
-import type { RegistryId } from "../../../types/registryTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import type { RegistryId } from "@/types/registryTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
-import {
-  mergeAsyncState,
-  valueToAsyncState,
-} from "../../../utils/asyncStateUtils";
+import { mergeAsyncState, valueToAsyncState } from "@/utils/asyncStateUtils";
 import type {
   ModDefinition,
   ModOptionsDefinition,
-} from "../../../types/modDefinitionTypes";
+} from "@/types/modDefinitionTypes";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import type { FormikValues } from "formik";
 

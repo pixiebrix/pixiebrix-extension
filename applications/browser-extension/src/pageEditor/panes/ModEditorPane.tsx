@@ -18,19 +18,19 @@
 import styles from "./ModEditorPane.module.scss";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveModId } from "../store/editor/editorSelectors";
+import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors";
 import EditorTabLayout, {
   type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
-import Logs from "../tabs/Logs";
-import ModMetadataEditor from "../tabs/modMetadata/ModMetadataEditor";
+import Logs from "@/pageEditor/tabs/Logs";
+import ModMetadataEditor from "@/pageEditor/tabs/modMetadata/ModMetadataEditor";
 import { logActions } from "@/components/logViewer/logSlice";
-import useLogsBadgeState from "../tabs/logs/useLogsBadgeState";
-import ModOptionsDefinitionEditor from "../tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
-import ModOptionsArgsEditor from "../tabs/modOptionsArgs/ModOptionsArgsEditor";
-import useRegisterDraftModInstanceOnAllFrames from "../hooks/useRegisterDraftModInstanceOnAllFrames";
+import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
+import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
+import ModOptionsArgsEditor from "@/pageEditor/tabs/modOptionsArgs/ModOptionsArgsEditor";
+import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegisterDraftModInstanceOnAllFrames";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import ModVariablesDefinitionEditor from "../tabs/modVariablesDefinition/ModVariablesDefinitionEditor";
+import ModVariablesDefinitionEditor from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesDefinitionEditor";
 import { FeatureFlags } from "@/auth/featureFlags";
 
 const ModEditorPane: React.VFC = () => {

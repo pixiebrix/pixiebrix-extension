@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../../types/bricks/transformerTypes";
-import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
-import { type Schema } from "../../../types/schemaTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   type FrameworkConfig,
   frameworkReadFactory,
-} from "../../readers/frameworkReader";
-import { KNOWN_READERS } from "../../../pageScript/messenger/constants";
-import { validateRegistryId } from "../../../types/helpers";
+} from "@/bricks/readers/frameworkReader";
+import { KNOWN_READERS } from "@/pageScript/messenger/constants";
+import { validateRegistryId } from "@/types/helpers";
 
 export const COMPONENT_READER_ID = validateRegistryId(
   "@pixiebrix/component-reader",

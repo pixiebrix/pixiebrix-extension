@@ -15,32 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { integrationConfigLocator as serviceLocator } from "./integrationConfigLocator";
+import { integrationConfigLocator as serviceLocator } from "@/background/integrationConfigLocator";
 import { type Runtime } from "webextension-polyfill";
-import { initTelemetry, recordEvent } from "./telemetry";
-import { getUUID } from "../telemetry/telemetryHelpers";
-import { allowsTrack, dntConfig } from "../telemetry/dnt";
+import { initTelemetry, recordEvent } from "@/background/telemetry";
+import { getUUID } from "@/telemetry/telemetryHelpers";
+import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/data/service/baseService";
 import { getExtensionToken, getUserData, isLinked } from "@/auth/authStorage";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
-import { expectContext } from "../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import {
   initManagedStorage,
   isInitialized as isManagedStorageInitialized,
   readManagedStorage,
   resetInitializationTimestamp as resetManagedStorageInitializationState,
   watchForDelayedStorageInitialization,
-} from "../store/enterprise/managedStorage";
-import { Events } from "../telemetry/events";
-import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "../urlConstants";
-import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "../integrations/constants";
+} from "@/store/enterprise/managedStorage";
+import { Events } from "@/telemetry/events";
+import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
+import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import {
   getExtensionConsoleUrl,
   getExtensionVersion,
-} from "../utils/extensionUtils";
-import { oncePerSession } from "../mv3/SessionStorage";
+} from "@/utils/extensionUtils";
+import { oncePerSession } from "@/mv3/SessionStorage";
 import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { normalizeSemVerString } from "@/types/helpers";
 import { type SemVerString } from "@/types/registryTypes";

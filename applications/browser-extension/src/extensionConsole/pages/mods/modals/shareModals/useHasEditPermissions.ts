@@ -16,11 +16,11 @@
  */
 
 import { selectAuth } from "@/auth/authSelectors";
-import useSortOrganizations from "./useSortOrganizations";
-import { type RegistryId } from "../../../../../types/registryTypes";
-import { getScopeAndId } from "../../../../../utils/registryUtils";
+import useSortOrganizations from "@/extensionConsole/pages/mods/modals/shareModals/useSortOrganizations";
+import { type RegistryId } from "@/types/registryTypes";
+import { getScopeAndId } from "@/utils/registryUtils";
 import { useSelector } from "react-redux";
-import { type Nullishable } from "../../../../../utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 import { LegacyUserRole } from "@/data/model/UserRole";
 
 const editorRoles = new Set<number>([

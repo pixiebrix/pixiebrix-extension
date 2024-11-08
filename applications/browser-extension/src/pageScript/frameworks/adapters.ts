@@ -16,14 +16,14 @@
  */
 
 import emberAdapter from "./contrib/ember";
-import angularjsAdapter from "./contrib/angularjs";
+import angularjsAdapter from "@/pageScript/frameworks/contrib/angularjs";
 import reactAdapter from "./contrib/react";
 import vueAdapter from "./contrib/vue";
-import { type FrameworkAdapter } from "../messenger/constants";
+import { type FrameworkAdapter } from "@/pageScript/messenger/constants";
 import {
   type ReadableComponentAdapter,
   type WriteableComponentAdapter,
-} from "./component";
+} from "@/pageScript/frameworks/component";
 
 const FRAMEWORK_ADAPTERS = new Map<
   FrameworkAdapter,

@@ -16,16 +16,14 @@
  */
 
 import React, { useMemo, useState } from "react";
-import Page from "../../../layout/Page";
+import Page from "@/layout/Page";
 import { faHammer, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
-import workshopSlice, {
-  type WorkshopState,
-} from "../../../store/workshopSlice";
+import workshopSlice, { type WorkshopState } from "@/store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
@@ -35,11 +33,11 @@ import {
   type NavigateProps,
 } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
-import { mapKindToKindUiValue } from "./workshopUtils";
-import { PACKAGE_REGEX } from "../../../types/helpers";
+import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
+import { PACKAGE_REGEX } from "@/types/helpers";
 import { useGetEditablePackagesQuery } from "@/data/service/api";
-import { type EditablePackageMetadata } from "../../../types/contract";
-import { type Nullishable } from "../../../utils/nullishUtils";
+import { type EditablePackageMetadata } from "@/types/contract";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const { actions } = workshopSlice;
 

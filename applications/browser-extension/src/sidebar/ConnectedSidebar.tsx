@@ -16,7 +16,11 @@
  */
 
 import React, { useEffect, useMemo } from "react";
-import { addListener, removeListener, type SidebarListener } from "./protocol";
+import {
+  addListener,
+  removeListener,
+  type SidebarListener,
+} from "@/sidebar/protocol";
 import { useDispatch, useSelector } from "react-redux";
 import {
   type ActivatePanelOptions,
@@ -25,15 +29,15 @@ import {
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import Tabs from "./Tabs";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
+import Tabs from "@/sidebar/Tabs";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
-import LoginPanel from "./LoginPanel";
+import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./SidebarErrorBoundary";
-import { selectIsSidebarEmpty } from "./sidebarSelectors";
+import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import DelayedRender from "@/components/DelayedRender";
-import DefaultPanel from "./DefaultPanel";
-import { MOD_LAUNCHER } from "../store/sidebar/constants";
+import DefaultPanel from "@/sidebar/DefaultPanel";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import {
   ensureStarterBricksInstalled,
   getReservedSidebarEntries,
@@ -41,20 +45,20 @@ import {
 import {
   getConnectedTabIdForSidebarTopFrame,
   getConnectedTarget,
-} from "./connectedTarget";
+} from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-import addFormPanel from "../store/sidebar/thunks/addFormPanel";
-import addTemporaryPanel from "../store/sidebar/thunks/addTemporaryPanel";
-import removeTemporaryPanel from "../store/sidebar/thunks/removeTemporaryPanel";
-import { type AppDispatch } from "./store";
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import { type AppDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
 import {
   type ModComponentRef,
   validateModComponentRef,
 } from "@/types/modComponentTypes";
-import { assertNotNullish } from "../utils/nullishUtils";
-import { CONNECTED_TAB_URL_PERFORMANCE_KEY } from "./telemetryConstants";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { CONNECTED_TAB_URL_PERFORMANCE_KEY } from "@/sidebar/telemetryConstants";
 import { datadogRum } from "@datadog/browser-rum";
 
 /**

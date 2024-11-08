@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type EditorState } from "../../pageEditor/store/editor/pageEditorTypes";
-import { type ModComponentState } from "../../store/modComponents/modComponentTypes";
-import { type ModInstance } from "../../types/modInstanceTypes";
-import { editorSlice } from "../../pageEditor/store/editor/editorSlice";
-import modComponentSlice from "../../store/modComponents/modComponentSlice";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type ModComponentState } from "@/store/modComponents/modComponentTypes";
+import { type ModInstance } from "@/types/modInstanceTypes";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
 
 type ReduxSliceState = {
   modComponentState: ModComponentState;

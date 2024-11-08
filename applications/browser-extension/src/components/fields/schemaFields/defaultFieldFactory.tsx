@@ -19,9 +19,9 @@ import React from "react";
 import {
   type SchemaFieldComponent,
   type SchemaFieldProps,
-} from "./propTypes";
-import ConnectedFieldTemplate from "../../form/ConnectedFieldTemplate";
-import { makeLabelForSchemaField } from "./schemaFieldUtils";
+} from "@/components/fields/schemaFields/propTypes";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
 
 export default function defaultFieldFactory(
   Widget: React.FC<SchemaFieldProps>,

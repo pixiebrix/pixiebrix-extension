@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Metadata } from "../../types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import {
   type ModComponentBase,
   type ModMetadata,
-} from "../../types/modComponentTypes";
+} from "@/types/modComponentTypes";
 import {
   baseFromModComponent,
   baseSelectModComponent,
@@ -33,14 +33,14 @@ import {
   removeEmptyValues,
   selectStarterBrickAvailability,
   cleanIsAvailable,
-} from "./base";
+} from "@/pageEditor/starterBricks/base";
 import { omitEditorMetadata } from "./pipelineMapping";
-import { ButtonStarterBrickABC } from "../../starterBricks/button/buttonStarterBrick";
-import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
-import { getDomain } from "../../permissions/patterns";
+import { ButtonStarterBrickABC } from "@/starterBricks/button/buttonStarterBrick";
+import { type StarterBrickDefinitionLike } from "@/starterBricks/types";
+import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
-import ButtonConfiguration from "../tabs/button/ButtonConfiguration";
+import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
+import ButtonConfiguration from "@/pageEditor/tabs/button/ButtonConfiguration";
 import { insertButton } from "@/contentScript/messenger/api";
 import {
   type DraftButtonModComponent,
@@ -50,11 +50,11 @@ import { type ButtonFormState } from "./formStateTypes";
 import {
   type ButtonDefinition,
   type ButtonStarterBrickConfig,
-} from "../../starterBricks/button/buttonStarterBrickTypes";
-import { assertNotNullish } from "../../utils/nullishUtils";
-import { StarterBrickTypes } from "../../types/starterBrickTypes";
+} from "@/starterBricks/button/buttonStarterBrickTypes";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { StarterBrickTypes } from "@/types/starterBrickTypes";
 
-import { type DraftModState } from "../store/editor/pageEditorTypes";
+import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
 
 function fromNativeElement({
   url,

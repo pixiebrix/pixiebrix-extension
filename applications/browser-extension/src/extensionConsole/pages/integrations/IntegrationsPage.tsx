@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./PrivateIntegrationsCard.module.scss";
+import styles from "@/extensionConsole/pages/integrations/PrivateIntegrationsCard.module.scss";
 
 import React, { useCallback, useContext, useEffect, useReducer } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import integrationsSlice from "../../../integrations/store/integrationsSlice";
-import Page from "../../../layout/Page";
+import integrationsSlice from "@/integrations/store/integrationsSlice";
+import Page from "@/layout/Page";
 import { Card } from "react-bootstrap";
 import { push } from "connected-react-router";
 import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
@@ -28,37 +28,37 @@ import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import { faCloud, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { integrationConfigLocator } from "@/background/messenger/api";
-import ZapierIntegrationModal from "./ZapierIntegrationModal";
-import notify from "../../../utils/notify";
+import ZapierIntegrationModal from "@/extensionConsole/pages/integrations/ZapierIntegrationModal";
+import notify from "@/utils/notify";
 import { useLocation } from "react-router";
 import PackageSearchModal from "@/components/packageSearchModal/PackageSearchModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isUUID, uuidv4 } from "../../../types/helpers";
+import { isUUID, uuidv4 } from "@/types/helpers";
 import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
-import reportEvent from "../../../telemetry/reportEvent";
-import { Events } from "../../../telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 import {
   type Integration,
   type IntegrationConfig,
-} from "../../../integrations/integrationTypes";
-import { type SafeString, type UUID } from "../../../types/stringTypes";
-import ReduxPersistenceContext from "../../../store/ReduxPersistenceContext";
+} from "@/integrations/integrationTypes";
+import { type SafeString, type UUID } from "@/types/stringTypes";
+import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 import {
   type AnyAction,
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import registry from "../../../integrations/registry";
+import registry from "@/integrations/registry";
 import { isEmpty, isEqual, sortBy } from "lodash";
-import { selectIntegrationConfigs } from "../../../integrations/store/integrationsSelectors";
+import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import useAsyncEffect from "use-async-effect";
-import { type RegistryId } from "../../../types/registryTypes";
-import { freshIdentifier } from "../../../utils/variableUtils";
-import { PIXIEBRIX_INTEGRATION_ID } from "../../../integrations/constants";
+import { type RegistryId } from "@/types/registryTypes";
+import { freshIdentifier } from "@/utils/variableUtils";
+import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import {
   autoConfigurations,
   autoConfigureIntegration,
-} from "../../../integrations/autoConfigure";
+} from "@/integrations/autoConfigure";
 import { type Draft } from "immer";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =

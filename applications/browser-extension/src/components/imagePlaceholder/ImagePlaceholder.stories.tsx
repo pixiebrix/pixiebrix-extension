@@ -18,7 +18,7 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 
-import ImagePlaceholder from "./ImagePlaceholder";
+import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 
 export default {
   title: "Components/ImagePlaceholder",

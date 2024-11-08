@@ -16,9 +16,9 @@
  */
 
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
-import { type FieldAnnotation } from "./FieldAnnotation";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { isEqual } from "lodash";
-import { makeFieldActionForAnnotationAction } from "./makeFieldActionForAnnotationAction";
+import { makeFieldActionForAnnotationAction } from "@/components/form/makeFieldActionForAnnotationAction";
 import { type FormikContextType } from "formik";
 
 export function makeFieldAnnotationsForValue(

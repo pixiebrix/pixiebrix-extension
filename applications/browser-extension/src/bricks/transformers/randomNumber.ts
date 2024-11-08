@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { type BrickArgs } from "../../types/runtimeTypes";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { type BrickArgs } from "@/types/runtimeTypes";
 import { random } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { propertiesToSchema } from "../../utils/schemaUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class RandomNumber extends TransformerABC {
   constructor() {

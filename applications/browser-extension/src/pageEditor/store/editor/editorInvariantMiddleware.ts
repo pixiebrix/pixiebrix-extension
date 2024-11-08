@@ -16,7 +16,7 @@
  */
 
 import type { AnyAction, Dispatch, Middleware } from "@reduxjs/toolkit";
-import { type EditorRootState } from "./pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
   selectActiveModComponentId,
   selectActiveModId,
@@ -24,7 +24,7 @@ import {
   selectCurrentModId,
   selectExpandedModId,
   selectModComponentFormStates,
-} from "./editorSelectors";
+} from "@/pageEditor/store/editor/editorSelectors";
 import type { EmptyObject } from "type-fest";
 import { uniqBy } from "lodash";
 

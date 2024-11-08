@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CopyToClipboard } from "./clipboard";
-import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
+import { CopyToClipboard } from "@/bricks/effects/clipboard";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 import userEvent from "@testing-library/user-event";
-import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { convertDataUrl } from "../../utils/parseDataUrl";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { convertDataUrl } from "@/utils/parseDataUrl";
 
 const brick = new CopyToClipboard();
 

@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import {
   type Integration,
   type IntegrationDefinition,
-} from "../integrations/integrationTypes";
+} from "@/integrations/integrationTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 type FlowOptions = {

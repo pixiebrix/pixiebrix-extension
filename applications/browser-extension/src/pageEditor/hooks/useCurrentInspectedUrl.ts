@@ -17,14 +17,14 @@
 
 import { once } from "lodash";
 import { useEffect, useState } from "react";
-import { SimpleEventTarget } from "../../utils/SimpleEventTarget";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type WebNavigation } from "webextension-polyfill";
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import {
   getCurrentInspectedURL,
   isCurrentTopFrame,
-} from "../context/connection";
-import type { Nullishable } from "../../utils/nullishUtils";
+} from "@/pageEditor/context/connection";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 let tabUrl: Nullishable<string>;
 
