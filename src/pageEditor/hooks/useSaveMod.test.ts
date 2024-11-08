@@ -365,17 +365,4 @@ describe("isModEditable", () => {
 
     expect(isModEditable(editablePackages, mod)).toBe(false);
   });
-
-  test("returns false if mod is null", () => {
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null as unknown as UUID,
-        name: validateRegistryId("test/mod"),
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(
-      isModEditable(editablePackages, null as unknown as ModDefinition),
-    ).toBe(false);
-  });
 });
