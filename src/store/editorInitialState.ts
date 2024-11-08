@@ -42,7 +42,6 @@ export const initialSyncedState: EditorStateSynced = {
   isModListingPanelExpanded: true,
 } as const;
 
-/** @internal */
 export const initialState: EditorState = {
   ...initialEphemeralState,
   ...initialSyncedState,
