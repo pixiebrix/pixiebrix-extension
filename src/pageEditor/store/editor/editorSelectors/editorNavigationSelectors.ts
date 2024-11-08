@@ -29,9 +29,8 @@ export const selectActiveModComponentId = ({ editor }: EditorRootState) => {
 };
 
 /**
- * Select the id of the mod being edited. NOTE: is null when editing a mod component within the mod.
+ * Select the id of the mod being edited.
  * @see selectModId
- * @see selectCurrentModId
  */
 export const selectActiveModId = ({ editor }: EditorRootState) =>
   editor.activeModId;

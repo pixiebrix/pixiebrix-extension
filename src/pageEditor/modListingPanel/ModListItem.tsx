@@ -29,7 +29,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import {
-  selectActiveModComponentFormState,
+  selectActiveModComponentId,
   selectActiveModId,
   selectDirtyMetadataForModId,
   selectExpandedModId,
@@ -47,23 +47,18 @@ const ModListItem: React.FC<
   const dispatch = useDispatch();
   const activeModId = useSelector(selectActiveModId);
   const expandedModId = useSelector(selectExpandedModId);
-  const activeModComponentFormState = useSelector(
-    selectActiveModComponentFormState,
-  );
+  const activeModComponentId = useSelector(selectActiveModComponentId);
 
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
 
-  const isActive = activeModId === modId;
+  const isModActive = activeModId === modId;
+  const isModComponentActive = activeModComponentId != null;
   const isExpanded = expandedModId === modId;
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
   //        (See: https://github.com/pixiebrix/pixiebrix-extension/issues/7184)
   const { data: modDefinition } = useGetModDefinitionQuery({ modId });
   const latestModVersion = modDefinition?.metadata?.version;
-
-  // Set the alternate background if a mod component in this mod is active
-  const hasModBackground =
-    activeModComponentFormState?.modMetadata.id === modId;
 
   const dirtyName = useSelector(selectDirtyMetadataForModId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
@@ -81,16 +76,17 @@ const ModListItem: React.FC<
         eventKey={modId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.modBackground ?? ""]: hasModBackground,
+          // Set the alternate background if a mod component in this mod is active
+          [styles.modBackground ?? ""]: isModComponentActive,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
-        active={isActive}
+        active={isModActive && !isModComponentActive}
         key={`mod-${modId}`}
         onClick={() => {
           dispatch(actions.setActiveModId(modId));
           // Collapse if the user clicks the mod item when it's already active/selected in the listing pane
           dispatch(
-            actions.setExpandedModId(isExpanded && isActive ? null : modId),
+            actions.setExpandedModId(isExpanded && isModActive ? null : modId),
           );
         }}
       >

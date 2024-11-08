@@ -18,15 +18,16 @@
 import type { AnyAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
-  selectActiveModComponentId,
+  selectActiveModComponentFormState,
   selectActiveModId,
   selectAllDeletedModComponentIds,
-  selectCurrentModId,
   selectExpandedModId,
   selectModComponentFormStates,
 } from "@/pageEditor/store/editor/editorSelectors";
 import type { EmptyObject } from "type-fest";
 import { uniqBy } from "lodash";
+import { type AppDispatch } from "@/pageEditor/store/store";
+import { actions } from "@/pageEditor/store/editor/editorSlice";
 
 class InvariantViolationError extends Error {
   override name = "InvariantViolationError";
@@ -46,19 +47,32 @@ class InvariantViolationError extends Error {
  * @see editorInvariantMiddleware
  */
 // XXX: in production, should we be attempting to auto-fix these invariants?
-export function assertEditorInvariants(state: EditorRootState): void {
+export function assertEditorInvariants(
+  state: EditorRootState,
+  dispatch: AppDispatch,
+): void {
   // Assert that a mod and mod component item cannot be selected at the same time
-  if (selectActiveModId(state) && selectActiveModComponentId(state)) {
+  const activeModId = selectActiveModId(state);
+  const activeModComponentId = selectActiveModComponentFormState(state);
+
+  if (activeModComponentId && !activeModId) {
+    dispatch(actions.setActiveModId(activeModComponentId.modMetadata.id));
+  }
+
+  if (
+    activeModComponentId &&
+    activeModId !== activeModComponentId?.modMetadata.id
+  ) {
     throw new InvariantViolationError(
-      "activeModId and activeModComponentId are both set",
+      "activeModComponent is not a part of the activeMod",
     );
   }
 
   // Assert that the expanded mod must correspond to the selected mod or mod component
   const expandedModId = selectExpandedModId(state);
-  if (expandedModId && selectCurrentModId(state) !== expandedModId) {
+  if (expandedModId && selectActiveModId(state) !== expandedModId) {
     throw new InvariantViolationError(
-      "expandedModId does not match active mod/mod component",
+      "expandedModId does not match active mod",
     );
   }
 
@@ -97,7 +111,7 @@ const editorInvariantMiddleware: Middleware<EmptyObject, EditorRootState> =
     const result = next(action);
 
     try {
-      assertEditorInvariants(storeAPI.getState());
+      assertEditorInvariants(storeAPI.getState(), storeAPI.dispatch);
     } catch (error) {
       throw new Error(`Action violated invariant: ${action.type}`, {
         cause: error,

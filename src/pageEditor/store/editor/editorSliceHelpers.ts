@@ -171,9 +171,8 @@ export function setActiveModComponentId(
 ) {
   state.error = null;
   state.activeModComponentId = modComponentFormState.uuid;
-  state.activeModId = null;
-  state.expandedModId =
-    modComponentFormState.modMetadata.id ?? state.expandedModId;
+  state.activeModId = modComponentFormState.modMetadata.id;
+  state.expandedModId = modComponentFormState.modMetadata.id;
   state.selectionSeq++;
 
   ensureBrickPipelineUIState(state, modComponentFormState.uuid);

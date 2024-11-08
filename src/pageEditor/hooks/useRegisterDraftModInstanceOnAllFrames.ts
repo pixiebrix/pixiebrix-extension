@@ -31,7 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentId,
-  selectCurrentModId,
+  selectActiveModId,
   selectEditorUpdateKey,
   selectGetModDraftStateForModId,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -113,7 +113,7 @@ function updateDraftModInstance() {
     const state = getState();
 
     const activeModComponentId = selectActiveModComponentId(state);
-    const modId = selectCurrentModId(state);
+    const modId = selectActiveModId(state);
 
     if (!modId) {
       // Skip if the modId has somehow become null before the microtask for this async method got scheduled
@@ -175,7 +175,7 @@ function updateDraftModInstance() {
  */
 function useRegisterDraftModInstanceOnAllFrames(): void {
   const dispatch = useDispatch<AppDispatch>();
-  const modId = useSelector(selectCurrentModId);
+  const modId = useSelector(selectActiveModId);
   const editorUpdateKey = useSelector(selectEditorUpdateKey);
 
   assertNotNullish(modId, "modId is required");
