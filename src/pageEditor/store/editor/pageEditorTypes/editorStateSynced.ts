@@ -25,6 +25,8 @@ import { type UUID } from "@/types/stringTypes";
  *
  * Changing the keys in the future does not require a migration.
  * Prefer `null` to `undefined` to require the keys in initialSyncedState
+ * The initialSyncedState is used to reset the synced state during
+ * EditorStateMigratedV<N> migrations
  *
  * @see EditorStateEphemeral
  * @see EditorStateMigratedV<N>

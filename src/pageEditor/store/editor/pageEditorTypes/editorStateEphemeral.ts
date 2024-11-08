@@ -23,10 +23,12 @@ import { type UUID } from "@/types/stringTypes";
 /**
  * Page Editor Slice state that should not be persisted using redux-persist.
  * Prefer `null` to `undefined` to require the keys in initialEphemeralState
+ * All keys are necessary to properly set the blacklist in persistEditorConfig
  *
  * @see EditorStateMigratedV<N>
  * @see EditorStateSynced
  * @see initialEphemeralState
+ * @see persistEditorConfig
  */
 export type EditorStateEphemeral = {
   /**
