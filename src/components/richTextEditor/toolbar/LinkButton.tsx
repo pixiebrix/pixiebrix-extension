@@ -60,7 +60,7 @@ const LinkButton: React.FunctionComponent = () => {
         active={editor.isActive("link")}
         aria-label="Link"
         onClick={() => {
-          if (editor.state.selection.empty) {
+          if (!editor.isActive("link") && editor.state.selection.empty) {
             return;
           }
 

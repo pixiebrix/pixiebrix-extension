@@ -27,7 +27,10 @@ const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
 ) => (
   <div className={styles.root}>
     <EditorProvider
-      extensions={[StarterKit, Link]}
+      extensions={[
+        StarterKit,
+        Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+      ]}
       slotBefore={<Toolbar />}
       {...props}
     />
