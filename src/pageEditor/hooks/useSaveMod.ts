@@ -55,7 +55,7 @@ export function isModEditable(
 ): boolean {
   // The user might lose access to the mod while they were editing it (the mod or a mod component)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
-  const modId = modDefinition?.metadata?.id;
+  const modId = modDefinition.metadata.id;
   return modId != null && editablePackages.some((x) => x.name === modId);
 }
 
