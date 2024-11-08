@@ -63,6 +63,8 @@ export function assertEditorInvariants(
     activeModComponentId &&
     activeModId !== activeModComponentId?.modMetadata.id
   ) {
+    // Should we dispatch(actions.setActiveModComponentId(null))
+    // Would need to change the behavior of the action to handle null
     throw new InvariantViolationError(
       "activeModComponent is not a part of the activeMod",
     );
