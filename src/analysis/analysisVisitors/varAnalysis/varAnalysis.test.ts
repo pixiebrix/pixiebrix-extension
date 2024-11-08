@@ -470,8 +470,7 @@ describe("Collecting available vars", () => {
           [
             formState.modComponent.brickPipeline[0]!.id,
             {
-              block: {
-                // HtmlReader's output schema, see @/bricks/readers/HtmlReader.ts
+              brick: {
                 outputSchema,
               },
             },
@@ -819,7 +818,7 @@ describe("Collecting available vars", () => {
             IdentityTransformer.BRICK_ID,
             {
               type: BrickTypes.TRANSFORM,
-              block: new IdentityTransformer(),
+              brick: new IdentityTransformer(),
             },
           ],
         ]),
@@ -1164,7 +1163,7 @@ describe("Collecting available vars", () => {
             CustomFormRenderer.BRICK_ID,
             {
               type: "renderer",
-              block: new CustomFormRenderer(),
+              brick: new CustomFormRenderer(),
             },
           ],
         ]),

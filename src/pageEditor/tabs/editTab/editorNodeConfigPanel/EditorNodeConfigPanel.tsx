@@ -46,7 +46,7 @@ const EditorNodeConfigPanel: React.FC = () => {
 
     const brick = await brickRegistry.lookup(brickId);
     return {
-      block: brick,
+      brick,
       type: await getType(brick),
     };
   }, [brickId]);
@@ -65,7 +65,7 @@ const EditorNodeConfigPanel: React.FC = () => {
       <AnalysisResult className="mb-3" />
 
       <h6 className="mb-3 d-flex justify-content-between flex-wrap gap-2">
-        {brickInfo?.block.name}
+        {brickInfo?.brick.name}
         {showDocumentationLink && (
           <a
             href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
@@ -82,7 +82,7 @@ const EditorNodeConfigPanel: React.FC = () => {
             name={`${brickFieldName}.label`}
             label="Step Name"
             className="flex-grow-1"
-            placeholder={brickInfo?.block.name}
+            placeholder={brickInfo?.brick.name}
           />
           <OutputVariableField
             brickInfo={brickInfo}

@@ -63,11 +63,18 @@ import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/s
 import { getExtensionVersion } from "@/utils/extensionUtils";
 import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
 import type { ContentScriptPlatformProtocol } from "@/contentScript/platform/contentScriptPlatformProtocol";
+import brickRegistry from "@/bricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 
 /**
  * @file Platform definition for mods running in a content script
  * @see PlatformProtocol
  */
+
+expectContext(
+  "contentScript",
+  "contentScriptPlatform imported directly/indirectly from another context",
+);
 
 async function playSound(sound: string): Promise<void> {
   const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));
@@ -100,6 +107,7 @@ class ContentScriptPlatform
   }
 
   override capabilities: PlatformCapability[] = [
+    "registry",
     "dom",
     "pageScript",
     "contentScript",
@@ -166,6 +174,13 @@ class ContentScriptPlatform
   override form = ephemeralForm;
 
   override runSandboxedJavascript = runUserJs;
+
+  override get registry(): PlatformProtocol["registry"] {
+    return {
+      bricks: brickRegistry,
+      starterBricks: starterBrickRegistry,
+    };
+  }
 
   override get templates(): PlatformProtocol["templates"] {
     return {

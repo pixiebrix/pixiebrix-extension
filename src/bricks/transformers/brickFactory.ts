@@ -40,6 +40,7 @@ import {
 import {
   DefinitionKinds,
   type Metadata,
+  type Registry,
   type RegistryId,
   type SemVerString,
 } from "@/types/registryTypes";
@@ -56,12 +57,8 @@ import {
   inputProperties,
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
-import type BaseRegistry from "@/registry/memoryRegistry";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
-
-// Interface to avoid circular dependency with the implementation
-type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
 
 export type BrickDefinition = {
   /**
@@ -141,7 +138,7 @@ class UserDefinedBrick extends BrickABC {
   readonly version?: SemVerString;
 
   constructor(
-    private readonly registry: BrickRegistryProtocol,
+    private readonly registry: Registry<RegistryId, Brick>,
     public readonly component: BrickDefinition,
   ) {
     const { id, name, description, version } = component.metadata;
@@ -392,7 +389,7 @@ class UserDefinedBrick extends BrickABC {
 
 // Put registry first for easier partial application
 export function fromJS(
-  registry: BrickRegistryProtocol,
+  registry: Registry<RegistryId, Brick>,
   component: UnknownObject,
 ): Brick {
   if (component.kind == null) {

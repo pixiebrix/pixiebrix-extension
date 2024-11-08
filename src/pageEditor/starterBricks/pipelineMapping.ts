@@ -54,7 +54,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
         this.blockMap,
       );
     } else {
-      const propertiesSchema = typedBlock.block?.inputSchema?.properties ?? {};
+      const propertiesSchema = typedBlock.brick?.inputSchema?.properties ?? {};
       const emptySubPipelineProperties = Object.entries(propertiesSchema)
         .filter(
           ([prop, fieldSchema]) =>

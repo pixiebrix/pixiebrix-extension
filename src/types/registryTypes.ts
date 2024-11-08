@@ -190,7 +190,7 @@ export class DoesNotExistError extends Error {
  * A registry that can look up items by id.
  * @since 1.8.2
  */
-export interface RegistryProtocol<
+export interface Registry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
 > {
@@ -200,9 +200,9 @@ export interface RegistryProtocol<
 /**
  * A registry that can enumerate all items accessible to the user.
  */
-export interface EnumerableRegistryProtocol<
+export interface EnumerableRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
-> extends RegistryProtocol<Id, Item> {
+> extends Registry<Id, Item> {
   all: () => Promise<Item[]>;
 }

@@ -226,17 +226,17 @@ const AddBrickModal: React.FC = () => {
     }
 
     let typedBricks = [...allBricks.values()].filter(
-      ({ block }) => block.featureFlag == null || flagOn(block.featureFlag),
+      ({ brick }) => brick.featureFlag == null || flagOn(brick.featureFlag),
     );
 
     if (themeName === AUTOMATION_ANYWHERE_PARTNER_KEY) {
       typedBricks = typedBricks.filter(
         // eslint-disable-next-line security/detect-object-injection -- constant
-        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.block.id),
+        (typed) => !taggedBrickIds[TAG_UIPATH]?.has(typed.brick.id),
       );
     }
 
-    return typedBricks.map(({ block }) => block);
+    return typedBricks.map(({ brick }) => brick);
   }, [allBricks, isLoadingTags, themeName, taggedBrickIds, flagOn]);
 
   const searchResults = useBrickSearch(

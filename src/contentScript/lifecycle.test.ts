@@ -28,23 +28,22 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "@/starterBricks/testHelpers";
 import brickRegistry from "@/bricks/registry";
+import starterBrickRegistry from "@/starterBricks/registry";
 import { hydrateModComponentInnerDefinitions } from "@/registry/hydrateInnerDefinitions";
 import {
   timestampFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { type getModComponentState } from "@/store/modComponents/modComponentStorage";
+import { getModComponentState } from "@/store/modComponents/modComponentStorage";
 import { getPlatform } from "@/platform/platformContext";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { RunReason } from "@/types/runtimeTypes";
+import * as lifecycleModule from "@/contentScript/lifecycle";
 
-let starterBrickRegistry: any;
-let lifecycleModule: any;
+jest.mock("@/store/modComponents/modComponentStorage");
 
-let getModComponentStateMock: jest.MockedFunctionDeep<
-  typeof getModComponentState
->;
+const getModComponentStateMock = jest.mocked(getModComponentState);
 
 const rootReader = new RootReader();
 
@@ -91,25 +90,16 @@ const activatedModComponentFactory = define<
 
 describe("lifecycle", () => {
   beforeEach(() => {
-    jest.isolateModules(() => {
-      jest.mock("@/store/modComponents/modComponentStorage", () => ({
-        getModComponentState: jest
-          .fn()
-          .mockRejectedValue(new Error("Mock not implemented")),
-      }));
-
-      lifecycleModule = require("@/contentScript/lifecycle");
-      starterBrickRegistry = require("@/starterBricks/registry").default;
-      getModComponentStateMock =
-        require("@/store/modComponents/modComponentStorage").getModComponentState;
-    });
-
     window.document.body.innerHTML = "";
     document.body.innerHTML = "";
+    getModComponentStateMock.mockClear();
     brickRegistry.clear();
+    starterBrickRegistry.clear();
     brickRegistry.register([rootReader]);
     rootReader.readCount = 0;
     rootReader.ref = null;
+
+    lifecycleModule.TEST_reset();
   });
 
   it("getRunningStarterBricks smoke test", () => {
@@ -148,10 +138,10 @@ describe("lifecycle", () => {
       activatedModComponents: [modComponent],
     });
 
-    // Sanity check for the test
+    // Check for interference from previous tests
     expect(getModComponentStateMock).toHaveBeenCalledTimes(0);
-    await lifecycleModule.handleNavigate();
 
+    await lifecycleModule.handleNavigate();
     await tick();
 
     expect(lifecycleModule.getRunningStarterBricks()).toEqual([starterBrick]);
@@ -291,7 +281,8 @@ describe("lifecycle", () => {
     getModComponentStateMock.mockResolvedValue({
       activatedModComponents: [updatedModComponent],
     });
-    lifecycleModule.queueReloadFrameMods();
+
+    await lifecycleModule.queueReloadFrameMods();
 
     await lifecycleModule.handleNavigate({ force: true });
     await tick();

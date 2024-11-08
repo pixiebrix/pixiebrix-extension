@@ -20,6 +20,8 @@
  * @internal
  */
 export const platformCapabilities = [
+  // Access to the PixieBrix package registry
+  "registry",
   // Access to a DOM - but not necessarily visible to a user
   "dom",
   // Access the host-page Javascript context

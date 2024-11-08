@@ -23,8 +23,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
-import type { Brick } from "@/types/brickTypes";
+import type { RegistryId } from "@/types/registryTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -39,7 +38,7 @@ import { propertiesToSchema } from "@/utils/schemaUtils";
 class RunBrickByIdTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/reflect/run");
 
-  constructor(private readonly registry: RegistryProtocol<RegistryId, Brick>) {
+  constructor() {
     super(
       RunBrickByIdTransformer.BRICK_ID,
       "[Experimental] Run Brick by ID",
@@ -83,7 +82,9 @@ class RunBrickByIdTransformer extends TransformerABC {
     let brick;
 
     try {
-      brick = await this.registry.lookup(registryId as RegistryId);
+      brick = await options.platform.registry.bricks.lookup(
+        registryId as RegistryId,
+      );
     } catch {
       throw new BusinessError(
         "Could not find brick with registry id: " + registryId,

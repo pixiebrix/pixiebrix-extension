@@ -21,7 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import {
   type DefinitionKind,
   DoesNotExistError,
-  type EnumerableRegistryProtocol,
+  type EnumerableRegistry,
   type RegistryId,
   type RegistryItem,
 } from "@/types/registryTypes";
@@ -68,7 +68,7 @@ export const clearPackages = async () => {
 class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
-> implements EnumerableRegistryProtocol<Id, Item>
+> implements EnumerableRegistry<Id, Item>
 {
   /**
    * Registered built-in items. Used to keep track of built-ins across cache clears.

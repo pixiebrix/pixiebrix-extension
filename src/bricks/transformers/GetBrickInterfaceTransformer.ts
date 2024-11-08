@@ -16,11 +16,10 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
-import type { Brick } from "@/types/brickTypes";
+import type { RegistryId } from "@/types/registryTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
@@ -34,7 +33,7 @@ import { propertiesToSchema } from "@/utils/schemaUtils";
 class GetBrickInterfaceTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/reflect/brick-get");
 
-  constructor(private readonly registry: RegistryProtocol<RegistryId, Brick>) {
+  constructor() {
     super(
       GetBrickInterfaceTransformer.BRICK_ID,
       "[Experimental] Get Brick Interface",
@@ -90,9 +89,10 @@ class GetBrickInterfaceTransformer extends TransformerABC {
     ["id", "name", "inputSchema", "outputSchema"],
   );
 
-  async transform({
-    registryId,
-  }: BrickArgs<{ registryId: string }>): Promise<unknown> {
+  async transform(
+    { registryId }: BrickArgs<{ registryId: string }>,
+    { platform }: BrickOptions,
+  ): Promise<unknown> {
     try {
       validateRegistryId(registryId);
     } catch {
@@ -107,7 +107,7 @@ class GetBrickInterfaceTransformer extends TransformerABC {
     let brick;
 
     try {
-      brick = await this.registry.lookup(registryId as RegistryId);
+      brick = await platform.registry.bricks.lookup(registryId as RegistryId);
     } catch {
       throw new BusinessError(
         "Could not find brick with registry id: " + registryId,

@@ -213,7 +213,7 @@ export function useMapBrickToNodes(): (args: MapBrickToNodesArgs) => MapOutput {
       const { instanceId } = brickConfig;
       assertNotNullish(instanceId, "instanceId is required");
 
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
       const isNodeActive = instanceId === activeNodeId;
 
       const subPipelines = getSubPipelinesForBrick(brick, brickConfig);

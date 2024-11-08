@@ -38,6 +38,7 @@ import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 import type { ModComponentRef } from "@/types/modComponentTypes";
 import type { CaptureProtocol } from "@/platform/platformTypes/captureProtocol";
+import type { RegistryProtocol } from "@/platform/platformTypes/registryProtocol";
 
 /**
  * A protocol for the platform/environment running the mods.
@@ -102,13 +103,18 @@ export interface PlatformProtocol {
   runSandboxedJavascript: (args: JavaScriptPayload) => Promise<unknown>;
 
   /**
-   * Perform an API request.
+   * Perform a (potentially-authenticated) API request.
    * @since 1.8.10
    */
   request: <TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: NetworkRequestConfig,
   ) => Promise<RemoteResponse<TData>>;
+
+  /**
+   * The package registry protocol for the platform.
+   */
+  get registry(): RegistryProtocol;
 
   /**
    * The runtime logger for the platform.

@@ -170,7 +170,7 @@ export function useGetSubPipelineNodes() {
 
       const isNodeActive = nodeId === activeNodeId;
 
-      const brick = allBricks?.get(brickConfig.id)?.block;
+      const brick = allBricks?.get(brickConfig.id)?.brick;
       const subPipelines = getSubPipelinesForBrick(brick, brickConfig);
 
       const nodes: EditorNodeProps[] = [];

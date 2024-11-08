@@ -16,7 +16,6 @@
  */
 
 import { getModComponentState } from "@/store/modComponents/modComponentStorage";
-import starterBrickRegistry from "@/starterBricks/registry";
 import { updateNavigationId } from "@/contentScript/context";
 import * as sidebar from "@/contentScript/sidebarController";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
@@ -56,6 +55,8 @@ import { notifyNavigationComplete } from "@/contentScript/sidebarController";
 import pDefer from "p-defer";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+// Can't reference contentScriptPlatform directly because some bricks currently reference this module
+import { getPlatform } from "@/platform/platformContext";
 
 /**
  * True if handling the initial frame load.
@@ -483,7 +484,7 @@ async function loadActivatedModComponents(): Promise<StarterBrick[]> {
         ]) => {
           try {
             const starterBrick =
-              await starterBrickRegistry.lookup(starterBrickId);
+              await getPlatform().registry.starterBricks.lookup(starterBrickId);
 
             // It's tempting to call starterBrick.isAvailable here and skip if it's not available.
             // However, that would cause the starter brick to be unavailable for the entire frame session
@@ -742,4 +743,20 @@ export async function initNavigation() {
     _activatedModComponentStarterBrickMap.clear();
     _draftModComponentStarterBrickMap.clear();
   });
+}
+
+/**
+ * Test helper method to reset lifecycle module state.
+ *
+ * Simpler to use than Jest's isolateModules/resetModules which seem to have gotchas with getPlatform() and other
+ * module-level state.
+ * @internal
+ */
+export function TEST_reset(): void {
+  _initialFrameLoad = true;
+  pendingFrameLoadPromise = null;
+  _runningStarterBricks.clear();
+  _activatedModComponentStarterBrickMap.clear();
+  _draftModComponentStarterBrickMap.clear();
+  lastUrl = undefined;
 }

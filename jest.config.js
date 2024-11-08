@@ -90,7 +90,7 @@ const config = {
   ],
   setupFilesAfterEnv: [
     "<rootDir>/src/testUtils/testAfterEnv.ts",
-    "<rootDir>/src/testUtils/injectRegistries.ts",
+    "<rootDir>/src/testUtils/injectPlatform.ts",
     "<rootDir>/src/testUtils/extendedExpectations.ts",
     "jest-extended/all",
   ],

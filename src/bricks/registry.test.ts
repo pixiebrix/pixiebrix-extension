@@ -55,7 +55,7 @@ describe("bricksMap", () => {
     const typedBrick = typedBricks.get(brick.id);
 
     expect(typedBrick!.type).toBe("reader");
-    expect(typedBrick!.block).toBe(brick);
+    expect(typedBrick!.brick).toBe(brick);
   });
 
   test("returns bricks of multiple registrations", async () => {
@@ -66,7 +66,7 @@ describe("bricksMap", () => {
 
     for (const brick of bricks) {
       expect(enrichedBlocks.get(brick.id)!.type).toBe("reader");
-      expect(enrichedBlocks.get(brick.id)!.block).toBe(brick);
+      expect(enrichedBlocks.get(brick.id)!.brick).toBe(brick);
     }
   });
 

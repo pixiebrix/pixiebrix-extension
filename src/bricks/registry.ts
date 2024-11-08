@@ -25,10 +25,10 @@ import { partial } from "lodash";
 import { allSettled } from "@/utils/promiseUtils";
 
 /**
- * A brick along with inferred/calculated information
+ * A brick along with its inferred/calculated information
  */
 export type TypedBrickPair = {
-  block: Brick;
+  brick: Brick;
   type: BrickType | null;
 };
 
@@ -68,7 +68,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
         //  this module? getType references the brickRegistry in order to calculate the type for composite bricks
         //  that are defined as a pipeline of other blocks.
         typeCache.set(item.id, {
-          block: item,
+          brick: item,
           type: await getType(item),
         });
       }),
@@ -102,7 +102,6 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
 
 /**
  * The singleton brick registry instance
- * @see initRuntime
  */
 const registry = new BrickRegistry();
 
