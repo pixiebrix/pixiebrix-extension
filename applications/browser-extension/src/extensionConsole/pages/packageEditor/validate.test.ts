@@ -16,11 +16,11 @@
  */
 
 import { validateSchema } from "./validate";
-import trelloModDefinition from "../../../../contrib/recipes/trello-slack.yaml";
-import amazonBrick from "../../../../contrib/bricks/amazon-search.yaml";
-import v3ModDefinition from "../../../../contrib/recipes/v3-example.txt";
+import trelloModDefinition from "@/contrib/recipes/trello-slack.yaml";
+import amazonBrick from "@/contrib/bricks/amazon-search.yaml";
+import v3ModDefinition from "@/contrib/recipes/v3-example.txt";
 import { objToYaml } from "../../../utils/objToYaml";
-import v3OptionalIntegrations from "../../../../contrib/recipes/v3-optional-services-example.txt";
+import v3OptionalIntegrations from "@/contrib/recipes/v3-optional-services-example.txt";
 
 describe("validateSchema", () => {
   test("validates a v1 blueprint", async () => {

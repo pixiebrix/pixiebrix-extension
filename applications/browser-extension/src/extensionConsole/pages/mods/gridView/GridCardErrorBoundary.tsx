@@ -18,7 +18,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import { type ModViewItem } from "../../../../types/modTypes";
-import ErrorBoundary from "../../../../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import styles from "./GridCard.module.scss";
 import cx from "classnames";

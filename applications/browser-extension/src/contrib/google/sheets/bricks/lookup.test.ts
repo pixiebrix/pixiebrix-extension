@@ -18,7 +18,7 @@
 import * as sheets from "../core/sheetsApi";
 import { GoogleSheetsLookup } from "./lookup";
 import { type ValueRange } from "../core/types";
-import { BusinessError, PropError } from "../../../../errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import { sanitizedIntegrationConfigFactory } from "../../../../testUtils/factories/integrationFactories";
 
 // XXX: sheetsApi should likely be mocked at the network level, not the module level

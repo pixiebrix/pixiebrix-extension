@@ -20,18 +20,18 @@ import styles from "./PackageDetail.module.scss";
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
-import AceEditor from "../../../../components/AceEditor";
+import AceEditor from "@/components/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClipboard,
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import SchemaTree from "../../../../components/schemaTree/SchemaTree";
-import useUserAction from "../../../../hooks/useUserAction";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
+import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { type Schema } from "../../../../types/schemaTypes";
-import { useGetMarketplaceListingsQuery } from "../../../../data/service/api";
-import PackageIcon from "../../../../components/PackageIcon";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
+import PackageIcon from "@/components/PackageIcon";
 import { writeToClipboard } from "../../../../utils/clipboardUtils";
 import { type PackageInstance } from "../../../../types/registryTypes";
 import { MARKETPLACE_URL } from "../../../../urlConstants";

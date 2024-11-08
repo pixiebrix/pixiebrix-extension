@@ -1,13 +1,13 @@
 import React, { type ChangeEvent } from "react";
-import FieldTemplate from "../../../components/form/FieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import SwitchButtonWidget, {
   type CheckBoxLike,
-} from "../../../components/form/widgets/switchButton/SwitchButtonWidget";
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { isEmpty, partial } from "lodash";
 import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
-import NumberWidget from "../../../components/fields/schemaFields/widgets/NumberWidget";
-import BooleanWidget from "../../../components/fields/schemaFields/widgets/BooleanWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import NumberWidget from "@/components/fields/schemaFields/widgets/NumberWidget";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { useField, useFormikContext } from "formik";
 import { type TriggerFormState } from "../../starterBricks/formStateTypes";
 import { type DebounceOptions } from "../../../starterBricks/types";

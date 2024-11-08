@@ -30,19 +30,19 @@ import {
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
-import { checkAvailable, testMatchPatterns } from "../../bricks/available";
-import { hasSpecificErrorCause } from "../../errors/errorHelpers";
+import { checkAvailable, testMatchPatterns } from "@/bricks/available";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "../../telemetry/reportError";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
 import { selectEventData } from "../../telemetry/deployments";
 import apiVersionOptions from "../../runtime/apiVersionOptions";
-import { collectAllBricks } from "../../bricks/util";
-import { mergeReaders } from "../../bricks/readers/readerUtils";
-import quickBarRegistry from "../../components/quickBar/quickBarRegistry";
+import { collectAllBricks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "../../icons/Icon";
 import { guessSelectedElement } from "../../utils/selectionController";
-import { BusinessError, CancelError } from "../../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import {
   type StarterBrick,
   type StarterBrickType,

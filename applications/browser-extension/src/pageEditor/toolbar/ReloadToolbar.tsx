@@ -18,15 +18,15 @@
 import React, { useCallback, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { adapterForComponent } from "../starterBricks/adapter";
-import ToggleField from "../components/ToggleField";
+import ToggleField from "@/pageEditor/components/ToggleField";
 import { Button } from "react-bootstrap";
-import { updateDraftModComponent } from "../../contentScript/messenger/api";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "../store/session/sessionSelectors";
-import useKeyboardShortcut from "../../hooks/useKeyboardShortcut";
+import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "../context/connection";
 import { StarterBrickTypes } from "../../types/starterBrickTypes";
 import { RunReason } from "../../types/runtimeTypes";

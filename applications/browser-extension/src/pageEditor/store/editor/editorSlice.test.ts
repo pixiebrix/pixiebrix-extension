@@ -22,15 +22,15 @@ import {
   persistEditorConfig,
 } from "./editorSlice";
 import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
-import {
-  type EditorRootState,
-  type EditorState,
-} from "./pageEditorTypes";
+import { type EditorRootState, type EditorState } from "./pageEditorTypes";
 import { FOUNDATION_NODE_ID } from "./uiState";
-import brickRegistry from "../../../bricks/registry";
-import { echoBrick, teapotBrick } from "../../../runtime/pipelineTests/testHelpers";
+import brickRegistry from "@/bricks/registry";
+import {
+  echoBrick,
+  teapotBrick,
+} from "../../../runtime/pipelineTests/testHelpers";
 import { type OutputKey } from "../../../types/runtimeTypes";
-import { defaultBrickConfig } from "../../../bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import { validateRegistryId } from "../../../types/helpers";
 import {
   autoUUIDSequence,

@@ -1,9 +1,9 @@
 import { initPerformanceMonitoring } from "./performance";
 import { getDNT } from "./dnt";
-import { flagOn } from "../auth/featureFlagStorage";
-import { getBaseURL } from "../data/service/baseService";
+import { flagOn } from "@/auth/featureFlagStorage";
+import { getBaseURL } from "@/data/service/baseService";
 import { datadogRum } from "@datadog/browser-rum";
-import { readAuthData } from "../auth/authStorage";
+import { readAuthData } from "@/auth/authStorage";
 
 jest.mock("./dnt");
 jest.mock("../auth/featureFlagStorage");

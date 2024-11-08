@@ -23,7 +23,7 @@ import styles from "./ListItem.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import ErrorBoundary from "../../../../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { DEFAULT_TEXT_ICON_COLOR } from "../../../../icons/constants";
 
 type Props = {

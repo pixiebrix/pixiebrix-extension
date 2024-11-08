@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "../dataPanelTypes";
 import DataTabPane from "../DataTabPane";
 import DataTabJsonTree from "../DataTabJsonTree";
-import { selectModComponentAnnotations } from "../../../../../analysis/analysisSelectors";
+import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";
 
 /**

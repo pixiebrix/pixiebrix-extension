@@ -25,18 +25,18 @@ import {
   selectActiveModComponentRef,
   selectParentNodeInfo,
 } from "../../store/editor/editorSelectors";
-import { getErrorMessage, type SimpleErrorObject } from "../../../errors/errorHelpers";
+import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "../../../types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
-import { runRendererBrick } from "../../../contentScript/messenger/api";
+import { runRendererBrick } from "@/contentScript/messenger/api";
 import { removeEmptyValues } from "../../starterBricks/base";
 import { selectActiveModComponentTraceForBrick } from "../../store/runtime/runtimeSelectors";
 import { type UUID } from "../../../types/stringTypes";
 import { type BrickArgsContext } from "../../../types/runtimeTypes";
 import { isExpression } from "../../../utils/expressionUtils";
 import makeIntegrationContextFromDependencies from "../../../integrations/util/makeIntegrationContextFromDependencies";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "../../context/connection";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 

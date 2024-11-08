@@ -28,12 +28,12 @@ import {
   getReservedPanelEntries,
   isSidePanelOpen,
   sidebarShowEvents,
-} from "../../contentScript/sidebarController";
+} from "@/contentScript/sidebarController";
 import {
   modComponentRefFactory,
   modMetadataFactory,
 } from "../../testUtils/factories/modComponentFactories";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { sleep } from "../../utils/timeUtils";
 import { getPlatform } from "../../platform/platformContext";
 import {

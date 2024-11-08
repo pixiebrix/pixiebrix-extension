@@ -17,7 +17,7 @@
 
 import { EffectABC } from "../../types/bricks/effectTypes";
 import { partial } from "lodash";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type Schema } from "../../types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
 import type { PlatformCapability } from "../../platform/capabilities";

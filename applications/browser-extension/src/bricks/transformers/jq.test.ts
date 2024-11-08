@@ -18,7 +18,7 @@
 import { JQTransformer } from "./jq";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { InputValidationError } from "../errors";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "../../runtime/runtimeUtils";
 import { type RenderedArgs } from "../../types/runtimeTypes";

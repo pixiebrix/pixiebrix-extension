@@ -26,14 +26,14 @@ import {
   faShieldAlt,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
-import AsyncButton from "../../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { type ModViewItem } from "../../../types/modTypes";
 import useModPermissions from "../../../mods/hooks/useModPermissions";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
 import { useHistory } from "react-router";
-import { UI_PATHS } from "../../../data/service/urlPaths";
-import { TrialAwareButton } from "../../../components/teamTrials/TrialAwareButton";
+import { UI_PATHS } from "@/data/service/urlPaths";
+import { TrialAwareButton } from "@/components/teamTrials/TrialAwareButton";
 import useFindModInstance from "../../../mods/hooks/useFindModInstance";
 import { compact } from "lodash";
 

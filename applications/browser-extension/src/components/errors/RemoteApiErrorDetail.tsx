@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { type ProxiedResponse } from "../../errors/businessErrors";
+import { type ProxiedResponse } from "@/errors/businessErrors";
 import styles from "./ErrorDetail.module.scss";
-import { safeGuessStatusText } from "../../errors/networkErrorHelpers";
+import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 import JsonTree from "../jsonTree/JsonTree";
 
 /**

@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   type ConfirmationModalProps,
   useModals,
-} from "../../components/ConfirmationModal";
+} from "@/components/ConfirmationModal";
 import { actions as editorActions } from "../store/editor/editorSlice";
 import { actions as modComponentActions } from "../../store/modComponents/modComponentSlice";
 import { isInnerDefinitionRegistryId } from "../../types/helpers";

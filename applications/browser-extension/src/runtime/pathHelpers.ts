@@ -16,7 +16,7 @@
  */
 
 import { identity, toPath, trimEnd } from "lodash";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { cleanValue, isObject } from "../utils/objectUtils";
 import { joinName } from "../utils/formUtils";
 

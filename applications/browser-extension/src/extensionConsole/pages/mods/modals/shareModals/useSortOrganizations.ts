@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectAuth } from "../../../../../auth/authSelectors";
+import { selectAuth } from "@/auth/authSelectors";
 import { sortBy } from "lodash";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";

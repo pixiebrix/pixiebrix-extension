@@ -15,12 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPipeline, type PipelineFlavor } from "../../../../../bricks/types";
+import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
 import { PIPELINE_BRICKS_FIELD_NAME } from "../../../../consts";
-import {
-  type MapOutput,
-  type EditorNodeProps,
-} from "./types";
+import { type MapOutput, type EditorNodeProps } from "./types";
 import { type useGetNodeState } from "./useGetNodeState";
 import { useGetSubPipelineNodes } from "./useGetSubPipelineNodes";
 import { useGetTraceHandling } from "./useGetTraceHandling";

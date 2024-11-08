@@ -21,12 +21,12 @@ import integrationsSlice from "../../../../integrations/store/integrationsSlice"
 import { useDispatch, useSelector } from "react-redux";
 import { uuidv4 } from "../../../../types/helpers";
 import notify from "../../../../utils/notify";
-import { integrationConfigLocator } from "../../../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import Form, {
   type RenderBody,
   type RenderSubmit,
-} from "../../../../components/form/Form";
-import ConnectedFieldTemplate from "../../../../components/form/ConnectedFieldTemplate";
+} from "@/components/form/Form";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
 import { normalizeControlRoomUrl } from "./partnerOnboardingUtils";

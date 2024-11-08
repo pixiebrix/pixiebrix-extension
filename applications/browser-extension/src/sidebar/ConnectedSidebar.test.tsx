@@ -18,21 +18,21 @@
 import React from "react";
 import ConnectedSidebar from "./ConnectedSidebar";
 import { render } from "./testHelpers";
-import { authActions } from "../auth/authSlice";
+import { authActions } from "@/auth/authSlice";
 import { waitForEffect } from "../testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
 import {
   mockAnonymousMeApiResponse,
   mockAuthenticatedMeApiResponse,
 } from "../testUtils/userMock";
-import useLinkState from "../auth/useLinkState";
+import useLinkState from "@/auth/useLinkState";
 import {
   authStateFactory,
   meWithPartnerApiResponseFactory,
 } from "../testUtils/factories/authFactories";
 import { appApiMock } from "../testUtils/appApiMock";
 import { valueToAsyncState } from "../utils/asyncStateUtils";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { getConnectedTabIdForSidebarTopFrame } from "./connectedTarget";
 import sidebarSlice from "../store/sidebar/sidebarSlice";
 import { datadogRum } from "@datadog/browser-rum";

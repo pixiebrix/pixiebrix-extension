@@ -26,7 +26,7 @@ import {
   type ModDefinition,
 } from "../../types/modDefinitionTypes";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import { mapModComponentDefinitionToActivatedModComponent } from "../../activation/mapModComponentDefinitionToActivatedModComponent";
+import { mapModComponentDefinitionToActivatedModComponent } from "@/activation/mapModComponentDefinitionToActivatedModComponent";
 import { modComponentToFormState } from "../starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "../testHelpers";

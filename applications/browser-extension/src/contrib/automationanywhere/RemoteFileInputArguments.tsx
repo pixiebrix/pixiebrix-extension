@@ -18,9 +18,9 @@
 import React from "react";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import { useField } from "formik";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { cachedFetchSchema } from "./aaApi";
-import RemoteSchemaObjectField from "../../components/fields/schemaFields/RemoteSchemaObjectField";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
 
 const RemoteFileInputArguments: React.FC<{
   fileIdFieldName: string;

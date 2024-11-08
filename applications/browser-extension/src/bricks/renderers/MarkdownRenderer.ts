@@ -17,7 +17,7 @@
 
 import { RendererABC } from "../../types/bricks/rendererTypes";
 import { validateRegistryId } from "../../types/helpers";
-import MarkdownLazy from "../../components/Markdown";
+import MarkdownLazy from "@/components/Markdown";
 import { type BrickArgs, type ComponentRef } from "../../types/runtimeTypes";
 import { ADD_IFRAME_CONFIG } from "../../utils/sanitize";
 import { propertiesToSchema } from "../../utils/schemaUtils";

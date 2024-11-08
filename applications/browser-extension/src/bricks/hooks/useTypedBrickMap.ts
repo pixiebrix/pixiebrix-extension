@@ -17,7 +17,7 @@
 
 import brickRegistry, { type TypedBrickMap } from "../registry";
 import type { AsyncState } from "../../types/sliceTypes";
-import useAsyncExternalStore from "../../hooks/useAsyncExternalStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
 function subscribe(callback: () => void) {
   brickRegistry.onChange.add(callback);

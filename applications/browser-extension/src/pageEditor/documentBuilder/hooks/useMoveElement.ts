@@ -24,7 +24,7 @@ import { produce } from "immer";
 import { getIn, useField } from "formik";
 import { getAllowedChildTypes } from "../allowedElementTypes";
 import { useCallback } from "react";
-import useReduxState from "../../../hooks/useReduxState";
+import useReduxState from "@/hooks/useReduxState";
 import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
 import { actions as editorActions } from "../../store/editor/editorSlice";
 

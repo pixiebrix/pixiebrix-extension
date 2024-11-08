@@ -23,7 +23,7 @@ import {
   valueToAsyncState,
 } from "../utils/asyncStateUtils";
 import { setPermissions } from "../testUtils/permissionsMock";
-import { INTERNAL_reset } from "../hooks/useAsyncExternalStore";
+import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 
 const selectAdditionalMock = jest.mocked(extractAdditionalPermissions);
 

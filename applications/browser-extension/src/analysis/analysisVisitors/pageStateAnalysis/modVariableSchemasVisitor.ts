@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPosition } from "../../../bricks/types";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import PipelineVisitor, {
   type VisitBlockExtra,
-} from "../../../bricks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
-import brickRegistry, { type TypedBrickMap } from "../../../bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { type Schema } from "../../../types/schemaTypes";
 import { compact, isEqual, uniqWith } from "lodash";
 

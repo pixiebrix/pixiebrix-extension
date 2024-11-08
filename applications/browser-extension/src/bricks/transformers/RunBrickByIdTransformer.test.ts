@@ -21,7 +21,7 @@ import RunBrickByIdTransformer from "./RunBrickByIdTransformer";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 import { InputValidationError } from "../errors";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 const brick = new RunBrickByIdTransformer(brickRegistry);
 

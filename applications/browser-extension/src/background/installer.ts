@@ -21,9 +21,9 @@ import { initTelemetry, recordEvent } from "./telemetry";
 import { getUUID } from "../telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "../telemetry/dnt";
 import { gt } from "semver";
-import { getBaseURL } from "../data/service/baseService";
-import { getExtensionToken, getUserData, isLinked } from "../auth/authStorage";
-import { isCommunityControlRoom } from "../contrib/automationanywhere/aaUtils";
+import { getBaseURL } from "@/data/service/baseService";
+import { getExtensionToken, getUserData, isLinked } from "@/auth/authStorage";
+import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "../utils/expectContext";
 import {
@@ -41,7 +41,7 @@ import {
   getExtensionVersion,
 } from "../utils/extensionUtils";
 import { oncePerSession } from "../mv3/SessionStorage";
-import { resetFeatureFlagsCache } from "../auth/featureFlagStorage";
+import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { normalizeSemVerString } from "@/types/helpers";
 import { type SemVerString } from "@/types/registryTypes";
 

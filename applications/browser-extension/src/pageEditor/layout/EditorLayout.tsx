@@ -18,22 +18,20 @@
 import React, { useEffect, useMemo } from "react";
 import ModListingPanel from "../modListingPanel/ModListingPanel";
 import { useDispatch, useSelector } from "react-redux";
-import useFlags from "../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import Modals from "../modals/Modals";
 import EditorContent from "./EditorContent";
 import styles from "./EditorLayout.module.scss";
 import RestrictedPane from "../panes/RestrictedPane";
-import InsertPane, {
-  useInsertPane,
-} from "../panes/insert/InsertPane";
+import InsertPane, { useInsertPane } from "../panes/insert/InsertPane";
 import useCurrentInspectedUrl from "../hooks/useCurrentInspectedUrl";
 import NonScriptablePage from "../panes/NonScriptablePage";
 import { isScriptableUrl } from "webext-content-scripts";
-import Loader from "../../components/Loader";
-import { selectIsStaleSession } from "../../store/sessionChanges/sessionChangesSelectors";
+import Loader from "@/components/Loader";
+import { selectIsStaleSession } from "@/store/sessionChanges/sessionChangesSelectors";
 import StaleSessionPane from "../panes/StaleSessionPane";
 import { actions as editorActions } from "../store/editor/editorSlice";
-import { RestrictedFeatures } from "../../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const EditorLayout: React.FunctionComponent = () => {
   const dispatch = useDispatch();

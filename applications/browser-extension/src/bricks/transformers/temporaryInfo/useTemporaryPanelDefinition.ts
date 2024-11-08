@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPanelDefinition } from "../../../contentScript/messenger/api";
+import { getPanelDefinition } from "@/contentScript/messenger/api";
 import { type UUID } from "../../../types/stringTypes";
 import { type TemporaryPanelEntry } from "../../../types/sidebarTypes";
 import { type Target } from "../../../types/messengerTypes";
@@ -26,7 +26,7 @@ import {
   removeListener,
 } from "./receiverProtocol";
 import { validateUUID } from "../../../types/helpers";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { type Nullishable } from "../../../utils/nullishUtils";
 
 type PanelDefinition = {

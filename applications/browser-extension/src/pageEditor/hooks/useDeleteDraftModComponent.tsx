@@ -21,13 +21,13 @@ import { selectSessionId } from "../store/session/sessionSelectors";
 import {
   type ConfirmationModalProps,
   useModals,
-} from "../../components/ConfirmationModal";
+} from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
 import notify from "../../utils/notify";
 import { actions as editorActions } from "../store/editor/editorSlice";
-import { removeDraftModComponents } from "../../contentScript/messenger/api";
+import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { allFramesInInspectedTab } from "../context/connection";
 import { selectActivatedModComponentsMap } from "../../store/modComponents/modComponentSelectors";
 import { selectGetSiblingDraftModComponents } from "../store/editor/editorSelectors";

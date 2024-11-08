@@ -25,9 +25,9 @@ import {
   generateVerifier,
   getRandomString,
 } from "../../vendors/pkce";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import axios, { type AxiosResponse } from "axios";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { setCachedAuthData } from "./authStorage";
 import { assertNotNullish } from "../../utils/nullishUtils";
 import { launchWebAuthFlow } from "./authHelpers";

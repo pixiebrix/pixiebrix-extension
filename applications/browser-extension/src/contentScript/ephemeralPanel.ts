@@ -26,10 +26,10 @@ import {
   waitForTemporaryPanel,
 } from "../platform/panels/panelController";
 import type { TemporaryPanelEntry } from "@/types/sidebarTypes";
-import { BusinessError, CancelError } from "../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { once } from "lodash";
-import { isSpecificError } from "../errors/errorHelpers";
-import { AbortPanelAction, ClosePanelAction } from "../bricks/errors";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { AbortPanelAction, ClosePanelAction } from "@/bricks/errors";
 import {
   hideTemporarySidebarPanel,
   showSidebar,

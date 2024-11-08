@@ -16,18 +16,15 @@
  */
 
 import React, { useContext, useEffect } from "react";
-import SelectWidget, {
-  type Option,
-  type SelectLike,
-} from "./SelectWidget";
+import SelectWidget, { type Option, type SelectLike } from "./SelectWidget";
 import { type SanitizedIntegrationConfig } from "../../../integrations/integrationTypes";
 import { type CustomFieldWidgetProps } from "../FieldTemplate";
 import isPromise from "is-promise";
-import useReportError from "../../../hooks/useReportError";
+import useReportError from "@/hooks/useReportError";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { useOptionsResolver } from "./useOptionsResolver";
 import FieldTemplateLocalErrorContext from "./FieldTemplateLocalErrorContext";
 

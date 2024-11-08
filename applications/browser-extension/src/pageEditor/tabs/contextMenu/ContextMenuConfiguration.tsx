@@ -16,17 +16,15 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import TemplateWidget, {
-  type Snippet,
-} from "../../fields/TemplateWidget";
+import TemplateWidget, { type Snippet } from "../../fields/TemplateWidget";
 import MultiSelectWidget from "../../fields/MultiSelectWidget";
 import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
 import ExtraPermissionsSection from "../ExtraPermissionsSection";
 import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
 import { useField } from "formik";
-import SwitchButtonWidget from "../../../components/form/widgets/switchButton/SwitchButtonWidget";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 

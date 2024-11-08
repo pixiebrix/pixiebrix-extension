@@ -1,9 +1,9 @@
 import type { RegistryId } from "../../../types/registryTypes";
 import { useSelector } from "react-redux";
 import { selectGetDraftFormStatesPromiseForModId } from "../../starterBricks/adapter";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import type { ModVariable } from "./modVariablesDefinitionEditorTypes";
-import ModVariableSchemasVisitor from "../../../analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
+import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { reduce } from "lodash";
 import {
   minimalSchemaFactory,

@@ -24,7 +24,7 @@ import { useSelector } from "react-redux";
 import { selectTabHasPermissions } from "../store/tabState/tabStateSelectors";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import reportEvent from "../../telemetry/reportEvent";
-import { Events } from "../../telemetry/events";
+import { Events } from "@/telemetry/events";
 import { selectSessionId } from "../store/session/sessionSelectors";
 import { inspectedTab } from "../context/connection";
 import { useAvailableFormStateAdapters } from "../starterBricks/adapter";

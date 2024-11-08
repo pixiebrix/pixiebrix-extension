@@ -23,7 +23,7 @@ import notify from "../../../utils/notify";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { renderHook } from "../../testHelpers";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 

@@ -16,11 +16,11 @@
  */
 
 import React from "react";
-import { getExtensionAuth } from "../auth/authStorage";
+import { getExtensionAuth } from "@/auth/authStorage";
 import { isExtensionContext } from "webext-detect";
-import { connectPage } from "../background/messenger/external/api";
-import Banner, { type BannerVariant } from "../components/banner/Banner";
-import useAsyncState from "../hooks/useAsyncState";
+import { connectPage } from "@/background/messenger/external/api";
+import Banner, { type BannerVariant } from "@/components/banner/Banner";
+import useAsyncState from "@/hooks/useAsyncState";
 
 // TODO: don't use process.env here so that we can use the same JS app bundle for all environments
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259

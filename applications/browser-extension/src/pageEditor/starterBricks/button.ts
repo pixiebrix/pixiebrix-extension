@@ -41,11 +41,11 @@ import { getDomain } from "../../permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
 import ButtonConfiguration from "../tabs/button/ButtonConfiguration";
-import { insertButton } from "../../contentScript/messenger/api";
+import { insertButton } from "@/contentScript/messenger/api";
 import {
   type DraftButtonModComponent,
   type ButtonSelectionResult,
-} from "../../contentScript/pageEditor/types";
+} from "@/contentScript/pageEditor/types";
 import { type ButtonFormState } from "./formStateTypes";
 import {
   type ButtonDefinition,

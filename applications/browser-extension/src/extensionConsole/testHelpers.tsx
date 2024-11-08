@@ -16,7 +16,7 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "../auth/authSlice";
+import { authSlice } from "@/auth/authSlice";
 import modComponentSlice from "../store/modComponents/modComponentSlice";
 import settingsSlice from "../store/settings/settingsSlice";
 import { modModalsSlice } from "./pages/mods/modals/modModalsSlice";
@@ -26,7 +26,7 @@ import {
 } from "../testUtils/testHelpers";
 import modsPageSlice from "./pages/mods/modsPageSlice";
 import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
-import { appApi } from "../data/service/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";
 import integrationsSlice from "../integrations/store/integrationsSlice";
 import workshopSlice from "../store/workshopSlice";

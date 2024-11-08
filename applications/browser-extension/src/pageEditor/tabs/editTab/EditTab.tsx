@@ -20,7 +20,7 @@ import { Collapse, Tab } from "react-bootstrap";
 import EditorNodeLayout from "./editorNodeLayout/EditorNodeLayout";
 import EditorNodeConfigPanel from "./editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import ErrorBoundary from "../../../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import BrickDataPanel from "./dataPanel/BrickDataPanel";
 import useModComponentTrace from "../../hooks/useModComponentTrace";
 import StarterBrickDataPanel from "./dataPanel/StarterBrickDataPanel";
@@ -33,7 +33,7 @@ import {
 } from "../../store/editor/editorSelectors";
 import useApiVersionAtLeast from "../../hooks/useApiVersionAtLeast";
 import UnsupportedRuntimeVersion from "./UnsupportedRuntimeVersion";
-import TooltipIconButton from "../../../components/TooltipIconButton";
+import TooltipIconButton from "@/components/TooltipIconButton";
 import {
   faAngleDoubleLeft,
   faCopy,
@@ -42,10 +42,10 @@ import {
 import cx from "classnames";
 import useReportTraceError from "./useReportTraceError";
 import StarterBrickConfigPanel from "./StarterBrickConfigPanel";
-import { type UUID } from "../../../types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { actions } from "../../store/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const EditTab: React.FC<{
   eventKey: string;

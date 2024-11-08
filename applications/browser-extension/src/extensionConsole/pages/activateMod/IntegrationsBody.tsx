@@ -19,23 +19,23 @@ import styles from "./IntegrationsBody.module.scss";
 
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
-import { type ModDefinition } from "../../../types/modDefinitionTypes";
-import AuthWidget from "../../../components/integrations/AuthWidget";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import AuthWidget from "@/components/integrations/AuthWidget";
 import IntegrationDescriptor from "./IntegrationDescriptor";
 import { useField } from "formik";
-import { useAuthOptions } from "../../../hooks/useAuthOptions";
-import { useGetIntegrationsQuery } from "../../../data/service/api";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
+import { useGetIntegrationsQuery } from "@/data/service/api";
 import ServiceFieldError from "../../components/ServiceFieldError";
 import FieldAnnotationAlert from "../../../components/annotationAlert/FieldAnnotationAlert";
-import { AnnotationType } from "../../../types/annotationTypes";
+import { AnnotationType } from "@/types/annotationTypes";
 import { isEmpty } from "lodash";
-import { type RegistryId } from "../../../types/registryTypes";
-import { joinName } from "../../../utils/formUtils";
-import { type IntegrationDependency } from "../../../integrations/integrationTypes";
+import { type RegistryId } from "@/types/registryTypes";
+import { joinName } from "@/utils/formUtils";
+import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getModDefinitionIntegrationIds from "../../../integrations/util/getModDefinitionIntegrationIds";
-import { freeze } from "../../../utils/objectUtils";
-import type { AuthOption } from "../../../auth/authTypes";
-import { fallbackValue } from "../../../utils/asyncStateUtils";
+import { freeze } from "@/utils/objectUtils";
+import type { AuthOption } from "@/auth/authTypes";
+import { fallbackValue } from "@/utils/asyncStateUtils";
 
 const NO_AUTH_OPTIONS = freeze<AuthOption[]>([]);
 

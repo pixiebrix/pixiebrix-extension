@@ -23,7 +23,7 @@ import {
 } from "../../platform/capabilities";
 import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
 import { propertiesToSchema } from "../../utils/schemaUtils";
-import { isContentScriptPlatformProtocol } from "../../contentScript/platform/contentScriptPlatformProtocol";
+import { isContentScriptPlatformProtocol } from "@/contentScript/platform/contentScriptPlatformProtocol";
 
 class SelectElement extends TransformerABC {
   constructor() {

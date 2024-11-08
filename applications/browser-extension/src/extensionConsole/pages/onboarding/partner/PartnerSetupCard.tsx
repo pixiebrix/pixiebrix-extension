@@ -18,28 +18,28 @@
 import React, { useEffect } from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
-} from "../../../../components/onboarding/OnboardingChecklistCard";
+} from "@/components/onboarding/OnboardingChecklistCard";
 import ControlRoomOAuthForm from "./ControlRoomOAuthForm";
 import ControlRoomTokenForm from "./ControlRoomTokenForm";
 import { selectSettings } from "../../../../store/settings/settingsSelectors";
-import { useGetMeQuery } from "../../../../data/service/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
-import { selectIsLoggedIn } from "../../../../auth/authSelectors";
+import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { getBaseURL } from "../../../../data/service/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { useActivatePartnerTheme } from "../../../../store/settings/settingsSlice";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,
   isCommunityControlRoom,
-} from "../../../../contrib/automationanywhere/aaUtils";
-import useAsyncState from "../../../../hooks/useAsyncState";
+} from "@/contrib/automationanywhere/aaUtils";
+import useAsyncState from "@/hooks/useAsyncState";
 import useManagedStorageState from "../../../../store/enterprise/useManagedStorageState";
 import { type FetchableAsyncState } from "../../../../types/sliceTypes";
-import useLinkState from "../../../../auth/useLinkState";
-import Loader from "../../../../components/Loader";
+import useLinkState from "@/auth/useLinkState";
+import Loader from "@/components/Loader";
 
 /**
  * Create the app URL for the partner start page. It shows content based on whether or not the hostname corresponds

@@ -22,7 +22,7 @@ import {
   type StarterBrickDefinitionLike,
 } from "./types";
 import deepEquals from "fast-deep-equal";
-import { normalizeAvailability } from "../bricks/available";
+import { normalizeAvailability } from "@/bricks/available";
 import { omit } from "lodash";
 
 /**

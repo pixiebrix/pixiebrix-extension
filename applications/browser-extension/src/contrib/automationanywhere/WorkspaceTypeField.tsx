@@ -18,9 +18,9 @@
 import React from "react";
 import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import { isCommunityControlRoom } from "./aaUtils";
-import SelectWidget from "../../components/form/widgets/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { WORKSPACE_OPTIONS } from "./util";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const WorkspaceTypeField: React.FC<{
   workspaceTypeFieldName: string;

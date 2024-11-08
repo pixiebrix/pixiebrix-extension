@@ -19,8 +19,11 @@ import { EffectABC } from "../../types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
-import { BusinessError, PropError } from "../../errors/businessErrors";
-import { type ContentType, detectContentType } from "../../utils/clipboardUtils";
+import { BusinessError, PropError } from "@/errors/businessErrors";
+import {
+  type ContentType,
+  detectContentType,
+} from "../../utils/clipboardUtils";
 import { convertDataUrl } from "../../utils/parseDataUrl";
 import type { PlatformCapability } from "../../platform/capabilities";
 

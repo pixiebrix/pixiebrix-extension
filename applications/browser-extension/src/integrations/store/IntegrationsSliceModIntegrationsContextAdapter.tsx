@@ -17,7 +17,7 @@
 
 import React, { type ReactNode } from "react";
 import { useFormikContext } from "formik";
-import { type IntegrationsFormSlice } from "../../components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
+import { type IntegrationsFormSlice } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import ModIntegrationsContext, {
   type ModIntegrationsContextValue,
 } from "../../mods/ModIntegrationsContext";

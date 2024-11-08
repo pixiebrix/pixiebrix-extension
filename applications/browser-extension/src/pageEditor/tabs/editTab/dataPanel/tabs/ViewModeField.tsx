@@ -6,10 +6,10 @@ import { selectNodeDataPanelTabState } from "../../../../store/editor/editorSele
 import { type DataPanelTabKey } from "../dataPanelTypes";
 import { actions } from "../../../../store/editor/editorSlice";
 import styles from "./ViewModeField.module.scss";
-import PopoverInfoLabel from "../../../../../components/form/popoverInfoLabel/PopoverInfoLabel";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import FieldTemplate, {
   type CustomFieldWidget,
-} from "../../../../../components/form/FieldTemplate";
+} from "@/components/form/FieldTemplate";
 
 export type ViewModeOption<T extends string = string> = {
   /**

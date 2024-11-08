@@ -17,12 +17,12 @@
 
 import React from "react";
 import { partial } from "lodash";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { COMMON_PROPERTIES } from "./RunBot";
 import { type Schema } from "../../types/schemaTypes";
 import { useField } from "formik";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
-import RemoteSelectWidget from "../../components/form/widgets/RemoteSelectWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import RequireIntegrationConfig from "../../integrations/components/RequireIntegrationConfig";
 import {
   cachedFetchDevicePools,
@@ -32,12 +32,12 @@ import {
 } from "./aaApi";
 import { type WorkspaceType } from "./contract";
 import { isCommunityControlRoom } from "./aaUtils";
-import BooleanWidget from "../../components/fields/schemaFields/widgets/BooleanWidget";
-import RemoteMultiSelectWidget from "../../components/form/widgets/RemoteMultiSelectWidget";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { type AsyncSelectStatusMessage } from "../../components/form/widgets/AsyncRemoteSelectWidget";
+import { type AsyncSelectStatusMessage } from "@/components/form/widgets/AsyncRemoteSelectWidget";
 import { joinName } from "../../utils/formUtils";
 import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import RemoteFileInputArguments from "./RemoteFileInputArguments";

@@ -17,7 +17,7 @@
 
 import { TourEffect } from "./tourEffect";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { CancelError, PropError } from "../../errors/businessErrors";
+import { CancelError, PropError } from "@/errors/businessErrors";
 import { tick } from "../../starterBricks/testHelpers";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

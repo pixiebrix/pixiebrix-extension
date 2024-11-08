@@ -23,7 +23,7 @@ import {
 } from "@/types/schemaTypes";
 import { castArray, intersection, isEmpty, uniq } from "lodash";
 import { isNullOrBlank } from "./stringUtils";
-import { UI_ORDER } from "../components/formBuilder/schemaFieldNames";
+import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 import { type Nullishable } from "./nullishUtils";
 
 /**

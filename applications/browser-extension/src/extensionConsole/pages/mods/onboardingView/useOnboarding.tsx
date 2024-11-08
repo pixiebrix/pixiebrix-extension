@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationsQuery } from "../../../../data/service/api";
-import useFlags from "../../../../hooks/useFlags";
+import { useGetOrganizationsQuery } from "@/data/service/api";
+import useFlags from "@/hooks/useFlags";
 import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectActiveTab } from "../modsPageSelectors";
 import { useAllModDefinitions } from "../../../../modDefinitions/modDefinitionHooks";
 import DeploymentsContext from "../../deployments/DeploymentsContext";
-import { RestrictedFeatures } from "../../../../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 export type OnboardingType =
   | "default"

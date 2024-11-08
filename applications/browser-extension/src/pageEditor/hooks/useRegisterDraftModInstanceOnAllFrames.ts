@@ -24,7 +24,7 @@ import {
 import {
   removeActivatedModComponent,
   updateDraftModComponent,
-} from "../../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import { allFramesInInspectedTab } from "../context/connection";
 import { navigationEvent } from "../events";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,7 +44,7 @@ import { assertNotNullish } from "../../utils/nullishUtils";
 import { RunReason } from "../../types/runtimeTypes";
 import type { UUID } from "../../types/stringTypes";
 import hash from "object-hash";
-import { usePreviousValue } from "../../hooks/usePreviousValue";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 import type { ModComponentFormState } from "../starterBricks/formStateTypes";
 import type { RootState } from "../store/editor/pageEditorTypes";
 import type { AppDispatch } from "../store/store";

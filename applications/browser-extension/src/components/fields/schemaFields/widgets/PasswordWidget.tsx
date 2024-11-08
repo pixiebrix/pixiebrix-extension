@@ -28,7 +28,7 @@ import { type SchemaFieldProps } from "../propTypes";
 import { useField } from "formik";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useAutoFocusConfiguration from "../../../../hooks/useAutoFocusConfiguration";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
 const PasswordWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   name,

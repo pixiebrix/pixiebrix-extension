@@ -20,10 +20,10 @@ import { toExpression } from "../../../utils/expressionUtils";
 import { unsafeAssumeValidArg } from "../../../runtime/runtimeTypes";
 import { brickOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
 import { isLoadedInIframe } from "../../../utils/iframeUtils";
-import { BusinessError, CancelError } from "../../../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { cancelAll } from "../../../platform/forms/formController";
 import * as messenger from "webext-messenger";
-import { showModal } from "../../../contentScript/modalDom";
+import { showModal } from "@/contentScript/modalDom";
 
 jest.mock("../../../utils/iframeUtils");
 jest.mock("../../../contentScript/modalDom");

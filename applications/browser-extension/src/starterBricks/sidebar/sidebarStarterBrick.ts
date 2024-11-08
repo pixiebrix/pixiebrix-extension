@@ -26,16 +26,16 @@ import {
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
-import { checkAvailable } from "../../bricks/available";
+import { checkAvailable } from "@/bricks/available";
 import Mustache from "mustache";
 import { uuidv4 } from "../../types/helpers";
-import { HeadlessModeError } from "../../bricks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import { shouldModComponentRunForStateChange } from "../helpers";
 import { cloneDeep, debounce, remove } from "lodash";
 import apiVersionOptions from "../../runtime/apiVersionOptions";
-import { collectAllBricks } from "../../bricks/util";
-import { mergeReaders } from "../../bricks/readers/readerUtils";
-import { NoRendererError } from "../../errors/businessErrors";
+import { collectAllBricks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
+import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { type Schema } from "../../types/schemaTypes";
 import { type HydratedModComponent } from "../../types/modComponentTypes";

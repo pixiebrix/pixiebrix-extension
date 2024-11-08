@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import FieldTemplate from "../../components/form/FieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import SwitchButtonWidget, {
   type CheckBoxLike,
-} from "../../components/form/widgets/switchButton/SwitchButtonWidget";
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import React, { type ChangeEvent } from "react";
 import { useField, useFormikContext } from "formik";
 import { type PipelineExpression } from "../../types/runtimeTypes";

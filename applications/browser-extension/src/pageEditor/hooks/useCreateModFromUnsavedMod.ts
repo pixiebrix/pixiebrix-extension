@@ -20,7 +20,7 @@ import { type ModMetadataFormState } from "../store/editor/pageEditorTypes";
 import reportEvent from "../../telemetry/reportEvent";
 import { useCallback } from "react";
 import { Events } from "../../telemetry/events";
-import { useCreateModDefinitionMutation } from "../../data/service/api";
+import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "../store/editor/editorSlice";
 import {

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "../../types/schemaTypes";
 import React, { useCallback, useState } from "react";
-import FormEditor from "../../components/formBuilder/edit/FormEditor";
-import FormIntroFields from "../../components/formBuilder/edit/FormIntroFields";
-import useReduxState from "../../hooks/useReduxState";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
+import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "./ConfigErrorBoundary";
 import { selectActiveBuilderPreviewElement } from "../store/editor/editorSelectors";
 import { actions as editorActions } from "../store/editor/editorSlice";
@@ -30,10 +30,10 @@ import {
   CUSTOM_FORM_SCHEMA,
   type PostSubmitAction,
   type Storage,
-} from "../../bricks/renderers/customForm";
+} from "@/bricks/renderers/customForm";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import { produceExcludeUnusedDependencies } from "../../components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
-import FieldTemplate from "../../components/form/FieldTemplate";
+import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import Select, { type Options } from "react-select";
 import FORM_FIELD_TYPE_OPTIONS from "./formFieldTypeOptions";
 import databaseSchema from "../../../schemas/database.json";

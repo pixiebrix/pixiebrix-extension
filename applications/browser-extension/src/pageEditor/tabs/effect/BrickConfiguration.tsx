@@ -18,33 +18,28 @@
 import React, { useMemo, useRef } from "react";
 import { type RegistryId } from "../../../types/registryTypes";
 import { getIn, useField, useFormikContext } from "formik";
-import useBrickOptions from "../../../hooks/useBrickOptions";
-import SchemaFieldContext from "../../../components/fields/schemaFields/SchemaFieldContext";
+import useBrickOptions from "@/hooks/useBrickOptions";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "../../fields/devtoolFieldOverrides";
-import Loader from "../../../components/Loader";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
-import SelectWidget from "../../../components/form/widgets/SelectWidget";
+import Loader from "@/components/Loader";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
-import { type BrickConfig } from "../../../bricks/types";
-import AdvancedLinks, {
-  DEFAULT_WINDOW_VALUE,
-} from "./AdvancedLinks";
-import { type SchemaFieldProps } from "../../../components/fields/schemaFields/propTypes";
-import SchemaField from "../../../components/fields/schemaFields/SchemaField";
+import { type BrickConfig } from "@/bricks/types";
+import AdvancedLinks, { DEFAULT_WINDOW_VALUE } from "./AdvancedLinks";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getType from "../../../runtime/getType";
 import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
 import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "../../../utils/formUtils";
 import { inputProperties } from "../../../utils/schemaUtils";
-import {
-  rootModeOptions,
-  windowOptions,
-} from "./configurationConstants";
+import { rootModeOptions, windowOptions } from "./configurationConstants";
 import useAsyncEffect from "use-async-effect";
-import CommentEffect from "../../../bricks/effects/comment";
-import useAsyncState from "../../../hooks/useAsyncState";
+import CommentEffect from "@/bricks/effects/comment";
+import useAsyncState from "@/hooks/useAsyncState";
 import { selectActiveModComponentAnalysisAnnotationsForPath } from "../../store/editor/editorSelectors";
-import AnalysisAnnotationsContext from "../../../analysis/AnalysisAnnotationsContext";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { BrickTypes } from "../../../runtime/runtimeTypes";
 import { StarterBrickTypes } from "../../../types/starterBrickTypes";
 import { useDispatch } from "react-redux";

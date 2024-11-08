@@ -16,8 +16,8 @@
  */
 
 import React, { useRef } from "react";
-import { type SchemaFieldProps } from "../../../../components/fields/schemaFields/propTypes";
-import SchemaField from "../../../../components/fields/schemaFields/SchemaField";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
 import { type Expression } from "../../../../types/runtimeTypes";

@@ -25,7 +25,7 @@ import { type ModViewItem } from "../../../../types/modTypes";
 import Status from "../Status";
 import { ListGroup } from "react-bootstrap";
 import LastUpdatedLabel from "../labels/LastUpdatedLabel";
-import MarketplaceListingIcon from "../../../../components/MarketplaceListingIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import {
   faCubes,
   faExclamationCircle,

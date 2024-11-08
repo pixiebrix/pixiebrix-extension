@@ -25,18 +25,18 @@ import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
 import notify from "../utils/notify";
-import ConnectedFieldTemplate from "../components/form/ConnectedFieldTemplate";
-import { appApi } from "../data/service/api";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { appApi } from "@/data/service/api";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
-} from "../components/form/Form";
+} from "@/components/form/Form";
 import { type FormikErrors } from "formik";
 import {
   isAxiosError,
   isSingleObjectBadRequestError,
-} from "../errors/networkErrorHelpers";
+} from "@/errors/networkErrorHelpers";
 
 type Profile = {
   scope: string | null;

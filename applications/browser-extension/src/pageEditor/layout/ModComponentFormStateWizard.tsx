@@ -29,9 +29,9 @@ import EditTab from "../tabs/editTab/EditTab";
 import { useDispatch } from "react-redux";
 import cx from "classnames";
 import LogNavItemBadge from "../tabs/logs/NavItemBadge";
-import { logActions } from "../../components/logViewer/logSlice";
+import { logActions } from "@/components/logViewer/logSlice";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import AnalysisAnnotationsContext from "../../analysis/AnalysisAnnotationsContext";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { selectActiveModComponentAnalysisAnnotationsForPath } from "../store/editor/editorSelectors";
 
 const EDIT_STEP_NAME = "Edit";

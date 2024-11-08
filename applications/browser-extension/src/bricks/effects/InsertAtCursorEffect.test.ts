@@ -18,7 +18,7 @@
 import InsertAtCursorEffect from "./InsertAtCursorEffect";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 const brick = new InsertAtCursorEffect();
 

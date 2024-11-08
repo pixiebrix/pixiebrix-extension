@@ -21,7 +21,7 @@ import { type Schema } from "../../types/schemaTypes";
 import { truncate } from "lodash";
 import { getEncodingName } from "../../vendors/encodings";
 import parseDataUrl from "../../utils/parseDataUrl";
-import { PropError } from "../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 
 /**

@@ -38,7 +38,7 @@ import { ContextMenuStarterBrickABC } from "../../starterBricks/contextMenu/cont
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
 import ContextMenuConfiguration from "../tabs/contextMenu/ContextMenuConfiguration";
-import type { DraftModComponent } from "../../contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type ContextMenuFormState } from "./formStateTypes";
 import { omitEditorMetadata } from "./pipelineMapping";
 import { type SingleLayerReaderConfig } from "../store/editor/baseFormStateTypes";

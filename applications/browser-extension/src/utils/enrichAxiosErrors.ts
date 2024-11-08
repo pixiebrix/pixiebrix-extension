@@ -17,20 +17,20 @@
 
 import axios from "axios";
 import { expectContext } from "./expectContext";
-import { getErrorMessage, withBusinessError } from "../errors/errorHelpers";
+import { getErrorMessage, withBusinessError } from "@/errors/errorHelpers";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
-} from "../errors/clientRequestErrors";
+} from "@/errors/clientRequestErrors";
 import { assertProtocolUrl, selectAbsoluteUrl } from "./urlUtils";
 import {
   isAxiosError,
   NO_INTERNET_MESSAGE,
   NO_RESPONSE_MESSAGE,
-} from "../errors/networkErrorHelpers";
+} from "@/errors/networkErrorHelpers";
 import { DEFAULT_SERVICE_URL } from "../urlConstants";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export default function enrichAxiosErrors(): void {
   expectContext("extension");

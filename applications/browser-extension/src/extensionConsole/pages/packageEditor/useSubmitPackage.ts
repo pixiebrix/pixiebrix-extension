@@ -22,25 +22,25 @@ import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import { type EditorValues } from "./Editor";
 import { type BrickValidationResult, validateSchema } from "./validate";
-import useRefreshRegistries from "../../../hooks/useRefreshRegistries";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import useReactivateMod from "../mods/utils/useReactivateMod";
 import notify from "../../../utils/notify";
 import { Events } from "../../../telemetry/events";
-import { clearIntegrationRegistry } from "../../../background/messenger/api";
+import { clearIntegrationRegistry } from "@/background/messenger/api";
 import { loadBrickYaml } from "../../../runtime/brickYaml";
 import {
   useCreatePackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,
-} from "../../../data/service/api";
-import { isSingleObjectBadRequestError } from "../../../errors/networkErrorHelpers";
+} from "@/data/service/api";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "../../../types/stringTypes";
 import { type UnsavedModDefinition } from "../../../types/modDefinitionTypes";
 import { type Definition, DefinitionKinds } from "../../../types/registryTypes";
-import useUserAction from "../../../hooks/useUserAction";
-import { useModals } from "../../../components/ConfirmationModal";
-import { CancelError } from "../../../errors/businessErrors";
-import { reloadModsEveryTab } from "../../../contentScript/messenger/api";
+import useUserAction from "@/hooks/useUserAction";
+import { useModals } from "@/components/ConfirmationModal";
+import { CancelError } from "@/errors/businessErrors";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 
 type SubmitOptions = {
   create: boolean;

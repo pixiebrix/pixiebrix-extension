@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import ParseJson from "./ParseJson";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 
 describe("ParseJson block", () => {

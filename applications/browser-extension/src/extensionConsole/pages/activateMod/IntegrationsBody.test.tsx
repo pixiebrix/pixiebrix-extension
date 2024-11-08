@@ -16,12 +16,12 @@
  */
 
 import React from "react";
-import { useAuthOptions } from "../../../hooks/useAuthOptions";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import {
   type IntegrationDefinition,
   type IntegrationDependency,
 } from "../../../integrations/integrationTypes";
-import { type AuthOption } from "../../../auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { valueToAsyncState } from "../../../utils/asyncStateUtils";
 import { appApiMock } from "../../../testUtils/appApiMock";
 import { validateRegistryId } from "../../../types/helpers";
@@ -36,13 +36,13 @@ import {
   integrationDependencyFactory,
 } from "../../../testUtils/factories/integrationFactories";
 import getModDefinitionIntegrationIds from "../../../integrations/util/getModDefinitionIntegrationIds";
-import { registry, integrationConfigLocator } from "../../../background/messenger/api";
-import { refreshIntegrationConfigs } from "../../../background/integrationConfigLocator";
+import { registry, integrationConfigLocator } from "@/background/messenger/api";
+import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
 import { clear, find, syncPackages } from "../../../registry/packageRegistry";
 import { type ModDefinition } from "../../../types/modDefinitionTypes";
 import { produce } from "immer";
-import { refreshRegistries } from "../../../hooks/useRefreshRegistries";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../../../hooks/useAuthOptions");
 jest.mock("../../../integrations/util/getModDefinitionIntegrationIds");

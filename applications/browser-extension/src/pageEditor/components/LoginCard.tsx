@@ -19,9 +19,9 @@ import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "react-bootstrap";
-import Centered from "../../components/Centered";
-import { getBaseURL } from "../../data/service/baseService";
-import useAsyncState from "../../hooks/useAsyncState";
+import Centered from "@/components/Centered";
+import { getBaseURL } from "@/data/service/baseService";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const LoginCard: React.VoidFunctionComponent = () => {
   const { data: baseURL } = useAsyncState(getBaseURL, []);

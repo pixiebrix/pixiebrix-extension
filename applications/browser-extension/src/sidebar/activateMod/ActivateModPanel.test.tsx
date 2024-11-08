@@ -21,8 +21,8 @@ import { render, screen } from "../testHelpers";
 import ActivateModPanel from "./ActivateModPanel";
 import sidebarSlice from "../../store/sidebar/sidebarSlice";
 import { waitForEffect } from "../../testUtils/testHelpers";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
-import useQuickbarShortcut from "../../hooks/useQuickbarShortcut";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type ModDefinition } from "../../types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "../../utils/asyncStateUtils";
 import { checkModDefinitionPermissions } from "../../modDefinitions/modDefinitionPermissionsHelpers";
@@ -41,19 +41,19 @@ import ActivateMultipleModsPanel from "./ActivateMultipleModsPanel";
 import ErrorBoundary from "../SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "../../starterBricks/starterBrickModUtils";
 import { generateIntegrationAndRemoteConfig } from "../../testUtils/factories/integrationFactories";
-import { integrationConfigLocator, registry } from "../../background/messenger/api";
+import { integrationConfigLocator, registry } from "@/background/messenger/api";
 import { clear, find, syncPackages } from "../../registry/packageRegistry";
-import { refreshRegistries } from "../../hooks/useRefreshRegistries";
-import { refreshIntegrationConfigs } from "../../background/integrationConfigLocator";
-import { type WizardValues } from "../../activation/wizardTypes";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
+import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
+import { type WizardValues } from "@/activation/wizardTypes";
 import useActivateMod, {
   type ActivateResult,
-} from "../../activation/useActivateMod";
-import brickRegistry from "../../bricks/registry";
+} from "@/activation/useActivateMod";
+import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "../../testUtils/factories/stringFactories";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "../../integrations/constants";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
 
 jest.mock("../../modDefinitions/modDefinitionHooks");

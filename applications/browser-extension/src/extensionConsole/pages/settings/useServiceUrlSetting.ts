@@ -16,12 +16,12 @@
  */
 
 import { uuidv4 } from "../../../types/helpers";
-import { useConfiguredHost } from "../../../data/service/baseService";
+import { useConfiguredHost } from "@/data/service/baseService";
 import { useCallback } from "react";
 import { assertProtocolUrl } from "../../../utils/urlUtils";
 import notify from "../../../utils/notify";
 import pTimeout from "p-timeout";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;

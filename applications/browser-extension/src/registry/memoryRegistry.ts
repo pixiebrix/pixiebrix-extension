@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registry as backgroundRegistry } from "../background/messenger/api";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { registry as backgroundRegistry } from "@/background/messenger/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "../utils/expectContext";
 import {
   type DefinitionKind,

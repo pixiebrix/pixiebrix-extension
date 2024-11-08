@@ -19,10 +19,10 @@ import { type Deployment } from "@/types/contract";
 import { uniq } from "lodash";
 import reportError from "../telemetry/reportError";
 import { getUUID } from "../telemetry/telemetryHelpers";
-import { isLinked, readAuthData, updateUserData } from "../auth/authStorage";
+import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
 import reportEvent from "../telemetry/reportEvent";
-import { refreshRegistries } from "../hooks/useRefreshRegistries";
-import { maybeGetLinkedApiClient } from "../data/service/apiClient";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { getExtensionVersion } from "../utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
 import type { ModComponentState } from "../store/modComponents/modComponentTypes";
@@ -34,7 +34,7 @@ import {
   saveSettingsState,
 } from "../store/settings/settingsStorage";
 import { isUpdateAvailable } from "./installer";
-import { selectUserDataUpdate } from "../auth/authUtils";
+import { selectUserDataUpdate } from "@/auth/authUtils";
 import {
   findLocalDeploymentConfiguredIntegrationDependencies,
   makeUpdatedFilter,
@@ -45,8 +45,8 @@ import { selectUpdatePromptState } from "../store/settings/settingsSelectors";
 import settingsSlice from "../store/settings/settingsSlice";
 import { getEditorState, saveEditorState } from "../store/editorStorage";
 import { type EditorState } from "../pageEditor/store/editor/pageEditorTypes";
-import registerBuiltinBricks from "../bricks/registerBuiltinBricks";
-import registerContribBricks from "../contrib/registerContribBricks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
+import registerContribBricks from "@/contrib/registerContribBricks";
 import { launchSsoFlow } from "../store/enterprise/singleSignOn";
 import { readManagedStorage } from "../store/enterprise/managedStorage";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -56,14 +56,14 @@ import type { Manifest } from "webextension-polyfill";
 import { fetchDeploymentModDefinitions } from "../modDefinitions/modDefinitionRawApiCalls";
 import { integrationConfigLocator } from "./messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
-import { isAxiosError } from "../errors/networkErrorHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";
-import { transformMeResponse } from "../data/model/Me";
-import { getMe } from "../data/service/backgroundApi";
-import { flagOn } from "../auth/featureFlagStorage";
+import { transformMeResponse } from "@/data/model/Me";
+import { getMe } from "@/data/service/backgroundApi";
+import { flagOn } from "@/auth/featureFlagStorage";
 import { SessionValue } from "../mv3/SessionStorage";
-import { FeatureFlags } from "../auth/featureFlags";
-import { API_PATHS } from "../data/service/urlPaths";
+import { FeatureFlags } from "@/auth/featureFlags";
+import { API_PATHS } from "@/data/service/urlPaths";
 import deactivateMod from "./utils/deactivateMod";
 import deactivateModInstancesAndSaveState from "./utils/deactivateModInstancesAndSaveState";
 import saveModComponentStateAndReloadTabs, {

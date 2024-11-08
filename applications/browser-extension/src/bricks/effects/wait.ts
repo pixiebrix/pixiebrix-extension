@@ -17,7 +17,7 @@
 
 import { EffectABC } from "../../types/bricks/effectTypes";
 import { awaitElementOnce } from "../../starterBricks/helpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "../rootModeHelpers";
 import { type Schema } from "../../types/schemaTypes";
 import {

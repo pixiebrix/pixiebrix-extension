@@ -29,7 +29,7 @@ import { Events } from "../../telemetry/events";
 import { array } from "cooky-cutter";
 import useCompareModComponentCounts from "./useCompareModComponentCounts";
 import useCheckModStarterBrickInvariants from "./useCheckModStarterBrickInvariants";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { timestampFactory } from "../../testUtils/factories/stringFactories";
 import { DataIntegrityError } from "./useBuildAndValidateMod";
 

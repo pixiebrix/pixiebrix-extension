@@ -17,11 +17,8 @@
 
 import { renderHook } from "../testHelpers";
 import useDeleteDraftModComponent from "./useDeleteDraftModComponent";
-import {
-  actions,
-  actions as editorActions,
-} from "../store/editor/editorSlice";
-import { removeDraftModComponents } from "../../contentScript/messenger/api";
+import { actions, actions as editorActions } from "../store/editor/editorSlice";
+import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { modMetadataFactory } from "../../testUtils/factories/modComponentFactories";
 

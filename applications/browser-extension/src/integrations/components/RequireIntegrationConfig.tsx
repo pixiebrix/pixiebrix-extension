@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import IntegrationDependencyField from "../../components/fields/schemaFields/integrations/IntegrationDependencyField";
+import IntegrationDependencyField from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
 import { type Schema } from "../../types/schemaTypes";
 import { type SanitizedIntegrationConfig } from "../integrationTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "../useSanitizedIntegrationConfigFormikAdapter";
 import extractIntegrationIdsFromSchema from "../util/extractIntegrationIdsFromSchema";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { checkIntegrationAuth } from "../util/checkIntegrationAuth";
-import { type FieldAnnotation } from "../../components/form/FieldAnnotation";
+import { type FieldAnnotation } from "@/components/form/FieldAnnotation";
 import { AnnotationType } from "../../types/annotationTypes";
 import { getExtensionConsoleUrl } from "../../utils/extensionUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

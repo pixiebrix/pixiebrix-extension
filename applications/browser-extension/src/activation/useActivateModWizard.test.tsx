@@ -18,7 +18,7 @@
 import useActivateModWizard, {
   wizardStateFactory,
 } from "./useActivateModWizard";
-import useDatabaseOptions from "../hooks/useDatabaseOptions";
+import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { valueToAsyncState } from "../utils/asyncStateUtils";
 import * as Yup from "yup";
 
@@ -33,14 +33,14 @@ import {
   FeatureFlags,
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
-} from "../auth/featureFlags";
+} from "@/auth/featureFlags";
 import { publicSharingDefinitionFactory } from "../testUtils/factories/registryFactories";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type RegistryId } from "@/types/registryTypes";
 import { appApiMock } from "../testUtils/appApiMock";
-import { renderHook } from "../extensionConsole/testHelpers";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import { waitFor } from "@testing-library/react";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { type WizardStep } from "./wizardTypes";
 
 jest.mock("../components/integrations/AuthWidget", () => {});

@@ -22,7 +22,7 @@ import pipelineSchema from "../../schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Brick } from "@/types/brickTypes";
-import BrickIdVisitor from "../analysis/analysisVisitors/brickIdVisitor";
+import BrickIdVisitor from "@/analysis/analysisVisitors/brickIdVisitor";
 import { removeUndefined } from "../utils/objectUtils";
 import { toExpression } from "../utils/expressionUtils";
 

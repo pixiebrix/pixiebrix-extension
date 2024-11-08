@@ -20,9 +20,12 @@ import { type Schema } from "../../types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 import { validateRegistryId } from "../../types/helpers";
 import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { minimalSchemaFactory, propertiesToSchema } from "../../utils/schemaUtils";
-import { DEEPGRAM_INTEGRATION_ID } from "../../contrib/deepgram/deepgramTypes";
-import { FeatureFlags } from "../../auth/featureFlags";
+import {
+  minimalSchemaFactory,
+  propertiesToSchema,
+} from "../../utils/schemaUtils";
+import { DEEPGRAM_INTEGRATION_ID } from "@/contrib/deepgram/deepgramTypes";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const DEEPGRAM_INTEGRATION_REF = `https://app.pixiebrix.com/schemas/services/${DEEPGRAM_INTEGRATION_ID}`;
 

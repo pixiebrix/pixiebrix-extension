@@ -17,8 +17,8 @@
 
 import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
 import ModVariableSchemasVisitor from "./modVariableSchemasVisitor";
-import AssignModVariable from "../../../bricks/effects/assignModVariable";
-import registerBuiltinBricks from "../../../bricks/registerBuiltinBricks";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { toExpression } from "../../../utils/expressionUtils";
 
 beforeAll(() => {

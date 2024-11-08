@@ -16,7 +16,7 @@
  */
 
 import { launchWebAuthFlow } from "./authHelpers";
-import { InteractiveLoginRequiredError } from "../../errors/authErrors";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 
 browser.identity = {
   launchWebAuthFlow: jest.fn(),

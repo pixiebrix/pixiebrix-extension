@@ -21,17 +21,14 @@ import { sanitizedIntegrationConfigFactory } from "../testUtils/factories/integr
 import { type IntegrationConfig } from "../integrations/integrationTypes";
 import { fromJS } from "../integrations/UserDefinedIntegration";
 import { integrationConfigLocator } from "./integrationConfigLocator";
-import aaDefinition from "../../contrib/integrations/automation-anywhere-oauth2.yaml";
-import googleDefinition from "../../contrib/integrations/google-oauth2-pkce.yaml";
-import greenhouseDefintion from "../../contrib/integrations/greenhouse.yaml";
-import microsoftDefinition from "../../contrib/integrations/microsoft-oauth2-pkce.yaml";
-import {
-  getCachedAuthData,
-  setCachedAuthData,
-} from "./auth/authStorage";
+import aaDefinition from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
+import googleDefinition from "@/contrib/integrations/google-oauth2-pkce.yaml";
+import greenhouseDefintion from "@/contrib/integrations/greenhouse.yaml";
+import microsoftDefinition from "@/contrib/integrations/microsoft-oauth2-pkce.yaml";
+import { getCachedAuthData, setCachedAuthData } from "./auth/authStorage";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "../integrations/constants";
 import { readRawConfigurations } from "../integrations/util/readRawConfigurations";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const aaIntegration = fromJS(aaDefinition as any);
 const googleIntegration = fromJS(googleDefinition as any);

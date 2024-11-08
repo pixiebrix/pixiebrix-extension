@@ -22,8 +22,8 @@ import { pick } from "lodash";
 
 // Methods imported async in the brick
 import type { ParsedDomain } from "psl";
-import { getErrorMessage } from "../../errors/errorHelpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "../../utils/stringUtils";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 

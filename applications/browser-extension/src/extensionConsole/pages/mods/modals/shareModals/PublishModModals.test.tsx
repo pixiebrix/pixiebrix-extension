@@ -18,18 +18,18 @@
 import React from "react";
 import { render, screen } from "../../../../testHelpers";
 import PublishModModals from "./PublishModModals";
-import { authSlice } from "../../../../../auth/authSlice";
+import { authSlice } from "@/auth/authSlice";
 import { modModalsSlice } from "../modModalsSlice";
 import { type ModDefinition } from "../../../../../types/modDefinitionTypes";
-import { type AuthState } from "../../../../../auth/authTypes";
+import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "../../../../../types/helpers";
-import { useGetMarketplaceListingsQuery } from "../../../../../data/service/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { waitForEffect } from "../../../../../testUtils/testHelpers";
 import { appApiMock } from "../../../../../testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "../../../../../testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "../../../../../testUtils/factories/metadataFactory";
 import { authStateFactory } from "../../../../../testUtils/factories/authFactories";
-import { API_PATHS } from "../../../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { type EmptyObject } from "type-fest";
 
 let modDefinition: ModDefinition;

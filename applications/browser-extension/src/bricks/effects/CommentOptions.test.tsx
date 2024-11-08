@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "../../pageEditor/testHelpers";
 import CommentOptions from "./CommentOptions";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { screen } from "@testing-library/react";
 
 beforeAll(() => {

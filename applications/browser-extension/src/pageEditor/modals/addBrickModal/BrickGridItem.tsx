@@ -17,15 +17,15 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import PackageIcon from "../../../components/PackageIcon";
+import PackageIcon from "@/components/PackageIcon";
 import styles from "./BrickGridItem.module.scss";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Icon from "../../../icons/Icon";
 import { type BrickSearchResult } from "./addBrickModalTypes";
 import cx from "classnames";
-import Alert from "../../../components/Alert";
-import ClickableElement from "../../../components/ClickableElement";
+import Alert from "@/components/Alert";
+import ClickableElement from "@/components/ClickableElement";
 
 export const BRICK_ITEM_FIXED_HEIGHT_PX = 89;
 

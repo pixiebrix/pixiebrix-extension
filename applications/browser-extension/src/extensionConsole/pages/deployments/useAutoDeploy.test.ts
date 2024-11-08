@@ -18,7 +18,7 @@
 import { activateDeployments } from "./activateDeployments";
 import useAutoDeploy from "./useAutoDeploy";
 import { renderHook } from "../../testHelpers";
-import useFlags from "../../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import useModPermissions from "../../../mods/hooks/useModPermissions";
 import { activatableDeploymentFactory } from "../../../testUtils/factories/deploymentFactories";
 import type { ActivatableDeployment } from "../../../types/deploymentTypes";

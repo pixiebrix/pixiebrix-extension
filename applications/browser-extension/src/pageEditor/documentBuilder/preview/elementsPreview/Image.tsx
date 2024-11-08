@@ -23,7 +23,7 @@ import {
 } from "../../documentBuilderTypes";
 import cx from "classnames";
 import documentTreeStyles from "../documentTree.module.scss";
-import ImagePlaceholder from "../../../../components/imagePlaceholder/ImagePlaceholder";
+import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 import { isEmpty } from "lodash";
 import Flaps from "../flaps/Flaps";
 import { canParseUrl } from "../../../../utils/urlUtils";

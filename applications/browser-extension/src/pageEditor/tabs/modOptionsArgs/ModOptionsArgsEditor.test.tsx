@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "../../testHelpers";
 import ModOptionsArgsEditor from "./ModOptionsArgsEditor";
 import { waitForEffect } from "../../../testUtils/testHelpers";
@@ -37,8 +37,8 @@ import selectEvent from "react-select-event";
 import { sanitizedIntegrationConfigFactory } from "../../../testUtils/factories/integrationFactories";
 import { uuidSequence } from "../../../testUtils/factories/stringFactories";
 import { validateRegistryId } from "../../../types/helpers";
-import useGoogleAccount from "../../../contrib/google/sheets/core/useGoogleAccount";
-import { getAllSpreadsheets } from "../../../contrib/google/sheets/core/sheetsApi";
+import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
+import { getAllSpreadsheets } from "@/contrib/google/sheets/core/sheetsApi";
 import { actions as editorActions } from "../../store/editor/editorSlice";
 
 jest.mock("../../../modDefinitions/modDefinitionHooks");

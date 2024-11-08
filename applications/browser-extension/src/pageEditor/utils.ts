@@ -15,27 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig } from "../bricks/types";
-import ForEach from "../bricks/transformers/controlFlow/ForEach";
-import TryExcept from "../bricks/transformers/controlFlow/TryExcept";
+import { type BrickConfig } from "@/bricks/types";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import {
   type DocumentBuilderElement,
   isButtonElement,
   isListElement,
   isPipelineElement,
 } from "./documentBuilder/documentBuilderTypes";
-import ForEachElement from "../bricks/transformers/controlFlow/ForEachElement";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pickBy } from "lodash";
-import { type AnalysisAnnotation } from "../analysis/analysisTypes";
+import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BRICKS_FIELD_NAME } from "./consts";
 import { type Brick } from "@/types/brickTypes";
-import { sortedFields } from "../components/fields/schemaFields/schemaFieldUtils";
+import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
 import { castTextLiteralOrThrow } from "../utils/expressionUtils";
 import { inputProperties } from "../utils/schemaUtils";
 import { joinPathParts } from "../utils/formUtils";
-import { CustomFormRenderer } from "../bricks/renderers/customForm";
-import MapValues from "../bricks/transformers/controlFlow/MapValues";
-import AddDynamicTextSnippet from "../bricks/effects/AddDynamicTextSnippet";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import MapValues from "@/bricks/transformers/controlFlow/MapValues";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import {
   type ModDefinition,

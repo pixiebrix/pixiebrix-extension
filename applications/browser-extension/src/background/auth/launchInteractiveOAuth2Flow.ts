@@ -17,7 +17,7 @@
 
 import type { UUID } from "../../types/stringTypes";
 import { integrationConfigLocator } from "../integrationConfigLocator";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import integrationRegistry from "../../integrations/registry";
 import launchOAuth2Flow from "./launchOAuth2Flow";
 

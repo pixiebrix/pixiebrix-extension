@@ -22,12 +22,10 @@ import {
   type DocumentBuilderElementType,
 } from "../documentBuilderTypes";
 import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
-import ElementPreview, {
-  type ElementPreviewProps,
-} from "./ElementPreview";
+import ElementPreview, { type ElementPreviewProps } from "./ElementPreview";
 import { fireEvent, screen } from "@testing-library/react";
-import { defaultBrickConfig } from "../../../bricks/util";
-import MarkdownRenderer from "../../../bricks/renderers/MarkdownRenderer";
+import { defaultBrickConfig } from "@/bricks/util";
+import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import { type PipelineExpression } from "../../../types/runtimeTypes";
 import { render } from "../../testHelpers";
 import { actions } from "../../store/editor/editorSlice";

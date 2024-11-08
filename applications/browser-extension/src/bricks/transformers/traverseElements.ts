@@ -16,7 +16,7 @@
  */
 
 import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { getReferenceForElement } from "../../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import { type Schema } from "../../types/schemaTypes";
 import {
   type BrickArgs,

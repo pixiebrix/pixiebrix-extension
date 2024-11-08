@@ -16,8 +16,8 @@
  */
 
 // noinspection ES6PreferShortImport -- Override mock
-import { fetchFeatureFlags } from "../../../auth/featureFlagStorage";
-import { mapRestrictedFeatureToFeatureFlag } from "../../../auth/featureFlags";
+import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
+import { mapRestrictedFeatureToFeatureFlag } from "@/auth/featureFlags";
 
 let flags: string[] | null = null;
 

@@ -16,7 +16,7 @@
  */
 
 import { activateDeployments } from "./activateDeployments";
-import useFlags from "../../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import useModPermissions from "../../../mods/hooks/useModPermissions";
 import notify from "../../../utils/notify";
 import { useState } from "react";
@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 import type { ActivatableDeployment } from "../../../types/deploymentTypes";
 import type { Nullishable } from "../../../utils/nullishUtils";
-import { RestrictedFeatures } from "../../../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 import type { ModInstance } from "../../../types/modInstanceTypes";
 import { type AppDispatch } from "../../store";
 

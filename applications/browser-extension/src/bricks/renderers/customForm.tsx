@@ -18,8 +18,8 @@
 import React from "react";
 import { type Except, type JsonObject } from "type-fest";
 import { validateRegistryId } from "../../types/helpers";
-import { BusinessError, PropError } from "../../errors/businessErrors";
-import { getPageState, setPageState } from "../../contentScript/messenger/api";
+import { BusinessError, PropError } from "@/errors/businessErrors";
+import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import { isEmpty, isPlainObject, set } from "lodash";
 import { getConnectedTarget } from "../../sidebar/connectedTarget";
 import { type UUID } from "../../types/stringTypes";
@@ -52,7 +52,7 @@ import {
   type StateNamespace,
   StateNamespaces,
 } from "../../platform/state/stateTypes";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 interface DatabaseResult {
   success: boolean;

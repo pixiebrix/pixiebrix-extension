@@ -19,7 +19,7 @@ import { assertNotNullish, type Nullishable } from "../utils/nullishUtils";
 import { type MessengerMeta, type Sender } from "webext-messenger";
 import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
 import { type JsonObject } from "type-fest";
-import { emitAudioEvent } from "../contentScript/messenger/api";
+import { emitAudioEvent } from "@/contentScript/messenger/api";
 import { TOP_LEVEL_FRAME_ID } from "../domConstants";
 import {
   ensureOffscreenDocument,
@@ -30,8 +30,8 @@ import {
   type StartAudioCaptureMessage,
   type StopAudioCaptureMessage,
 } from "../tinyPages/offscreenProtocol";
-import { assertDeepgramIntegrationConfig } from "../contrib/deepgram/deepgramTypes";
-import { BusinessError } from "../errors/businessErrors";
+import { assertDeepgramIntegrationConfig } from "@/contrib/deepgram/deepgramTypes";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Whether audio is currently being recorded. Kept in sync across worker reloads via the offscreen document hash.

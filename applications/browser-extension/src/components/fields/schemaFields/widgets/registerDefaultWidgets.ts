@@ -35,7 +35,7 @@ import DatabaseWidget from "./DatabaseWidget";
 import PasswordWidget from "./PasswordWidget";
 import IconWidget from "../../IconWidget";
 import IntegrationDependencyWidget from "../integrations/IntegrationDependencyWidget";
-import SpreadsheetPickerWidget from "../../../../contrib/google/sheets/ui/SpreadsheetPickerWidget";
+import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import FixedInnerObjectWidget from "./FixedInnerObjectWidget";
 
 const defaultWidgets = {

@@ -16,10 +16,10 @@
  */
 
 import React, { useContext } from "react";
-import { type BrickPipeline } from "../../../bricks/types";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { type BrickPipeline } from "@/bricks/types";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "./DocumentContext";
-import { runRendererPipeline } from "../../../contentScript/messenger/api";
+import { runRendererPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "../../../types/helpers";
 import PanelBody from "../../../sidebar/PanelBody";
 import apiVersionOptions from "../../../runtime/apiVersionOptions";
@@ -29,7 +29,7 @@ import { mapPathToTraceBranches } from "../utils";
 import { getConnectedTarget } from "../../../sidebar/connectedTarget";
 import { type PanelContext } from "../../../types/sidebarTypes";
 import { type RendererRunPayload } from "../../../types/rendererTypes";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { mapModComponentRefToMessageContext } from "../../../utils/modUtils";
 
 type BlockElementProps = {

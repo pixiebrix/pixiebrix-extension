@@ -18,7 +18,7 @@
 import JsonTree, {
   type JsonTreeProps,
   type TreeExpandedState,
-} from "../../../../components/jsonTree/JsonTree";
+} from "@/components/jsonTree/JsonTree";
 import { selectNodeDataPanelTabState } from "../../../store/editor/editorSelectors";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";

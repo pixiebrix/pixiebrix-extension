@@ -29,7 +29,7 @@ import {
 } from "./aaApi";
 import { type ApiTaskArgs } from "./aaTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { minimalSchemaFactory } from "../../utils/schemaUtils";
 import { type SetRequired } from "type-fest";
 

@@ -17,7 +17,7 @@
 
 import { renderHook } from "../../../../sidebar/testHelpers";
 import useSpreadsheetId from "./useSpreadsheetId";
-import { integrationConfigLocator } from "../../../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { validateRegistryId } from "../../../../types/helpers";
 import { uuidSequence } from "../../../../testUtils/factories/stringFactories";
 import {

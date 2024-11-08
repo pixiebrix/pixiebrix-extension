@@ -36,7 +36,7 @@ import {
 import { meWithPartnerApiResponseFactory } from "../../../testUtils/factories/authFactories";
 import notify from "../../../utils/notify";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "../../../integrations/constants";
-import { registry as backgroundRegistry } from "../../../background/messenger/api";
+import { registry as backgroundRegistry } from "@/background/messenger/api";
 import reportError from "../../../telemetry/reportError";
 
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.

@@ -26,11 +26,11 @@ import { type ModComponentFormState } from "../../../pageEditor/starterBricks/fo
 import { Formik } from "formik";
 import { menuItemFormStateFactory } from "../../../testUtils/factories/pageEditorFactories";
 import { JQueryReader } from "./JQueryReader";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "../../../testUtils/testHelpers";
-import { getAttributeExamples } from "../../../contentScript/messenger/api";
+import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { screen } from "@testing-library/react";
-import SchemaFieldContext from "../../../components/fields/schemaFields/SchemaFieldContext";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "../../../pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
 import { toExpression } from "../../../utils/expressionUtils";

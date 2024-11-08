@@ -16,16 +16,16 @@
  */
 
 import React from "react";
-import { cancelForm, getFormDefinition } from "../../../contentScript/messenger/api";
-import Loader from "../../../components/Loader";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { cancelForm, getFormDefinition } from "@/contentScript/messenger/api";
+import Loader from "@/components/Loader";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "../../../types/messengerTypes";
 import { validateUUID } from "../../../types/helpers";
 import { TOP_LEVEL_FRAME_ID } from "../../../domConstants";
-import useAsyncState from "../../../hooks/useAsyncState";
-import ErrorBoundary from "../../../components/ErrorBoundary";
-import useReportError from "../../../hooks/useReportError";
-import IsolatedComponent from "../../../components/IsolatedComponent";
+import useAsyncState from "@/hooks/useAsyncState";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import useReportError from "@/hooks/useReportError";
+import IsolatedComponent from "@/components/IsolatedComponent";
 import { type EphemeralFormContentProps } from "./EphemeralFormContent";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 import { type EmptyObject } from "type-fest";

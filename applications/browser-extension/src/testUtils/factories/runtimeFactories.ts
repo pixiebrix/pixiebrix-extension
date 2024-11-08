@@ -22,7 +22,7 @@ import {
 } from "../../types/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import ConsoleLogger from "../../utils/ConsoleLogger";
-import contentScriptPlatform from "../../contentScript/contentScriptPlatform";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { modComponentRefFactory } from "./modComponentFactories";
 import { mapModComponentRefToMessageContext } from "../../utils/modUtils";
 import type { ReduceOptions } from "../../runtime/reducePipeline";

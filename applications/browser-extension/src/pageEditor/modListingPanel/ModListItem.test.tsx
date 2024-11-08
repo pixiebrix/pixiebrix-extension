@@ -24,7 +24,7 @@ import { Accordion, ListGroup } from "react-bootstrap";
 import { appApiMock } from "../../testUtils/appApiMock";
 import { modDefinitionFactory } from "../../testUtils/factories/modDefinitionFactories";
 import { normalizeSemVerString } from "../../types/helpers";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("ModListItem", () => {
   it("renders expanded", async () => {

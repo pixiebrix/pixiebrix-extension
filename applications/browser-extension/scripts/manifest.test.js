@@ -16,7 +16,7 @@
  */
 
 import { omit } from "lodash";
-import manifest from "../applications/browser-extension/src/manifest.json";
+import manifest from "../src/manifest.json";
 import { loadEnv } from "./env.mjs";
 import customizeManifest from "./manifest.mjs";
 

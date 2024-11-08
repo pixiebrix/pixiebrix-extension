@@ -20,11 +20,9 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { OnboardingViewContent } from "./OnboardingView";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { appApi } from "../../../../data/service/api";
+import { appApi } from "@/data/service/api";
 import { persistReducer } from "redux-persist";
-import modsPageSlice, {
-  persistModsConfig,
-} from "../modsPageSlice";
+import modsPageSlice, { persistModsConfig } from "../modsPageSlice";
 
 export default {
   title: "Blueprints/OnboardingView",

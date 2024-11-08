@@ -19,22 +19,16 @@ import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  modComponentToFormState,
-  selectType,
-} from "../starterBricks/adapter";
+import { modComponentToFormState, selectType } from "../starterBricks/adapter";
 import { actions } from "../store/editor/editorSlice";
 import reportError from "../../telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
-import {
-  ModComponentIcon,
-  NotAvailableIcon,
-} from "./ModComponentIcons";
+import { ModComponentIcon, NotAvailableIcon } from "./ModComponentIcons";
 import {
   disableOverlay,
   enableOverlay,
   updateSidebar,
-} from "../../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import { openSidePanel } from "../../utils/sidePanelUtils";
 import cx from "classnames";
 import { selectSessionId } from "../store/session/sessionSelectors";
@@ -46,8 +40,8 @@ import {
 } from "../store/editor/editorSelectors";
 import { type UUID } from "../../types/stringTypes";
 import { type ModComponentBase } from "../../types/modComponentTypes";
-import { appApi } from "../../data/service/api";
-import useAsyncState from "../../hooks/useAsyncState";
+import { appApi } from "@/data/service/api";
+import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "../context/connection";
 import { StarterBrickTypes } from "../../types/starterBrickTypes";
 import { type AppDispatch } from "../store/store";

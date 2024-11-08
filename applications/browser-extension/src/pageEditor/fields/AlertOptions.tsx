@@ -16,11 +16,11 @@
  */
 
 import React, { useMemo } from "react";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { useField } from "formik";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
-import { ALERT_PERSISTENT_OPTION, AlertEffect } from "../../bricks/effects/alert";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { ALERT_PERSISTENT_OPTION, AlertEffect } from "@/bricks/effects/alert";
 import { type Schema } from "../../types/schemaTypes";
 import { joinName } from "../../utils/formUtils";
 import { assertNotNullish } from "../../utils/nullishUtils";

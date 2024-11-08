@@ -25,9 +25,9 @@ import { screen } from "@testing-library/react";
 import { modInstanceFactory } from "../../../testUtils/factories/modInstanceFactories";
 import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
 import { mapModInstanceToActivatedModComponents } from "../../../store/modComponents/modInstanceUtils";
-import AssignModVariable from "../../../bricks/effects/assignModVariable";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { uuidv4 } from "../../../types/helpers";
-import brickRegistry from "../../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "../../../testUtils/testHelpers";
 

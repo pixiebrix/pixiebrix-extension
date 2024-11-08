@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ForEach from "../../bricks/transformers/controlFlow/ForEach";
-import IfElse from "../../bricks/transformers/controlFlow/IfElse";
-import TryExcept from "../../bricks/transformers/controlFlow/TryExcept";
-import { type BrickConfig } from "../../bricks/types";
-import { echoBrick, teapotBrick } from "../../runtime/pipelineTests/testHelpers";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
+import { type BrickConfig } from "@/bricks/types";
+import {
+  echoBrick,
+  teapotBrick,
+} from "../../runtime/pipelineTests/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,
 } from "./pipelineMapping";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { uuidSequence } from "../../testUtils/factories/stringFactories";
-import { isPipelineExpression, toExpression } from "../../utils/expressionUtils";
+import {
+  isPipelineExpression,
+  toExpression,
+} from "../../utils/expressionUtils";
 import { type PipelineExpression } from "../../types/runtimeTypes";
 
 describe("normalizePipeline", () => {

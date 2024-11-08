@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectLogs } from "./logSelectors";
 import { logActions } from "./logSlice";
 import { ErrorDisplay } from "../../layout/ErrorDisplay";
-import { type AppDispatch } from "../../extensionConsole/store";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 type OwnProps = {
   initialLevel?: MessageLevel;

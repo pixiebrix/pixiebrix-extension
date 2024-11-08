@@ -16,14 +16,11 @@
  */
 
 import React, { useEffect, useState } from "react";
-import {
-  setInspectedTabId,
-  inspectedTab,
-} from "./connection";
-import useAsyncState from "../../hooks/useAsyncState";
-import { queryTabs } from "../../background/messenger/api";
+import { setInspectedTabId, inspectedTab } from "./connection";
+import useAsyncState from "@/hooks/useAsyncState";
+import { queryTabs } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type EmptyObject } from "type-fest";
 
 /**

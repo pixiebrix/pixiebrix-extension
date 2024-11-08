@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectKnownVars } from "../../../../../analysis/analysisSelectors";
+import { selectKnownVars } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentId,
   selectActiveNodeInfo,

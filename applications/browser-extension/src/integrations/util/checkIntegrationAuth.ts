@@ -20,7 +20,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "../constants";
-import { checkConfigAuth } from "../../contrib/automationanywhere/aaApi";
+import { checkConfigAuth } from "@/contrib/automationanywhere/aaApi";
 
 export async function checkIntegrationAuth(
   config: SanitizedIntegrationConfig,

@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   BusinessError,
   InvalidSelectorError,
   MultipleElementsFoundError,
   NoElementsFoundError,
-} from "../errors/businessErrors";
+} from "@/errors/businessErrors";
 import { sleep } from "./timeUtils";
-import { JQUERY_INVALID_SELECTOR_ERROR } from "../errors/knownErrorMessages";
+import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 import pDefer, { type DeferredPromise } from "p-defer";
 import type { Nullishable } from "./nullishUtils";
 

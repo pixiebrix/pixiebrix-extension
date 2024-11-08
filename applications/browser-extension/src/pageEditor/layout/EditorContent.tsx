@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import { selectSessionId } from "../store/session/sessionSelectors";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import { useGetMarketplaceListingsQuery } from "../../data/service/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import NoTabAccessPane from "../panes/NoTabAccessPane";
 import ModComponentEditorPane from "../panes/ModComponentEditorPane";
 import ModEditorPane from "../panes/ModEditorPane";
@@ -35,9 +35,9 @@ import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "../store/tabState/tabStateSelectors";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectPageEditorDimensions } from "../utils";
-import { DefaultErrorComponent } from "../../components/ErrorBoundary";
+import { DefaultErrorComponent } from "@/components/ErrorBoundary";
 
 const EditorContent: React.FC = () => {
   const tabHasPermissions = useSelector(selectTabHasPermissions);

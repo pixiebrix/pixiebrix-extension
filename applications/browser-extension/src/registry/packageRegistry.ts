@@ -29,10 +29,10 @@ import {
 } from "../utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "../utils/promiseUtils";
-import { getApiClient } from "../data/service/apiClient";
+import { getApiClient } from "@/data/service/apiClient";
 import { type Nullishable, assertNotNullish } from "../utils/nullishUtils";
 import { type DefinitionKind } from "@/types/registryTypes";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const BRICK_STORE = "bricks";
 const VERSION = 1;

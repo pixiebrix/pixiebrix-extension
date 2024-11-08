@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { WaitElementEffect } from "./wait";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

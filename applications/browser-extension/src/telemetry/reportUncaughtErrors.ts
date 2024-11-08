@@ -18,7 +18,7 @@
 /**
  * @file This file must be imported as early as possible in each entrypoint, once
  */
-import { onUncaughtError } from "../errors/errorHelpers";
+import { onUncaughtError } from "@/errors/errorHelpers";
 import reportError from "./reportError";
 
 // Refactor beware: Do not add an `init` function or it will run too late.

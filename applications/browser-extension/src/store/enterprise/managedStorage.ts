@@ -30,7 +30,7 @@ import type { Nullishable } from "../../utils/nullishUtils";
 import { mergeSignals, ReusableAbortController } from "abort-utils";
 import { StorageItem } from "webext-storage";
 import type { Timestamp } from "../../types/stringTypes";
-import { PromiseCancelled } from "../../errors/genericErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 import { nowTimestamp } from "../../utils/timeUtils";
 
 // 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618

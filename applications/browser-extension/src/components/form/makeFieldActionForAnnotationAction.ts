@@ -18,7 +18,7 @@
 import {
   type AnalysisAnnotationAction,
   AnalysisAnnotationActionType,
-} from "../../analysis/analysisTypes";
+} from "@/analysis/analysisTypes";
 import { type FormikContextType } from "formik";
 // Use lodash's get/set because formik's does not mutate the object in place.
 import { get as getIn, set as setIn } from "lodash";

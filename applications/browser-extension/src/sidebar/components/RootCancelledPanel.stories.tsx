@@ -19,7 +19,7 @@ import React from "react";
 import { type Meta, type StoryFn } from "@storybook/react";
 
 import RootCancelledPanel from "./RootCancelledPanel";
-import { CancelError } from "../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 
 export default {
   title: "Panels/RootCancelledPanel",

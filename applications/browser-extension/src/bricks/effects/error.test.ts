@@ -16,7 +16,7 @@
  */
 
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { ErrorEffect } from "./error";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

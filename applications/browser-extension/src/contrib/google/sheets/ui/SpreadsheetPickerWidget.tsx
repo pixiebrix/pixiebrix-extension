@@ -16,20 +16,20 @@
  */
 
 import React, { useCallback, useState } from "react";
-import { type SchemaFieldProps } from "../../../../components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useGoogleAccount from "../core/useGoogleAccount";
 import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import useDeriveAsyncState from "../../../../hooks/useDeriveAsyncState";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import {
   SPREADSHEET_FIELD_DESCRIPTION,
   SPREADSHEET_FIELD_TITLE,
 } from "../core/schemas";
 import { type Schema } from "../../../../types/schemaTypes";
-import AsyncStateGate from "../../../../components/AsyncStateGate";
-import SchemaSelectWidget from "../../../../components/fields/schemaFields/widgets/SchemaSelectWidget";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { valueToAsyncState } from "../../../../utils/asyncStateUtils";
 import { AnnotationType } from "../../../../types/annotationTypes";
-import FieldTemplate from "../../../../components/form/FieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { type AsyncStateArray } from "../../../../types/sliceTypes";
 import { useField } from "formik";
 import { type Expression } from "../../../../types/runtimeTypes";

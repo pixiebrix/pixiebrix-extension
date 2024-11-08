@@ -23,7 +23,7 @@ import { validateOutputKey } from "../../runtime/runtimeTypes";
 import { makeFieldActionForAnnotationAction } from "./makeFieldActionForAnnotationAction";
 import { render } from "../../pageEditor/testHelpers";
 import { useFormikContext } from "formik";
-import { AnalysisAnnotationActionType } from "../../analysis/analysisTypes";
+import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import AsyncButton from "../AsyncButton";
 import { screen, act } from "@testing-library/react";
 

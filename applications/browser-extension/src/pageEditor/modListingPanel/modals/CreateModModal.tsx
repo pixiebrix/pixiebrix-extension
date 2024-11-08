@@ -22,7 +22,7 @@ import {
   PACKAGE_REGEX,
   testIsSemVerString,
   validateRegistryId,
-} from "../../../types/helpers";
+} from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getModalDataSelector,
@@ -33,38 +33,38 @@ import {
 } from "../../store/editor/editorSelectors";
 import { actions as editorActions } from "../../store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
-import { selectScope } from "../../../auth/authSelectors";
+import { selectScope } from "@/auth/authSelectors";
 import { generateScopeBrickId } from "../../panes/save/saveHelpers";
-import { RequireScope } from "../../../auth/RequireScope";
+import { RequireScope } from "@/auth/RequireScope";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
-} from "../../../components/form/Form";
+} from "@/components/form/Form";
 import notify from "../../../utils/notify";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { object, string } from "yup";
-import RegistryIdWidget from "../../../components/form/widgets/RegistryIdWidget";
-import { isSingleObjectBadRequestError } from "../../../errors/networkErrorHelpers";
+import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import {
   useAllModDefinitions,
   useOptionalModDefinition,
-} from "../../../modDefinitions/modDefinitionHooks";
-import Loader from "../../../components/Loader";
-import ModalLayout from "../../../components/ModalLayout";
+} from "@/modDefinitions/modDefinitionHooks";
+import Loader from "@/components/Loader";
+import ModalLayout from "@/components/ModalLayout";
 import {
   ModalKey,
   type ModMetadataFormState,
 } from "../../store/editor/pageEditorTypes";
-import { type RegistryId } from "../../../types/registryTypes";
-import { generatePackageId } from "../../../utils/registryUtils";
-import { FieldDescriptions } from "../../../modDefinitions/modDefinitionConstants";
+import { type RegistryId } from "@/types/registryTypes";
+import { generatePackageId } from "@/utils/registryUtils";
+import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import useCreateModFromModComponent from "../../hooks/useCreateModFromModComponent";
 import useCreateModFromMod from "../../hooks/useCreateModFromMod";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "../../../hooks/useIsMounted";
 import useCreateModFromUnsavedMod from "../../hooks/useCreateModFromUnsavedMod";
-import { isSpecificError } from "../../../errors/errorHelpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 import { DataIntegrityError } from "../../hooks/useBuildAndValidateMod";
 
 /**

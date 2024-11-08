@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPipeline } from "../../../../../bricks/types";
-import useTypedBrickMap from "../../../../../bricks/hooks/useTypedBrickMap";
+import { type BrickPipeline } from "@/bricks/types";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { BrickTypes } from "../../../../../runtime/runtimeTypes";
 import { useCallback } from "react";
 

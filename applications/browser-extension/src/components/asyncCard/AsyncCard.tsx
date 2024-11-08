@@ -1,4 +1,4 @@
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import React from "react";
 import { Card } from "react-bootstrap";
 import Loader from "../Loader";

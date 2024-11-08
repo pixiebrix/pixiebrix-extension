@@ -27,7 +27,7 @@ import {
 } from "../pageEditor/documentBuilder/documentBuilderTypes";
 import { isExpression, isPipelineExpression } from "../utils/expressionUtils";
 import { joinPathParts } from "../utils/formUtils";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export type VisitDocumentBuilderElementArgs = {
   /**

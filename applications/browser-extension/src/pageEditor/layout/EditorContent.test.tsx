@@ -20,7 +20,7 @@ import { actions as editorActions } from "../store/editor/editorSlice";
 import { waitForEffect } from "../../testUtils/testHelpers";
 import React from "react";
 import EditorContent from "./EditorContent";
-import { getRunningStarterBricks } from "../../contentScript/messenger/api";
+import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { getCurrentInspectedURL } from "../context/connection";
 

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type ErrorObject } from "serialize-error";
-import getErrorDetails from "../../../../components/errors/getErrorDetails";
+import getErrorDetails from "@/components/errors/getErrorDetails";
 import styles from "./ErrorDisplay.module.scss";
 
 type ErrorDisplayProps = {

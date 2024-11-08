@@ -21,7 +21,7 @@
  * @since 1.8.10 set the ambient platform dynamically
  */
 
-import brickRegistry from "../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { initRuntime } from "../runtime/reducePipeline";
 import { setPlatform } from "../platform/platformContext";
 

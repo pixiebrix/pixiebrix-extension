@@ -16,13 +16,10 @@
  */
 
 import useAsyncEffect from "use-async-effect";
-import { getReservedSidebarEntries } from "../../contentScript/messenger/api";
+import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "../connectedTarget";
 import { useSelector } from "react-redux";
-import {
-  selectClosedTabs,
-  selectVisiblePanelCount,
-} from "../sidebarSelectors";
+import { selectClosedTabs, selectVisiblePanelCount } from "../sidebarSelectors";
 import { eventKeyForEntry } from "../../store/sidebar/eventKeyUtils";
 
 /**

@@ -16,7 +16,7 @@
  */
 
 import { INTERNAL_reset as resetManagedStorage } from "./managedStorage";
-import { INTERNAL_reset as resetAsyncExternalStore } from "../../hooks/useAsyncExternalStore";
+import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "./useManagedStorageState";
 import {

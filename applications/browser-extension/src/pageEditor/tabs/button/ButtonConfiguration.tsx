@@ -16,23 +16,21 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
-import TemplateWidget, {
-  type Snippet,
-} from "../../fields/TemplateWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import TemplateWidget, { type Snippet } from "../../fields/TemplateWidget";
 import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
-import IconWidget from "../../../components/fields/IconWidget";
+import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "../../fields/LocationWidget";
 import SelectWidget, {
   type Option,
-} from "../../../components/form/widgets/SelectWidget";
+} from "@/components/form/widgets/SelectWidget";
 import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
 import MatchRulesSection from "../MatchRulesSection";
 import ExtraPermissionsSection from "../ExtraPermissionsSection";
 import { useField } from "formik";
-import SwitchButtonWidget from "../../../components/form/widgets/switchButton/SwitchButtonWidget";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
-import BooleanWidget from "../../../components/fields/schemaFields/widgets/BooleanWidget";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 
 const buttonSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },

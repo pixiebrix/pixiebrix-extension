@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
 import MatchRulesSection from "../MatchRulesSection";

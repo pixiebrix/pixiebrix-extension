@@ -21,7 +21,7 @@ import { type ModComponentFormState } from "../starterBricks/formStateTypes";
 import reportEvent from "../../telemetry/reportEvent";
 import { useCallback } from "react";
 import { Events } from "../../telemetry/events";
-import { useCreateModDefinitionMutation } from "../../data/service/api";
+import { useCreateModDefinitionMutation } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "../store/editor/editorSlice";
 import { mapModDefinitionUpsertResponseToModDefinition } from "../utils";

@@ -20,8 +20,8 @@ import {
   type JavaScriptPayload,
   type TemplateRenderPayload,
 } from "./api";
-import { isErrorObject } from "../../errors/errorHelpers";
-import { BusinessError, InvalidTemplateError } from "../../errors/businessErrors";
+import { isErrorObject } from "@/errors/errorHelpers";
+import { BusinessError, InvalidTemplateError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 
 export async function renderNunjucksTemplate(

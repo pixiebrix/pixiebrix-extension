@@ -30,12 +30,9 @@ import {
   resolveForm,
   cancelForm,
 } from "../../platform/forms/formController";
-import { checkAvailable } from "../../bricks/available";
+import { checkAvailable } from "@/bricks/available";
 import notify from "../../utils/notify";
-import {
-  getState,
-  setState,
-} from "../stateController/stateController";
+import { getState, setState } from "../stateController/stateController";
 import {
   cancelTemporaryPanels,
   getPanelDefinition,
@@ -43,20 +40,17 @@ import {
   stopWaitingForTemporaryPanels,
 } from "../../platform/panels/panelController";
 import { closeWalkthroughModal } from "../walkthroughModalProtocol";
-import showWalkthroughModal from "../../components/walkthroughModal/showWalkthroughModal";
+import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
-import { toggleQuickBar } from "../../components/quickBar/QuickBarApp";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { cancelSelect } from "../pageEditor/elementPicker";
 import { reloadActivationEnhancements } from "../loadActivationEnhancementsCore";
 import { getAttributeExamples } from "../pageEditor/elementInformation";
 import selectElement from "../pageEditor/selectElement";
 import { insertButton } from "../pageEditor/insertButton";
-import {
-  disableOverlay,
-  enableOverlay,
-} from "../pageEditor/draft/overlay";
+import { disableOverlay, enableOverlay } from "../pageEditor/draft/overlay";
 import { runMapArgs } from "../pipelineProtocol/runMapArgs";
-import { getCopilotHostData } from "../../contrib/automationanywhere/SetCopilotDataEffect";
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
 import { showBannerFromConfig } from "../integrations/deferredLoginController";
 import { runBrickPreview } from "../pageEditor/runBrickPreview";
 import { runBrick } from "../executor";

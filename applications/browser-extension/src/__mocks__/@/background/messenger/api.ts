@@ -22,7 +22,7 @@ import { RegistryId } from "../../../../types/registryTypes";
 import { Nullishable } from "../../../../utils/nullishUtils";
 import { getMethod, backgroundTarget as bg } from "webext-messenger";
 
-export * from "../../../../background/messenger/api";
+export * from "@/background/messenger/api";
 
 export const registry = {
   syncRemote: jest.fn(),

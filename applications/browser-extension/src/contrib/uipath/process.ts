@@ -17,7 +17,7 @@
 
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { validateRegistryId } from "../../types/helpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "../../types/schemaTypes";
 import { type RegistryId } from "../../types/registryTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";

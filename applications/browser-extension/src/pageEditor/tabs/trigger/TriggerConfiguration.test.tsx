@@ -3,12 +3,12 @@ import { render } from "../../testHelpers";
 import TriggerConfiguration from "./TriggerConfiguration";
 import { actions as editorActions } from "../../store/editor/editorSlice";
 import { triggerFormStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import registerBuiltinBricks from "../../../bricks/registerBuiltinBricks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { screen } from "@testing-library/react";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "../../../testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import CustomEventEffect from "../../../bricks/effects/customEvent";
+import CustomEventEffect from "@/bricks/effects/customEvent";
 import { uuidv4 } from "../../../types/helpers";
 
 beforeAll(() => {

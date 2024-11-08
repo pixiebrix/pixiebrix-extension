@@ -16,7 +16,7 @@
  */
 
 import bricksRegistry from "./registry";
-import { registry as backgroundRegistry } from "../background/messenger/api";
+import { registry as backgroundRegistry } from "@/background/messenger/api";
 import { echoBrick } from "../runtime/pipelineTests/testHelpers";
 import { type PackageVersion, parsePackage } from "../registry/packageRegistry";
 import {

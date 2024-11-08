@@ -17,15 +17,15 @@
 
 import useMilestones from "./useMilestones";
 import { renderHook } from "../testUtils/renderWithCommonStore";
-import { authSlice } from "../auth/authSlice";
+import { authSlice } from "@/auth/authSlice";
 import { appApiMock } from "../testUtils/appApiMock";
-import { selectExtensionAuthState } from "../auth/authUtils";
+import { selectExtensionAuthState } from "@/auth/authUtils";
 import { meApiResponseFactory } from "../testUtils/factories/authFactories";
-import { transformUserMilestoneResponse } from "../data/model/UserMilestone";
+import { transformUserMilestoneResponse } from "@/data/model/UserMilestone";
 import { type components } from "@/types/swagger";
-import { transformMeResponse } from "../data/model/Me";
+import { transformMeResponse } from "@/data/model/Me";
 import { milestoneFactory } from "../testUtils/factories/milestoneFactories";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const renderUseMilestones = (
   milestonesApiResponses: components["schemas"]["Me"]["milestones"],

@@ -16,22 +16,16 @@
  */
 
 import { useCallback } from "react";
-import { type BrickConfig, type PipelineFlavor } from "../../../../../bricks/types";
+import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import {
   filterTracesByCall,
   getLatestBrickCall,
-} from "../../../../../telemetry/traceHelpers";
+} from "@/telemetry/traceHelpers";
 import { isEmpty } from "lodash";
 import { type Branch } from "../../../../../types/runtimeTypes";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";
-import {
-  type MapOutput,
-  type EditorNodeProps,
-} from "./types";
-import {
-  getBuilderPreviewElementId,
-  getSubPipelinesForBrick,
-} from "./helpers";
+import { type MapOutput, type EditorNodeProps } from "./types";
+import { getBuilderPreviewElementId, getSubPipelinesForBrick } from "./helpers";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveModComponentFormState,
@@ -41,7 +35,7 @@ import {
 import { selectActiveModComponentTraces } from "../../../../store/runtime/runtimeSelectors";
 import { useSelector } from "react-redux";
 import useApiVersionAtLeast from "../../../../hooks/useApiVersionAtLeast";
-import useTypedBrickMap from "../../../../../bricks/hooks/useTypedBrickMap";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import { useCreateNodeActions } from "./useCreateNodeActions";
 import { type useGetNodeState } from "./useGetNodeState";
 import { type useGetSubPipelineNodes } from "./useGetSubPipelineNodes";

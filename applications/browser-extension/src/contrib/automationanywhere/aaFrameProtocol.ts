@@ -17,11 +17,8 @@
 
 import { expectContext } from "../../utils/expectContext";
 import { getConnectedTarget } from "../../sidebar/connectedTarget";
-import { getCopilotHostData } from "../../contentScript/messenger/api";
-import {
-  type ProcessDataMap,
-  SET_COPILOT_DATA_MESSAGE_TYPE,
-} from "./aaTypes";
+import { getCopilotHostData } from "@/contentScript/messenger/api";
+import { type ProcessDataMap, SET_COPILOT_DATA_MESSAGE_TYPE } from "./aaTypes";
 import { type TopLevelFrame } from "webext-messenger";
 
 /**

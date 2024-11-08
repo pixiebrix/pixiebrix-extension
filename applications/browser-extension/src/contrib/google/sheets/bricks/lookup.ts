@@ -17,7 +17,7 @@
 
 import { validateRegistryId } from "../../../../types/helpers";
 import { zip } from "lodash";
-import { BusinessError, PropError } from "../../../../errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
   SHEET_INTEGRATION_SCHEMA,
@@ -25,11 +25,11 @@ import {
 import { type Schema } from "../../../../types/schemaTypes";
 import { TransformerABC } from "../../../../types/bricks/transformerTypes";
 import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import { type BrickArgs, type BrickOptions } from "../../../../types/runtimeTypes";
 import {
-  getAllRows,
-  type SpreadsheetTarget,
-} from "../core/sheetsApi";
+  type BrickArgs,
+  type BrickOptions,
+} from "../../../../types/runtimeTypes";
+import { getAllRows, type SpreadsheetTarget } from "../core/sheetsApi";
 import { isNullOrBlank } from "../../../../utils/stringUtils";
 
 import { INTEGRATIONS_BASE_SCHEMA_URL } from "../../../../integrations/constants";

@@ -20,8 +20,8 @@ import {
   type BrickConfig,
   type BrickPosition,
   PipelineFlavor,
-} from "../../bricks/types";
-import { type VisitBlockExtra } from "../../bricks/PipelineVisitor";
+} from "@/bricks/types";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { FORM_MODAL_ID } from "../../pageEditor/fields/FormModalOptions";
 import { AnnotationType } from "../../types/annotationTypes";
 

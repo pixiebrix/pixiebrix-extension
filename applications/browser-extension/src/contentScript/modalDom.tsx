@@ -18,8 +18,8 @@
 import React from "react";
 import { expectContext } from "../utils/expectContext";
 import { renderWidget } from "../utils/reactUtils";
-import useScrollLock from "../hooks/useScrollLock";
-import useAbortSignal from "../hooks/useAbortSignal";
+import useScrollLock from "@/hooks/useScrollLock";
+import useAbortSignal from "@/hooks/useAbortSignal";
 
 // This cannot be moved to globals.d.ts because it's a module augmentation
 // https://stackoverflow.com/a/42085876/288906

@@ -20,8 +20,8 @@ import { isEmpty, sortBy } from "lodash";
 import integrationRegistry from "./registry";
 import { validateRegistryId } from "@/types/helpers";
 import { expectContext, forbidContext } from "../utils/expectContext";
-import { ExtensionNotLinkedError } from "../errors/genericErrors";
-import { MissingConfigurationError } from "../errors/businessErrors";
+import { ExtensionNotLinkedError } from "@/errors/genericErrors";
+import { MissingConfigurationError } from "@/errors/businessErrors";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -33,12 +33,12 @@ import { type UUID } from "@/types/stringTypes";
 import { DoesNotExistError, type RegistryId } from "@/types/registryTypes";
 import { sanitizeIntegrationConfig } from "./sanitizeIntegrationConfig";
 import { PIXIEBRIX_INTEGRATION_ID } from "./constants";
-import { getLinkedApiClient } from "../data/service/apiClient";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 import { memoizeUntilSettled } from "../utils/promiseUtils";
 import { type SetRequired } from "type-fest";
 import { pixiebrixConfigurationFactory } from "./util/pixiebrixConfigurationFactory";
 import { readRawConfigurations } from "./util/readRawConfigurations";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 enum Visibility {
   Private = 0,

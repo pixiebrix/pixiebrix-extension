@@ -19,8 +19,11 @@ import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 import { toExpression } from "../../utils/expressionUtils";
 import { GetPageState, SetPageState } from "./pageState";
-import { TEST_resetStateController } from "../../contentScript/stateController/stateController";
-import { MergeStrategies, StateNamespaces } from "../../platform/state/stateTypes";
+import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
+import {
+  MergeStrategies,
+  StateNamespaces,
+} from "../../platform/state/stateTypes";
 
 beforeEach(async () => {
   await TEST_resetStateController();

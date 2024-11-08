@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import LockedStarterBrickLabel from "../../components/form/lockedLabel/LockedStarterBrickLabel";
+import LockedStarterBrickLabel from "@/components/form/lockedLabel/LockedStarterBrickLabel";
 
 export function makeLockableFieldProps(
   label: string,

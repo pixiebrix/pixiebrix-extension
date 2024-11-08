@@ -21,7 +21,7 @@ import { renderHook } from "../../testHelpers";
 import { actions } from "../../store/editor/editorSlice";
 import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
 import { autoUUIDSequence } from "../../../testUtils/factories/stringFactories";
-import { type BrickConfig } from "../../../bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { validateRegistryId } from "../../../types/helpers";
 
 const staticDocumentConfig: BrickConfig = {

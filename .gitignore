@@ -4,7 +4,7 @@ node_modules
 db.sqlite3
 .env
 .env.*
-!.env.example
+!applications/browser-extension/.env.example
 staticfiles
 .vscode
 
@@ -45,7 +45,7 @@ web-ext-artifacts
 
 # Other artifacts
 artifacts
-/scripts/bin/
+/applications/browser-extension/scripts/bin/
 headers.json
 report.html
 pixiebrix-extension-*.zip

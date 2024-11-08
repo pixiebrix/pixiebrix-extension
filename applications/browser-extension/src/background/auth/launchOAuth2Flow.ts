@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage } from "../../errors/errorHelpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 import {
   type AuthData,
   type Integration,

@@ -16,7 +16,7 @@
  */
 
 import { DataPanelTabKey } from "../dataPanelTypes";
-import Alert from "../../../../../components/Alert";
+import Alert from "@/components/Alert";
 import DataTabJsonTree from "../DataTabJsonTree";
 import { contextAsPlainObject } from "../../../../../runtime/extendModVariableContext";
 import DataTabPane from "../DataTabPane";
@@ -28,9 +28,7 @@ import ErrorDisplay from "../ErrorDisplay";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../store/editor/pageEditorTypes";
 import { selectNodeDataPanelTabState } from "../../../../store/editor/editorSelectors";
-import ViewModeField, {
-  type ViewModeOption,
-} from "./ViewModeField";
+import ViewModeField, { type ViewModeOption } from "./ViewModeField";
 import useBrickTraceRecord from "./useBrickTraceRecord";
 import { type ValueOf } from "type-fest";
 

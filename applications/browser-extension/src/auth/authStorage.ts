@@ -31,7 +31,7 @@ import { syncRemotePackages } from "../registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "../utils/SimpleEventTarget";
 import { ReusableAbortController } from "abort-utils";
-import { removeOAuth2Token } from "../background/messenger/api";
+import { removeOAuth2Token } from "@/background/messenger/api";
 import { deploymentKeyStorage, getDeploymentKey } from "./deploymentKey";
 import { getUUID } from "../telemetry/telemetryHelpers";
 

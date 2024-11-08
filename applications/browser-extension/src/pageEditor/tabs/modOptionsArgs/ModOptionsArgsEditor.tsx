@@ -26,15 +26,15 @@ import {
 import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
 import genericOptionsFactory, {
   type BrickOptionProps,
-} from "../../../components/fields/schemaFields/genericOptionsFactory";
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
-} from "../../../components/fields/schemaFields/FieldRuntimeContext";
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { Card, Container } from "react-bootstrap";
-import Form from "../../../components/form/Form";
-import ErrorBoundary from "../../../components/ErrorBoundary";
-import { getOptionsValidationSchema } from "../../../hooks/useAsyncModOptionsValidationSchema";
-import Effect from "../../../components/Effect";
+import Form from "@/components/form/Form";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
+import Effect from "@/components/Effect";
 import { actions } from "../../store/editor/editorSlice";
 import { type OptionsArgs } from "../../../types/runtimeTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "../../../runtime/apiVersionOptions";
@@ -43,13 +43,16 @@ import { emptyModOptionsDefinitionFactory } from "../../../utils/modUtils";
 import { uniqBy } from "lodash";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 import type { RegistryId } from "../../../types/registryTypes";
-import useDeriveAsyncState from "../../../hooks/useDeriveAsyncState";
-import { mergeAsyncState, valueToAsyncState } from "../../../utils/asyncStateUtils";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import {
+  mergeAsyncState,
+  valueToAsyncState,
+} from "../../../utils/asyncStateUtils";
 import type {
   ModDefinition,
   ModOptionsDefinition,
 } from "../../../types/modDefinitionTypes";
-import AsyncStateGate from "../../../components/AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 import type { FormikValues } from "formik";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {

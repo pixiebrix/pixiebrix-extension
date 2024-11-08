@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationsQuery } from "../../data/service/api";
+import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type ValueOf } from "type-fest";
 
 export const TeamTrialStatus = {

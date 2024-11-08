@@ -20,15 +20,15 @@ import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectShowPublishContext } from "../modModalsSelectors";
 import { modModalsSlice } from "../modModalsSlice";
-import { getErrorMessage } from "../../../../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
-} from "../../../../../data/service/api";
+} from "@/data/service/api";
 import notify from "../../../../../utils/notify";
 import { produce } from "immer";
-import ActivationLink from "../../../../../activation/ActivationLink";
-import { isSingleObjectBadRequestError } from "../../../../../errors/networkErrorHelpers";
+import ActivationLink from "@/activation/ActivationLink";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
 import PublishContentLayout from "./PublishContentLayout";
 

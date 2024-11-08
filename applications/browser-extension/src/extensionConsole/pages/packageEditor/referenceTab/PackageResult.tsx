@@ -20,8 +20,8 @@ import styles from "./PackageResult.module.scss";
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
 import cx from "classnames";
-import { OfficialBadge } from "../../../../components/OfficialBadge";
-import PackageIcon from "../../../../components/PackageIcon";
+import { OfficialBadge } from "@/components/OfficialBadge";
+import PackageIcon from "@/components/PackageIcon";
 import {
   faEyeSlash,
   faGlobe,
@@ -29,9 +29,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find as findPackage } from "../../../../registry/packageRegistry";
-import { type Team } from "../../../../data/model/Team";
-import { type PackageInstance, type Sharing } from "../../../../types/registryTypes";
-import useAsyncState from "../../../../hooks/useAsyncState";
+import { type Team } from "@/data/model/Team";
+import {
+  type PackageInstance,
+  type Sharing,
+} from "../../../../types/registryTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type SharingTagProps<T extends PackageInstance> = {
   packageInstance: T;

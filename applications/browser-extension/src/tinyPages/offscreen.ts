@@ -24,7 +24,7 @@ import {
 } from "@deepgram/sdk";
 import pDefer from "p-defer";
 import { type JsonObject } from "type-fest";
-import { tabCapture } from "../background/messenger/api";
+import { tabCapture } from "@/background/messenger/api";
 import {
   extractRecordingTabId,
   isGetRecordingTabIdMessage,

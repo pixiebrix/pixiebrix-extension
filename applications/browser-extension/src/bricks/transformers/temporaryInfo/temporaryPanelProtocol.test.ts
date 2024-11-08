@@ -23,7 +23,7 @@ import {
   resolveTemporaryPanel,
 } from "../../../platform/panels/panelController";
 import { uuidv4 } from "../../../types/helpers";
-import { CancelError } from "../../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 
 import { sidebarEntryFactory } from "../../../testUtils/factories/sidebarEntryFactories";
 

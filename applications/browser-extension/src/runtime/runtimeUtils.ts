@@ -19,24 +19,24 @@ import { validateBrickInputOutput } from "../validators/schemaValidator";
 import {
   arraySchema,
   castSchema,
-} from "../components/fields/schemaFields/schemaUtils";
-import { InputValidationError, OutputValidationError } from "../bricks/errors";
+} from "@/components/fields/schemaFields/schemaUtils";
+import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import { isEmpty } from "lodash";
 import {
   type BrickCondition,
   type BrickConfig,
   type BrickWindow,
   hasMultipleTargets,
-} from "../bricks/types";
+} from "@/bricks/types";
 import {
   type ApiVersionOptions,
   DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
 } from "./apiVersionOptions";
 import { engineRenderer } from "./renderers";
 import { mapArgs } from "./mapArgs";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { isInnerDefinitionRegistryId, validateUUID } from "@/types/helpers";
-import { getElementForReference } from "../contentScript/elementReference";
+import { getElementForReference } from "@/contentScript/elementReference";
 import { type Brick } from "@/types/brickTypes";
 import { type Logger } from "@/types/loggerTypes";
 import {

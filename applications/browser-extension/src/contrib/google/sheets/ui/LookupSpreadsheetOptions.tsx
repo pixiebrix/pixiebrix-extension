@@ -16,22 +16,22 @@
  */
 
 import React, { useState } from "react";
-import { type BrickOptionProps } from "../../../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { type Expression } from "../../../../types/runtimeTypes";
-import { type Schema } from "../../../../types/schemaTypes";
+import { type Expression } from "@/types/runtimeTypes";
+import { type Schema } from "@/types/schemaTypes";
 import TabField from "./TabField";
-import SchemaField from "../../../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "../bricks/lookup";
 import { isEmpty } from "lodash";
-import { isExpression, toExpression } from "../../../../utils/expressionUtils";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "./RequireGoogleSheet";
-import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
+import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import useAsyncEffect from "use-async-effect";
 import hash from "object-hash";
-import { joinName } from "../../../../utils/formUtils";
+import { joinName } from "@/utils/formUtils";
 import { getHeaders } from "../core/sheetsApi";
-import { assertNotNullish } from "../../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   return {

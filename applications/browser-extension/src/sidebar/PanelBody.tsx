@@ -16,10 +16,10 @@
  */
 
 import React, { useReducer } from "react";
-import Loader from "../components/Loader";
-import brickRegistry from "../bricks/registry";
-import EmotionShadowRoot from "../components/EmotionShadowRoot";
-import { getErrorMessage, selectSpecificError } from "../errors/errorHelpers";
+import Loader from "@/components/Loader";
+import brickRegistry from "@/bricks/registry";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
   isRendererErrorPayload,
   isRendererLoadingPayload,
@@ -28,12 +28,12 @@ import {
   type PanelRunMetadata,
 } from "@/types/sidebarTypes";
 import RendererComponent from "./RendererComponent";
-import { BusinessError, CancelError } from "../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useAsyncEffect } from "use-async-effect";
 import RootCancelledPanel from "./components/RootCancelledPanel";
 import RootErrorPanel from "./components/RootErrorPanel";
-import { type SubmitPanelAction } from "../bricks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type BrickArgsContext,
@@ -41,8 +41,8 @@ import {
 } from "@/types/runtimeTypes";
 import { unsafeAssumeValidArg } from "../runtime/runtimeTypes";
 import { isEmpty } from "lodash";
-import DelayedRender from "../components/DelayedRender";
-import { runHeadlessPipeline } from "../contentScript/messenger/api";
+import DelayedRender from "@/components/DelayedRender";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "../runtime/apiVersionOptions";
 import { getConnectedTarget } from "./connectedTarget";

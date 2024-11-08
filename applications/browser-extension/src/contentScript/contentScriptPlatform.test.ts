@@ -18,9 +18,9 @@
 import contentScriptPlatform from "./contentScriptPlatform";
 import { setPlatform } from "../platform/platformContext";
 import { sanitizedIntegrationConfigFactory } from "../testUtils/factories/integrationFactories";
-import { TEST_deleteFeatureFlagsCache } from "../auth/featureFlagStorage";
+import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { appApiMock } from "../testUtils/appApiMock";
-import { InteractiveLoginRequiredError } from "../errors/authErrors";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { waitForEffect } from "../testUtils/testHelpers";
 import { deferLogin } from "./integrations/deferredLoginController";
 import pDefer from "p-defer";
@@ -28,8 +28,8 @@ import {
   clearModComponentDebugLogs,
   performConfiguredRequestInBackground,
   traces,
-} from "../background/messenger/api";
-import { API_PATHS } from "../data/service/urlPaths";
+} from "@/background/messenger/api";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { modComponentFactory } from "../testUtils/factories/modComponentFactories";
 
 jest.mock("./integrations/deferredLoginController");

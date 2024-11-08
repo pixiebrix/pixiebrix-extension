@@ -17,11 +17,11 @@
 
 import React from "react";
 import BrickConfiguration from "./BrickConfiguration";
-import brickRegistry from "../../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { echoBrick } from "../../../runtime/pipelineTests/testHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "../../../testUtils/testHelpers";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "../../testHelpers";
 import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
 import { actions } from "../../store/editor/editorSlice";
@@ -37,7 +37,7 @@ import {
   brickConfigFactory,
   brickFactory,
 } from "../../../testUtils/factories/brickFactories";
-import CommentEffect from "../../../bricks/effects/comment";
+import CommentEffect from "@/bricks/effects/comment";
 import { propertiesToSchema } from "../../../utils/schemaUtils";
 import { StarterBrickTypes } from "../../../types/starterBrickTypes";
 

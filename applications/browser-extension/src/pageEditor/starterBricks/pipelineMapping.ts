@@ -21,15 +21,18 @@ import {
   type BrickPipeline,
   type BrickPosition,
   PipelineFlavor,
-} from "../../bricks/types";
+} from "@/bricks/types";
 import { type Draft, produce } from "immer";
 import PipelineVisitor, {
   ROOT_POSITION,
   type VisitResolvedBlockExtra,
-} from "../../bricks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import pipelineSchema from "../../../schemas/pipeline.json";
-import brickRegistry, { type TypedBrickMap } from "../../bricks/registry";
-import { isPipelineExpression, toExpression } from "../../utils/expressionUtils";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
+import {
+  isPipelineExpression,
+  toExpression,
+} from "../../utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
   constructor(private readonly blockMap: TypedBrickMap) {

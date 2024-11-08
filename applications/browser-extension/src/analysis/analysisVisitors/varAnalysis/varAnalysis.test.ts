@@ -22,16 +22,16 @@ import VarAnalysis, {
 } from "./varAnalysis";
 import { validateRegistryId } from "../../../types/helpers";
 import { BrickTypes, validateOutputKey } from "../../../runtime/runtimeTypes";
-import IfElse from "../../../bricks/transformers/controlFlow/IfElse";
-import ForEach from "../../../bricks/transformers/controlFlow/ForEach";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { EchoBrick } from "../../../runtime/pipelineTests/testHelpers";
 import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
 import modRegistry from "../../../modDefinitions/registry";
-import brickRegistry from "../../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { SELF_EXISTENCE, VarExistence } from "./varMap";
-import TryExcept from "../../../bricks/transformers/controlFlow/TryExcept";
-import ForEachElement from "../../../bricks/transformers/controlFlow/ForEachElement";
-import { DocumentRenderer } from "../../../bricks/renderers/document";
+import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
+import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import { createNewDocumentBuilderElement } from "../../../pageEditor/documentBuilder/createNewDocumentBuilderElement";
 import {
   type ButtonElement,
@@ -39,7 +39,7 @@ import {
   type ListElement,
 } from "../../../pageEditor/documentBuilder/documentBuilderTypes";
 import { type Schema } from "../../../types/schemaTypes";
-import { integrationConfigLocator } from "../../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { modMetadataFactory } from "../../../testUtils/factories/modComponentFactories";
 import {
   draftModStateFactory,
@@ -53,10 +53,10 @@ import {
 } from "../../../testUtils/factories/integrationFactories";
 import { brickConfigFactory } from "../../../testUtils/factories/brickFactories";
 import { uuidSequence } from "../../../testUtils/factories/stringFactories";
-import { CustomFormRenderer } from "../../../bricks/renderers/customForm";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { toExpression } from "../../../utils/expressionUtils";
-import IdentityTransformer from "../../../bricks/transformers/IdentityTransformer";
-import { createNewConfiguredBrick } from "../../../bricks/exampleBrickConfigs";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import pixiebrixIntegrationDependencyFactory from "../../../integrations/util/pixiebrixIntegrationDependencyFactory";
 
 jest

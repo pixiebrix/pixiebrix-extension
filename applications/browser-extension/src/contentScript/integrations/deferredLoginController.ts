@@ -16,10 +16,10 @@
  */
 
 import { expectContext } from "../../utils/expectContext";
-import { oauth2Storage } from "../../auth/authConstants";
+import { oauth2Storage } from "@/auth/authConstants";
 import type { UUID } from "../../types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { CancelError, RequestSupersededError } from "../../errors/businessErrors";
+import { CancelError, RequestSupersededError } from "@/errors/businessErrors";
 import type { SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import {
   hideAllLoginBanners,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as ckeditorDom from "../contrib/ckeditor/ckeditorDom";
+import * as ckeditorDom from "@/contrib/ckeditor/ckeditorDom";
 import * as pageScript from "../pageScript/messenger/api";
 import { getSelectorForElement } from "./elementReference";
 import { expectContext } from "../utils/expectContext";
@@ -23,7 +23,7 @@ import focusController from "../utils/focusController";
 import {
   insertIntoDraftJs,
   isDraftJsField,
-} from "../contrib/draftjs/draftJsDom";
+} from "@/contrib/draftjs/draftJsDom";
 
 /**
  * @file Text Editor DOM utilities that might call the pageScript.

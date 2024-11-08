@@ -19,20 +19,18 @@ import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import modsPageSlice, {
-  persistModsConfig,
-} from "./modsPageSlice";
-import { appApi } from "../../../data/service/api";
+import modsPageSlice, { persistModsConfig } from "./modsPageSlice";
+import { appApi } from "@/data/service/api";
 import GetStartedView from "./GetStartedView";
 import { Provider } from "react-redux";
-import { authSlice, persistAuthConfig } from "../../../auth/authSlice";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { rest } from "msw";
 import { modDefinitionsSlice } from "../../../modDefinitions/modDefinitionsSlice";
 import { valueToAsyncCacheState } from "../../../utils/asyncStateUtils";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { publicSharingDefinitionFactory } from "../../../testUtils/factories/registryFactories";
 import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
-import { Milestones } from "../../../data/model/UserMilestone";
+import { Milestones } from "@/data/model/UserMilestone";
 
 export default {
   title: "ModsPage/GetStartedView",

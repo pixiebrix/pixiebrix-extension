@@ -38,7 +38,7 @@ import {
   uuidv4,
   validateRegistryId,
 } from "../../types/helpers";
-import { type BrickPipeline, type ReaderConfig } from "../../bricks/types";
+import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
 import { hasInnerStarterBrickRef } from "../../registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
@@ -60,8 +60,8 @@ import {
   type Availability,
   type NormalizedAvailability,
 } from "../../types/availabilityTypes";
-import { normalizeAvailability } from "../../bricks/available";
-import { registry } from "../../background/messenger/api";
+import { normalizeAvailability } from "@/bricks/available";
+import { registry } from "@/background/messenger/api";
 
 import { type DraftModState } from "../store/editor/pageEditorTypes";
 

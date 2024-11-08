@@ -20,14 +20,14 @@ import { Button } from "react-bootstrap";
 import React, { useCallback, useMemo } from "react";
 import { type Column, type Row } from "react-table";
 import { isEqual } from "lodash";
-import PaginatedTable from "../../../components/paginatedTable/PaginatedTable";
+import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { type RootState } from "../../store";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { deleteCachedAuthData } from "../../../background/messenger/api";
+import { deleteCachedAuthData } from "@/background/messenger/api";
 import notify from "../../../utils/notify";
-import EllipsisMenu from "../../../components/ellipsisMenu/EllipsisMenu";
-import PackageIcon from "../../../components/PackageIcon";
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import PackageIcon from "@/components/PackageIcon";
 import {
   type SecretsConfig,
   type Integration,

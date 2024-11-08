@@ -21,7 +21,7 @@ import BrowserBanner from "./BrowserBanner";
 import { waitForEffect } from "../../testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import { INTERNAL_reset } from "../../store/enterprise/managedStorage";
-import { INTERNAL_reset as resetAsyncExternalStore } from "../../hooks/useAsyncExternalStore";
+import { INTERNAL_reset as resetAsyncExternalStore } from "@/hooks/useAsyncExternalStore";
 
 beforeEach(async () => {
   await INTERNAL_reset();

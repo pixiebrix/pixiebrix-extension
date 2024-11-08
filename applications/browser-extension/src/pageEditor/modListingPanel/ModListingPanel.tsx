@@ -26,13 +26,13 @@ import {
   faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import useFlags from "../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import { selectIsEditorSidebarExpanded } from "../store/editor/editorSelectors";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import NewModButton from "./NewModButton";
 import ModSidebarListItems from "./ModSidebarListItems";
-import { FeatureFlags } from "../../auth/featureFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * React Bootstrap Collapsed component that includes a div wrapper.

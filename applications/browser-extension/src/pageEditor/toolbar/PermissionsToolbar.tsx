@@ -22,7 +22,7 @@ import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { useDebounce } from "use-debounce";
 import notify from "../../utils/notify";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import {
   emptyPermissionsFactory,
   ensurePermissionsFromUserGesture,

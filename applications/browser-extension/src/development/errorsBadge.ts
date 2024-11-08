@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage, onUncaughtError } from "../errors/errorHelpers";
+import { getErrorMessage, onUncaughtError } from "@/errors/errorHelpers";
 import { browserAction } from "../mv3/api";
 
 let counter = 0;

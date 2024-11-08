@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { flagOn } from "../auth/featureFlagStorage";
+import { flagOn } from "@/auth/featureFlagStorage";
 import { reportToApplicationErrorTelemetry } from "./reportToApplicationErrorTelemetry";
 import { serializeError } from "serialize-error";
 import Reason = chrome.offscreen.Reason;
-import { FeatureFlags, type FeatureFlag } from "../auth/featureFlags";
+import { FeatureFlags, type FeatureFlag } from "@/auth/featureFlags";
 
 jest.mock("../auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),

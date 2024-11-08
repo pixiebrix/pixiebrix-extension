@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import useTimeoutState from "../hooks/useTimeoutState";
+import useTimeoutState from "@/hooks/useTimeoutState";
 
 type Props = {
   millis: number;

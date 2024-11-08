@@ -26,10 +26,10 @@ import { produce } from "immer";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
-} from "../../../../../data/service/api";
+} from "@/data/service/api";
 import notify from "../../../../../utils/notify";
-import { isSingleObjectBadRequestError } from "../../../../../errors/networkErrorHelpers";
-import { getErrorMessage } from "../../../../../errors/errorHelpers";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";
 
 const CancelPublishContent: React.FunctionComponent = () => {

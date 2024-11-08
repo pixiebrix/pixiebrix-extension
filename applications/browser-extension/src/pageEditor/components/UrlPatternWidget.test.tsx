@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "../testHelpers";
 import UrlPatternWidget from "./UrlPatternWidget";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeEach(() => {
   registerDefaultWidgets();

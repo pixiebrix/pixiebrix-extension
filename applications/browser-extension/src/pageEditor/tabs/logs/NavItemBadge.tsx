@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectLogs } from "../../../components/logViewer/logSelectors";
+import { selectLogs } from "@/components/logViewer/logSelectors";
 import { groupBy } from "lodash";
 import React, { useMemo } from "react";
 import { Badge } from "react-bootstrap";

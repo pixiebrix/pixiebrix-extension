@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPipeline } from "../../bricks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickDefinitionProp } from "@/starterBricks/types";
 import { type MessageConfig } from "../../utils/notify";
 import { type Manifest, type Menus } from "webextension-polyfill";

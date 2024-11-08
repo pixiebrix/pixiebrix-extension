@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLinkedApiClient } from "../data/service/apiClient";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment, type PackageConfigDetail } from "@/types/contract";
 import { allSettled } from "../utils/promiseUtils";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 /**
  * Fetches the mod definition for the given deployment.

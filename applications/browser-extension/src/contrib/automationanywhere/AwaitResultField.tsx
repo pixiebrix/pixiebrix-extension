@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
-import BooleanWidget from "../../components/fields/schemaFields/widgets/BooleanWidget";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { ENTERPRISE_EDITION_COMMON_PROPERTIES } from "./RunBot";
 import type { Schema } from "../../types/schemaTypes";
 import { useField } from "formik";

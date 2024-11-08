@@ -38,7 +38,7 @@ import {
   withIdRefPrefix,
   type GenericObjectType,
 } from "@rjsf/utils";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { assertNotNullish } from "../utils/nullishUtils";
 
 /**

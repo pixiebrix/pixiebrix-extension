@@ -34,7 +34,7 @@ import {
   type ModModalsRootState,
   modModalsSlice,
 } from "./pages/mods/modals/modModalsSlice";
-import { appApi } from "../data/service/api";
+import { appApi } from "@/data/service/api";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import modComponentSlice from "../store/modComponents/modComponentSlice";
 import settingsSlice from "../store/settings/settingsSlice";
@@ -45,13 +45,11 @@ import workshopSlice, {
 import { persistModComponentOptionsConfig } from "../store/modComponents/modComponentStorage";
 import { persistSettingsConfig } from "../store/settings/settingsStorage";
 import { type SettingsRootState } from "../store/settings/settingsTypes";
-import modsPageSlice, {
-  persistModsConfig,
-} from "./pages/mods/modsPageSlice";
-import { logSlice } from "../components/logViewer/logSlice";
-import { type LogRootState } from "../components/logViewer/logViewerTypes";
-import { type AuthRootState } from "../auth/authTypes";
-import { authSlice, persistAuthConfig } from "../auth/authSlice";
+import modsPageSlice, { persistModsConfig } from "./pages/mods/modsPageSlice";
+import { logSlice } from "@/components/logViewer/logSlice";
+import { type LogRootState } from "@/components/logViewer/logViewerTypes";
+import { type AuthRootState } from "@/auth/authTypes";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { type ModsPageRootState } from "./pages/mods/modsPageSelectors";
 import { modDefinitionsSlice } from "../modDefinitions/modDefinitionsSlice";
 import { modDefinitionsMiddleware } from "../modDefinitions/modDefinitionsListenerMiddleware";

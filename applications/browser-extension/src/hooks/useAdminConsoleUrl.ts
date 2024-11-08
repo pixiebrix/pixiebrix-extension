@@ -19,8 +19,8 @@ import {
   addAuthListener,
   getPartnerAuthData,
   removeAuthListener,
-} from "../auth/authStorage";
-import { getBaseURL } from "../data/service/baseService";
+} from "@/auth/authStorage";
+import { getBaseURL } from "@/data/service/baseService";
 import useAsyncExternalStore from "./useAsyncExternalStore";
 import { type AsyncState } from "@/types/sliceTypes";
 

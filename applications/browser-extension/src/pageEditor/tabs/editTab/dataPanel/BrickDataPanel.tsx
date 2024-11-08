@@ -20,7 +20,7 @@ import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "./dataPanelTabs.module.scss";
 import { useSelector } from "react-redux";
 import useDataPanelActiveTabKey from "./useDataPanelActiveTabKey";
-import useFlags from "../../../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import {
@@ -39,7 +39,7 @@ import DesignTab, {
   shouldShowFormDesign,
 } from "./tabs/DesignTab";
 import OutlineTab from "./tabs/OutlineTab";
-import { FeatureFlags } from "../../../../auth/featureFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 export const NavItem: React.FC<{
   eventKey: DataPanelTabKey;

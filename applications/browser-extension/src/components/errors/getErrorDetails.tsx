@@ -16,21 +16,21 @@
  */
 
 import React from "react";
-import { InputValidationError, OutputValidationError } from "../../bricks/errors";
+import { InputValidationError, OutputValidationError } from "@/bricks/errors";
 import {
   getErrorMessageWithCauses,
   selectSpecificError,
-} from "../../errors/errorHelpers";
+} from "@/errors/errorHelpers";
 import { type ErrorObject } from "serialize-error";
 import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
-import { ClientRequestError } from "../../errors/clientRequestErrors";
+import { ClientRequestError } from "@/errors/clientRequestErrors";
 import {
   MultipleElementsFoundError,
   NoElementsFoundError,
   ProxiedRemoteServiceError,
-} from "../../errors/businessErrors";
+} from "@/errors/businessErrors";
 import RemoteApiErrorDetail from "./RemoteApiErrorDetail";
 import InvalidSelectorErrorDetail from "./InvalidSelectorErrorDetail";
 

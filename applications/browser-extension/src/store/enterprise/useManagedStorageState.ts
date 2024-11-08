@@ -20,7 +20,7 @@ import {
   readManagedStorage,
 } from "./managedStorage";
 import { expectContext } from "../../utils/expectContext";
-import useAsyncExternalStore from "../../hooks/useAsyncExternalStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
 // NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
 // a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789

@@ -16,23 +16,21 @@
  */
 
 import React, { useMemo } from "react";
-import RequireMods, {
-  type RequiredModDefinition,
-} from "./RequireMods";
-import AsyncStateGate from "../../components/AsyncStateGate";
-import { getOptionsValidationSchema } from "../../hooks/useAsyncModOptionsValidationSchema";
-import useDatabaseOptions from "../../hooks/useDatabaseOptions";
+import RequireMods, { type RequiredModDefinition } from "./RequireMods";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
+import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { useDispatch, useSelector } from "react-redux";
-import useDeriveAsyncState from "../../hooks/useDeriveAsyncState";
-import { type Option } from "../../components/form/widgets/SelectWidget";
-import { wizardStateFactory } from "../../activation/useActivateModWizard";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { wizardStateFactory } from "@/activation/useActivateModWizard";
 import useActivateMod, {
   type ActivateResult,
-} from "../../activation/useActivateMod";
+} from "@/activation/useActivateMod";
 import { SuccessPanel } from "./ActivateModPanel";
 import sidebarSlice from "../../store/sidebar/sidebarSlice";
 import type { ModActivationConfig } from "../../types/modTypes";
-import useFlags from "../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import { selectModInstances } from "../../store/modComponents/modInstanceSelectors";
 
 type ModResultPair = {

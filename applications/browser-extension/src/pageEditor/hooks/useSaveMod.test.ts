@@ -36,7 +36,7 @@ import type {
 } from "../../types/contract";
 import modComponentSlice from "../../store/modComponents/modComponentSlice";
 import { type UUID } from "../../types/stringTypes";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { createNewUnsavedModMetadata } from "../../utils/modUtils";
 import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { createPrivateSharing } from "../../utils/registryUtils";

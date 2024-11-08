@@ -24,19 +24,19 @@ import {
   type PartnerAuthData,
   type TokenAuthData,
   type UserData,
-} from "../../auth/authTypes";
+} from "@/auth/authTypes";
 import { uuidSequence } from "./stringFactories";
 import { type AuthData } from "../../integrations/integrationTypes";
-import { type UserMilestone } from "../../data/model/UserMilestone";
+import { type UserMilestone } from "@/data/model/UserMilestone";
 import type { components } from "../../types/swagger";
-import { type UserPartner } from "../../data/model/UserPartner";
+import { type UserPartner } from "@/data/model/UserPartner";
 import {
   type RequiredMeTeamResponse,
   type RequiredMePartnerResponse,
-} from "../../data/service/responseTypeHelpers";
+} from "@/data/service/responseTypeHelpers";
 import { type SetRequired } from "type-fest";
 import { padStart } from "lodash";
-import { LegacyUserRole } from "../../data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;

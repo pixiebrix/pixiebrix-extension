@@ -39,7 +39,7 @@ import { faThLarge } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
 import { QuickBarStarterBrickABC } from "../../starterBricks/quickBar/quickBarStarterBrick";
 import QuickBarConfiguration from "../tabs/quickBar/QuickBarConfiguration";
-import type { DraftModComponent } from "../../contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type QuickBarFormState } from "./formStateTypes";
 import { type SingleLayerReaderConfig } from "../store/editor/baseFormStateTypes";
 import {

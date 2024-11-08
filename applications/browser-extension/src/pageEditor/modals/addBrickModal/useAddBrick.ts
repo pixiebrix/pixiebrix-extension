@@ -30,13 +30,13 @@ import {
   selectPipelineMap,
 } from "../../store/editor/editorSelectors";
 import { selectSessionId } from "../../store/session/sessionSelectors";
-import BrickTypeAnalysis from "../../../analysis/analysisVisitors/brickTypeAnalysis";
-import { type BrickConfig } from "../../../bricks/types";
-import FormBrickAnalysis from "../../../analysis/analysisVisitors/formBrickAnalysis";
-import RenderersAnalysis from "../../../analysis/analysisVisitors/renderersAnalysis";
-import { type Analysis } from "../../../analysis/analysisTypes";
+import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
+import { type BrickConfig } from "@/bricks/types";
+import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
+import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
+import { type Analysis } from "@/analysis/analysisTypes";
 import { produce } from "immer";
-import { createNewConfiguredBrick } from "../../../bricks/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { type OutputKey } from "../../../types/runtimeTypes";
 import { type Brick } from "../../../types/brickTypes";
 import { joinPathParts } from "../../../utils/formUtils";

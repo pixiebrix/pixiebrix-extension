@@ -40,7 +40,7 @@ import PanelBody from "./PanelBody";
 import FormBody from "./FormBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectClosedTabs,
@@ -62,7 +62,7 @@ import { MOD_LAUNCHER } from "../store/sidebar/constants";
 import useHideEmptySidebarEffect from "./hooks/useHideEmptySidebarEffect";
 import removeTemporaryPanel from "../store/sidebar/thunks/removeTemporaryPanel";
 import { type AppDispatch } from "./store";
-import useOnMountOnly from "../hooks/useOnMountOnly";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 import UnavailableOverlay from "./UnavailableOverlay";
 import removeFormPanel from "../store/sidebar/thunks/removeFormPanel";
 import ConnectingOverlay from "./ConnectingOverlay";

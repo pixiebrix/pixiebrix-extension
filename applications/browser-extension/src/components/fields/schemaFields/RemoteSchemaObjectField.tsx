@@ -18,7 +18,7 @@
 import React from "react";
 import { Card } from "react-bootstrap";
 import ConnectedFieldTemplate from "../../form/ConnectedFieldTemplate";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Schema } from "../../../types/schemaTypes";
 import { isEmpty } from "lodash";
 import SchemaField from "./SchemaField";

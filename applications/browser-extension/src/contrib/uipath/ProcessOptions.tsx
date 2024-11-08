@@ -16,21 +16,21 @@
  */
 
 import React, { useCallback } from "react";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { UIPATH_PROPERTIES } from "./process";
 import { useField } from "formik";
-import RemoteSchemaObjectField from "../../components/fields/schemaFields/RemoteSchemaObjectField";
-import { type Option } from "../../components/form/widgets/SelectWidget";
+import RemoteSchemaObjectField from "@/components/fields/schemaFields/RemoteSchemaObjectField";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type ODataResponseData, type Robot } from "./uipathContract";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
-import RemoteSelectWidget from "../../components/form/widgets/RemoteSelectWidget";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import RequireIntegrationConfig from "../../integrations/components/RequireIntegrationConfig";
-import RemoteMultiSelectWidget from "../../components/form/widgets/RemoteMultiSelectWidget";
+import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
 import { useSelectedRelease } from "./uipathHooks";
 import cachePromise from "../../utils/cachePromise";
-import WorkshopMessage from "../../components/fields/schemaFields/WorkshopMessage";
+import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import { type Expression } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";

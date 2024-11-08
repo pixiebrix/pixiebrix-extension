@@ -34,12 +34,9 @@ import {
   type EnrichedPackageMetadata,
   type NavigateProps,
 } from "./workshopTypes";
-import PaginatedTable from "../../../components/paginatedTable/PaginatedTable";
-import AsyncCard from "../../../components/asyncCard/AsyncCard";
-import {
-  type KindFilterValue,
-  mapKindToKindUiValue,
-} from "./workshopUtils";
+import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
+import AsyncCard from "@/components/asyncCard/AsyncCard";
+import { type KindFilterValue, mapKindToKindUiValue } from "./workshopUtils";
 import { type Nullishable } from "../../../utils/nullishUtils";
 
 type TableColumn = Column<EnrichedPackageMetadata>;

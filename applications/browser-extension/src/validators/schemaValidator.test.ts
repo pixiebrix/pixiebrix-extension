@@ -21,12 +21,12 @@ import {
   validatePackageDefinition,
 } from "./schemaValidator";
 import { loadBrickYaml } from "../runtime/brickYaml";
-import serviceText from "../../contrib/raw/hunter.txt";
-import jqueryReaderDefinition from "../../contrib/readers/apartments-reader.yaml";
-import emptyJQueryReaderDefinition from "../../contrib/readers/empty-jquery-reader.yaml";
-import emberJsReaderDefinition from "../../contrib/readers/linkedin-organization-reader.yaml";
-import windowReader from "../../contrib/readers/trello-card-reader.yaml";
-import reactReader from "../../contrib/readers/redfin-reader.yaml";
+import serviceText from "@/contrib/raw/hunter.txt";
+import jqueryReaderDefinition from "@/contrib/readers/apartments-reader.yaml";
+import emptyJQueryReaderDefinition from "@/contrib/readers/empty-jquery-reader.yaml";
+import emberJsReaderDefinition from "@/contrib/readers/linkedin-organization-reader.yaml";
+import windowReader from "@/contrib/readers/trello-card-reader.yaml";
+import reactReader from "@/contrib/readers/redfin-reader.yaml";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { timestampFactory } from "../testUtils/factories/stringFactories";

@@ -21,18 +21,15 @@ import React, {
   useContext,
   useState,
 } from "react";
-import {
-  type Option,
-  type SelectLike,
-} from "./SelectWidget";
+import { type Option, type SelectLike } from "./SelectWidget";
 import AsyncSelect, { type AsyncProps } from "react-select/async";
 import { type CustomFieldWidgetProps } from "../FieldTemplate";
 import { uniqBy } from "lodash";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";
 import { type GroupBase } from "react-select";
 import FieldTemplateLocalErrorContext from "./FieldTemplateLocalErrorContext";
-import useIsMounted from "../../../hooks/useIsMounted";
+import useIsMounted from "@/hooks/useIsMounted";
 
 type DefaultFactoryArgs = {
   /**

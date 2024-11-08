@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import FieldTemplate from "../../../components/form/FieldTemplate";
-import LayoutWidget from "../../../components/LayoutWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import LayoutWidget from "@/components/LayoutWidget";
 import useMoveWithinParent from "../hooks/useMoveWithinParent";
 
 type MoveElementProps = {

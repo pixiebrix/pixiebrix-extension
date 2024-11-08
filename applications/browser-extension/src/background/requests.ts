@@ -18,28 +18,28 @@
 import axios, { type AxiosResponse, type Method } from "axios";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import integrationRegistry from "../integrations/registry";
-import { getExtensionToken } from "../auth/authStorage";
+import { getExtensionToken } from "@/auth/authStorage";
 import { integrationConfigLocator } from "./integrationConfigLocator";
 import { isEmpty } from "lodash";
 import launchOAuth2Flow from "./auth/launchOAuth2Flow";
 import { expectContext } from "../utils/expectContext";
-import { absoluteApiUrl } from "../data/service/apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
   selectRemoteResponseErrorMessage,
 } from "./proxyUtils";
-import { selectAxiosError } from "../data/service/requestErrorUtils";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import {
   BusinessError,
   ProxiedRemoteServiceError,
-} from "../errors/businessErrors";
-import { ContextError, ExtensionNotLinkedError } from "../errors/genericErrors";
+} from "@/errors/businessErrors";
+import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
 import {
   isAxiosError,
   safeGuessStatusText,
-} from "../errors/networkErrorHelpers";
+} from "@/errors/networkErrorHelpers";
 import { deserializeError, serializeError } from "serialize-error";
 import {
   type AuthData,
@@ -63,8 +63,8 @@ import { memoizeUntilSettled } from "../utils/promiseUtils";
 import { pixiebrixConfigurationFactory } from "../integrations/util/pixiebrixConfigurationFactory";
 import { type Nullishable } from "../utils/nullishUtils";
 
-import { isAuthenticationAxiosError } from "../auth/isAuthenticationAxiosError";
-import { API_PATHS } from "../data/service/urlPaths";
+import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // Firefox won't send response objects from the background page to the content script. Strip out the
 // potentially sensitive parts of the response (the request, headers, etc.)

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import AsyncButton from "../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import cx from "classnames";
 import rootStyles from "./ActionButtons.module.scss";
 import styles from "./SaveButton.module.scss";

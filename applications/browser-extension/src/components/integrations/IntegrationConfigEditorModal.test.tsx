@@ -18,12 +18,12 @@
 import React from "react";
 import { fromJS } from "../../integrations/UserDefinedIntegration";
 import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
-import { render, screen } from "../../extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "../../testUtils/testHelpers";
 
 // FIXME: Use ?loadAsText when supported by Jest https://github.com/jestjs/jest/pull/6282
-import pipedriveYaml from "../../../contrib/integrations/pipedrive.yaml";
-import automationAnywhereYaml from "../../../contrib/integrations/automation-anywhere.yaml";
+import pipedriveYaml from "@/contrib/integrations/pipedrive.yaml";
+import automationAnywhereYaml from "@/contrib/integrations/automation-anywhere.yaml";
 import registerDefaultWidgets from "../fields/schemaFields/widgets/registerDefaultWidgets";
 import { type IntegrationConfig } from "../../integrations/integrationTypes";
 import { within } from "@testing-library/react";

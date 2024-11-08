@@ -29,7 +29,7 @@ import { brickConfigFactory } from "../../../../testUtils/factories/brickFactori
 import { integrationDependencyFactory } from "../../../../testUtils/factories/integrationFactories";
 import { validateOutputKey } from "../../../../runtime/runtimeTypes";
 import { toExpression } from "../../../../utils/expressionUtils";
-import { normalizeAvailability } from "../../../../bricks/available";
+import { normalizeAvailability } from "@/bricks/available";
 import { StarterBrickTypes } from "../../../../types/starterBrickTypes";
 import { createNewUnsavedModMetadata } from "../../../../utils/modUtils";
 

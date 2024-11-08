@@ -21,7 +21,7 @@ import {
 } from "../../utils/inference/selectorInference";
 import * as pageScript from "../../pageScript/messenger/api";
 import { type SelectMode } from "./types";
-import { NoElementsFoundError } from "../../errors/businessErrors";
+import { NoElementsFoundError } from "@/errors/businessErrors";
 import { $safeFind, findSingleElement } from "../../utils/domUtils";
 import inferSingleElementSelector from "../../utils/inference/inferSingleElementSelector";
 import { type ElementInfo } from "../../utils/inference/selectorTypes";

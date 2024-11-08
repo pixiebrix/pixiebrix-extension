@@ -18,7 +18,7 @@
 import { type FormDefinition } from "./formTypes";
 import { type UUID } from "../../types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { CancelError } from "../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "../../types/sidebarTypes";
 import { type ModComponentRef } from "../../types/modComponentTypes";
 

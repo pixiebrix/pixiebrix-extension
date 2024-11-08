@@ -28,7 +28,7 @@ import userEvent from "@testing-library/user-event";
 import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "../store/editor/editorSlice";
 import { createNewUnsavedModMetadata } from "../../utils/modUtils";
-import { ModalProvider } from "../../components/ConfirmationModal";
+import { ModalProvider } from "@/components/ConfirmationModal";
 import { array } from "cooky-cutter";
 import mapModDefinitionToModMetadata from "../../modDefinitions/util/mapModDefinitionToModMetadata";
 

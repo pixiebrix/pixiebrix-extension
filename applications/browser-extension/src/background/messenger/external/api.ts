@@ -22,7 +22,7 @@
 
 import { _liftBackground as liftExternal } from "../../externalProtocol";
 import * as local from "./_implementation";
-import { getPartnerAuthData } from "../../../auth/authStorage";
+import { getPartnerAuthData } from "@/auth/authStorage";
 import { getExtensionVersion } from "../../../utils/extensionUtils";
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>

@@ -24,10 +24,10 @@ import type { PlatformCapability } from "../../platform/capabilities";
 import {
   ExecCommandError,
   insertAtCursorWithCustomEditorSupport,
-} from "../../contentScript/textEditorDom";
+} from "@/contentScript/textEditorDom";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 import { expectContext } from "../../utils/expectContext";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.

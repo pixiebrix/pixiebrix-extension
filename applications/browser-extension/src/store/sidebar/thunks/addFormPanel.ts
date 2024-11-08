@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cancelForm } from "../../../contentScript/messenger/api";
+import { cancelForm } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "../../../sidebar/connectedTarget";
-import { type SidebarState, type FormPanelEntry } from "../../../types/sidebarTypes";
+import {
+  type SidebarState,
+  type FormPanelEntry,
+} from "../../../types/sidebarTypes";
 import { type UUID } from "../../../types/stringTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { partition } from "lodash";

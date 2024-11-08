@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContextError } from "../../errors/genericErrors";
+import { ContextError } from "@/errors/genericErrors";
 import { hydrateModComponentInnerDefinitions } from "../../registry/hydrateInnerDefinitions";
 import { ContextMenuStarterBrickABC } from "../../starterBricks/contextMenu/contextMenuStarterBrick";
 import { type ContextMenuConfig } from "../../starterBricks/contextMenu/contextMenuTypes";

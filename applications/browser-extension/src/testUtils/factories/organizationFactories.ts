@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LegacyUserRole } from "../../data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 import { uuidv4 } from "../../types/helpers";
 import { type components } from "../../types/swagger";
 import { define } from "cooky-cutter";

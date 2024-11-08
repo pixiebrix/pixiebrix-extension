@@ -21,14 +21,14 @@ import { getActivatedModIds } from "../store/modComponents/modComponentStorage";
 import { getDocument } from "../starterBricks/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "../testUtils/testHelpers";
-import { getActivatingMods } from "../background/messenger/external/_implementation";
+import { getActivatingMods } from "@/background/messenger/external/_implementation";
 import { modComponentFactory } from "../testUtils/factories/modComponentFactories";
 import {
   loadActivationEnhancements,
   TEST_unloadActivationEnhancements,
 } from "./loadActivationEnhancementsCore";
 import { getContentScriptState } from "./ready";
-import { isLinked } from "../auth/authStorage";
+import { isLinked } from "@/auth/authStorage";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "../urlConstants";
 import { type RegistryId } from "@/types/registryTypes";

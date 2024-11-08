@@ -37,7 +37,7 @@ import { omitEditorMetadata } from "./pipelineMapping";
 import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
-import type { DraftModComponent } from "../../contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type DynamicQuickBarFormState } from "./formStateTypes";
 import { DynamicQuickBarStarterBrickABC } from "../../starterBricks/dynamicQuickBar/dynamicQuickBarStarterBrick";
 import DynamicQuickBarConfiguration from "../tabs/dynamicQuickBar/DynamicQuickBarConfiguration";
@@ -48,7 +48,7 @@ import {
 } from "../../starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import { assertNotNullish } from "../../utils/nullishUtils";
 import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import { FeatureFlags } from "../../auth/featureFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 import { type DraftModState } from "../store/editor/pageEditorTypes";
 

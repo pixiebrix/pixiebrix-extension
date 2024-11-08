@@ -20,12 +20,12 @@ import React from "react";
 import cx from "classnames";
 import { Navbar } from "react-bootstrap";
 import { ActiveSidebarModsList } from "./ActiveSidebarModsList";
-import useFlags from "../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import { showWalkthroughModal } from "../../contentScript/messenger/api";
+import { showWalkthroughModal } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "../connectedTarget";
-import { RestrictedFeatures } from "../../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { permit } = useFlags();

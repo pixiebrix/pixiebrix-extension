@@ -17,7 +17,7 @@
 import type { NetworkRequestConfig } from "../../types/networkTypes";
 import { type BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { serializeError } from "serialize-error";
-import { isAxiosError } from "../../errors/networkErrorHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { getApiClient, getLinkedApiClient } from "./apiClient";
 
 type QueryArgs = {

@@ -25,7 +25,7 @@ import OutputKeyView from "./OutputKeyView";
 import PipelineOffsetView from "./PipelineOffsetView";
 import { type OutputKey } from "../../../../types/runtimeTypes";
 import TrailingMessage from "./TrailingMessage";
-import ClickableElement from "../../../../components/ClickableElement";
+import ClickableElement from "@/components/ClickableElement";
 
 export type PipelineFooterNodeProps = {
   outputKey?: OutputKey;

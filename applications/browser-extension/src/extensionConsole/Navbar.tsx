@@ -25,10 +25,10 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import cx from "classnames";
-import { selectAuth } from "../auth/authSelectors";
+import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "../themes/themeUtils";
-import useLinkState from "../auth/useLinkState";
-import useAdminConsoleUrl from "../hooks/useAdminConsoleUrl";
+import useLinkState from "@/auth/useLinkState";
+import useAdminConsoleUrl from "@/hooks/useAdminConsoleUrl";
 import { fallbackValue } from "../utils/asyncStateUtils";
 import { DEFAULT_SERVICE_URL } from "../urlConstants";
 
@@ -46,10 +46,16 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div className={cx(styles.collapsedWrapper, "navbar-brand-wrapper")}>
-        <Link className="navbar-brand brand-logo" to="/applications/browser-extension/static">
+        <Link
+          className="navbar-brand brand-logo"
+          to="/applications/browser-extension/static"
+        >
           <img src={logo.regular} alt="PixieBrix logo" />
         </Link>
-        <Link className="navbar-brand brand-logo-mini" to="/applications/browser-extension/static">
+        <Link
+          className="navbar-brand brand-logo-mini"
+          to="/applications/browser-extension/static"
+        >
           <img src={logo.small} alt="PixieBrix mini logo" />
         </Link>
         {showNavbarToggle && (

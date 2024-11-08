@@ -21,11 +21,11 @@ import {
   showSidebar,
   sidePanelOnClose,
 } from "./sidebarController";
-import { isLinked } from "../auth/authStorage";
+import { isLinked } from "@/auth/authStorage";
 import {
   getActivatingMods,
   setActivatingMods,
-} from "../background/messenger/external/_implementation";
+} from "@/background/messenger/external/_implementation";
 import reportEvent from "../telemetry/reportEvent";
 import { Events } from "../telemetry/events";
 import { isLoadedInIframe } from "../utils/iframeUtils";
@@ -36,7 +36,7 @@ import type { ModActivationConfig } from "@/types/modTypes";
 import {
   getNextUrlFromActivateUrl,
   parseModActivationUrlSearchParams,
-} from "../activation/activationLinkUtils";
+} from "@/activation/activationLinkUtils";
 import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,

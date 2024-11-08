@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
 import {
   contextBrick,
@@ -24,7 +24,7 @@ import {
   throwBrick,
 } from "./testHelpers";
 import { uuidv4 } from "../../types/helpers";
-import { traces } from "../../background/messenger/api";
+import { traces } from "@/background/messenger/api";
 import {
   type TraceEntryData,
   type TraceExitData,
@@ -32,7 +32,7 @@ import {
 } from "../../telemetry/trace";
 import ConsoleLogger from "../../utils/ConsoleLogger";
 import MockDate from "mockdate";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "../runtimeTypes";
 import { type RenderedArgs } from "../../types/runtimeTypes";
 import { toExpression } from "../../utils/expressionUtils";

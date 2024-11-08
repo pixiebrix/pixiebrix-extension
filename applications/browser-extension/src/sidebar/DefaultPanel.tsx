@@ -20,10 +20,10 @@ import styles from "./DefaultPanel.module.scss";
 import React from "react";
 import workshopImage from "../../img/workshop.svg";
 import { Container } from "react-bootstrap";
-import useFlags from "../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import { isMac } from "../utils/browserUtils";
 import { MARKETPLACE_URL } from "../urlConstants";
-import { RestrictedFeatures } from "../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>

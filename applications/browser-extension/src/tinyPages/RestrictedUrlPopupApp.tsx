@@ -24,7 +24,7 @@ import {
 } from "./restrictedUrlPopupConstants";
 import { isBrowserSidebarTopFrame } from "../utils/expectContext";
 import { getExtensionConsoleUrl } from "../utils/extensionUtils";
-import useOnMountOnly from "../hooks/useOnMountOnly";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 // TODO: Move to utils folder after the isBrowserSidebar condition is dropped
 async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {

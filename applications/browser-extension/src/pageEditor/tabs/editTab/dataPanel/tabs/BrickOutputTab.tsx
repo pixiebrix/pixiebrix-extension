@@ -1,27 +1,23 @@
 import DataTabPane from "../DataTabPane";
 import { DataPanelTabKey } from "../dataPanelTypes";
-import Alert from "../../../../../components/Alert";
+import Alert from "@/components/Alert";
 import { BrickTypes } from "../../../../../runtime/runtimeTypes";
 import DataTabJsonTree from "../DataTabJsonTree";
 import ErrorDisplay from "../ErrorDisplay";
 import React from "react";
 import type { ValueOf } from "type-fest";
-import BrickPreview, {
-  usePreviewInfo,
-} from "../../../effect/BrickPreview";
+import BrickPreview, { usePreviewInfo } from "../../../effect/BrickPreview";
 import { useSelector } from "react-redux";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeInfo,
   selectNodeDataPanelTabState,
 } from "../../../../store/editor/editorSelectors";
-import useTypedBrickMap from "../../../../../bricks/hooks/useTypedBrickMap";
-import ViewModeField, {
-  type ViewModeOption,
-} from "./ViewModeField";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
+import ViewModeField, { type ViewModeOption } from "./ViewModeField";
 import useBrickTraceRecord from "./useBrickTraceRecord";
 import type { RootState } from "../../../../store/editor/pageEditorTypes";
-import ErrorBoundary from "../../../../../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { isTraceError } from "../../../../../telemetry/trace";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";

@@ -19,11 +19,11 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 import {
   type StarterBrickType,
   StarterBrickTypes,
-} from "../../../types/starterBrickTypes";
+} from "@/types/starterBrickTypes";
 import InsertButtonPane from "./InsertButtonPane";
 import useEscapeHandler from "../../hooks/useEscapeHandler";
 import { inspectedTab } from "../../context/connection";
-import { cancelSelect } from "../../../contentScript/messenger/api";
+import { cancelSelect } from "@/contentScript/messenger/api";
 import { type EmptyObject } from "type-fest";
 
 type InsertPaneContextProps = {

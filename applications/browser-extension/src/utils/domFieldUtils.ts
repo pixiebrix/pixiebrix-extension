@@ -16,10 +16,10 @@
  */
 
 import { setCKEditorData } from "../pageScript/messenger/api";
-import { getSelectorForElement } from "../contentScript/elementReference";
-import { hasCKEditorClass } from "../contrib/ckeditor/ckeditorDom";
+import { getSelectorForElement } from "@/contentScript/elementReference";
+import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "./typeUtils";
-import { isDraftJsField, setDraftJs } from "../contrib/draftjs/draftJsDom";
+import { isDraftJsField, setDraftJs } from "@/contrib/draftjs/draftJsDom";
 
 export type FieldElement =
   | HTMLInputElement

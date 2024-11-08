@@ -18,7 +18,7 @@
 import extensionPagePlatform from "./extensionPagePlatform";
 import { setPlatform } from "../platform/platformContext";
 import { modComponentFactory } from "../testUtils/factories/modComponentFactories";
-import { clearModComponentDebugLogs, traces } from "../background/messenger/api";
+import { clearModComponentDebugLogs, traces } from "@/background/messenger/api";
 
 jest.mock("../background/messenger/api", () => ({
   clearModComponentDebugLogs: jest.fn(),

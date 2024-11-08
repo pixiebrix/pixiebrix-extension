@@ -17,7 +17,7 @@
 
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type BrickOptions } from "../../types/runtimeTypes";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 

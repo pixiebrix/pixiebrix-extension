@@ -42,7 +42,7 @@ import { getDomain } from "../../permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
 import TriggerConfiguration from "../tabs/trigger/TriggerConfiguration";
-import type { DraftModComponent } from "../../contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type TriggerFormState } from "./formStateTypes";
 import {
   type ModComponentBase,

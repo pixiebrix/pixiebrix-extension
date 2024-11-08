@@ -19,7 +19,7 @@ import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type BrickArgs } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import { isEmpty } from "lodash";
-import { PropError } from "../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 
 /** @internal */

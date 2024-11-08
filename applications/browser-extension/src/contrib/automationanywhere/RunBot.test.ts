@@ -22,7 +22,7 @@ import {
   getUserData,
   getCachedAuthData,
   performConfiguredRequestInBackground,
-} from "../../background/messenger/api";
+} from "@/background/messenger/api";
 import {
   type AuthData,
   type SanitizedIntegrationConfig,

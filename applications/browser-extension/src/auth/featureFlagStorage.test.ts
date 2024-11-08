@@ -32,9 +32,9 @@ import {
   TEST_triggerListeners,
 } from "./authStorage";
 import { tokenAuthDataFactory } from "../testUtils/factories/authFactories";
-import { fetchFeatureFlagsInBackground } from "../background/messenger/api";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 import { featureFlagFactory } from "../testUtils/factories/featureFlagFactories";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const testFlag = featureFlagFactory("test-flag");
 

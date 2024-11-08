@@ -19,11 +19,11 @@ import type React from "react";
 import { useMemo, useState } from "react";
 import genericOptionsFactory, {
   type BrickOptionProps,
-} from "../components/fields/schemaFields/genericOptionsFactory";
-import brickRegistry from "../bricks/registry";
+} from "@/components/fields/schemaFields/genericOptionsFactory";
+import brickRegistry from "@/bricks/registry";
 import { useAsyncEffect } from "use-async-effect";
 import reportError from "../telemetry/reportError";
-import optionsRegistry from "../components/fields/optionsRegistry";
+import optionsRegistry from "@/components/fields/optionsRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick, isUserDefinedBrick } from "@/types/brickTypes";
 

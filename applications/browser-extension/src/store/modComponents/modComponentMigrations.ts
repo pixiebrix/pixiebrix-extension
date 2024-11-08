@@ -39,7 +39,7 @@ import { nowTimestamp } from "../../utils/timeUtils";
 import { type Nullishable } from "../../utils/nullishUtils";
 import { type ActivatedModComponentV2 } from "../../types/modComponentTypes";
 import { normalizeSemVerString, validateRegistryId } from "../../types/helpers";
-import { getUserScope } from "../../auth/authUtils";
+import { getUserScope } from "@/auth/authUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- This is never mutated
 const migrations: MigrationManifest = {

@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
-import {
-  featureFlagBrick,
-  simpleInput,
-} from "./testHelpers";
+import brickRegistry from "@/bricks/registry";
+import { featureFlagBrick, simpleInput } from "./testHelpers";
 import { reducePipeline } from "../reducePipeline";
 import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { TEST_overrideFeatureFlags } from "../../auth/featureFlagStorage";
+import { TEST_overrideFeatureFlags } from "@/auth/featureFlagStorage";
 
 beforeEach(() => {
   brickRegistry.clear();

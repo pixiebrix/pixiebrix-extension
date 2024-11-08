@@ -18,7 +18,7 @@
 import { type UUID } from "../../types/stringTypes";
 import { type RegistryId } from "../../types/registryTypes";
 import { cloneDeep, isEmpty, isEqual, merge, omit, pick } from "lodash";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type Except, type JsonObject } from "type-fest";
 import { assertPlatformCapability } from "../../platform/platformContext";
 import { assertNotNullish } from "../../utils/nullishUtils";

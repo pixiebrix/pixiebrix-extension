@@ -28,7 +28,7 @@ import OnboardingView from "./onboardingView/OnboardingView";
 import EmptyView from "./emptyView/EmptyView";
 import GetStartedView from "./GetStartedView";
 import { type ModsPageContentProps } from "./modsPageTypes";
-import Loader from "../../../components/Loader";
+import Loader from "@/components/Loader";
 
 const ModsPageContent: React.VoidFunctionComponent<ModsPageContentProps> = ({
   tableInstance,

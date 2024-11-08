@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "../runtimeTypes";
 import {
   arrayBrick,

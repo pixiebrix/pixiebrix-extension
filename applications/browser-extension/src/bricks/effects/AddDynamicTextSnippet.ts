@@ -23,8 +23,8 @@ import type {
 } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import { EffectABC } from "../../types/bricks/effectTypes";
-import { initSnippetShortcutMenuController } from "../../contentScript/snippetShortcutMenu/snippetShortcutMenuController";
-import { BusinessError } from "../../errors/businessErrors";
+import { initSnippetShortcutMenuController } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
+import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "../../store/settings/settingsStorage";
 import { validateOutputKey } from "../../runtime/runtimeTypes";
 import type { PlatformCapability } from "../../platform/capabilities";

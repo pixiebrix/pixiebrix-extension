@@ -18,19 +18,19 @@
 import React, { useContext } from "react";
 import DocumentContext from "./DocumentContext";
 import { type Args } from "../../../runtime/mapArgs";
-import Loader from "../../../components/Loader";
+import Loader from "@/components/Loader";
 import {
   type BuildDocumentBuilderSubtree,
   type DocumentBuilderElement,
   type DynamicPath,
 } from "../documentBuilderTypes";
 import { produce } from "immer";
-import ErrorBoundary from "../../../components/ErrorBoundary";
-import { getErrorMessage } from "../../../errors/errorHelpers";
-import { runMapArgs } from "../../../contentScript/messenger/api";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { runMapArgs } from "@/contentScript/messenger/api";
 import apiVersionOptions from "../../../runtime/apiVersionOptions";
-import useAsyncState from "../../../hooks/useAsyncState";
-import DelayedRender from "../../../components/DelayedRender";
+import useAsyncState from "@/hooks/useAsyncState";
+import DelayedRender from "@/components/DelayedRender";
 import { isDeferExpression } from "../../../utils/expressionUtils";
 import { isNullOrBlank } from "../../../utils/stringUtils";
 import { joinPathParts } from "../../../utils/formUtils";

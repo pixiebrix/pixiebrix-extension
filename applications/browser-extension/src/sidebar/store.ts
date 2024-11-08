@@ -29,8 +29,8 @@ import { persistModComponentOptionsConfig } from "../store/modComponents/modComp
 import sidebarSlice from "../store/sidebar/sidebarSlice";
 import { persistSettingsConfig } from "../store/settings/settingsStorage";
 import settingsSlice from "../store/settings/settingsSlice";
-import { appApi } from "../data/service/api";
-import { authSlice, persistAuthConfig } from "../auth/authSlice";
+import { appApi } from "@/data/service/api";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
   type IntegrationsState,
   persistIntegrationsConfig,
@@ -48,7 +48,7 @@ import {
   sessionChangesStateSyncActions,
 } from "../store/sessionChanges/sessionChangesSlice";
 import sessionSlice from "../pageEditor/store/session/sessionSlice";
-import { type AuthState } from "../auth/authTypes";
+import { type AuthState } from "@/auth/authTypes";
 import { type ModDefinitionsState } from "../modDefinitions/modDefinitionsTypes";
 import { type SessionState } from "../pageEditor/store/session/sessionSliceTypes";
 import { type SessionChangesState } from "../store/sessionChanges/sessionChangesTypes";

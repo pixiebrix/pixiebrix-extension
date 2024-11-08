@@ -30,12 +30,10 @@ import { selectNodeDataPanelTabState } from "../../store/editor/editorSelectors"
 import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
 import { actions } from "../../store/editor/editorSlice";
 import { selectTreeData } from "./outlineHelpers";
-import OutlineItem, {
-  LEVEL_PADDING_PX,
-} from "./OutlineItem";
+import OutlineItem, { LEVEL_PADDING_PX } from "./OutlineItem";
 import useMoveElement from "../hooks/useMoveElement";
 import useDeleteElement from "../hooks/useDeleteElement";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type DocumentOutlineProps = {
   /**

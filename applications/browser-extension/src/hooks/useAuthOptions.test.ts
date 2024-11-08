@@ -18,8 +18,8 @@
 import { waitFor } from "@testing-library/react";
 import { useAuthOptions } from "./useAuthOptions";
 import { appApiMock } from "../testUtils/appApiMock";
-import { API_PATHS } from "../data/service/urlPaths";
-import { renderHook } from "../extensionConsole/testHelpers";
+import { API_PATHS } from "@/data/service/urlPaths";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import { readRawConfigurations } from "../integrations/util/readRawConfigurations";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import {

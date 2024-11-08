@@ -16,10 +16,10 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectMilestones } from "../auth/authSelectors";
+import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
-import { appApi } from "../data/service/api";
-import { type Milestone, type UserMilestone } from "../data/model/UserMilestone";
+import { appApi } from "@/data/service/api";
+import { type Milestone, type UserMilestone } from "@/data/model/UserMilestone";
 import { type Nullishable } from "../utils/nullishUtils";
 
 type MilestoneHelpers = {

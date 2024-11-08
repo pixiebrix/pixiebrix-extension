@@ -29,15 +29,15 @@ import {
 } from "react-bootstrap";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
-import Loader from "../../../../components/Loader";
+import Loader from "@/components/Loader";
 import PackageDetail from "./PackageDetail";
 import PackageResult from "./PackageResult";
-import { isOfficial } from "../../../../bricks/util";
+import { isOfficial } from "@/bricks/util";
 import { find as findPackage } from "../../../../registry/packageRegistry";
 import { brickToYaml } from "../../../../utils/objToYaml";
-import { useGetOrganizationsQuery } from "../../../../data/service/api";
+import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type PackageInstance } from "../../../../types/registryTypes";
-import useAsyncState from "../../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type OwnProps<Instance extends PackageInstance> = {
   packageInstances: Instance[] | undefined;

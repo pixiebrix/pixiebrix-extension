@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { deploymentKeyStorage } from "../../../auth/deploymentKey";
+import { deploymentKeyStorage } from "@/auth/deploymentKey";
 import { renderHook } from "../../testHelpers";
 import useDeploymentKeySetting from "./useDeploymentKeySetting";
 import { deploymentKeyFactory } from "../../../testUtils/factories/authFactories";

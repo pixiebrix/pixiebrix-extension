@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect, useRef } from "react";
-import useAutoFocusConfiguration from "../../../../../hooks/useAutoFocusConfiguration";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import BrickNodeContent from "./BrickNodeContent";
 import styles from "./BrickNode.module.scss";
 import MoveBrickControl from "./MoveBrickControl";
@@ -25,10 +25,7 @@ import { ListGroup } from "react-bootstrap";
 import NodeActionsView from "../nodeActions/NodeActionsView";
 import PipelineOffsetView from "../PipelineOffsetView";
 import TrailingMessage from "../TrailingMessage";
-import {
-  type BrickNodeProps,
-  RunStatus,
-} from "../../editTabTypes";
+import { type BrickNodeProps, RunStatus } from "../../editTabTypes";
 import { useSelector } from "react-redux";
 import { selectActiveBuilderPreviewElement } from "../../../../store/editor/editorSelectors";
 

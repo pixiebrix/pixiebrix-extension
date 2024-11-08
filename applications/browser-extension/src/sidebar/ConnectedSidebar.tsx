@@ -27,28 +27,28 @@ import {
 } from "@/types/sidebarTypes";
 import Tabs from "./Tabs";
 import sidebarSlice from "../store/sidebar/sidebarSlice";
-import RequireAuth from "../auth/RequireAuth";
+import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "./LoginPanel";
 import ErrorBoundary from "./SidebarErrorBoundary";
 import { selectIsSidebarEmpty } from "./sidebarSelectors";
-import DelayedRender from "../components/DelayedRender";
+import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "./DefaultPanel";
 import { MOD_LAUNCHER } from "../store/sidebar/constants";
 import {
   ensureStarterBricksInstalled,
   getReservedSidebarEntries,
-} from "../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import {
   getConnectedTabIdForSidebarTopFrame,
   getConnectedTarget,
 } from "./connectedTarget";
 import useAsyncEffect from "use-async-effect";
-import activateLinkClickHandler from "../activation/activateLinkClickHandler";
+import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import addFormPanel from "../store/sidebar/thunks/addFormPanel";
 import addTemporaryPanel from "../store/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "../store/sidebar/thunks/removeTemporaryPanel";
 import { type AppDispatch } from "./store";
-import useEventListener from "../hooks/useEventListener";
+import useEventListener from "@/hooks/useEventListener";
 import {
   type ModComponentRef,
   validateModComponentRef,

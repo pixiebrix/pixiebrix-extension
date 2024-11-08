@@ -27,7 +27,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
 import { isNullOrBlank } from "../../../utils/stringUtils";
 import { isEmpty } from "lodash";
-import { BusinessError, CancelError, PropError } from "../../../errors/businessErrors";
+import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "../../types";
 import { castTextLiteralOrThrow } from "../../../utils/expressionUtils";
 import { propertiesToSchema } from "../../../utils/schemaUtils";
@@ -36,7 +36,7 @@ import {
   STATE_CHANGE_JS_EVENT_TYPE,
   StateNamespaces,
 } from "../../../platform/state/stateTypes";
-import { ContextError } from "../../../errors/genericErrors";
+import { ContextError } from "@/errors/genericErrors";
 import pDefer from "p-defer";
 import type { UUID } from "../../../types/stringTypes";
 

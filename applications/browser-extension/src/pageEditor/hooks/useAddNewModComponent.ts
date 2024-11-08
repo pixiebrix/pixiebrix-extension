@@ -20,15 +20,15 @@ import { useCallback } from "react";
 import notify from "../../utils/notify";
 import { actions } from "../store/editor/editorSlice";
 import { internalStarterBrickMetaFactory } from "../starterBricks/base";
-import { isSpecificError } from "../../errors/errorHelpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 import { type ModComponentFormStateAdapter } from "../starterBricks/modComponentFormStateAdapter";
-import { updateDraftModComponent } from "../../contentScript/messenger/api";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { type SettingsState } from "../../store/settings/settingsTypes";
-import useFlags from "../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import { CancelError } from "../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 import {
   allFramesInInspectedTab,
   getCurrentInspectedURL,

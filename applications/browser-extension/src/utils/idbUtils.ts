@@ -17,7 +17,7 @@
 
 import pDefer from "p-defer";
 import { deleteDB, type IDBPDatabase } from "idb";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ValueOf } from "type-fest";
 import { getReportErrorAdditionalContext } from "../telemetry/reportError";
 import { reportToApplicationErrorTelemetry } from "../telemetry/reportToApplicationErrorTelemetry";

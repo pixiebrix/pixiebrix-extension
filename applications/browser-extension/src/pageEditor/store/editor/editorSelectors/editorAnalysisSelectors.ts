@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type {
-  EditorRootState,
-  RootState,
-} from "../pageEditorTypes";
+import type { EditorRootState, RootState } from "../pageEditorTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectActiveModComponentId } from "./editorNavigationSelectors";
-import type { AnalysisRootState } from "../../../../analysis/analysisTypes";
+import type { AnalysisRootState } from "@/analysis/analysisTypes";
 import { sortBy } from "lodash";
 import { AnnotationType } from "../../../../types/annotationTypes";
-import { selectKnownEventNames } from "../../../../analysis/analysisSelectors";
+import { selectKnownEventNames } from "@/analysis/analysisSelectors";
 import { expectContext } from "../../../../utils/expectContext";
 
 const selectGetActiveModComponentAnalysisAnnotationsForPath = createSelector(

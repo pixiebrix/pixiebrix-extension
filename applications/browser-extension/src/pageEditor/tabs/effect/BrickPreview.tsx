@@ -16,19 +16,19 @@
  */
 
 import React, { useEffect, useReducer } from "react";
-import { type BrickConfig } from "../../../bricks/types";
-import brickRegistry from "../../../bricks/registry";
+import { type BrickConfig } from "@/bricks/types";
+import brickRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
-import Loader from "../../../components/Loader";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import Loader from "@/components/Loader";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import { isEmpty } from "lodash";
 import { type TraceRecord } from "../../../telemetry/trace";
 import { removeEmptyValues } from "../../starterBricks/base";
-import { runBrickPreview } from "../../../contentScript/messenger/api";
+import { runBrickPreview } from "@/contentScript/messenger/api";
 import { useField } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "../../../runtime/getType";
@@ -37,12 +37,15 @@ import { DataPanelTabKey } from "../editTab/dataPanel/dataPanelTypes";
 import DataTabJsonTree from "../editTab/dataPanel/DataTabJsonTree";
 import { type RegistryId } from "../../../types/registryTypes";
 import { type Brick } from "../../../types/brickTypes";
-import { type ApiVersion, type BrickArgsContext } from "../../../types/runtimeTypes";
+import {
+  type ApiVersion,
+  type BrickArgsContext,
+} from "../../../types/runtimeTypes";
 import { type IntegrationDependency } from "../../../integrations/integrationTypes";
 import { type BaseStarterBrickState } from "../../store/editor/baseFormStateTypes";
 import makeIntegrationContextFromDependencies from "../../../integrations/util/makeIntegrationContextFromDependencies";
 import type { FetchableAsyncState } from "../../../types/sliceTypes";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "../../context/connection";
 import { type Nullishable } from "../../../utils/nullishUtils";
 import { useSelector } from "react-redux";

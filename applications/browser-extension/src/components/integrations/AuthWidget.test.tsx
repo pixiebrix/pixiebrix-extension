@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "../../extensionConsole/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 import AuthWidget from "./AuthWidget";
 import { generateIntegrationAndRemoteConfig } from "../../testUtils/factories/integrationFactories";
 import { appApiMock } from "../../testUtils/appApiMock";
@@ -26,18 +26,18 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { type AuthOption } from "../../auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { uuidSequence } from "../../testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
-import { refreshRegistries } from "../../hooks/useRefreshRegistries";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { clear, find, syncPackages } from "../../registry/packageRegistry";
-import { integrationConfigLocator, registry } from "../../background/messenger/api";
-import { refreshIntegrationConfigs } from "../../background/integrationConfigLocator";
+import { integrationConfigLocator, registry } from "@/background/messenger/api";
+import { refreshIntegrationConfigs } from "@/background/integrationConfigLocator";
 import registerDefaultWidgets from "../fields/schemaFields/widgets/registerDefaultWidgets";
 import { produce } from "immer";
 import { userEvent } from "../../pageEditor/testHelpers";
 import { waitForEffect } from "../../testUtils/testHelpers";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const { remoteConfig, integrationDefinition } =
   generateIntegrationAndRemoteConfig();

@@ -28,7 +28,7 @@ import {
 import { DocumentRenderer } from "../../renderers/document";
 import { getExampleBrickConfig } from "../../exampleBrickConfigs";
 import { reducePipeline } from "../../../runtime/reducePipeline";
-import { type BusinessError } from "../../../errors/businessErrors";
+import { type BusinessError } from "@/errors/businessErrors";
 import {
   isRendererErrorPayload,
   type PanelPayload,
@@ -37,7 +37,7 @@ import {
 import {
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
-} from "../../../contentScript/sidebarController";
+} from "@/contentScript/sidebarController";
 import {
   cancelTemporaryPanelsForModComponent,
   updatePanelDefinition,
@@ -50,7 +50,7 @@ import { type RendererErrorPayload } from "../../../types/rendererTypes";
 import { contextAsPlainObject } from "../../../runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "../../../utils/expressionUtils";
-import { showModal } from "../../../contentScript/modalDom";
+import { showModal } from "@/contentScript/modalDom";
 import { isLoadedInIframe } from "../../../utils/iframeUtils";
 import { modComponentRefFactory } from "../../../testUtils/factories/modComponentFactories";
 import { mapModComponentRefToMessageContext } from "../../../utils/modUtils";

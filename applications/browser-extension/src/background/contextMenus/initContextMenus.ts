@@ -17,7 +17,7 @@
 
 import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
-import { handleMenuAction, notify } from "../../contentScript/messenger/api";
+import { handleMenuAction, notify } from "@/contentScript/messenger/api";
 import { waitForContentScript } from "../contentScript";
 import { expectContext } from "../../utils/expectContext";
 import { getModComponentState } from "../../store/modComponents/modComponentStorage";

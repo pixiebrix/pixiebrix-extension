@@ -50,7 +50,7 @@ import {
 import { isContentScript } from "webext-detect";
 import { getConnectedTarget } from "../../sidebar/connectedTarget";
 import { uuidv4 } from "../../types/helpers";
-import { isSpecificError } from "../../errors/errorHelpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "../errors";
 import {
   inputProperties,
@@ -58,7 +58,7 @@ import {
 } from "../../utils/schemaUtils";
 import type BaseRegistry from "../../registry/memoryRegistry";
 import type { PlatformCapability } from "../../platform/capabilities";
-import { runHeadlessPipeline } from "../../contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;

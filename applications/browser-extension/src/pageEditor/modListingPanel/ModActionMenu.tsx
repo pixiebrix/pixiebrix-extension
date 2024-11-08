@@ -28,14 +28,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
-} from "../../components/ellipsisMenu/EllipsisMenu";
+} from "@/components/ellipsisMenu/EllipsisMenu";
 import useAddNewModComponent from "../hooks/useAddNewModComponent";
 import { useAvailableFormStateAdapters } from "../starterBricks/adapter";
 import useDeactivateMod from "../hooks/useDeactivateMod";
 import useSaveMod from "../hooks/useSaveMod";
-import { type ModMetadata } from "../../types/modComponentTypes";
+import { type ModMetadata } from "@/types/modComponentTypes";
 import useClearModChanges from "../hooks/useClearModChanges";
-import { isInnerDefinitionRegistryId } from "../../types/helpers";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { actions } from "../store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {

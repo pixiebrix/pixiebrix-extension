@@ -18,11 +18,11 @@
 import { JSDOM } from "jsdom";
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { getReferenceForElement } from "../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import { type ElementReference } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
-import { CONTEXT_INVALIDATED_ERROR } from "../errors/knownErrorMessages";
+import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
 
 /**
  * Helper function returns a promise that resolves after all other promise mocks, even if they are chained

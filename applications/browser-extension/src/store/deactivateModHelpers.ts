@@ -21,12 +21,12 @@ import {
   clearLog,
   deleteSynchronizedModVariables,
   removeModComponentForEveryTab,
-} from "../background/messenger/api";
+} from "@/background/messenger/api";
 import { uniq } from "lodash";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { forbidContext } from "../utils/expectContext";
-import { type AppDispatch } from "../extensionConsole/store";
+import { type AppDispatch } from "@/extensionConsole/store";
 
 /**
  * @file utility methods to deactivate mods/mod components and remove from the existing tabs.

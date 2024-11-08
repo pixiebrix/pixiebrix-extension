@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import reportError from "../telemetry/reportError";
 
 export const ErrorDisplay: React.VFC<{ error: unknown }> = ({ error }) => {

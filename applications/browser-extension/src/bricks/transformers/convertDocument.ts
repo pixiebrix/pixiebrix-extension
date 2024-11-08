@@ -19,7 +19,7 @@ import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type BrickArgs } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import sanitize from "../../utils/sanitize";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 
 async function convert({

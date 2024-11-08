@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import JsonTree from "../../../../../components/jsonTree/JsonTree";
-import { getPageState } from "../../../../../contentScript/messenger/api";
-import { getErrorMessage } from "../../../../../errors/errorHelpers";
+import JsonTree from "@/components/jsonTree/JsonTree";
+import { getPageState } from "@/contentScript/messenger/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectActiveModComponentRef } from "../../../../store/editor/editorSelectors";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +26,7 @@ import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { DataPanelTabKey } from "../dataPanelTypes";
 import DataTabPane from "../DataTabPane";
-import useAsyncState from "../../../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
 import { inspectedTab } from "../../../../context/connection";
 import { resolveObj } from "../../../../../utils/promiseUtils";

@@ -21,7 +21,7 @@ import { type Schema } from "../../types/schemaTypes";
 import { validateRegistryId } from "../../types/helpers";
 import type { RegistryId, RegistryProtocol } from "../../types/registryTypes";
 import type { Brick } from "../../types/brickTypes";
-import { BusinessError, PropError } from "../../errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 
 /**

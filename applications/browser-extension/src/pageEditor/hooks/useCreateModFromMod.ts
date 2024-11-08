@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCreateModDefinitionMutation } from "../../data/service/api";
+import { useCreateModDefinitionMutation } from "@/data/service/api";
 import useDeactivateMod from "./useDeactivateMod";
 import { type ModMetadataFormState } from "../store/editor/pageEditorTypes";
 import {

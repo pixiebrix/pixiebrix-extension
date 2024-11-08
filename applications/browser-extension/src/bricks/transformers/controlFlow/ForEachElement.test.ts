@@ -16,10 +16,13 @@
  */
 
 import brickRegistry from "../../registry";
-import { echoBrick, simpleInput } from "../../../runtime/pipelineTests/testHelpers";
+import {
+  echoBrick,
+  simpleInput,
+} from "../../../runtime/pipelineTests/testHelpers";
 import { reducePipeline } from "../../../runtime/reducePipeline";
 import ForEachElement from "./ForEachElement";
-import { getReferenceForElement } from "../../../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import { toExpression } from "../../../utils/expressionUtils";
 import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
 

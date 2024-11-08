@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { toggleQuickBar } from "../contentScript/messenger/api";
+import { toggleQuickBar } from "@/contentScript/messenger/api";
 import { type Tab } from "../mv3/api";
 import { type Target } from "@/types/messengerTypes";
 import { expectContext } from "../utils/expectContext";

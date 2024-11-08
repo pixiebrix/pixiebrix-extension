@@ -17,7 +17,7 @@
 
 import TraverseElements from "./traverseElements";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { getReferenceForElement } from "../../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 
 const brick = new TraverseElements();

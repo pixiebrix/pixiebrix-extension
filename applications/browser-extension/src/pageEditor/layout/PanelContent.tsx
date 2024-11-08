@@ -19,25 +19,25 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { tabStateActions } from "../store/tabState/tabStateSlice";
 import { type AppDispatch, persistor } from "../store/store";
-import { ModalProvider } from "../../components/ConfirmationModal";
-import ErrorBoundary from "../../components/ErrorBoundary";
-import TabConnectionErrorBanner from "../components/TabConnectionErrorBanner";
-import RequireAuth from "../../auth/RequireAuth";
-import LoginCard from "../components/LoginCard";
+import { ModalProvider } from "@/components/ConfirmationModal";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import TabConnectionErrorBanner from "@/pageEditor/components/TabConnectionErrorBanner";
+import RequireAuth from "@/auth/RequireAuth";
+import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "./EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "../../store/ReduxPersistenceContext";
-import DimensionGate from "../components/DimensionGate";
-import DatabaseUnresponsiveBanner from "../../components/DatabaseUnresponsiveBanner";
+import DimensionGate from "@/pageEditor/components/DimensionGate";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 import { InsertPaneProvider } from "../panes/insert/InsertPane";
-import TeamTrialBanner from "../../components/teamTrials/TeamTrialBanner";
+import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import useTeamTrialStatus, {
   TeamTrialStatus,
-} from "../../components/teamTrials/useTeamTrialStatus";
+} from "@/components/teamTrials/useTeamTrialStatus";
 import { navigationEvent } from "../events";
-import usePollModLogs from "../../components/logViewer/usePollModLogs";
+import usePollModLogs from "@/components/logViewer/usePollModLogs";
 
 /**
  * Hook to connect to the content script on Page Editor mount and on navigation events.

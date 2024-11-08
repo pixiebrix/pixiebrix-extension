@@ -20,7 +20,7 @@ import React from "react";
 import { Card, Form } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectSettings } from "../../../store/settings/settingsSelectors";
-import useIsEnterpriseUser from "../../../hooks/useIsEnterpriseUser";
+import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import SettingToggle from "./SettingToggle";
 
 const GeneralSettings: React.FunctionComponent = () => {

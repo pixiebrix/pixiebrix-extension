@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { showWalkthroughModal } from "../contentScript/messenger/api";
+import { showWalkthroughModal } from "@/contentScript/messenger/api";
 
 const DEVELOPER_WELCOME_URL = "https://www.pixiebrix.com/developers-welcome";
 

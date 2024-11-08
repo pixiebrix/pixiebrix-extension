@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPosition } from "../../bricks/types";
+import { type BrickPosition } from "@/bricks/types";
 import TemplateAnalysis from "./templateAnalysis";
 import { toExpression } from "../../utils/expressionUtils";
-import { RemoteMethod } from "../../bricks/transformers/remoteMethod";
+import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "../../testUtils/factories/brickFactories";
 import { type Expression } from "../../types/runtimeTypes";

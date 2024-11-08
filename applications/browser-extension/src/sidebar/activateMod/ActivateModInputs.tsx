@@ -20,24 +20,24 @@ import { type ModDefinition } from "../../types/modDefinitionTypes";
 import Form, {
   type RenderBody,
   type RenderSubmit,
-} from "../../components/form/Form";
+} from "@/components/form/Form";
 import styles from "./ActivateModPanel.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
-import { type WizardStep, type WizardValues } from "../../activation/wizardTypes";
+import { type WizardStep, type WizardValues } from "@/activation/wizardTypes";
 import { Button, Col } from "react-bootstrap";
-import Alert from "../../components/Alert";
+import Alert from "@/components/Alert";
 import cx from "classnames";
-import Effect from "../../components/Effect";
+import Effect from "@/components/Effect";
 import permissionsDialogImage from "../../../img/example-permissions-dialog.png";
 import { type AnyObjectSchema } from "yup";
 import { produce } from "immer";
-import { isDatabaseField } from "../../components/fields/schemaFields/fieldTypeCheckers";
+import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID } from "../../types/helpers";
-import IntegrationsBody from "../../extensionConsole/pages/activateMod/IntegrationsBody";
+import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import WizardValuesModIntegrationsContextAdapter from "../../activation/WizardValuesModIntegrationsContextAdapter";
+import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 import { assertNotNullish, type Nullishable } from "../../utils/nullishUtils";
 
 type ActivateModInputsProps = {

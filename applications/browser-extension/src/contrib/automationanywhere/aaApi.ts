@@ -16,7 +16,7 @@
  */
 
 import { type Logger } from "../../types/loggerTypes";
-import { type Option } from "../../components/form/widgets/SelectWidget";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 import {
   type Activity,
   type ApiTaskResponse,
@@ -44,7 +44,7 @@ import {
   type CommunityBotArgs,
   type EnterpriseBotArgs,
 } from "./aaTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, partial, sortBy } from "lodash";
 import type { NetworkRequestConfig } from "../../types/networkTypes";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";

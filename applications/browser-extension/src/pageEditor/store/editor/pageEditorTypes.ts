@@ -15,21 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthRootState } from "../../../auth/authTypes";
-import { type LogRootState } from "../../../components/logViewer/logViewerTypes";
+import { type AuthRootState } from "@/auth/authTypes";
+import { type LogRootState } from "@/components/logViewer/logViewerTypes";
 import { type ModComponentsRootState } from "../../../store/modComponents/modComponentTypes";
 import { type SettingsRootState } from "../../../store/settings/settingsTypes";
 import { type RuntimeRootState } from "../runtime/runtimeSliceTypes";
 import { type StarterBrickType } from "../../../types/starterBrickTypes";
 import { type UUID } from "../../../types/stringTypes";
-import { type RegistryId, type VersionedMetadata } from "../../../types/registryTypes";
-import { type BrickConfig, type PipelineFlavor } from "../../../bricks/types";
+import {
+  type RegistryId,
+  type VersionedMetadata,
+} from "../../../types/registryTypes";
+import { type BrickConfig, type PipelineFlavor } from "@/bricks/types";
 import { type BrickPipelineUIState } from "./uiStateTypes";
-import { type AnalysisRootState } from "../../../analysis/analysisTypes";
+import { type AnalysisRootState } from "@/analysis/analysisTypes";
 import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
 import { type TabStateRootState } from "../tabState/tabStateTypes";
 import { type ModDefinitionsRootState } from "../../../modDefinitions/modDefinitionsTypes";
-import { type SimpleErrorObject } from "../../../errors/errorHelpers";
+import { type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SessionChangesRootState } from "../../../store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "../session/sessionSliceTypes";
 import {

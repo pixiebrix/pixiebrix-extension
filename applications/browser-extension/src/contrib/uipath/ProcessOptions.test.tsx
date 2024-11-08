@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render, screen } from "../../extensionConsole/testHelpers";
+import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { UIPATH_ID } from "./process";
@@ -24,9 +24,9 @@ import { validateRegistryId } from "../../types/helpers";
 import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
 import ProcessOptions from "./ProcessOptions";
 import useSanitizedIntegrationConfigFormikAdapter from "../../integrations/useSanitizedIntegrationConfigFormikAdapter";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
-import { useAuthOptions } from "../../hooks/useAuthOptions";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { valueToAsyncState } from "../../utils/asyncStateUtils";
 import { TEST_setContext } from "webext-detect";
 import { menuItemFormStateFactory } from "../../testUtils/factories/pageEditorFactories";

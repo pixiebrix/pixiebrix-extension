@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import EllipsisMenu, {
   type EllipsisMenuItem,
-} from "../../../components/ellipsisMenu/EllipsisMenu";
+} from "@/components/ellipsisMenu/EllipsisMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHammer,
@@ -37,12 +37,12 @@ import { useHistory } from "react-router";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
 import { deactivateMod } from "../../../store/deactivateModHelpers";
-import useUserAction from "../../../hooks/useUserAction";
-import { useDeletePackageMutation } from "../../../data/service/api";
-import { useModals } from "../../../components/ConfirmationModal";
-import { CancelError } from "../../../errors/businessErrors";
+import useUserAction from "@/hooks/useUserAction";
+import { useDeletePackageMutation } from "@/data/service/api";
+import { useModals } from "@/components/ConfirmationModal";
+import { CancelError } from "@/errors/businessErrors";
 import { assertNotNullish } from "../../../utils/nullishUtils";
-import { UI_PATHS } from "../../../data/service/urlPaths";
+import { UI_PATHS } from "@/data/service/urlPaths";
 import useFindModInstance from "../../../mods/hooks/useFindModInstance";
 import { type AppDispatch } from "../../store";
 

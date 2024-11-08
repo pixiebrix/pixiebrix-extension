@@ -17,10 +17,10 @@
 
 import React, { useMemo } from "react";
 import { type ModDefinition } from "../../../types/modDefinitionTypes";
-import genericOptionsFactory from "../../../components/fields/schemaFields/genericOptionsFactory";
+import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import FieldRuntimeContext, {
   type RuntimeContext,
-} from "../../../components/fields/schemaFields/FieldRuntimeContext";
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 import { DEFAULT_RUNTIME_API_VERSION } from "../../../runtime/apiVersionOptions";
 

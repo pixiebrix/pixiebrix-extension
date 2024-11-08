@@ -20,7 +20,7 @@ import Select, { type SelectInstance, type Options } from "react-select";
 import { type SchemaFieldProps } from "../propTypes";
 import { isEmpty, uniq } from "lodash";
 import { useField } from "formik";
-import useAutoFocusConfiguration from "../../../../hooks/useAutoFocusConfiguration";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { isExpression } from "../../../../utils/expressionUtils";
 import { mapSchemaToOptions } from "../selectFieldUtils";
 import Creatable from "react-select/creatable";

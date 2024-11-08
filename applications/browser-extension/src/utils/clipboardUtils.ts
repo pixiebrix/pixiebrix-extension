@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
-import { getErrorMessage } from "../errors/errorHelpers";
-import { focusCaptureDialog } from "../contentScript/focusCaptureDialog";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isPromiseFulfilled } from "./promiseUtils";
-import { writeToClipboardInFocusedDocument } from "../background/messenger/api";
+import { writeToClipboardInFocusedDocument } from "@/background/messenger/api";
 
 export type ContentType = "infer" | "text" | "image";
 

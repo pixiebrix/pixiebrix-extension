@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig } from "../bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { validateRegistryId } from "./helpers";
 import { type Schema, type UiSchema } from "./schemaTypes";

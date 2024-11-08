@@ -19,7 +19,7 @@ import React from "react";
 
 import { render } from "../testHelpers";
 import RootCancelledPanel from "./RootCancelledPanel";
-import { CancelError } from "../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 
 describe("RootCancelledPanel", () => {
   it("should render", () => {

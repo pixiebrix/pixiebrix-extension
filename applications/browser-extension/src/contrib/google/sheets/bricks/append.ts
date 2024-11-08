@@ -19,7 +19,7 @@ import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "../../../../types/helpers";
 import { normalizeHeader } from "../core/sheetsHelpers";
 import * as sheets from "../core/sheetsApi";
-import { BusinessError, PropError } from "../../../../errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
   SHEET_INTEGRATION_SCHEMA,
@@ -27,7 +27,10 @@ import {
 import { type Schema } from "../../../../types/schemaTypes";
 import { EffectABC } from "../../../../types/bricks/effectTypes";
 import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
-import { type BrickArgs, type BrickOptions } from "../../../../types/runtimeTypes";
+import {
+  type BrickArgs,
+  type BrickOptions,
+} from "../../../../types/runtimeTypes";
 import { type SpreadsheetTarget } from "../core/sheetsApi";
 import { isNullOrBlank } from "../../../../utils/stringUtils";
 import { isObject } from "../../../../utils/objectUtils";

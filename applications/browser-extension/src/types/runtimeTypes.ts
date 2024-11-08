@@ -20,7 +20,7 @@ import { type SafeHTML, type UUID } from "./stringTypes";
 import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
 import { type Primitive, type Tagged } from "type-fest";
 import { type Logger } from "./loggerTypes";
-import { type BrickPipeline } from "../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
 import { type PlatformProtocol } from "../platform/platformProtocol";
 import { type Nullishable } from "../utils/nullishUtils";

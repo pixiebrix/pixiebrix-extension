@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import BooleanWidget from "../components/fields/schemaFields/widgets/BooleanWidget";
-import ConnectedFieldTemplate from "../components/form/ConnectedFieldTemplate";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const PersonalDeploymentField: React.FunctionComponent = () => (
   <ConnectedFieldTemplate

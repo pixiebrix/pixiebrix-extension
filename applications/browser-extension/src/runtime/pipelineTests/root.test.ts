@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { echoBrick, simpleInput } from "./testHelpers";
 import { reducePipeline } from "../reducePipeline";
-import { getReferenceForElement } from "../../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import { ReaderABC } from "../../types/bricks/readerTypes";
 import {
   type ApiVersion,

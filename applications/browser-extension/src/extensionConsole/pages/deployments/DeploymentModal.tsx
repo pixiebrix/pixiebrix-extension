@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import AsyncButton from "../../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { Alert, Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import settingsSlice from "../../../store/settings/settingsSlice";
@@ -24,7 +24,7 @@ import notify from "../../../utils/notify";
 import { useExtensionUpdateAvailable } from "../UpdateBanner";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
-import { selectAuth } from "../../../auth/authSelectors";
+import { selectAuth } from "@/auth/authSelectors";
 import { noop } from "lodash";
 import { selectUpdatePromptState } from "../../../store/settings/settingsSelectors";
 import pluralize from "../../../utils/pluralize";

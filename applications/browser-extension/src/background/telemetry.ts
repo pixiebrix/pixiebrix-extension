@@ -20,7 +20,7 @@ import { getModComponentState } from "../store/modComponents/modComponentStorage
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
-} from "../data/service/apiClient";
+} from "@/data/service/apiClient";
 import { allowsTrack } from "../telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import {
@@ -34,9 +34,12 @@ import { count as registrySize } from "../registry/packageRegistry";
 import { count as logSize } from "../telemetry/logging";
 import { count as traceSize } from "../telemetry/trace";
 import { getUUID } from "../telemetry/telemetryHelpers";
-import { getExtensionVersion, getTabsWithAccess } from "../utils/extensionUtils";
+import {
+  getExtensionVersion,
+  getTabsWithAccess,
+} from "../utils/extensionUtils";
 import { type TelemetryEvent } from "../telemetry/telemetryTypes";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;

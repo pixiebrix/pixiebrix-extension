@@ -31,7 +31,7 @@ import {
   type ModMetadata,
 } from "../../../types/modComponentTypes";
 import { type ModVariablesDefinition } from "../../../types/modDefinitionTypes";
-import { type BrickPipeline } from "../../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { type Metadata, type RegistryId } from "../../../types/registryTypes";
 import { type NormalizedAvailability } from "../../../types/availabilityTypes";
 

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import registerDefaultWidgets from "../../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "../../../../testUtils/testHelpers";
 import LookupSpreadsheetOptions from "./LookupSpreadsheetOptions";
 import { act, screen } from "@testing-library/react";
@@ -26,18 +26,15 @@ import { render } from "../../../../pageEditor/testHelpers";
 import {
   integrationConfigLocator,
   hasCachedAuthData,
-} from "../../../../background/messenger/api";
+} from "@/background/messenger/api";
 import { autoUUIDSequence } from "../../../../testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
 } from "../../../../testUtils/factories/integrationFactories";
-import {
-  type FileList,
-  type Spreadsheet,
-} from "../core/types";
-import { useAuthOptions } from "../../../../hooks/useAuthOptions";
-import { type AuthOption } from "../../../../auth/authTypes";
+import { type FileList, type Spreadsheet } from "../core/types";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
+import { type AuthOption } from "@/auth/authTypes";
 import { validateOutputKey } from "../../../../runtime/runtimeTypes";
 import { valueToAsyncState } from "../../../../utils/asyncStateUtils";
 import { type FormikValues } from "formik";

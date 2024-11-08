@@ -18,7 +18,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectCopiedBrick } from "../../../store/editor/editorSelectors";
 import { uuidv4 } from "../../../../types/helpers";
-import { type BrickConfig } from "../../../../bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { actions } from "../../../store/editor/editorSlice";
 import { normalizePipelineForEditor } from "../../../starterBricks/pipelineMapping";
 import { assertNotNullish } from "../../../../utils/nullishUtils";

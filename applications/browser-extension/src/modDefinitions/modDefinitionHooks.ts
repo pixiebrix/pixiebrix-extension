@@ -29,10 +29,10 @@ import {
   type FetchableAsyncState,
   type UseCachedQueryResult,
 } from "@/types/sliceTypes";
-import useMemoCompare from "../hooks/useMemoCompare";
+import useMemoCompare from "@/hooks/useMemoCompare";
 import deepEquals from "fast-deep-equal";
 import { loadingAsyncStateFactory } from "../utils/asyncStateUtils";
-import useMergeAsyncState from "../hooks/useMergeAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import pluralize from "../utils/pluralize";
 import { type Nullishable } from "../utils/nullishUtils";
 import useAsyncEffect from "use-async-effect";

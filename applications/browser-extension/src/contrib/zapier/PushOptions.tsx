@@ -16,31 +16,31 @@
  */
 
 import React, { useMemo } from "react";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { type SchemaFieldProps } from "../../components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "./contract";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "./push";
-import AsyncButton from "../../components/AsyncButton";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
-import SelectWidget from "../../components/form/widgets/SelectWidget";
-import ObjectWidget from "../../components/fields/schemaFields/widgets/ObjectWidget";
-import { makeLabelForSchemaField } from "../../components/fields/schemaFields/schemaFieldUtils";
-import WorkshopMessageWidget from "../../components/fields/schemaFields/widgets/WorkshopMessageWidget";
-import FieldTemplate from "../../components/form/FieldTemplate";
+import AsyncButton from "@/components/AsyncButton";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import { makeLabelForSchemaField } from "@/components/fields/schemaFields/schemaFieldUtils";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { type Expression } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import useExtensionPermissions from "../../permissions/useExtensionPermissions";
 import useRequestPermissionsCallback from "../../permissions/useRequestPermissionsCallback";
 import { isExpression } from "../../utils/expressionUtils";
 import { joinName } from "../../utils/formUtils";
-import defaultFieldFactory from "../../components/fields/schemaFields/defaultFieldFactory";
-import useAsyncState from "../../hooks/useAsyncState";
+import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
+import useAsyncState from "@/hooks/useAsyncState";
 import type { AsyncState } from "../../types/sliceTypes";
 import { getPlatform } from "../../platform/platformContext";
-import { absoluteApiUrl } from "../../data/service/apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 import { pixiebrixConfigurationFactory } from "../../integrations/util/pixiebrixConfigurationFactory";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 function useHooks(): AsyncState<Webhook[]> {
   return useAsyncState(async () => {

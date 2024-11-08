@@ -18,7 +18,7 @@
 import { useField } from "formik";
 import React from "react";
 import { useSelector } from "react-redux";
-import { selectEditableScopes, selectScope } from "../../../auth/authSelectors";
+import { selectEditableScopes, selectScope } from "@/auth/authSelectors";
 import SelectWidget, {
   type Option,
   type SelectWidgetOnChange,

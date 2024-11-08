@@ -22,8 +22,8 @@ import { getExampleBrickConfig } from "../exampleBrickConfigs";
 import IdentityTransformer from "./IdentityTransformer";
 import brickRegistry from "../registry";
 import { screen } from "@testing-library/react";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
-import registerEditors from "../../contrib/editors";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerEditors from "@/contrib/editors";
 import { toExpression } from "../../utils/expressionUtils";
 
 beforeAll(() => {

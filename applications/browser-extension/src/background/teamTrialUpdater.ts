@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import deactivateModInstancesAndSaveState from "./utils/deactivateModInstancesAndSaveState";
-import { type Team } from "../data/model/Team";
-import { getTeams } from "../data/service/backgroundApi";
+import { type Team } from "@/data/model/Team";
+import { getTeams } from "@/data/service/backgroundApi";
 import { getEditorState } from "../store/editorStorage";
 import { getModComponentState } from "../store/modComponents/modComponentStorage";
 import { getScopeAndId } from "../utils/registryUtils";

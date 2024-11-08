@@ -20,12 +20,12 @@ import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faSync } from "@fortawesome/free-solid-svg-icons";
-import useTheme from "../hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import cx from "classnames";
-import useFlags from "../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import { DEFAULT_THEME } from "../themes/themeTypes";
 import { getExtensionConsoleUrl } from "../utils/extensionUtils";
-import { FeatureFlags } from "../auth/featureFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 function reloadSidebar() {
   location.reload();

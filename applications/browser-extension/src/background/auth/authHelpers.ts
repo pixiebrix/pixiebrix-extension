@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InteractiveLoginRequiredError } from "../../errors/authErrors";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import type { Identity } from "webextension-polyfill";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 // https://chromium.googlesource.com/chromium/src/+/ee37f1b7c6da834dec9056283cf83d88b0f2f53c/chrome/browser/extensions/api/identity/identity_api.cc
 const INTERACTIVE_MESSAGE_PATTERNS = [

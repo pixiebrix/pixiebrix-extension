@@ -25,9 +25,9 @@ import settingsSlice, {
 } from "../../../store/settings/settingsSlice";
 import MockDate from "mockdate";
 import { type SettingsState } from "../../../store/settings/settingsTypes";
-import { authSlice } from "../../../auth/authSlice";
+import { authSlice } from "@/auth/authSlice";
 import { useExtensionUpdateAvailable } from "../UpdateBanner";
-import { type AuthState } from "../../../auth/authTypes";
+import { type AuthState } from "@/auth/authTypes";
 
 jest.mock("../UpdateBanner");
 

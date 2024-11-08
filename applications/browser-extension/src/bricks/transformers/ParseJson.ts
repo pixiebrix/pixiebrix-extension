@@ -18,8 +18,8 @@
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type BrickArgs } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { getErrorMessage } from "../../errors/errorHelpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 import { sortBy } from "lodash";
 import { type JsonValue } from "type-fest";
 import { propertiesToSchema } from "../../utils/schemaUtils";

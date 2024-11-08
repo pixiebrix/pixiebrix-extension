@@ -17,7 +17,7 @@
 
 import React, { useContext, useEffect } from "react";
 import ModsPageTableLayout from "./ModsPageTableLayout";
-import useSetDocumentTitle from "../../../hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { ErrorDisplay } from "../../../layout/ErrorDisplay";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
@@ -27,7 +27,7 @@ import {
   useGetEditablePackagesQuery,
   useGetFeatureFlagsQuery,
   useGetMarketplaceListingsQuery,
-} from "../../../data/service/api";
+} from "@/data/service/api";
 import DeploymentsContext from "../deployments/DeploymentsContext";
 import { useDispatch } from "react-redux";
 import modsPageSlice from "./modsPageSlice";

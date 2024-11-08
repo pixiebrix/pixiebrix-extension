@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Analysis,
-  type AnalysisAnnotation,
-} from "../analysisTypes";
-import PipelineVisitor from "../../bricks/PipelineVisitor";
+import { type Analysis, type AnalysisAnnotation } from "../analysisTypes";
+import PipelineVisitor from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
-import brickRegistry, { type TypedBrickMap } from "../../bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 
 /**
  * A base class for creating analysis visitors.

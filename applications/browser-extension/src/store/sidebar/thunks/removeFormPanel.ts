@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cancelForm } from "../../../contentScript/messenger/api";
+import { cancelForm } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "../../../sidebar/connectedTarget";
 import { type SidebarState } from "../../../types/sidebarTypes";
 import { type UUID } from "../../../types/stringTypes";

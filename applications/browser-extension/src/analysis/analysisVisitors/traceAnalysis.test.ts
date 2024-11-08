@@ -18,8 +18,8 @@
 import TraceAnalysis from "./traceAnalysis";
 import { serializeError } from "serialize-error";
 import { throwIfInvalidInput } from "../../runtime/runtimeUtils";
-import { JQTransformer } from "../../bricks/transformers/jq";
-import { BusinessError } from "../../errors/businessErrors";
+import { JQTransformer } from "@/bricks/transformers/jq";
+import { BusinessError } from "@/errors/businessErrors";
 import { type RenderedArgs } from "../../types/runtimeTypes";
 
 describe("TraceAnalysis.mapErrorAnnotations", () => {

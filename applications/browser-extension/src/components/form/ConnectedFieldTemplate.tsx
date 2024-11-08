@@ -17,14 +17,12 @@
 
 import React, { useContext, useMemo } from "react";
 import { connect, type FormikContextType, getIn } from "formik";
-import FieldTemplate, {
-  type FieldProps,
-} from "./FieldTemplate";
+import FieldTemplate, { type FieldProps } from "./FieldTemplate";
 import { useSelector } from "react-redux";
 import type { FieldAnnotation } from "./FieldAnnotation";
 import { extractMarkdownLink, isNullOrBlank } from "../../utils/stringUtils";
 import { AnnotationType } from "../../types/annotationTypes";
-import AnalysisAnnotationsContext from "../../analysis/AnalysisAnnotationsContext";
+import AnalysisAnnotationsContext from "@/analysis/AnalysisAnnotationsContext";
 import { makeFieldAnnotationsForValue } from "./makeFieldAnnotationsForValue";
 
 type ConnectedFieldProps<Values> = FieldProps & {

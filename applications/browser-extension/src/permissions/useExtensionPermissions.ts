@@ -20,7 +20,7 @@ import {
   extractAdditionalPermissions,
 } from "webext-permissions";
 import { type AsyncState } from "@/types/sliceTypes";
-import useAsyncExternalStore from "../hooks/useAsyncExternalStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
 export type DetailedPermissions = Array<{
   name: string;

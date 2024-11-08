@@ -23,7 +23,7 @@ import {
 } from "../documentBuilderTypes";
 import React, { useMemo } from "react";
 import ListOptions from "./ListOptions";
-import SchemaField from "../../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "./getElementEditSchemas";
 import PipelineOptions from "./PipelineOptions";
 import ButtonOptions from "./ButtonOptions";

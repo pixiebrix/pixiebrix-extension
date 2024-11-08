@@ -22,12 +22,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectShowShareContext } from "../modModalsSelectors";
 import { modModalsSlice } from "../modModalsSlice";
 import * as Yup from "yup";
-import Form from "../../../../../components/form/Form";
-import { getErrorMessage } from "../../../../../errors/errorHelpers";
+import Form from "@/components/form/Form";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
-} from "../../../../../data/service/api";
+} from "@/data/service/api";
 import { type FormikHelpers } from "formik";
 import notify from "../../../../../utils/notify";
 import { produce } from "immer";
@@ -39,12 +39,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactSelect from "react-select";
 import styles from "./ShareModals.module.scss";
-import { isSingleObjectBadRequestError } from "../../../../../errors/networkErrorHelpers";
+import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
-import ActivationLink from "../../../../../activation/ActivationLink";
-import createMenuListWithAddButton from "../../../../../components/form/widgets/createMenuListWithAddButton";
-import { type Option } from "../../../../../components/form/widgets/SelectWidget";
-import Loader from "../../../../../components/Loader";
+import ActivationLink from "@/activation/ActivationLink";
+import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import Loader from "@/components/Loader";
 import useHasEditPermissions from "./useHasEditPermissions";
 import ModOwnerLabel from "./ModOwnerLabel";
 import useSortOrganizations from "./useSortOrganizations";

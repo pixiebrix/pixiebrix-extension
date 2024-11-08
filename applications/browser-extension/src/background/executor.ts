@@ -22,11 +22,11 @@ import {
   errorTargetClosedEarly,
   type MessengerMeta,
 } from "webext-messenger";
-import { runBrick } from "../contentScript/messenger/api";
+import { runBrick } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
-import { getErrorMessage } from "../errors/errorHelpers";
-import type { RunBrickRequest } from "../contentScript/messenger/runBrickTypes";
-import { BusinessError } from "../errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
+import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "../permissions/permissionsUtils";
 import { allSettled } from "../utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "../domConstants";

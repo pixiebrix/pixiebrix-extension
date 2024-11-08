@@ -22,11 +22,8 @@ import { type BrickArgs, type BrickOptions } from "../../../types/runtimeTypes";
 import { validateRegistryId } from "../../../types/helpers";
 import { propertiesToSchema } from "../../../utils/schemaUtils";
 import { type PlatformCapability } from "../../../platform/capabilities";
-import {
-  assertAiCapabilities,
-  throwIfBusinessError,
-} from "./domAiHelpers";
-import { PropError } from "../../../errors/businessErrors";
+import { assertAiCapabilities, throwIfBusinessError } from "./domAiHelpers";
+import { PropError } from "@/errors/businessErrors";
 
 type Message = {
   role: "user" | "assistant" | "system";

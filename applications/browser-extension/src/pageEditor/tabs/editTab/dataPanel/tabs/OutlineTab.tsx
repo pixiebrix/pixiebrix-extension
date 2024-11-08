@@ -19,7 +19,7 @@ import { DataPanelTabKey } from "../dataPanelTypes";
 import DataTabPane from "../DataTabPane";
 import React from "react";
 import DocumentOutline from "../../../../documentBuilder/outline/DocumentOutline";
-import useReduxState from "../../../../../hooks/useReduxState";
+import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveNodeInfo,

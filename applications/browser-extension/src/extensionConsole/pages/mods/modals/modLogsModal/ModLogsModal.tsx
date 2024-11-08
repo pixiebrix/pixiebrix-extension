@@ -20,10 +20,10 @@ import styles from "./ModLogsModal.module.scss";
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import LogCard from "../../../../../components/logViewer/LogCard";
-import { logActions } from "../../../../../components/logViewer/logSlice";
+import LogCard from "@/components/logViewer/LogCard";
+import { logActions } from "@/components/logViewer/logSlice";
 import { modModalsSlice } from "../modModalsSlice";
-import ModalLayout from "../../../../../components/ModalLayout";
+import ModalLayout from "@/components/ModalLayout";
 import { selectShowLogsContext } from "../modModalsSelectors";
 
 const ModLogsModal: React.FunctionComponent = () => {

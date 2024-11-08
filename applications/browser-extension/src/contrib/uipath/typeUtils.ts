@@ -18,7 +18,7 @@
 import { parseAssemblyQualifiedName } from "csharp-helpers";
 import { type Schema, type SchemaProperties } from "../../types/schemaTypes";
 import { type Argument, type Release } from "./uipathContract";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 function toType(type: string) {
   const { namespace, typeName } = parseAssemblyQualifiedName(type);

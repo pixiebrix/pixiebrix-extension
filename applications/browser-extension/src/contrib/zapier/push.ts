@@ -19,14 +19,14 @@ import { validateBrickInputOutput } from "../../validators/schemaValidator";
 import { type Webhook } from "./contract";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "../../types/helpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "../../types/schemaTypes";
 import { EffectABC } from "../../types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 import type { PlatformCapability } from "../../platform/capabilities";
-import { absoluteApiUrl } from "../../data/service/apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 import { pixiebrixConfigurationFactory } from "../../integrations/util/pixiebrixConfigurationFactory";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 

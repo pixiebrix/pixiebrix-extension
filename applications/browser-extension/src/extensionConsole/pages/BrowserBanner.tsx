@@ -18,7 +18,7 @@
 import React from "react";
 import { type RootState } from "../store";
 import { selectBrowserWarningDismissed } from "../../store/settings/settingsSelectors";
-import Banner from "../../components/banner/Banner";
+import Banner from "@/components/banner/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 import settingsSlice from "../../store/settings/settingsSlice";

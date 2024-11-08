@@ -18,8 +18,8 @@
 import React, { useCallback, useRef } from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
-import { type CustomFieldWidgetProps } from "../../components/form/FieldTemplate";
-import { LinkButton } from "../../components/LinkButton";
+import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
+import { LinkButton } from "@/components/LinkButton";
 import { freeze } from "../../utils/objectUtils";
 
 export type Snippet = {

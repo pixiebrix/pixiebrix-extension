@@ -15,39 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BrickTypeAnalysis from "../../analysis/analysisVisitors/brickTypeAnalysis";
-import ModComponentUrlPatternAnalysis from "../../analysis/analysisVisitors/modComponentUrlPatternAnalysis";
-import OutputKeyAnalysis from "../../analysis/analysisVisitors/outputKeyAnalysis";
-import RenderersAnalysis from "../../analysis/analysisVisitors/renderersAnalysis";
-import TemplateAnalysis from "../../analysis/analysisVisitors/templateAnalysis";
-import TraceAnalysis from "../../analysis/analysisVisitors/traceAnalysis";
-import ReduxAnalysisManager from "../../analysis/ReduxAnalysisManager";
+import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
+import ModComponentUrlPatternAnalysis from "@/analysis/analysisVisitors/modComponentUrlPatternAnalysis";
+import OutputKeyAnalysis from "@/analysis/analysisVisitors/outputKeyAnalysis";
+import RenderersAnalysis from "@/analysis/analysisVisitors/renderersAnalysis";
+import TemplateAnalysis from "@/analysis/analysisVisitors/templateAnalysis";
+import TraceAnalysis from "@/analysis/analysisVisitors/traceAnalysis";
+import ReduxAnalysisManager from "@/analysis/ReduxAnalysisManager";
 import { type UUID } from "../../types/stringTypes";
 import { type TraceRecord } from "../../telemetry/trace";
 import { isAnyOf, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "./editor/pageEditorTypes";
 import { actions as editorActions } from "./editor/editorSlice";
 import runtimeSlice from "./runtime/runtimeSlice";
-import RequestPermissionAnalysis from "../../analysis/analysisVisitors/requestPermissionAnalysis";
-import FormBrickAnalysis from "../../analysis/analysisVisitors/formBrickAnalysis";
+import RequestPermissionAnalysis from "@/analysis/analysisVisitors/requestPermissionAnalysis";
+import FormBrickAnalysis from "@/analysis/analysisVisitors/formBrickAnalysis";
 import { selectActiveModComponentTraces } from "./runtime/runtimeSelectors";
-import VarAnalysis from "../../analysis/analysisVisitors/varAnalysis/varAnalysis";
-import analysisSlice from "../../analysis/analysisSlice";
-import RegexAnalysis from "../../analysis/analysisVisitors/regexAnalysis";
-import PageStateAnalysis from "../../analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
-import CheckEventNamesAnalysis from "../../analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
+import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
+import analysisSlice from "@/analysis/analysisSlice";
+import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
+import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pageStateAnalysis";
+import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import {
   selectActiveModComponentFormState,
   selectActiveModComponentRef,
 } from "./editor/editorSelectors";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
 import { selectGetDraftFormStatesPromiseForModId } from "../starterBricks/adapter";
-import { getPageState } from "../../contentScript/messenger/api";
-import HttpRequestAnalysis from "../../analysis/analysisVisitors/httpRequestAnalysis";
-import ModVariableNames from "../../analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
+import { getPageState } from "@/contentScript/messenger/api";
+import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
+import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { inspectedTab } from "../context/connection";
-import SelectorAnalysis from "../../analysis/analysisVisitors/selectorAnalysis";
-import ConditionAnalysis from "../../analysis/analysisVisitors/conditionAnalysis";
+import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
+import ConditionAnalysis from "@/analysis/analysisVisitors/conditionAnalysis";
 import { StateNamespaces } from "../../platform/state/stateTypes";
 import { assertNotNullish } from "../../utils/nullishUtils";
 

@@ -22,7 +22,7 @@ import notify from "../utils/notify";
 import {
   clearIntegrationRegistry,
   integrationConfigLocator,
-} from "../background/messenger/api";
+} from "@/background/messenger/api";
 import { syncRemotePackages } from "../registry/memoryRegistry";
 
 const syncIntegrations = async () => {

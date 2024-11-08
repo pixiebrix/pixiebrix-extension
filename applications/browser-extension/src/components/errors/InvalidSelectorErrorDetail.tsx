@@ -19,7 +19,7 @@ import React from "react";
 import {
   type NoElementsFoundError,
   type MultipleElementsFoundError,
-} from "../../errors/businessErrors";
+} from "@/errors/businessErrors";
 import styles from "./ErrorDetail.module.scss";
 
 const InvalidSelectorErrorDetail: React.FunctionComponent<{

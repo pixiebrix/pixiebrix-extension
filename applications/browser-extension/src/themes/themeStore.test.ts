@@ -31,7 +31,7 @@ import {
   meOrganizationApiResponseFactory,
 } from "../testUtils/factories/authFactories";
 import { appApiMock } from "../testUtils/appApiMock";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const reportErrorMock = jest.mocked(reportError);
 

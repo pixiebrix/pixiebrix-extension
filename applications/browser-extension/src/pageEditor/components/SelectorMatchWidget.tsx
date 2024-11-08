@@ -17,11 +17,11 @@
 
 import React from "react";
 import { useFormikContext } from "formik";
-import ArrayWidget from "../../components/fields/schemaFields/widgets/ArrayWidget";
-import FieldRuntimeContext from "../../components/fields/schemaFields/FieldRuntimeContext";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { PAGE_EDITOR_DEFAULT_BRICK_API_VERSION } from "../starterBricks/base";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
-import { type SchemaFieldProps } from "../../components/fields/schemaFields/propTypes";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Schema } from "../../types/schemaTypes";
 
 const selectorMatchItemSchema: Schema = {

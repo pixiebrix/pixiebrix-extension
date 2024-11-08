@@ -16,7 +16,7 @@
  */
 
 import { isExtensionContext } from "webext-detect";
-import useUpdatableAsyncState from "../../hooks/useUpdatableAsyncState";
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
 import { readManagedStorageByKey } from "../../store/enterprise/managedStorage";
 import { StorageItem } from "webext-storage";
 import { DEFAULT_SERVICE_URL } from "../../urlConstants";

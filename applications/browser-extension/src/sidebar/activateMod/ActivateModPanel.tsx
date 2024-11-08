@@ -22,37 +22,35 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import Loader from "../../components/Loader";
+import Loader from "@/components/Loader";
 import activationCompleteImage from "../../../img/blueprint-activation-complete.png";
 import styles from "./ActivateModPanel.module.scss";
-import AsyncButton from "../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "../../store/sidebar/sidebarSlice";
-import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "../../contentScript/messenger/api";
+import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "../connectedTarget";
 import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "./ActivateModInputs";
-import useQuickbarShortcut from "../../hooks/useQuickbarShortcut";
+import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Button } from "react-bootstrap";
-import useActivateMod from "../../activation/useActivateMod";
-import { type WizardValues } from "../../activation/wizardTypes";
+import useActivateMod from "@/activation/useActivateMod";
+import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useActivateModWizard, {
   type UseActivateModWizardResult,
-} from "../../activation/useActivateModWizard";
-import RequireMods, {
-  type RequiredModDefinition,
-} from "./RequireMods";
+} from "@/activation/useActivateModWizard";
+import RequireMods, { type RequiredModDefinition } from "./RequireMods";
 import { persistor } from "../store";
 import { checkModDefinitionPermissions } from "../../modDefinitions/modDefinitionPermissionsHelpers";
-import AsyncStateGate from "../../components/AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 import { type ModDefinition } from "../../types/modDefinitionTypes";
 import { openShortcutsTab, SHORTCUTS_URL } from "../../utils/extensionUtils";
-import Markdown from "../../components/Markdown";
+import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "../../utils/modUtils";
 import type { ModActivationConfig } from "../../types/modTypes";
-import useOnMountOnly from "../../hooks/useOnMountOnly";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 import { type Nullishable } from "../../utils/nullishUtils";
 
 const { actions } = sidebarSlice;

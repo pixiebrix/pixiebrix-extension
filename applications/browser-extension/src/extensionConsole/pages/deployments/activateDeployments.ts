@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { integrationConfigLocator } from "../../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import modComponentSlice from "../../../store/modComponents/modComponentSlice";
 import { Events } from "../../../telemetry/events";
 import reportEvent from "../../../telemetry/reportEvent";
@@ -25,7 +25,7 @@ import type { ActivatableDeployment } from "../../../types/deploymentTypes";
 import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
-} from "../../../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import { type AppDispatch, persistor } from "../../store";
 import type { ModInstance } from "../../../types/modInstanceTypes";
 

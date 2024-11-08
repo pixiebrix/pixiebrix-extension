@@ -23,17 +23,17 @@ import {
 } from "../../store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import { actions } from "../../store/editor/editorSlice";
-import ErrorBoundary from "../../../components/ErrorBoundary";
-import Effect from "../../../components/Effect";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import Effect from "@/components/Effect";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./ModMetadataEditor.module.scss";
 import { object, string } from "yup";
 import {
   isInnerDefinitionRegistryId,
   testIsSemVerString,
 } from "../../../types/helpers";
-import Form, { type RenderBody } from "../../../components/form/Form";
-import Alert from "../../../components/Alert";
+import Form, { type RenderBody } from "@/components/form/Form";
+import Alert from "@/components/Alert";
 import { createSelector } from "@reduxjs/toolkit";
 import { lt } from "semver";
 import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
@@ -44,9 +44,9 @@ import cx from "classnames";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 import { type RegistryId } from "../../../types/registryTypes";
 import { pick } from "lodash";
-import AsyncStateGate from "../../../components/AsyncStateGate";
-import { UI_PATHS } from "../../../data/service/urlPaths";
-import FieldTemplate from "../../../components/form/FieldTemplate";
+import AsyncStateGate from "@/components/AsyncStateGate";
+import { UI_PATHS } from "@/data/service/urlPaths";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { selectModInstanceMap } from "../../../store/modComponents/modInstanceSelectors";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`

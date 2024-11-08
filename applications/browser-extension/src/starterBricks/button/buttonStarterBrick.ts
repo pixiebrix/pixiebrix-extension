@@ -37,7 +37,7 @@ import { type Metadata } from "@/types/registryTypes";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import { getNavigationId } from "../../contentScript/context";
+import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "../../icons/getSvgIcon";
 import { selectEventData } from "../../telemetry/deployments";
 import apiVersionOptions, {
@@ -45,8 +45,8 @@ import apiVersionOptions, {
 } from "../../runtime/apiVersionOptions";
 import { engineRenderer } from "../../runtime/renderers";
 import { mapArgs } from "../../runtime/mapArgs";
-import { collectAllBricks } from "../../bricks/util";
-import { mergeReaders } from "../../bricks/readers/readerUtils";
+import { collectAllBricks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import sanitize from "../../utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "../../domConstants";
 import reportError from "../../telemetry/reportError";
@@ -56,9 +56,9 @@ import {
   CancelError,
   MultipleElementsFoundError,
   NoElementsFoundError,
-} from "../../errors/businessErrors";
-import { PromiseCancelled } from "../../errors/genericErrors";
-import { rejectOnCancelled } from "../../errors/rejectOnCancelled";
+} from "@/errors/businessErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
+import { rejectOnCancelled } from "@/errors/rejectOnCancelled";
 import { type Schema } from "../../types/schemaTypes";
 import { type HydratedModComponent } from "../../types/modComponentTypes";
 import { type Brick } from "../../types/brickTypes";

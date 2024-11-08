@@ -19,7 +19,7 @@ import { type ModDefinition } from "./modDefinitionTypes";
 import { type RegistryId, type SemVerString } from "./registryTypes";
 import { type Nullishable } from "../utils/nullishUtils";
 import { type Timestamp, type UUID } from "./stringTypes";
-import { type AuthUserOrganization } from "../auth/authTypes";
+import { type AuthUserOrganization } from "@/auth/authTypes";
 
 /**
  * @deprecated

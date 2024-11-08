@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
 import {
   contextBrick,
@@ -23,11 +23,11 @@ import {
   simpleInput,
   throwBrick,
 } from "./testHelpers";
-import { sendDeploymentAlert } from "../../background/messenger/api";
+import { sendDeploymentAlert } from "@/background/messenger/api";
 import { type ApiVersion } from "../../types/runtimeTypes";
 import { uuidv4 } from "../../types/helpers";
 import { serializeError } from "serialize-error";
-import { ContextError } from "../../errors/genericErrors";
+import { ContextError } from "@/errors/genericErrors";
 import { extraEmptyModStateContext } from "../extendModVariableContext";
 import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

@@ -21,14 +21,11 @@ import { UIPATH_SERVICE_IDS } from "./process";
 import { useMemo } from "react";
 import { releaseSchema } from "./typeUtils";
 import { optionalFactory } from "../remoteOptionUtils";
-import { type Option } from "../../components/form/widgets/SelectWidget";
-import {
-  type ODataResponseData,
-  type Release,
-} from "./uipathContract";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type ODataResponseData, type Release } from "./uipathContract";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import cachePromise from "../../utils/cachePromise";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { getPlatform } from "../../platform/platformContext";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);

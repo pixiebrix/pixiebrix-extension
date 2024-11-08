@@ -20,7 +20,7 @@ import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "../urlConstants";
 import { getActivatedModIds } from "../store/modComponents/modComponentStorage";
 import { pollUntilTruthy } from "../utils/promiseUtils";
 import { getContentScriptState } from "./ready";
-import { getRegistryIdsFromActivateUrlSearchParams } from "../activation/activationLinkUtils";
+import { getRegistryIdsFromActivateUrlSearchParams } from "@/activation/activationLinkUtils";
 import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,

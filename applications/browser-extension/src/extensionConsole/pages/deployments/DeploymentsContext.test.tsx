@@ -17,29 +17,27 @@
 
 import React, { useContext } from "react";
 import { render, screen, waitFor } from "../../testHelpers";
-import DeploymentsContext, {
-  DeploymentsProvider,
-} from "./DeploymentsContext";
-import AsyncButton from "../../../components/AsyncButton";
+import DeploymentsContext, { DeploymentsProvider } from "./DeploymentsContext";
+import AsyncButton from "@/components/AsyncButton";
 import { waitForEffect } from "../../../testUtils/testHelpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModComponentState } from "../../../store/modComponents/modComponentTypes";
-import { getLinkedApiClient } from "../../../data/service/apiClient";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 import {
   deploymentFactory,
   activatableDeploymentFactory,
 } from "../../../testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "../../../testUtils/factories/brickFactories";
-import { ExtensionNotLinkedError } from "../../../errors/genericErrors";
+import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 import modComponentSlice from "../../../store/modComponents/modComponentSlice";
 import { type ModDefinition } from "../../../types/modDefinitionTypes";
 import { type Deployment } from "../../../types/contract";
 import { validateTimestamp } from "../../../utils/timeUtils";
-import { reloadModsEveryTab } from "../../../contentScript/messenger/api";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../../../contentScript/messenger/api");
 

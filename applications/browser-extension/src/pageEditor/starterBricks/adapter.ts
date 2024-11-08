@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentBase } from "../../types/modComponentTypes";
-import { registry } from "../../background/messenger/api";
+import { registry } from "@/background/messenger/api";
 import { type StarterBrickDefinitionLike } from "../../starterBricks/types";
 import {
   type StarterBrickType,
@@ -31,11 +31,11 @@ import dynamicQuickBarModComponent from "./dynamicQuickBar";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
 import { hasInnerStarterBrickRef } from "../../registry/hydrateInnerDefinitions";
 import { type ModComponentFormState } from "./formStateTypes";
-import { type DraftModComponent } from "../../contentScript/pageEditor/types";
+import { type DraftModComponent } from "@/contentScript/pageEditor/types";
 import { assertNotNullish } from "../../utils/nullishUtils";
 import { compact, memoize, sortBy } from "lodash";
-import useAsyncState from "../../hooks/useAsyncState";
-import { flagOn } from "../../auth/featureFlagStorage";
+import useAsyncState from "@/hooks/useAsyncState";
+import { flagOn } from "@/auth/featureFlagStorage";
 import { type DraftModState } from "../store/editor/pageEditorTypes";
 import { selectGetDraftModComponentsForMod } from "../store/editor/editorSelectors";
 import { type RegistryId } from "../../types/registryTypes";

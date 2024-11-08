@@ -33,21 +33,18 @@ import {
   starterBrickDefinitionPropFactory,
 } from "./modDefinitionFactories";
 import { metadataFactory } from "./metadataFactory";
-import { type BrickPipeline, PipelineFlavor } from "../../bricks/types";
+import { type BrickPipeline, PipelineFlavor } from "@/bricks/types";
 import contextMenu from "../../pageEditor/starterBricks/contextMenu";
 import { validateRegistryId } from "../../types/helpers";
 import menuItem from "../../pageEditor/starterBricks/button";
-import { type ButtonSelectionResult } from "../../contentScript/pageEditor/types";
+import { type ButtonSelectionResult } from "@/contentScript/pageEditor/types";
 import quickBar from "../../pageEditor/starterBricks/quickBar";
 import trigger from "../../pageEditor/starterBricks/trigger";
 import { type TraceRecord } from "../../telemetry/trace";
 import { type Except, type JsonObject } from "type-fest";
 import sidebar from "../../pageEditor/starterBricks/sidebar";
 import { traceRecordFactory } from "./traceFactories";
-import {
-  brickConfigFactory,
-  pipelineFactory,
-} from "./brickFactories";
+import { brickConfigFactory, pipelineFactory } from "./brickFactories";
 import { type BaseModComponentState } from "../../pageEditor/store/editor/baseFormStateTypes";
 import { assertNotNullish } from "../../utils/nullishUtils";
 import { validateOutputKey } from "../../runtime/runtimeTypes";

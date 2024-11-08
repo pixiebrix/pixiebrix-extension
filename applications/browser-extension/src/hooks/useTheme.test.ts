@@ -19,7 +19,7 @@ import useTheme from "./useTheme";
 import { renderHook } from "../pageEditor/testHelpers";
 import { initialTheme } from "../themes/themeStore";
 import { type ThemeAssets, themeStorage } from "../themes/themeUtils";
-import { activateTheme } from "../background/messenger/api";
+import { activateTheme } from "@/background/messenger/api";
 import { readManagedStorage } from "../store/enterprise/managedStorage";
 import { INTERNAL_reset as resetAsyncExternalStore } from "./useAsyncExternalStore";
 

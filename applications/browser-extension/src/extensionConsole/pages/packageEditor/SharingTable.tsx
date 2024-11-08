@@ -22,9 +22,9 @@ import { sortBy, uniq } from "lodash";
 import { Table } from "react-bootstrap";
 import React from "react";
 import { useField } from "formik";
-import { useGetOrganizationsQuery } from "../../../data/service/api";
+import { useGetOrganizationsQuery } from "@/data/service/api";
 import { type UUID } from "../../../types/stringTypes";
-import { type Team } from "../../../data/model/Team";
+import { type Team } from "@/data/model/Team";
 
 const SharingTable: React.FunctionComponent = () => {
   const { data: teams = [] } = useGetOrganizationsQuery();

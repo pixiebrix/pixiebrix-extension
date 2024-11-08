@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPipeline } from "../../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import {
   type StarterBrickType,
   StarterBrickTypes,
 } from "../../../types/starterBrickTypes";
 import { validateRegistryId } from "../../../types/helpers";
-import { createNewConfiguredBrick } from "../../../bricks/exampleBrickConfigs";
+import { createNewConfiguredBrick } from "@/bricks/exampleBrickConfigs";
 import { toExpression } from "../../../utils/expressionUtils";
 
 const documentBrickId = validateRegistryId("@pixiebrix/document");

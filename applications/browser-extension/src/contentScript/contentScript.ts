@@ -20,12 +20,12 @@
 // which is behind a guarded dynamic import.
 
 import "./contentScript.scss";
-import { addContentScriptIndicator } from "../development/visualInjection";
+import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import { getContentScriptState, setContentScriptState } from "./ready";
 import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "../utils/promiseUtils";
-import { initRuntimeLogging } from "../development/runtimeLogging";
+import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { type Runtime } from "webextension-polyfill";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution

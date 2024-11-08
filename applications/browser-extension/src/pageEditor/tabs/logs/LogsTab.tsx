@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Tab } from "react-bootstrap";
-import LogCard from "../../../components/logViewer/LogCard";
+import LogCard from "@/components/logViewer/LogCard";
 
 export const LOGS_EVENT_KEY = "logs";
 

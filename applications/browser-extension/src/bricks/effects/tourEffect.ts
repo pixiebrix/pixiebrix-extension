@@ -21,7 +21,7 @@ import { type Schema } from "../../types/schemaTypes";
 import injectStylesheet from "../../utils/injectStylesheet";
 import stylesheetUrl from "../../vendors/intro.js/introjs.scss?loadAsUrl";
 import pDefer from "p-defer";
-import { BusinessError, CancelError, PropError } from "../../errors/businessErrors";
+import { BusinessError, CancelError, PropError } from "@/errors/businessErrors";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "../rootModeHelpers";
 import { validateRegistryId } from "../../types/helpers";
 import { isEmpty } from "lodash";

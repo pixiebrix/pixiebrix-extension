@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { getErrorMessage, isSpecificError } from "../../errors/errorHelpers";
+import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { useSelector } from "react-redux";
 import { selectTabStateError } from "../store/tabState/tabStateSelectors";
 import { TimeoutError } from "p-timeout";

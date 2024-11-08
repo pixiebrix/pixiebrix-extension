@@ -19,7 +19,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Nav, Tab } from "react-bootstrap";
 import useDataPanelActiveTabKey from "./useDataPanelActiveTabKey";
-import useFlags from "../../../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import ModVariablesTab from "./tabs/ModVariablesTab";
 import { DataPanelTabKey } from "./dataPanelTypes";
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
@@ -29,7 +29,7 @@ import { assertNotNullish } from "../../../../utils/nullishUtils";
 import { NavItem } from "./BrickDataPanel";
 import StarterBrickInputTab from "./tabs/StarterBrickInputTab";
 import StarterBrickOutputTab from "./tabs/StarterBrickOutputTab";
-import { FeatureFlags } from "../../../../auth/featureFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * @see DataPanel

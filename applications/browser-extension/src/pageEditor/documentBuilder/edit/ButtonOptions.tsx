@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import SchemaField from "../../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import getElementEditSchemas from "./getElementEditSchemas";
 import PipelineOptions from "./PipelineOptions";
 

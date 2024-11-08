@@ -17,10 +17,10 @@
 
 import { serializeError } from "serialize-error";
 
-import { CancelError, NoRendererError } from "../../errors/businessErrors";
+import { CancelError, NoRendererError } from "@/errors/businessErrors";
 import { uuidv4 } from "../../types/helpers";
 import { type PanelPayload } from "../../types/sidebarTypes";
-import { HeadlessModeError } from "../../bricks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import { showTemporarySidebarPanel } from "../sidebarController";
 import { waitForTemporaryPanel } from "../../platform/panels/panelController";
 import { type UUID } from "../../types/stringTypes";

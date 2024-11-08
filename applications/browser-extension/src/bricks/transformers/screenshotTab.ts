@@ -17,8 +17,8 @@
 
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { getErrorMessage } from "../../errors/errorHelpers";
-import { BusinessError } from "../../errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { BusinessError } from "@/errors/businessErrors";
 import { minimalSchemaFactory } from "../../utils/schemaUtils";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 

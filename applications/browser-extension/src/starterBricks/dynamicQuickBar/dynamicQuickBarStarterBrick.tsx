@@ -22,22 +22,22 @@ import {
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, isEmpty } from "lodash";
-import { checkAvailable, testMatchPatterns } from "../../bricks/available";
+import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "../../telemetry/reportError";
-import { collectAllBricks } from "../../bricks/util";
-import { mergeReaders } from "../../bricks/readers/readerUtils";
-import quickBarRegistry from "../../components/quickBar/quickBarRegistry";
+import { collectAllBricks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "../../icons/Icon";
-import { CancelError } from "../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "../../utils/selectionController";
 import {
   type InitialValues,
   reduceModComponentPipeline,
 } from "../../runtime/reducePipeline";
 import apiVersionOptions from "../../runtime/apiVersionOptions";
-import { isSpecificError } from "../../errors/errorHelpers";
-import { type ActionGenerator } from "../../components/quickBar/quickbarTypes";
-import ArrayCompositeReader from "../../bricks/readers/ArrayCompositeReader";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { type ActionGenerator } from "@/components/quickBar/quickbarTypes";
+import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   QuickBarQueryReader,
   quickbarQueryReaderShim,

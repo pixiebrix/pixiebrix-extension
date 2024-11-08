@@ -21,7 +21,7 @@ import {
   isUnknownObjectArray,
   assertObject,
 } from "./objectUtils";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 describe("removeUndefined", () => {
   test("remove top-level undefined", () => {

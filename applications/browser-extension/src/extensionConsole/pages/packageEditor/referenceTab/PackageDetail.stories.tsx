@@ -18,14 +18,14 @@
 import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import PackageDetail from "./PackageDetail";
-import { TableRenderer } from "../../../../bricks/renderers/table";
-import { fromJS as nativeFromJS } from "../../../../bricks/transformers/brickFactory";
-import amazonSearch from "../../../../../contrib/bricks/amazon-search.yaml";
+import { TableRenderer } from "@/bricks/renderers/table";
+import { fromJS as nativeFromJS } from "@/bricks/transformers/brickFactory";
+import amazonSearch from "@/contrib/bricks/amazon-search.yaml";
 import { brickToYaml } from "../../../../utils/objToYaml";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { appApi } from "../../../../data/service/api";
-import brickRegistry from "../../../../bricks/registry";
+import { appApi } from "@/data/service/api";
+import brickRegistry from "@/bricks/registry";
 import { partial } from "lodash";
 
 export default {

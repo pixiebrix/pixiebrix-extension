@@ -23,7 +23,7 @@ import {
   moveMenuOption,
 } from "./menuFilters";
 import { isEqual } from "lodash";
-import { usePreviousValue } from "../../../../../hooks/usePreviousValue";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field

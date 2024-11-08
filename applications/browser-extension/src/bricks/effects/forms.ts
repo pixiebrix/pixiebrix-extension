@@ -21,7 +21,7 @@ import {
   BusinessError,
   MultipleElementsFoundError,
   NoElementsFoundError,
-} from "../../errors/businessErrors";
+} from "@/errors/businessErrors";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,

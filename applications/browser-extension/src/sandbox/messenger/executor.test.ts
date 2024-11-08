@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  renderNunjucksTemplate,
-  runUserJs,
-} from "./executor";
-import { BusinessError, InvalidTemplateError } from "../../errors/businessErrors";
+import { renderNunjucksTemplate, runUserJs } from "./executor";
+import { BusinessError, InvalidTemplateError } from "@/errors/businessErrors";
 
 describe("renderNunjucksTemplate", () => {
   it("handles template", async () => {

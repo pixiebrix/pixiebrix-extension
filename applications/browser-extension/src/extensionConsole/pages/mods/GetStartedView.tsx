@@ -20,14 +20,14 @@ import styles from "./GetStartedView.module.scss";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import useMilestones from "../../../hooks/useMilestones";
-import { useGetMarketplaceListingsQuery } from "../../../data/service/api";
+import useMilestones from "@/hooks/useMilestones";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { type RegistryId } from "../../../types/registryTypes";
 import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
 import { isMac } from "../../../utils/browserUtils";
 import { MARKETPLACE_URL } from "../../../urlConstants";
 import { Card } from "react-bootstrap";
-import MarketplaceListingIcon from "../../../components/MarketplaceListingIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;

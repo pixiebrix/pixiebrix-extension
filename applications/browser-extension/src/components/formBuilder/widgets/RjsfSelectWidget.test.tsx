@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "../../../sidebar/testHelpers";
-import CustomFormComponent from "../../../bricks/renderers/CustomFormComponent";
+import CustomFormComponent from "@/bricks/renderers/CustomFormComponent";
 import type { Schema } from "../../../types/schemaTypes";
 import selectEvent from "react-select-event";
 import { act, screen } from "@testing-library/react";

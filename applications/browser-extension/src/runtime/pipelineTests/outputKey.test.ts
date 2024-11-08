@@ -16,15 +16,15 @@
  */
 
 import { type ApiVersion } from "../../types/runtimeTypes";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { cloneDeep } from "lodash";
 import { validateOutputKey } from "../runtimeTypes";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { extraEmptyModStateContext } from "../extendModVariableContext";
 import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import CommentEffect from "../../bricks/effects/comment";
+import CommentEffect from "@/bricks/effects/comment";
 
 beforeEach(() => {
   brickRegistry.clear();

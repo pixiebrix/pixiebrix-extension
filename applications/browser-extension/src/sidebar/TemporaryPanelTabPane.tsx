@@ -24,7 +24,7 @@ import { Tab } from "react-bootstrap";
 import PanelBody from "./PanelBody";
 import styles from "./Tabs.module.scss";
 import cx from "classnames";
-import { type SubmitPanelAction } from "../bricks/errors";
+import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
 import ErrorBoundary from "./SidebarErrorBoundary";
 import resolveTemporaryPanel from "../store/sidebar/thunks/resolveTemporaryPanel";

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ping } from "../background/messenger/api";
-import { isContextInvalidatedError } from "../errors/contextInvalidated";
+import { ping } from "@/background/messenger/api";
+import { isContextInvalidatedError } from "@/errors/contextInvalidated";
 import { isLoadedInIframe } from "../utils/iframeUtils";
 import { getSettingsState } from "../store/settings/settingsStorage";
 

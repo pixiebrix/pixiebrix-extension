@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useConfiguredDeploymentKey } from "../../../auth/deploymentKey";
-import useUserAction from "../../../hooks/useUserAction";
-import { type DeploymentKey } from "../../../auth/authTypes";
+import { useConfiguredDeploymentKey } from "@/auth/deploymentKey";
+import useUserAction from "@/hooks/useUserAction";
+import { type DeploymentKey } from "@/auth/authTypes";
 import { isNullOrBlank } from "../../../utils/stringUtils";
-import { CancelError } from "../../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 
 // https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
 const deploymentKeyRegex = /^[\dA-Za-z]{32,128}$/;

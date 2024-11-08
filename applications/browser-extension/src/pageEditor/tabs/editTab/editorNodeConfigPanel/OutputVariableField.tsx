@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConnectedFieldTemplate from "../../../../components/form/ConnectedFieldTemplate";
-import KeyNameWidget from "../../../../components/form/widgets/KeyNameWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
 import React from "react";
 import { brickTypeSupportsOutputKey } from "../../../../runtime/runtimeUtils";
-import PopoverInfoLabel from "../../../../components/form/popoverInfoLabel/PopoverInfoLabel";
-import { type TypedBrickPair } from "../../../../bricks/registry";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
+import { type TypedBrickPair } from "@/bricks/registry";
 import { useField } from "formik";
 import { type Nullishable } from "../../../../utils/nullishUtils";
 

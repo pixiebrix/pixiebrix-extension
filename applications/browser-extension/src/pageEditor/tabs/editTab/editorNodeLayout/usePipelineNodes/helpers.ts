@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentRenderer } from "../../../../../bricks/renderers/document";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import {
   type BrickConfig,
   type BrickPipeline,
   PipelineFlavor,
-} from "../../../../../bricks/types";
+} from "@/bricks/types";
 import {
   type DocumentBuilderElement,
   isButtonElement,

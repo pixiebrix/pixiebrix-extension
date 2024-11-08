@@ -25,8 +25,8 @@ import { isNativeCssSelector, isValidSelector } from "../../utils/domUtils";
 import { AnnotationType } from "../../types/annotationTypes";
 import { isEmpty } from "lodash";
 import pluralize from "../../utils/pluralize";
-import type { BrickConfig, BrickPosition } from "../../bricks/types";
-import { nestedPosition, type VisitBlockExtra } from "../../bricks/PipelineVisitor";
+import type { BrickConfig, BrickPosition } from "@/bricks/types";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { inputProperties } from "../../utils/schemaUtils";
 import {
   castTextLiteralOrThrow,
@@ -36,7 +36,7 @@ import { guessUsefulness } from "../../utils/detectRandomString";
 import type { Schema } from "../../types/schemaTypes";
 import { isObject } from "../../utils/objectUtils";
 import { StarterBrickTypes } from "../../types/starterBrickTypes";
-import IdentityTransformer from "../../bricks/transformers/IdentityTransformer";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 
 // `jQuery` selector extension: https://api.jquery.com/category/selectors/jquery-selector-extensions/
 const jQueryExtensions = new Set([

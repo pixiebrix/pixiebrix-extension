@@ -18,7 +18,7 @@
 import { ReaderABC } from "../../types/bricks/readerTypes";
 import { startCase } from "lodash";
 import { withReadWindow } from "../../pageScript/messenger/api";
-import { type PathSpec } from "../../bricks/readers/window";
+import { type PathSpec } from "@/bricks/readers/window";
 import { type JsonObject } from "type-fest";
 import { mapObject } from "../../utils/objectUtils";
 

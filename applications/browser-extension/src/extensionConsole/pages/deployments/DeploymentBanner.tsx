@@ -16,9 +16,9 @@
  */
 
 import React, { useContext } from "react";
-import AsyncButton from "../../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
-import Banner from "../../../components/banner/Banner";
+import Banner from "@/components/banner/Banner";
 import DeploymentModal from "./DeploymentModal";
 import DeploymentsContext from "./DeploymentsContext";
 

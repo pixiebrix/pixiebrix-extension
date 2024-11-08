@@ -21,7 +21,7 @@ import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import styles from "./TagSearchInput.module.scss";
 import { useDebouncedCallback } from "use-debounce";
-import useAutoFocusConfiguration from "../../../hooks/useAutoFocusConfiguration";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
 const TagBadge: React.VFC<{
   tag: string;

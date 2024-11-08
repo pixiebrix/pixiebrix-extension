@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nestedPosition, type VisitBlockExtra } from "../../bricks/PipelineVisitor";
-import { GetAPITransformer } from "../../bricks/transformers/httpGet";
-import { RemoteMethod } from "../../bricks/transformers/remoteMethod";
-import { type BrickConfig, type BrickPosition } from "../../bricks/types";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { GetAPITransformer } from "@/bricks/transformers/httpGet";
+import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "../../types/annotationTypes";
 import { AnalysisAnnotationActionType } from "../analysisTypes";
 import { ensurePermissionsFromUserGesture } from "../../permissions/permissionsUtils";

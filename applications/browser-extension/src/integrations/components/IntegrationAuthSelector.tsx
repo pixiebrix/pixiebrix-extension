@@ -25,7 +25,7 @@ import Select, {
   type StylesConfig,
 } from "react-select";
 
-import { type AuthOption } from "../../auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";

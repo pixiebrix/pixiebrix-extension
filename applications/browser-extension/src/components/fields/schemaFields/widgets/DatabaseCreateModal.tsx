@@ -25,14 +25,14 @@ import {
   useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
   useGetOrganizationsQuery,
-} from "../../../../data/service/api";
+} from "@/data/service/api";
 import SelectWidget from "../../../form/widgets/SelectWidget";
 import DatabaseGroupSelect from "../DatabaseGroupSelect";
 import notify from "../../../../utils/notify";
 import { type UUID } from "../../../../types/stringTypes";
 import { validateUUID } from "../../../../types/helpers";
-import { type Team } from "../../../../data/model/Team";
-import { UserRole } from "../../../../data/model/UserRole";
+import { type Team } from "@/data/model/Team";
+import { UserRole } from "@/data/model/UserRole";
 
 type DatabaseCreateModalProps = {
   show: boolean;

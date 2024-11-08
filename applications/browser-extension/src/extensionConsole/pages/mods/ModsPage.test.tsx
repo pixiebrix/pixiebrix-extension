@@ -32,7 +32,7 @@ import {
   loadingAsyncCacheStateFactory,
   valueToAsyncCacheState,
 } from "../../../utils/asyncStateUtils";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { MODS_PAGE_TABS } from "./ModsPageSidebar";
 import { modDefinitionFactory } from "../../../testUtils/factories/modDefinitionFactories";
 import { modMetadataFactory } from "../../../testUtils/factories/modComponentFactories";

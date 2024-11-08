@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "../testHelpers";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { set } from "lodash";
 import ExtraPermissionsSection from "./ExtraPermissionsSection";
 

@@ -31,21 +31,21 @@ import {
   clear as clearEvents,
   count as eventsSize,
   recreateDB as recreateEventDB,
-} from "../../../background/telemetry";
-import AsyncButton from "../../../components/AsyncButton";
+} from "@/background/telemetry";
+import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBroom, faDatabase } from "@fortawesome/free-solid-svg-icons";
-import useUserAction from "../../../hooks/useUserAction";
+import useUserAction from "@/hooks/useUserAction";
 import {
   clearTraces,
   count as traceSize,
   recreateDB as recreateTraceDB,
 } from "../../../telemetry/trace";
-import AsyncStateGate, { StandardError } from "../../../components/AsyncStateGate";
+import AsyncStateGate, { StandardError } from "@/components/AsyncStateGate";
 import cx from "classnames";
 import styles from "./SettingsCard.module.scss";
 import { type StorageEstimate } from "../../../types/browserTypes";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * React component to display local storage usage (to help identify storage problems)

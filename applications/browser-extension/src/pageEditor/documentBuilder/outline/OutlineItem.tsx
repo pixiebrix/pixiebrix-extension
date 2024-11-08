@@ -31,7 +31,7 @@ import documentBuilderElementTypeLabels from "../elementTypeLabels";
 import { type DocumentBuilderElement } from "../documentBuilderTypes";
 import { type TreeItem } from "@atlaskit/tree/types";
 import { acceptDrop } from "../hooks/useMoveElement";
-import { UnstyledButton } from "../../../components/UnstyledButton";
+import { UnstyledButton } from "@/components/UnstyledButton";
 
 export const LEVEL_PADDING_PX = 15;
 

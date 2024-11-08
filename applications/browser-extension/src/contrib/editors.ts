@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import optionsRegistry from "../components/fields/optionsRegistry";
+import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "./zapier/PushOptions";
 import ProcessOptions from "./uipath/ProcessOptions";
 import AppendSpreadsheetOptions from "./google/sheets/ui/AppendSpreadsheetOptions";
@@ -40,18 +40,18 @@ import DocumentOptions from "../pageEditor/documentBuilder/edit/DocumentOptions"
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "../pageEditor/fields/RemoteMethodOptions";
-import { ALERT_EFFECT_ID } from "../bricks/effects/alert";
+import { ALERT_EFFECT_ID } from "@/bricks/effects/alert";
 import AlertOptions from "../pageEditor/fields/AlertOptions";
-import { JQueryReader } from "../bricks/transformers/jquery/JQueryReader";
-import JQueryReaderOptions from "../bricks/transformers/jquery/JQueryReaderOptions";
-import AssignModVariable from "../bricks/effects/assignModVariable";
+import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
+import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 import AssignModVariableOptions from "../pageEditor/fields/AssignModVariableOptions";
-import IdentityTransformer from "../bricks/transformers/IdentityTransformer";
-import IdentityTransformerOptions from "../bricks/transformers/IdentityTransformerOptions";
-import CommentEffect from "../bricks/effects/comment";
-import CommentOptions from "../bricks/effects/CommentOptions";
-import { DocumentRenderer } from "../bricks/renderers/document";
-import { CustomFormRenderer } from "../bricks/renderers/customForm";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
+import CommentEffect from "@/bricks/effects/comment";
+import CommentOptions from "@/bricks/effects/CommentOptions";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { RunApiTask } from "./automationanywhere/RunApiTask";
 import ApiTaskOptions from "./automationanywhere/ApiTaskOptions";
 

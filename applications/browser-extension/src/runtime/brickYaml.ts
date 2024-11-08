@@ -21,7 +21,7 @@ import { produce } from "immer";
 import { isPlainObject } from "lodash";
 import { toExpression } from "../utils/expressionUtils";
 import { type ExpressionType } from "@/types/runtimeTypes";
-import { type BrickPipeline } from "../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 
 /**
  * @param tag the tag name, without the leading `!`

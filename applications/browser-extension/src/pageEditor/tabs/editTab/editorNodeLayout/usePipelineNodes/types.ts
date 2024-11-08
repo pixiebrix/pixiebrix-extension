@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPipeline, type PipelineFlavor } from "../../../../../bricks/types";
+import { type BrickPipeline, type PipelineFlavor } from "@/bricks/types";
 import { type PipelineFooterNodeProps } from "../../editorNodes/PipelineFooterNode";
 import { type PipelineHeaderNodeProps } from "../../editorNodes/PipelineHeaderNode";
 import { type BrickNodeProps } from "../../editTabTypes";

@@ -1,7 +1,7 @@
 import { reducePipeline } from "../../runtime/reducePipeline";
 import { expectContext } from "../../utils/expectContext";
-import { HeadlessModeError } from "../../bricks/errors";
-import { BusinessError } from "../../errors/businessErrors";
+import { HeadlessModeError } from "@/bricks/errors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type IntegrationContext } from "../../types/runtimeTypes";
 import { type RendererRunPayload } from "../../types/rendererTypes";
 import { getPlatform } from "../../platform/platformContext";

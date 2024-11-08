@@ -20,7 +20,7 @@ import { modDefinitionFactory } from "../../../../testUtils/factories/modDefinit
 import { modMetadataFactory } from "../../../../testUtils/factories/modComponentFactories";
 import { validateRegistryId } from "../../../../types/helpers";
 import { organizationStateFactory } from "../../../../testUtils/factories/authFactories";
-import { LegacyUserRole } from "../../../../data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 const userScope = "my-test-user";
 

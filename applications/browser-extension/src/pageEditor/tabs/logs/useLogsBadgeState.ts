@@ -17,7 +17,7 @@
 
 import { type Variant } from "react-bootstrap/types";
 import { useSelector } from "react-redux";
-import { selectLogs } from "../../../components/logViewer/logSelectors";
+import { selectLogs } from "@/components/logViewer/logSelectors";
 import { useMemo } from "react";
 import { groupBy } from "lodash";
 

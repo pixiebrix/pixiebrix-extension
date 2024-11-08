@@ -25,7 +25,7 @@ import { truncate } from "lodash";
 import genericOptionsFactory, {
   type BrickOptionProps,
 } from "../fields/schemaFields/genericOptionsFactory";
-import useSetDocumentTitle from "../../hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import ConnectedFieldTemplate from "../form/ConnectedFieldTemplate";
 import FieldRuntimeContext, {
   type RuntimeContext,
@@ -41,7 +41,7 @@ import {
 } from "../../integrations/integrationTypes";
 import { type UUID } from "../../types/stringTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "../../runtime/apiVersionOptions";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "../AsyncStateGate";
 import type * as Yup from "yup";
 import {

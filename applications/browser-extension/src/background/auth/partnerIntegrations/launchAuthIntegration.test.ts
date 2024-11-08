@@ -16,7 +16,7 @@
  */
 
 import { registry, removeOAuth2Token } from "../../messenger/api";
-import oauth2IntegrationDefinition from "../../../../contrib/integrations/automation-anywhere-oauth2.yaml";
+import oauth2IntegrationDefinition from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
 import { launchAuthIntegration } from "./launchAuthIntegration";
 import { appApiMock } from "../../../testUtils/appApiMock";
 import { validateRegistryId } from "../../../types/helpers";
@@ -27,8 +27,8 @@ import {
 } from "../../../testUtils/factories/integrationFactories";
 import launchOAuth2Flow from "../launchOAuth2Flow";
 import { type Metadata } from "../../../types/registryTypes";
-import { setPartnerAuthData } from "../../../auth/authStorage";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { setPartnerAuthData } from "@/auth/authStorage";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../../../integrations/util/readRawConfigurations");
 const readRawConfigurationsMock = jest.mocked(readRawConfigurations);

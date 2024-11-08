@@ -26,9 +26,9 @@ import {
   tabCapture,
   traces,
   uninstallContextMenu,
-} from "../background/messenger/api";
+} from "@/background/messenger/api";
 import { getState, setState } from "./stateController/stateController";
-import quickBarRegistry from "../components/quickBar/quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "../utils/expectContext";
 import type { PlatformCapability } from "../platform/capabilities";
 import { getReferenceForElement } from "./elementReference";
@@ -42,7 +42,7 @@ import {
   validateNunjucksTemplate,
 } from "../sandbox/messenger/api";
 import type { JsonObject } from "type-fest";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "./contextMenus";
 import { writeToClipboard } from "../utils/clipboardUtils";
 import { snippetRegistry } from "./snippetShortcutMenu/snippetShortcutMenuController";
@@ -53,8 +53,8 @@ import { PlatformBase } from "../platform/platformBase";
 import type { SanitizedIntegrationConfig } from "../integrations/integrationTypes";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
-import { hasSpecificErrorCause } from "../errors/errorHelpers";
-import { InteractiveLoginRequiredError } from "../errors/authErrors";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "./integrations/deferredLoginController";
 import { selectionMenuActionRegistry } from "./textSelectionMenu/selectionMenuController";
 import { getExtensionVersion } from "../utils/extensionUtils";

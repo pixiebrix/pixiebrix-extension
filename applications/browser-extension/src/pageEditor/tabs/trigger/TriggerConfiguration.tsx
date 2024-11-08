@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
 import LocationWidget from "../../fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { type TriggerFormState } from "../../starterBricks/formStateTypes";
 import { getDefaultReportModeForTrigger } from "../../../starterBricks/trigger/triggerStarterBrick";
 import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import BooleanWidget from "../../../components/fields/schemaFields/widgets/BooleanWidget";
+import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { partial } from "lodash";
 import MatchRulesSection from "../MatchRulesSection";
 import DebounceFieldSet from "./DebounceFieldSet";
@@ -36,7 +36,7 @@ import {
 } from "../../../starterBricks/trigger/triggerStarterBrickTypes";
 import { useSelector } from "react-redux";
 import { selectKnownEventNamesForActiveModComponent } from "../../store/editor/editorSelectors";
-import SchemaSelectWidget from "../../../components/fields/schemaFields/widgets/SchemaSelectWidget";
+import SchemaSelectWidget from "@/components/fields/schemaFields/widgets/SchemaSelectWidget";
 import { joinName } from "../../../utils/formUtils";
 
 function supportsSelector(trigger: Trigger) {

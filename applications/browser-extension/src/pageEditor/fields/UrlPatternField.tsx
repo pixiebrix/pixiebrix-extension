@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { type Shortcut } from "../../components/fields/schemaFields/widgets/urlMatchPatternWidgetTypes";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
-import widgetsRegistry from "../../components/fields/schemaFields/widgets/widgetsRegistry";
+import { type Shortcut } from "@/components/fields/schemaFields/widgets/urlMatchPatternWidgetTypes";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
 export type UrlPatternFieldProps = {
   name: string;

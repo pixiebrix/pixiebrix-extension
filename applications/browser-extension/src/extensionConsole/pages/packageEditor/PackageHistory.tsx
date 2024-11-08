@@ -23,13 +23,13 @@ import Select, {
   type OptionProps,
   type SingleValueProps,
 } from "react-select";
-import DiffEditor from "../../../components/DiffEditor";
+import DiffEditor from "@/components/DiffEditor";
 import objectHash from "object-hash";
 import { type UUID } from "../../../types/stringTypes";
 import {
   useGetPackageQuery,
   useListPackageVersionsQuery,
-} from "../../../data/service/api";
+} from "@/data/service/api";
 
 export interface PackageVersionOption {
   value: string;

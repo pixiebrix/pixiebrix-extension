@@ -16,8 +16,8 @@
  */
 
 import { appApiMock } from "../../../testUtils/appApiMock";
-import tokenIntegrationDefinition from "../../../../contrib/integrations/automation-anywhere.yaml";
-import oauthIntegrationDefinition from "../../../../contrib/integrations/automation-anywhere-oauth2.yaml";
+import tokenIntegrationDefinition from "@/contrib/integrations/automation-anywhere.yaml";
+import oauthIntegrationDefinition from "@/contrib/integrations/automation-anywhere-oauth2.yaml";
 import { syncRemotePackages } from "../../../registry/memoryRegistry";
 import { integrationConfigLocator as serviceLocator } from "../../integrationConfigLocator";
 import { getPartnerPrincipals } from "./getPartnerPrincipals";
@@ -32,7 +32,7 @@ import {
 import { registry } from "../../messenger/api";
 import { type RegistryId } from "../../../types/registryTypes";
 import { readRawConfigurations } from "../../../integrations/util/readRawConfigurations";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../../../integrations/registry", () => {
   const actual = jest.requireActual("@/integrations/registry");

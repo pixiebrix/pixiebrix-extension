@@ -20,7 +20,7 @@ import { selectSessionId } from "../../store/session/sessionSelectors";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
 import { useSelector } from "react-redux";
-import { usePreviousValue } from "../../../hooks/usePreviousValue";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
  * React Hook that reports when there's an error in a trace. Reports the error once per runId.

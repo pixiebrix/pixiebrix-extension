@@ -25,11 +25,11 @@ import brickRegistry from "@/bricks/registry";
 import { fromJS } from "@/starterBricks/quickBar/quickBarStarterBrick";
 import { type Menus } from "webextension-polyfill";
 import userEvent from "@testing-library/user-event";
-import quickBarRegistry from "../../components/quickBar/quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import {
   initQuickBarApp,
   toggleQuickBar,
-} from "../../components/quickBar/QuickBarApp";
+} from "@/components/quickBar/QuickBarApp";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { type HydratedModComponent } from "../../types/modComponentTypes";
 import { RunReason } from "../../types/runtimeTypes";
@@ -37,7 +37,7 @@ import { RunReason } from "../../types/runtimeTypes";
 import { uuidSequence } from "../../testUtils/factories/stringFactories";
 import defaultActions, {
   pageEditorAction,
-} from "../../components/quickBar/defaultActions";
+} from "@/components/quickBar/defaultActions";
 import { getPlatform } from "../../platform/platformContext";
 import { type QuickBarDefinition, type QuickBarConfig } from "./quickBarTypes";
 import { StarterBrickTypes } from "../../types/starterBrickTypes";

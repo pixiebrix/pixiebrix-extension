@@ -20,10 +20,10 @@ import { act, render } from "./testHelpers";
 import RendererComponent from "./RendererComponent";
 import { validateRegistryId } from "@/types/helpers";
 import { waitForEffect } from "../testUtils/testHelpers";
-import DocumentView from "../bricks/renderers/documentView/DocumentView";
+import DocumentView from "@/bricks/renderers/documentView/DocumentView";
 import { screen } from "shadow-dom-testing-library";
-import { SubmitPanelAction } from "../bricks/errors";
-import { runHeadlessPipeline } from "../contentScript/messenger/api";
+import { SubmitPanelAction } from "@/bricks/errors";
+import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import {
   brickOptionsFactory,
   runMetadataFactory,

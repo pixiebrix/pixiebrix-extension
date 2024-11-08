@@ -18,16 +18,16 @@
 import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
   type RuntimeContext,
-} from "../../../components/fields/schemaFields/FieldRuntimeContext";
+} from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { Card, Nav, Tab } from "react-bootstrap";
 import { isEmpty } from "lodash";
 import styles from "./ModOptionsDefinitionEditor.module.scss";
-import ErrorBoundary from "../../../components/ErrorBoundary";
-import FormEditor from "../../../components/formBuilder/edit/FormEditor";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import dataPanelStyles from "../editTab/dataPanel/dataPanelTabs.module.scss";
-import FormPreview from "../../../components/formBuilder/preview/FormPreview";
-import { type RJSFSchema } from "../../../components/formBuilder/formBuilderTypes";
-import { stringifyUiType } from "../../../components/formBuilder/formBuilderHelpers";
+import FormPreview from "@/components/formBuilder/preview/FormPreview";
+import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
+import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
 import FORM_FIELD_TYPE_OPTIONS from "../../fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -42,19 +42,19 @@ import {
   type ModOptionsDefinition,
 } from "../../../types/modDefinitionTypes";
 import { actions } from "../../store/editor/editorSlice";
-import Effect from "../../../components/Effect";
+import Effect from "@/components/Effect";
 import { useOptionalModDefinition } from "../../../modDefinitions/modDefinitionHooks";
-import SchemaField from "../../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "../../../types/schemaTypes";
 import { emptyModOptionsDefinitionFactory } from "../../../utils/modUtils";
 import { DataPanelTabKey } from "../editTab/dataPanel/dataPanelTypes";
 import DataTabPane from "../editTab/dataPanel/DataTabPane";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 import { type AsyncState } from "../../../types/sliceTypes";
-import useMergeAsyncState from "../../../hooks/useMergeAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type RegistryId } from "../../../types/registryTypes";
 import { valueToAsyncState } from "../../../utils/asyncStateUtils";
-import AsyncStateGate from "../../../components/AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(

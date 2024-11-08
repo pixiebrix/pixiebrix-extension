@@ -23,7 +23,7 @@ import {
   asyncMapValues,
   pollUntilTruthy,
 } from "./promiseUtils";
-import { PromiseCancelled } from "../errors/genericErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 import pDefer from "p-defer";
 
 // From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198

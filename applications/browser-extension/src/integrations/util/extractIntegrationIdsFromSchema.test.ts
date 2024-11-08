@@ -18,8 +18,8 @@
 import {
   SHEET_FIELD_REF_SCHEMA,
   SHEET_INTEGRATION_SCHEMA,
-} from "../../contrib/google/sheets/core/schemas";
-import { inputProperties as httpInputProperties } from "../../bricks/transformers/remoteMethod";
+} from "@/contrib/google/sheets/core/schemas";
+import { inputProperties as httpInputProperties } from "@/bricks/transformers/remoteMethod";
 import extractIntegrationIdsFromSchema from "./extractIntegrationIdsFromSchema";
 
 describe("extractIntegrationIdsFromSchema", () => {

@@ -24,9 +24,9 @@ import { useDispatch, useSelector } from "react-redux";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
 import notify from "../../../utils/notify";
-import { integrationConfigLocator } from "../../../background/messenger/api";
-import { refreshRegistries } from "../../../hooks/useRefreshRegistries";
-import useFlags, { type FlagHelpers } from "../../../hooks/useFlags";
+import { integrationConfigLocator } from "@/background/messenger/api";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
+import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
@@ -41,18 +41,18 @@ import {
 } from "../../../utils/extensionUtils";
 import useAutoDeploy from "./useAutoDeploy";
 import { activateDeployments } from "./activateDeployments";
-import { useGetDeploymentsQuery } from "../../../data/service/api";
+import { useGetDeploymentsQuery } from "@/data/service/api";
 import { fetchDeploymentModDefinitions } from "../../../modDefinitions/modDefinitionRawApiCalls";
 import { isEqual } from "lodash";
-import useMemoCompare from "../../../hooks/useMemoCompare";
-import useDeriveAsyncState from "../../../hooks/useDeriveAsyncState";
+import useMemoCompare from "@/hooks/useMemoCompare";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import type { ActivatedDeployment, Deployment } from "../../../types/contract";
-import useBrowserIdentifier from "../../../hooks/useBrowserIdentifier";
+import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
 import type { ActivatableDeployment } from "../../../types/deploymentTypes";
 import type { Permissions } from "webextension-polyfill";
 import useDeactivateUnassignedDeploymentsEffect from "./useDeactivateUnassignedDeploymentsEffect";
 import { valueToAsyncState } from "../../../utils/asyncStateUtils";
-import { RestrictedFeatures } from "../../../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 import { selectModInstances } from "../../../store/modComponents/modInstanceSelectors";
 import type { ModInstance } from "../../../types/modInstanceTypes";
 import { type AppDispatch } from "../../store";

@@ -17,7 +17,7 @@
 
 import React from "react";
 import ConsoleLogger from "../../../utils/ConsoleLogger";
-import { BusinessError } from "../../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
 import {
   type BrickArgsContext,

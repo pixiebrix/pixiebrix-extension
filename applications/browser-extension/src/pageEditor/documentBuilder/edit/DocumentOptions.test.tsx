@@ -18,7 +18,7 @@
 import React from "react";
 import { createNewDocumentBuilderElement } from "../createNewDocumentBuilderElement";
 import { type DocumentBuilderElement } from "../documentBuilderTypes";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { type ModComponentFormState } from "../../starterBricks/formStateTypes";
 import { validateRegistryId } from "../../../types/helpers";

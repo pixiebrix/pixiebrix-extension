@@ -25,10 +25,10 @@ import {
   isLinked,
   TEST_clearListeners,
   TEST_triggerListeners,
-} from "../auth/authStorage";
+} from "@/auth/authStorage";
 import { waitForEffect } from "../testUtils/testHelpers";
 import { tabFactory } from "../testUtils/factories/browserFactories";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../auth/authStorage", () => ({
   __esModule: true,

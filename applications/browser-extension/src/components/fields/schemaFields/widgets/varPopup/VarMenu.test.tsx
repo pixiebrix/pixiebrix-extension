@@ -24,9 +24,9 @@ import {
 } from "../../../../../testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "../../../../../pageEditor/store/editor/editorSlice";
 import { waitForEffect } from "../../../../../testUtils/testHelpers";
-import registerBuiltinBricks from "../../../../../bricks/registerBuiltinBricks";
-import analysisSlice from "../../../../../analysis/analysisSlice";
-import VarAnalysis from "../../../../../analysis/analysisVisitors/varAnalysis/varAnalysis";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
+import analysisSlice from "@/analysis/analysisSlice";
+import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 
 const TestWrapper: React.FunctionComponent<{
   renderMenu: (

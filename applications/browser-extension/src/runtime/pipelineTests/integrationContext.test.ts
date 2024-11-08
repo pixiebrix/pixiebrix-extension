@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
 import {
   contextBrick,
@@ -24,7 +24,7 @@ import {
   simpleInput,
 } from "./testHelpers";
 import { validateOutputKey } from "../runtimeTypes";
-import { integrationConfigLocator } from "../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "../../types/helpers";
 import { type ApiVersion, type TemplateEngine } from "../../types/runtimeTypes";
 import {

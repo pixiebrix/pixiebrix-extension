@@ -16,7 +16,7 @@
  */
 
 /* eslint-disable testing-library/no-node-access -- TODO: refactor to use better locator methods */
-import { getExampleBrickConfig } from "../../../bricks/exampleBrickConfigs";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 import {
   createFormikTemplate,
   fireTextInput,
@@ -24,7 +24,11 @@ import {
   selectSchemaFieldInputMode,
 } from "../../../testUtils/formHelpers";
 import { waitForEffect } from "../../../testUtils/testHelpers";
-import { render, type RenderResult, screen } from "../../../pageEditor/testHelpers";
+import {
+  render,
+  type RenderResult,
+  screen,
+} from "../../../pageEditor/testHelpers";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import selectEvent from "react-select-event";
@@ -32,7 +36,7 @@ import registerDefaultWidgets from "../../fields/schemaFields/widgets/registerDe
 import FormBuilderDemo from "./FormBuilderDemo";
 import { type RJSFSchema } from "../formBuilderTypes";
 import userEvent from "@testing-library/user-event";
-import { CustomFormRenderer } from "../../../bricks/renderers/customForm";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { type Schema, type UiSchema } from "../../../types/schemaTypes";
 
 let exampleFormSchema: RJSFSchema;

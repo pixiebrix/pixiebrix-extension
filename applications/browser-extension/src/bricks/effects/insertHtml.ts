@@ -21,7 +21,7 @@ import { type Schema } from "../../types/schemaTypes";
 import sanitize from "../../utils/sanitize";
 import { PIXIEBRIX_DATA_ATTR } from "../../domConstants";
 import { escape } from "lodash";
-import { BusinessError, PropError } from "../../errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import { $safeFind } from "../../utils/domUtils";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 import { validateRegistryId } from "../../types/helpers";

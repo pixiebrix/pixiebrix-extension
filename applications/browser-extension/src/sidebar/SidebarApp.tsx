@@ -18,10 +18,10 @@
 import React from "react";
 import store, { persistor } from "./store";
 import { Provider } from "react-redux";
-import Loader from "../components/Loader";
+import Loader from "@/components/Loader";
 import { PersistGate } from "redux-persist/integration/react";
 import { MemoryRouter } from "react-router";
-import registerDefaultWidgets from "../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import ReduxPersistenceContext, {
   type ReduxPersistenceContextType,
 } from "../store/ReduxPersistenceContext";

@@ -29,7 +29,7 @@ import {
 } from "../../../testUtils/factories/authFactories";
 import { DeploymentsProvider } from "../deployments/DeploymentsContext";
 import useAutoDeploy from "../deployments/useAutoDeploy";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../../../modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest

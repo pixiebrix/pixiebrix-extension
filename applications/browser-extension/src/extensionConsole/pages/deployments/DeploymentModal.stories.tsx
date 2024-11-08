@@ -23,8 +23,8 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import modComponentSlice from "../../../store/modComponents/modComponentSlice";
 import settingsSlice from "../../../store/settings/settingsSlice";
-import { authSlice } from "../../../auth/authSlice";
-import { appApi } from "../../../data/service/api";
+import { authSlice } from "@/auth/authSlice";
+import { appApi } from "@/data/service/api";
 
 export default {
   title: "Options/DeploymentModal",

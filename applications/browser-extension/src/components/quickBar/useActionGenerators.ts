@@ -18,7 +18,7 @@
 import { useKBar } from "kbar";
 import { useEffect, useRef } from "react";
 import quickBarRegistry from "./quickBarRegistry";
-import useDebouncedEffect from "../../hooks/useDebouncedEffect";
+import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 /**
  * QuickBar Hook for automatically updating QuickBar actions when the search query or root action changes.

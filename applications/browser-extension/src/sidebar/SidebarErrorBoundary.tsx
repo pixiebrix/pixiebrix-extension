@@ -20,7 +20,7 @@ import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
-import ErrorBoundary from "../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 class SidebarErrorBoundary extends ErrorBoundary {
   async reloadSidebar() {

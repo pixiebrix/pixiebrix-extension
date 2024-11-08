@@ -21,12 +21,12 @@ import { Button, Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
-} from "../../../contentScript/messenger/api";
-import Loader from "../../../components/Loader";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+} from "@/contentScript/messenger/api";
+import Loader from "@/components/Loader";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "../../../types/messengerTypes";
 import { validateUUID } from "../../../types/helpers";
-import ErrorBoundary from "../../../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import PanelBody from "../../../sidebar/PanelBody";
 import useTemporaryPanelDefinition from "./useTemporaryPanelDefinition";
 import { type UUID } from "../../../types/stringTypes";
@@ -34,7 +34,7 @@ import { startCase } from "lodash";
 import { type PanelButton } from "../../../types/sidebarTypes";
 import { ClosePanelAction } from "../../errors";
 import styles from "./EphemeralPanel.module.scss";
-import useReportError from "../../../hooks/useReportError";
+import useReportError from "@/hooks/useReportError";
 import { mapModComponentRefToMessageContext } from "../../../utils/modUtils";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 

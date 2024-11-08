@@ -19,12 +19,12 @@ import integrationRegistry from "../integrations/registry";
 import axios, { type AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
-import * as token from "../auth/authStorage";
+import * as token from "@/auth/authStorage";
 import Locator from "../integrations/integrationConfigLocator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "../utils/enrichAxiosErrors";
-import { ContextError } from "../errors/genericErrors";
-import { RemoteServiceError } from "../errors/clientRequestErrors";
+import { ContextError } from "@/errors/genericErrors";
+import { RemoteServiceError } from "@/errors/clientRequestErrors";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -34,8 +34,8 @@ import { TEST_setContext } from "webext-detect";
 import { sanitizedIntegrationConfigFactory } from "../testUtils/factories/integrationFactories";
 import { getToken } from "./auth/getToken";
 import { PIXIEBRIX_INTEGRATION_ID } from "../integrations/constants";
-import { hasSpecificErrorCause } from "../errors/errorHelpers";
-import { InteractiveLoginRequiredError } from "../errors/authErrors";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deserializeError, serializeError } from "serialize-error";
 import { type NetworkRequestConfig } from "@/types/networkTypes";
 

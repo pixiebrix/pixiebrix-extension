@@ -29,7 +29,7 @@ import { type UUID } from "../../types/stringTypes";
 import { type RegistryId } from "../../types/registryTypes";
 import { type Nullishable } from "../../utils/nullishUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "../constants";
-import { NotConfiguredError } from "../../errors/businessErrors";
+import { NotConfiguredError } from "@/errors/businessErrors";
 import { pixiebrixConfigurationFactory } from "./pixiebrixConfigurationFactory";
 
 async function dependencyContextValue({

@@ -30,7 +30,7 @@ import {
 } from "./likelyVariableUtils";
 import { type FieldInputMode } from "../../fieldInputMode";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import useDebouncedEffect from "../../../../../hooks/useDebouncedEffect";
+import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 import { waitAnimationFrame } from "../../../../../utils/domUtils";
 import FieldRuntimeContext from "../../FieldRuntimeContext";

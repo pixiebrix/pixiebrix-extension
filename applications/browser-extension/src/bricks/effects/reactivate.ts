@@ -17,7 +17,7 @@
 
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { reloadFrameMods } from "../../contentScript/lifecycle";
+import { reloadFrameMods } from "@/contentScript/lifecycle";
 import { expectContext } from "../../utils/expectContext";
 import { EffectABC } from "../../types/bricks/effectTypes";
 import { type JsonObject } from "type-fest";

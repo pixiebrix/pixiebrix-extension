@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  isCKEditorElement,
-  setData,
-} from "./ckeditorProtocol";
-import { BusinessError } from "../../errors/businessErrors";
+import { isCKEditorElement, setData } from "./ckeditorProtocol";
+import { BusinessError } from "@/errors/businessErrors";
 import { hasCKEditorClass } from "./ckeditorDom";
 
 describe("CKEditor", () => {

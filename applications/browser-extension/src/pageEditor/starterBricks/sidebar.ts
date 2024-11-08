@@ -39,7 +39,7 @@ import { SidebarStarterBrickABC } from "../../starterBricks/sidebar/sidebarStart
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import SidebarConfiguration from "../tabs/sidebar/SidebarConfiguration";
 import { type ModComponentFormStateAdapter } from "./modComponentFormStateAdapter";
-import type { DraftModComponent } from "../../contentScript/pageEditor/types";
+import type { DraftModComponent } from "@/contentScript/pageEditor/types";
 import { type SidebarFormState } from "./formStateTypes";
 import {
   type SidebarConfig,

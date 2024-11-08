@@ -24,9 +24,9 @@ import {
 import { type Schema } from "../../../types/schemaTypes";
 import { validateRegistryId } from "../../../types/helpers";
 import { castArray } from "lodash";
-import { getReferenceForElement } from "../../../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import { validateOutputKey } from "../../../runtime/runtimeTypes";
-import { PropError } from "../../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "../../../utils/domUtils";
 import { propertiesToSchema } from "../../../utils/schemaUtils";
 

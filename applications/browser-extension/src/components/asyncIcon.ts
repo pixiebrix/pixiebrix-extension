@@ -6,7 +6,7 @@ import {
   type IconName,
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
-import useAsyncState from "../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { type Nullishable } from "../utils/nullishUtils";
 
 type ModuleImport = Promise<{ definition: IconProp }>;

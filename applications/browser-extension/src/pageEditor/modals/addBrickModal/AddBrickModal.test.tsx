@@ -22,7 +22,7 @@ import { actions } from "../../store/editor/editorSlice";
 import userEvent from "@testing-library/user-event";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "../../../testUtils/testHelpers";
-import brickRegistry from "../../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   echoBrick,
   featureFlagBrick,
@@ -36,7 +36,7 @@ import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "../../../testUtils/factories/marketplaceFactories";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // Need at least one item so callers see the registry as initialized
 brickRegistry.register([echoBrick, featureFlagBrick]);

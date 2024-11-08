@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { AuthUserOrganization } from "../../../../auth/authTypes";
-import type { Mod, SharingSource, SharingType } from "../../../../types/modTypes";
+import type { AuthUserOrganization } from "@/auth/authTypes";
+import type {
+  Mod,
+  SharingSource,
+  SharingType,
+} from "../../../../types/modTypes";
 import { idHasScope } from "../../../../utils/modUtils";
 import { type RegistryId } from "../../../../types/registryTypes";
 import { type ModInstance } from "../../../../types/modInstanceTypes";

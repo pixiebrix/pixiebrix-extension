@@ -28,7 +28,7 @@ import {
 } from "../../types/registryTypes";
 import { type OutputKey } from "../../types/runtimeTypes";
 import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { personalSharingDefinitionFactory } from "./registryFactories";
 import { isRegistryId, validateRegistryId } from "../../types/helpers";
 import {

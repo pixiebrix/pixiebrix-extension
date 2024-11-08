@@ -21,11 +21,11 @@ import Header from "./Header";
 import RestrictedUrlPopupApp from "../tinyPages/RestrictedUrlPopupApp";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
 import { getReasonByUrl as getRestrictedReasonByUrl } from "../tinyPages/restrictedUrlPopupUtils";
-import DatabaseUnresponsiveBanner from "../components/DatabaseUnresponsiveBanner";
-import TeamTrialBanner from "../components/teamTrials/TeamTrialBanner";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
+import TeamTrialBanner from "@/components/teamTrials/TeamTrialBanner";
 import useTeamTrialStatus, {
   TeamTrialStatus,
-} from "../components/teamTrials/useTeamTrialStatus";
+} from "@/components/teamTrials/useTeamTrialStatus";
 
 const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
   const restricted = getRestrictedReasonByUrl(url);

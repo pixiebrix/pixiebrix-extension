@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { KnownSources } from "../../../../../analysis/analysisVisitors/varAnalysis/varAnalysis";
-import type VarMap from "../../../../../analysis/analysisVisitors/varAnalysis/varMap";
+import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
+import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import {
   IS_ARRAY,
   type ExistenceNode,
-} from "../../../../../analysis/analysisVisitors/varAnalysis/varMap";
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { isEmpty, merge } from "lodash";
 import { type UnknownRecord, type JsonObject } from "type-fest";
 import { excludeIntegrationVariables } from "./menuFilters";

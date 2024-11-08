@@ -21,7 +21,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { FOUNDATION_NODE_ID } from "./uiState";
-import { type BrickConfig } from "../../../bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import {
   type AddBrickLocation,
   type EditorRootState,
@@ -33,7 +33,7 @@ import {
 import { uuidv4 } from "../../../types/helpers";
 import { cloneDeep, compact, get, pull, uniq } from "lodash";
 import { DataPanelTabKey } from "../../tabs/editTab/dataPanel/dataPanelTypes";
-import { type TreeExpandedState } from "../../../components/jsonTree/JsonTree";
+import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "../../../utils/debugUtils";
 import {
   selectActiveBrickConfigurationUIState,
@@ -61,14 +61,14 @@ import { type ModComponentsRootState } from "../../../store/modComponents/modCom
 import {
   checkAvailable,
   getRunningStarterBricks,
-} from "../../../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import { hydrateModComponentInnerDefinitions } from "../../../registry/hydrateInnerDefinitions";
 import { QuickBarStarterBrickABC } from "../../../starterBricks/quickBar/quickBarStarterBrick";
-import { testMatchPatterns } from "../../../bricks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import { serializeError } from "serialize-error";
 import { type StorageInterface } from "../../../store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
-import { removeUnusedDependencies } from "../../../components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
+import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { type UUID } from "../../../types/stringTypes";
 import { type RegistryId } from "../../../types/registryTypes";
 import {
@@ -83,10 +83,7 @@ import { type OptionsArgs } from "../../../types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "../../../store/editorMigrations";
 import { type BaseStarterBrickState } from "./baseFormStateTypes";
-import {
-  getCurrentInspectedURL,
-  inspectedTab,
-} from "../../context/connection";
+import { getCurrentInspectedURL, inspectedTab } from "../../context/connection";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 
 /** @internal */

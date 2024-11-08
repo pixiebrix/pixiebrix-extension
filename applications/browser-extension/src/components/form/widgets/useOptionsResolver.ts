@@ -18,9 +18,9 @@
 import type { SanitizedIntegrationConfig } from "../../../integrations/integrationTypes";
 import type { Option } from "./SelectWidget";
 import type { FetchableAsyncState } from "../../../types/sliceTypes";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import isPromise from "is-promise";
-import { BusinessError } from "../../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type OptionsFactory } from "./RemoteSelectWidget";
 
 export function useOptionsResolver<T>(

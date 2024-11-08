@@ -18,7 +18,7 @@
 import { EffectABC } from "../../types/bricks/effectTypes";
 import { type BrickArgs } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { validateRegistryId } from "../../types/helpers";
 
 export class ErrorEffect extends EffectABC {

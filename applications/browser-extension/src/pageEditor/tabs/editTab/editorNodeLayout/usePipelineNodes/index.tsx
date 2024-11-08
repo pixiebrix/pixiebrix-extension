@@ -19,13 +19,10 @@ import { type BrickNodeProps } from "../../editTabTypes";
 import { isEmpty } from "lodash";
 import { useSelector } from "react-redux";
 import { selectActiveModComponentFormState } from "../../../../store/editor/editorSelectors";
-import { getRootPipelineFlavor } from "../../../../../bricks/brickFilterHelpers";
+import { getRootPipelineFlavor } from "@/bricks/brickFilterHelpers";
 import { adapterForComponent } from "../../../../starterBricks/adapter";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";
-import {
-  type MapOutput,
-  type EditorNodeProps,
-} from "./types";
+import { type MapOutput, type EditorNodeProps } from "./types";
 import { useMapPipelineToNodes } from "./useMapPipelineToNodes";
 import { useMakeFoundationNode } from "./useMakeFoundationNode";
 import { useGetNodeState } from "./useGetNodeState";

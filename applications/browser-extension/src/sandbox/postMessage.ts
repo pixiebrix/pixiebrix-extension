@@ -37,7 +37,7 @@ import { type JsonValue } from "type-fest";
 import { assertNotNullish, type Nullishable } from "../utils/nullishUtils";
 import { type AbortSignalAsOptions } from "../utils/promiseUtils";
 import { uuidv4 } from "@/types/helpers";
-import { isSpecificError } from "../errors/errorHelpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 import { type UUID } from "@/types/stringTypes";
 
 const TIMEOUT_MS = 5000;

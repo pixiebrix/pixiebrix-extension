@@ -18,7 +18,7 @@
 import { getBasePageEditorUrl } from "../constants";
 import { type Page, expect, type Locator } from "@playwright/test";
 import { WorkshopPage } from "../extensionConsole/workshop/workshopPage";
-import { type UUID } from "../../../src/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { BasePageObject } from "../basePageObject";
 import { ModListingPanel } from "./modListingPanel";
 import { BrickActionsPanel } from "./brickActionsPanel";

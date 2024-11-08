@@ -20,12 +20,8 @@ import { FieldArray, useField } from "formik";
 import { Button } from "react-bootstrap";
 import React, { useMemo } from "react";
 import { type Schema } from "../../../../types/schemaTypes";
-import {
-  booleanPredicate,
-  findOneOf,
-  textPredicate,
-} from "../schemaUtils";
-import { defaultBrickConfig } from "../../../../bricks/util";
+import { booleanPredicate, findOneOf, textPredicate } from "../schemaUtils";
+import { defaultBrickConfig } from "@/bricks/util";
 import ArrowUpwardIcon from "../../../../icons/arrow-upward.svg?loadAsComponent";
 import ArrowDownwardIcon from "../../../../icons/arrow-downward.svg?loadAsComponent";
 import SchemaField from "../SchemaField";

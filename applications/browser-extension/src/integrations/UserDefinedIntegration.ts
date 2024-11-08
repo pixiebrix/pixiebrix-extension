@@ -17,11 +17,11 @@
 
 import { produce } from "immer";
 import { renderMustache } from "../runtime/mapArgs";
-import { testMatchPatterns } from "../bricks/available";
+import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
-import { BusinessError, NotConfiguredError } from "../errors/businessErrors";
-import { IncompatibleServiceError } from "../errors/genericErrors";
+import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
+import { IncompatibleServiceError } from "@/errors/genericErrors";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import {
   type AuthData,

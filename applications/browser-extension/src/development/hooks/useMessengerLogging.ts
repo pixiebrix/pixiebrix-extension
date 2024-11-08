@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useUpdatableAsyncState from "../../hooks/useUpdatableAsyncState";
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
 import { messengerLogging } from "../messengerLogging";
 
 export default function useMessengerLogging(): [

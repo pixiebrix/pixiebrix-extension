@@ -16,7 +16,7 @@
  */
 
 import RequestPermissionAnalysis from "./requestPermissionAnalysis";
-import { RemoteMethod } from "../../bricks/transformers/remoteMethod";
+import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { AnalysisAnnotationActionType } from "../analysisTypes";
 import { triggerFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "../../testUtils/factories/brickFactories";

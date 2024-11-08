@@ -16,17 +16,17 @@
  */
 
 import React, { useMemo } from "react";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "../../types/schemaTypes";
-import AssignModVariable from "../../bricks/effects/assignModVariable";
+import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { joinName } from "../../utils/formUtils";
 import { useSelector } from "react-redux";
-import { selectKnownVarsForActiveNode } from "../../components/fields/schemaFields/widgets/varPopup/varSelectors";
-import { KnownSources } from "../../analysis/analysisVisitors/varAnalysis/varAnalysis";
+import { selectKnownVarsForActiveNode } from "@/components/fields/schemaFields/widgets/varPopup/varSelectors";
+import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { MOD_VARIABLE_REFERENCE } from "../../runtime/extendModVariableContext";
-import type VarMap from "../../analysis/analysisVisitors/varAnalysis/varMap";
+import type VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { assertNotNullish, type Nullishable } from "../../utils/nullishUtils";
 
 function schemaWithKnownVariableNames(varMap: Nullishable<VarMap>): Schema {

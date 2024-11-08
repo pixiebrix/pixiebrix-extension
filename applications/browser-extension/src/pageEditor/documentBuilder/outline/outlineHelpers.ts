@@ -19,7 +19,7 @@ import {
   type DocumentBuilderElement,
   isListElement,
 } from "../documentBuilderTypes";
-import { type TreeExpandedState } from "../../../components/jsonTree/JsonTree";
+import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { type ItemId, type TreeData } from "@atlaskit/tree";
 import { type TreeItem } from "@atlaskit/tree/types";
 import { PARENT_ELEMENT_TYPES } from "../allowedElementTypes";

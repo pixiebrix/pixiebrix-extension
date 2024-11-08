@@ -19,7 +19,7 @@ import React from "react";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty } from "lodash";
-import ErrorBoundary from "../../components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;

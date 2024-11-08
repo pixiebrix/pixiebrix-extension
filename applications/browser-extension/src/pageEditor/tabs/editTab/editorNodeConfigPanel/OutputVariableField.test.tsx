@@ -20,13 +20,13 @@ import { render } from "../../../testHelpers";
 import { actions } from "../../../store/editor/editorSlice";
 import React from "react";
 import EditorNodeConfigPanel from "./EditorNodeConfigPanel";
-import brickRegistry from "../../../../bricks/registry";
-import IdentityTransformer from "../../../../bricks/transformers/IdentityTransformer";
+import brickRegistry from "@/bricks/registry";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { validateOutputKey } from "../../../../runtime/runtimeTypes";
 import userEvent from "@testing-library/user-event";
 import { screen, act } from "@testing-library/react";
 import { autoUUIDSequence } from "../../../../testUtils/factories/stringFactories";
-import registerDefaultWidgets from "../../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {
   registerDefaultWidgets();

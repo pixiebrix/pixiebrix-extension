@@ -17,8 +17,8 @@
 
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { getDiagnostics as collectFrameDiagnostics } from "../../contentScript/performanceMonitoring";
-import { collectPerformanceDiagnostics as collectExtensionDiagnostics } from "../../background/messenger/api";
+import { getDiagnostics as collectFrameDiagnostics } from "@/contentScript/performanceMonitoring";
+import { collectPerformanceDiagnostics as collectExtensionDiagnostics } from "@/background/messenger/api";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 
 class ExtensionDiagnostics extends TransformerABC {

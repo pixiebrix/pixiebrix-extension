@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
 import styles from "./ShareModals.module.scss";
 import { useOptionalModDefinition } from "../../../../../modDefinitions/modDefinitionHooks";
-import { RequireScope } from "../../../../../auth/RequireScope";
+import { RequireScope } from "@/auth/RequireScope";
 import ModOwnerLabel from "./ModOwnerLabel";
 import useHasEditPermissions from "./useHasEditPermissions";
 import useSortOrganizations from "./useSortOrganizations";

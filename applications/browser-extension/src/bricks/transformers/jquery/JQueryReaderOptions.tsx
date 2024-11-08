@@ -16,7 +16,7 @@
  */
 
 import React, { type ChangeEvent, useCallback, useMemo, useState } from "react";
-import { type BrickOptionProps } from "../../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact, isEmpty, partial, truncate } from "lodash";
 import { useField } from "formik";
 import {
@@ -28,21 +28,27 @@ import { type SafeString } from "../../../types/stringTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
-import SchemaField from "../../../components/fields/schemaFields/SchemaField";
-import WorkshopMessage from "../../../components/fields/schemaFields/WorkshopMessage";
-import FieldTemplate from "../../../components/form/FieldTemplate";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import styles from "./JQueryReaderOptions.module.scss";
 import SelectWidget, {
   type SelectLike,
-} from "../../../components/form/widgets/SelectWidget";
-import useAsyncState from "../../../hooks/useAsyncState";
-import { getAttributeExamples } from "../../../contentScript/messenger/api";
+} from "@/components/form/widgets/SelectWidget";
+import useAsyncState from "@/hooks/useAsyncState";
+import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { fallbackValue } from "../../../utils/asyncStateUtils";
-import { type AttributeExample } from "../../../contentScript/pageEditor/types";
+import { type AttributeExample } from "@/contentScript/pageEditor/types";
 import CollapsibleFieldSection from "../../../pageEditor/fields/CollapsibleFieldSection";
 import cx from "classnames";
-import { type Expression, type TemplateEngine } from "../../../types/runtimeTypes";
-import { isTemplateExpression, isVarExpression } from "../../../utils/expressionUtils";
+import {
+  type Expression,
+  type TemplateEngine,
+} from "../../../types/runtimeTypes";
+import {
+  isTemplateExpression,
+  isVarExpression,
+} from "../../../utils/expressionUtils";
 import { joinName } from "../../../utils/formUtils";
 import { freshIdentifier } from "../../../utils/variableUtils";
 import useAsyncEffect from "use-async-effect";

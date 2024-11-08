@@ -20,11 +20,11 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import ModsPage from "./ModsPage";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "../../../auth/authSlice";
+import { authSlice } from "@/auth/authSlice";
 import modsPageSlice from "./modsPageSlice";
 import modComponentSlice from "../../../store/modComponents/modComponentSlice";
 import { modModalsSlice } from "./modals/modModalsSlice";
-import { appApi } from "../../../data/service/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "../../../modDefinitions/modDefinitionsSlice";
 
 export default {

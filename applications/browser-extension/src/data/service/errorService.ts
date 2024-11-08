@@ -20,30 +20,27 @@ import { maybeGetLinkedApiClient } from "./apiClient";
 import {
   hasSpecificErrorCause,
   selectSpecificError,
-} from "../../errors/errorHelpers";
+} from "@/errors/errorHelpers";
 import { allowsTrack } from "../../telemetry/dnt";
 import { uuidv4 } from "../../types/helpers";
-import { getUserData } from "../../auth/authStorage";
-import {
-  isAppRequestError,
-  selectAxiosError,
-} from "./requestErrorUtils";
+import { getUserData } from "@/auth/authStorage";
+import { isAppRequestError, selectAxiosError } from "./requestErrorUtils";
 import { type ErrorItem } from "../../types/contract";
 import { expectContext } from "../../utils/expectContext";
 import {
   BusinessError,
   CancelError,
   RequestSupersededError,
-} from "../../errors/businessErrors";
+} from "@/errors/businessErrors";
 import { type SerializedError } from "../../types/messengerTypes";
 import { type SemVerString } from "../../types/registryTypes";
 import { type MessageContext } from "../../types/loggerTypes";
 import { isObject } from "../../utils/objectUtils";
-import { flagOn } from "../../auth/featureFlagStorage";
+import { flagOn } from "@/auth/featureFlagStorage";
 import { selectAbsoluteUrl } from "../../utils/urlUtils";
 import { getExtensionVersion } from "../../utils/extensionUtils";
 import { nowTimestamp } from "../../utils/timeUtils";
-import { FeatureFlags, OrganizationFlags } from "../../auth/featureFlags";
+import { FeatureFlags, OrganizationFlags } from "@/auth/featureFlags";
 import { API_PATHS } from "./urlPaths";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;

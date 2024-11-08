@@ -21,7 +21,7 @@ import { isEmpty } from "lodash";
 import { Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { cachedFetchFolder } from "./aaApi";
 
 const FolderIdConfigAlert: React.FC<{

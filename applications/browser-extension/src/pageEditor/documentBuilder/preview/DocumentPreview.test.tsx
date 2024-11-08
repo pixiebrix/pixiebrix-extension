@@ -25,18 +25,18 @@ import { fireEvent, screen } from "@testing-library/react";
 import DocumentPreview from "./DocumentPreview";
 import userEvent from "@testing-library/user-event";
 import { render } from "../../testHelpers";
-import { DocumentRenderer } from "../../../bricks/renderers/document";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 import { actions } from "../../store/editor/editorSlice";
-import DisplayTemporaryInfo from "../../../bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
-import brickRegistry from "../../../bricks/registry";
+import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import brickRegistry from "@/bricks/registry";
 import { waitForEffect } from "../../../testUtils/testHelpers";
 import { type PipelineExpression } from "../../../types/runtimeTypes";
 import { uuidSequence } from "../../../testUtils/factories/stringFactories";
 import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
 import { toExpression } from "../../../utils/expressionUtils";
 import { uuidv4 } from "../../../types/helpers";
-import useReduxState from "../../../hooks/useReduxState";
+import useReduxState from "@/hooks/useReduxState";
 import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
 
 function renderDocumentPreview(documentBuilderElement: DocumentBuilderElement) {

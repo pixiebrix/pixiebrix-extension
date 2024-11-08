@@ -22,7 +22,7 @@ import {
   getAvailableVersion,
   setAvailableVersion,
 } from "./installer";
-import * as auth from "../auth/authStorage";
+import * as auth from "@/auth/authStorage";
 import { integrationConfigLocator } from "./integrationConfigLocator";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "../testUtils/testHelpers";

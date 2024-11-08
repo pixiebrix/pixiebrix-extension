@@ -17,8 +17,8 @@
 
 import { type AuthUserOrganization } from "./authTypes";
 import { type Nullishable } from "../utils/nullishUtils";
-import { type MeTeamMembership } from "../data/model/MeTeamMembership";
-import { convertToUserRole } from "../data/model/UserRole";
+import { type MeTeamMembership } from "@/data/model/MeTeamMembership";
+import { convertToUserRole } from "@/data/model/UserRole";
 
 // Export this function because it's used in both the Extension and the App
 export default function selectAuthUserOrganizations(

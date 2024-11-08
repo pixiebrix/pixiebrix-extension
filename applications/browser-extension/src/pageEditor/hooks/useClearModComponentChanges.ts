@@ -17,7 +17,7 @@
 
 import { actions } from "../store/editor/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useModals } from "../../components/ConfirmationModal";
+import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { modComponentToFormState } from "../starterBricks/adapter";
 import reportError from "../../telemetry/reportError";

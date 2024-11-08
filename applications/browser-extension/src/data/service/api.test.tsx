@@ -26,7 +26,7 @@ import {
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import React from "react";
-import { isAxiosError } from "../../errors/networkErrorHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { uuidv4 } from "../../types/helpers";
 import { act } from "react-dom/test-utils";
 import { waitForEffect } from "../../testUtils/testHelpers";

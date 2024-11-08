@@ -23,7 +23,7 @@ import { uuidv4 } from "@/types/helpers";
 import { NOTIFICATIONS_Z_INDEX } from "../domConstants";
 import reportError from "../telemetry/reportError";
 import { type Except, type RequireAtLeastOne } from "type-fest";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { merge, truncate } from "lodash";
 import ErrorIcon from "../icons/error.svg?loadAsComponent";
 import WarningIcon from "../icons/warning.svg?loadAsComponent";

@@ -18,7 +18,7 @@
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 
 export class ParseCsv extends TransformerABC {

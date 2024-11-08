@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import Centered from "../../components/Centered";
-import Alert from "../../components/Alert";
+import Centered from "@/components/Centered";
+import Alert from "@/components/Alert";
 import { Button } from "react-bootstrap";
 
 const StaleSessionPane: React.FC = () => (

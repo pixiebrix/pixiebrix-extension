@@ -21,7 +21,7 @@ import { render } from "../testHelpers";
 import { navigationEvent } from "../events";
 import { tabStateActions } from "../store/tabState/tabStateSlice";
 import { waitForEffect } from "../../testUtils/testHelpers";
-import { updateDraftModComponent } from "../../contentScript/messenger/api";
+import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { actions as editorActions } from "../store/editor/editorSlice";
 
 import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";

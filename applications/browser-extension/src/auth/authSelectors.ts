@@ -16,7 +16,7 @@
  */
 
 import { type AuthRootState } from "./authTypes";
-import { LegacyUserRole } from "../data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 import { compact } from "lodash";
 import { createSelector } from "@reduxjs/toolkit";
 

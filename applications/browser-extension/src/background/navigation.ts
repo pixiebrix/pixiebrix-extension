@@ -23,10 +23,10 @@ import {
 } from "webext-content-scripts";
 import { debounce } from "lodash";
 import { getTabUrl } from "webext-tools";
-import { isTargetReady } from "../contentScript/ready";
-import { flagOn } from "../auth/featureFlagStorage";
-import { activatePrerenderedTab } from "../contentScript/messenger/api";
-import { FeatureFlags } from "../auth/featureFlags";
+import { isTargetReady } from "@/contentScript/ready";
+import { flagOn } from "@/auth/featureFlagStorage";
+import { activatePrerenderedTab } from "@/contentScript/messenger/api";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 /**
  * Log details about a navigation to the console for debugging content script/navigation bugs.

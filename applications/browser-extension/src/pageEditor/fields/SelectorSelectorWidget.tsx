@@ -34,19 +34,19 @@ import {
   enableOverlay,
   cancelSelect,
   selectElement,
-} from "../../contentScript/messenger/api";
-import { type SelectMode } from "../../contentScript/pageEditor/types";
+} from "@/contentScript/messenger/api";
+import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";
 import { type SettingsState } from "../../store/settings/settingsTypes";
 import { sortBySelector } from "../../utils/inference/selectorInference";
-import { isSpecificError } from "../../errors/errorHelpers";
-import { CancelError } from "../../errors/businessErrors";
+import { isSpecificError } from "@/errors/errorHelpers";
+import { CancelError } from "@/errors/businessErrors";
 import { type Expression } from "../../types/runtimeTypes";
 import {
   castTextLiteralOrThrow,
   isTextLiteralOrNull,
 } from "../../utils/expressionUtils";
-import WorkshopMessageWidget from "../../components/fields/schemaFields/widgets/WorkshopMessageWidget";
+import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/WorkshopMessageWidget";
 import { type ElementInfo } from "../../utils/inference/selectorTypes";
 import { inspectedTab } from "../context/connection";
 import { type Nullishable } from "../../utils/nullishUtils";

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { render } from "../extensionConsole/testHelpers";
+import { render } from "@/extensionConsole/testHelpers";
 import { act, screen } from "@testing-library/react";
 import { count } from "../registry/packageRegistry";
 import DatabaseUnresponsiveBanner from "./DatabaseUnresponsiveBanner";

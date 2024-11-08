@@ -17,12 +17,12 @@
 
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import IntegrationAuthSelector from "../../integrations/components/IntegrationAuthSelector";
-import { type AuthOption } from "../../auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import registry from "../../integrations/registry";
 import { uuidv4 } from "../../types/helpers";
-import { integrationConfigLocator } from "../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { Button } from "react-bootstrap";
 import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +30,7 @@ import { faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
 import integrationsSlice from "../../integrations/store/integrationsSlice";
 import notify from "../../utils/notify";
 import createMenuListWithAddButton from "../form/widgets/createMenuListWithAddButton";
-import useAuthorizationGrantFlow from "../../hooks/useAuthorizationGrantFlow";
+import useAuthorizationGrantFlow from "@/hooks/useAuthorizationGrantFlow";
 import styles from "./AuthWidget.module.scss";
 import ReduxPersistenceContext from "../../store/ReduxPersistenceContext";
 import { type RegistryId } from "../../types/registryTypes";
@@ -49,7 +49,7 @@ import {
 } from "../../integrations/autoConfigure";
 import { freshIdentifier } from "../../utils/variableUtils";
 import { selectIntegrationConfigs } from "../../integrations/store/integrationsSelectors";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "../AsyncStateGate";
 import { convertSchemaToConfigState } from "./integrationHelpers";
 

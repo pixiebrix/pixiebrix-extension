@@ -26,7 +26,7 @@ import { type SerializableResponse } from "../../types/messengerTypes";
 import apiVersionOptions from "../../runtime/apiVersionOptions";
 import extendModVariableContext from "../../runtime/extendModVariableContext";
 import { $safeFind } from "../../utils/domUtils";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type RunBrickArgs } from "./types";
 import { type ModComponentRef } from "../../types/modComponentTypes";
 

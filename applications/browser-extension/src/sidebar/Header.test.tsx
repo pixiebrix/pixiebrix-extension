@@ -18,7 +18,7 @@
 import React from "react";
 import { screen, render } from "./testHelpers";
 import Header from "./Header";
-import useTheme from "../hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 
 import { waitFor } from "@testing-library/react";
 import { initialTheme } from "../themes/themeStore";

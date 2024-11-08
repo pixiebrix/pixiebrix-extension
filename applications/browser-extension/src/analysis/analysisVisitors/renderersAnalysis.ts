@@ -20,11 +20,11 @@ import {
   type BrickConfig,
   type BrickPosition,
   PipelineFlavor,
-} from "../../bricks/types";
+} from "@/bricks/types";
 import {
   nestedPosition,
   type VisitPipelineExtra,
-} from "../../bricks/PipelineVisitor";
+} from "@/bricks/PipelineVisitor";
 import { AnnotationType } from "../../types/annotationTypes";
 import { assertNotNullish } from "../../utils/nullishUtils";
 import { BrickTypes } from "../../runtime/runtimeTypes";

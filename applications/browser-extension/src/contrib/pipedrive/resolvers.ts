@@ -18,7 +18,7 @@
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import type { PlatformCapability } from "../../platform/capabilities";
 

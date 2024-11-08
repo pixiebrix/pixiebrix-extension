@@ -36,7 +36,7 @@ import { renderHook } from "../pageEditor/testHelpers";
 import { integrationConfigFactory } from "../testUtils/factories/integrationFactories";
 import { valueToAsyncState } from "../utils/asyncStateUtils";
 import usePartnerAuthData from "./usePartnerAuthData";
-import { Milestones } from "../data/model/UserMilestone";
+import { Milestones } from "@/data/model/UserMilestone";
 import { getDeploymentKey } from "./deploymentKey";
 import { getExtensionToken } from "./authStorage";
 

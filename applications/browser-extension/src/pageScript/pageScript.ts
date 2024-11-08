@@ -53,7 +53,7 @@ import {
 } from "../runtime/pathHelpers";
 import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
-import * as ckeditor from "../contrib/ckeditor/ckeditorProtocol";
+import * as ckeditor from "@/contrib/ckeditor/ckeditorProtocol";
 import { awaitValue } from "../utils/promiseUtils";
 import { findSingleElement } from "../utils/domUtils";
 import { uuidv4 } from "@/types/helpers";

@@ -17,7 +17,7 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
-import { expectContext } from "../../utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { showMySidePanel } from "../sidePanel";
 import { waitForContentScript } from "../contentScript";
 import initTheme from "../initTheme";
@@ -26,7 +26,7 @@ import {
   addTraceExit,
   clearModComponentTraces,
   clearTraces,
-} from "../../telemetry/trace";
+} from "@/telemetry/trace";
 import {
   captureTab,
   forwardAudioCaptureEvent,
@@ -40,19 +40,19 @@ import {
   removeOAuth2Token,
 } from "../auth/authStorage";
 import { setToolbarBadge } from "../toolbarBadge";
-import { rememberFocus } from "../../utils/focusTracker";
+import { rememberFocus } from "@/utils/focusTracker";
 import writeToClipboardInFocusedContext from "../clipboard";
 import * as packageRegistry from "../../registry/packageRegistry";
 import integrationRegistry from "../../integrations/registry";
-import { getUserData } from "../../auth/authStorage";
+import { getUserData } from "@/auth/authStorage";
 import {
   clearModComponentDebugLogs,
   clearLog,
   clearLogs,
   recordError,
   recordLog,
-} from "../../telemetry/logging";
-import { fetchFeatureFlags } from "../../auth/featureFlagStorage";
+} from "@/telemetry/logging";
+import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 import {
   integrationConfigLocator,
   refreshIntegrationConfigs,
@@ -84,7 +84,7 @@ import { debouncedActivateWelcomeMods as activateWelcomeMods } from "../welcomeM
 import { launchAuthIntegration } from "../auth/partnerIntegrations/launchAuthIntegration";
 import { getPartnerPrincipals } from "../auth/partnerIntegrations/getPartnerPrincipals";
 import refreshPartnerAuthentication from "../auth/partnerIntegrations/refreshPartnerAuthentication";
-import { getMe } from "../../data/service/backgroundApi";
+import { getMe } from "@/data/service/backgroundApi";
 import { deleteSynchronizedModVariablesForMod } from "../stateControllerListeners";
 
 expectContext("background");

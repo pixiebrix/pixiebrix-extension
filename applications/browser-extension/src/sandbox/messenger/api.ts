@@ -21,16 +21,13 @@ import injectIframe, {
   hiddenIframeStyle,
   IframeInjectionError,
 } from "../../utils/injectIframe";
-import postMessage, {
-  type Payload,
-  SandboxTimeoutError,
-} from "../postMessage";
+import postMessage, { type Payload, SandboxTimeoutError } from "../postMessage";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { memoizeUntilSettled } from "../../utils/promiseUtils";
 import pRetry from "p-retry";
 import { type JsonObject } from "type-fest";
 import { TimeoutError } from "p-timeout";
-import { isSpecificError } from "../../errors/errorHelpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 
 const SANDBOX_SHADOW_ROOT_ID = "pixiebrix-sandbox";
 const MAX_RETRIES = 3;

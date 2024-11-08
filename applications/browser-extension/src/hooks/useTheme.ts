@@ -24,7 +24,7 @@ import {
 } from "../themes/themeUtils";
 import { initialTheme } from "../themes/themeStore";
 import useAsyncExternalStore from "./useAsyncExternalStore";
-import { activateTheme } from "../background/messenger/api";
+import { activateTheme } from "@/background/messenger/api";
 import useManagedStorageState from "../store/enterprise/useManagedStorageState";
 
 const themeStorageSubscribe = (callback: () => void) => {

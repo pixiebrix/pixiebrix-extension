@@ -17,7 +17,7 @@
 
 import styles from "./AdvancedLinks.module.scss";
 
-import { type BrickCondition, type BrickWindow } from "../../../bricks/types";
+import { type BrickCondition, type BrickWindow } from "@/bricks/types";
 import { type TemplateEngine } from "../../../types/runtimeTypes";
 import { useField } from "formik";
 import { partial } from "lodash";

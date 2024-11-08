@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nestedPosition, type VisitBlockExtra } from "../../bricks/PipelineVisitor";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import {
   type BrickCondition,
   type BrickConfig,
   type BrickPosition,
-} from "../../bricks/types";
+} from "@/bricks/types";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { getConstantConditionOrUndefined } from "../../runtime/runtimeUtils";
 import { isTemplateExpression } from "../../utils/expressionUtils";
 import { isNullOrBlank } from "../../utils/stringUtils";
 import { AnnotationType } from "../../types/annotationTypes";
 import { AnalysisAnnotationActionType } from "../analysisTypes";
-import IfElse from "../../bricks/transformers/controlFlow/IfElse";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 
 class ConditionAnalysis extends AnalysisVisitorABC {
   get id() {

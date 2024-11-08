@@ -20,7 +20,7 @@ import { ListGroup } from "react-bootstrap";
 import React, { useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
-import AceEditor from "../../../components/AceEditor";
+import AceEditor from "@/components/AceEditor";
 import { type Ace } from "ace-builds";
 
 interface OwnProps {

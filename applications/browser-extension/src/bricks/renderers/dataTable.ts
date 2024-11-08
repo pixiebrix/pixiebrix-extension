@@ -17,7 +17,7 @@
 
 import { type SafeHTML } from "../../types/stringTypes";
 import sanitize from "../../utils/sanitize";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { isUnknownObjectArray } from "../../utils/objectUtils";
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys

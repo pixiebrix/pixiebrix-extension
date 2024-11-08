@@ -18,7 +18,7 @@
 import React from "react";
 
 import { render, screen } from "../testHelpers";
-import { BusinessError, NoRendererError } from "../../errors/businessErrors";
+import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 import RootErrorPanel from "./RootErrorPanel";
 
 describe("RootErrorPanel", () => {

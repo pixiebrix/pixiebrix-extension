@@ -1,7 +1,7 @@
 import React from "react";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { type Schema } from "../../types/schemaTypes";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { joinName } from "../../utils/formUtils";
 
 const ANY_SCHEMA: Schema = {

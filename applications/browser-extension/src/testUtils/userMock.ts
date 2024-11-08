@@ -20,13 +20,13 @@ import {
   meApiResponseFactory,
 } from "./factories/authFactories";
 import { appApiMock } from "./appApiMock";
-import { TEST_setAuthData } from "../auth/authStorage";
-import { selectUserDataUpdate } from "../auth/authUtils";
-import useLinkState from "../auth/useLinkState";
+import { TEST_setAuthData } from "@/auth/authStorage";
+import { selectUserDataUpdate } from "@/auth/authUtils";
+import useLinkState from "@/auth/useLinkState";
 import { valueToAsyncState } from "../utils/asyncStateUtils";
 import type { components } from "@/types/swagger";
-import { transformMeResponse } from "../data/model/Me";
-import { API_PATHS } from "../data/service/urlPaths";
+import { transformMeResponse } from "@/data/model/Me";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.

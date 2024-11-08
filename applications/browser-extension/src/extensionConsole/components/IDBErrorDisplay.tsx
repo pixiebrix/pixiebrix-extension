@@ -20,26 +20,32 @@ import React from "react";
 import {
   DefaultErrorComponent,
   type ErrorDisplayProps,
-} from "../../components/ErrorBoundary";
+} from "@/components/ErrorBoundary";
 import { isIDBConnectionError, isIDBQuotaError } from "../../utils/idbUtils";
-import useUserAction from "../../hooks/useUserAction";
-import { clearLogs, recreateDB as recreateLogDB } from "../../telemetry/logging";
-import { clearTraces, recreateDB as recreateTraceDB } from "../../telemetry/trace";
+import useUserAction from "@/hooks/useUserAction";
+import {
+  clearLogs,
+  recreateDB as recreateLogDB,
+} from "../../telemetry/logging";
+import {
+  clearTraces,
+  recreateDB as recreateTraceDB,
+} from "../../telemetry/trace";
 import { recreateDB as recreateBrickDB } from "../../registry/packageRegistry";
 import {
   recreateDB as recreateEventDB,
   clear as clearEvents,
-} from "../../background/telemetry";
+} from "@/background/telemetry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
-import AsyncButton from "../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { type StorageEstimate } from "../../types/browserTypes";
 import { expectContext } from "../../utils/expectContext";
-import AsyncStateGate from "../../components/AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 import { round } from "lodash";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { sleep } from "../../utils/timeUtils";
 
 const ConnectionErrorDisplay: React.FC<ErrorDisplayProps> = ({

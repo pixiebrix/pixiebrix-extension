@@ -16,13 +16,13 @@
  */
 
 import { type UnknownRecord } from "type-fest";
-import { KnownSources } from "../../../../../analysis/analysisVisitors/varAnalysis/varAnalysis";
+import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import { compact, reverse, toPath } from "lodash";
 import {
   ALLOW_ANY_CHILD,
   IS_ARRAY,
   SELF_EXISTENCE,
-} from "../../../../../analysis/analysisVisitors/varAnalysis/varMap";
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { type KeyPath, type ShouldExpandNodeInitially } from "react-json-tree";
 import { getIn } from "formik";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";

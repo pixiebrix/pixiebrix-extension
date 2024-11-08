@@ -17,7 +17,7 @@
 
 import { CopyToClipboard } from "./clipboard";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { PropError } from "../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import userEvent from "@testing-library/user-event";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 import { convertDataUrl } from "../../utils/parseDataUrl";

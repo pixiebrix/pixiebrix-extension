@@ -23,13 +23,10 @@ import {
   runCommunityBot,
   runEnterpriseBot,
 } from "./aaApi";
-import {
-  type BotArgs,
-  type EnterpriseBotArgs,
-} from "./aaTypes";
-import { BusinessError, PropError } from "../../errors/businessErrors";
+import { type BotArgs, type EnterpriseBotArgs } from "./aaTypes";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import { cloneDeep } from "lodash";
-import { getCachedAuthData, getUserData } from "../../background/messenger/api";
+import { getCachedAuthData, getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "../../types/schemaTypes";
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";

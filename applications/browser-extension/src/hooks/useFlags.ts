@@ -16,18 +16,18 @@
  */
 
 import { useEffect, useMemo } from "react";
-import { useGetFeatureFlagsQuery } from "../data/service/api";
+import { useGetFeatureFlagsQuery } from "@/data/service/api";
 import {
   addAuthListener as addAuthStorageListener,
   removeAuthListener as removeAuthStorageListener,
-} from "../auth/authStorage";
+} from "@/auth/authStorage";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import { mergeAsyncState } from "../utils/asyncStateUtils";
 import {
   type FeatureFlag,
   mapRestrictedFeatureToFeatureFlag,
   type RestrictedFeature,
-} from "../auth/featureFlags";
+} from "@/auth/featureFlags";
 
 export type FlagHelpers = {
   permit: (area: RestrictedFeature) => boolean;

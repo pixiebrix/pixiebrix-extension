@@ -17,7 +17,7 @@
 
 import CancelEffect from "./CancelEffect";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { CancelError } from "../../errors/businessErrors";
+import { CancelError } from "@/errors/businessErrors";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 
 const brick = new CancelEffect();

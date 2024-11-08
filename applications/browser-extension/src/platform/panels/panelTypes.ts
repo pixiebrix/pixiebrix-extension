@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { PanelPayload, TemporaryPanelEntry } from "../../types/sidebarTypes";
+import type {
+  PanelPayload,
+  TemporaryPanelEntry,
+} from "../../types/sidebarTypes";
 import type { Location } from "../../types/starterBrickTypes";
 import type { UUID } from "../../types/stringTypes";
-import type { Placement } from "../../contentScript/popoverDom";
+import type { Placement } from "@/contentScript/popoverDom";
 import type { Except, ValueOf } from "type-fest";
 import { type Nullishable } from "../../utils/nullishUtils";
 

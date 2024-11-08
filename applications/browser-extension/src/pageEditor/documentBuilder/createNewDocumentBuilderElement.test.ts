@@ -18,7 +18,7 @@
 import { isUUID } from "../../types/helpers";
 import { createNewDocumentBuilderElement } from "./createNewDocumentBuilderElement";
 import { DOCUMENT_BUILDER_ELEMENT_TYPES } from "./documentBuilderTypes";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { toExpression } from "../../utils/expressionUtils";
 
 test.each(

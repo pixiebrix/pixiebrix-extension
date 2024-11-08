@@ -21,17 +21,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectActiveModId } from "../store/editor/editorSelectors";
 import EditorTabLayout, {
   type TabItem,
-} from "../../components/tabLayout/EditorTabLayout";
+} from "@/components/tabLayout/EditorTabLayout";
 import Logs from "../tabs/Logs";
 import ModMetadataEditor from "../tabs/modMetadata/ModMetadataEditor";
-import { logActions } from "../../components/logViewer/logSlice";
+import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "../tabs/logs/useLogsBadgeState";
 import ModOptionsDefinitionEditor from "../tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import ModOptionsArgsEditor from "../tabs/modOptionsArgs/ModOptionsArgsEditor";
 import useRegisterDraftModInstanceOnAllFrames from "../hooks/useRegisterDraftModInstanceOnAllFrames";
-import { assertNotNullish } from "../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import ModVariablesDefinitionEditor from "../tabs/modVariablesDefinition/ModVariablesDefinitionEditor";
-import { FeatureFlags } from "../../auth/featureFlags";
+import { FeatureFlags } from "@/auth/featureFlags";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();

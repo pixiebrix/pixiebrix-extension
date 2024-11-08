@@ -19,7 +19,7 @@ import React from "react";
 import styles from "./blurSidebarOverlay.module.scss";
 import cx from "classnames";
 import { Modal } from "react-bootstrap";
-import Loader from "../components/Loader";
+import Loader from "@/components/Loader";
 
 const ConnectingOverlay = () => (
   <div className={styles.blurOverlay}>

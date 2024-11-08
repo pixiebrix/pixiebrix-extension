@@ -27,11 +27,14 @@ import { serializeError } from "serialize-error";
 import { type JsonObject } from "type-fest";
 import { isNullOrBlank } from "../../../utils/stringUtils";
 import { isEmpty } from "lodash";
-import { PropError } from "../../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "../../types";
 import { castTextLiteralOrThrow } from "../../../utils/expressionUtils";
 import { propertiesToSchema } from "../../../utils/schemaUtils";
-import { MergeStrategies, StateNamespaces } from "../../../platform/state/stateTypes";
+import {
+  MergeStrategies,
+  StateNamespaces,
+} from "../../../platform/state/stateTypes";
 
 /**
  * A brick that stores the result of an asynchronous operation in a Mod Variable.

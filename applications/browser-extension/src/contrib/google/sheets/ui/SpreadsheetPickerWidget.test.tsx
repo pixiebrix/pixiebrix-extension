@@ -18,7 +18,7 @@
 import { render } from "../../../../pageEditor/testHelpers";
 import React from "react";
 import SpreadsheetPickerWidget from "./SpreadsheetPickerWidget";
-import { integrationConfigLocator } from "../../../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { validateRegistryId } from "../../../../types/helpers";
 import { uuidSequence } from "../../../../testUtils/factories/stringFactories";
 import { act, screen } from "@testing-library/react";
@@ -30,7 +30,7 @@ import {
 } from "../../../../testUtils/factories/integrationFactories";
 import { validateOutputKey } from "../../../../runtime/runtimeTypes";
 import { type FileList } from "../core/types";
-import registerDefaultWidgets from "../../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import IntegrationsSliceModIntegrationsContextAdapter from "../../../../integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
 import { SHEET_FIELD_SCHEMA } from "../core/schemas";

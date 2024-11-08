@@ -22,12 +22,12 @@ import {
   type TraceError,
   type TraceRecord,
 } from "../../telemetry/trace";
-import { type BrickConfig, type BrickPosition } from "../../bricks/types";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type UUID } from "../../types/stringTypes";
 import { groupBy, isEmpty } from "lodash";
-import { getErrorMessage } from "../../errors/errorHelpers";
-import { isSchemaValidationError } from "../../bricks/errors";
-import { nestedPosition, type VisitBlockExtra } from "../../bricks/PipelineVisitor";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { isSchemaValidationError } from "@/bricks/errors";
+import { nestedPosition, type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "../../pageEditor/starterBricks/formStateTypes";
 import { type ErrorObject } from "serialize-error";
 import { AnnotationType } from "../../types/annotationTypes";

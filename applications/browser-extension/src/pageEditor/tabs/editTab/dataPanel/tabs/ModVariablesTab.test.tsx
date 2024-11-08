@@ -20,7 +20,7 @@ import { waitForEffect } from "../../../../../testUtils/testHelpers";
 import { render } from "../../../../testHelpers";
 import ModVariablesTab from "./ModVariablesTab";
 import { actions } from "../../../../store/editor/editorSlice";
-import { getPageState } from "../../../../../contentScript/messenger/api";
+import { getPageState } from "@/contentScript/messenger/api";
 import { type ModComponentFormState } from "../../../../starterBricks/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "../dataPanelTypes";

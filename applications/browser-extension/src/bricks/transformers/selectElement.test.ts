@@ -16,9 +16,9 @@
  */
 
 import SelectElement from "./selectElement";
-import { userSelectElement } from "../../contentScript/pageEditor/elementPicker";
-import { getReferenceForElement } from "../../contentScript/elementReference";
-import { CancelError } from "../../errors/businessErrors";
+import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
+import { getReferenceForElement } from "@/contentScript/elementReference";
+import { CancelError } from "@/errors/businessErrors";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

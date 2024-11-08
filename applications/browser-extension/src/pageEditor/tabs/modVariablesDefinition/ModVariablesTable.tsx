@@ -24,14 +24,14 @@ import {
 } from "./modVariablesDefinitionEditorTypes";
 import { Button, Table } from "react-bootstrap";
 import styles from "./ModVariablesTable.module.scss";
-import PopoverInfoLabel from "../../../components/form/popoverInfoLabel/PopoverInfoLabel";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 import { FieldArray } from "formik";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
-import SelectWidget from "../../../components/form/widgets/SelectWidget";
-import SwitchButtonWidget from "../../../components/form/widgets/switchButton/SwitchButtonWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
-import FieldTemplate from "../../../components/form/FieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { uuidv4 } from "../../../types/helpers";
 
 const ModVariablesTable: React.FC<{

@@ -30,12 +30,12 @@ import {
   echoBrick,
 } from "../../../runtime/pipelineTests/testHelpers";
 import brickRegistry from "../../registry";
-import { TEST_resetStateController } from "../../../contentScript/stateController/stateController";
+import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 import { reducePipeline } from "../../../runtime/reducePipeline";
 import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
 import { tick } from "../../../starterBricks/testHelpers";
-import { CancelError } from "../../../errors/businessErrors";
-import { ContextError } from "../../../errors/genericErrors";
+import { CancelError } from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 import { sleep } from "../../../utils/timeUtils";
 
 const withCacheBrick = new WithCache();

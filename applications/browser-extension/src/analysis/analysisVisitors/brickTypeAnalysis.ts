@@ -16,9 +16,9 @@
  */
 
 import { AnalysisVisitorWithResolvedBricksABC } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BrickPosition } from "../../bricks/types";
-import { type VisitBlockExtra } from "../../bricks/PipelineVisitor";
-import { makeIsBrickAllowedForPipeline } from "../../bricks/brickFilterHelpers";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { makeIsBrickAllowedForPipeline } from "@/bricks/brickFilterHelpers";
 import { AnnotationType } from "../../types/annotationTypes";
 
 class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {

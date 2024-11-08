@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ReaderConfig } from "../bricks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type RunArgs } from "@/types/runtimeTypes";

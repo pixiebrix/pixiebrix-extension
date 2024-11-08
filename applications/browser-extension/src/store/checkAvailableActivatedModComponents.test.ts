@@ -19,7 +19,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { actions, editorSlice } from "../pageEditor/store/editor/editorSlice";
 import { type EditorRootState } from "../pageEditor/store/editor/pageEditorTypes";
 import { selectModComponentAvailability } from "../pageEditor/store/editor/editorSelectors";
-import { getRunningStarterBricks } from "../contentScript/messenger/api";
+import { getRunningStarterBricks } from "@/contentScript/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { RemoteButtonStarterBrick } from "../starterBricks/button/buttonStarterBrick";
 import { type StarterBrickDefinitionLike } from "../starterBricks/types";

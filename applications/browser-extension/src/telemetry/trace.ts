@@ -18,7 +18,7 @@
 import { type JsonObject, type SetRequired } from "type-fest";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { sortBy } from "lodash";
-import { type BrickConfig } from "../bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import objectHash from "object-hash";
 import { type ErrorObject } from "serialize-error";
 import { type UUID } from "@/types/stringTypes";

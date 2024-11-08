@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectAuth } from "../../../../../auth/authSelectors";
+import { selectAuth } from "@/auth/authSelectors";
 import useSortOrganizations from "./useSortOrganizations";
 import { type RegistryId } from "../../../../../types/registryTypes";
 import { getScopeAndId } from "../../../../../utils/registryUtils";
 import { useSelector } from "react-redux";
 import { type Nullishable } from "../../../../../utils/nullishUtils";
-import { LegacyUserRole } from "../../../../../data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 const editorRoles = new Set<number>([
   LegacyUserRole.admin,

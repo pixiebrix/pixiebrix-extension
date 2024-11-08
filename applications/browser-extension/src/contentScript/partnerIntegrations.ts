@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPartnerPrincipals } from "../background/messenger/api";
+import { getPartnerPrincipals } from "@/background/messenger/api";
 
 const INTEGRATION_ATTR = "data-pb-integration-userid";
 

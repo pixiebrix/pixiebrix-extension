@@ -17,13 +17,13 @@
 
 import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
 import { type FetchableAsyncState } from "../../../../types/sliceTypes";
-import useAsyncState from "../../../../hooks/useAsyncState";
-import { integrationConfigLocator } from "../../../../background/messenger/api";
+import useAsyncState from "@/hooks/useAsyncState";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { useContext, useEffect } from "react";
 import ModIntegrationsContext from "../../../../mods/ModIntegrationsContext";
 import { validateRegistryId } from "../../../../types/helpers";
 import reportError from "../../../../telemetry/reportError";
-import { oauth2Storage } from "../../../../auth/authConstants";
+import { oauth2Storage } from "@/auth/authConstants";
 import { isEmpty } from "lodash";
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");

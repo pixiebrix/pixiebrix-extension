@@ -17,7 +17,7 @@
 
 import React, { type PropsWithoutRef } from "react";
 import Loader from "./Loader";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
 import { isFetchableAsyncState } from "../utils/asyncStateUtils";

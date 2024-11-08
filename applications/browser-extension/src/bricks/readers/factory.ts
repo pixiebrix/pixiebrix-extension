@@ -18,7 +18,7 @@
 import { checkAvailable } from "@/bricks/available";
 import type { BrickConfig } from "@/bricks/types";
 import { cloneDeep } from "lodash";
-import { InvalidDefinitionError } from "../../errors/businessErrors";
+import { InvalidDefinitionError } from "@/errors/businessErrors";
 import { type ApiVersion, type SelectorRoot } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import { type JsonObject } from "type-fest";

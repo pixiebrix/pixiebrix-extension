@@ -16,11 +16,11 @@
  */
 
 import { formStateFactory } from "../../../testUtils/factories/pageEditorFactories";
-import { GetPageState, SetPageState } from "../../../bricks/effects/pageState";
+import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import PageStateAnalysis from "./pageStateAnalysis";
 import { AnnotationType } from "../../../types/annotationTypes";
 import { registryIdFactory } from "../../../testUtils/factories/stringFactories";
-import { CustomFormRenderer } from "../../../bricks/renderers/customForm";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { type BaseFormState } from "../../../pageEditor/store/editor/baseFormStateTypes";
 
 import { StateNamespaces } from "../../../platform/state/stateTypes";

@@ -17,11 +17,11 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { getAvailableVersion } from "../../background/messenger/api";
+import { getAvailableVersion } from "@/background/messenger/api";
 import reportError from "../../telemetry/reportError";
-import Banner from "../../components/banner/Banner";
+import Banner from "@/components/banner/Banner";
 import { gt } from "semver";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { getExtensionVersion } from "../../utils/extensionUtils";
 
 // XXX: move this kind of async state to the Redux state.

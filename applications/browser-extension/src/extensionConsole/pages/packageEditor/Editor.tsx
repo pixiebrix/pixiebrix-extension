@@ -32,13 +32,13 @@ import { sortBy } from "lodash";
 import { type UUID } from "../../../types/stringTypes";
 import PackageReference from "./referenceTab/PackageReference";
 import integrationRegistry from "../../../integrations/registry";
-import brickRegistry from "../../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import starterBrickRegistry from "../../../starterBricks/registry";
-import ConfirmNavigationModal from "../../../components/ConfirmNavigationModal";
+import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "../../../utils/notify";
 import PackageHistory from "./PackageHistory";
 import { useParams } from "react-router";
-import LogCard from "../../../components/logViewer/LogCard";
+import LogCard from "@/components/logViewer/LogCard";
 import {
   type Metadata,
   type PackageInstance,
@@ -46,10 +46,10 @@ import {
 } from "../../../types/registryTypes";
 import { isMac } from "../../../utils/browserUtils";
 import { getExtensionConsoleUrl } from "../../../utils/extensionUtils";
-import { appApi } from "../../../data/service/api";
-import useAsyncState from "../../../hooks/useAsyncState";
-import useMergeAsyncState from "../../../hooks/useMergeAsyncState";
-import useFlags, { type FlagHelpers } from "../../../hooks/useFlags";
+import { appApi } from "@/data/service/api";
+import useAsyncState from "@/hooks/useAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;

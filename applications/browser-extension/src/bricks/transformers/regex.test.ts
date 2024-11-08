@@ -17,7 +17,7 @@
 
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 import { toExpression } from "../../utils/expressionUtils";
 

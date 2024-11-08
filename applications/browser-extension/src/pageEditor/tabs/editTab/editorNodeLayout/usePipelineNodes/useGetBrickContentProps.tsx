@@ -16,16 +16,16 @@
  */
 
 import { type BrickNodeContentProps } from "../../editTabTypes";
-import { type BrickConfig } from "../../../../../bricks/types";
+import { type BrickConfig } from "@/bricks/types";
 import { filterAnnotationsByBrickPath } from "../../../../utils";
 import { type TraceRecord } from "../../../../../telemetry/trace";
 import React, { useCallback } from "react";
-import PackageIcon from "../../../../../components/PackageIcon";
+import PackageIcon from "@/components/PackageIcon";
 import { decideBrickStatus } from "../decideStatus";
 import { getBrickPipelineNodeSummary } from "../nodeSummary";
 import { isNullOrBlank } from "../../../../../utils/stringUtils";
-import useTypedBrickMap from "../../../../../bricks/hooks/useTypedBrickMap";
-import { selectModComponentAnnotations } from "../../../../../analysis/analysisSelectors";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
+import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentFormState,
   selectPipelineMap,

@@ -17,10 +17,10 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, omit, once } from "lodash";
-import { requestRun, sendDeploymentAlert } from "../background/messenger/api";
+import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
 import { hideNotification, showNotification } from "../utils/notify";
 import { serializeError } from "serialize-error";
-import { HeadlessModeError } from "../bricks/errors";
+import { HeadlessModeError } from "@/bricks/errors";
 import { engineRenderer } from "./renderers";
 import { type TraceExitData, type TraceRecordMeta } from "../telemetry/trace";
 import { type JsonObject, type SetRequired } from "type-fest";
@@ -34,7 +34,7 @@ import {
   type BrickConfig,
   type BrickPipeline,
   hasMultipleTargets,
-} from "../bricks/types";
+} from "@/bricks/types";
 import {
   logIfInvalidOutput,
   selectBrickRootElement,
@@ -47,13 +47,13 @@ import {
   type ResolvedBrickConfig,
   unsafeAssumeValidArg,
 } from "./runtimeTypes";
-import { type RunBrickRequest } from "../contentScript/messenger/runBrickTypes";
+import { type RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import {
   BusinessError,
   CancelError,
   NoRendererError,
-} from "../errors/businessErrors";
-import { ContextError } from "../errors/genericErrors";
+} from "@/errors/businessErrors";
+import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/types/sidebarTypes";
 import { getLoggingConfig } from "../telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
@@ -80,7 +80,7 @@ import getType from "./getType";
 import { getPlatform } from "../platform/platformContext";
 import { type Nullishable, assertNotNullish } from "../utils/nullishUtils";
 import { nowTimestamp } from "../utils/timeUtils";
-import { flagOn } from "../auth/featureFlagStorage";
+import { flagOn } from "@/auth/featureFlagStorage";
 import castError from "../utils/castError";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry

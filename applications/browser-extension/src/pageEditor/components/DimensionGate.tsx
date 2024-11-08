@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { useWindowSize } from "../../hooks/useWindowSize";
+import { useWindowSize } from "@/hooks/useWindowSize";
 import { selectIsDimensionsWarningDismissed } from "../store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Col, Row } from "react-bootstrap";

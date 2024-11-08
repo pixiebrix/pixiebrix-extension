@@ -25,7 +25,7 @@ import {
 } from "./sidebarController";
 import { uuidv4 } from "@/types/helpers";
 import { isLoadedInIframe } from "../utils/iframeUtils";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "../utils/expectContext";
 import { showModal } from "./modalDom";

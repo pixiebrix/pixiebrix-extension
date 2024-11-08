@@ -19,18 +19,18 @@ import { validateRegistryId } from "../../types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
 import { define } from "cooky-cutter";
 import { fromJS } from "./dynamicQuickBarStarterBrick";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { getDocument, RootReader, tick } from "../testHelpers";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import userEvent from "@testing-library/user-event";
-import quickBarRegistry from "../../components/quickBar/quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import {
   initQuickBarApp,
   toggleQuickBar,
-} from "../../components/quickBar/QuickBarApp";
+} from "@/components/quickBar/QuickBarApp";
 import defaultActions, {
   pageEditorAction,
-} from "../../components/quickBar/defaultActions";
+} from "@/components/quickBar/defaultActions";
 import { waitForEffect } from "../../testUtils/testHelpers";
 import { type HydratedModComponent } from "../../types/modComponentTypes";
 import { RunReason } from "../../types/runtimeTypes";

@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "../../testHelpers";
 import ModOptionsDefinitionEditor from "./ModOptionsDefinitionEditor";
 import { waitForEffect } from "../../../testUtils/testHelpers";

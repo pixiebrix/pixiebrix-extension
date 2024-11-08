@@ -28,7 +28,7 @@ import {
   DOCUMENT_BUILDER_ELEMENT_TYPES,
   type DocumentBuilderElement,
 } from "../../pageEditor/documentBuilder/documentBuilderTypes";
-import IsolatedComponent from "../../components/IsolatedComponent";
+import IsolatedComponent from "@/components/IsolatedComponent";
 import { type DocumentViewProps } from "./documentView/DocumentViewProps";
 
 export const DOCUMENT_SCHEMA: Schema = {

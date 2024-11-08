@@ -16,7 +16,7 @@
  */
 
 import { sanitizeIntegrationConfig } from "./sanitizeIntegrationConfig";
-import automationAnywhere from "../../contrib/integrations/automation-anywhere.yaml";
+import automationAnywhere from "@/contrib/integrations/automation-anywhere.yaml";
 import { fromJS } from "./UserDefinedIntegration";
 import type { IntegrationDefinition } from "./integrationTypes";
 

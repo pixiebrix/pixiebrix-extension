@@ -17,16 +17,13 @@
 
 import { define, derive, extend, type FactoryConfig } from "cooky-cutter";
 import { type Brick } from "../../types/brickTypes";
-import { type BrickConfig, type BrickPipeline } from "../../bricks/types";
+import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type UUID } from "../../types/stringTypes";
-import {
-  registryIdSequence,
-  uuidSequence,
-} from "./stringFactories";
+import { registryIdSequence, uuidSequence } from "./stringFactories";
 import { normalizeSemVerString } from "../../types/helpers";
 import { emptyPermissionsFactory } from "../../permissions/permissionsUtils";
 import { minimalSchemaFactory } from "../../utils/schemaUtils";
-import type { BrickDefinition } from "../../bricks/transformers/brickFactory";
+import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
 import { metadataFactory } from "./metadataFactory";
 import type { Reader } from "../../types/bricks/readerTypes";
 import type { PackageConfigDetail } from "../../types/contract";

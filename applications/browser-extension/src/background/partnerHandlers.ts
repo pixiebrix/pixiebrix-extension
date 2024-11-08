@@ -1,7 +1,7 @@
 import {
   type ProcessDataMap,
   SET_COPILOT_DATA_MESSAGE_TYPE,
-} from "../contrib/automationanywhere/aaTypes";
+} from "@/contrib/automationanywhere/aaTypes";
 import { getNotifier, type MessengerMeta } from "webext-messenger";
 
 type SetCopilotDataRequest = {

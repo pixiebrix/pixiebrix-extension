@@ -28,11 +28,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
-import useFlags from "../hooks/useFlags";
-import { useGetMeQuery } from "../data/service/api";
+import useFlags from "@/hooks/useFlags";
+import { useGetMeQuery } from "@/data/service/api";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
 import { MARKETPLACE_URL } from "../urlConstants";
-import { RestrictedFeatures } from "../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 const DEFAULT_DOCUMENTATION_URL = "https://docs.pixiebrix.com/";
 

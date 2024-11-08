@@ -27,7 +27,7 @@ import { type Schema } from "../../../../types/schemaTypes";
 import { type SchemaFieldProps } from "../propTypes";
 // eslint-disable-next-line no-restricted-imports -- test
 import { Formik } from "formik";
-import { useAuthOptions } from "../../../../hooks/useAuthOptions";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { waitForEffect } from "../../../../testUtils/testHelpers";
 import {
   loadingAsyncStateFactory,

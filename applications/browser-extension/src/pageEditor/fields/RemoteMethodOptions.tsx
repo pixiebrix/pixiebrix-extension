@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { inputProperties } from "../../bricks/transformers/remoteMethod";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import { inputProperties } from "@/bricks/transformers/remoteMethod";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { validateRegistryId } from "../../types/helpers";
 import { useField } from "formik";
 import { partial } from "lodash";

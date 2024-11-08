@@ -18,7 +18,7 @@
 import {
   BusinessError,
   MultipleElementsFoundError,
-} from "../../errors/businessErrors";
+} from "@/errors/businessErrors";
 import { asyncMapValues, pollUntilTruthy } from "../../utils/promiseUtils";
 import { $safeFind } from "../../utils/domUtils";
 

@@ -20,10 +20,10 @@ import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { isEmpty, sortBy } from "lodash";
-import { getErrorMessage, isSpecificError } from "../errors/errorHelpers";
+import { getErrorMessage, isSpecificError } from "@/errors/errorHelpers";
 import { expectContext } from "../utils/expectContext";
-import { reportToErrorService } from "../data/service/errorService";
-import { ContextError } from "../errors/genericErrors";
+import { reportToErrorService } from "@/data/service/errorService";
+import { ContextError } from "@/errors/genericErrors";
 import { type MessengerMeta } from "webext-messenger";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -37,8 +37,8 @@ import {
 } from "../utils/idbUtils";
 import { memoizeUntilSettled } from "../utils/promiseUtils";
 import { StorageItem } from "webext-storage";
-import { flagOn } from "../auth/featureFlagStorage";
-import { FeatureFlags } from "../auth/featureFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
+import { FeatureFlags } from "@/auth/featureFlags";
 import { reportToApplicationErrorTelemetry } from "./reportToApplicationErrorTelemetry";
 
 const ENTRY_OBJECT_STORE = "entries";

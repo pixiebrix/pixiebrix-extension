@@ -26,14 +26,14 @@ import {
   RootReader,
   tick,
 } from "../testHelpers";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import {
   fromJS,
   getDefaultAllowInactiveFramesForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
 } from "./triggerStarterBrick";
-import { getReferenceForElement } from "../../contentScript/elementReference";
+import { getReferenceForElement } from "@/contentScript/elementReference";
 import userEvent from "@testing-library/user-event";
 import { waitForEffect } from "../../testUtils/testHelpers";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
@@ -46,7 +46,7 @@ import {
   ThrowTwiceBrick,
 } from "../../runtime/pipelineTests/testHelpers";
 import { showNotification } from "../../utils/notify";
-import { notifyContextInvalidated } from "../../errors/contextInvalidated";
+import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "../../telemetry/reportError";
 import reportEvent from "../../telemetry/reportEvent";
 import { screen, waitFor } from "@testing-library/react";

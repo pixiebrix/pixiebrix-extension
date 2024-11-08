@@ -19,15 +19,15 @@ import { produce } from "immer";
 import objectHash from "object-hash";
 import { cloneDeep, isEmpty, mapValues, pick, pickBy } from "lodash";
 import starterBrickRegistry from "../starterBricks/registry";
-import brickRegistry from "../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { fromJS as starterBrickFactory } from "../starterBricks/factory";
-import { fromJS as brickFactory } from "../bricks/transformers/brickFactory";
+import { fromJS as brickFactory } from "@/bricks/transformers/brickFactory";
 import {
   type ModDefinition,
   type HydratedModComponentDefinition,
 } from "@/types/modDefinitionTypes";
 import { type StarterBrickDefinitionLike } from "../starterBricks/types";
-import { type ReaderConfig } from "../bricks/types";
+import { type ReaderConfig } from "@/bricks/types";
 import {
   INNER_SCOPE,
   type InnerDefinitions,

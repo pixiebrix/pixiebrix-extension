@@ -22,7 +22,7 @@ import {
 } from "../store/modComponents/modComponentStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { isLinked } from "../auth/authStorage";
+import { isLinked } from "@/auth/authStorage";
 import { refreshRegistries } from "./refreshRegistries";
 import { uuidv4 } from "@/types/helpers";
 import {
@@ -64,12 +64,12 @@ import { getBuiltInIntegrationConfigs } from "./getBuiltInIntegrationConfigs";
 import {
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
-} from "../auth/featureFlags";
+} from "@/auth/featureFlags";
 import {
   TEST_deleteFeatureFlagsCache,
   TEST_overrideFeatureFlags,
-} from "../auth/featureFlagStorage";
-import { API_PATHS } from "../data/service/urlPaths";
+} from "@/auth/featureFlagStorage";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 

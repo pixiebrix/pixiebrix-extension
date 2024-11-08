@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "./stringUtils";
 import { type Nullishable, assertNotNullish } from "./nullishUtils";
 

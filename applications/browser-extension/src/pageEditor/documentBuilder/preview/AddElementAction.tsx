@@ -17,7 +17,7 @@
 
 import { useField } from "formik";
 import React, { type MutableRefObject } from "react";
-import EllipsisMenu from "../../../components/ellipsisMenu/EllipsisMenu";
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,

@@ -17,7 +17,7 @@
 
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { FormFill, SetInputValue } from "./forms";
-import { BusinessError, NoElementsFoundError } from "../../errors/businessErrors";
+import { BusinessError, NoElementsFoundError } from "@/errors/businessErrors";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 
 const setInputValueBrick = new SetInputValue();

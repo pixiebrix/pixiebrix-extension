@@ -20,7 +20,7 @@ import VarMap, {
   IS_ARRAY,
   SELF_EXISTENCE,
   VarExistence,
-} from "../../../../../analysis/analysisVisitors/varAnalysis/varMap";
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import {
   defaultMenuOption,
   expandCurrentVariableLevel,

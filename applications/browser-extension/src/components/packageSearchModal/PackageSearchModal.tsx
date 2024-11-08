@@ -33,7 +33,7 @@ import {
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
 import { useDebounce } from "use-debounce";
-import { useGetMarketplaceListingsQuery } from "../../data/service/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import Fuse from "fuse.js";
 import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";
@@ -44,11 +44,14 @@ import { type Except } from "type-fest";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import useAutoFocusConfiguration from "../../hooks/useAutoFocusConfiguration";
-import { type PackageInstance, type RegistryId } from "../../types/registryTypes";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
+import {
+  type PackageInstance,
+  type RegistryId,
+} from "../../types/registryTypes";
 import { type Brick } from "../../types/brickTypes";
 import { isNullOrBlank } from "../../utils/stringUtils";
-import useOnMountOnly from "../../hooks/useOnMountOnly";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 import { freeze } from "../../utils/objectUtils";
 import { assertNotNullish } from "../../utils/nullishUtils";
 

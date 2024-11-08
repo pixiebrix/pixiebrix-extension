@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { snippetRegistry } from "../../contentScript/snippetShortcutMenu/snippetShortcutMenuController";
+import { snippetRegistry } from "@/contentScript/snippetShortcutMenu/snippetShortcutMenuController";
 import AddDynamicTextSnippet from "./AddDynamicTextSnippet";
 import brickRegistry from "../registry";
 import { simpleInput } from "../../runtime/pipelineTests/testHelpers";

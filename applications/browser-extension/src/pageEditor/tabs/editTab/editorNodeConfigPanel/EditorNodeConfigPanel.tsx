@@ -18,17 +18,17 @@
 import React from "react";
 import cx from "classnames";
 import styles from "./EditorNodeConfigPanel.module.scss";
-import ConnectedFieldTemplate from "../../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "../../effect/BrickConfiguration";
-import brickRegistry from "../../../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import getType from "../../../../runtime/getType";
 import AnalysisResult from "../AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "../../../store/editor/editorSelectors";
-import { useGetMarketplaceListingsQuery } from "../../../../data/service/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "../../../../urlConstants";
 import CommentsPreview from "./CommentsPreview";
-import useAsyncState from "../../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import OutputVariableField from "./OutputVariableField";
 
 const EditorNodeConfigPanel: React.FC = () => {

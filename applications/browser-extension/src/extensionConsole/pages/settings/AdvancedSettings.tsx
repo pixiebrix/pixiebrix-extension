@@ -23,27 +23,27 @@ import React, { useCallback } from "react";
 import {
   clearCachedAuthSecrets,
   clearPartnerAuthData,
-} from "../../../auth/authStorage";
+} from "@/auth/authStorage";
 import notify from "../../../utils/notify";
-import useFlags from "../../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import settingsSlice, {
   useActivatePartnerTheme,
 } from "../../../store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSettings } from "../../../store/settings/settingsSelectors";
 import { validateRegistryId } from "../../../types/helpers";
-import useUserAction from "../../../hooks/useUserAction";
+import useUserAction from "@/hooks/useUserAction";
 import { isEmpty } from "lodash";
-import { util as apiUtil } from "../../../data/service/api";
+import { util as apiUtil } from "@/data/service/api";
 import useDiagnostics from "./useDiagnostics";
-import AsyncButton from "../../../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { reloadIfNewVersionIsReady } from "../../../utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "../../../urlConstants";
 import { PIXIEBRIX_INTEGRATION_ID } from "../../../integrations/constants";
-import { refreshPartnerAuthentication } from "../../../background/messenger/api";
+import { refreshPartnerAuthentication } from "@/background/messenger/api";
 import useServiceUrlSetting from "./useServiceUrlSetting";
 import useDeploymentKeySetting from "./useDeploymentKeySetting";
-import { FeatureFlags, RestrictedFeatures } from "../../../auth/featureFlags";
+import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
 
 const AdvancedSettings: React.FunctionComponent = () => {
   const dispatch = useDispatch();

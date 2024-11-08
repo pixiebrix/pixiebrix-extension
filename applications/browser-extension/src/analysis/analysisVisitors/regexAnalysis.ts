@@ -16,10 +16,10 @@
  */
 
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
-import { type BrickConfig, type BrickPosition } from "../../bricks/types";
-import { type VisitBlockExtra } from "../../bricks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import { validateRegistryId } from "../../types/helpers";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "../../types/annotationTypes";
 import {
   containsTemplateExpression,

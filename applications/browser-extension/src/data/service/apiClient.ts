@@ -23,17 +23,17 @@ import {
   getAuthHeaders,
   getPartnerAuthData,
   isLinked,
-} from "../../auth/authStorage";
+} from "@/auth/authStorage";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
-} from "../../errors/genericErrors";
+} from "@/errors/genericErrors";
 import { isUrlRelative } from "../../utils/urlUtils";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 import { selectAxiosError } from "./requestErrorUtils";
 import { getURLApiVersion } from "./apiVersioning";
-import { isAuthenticationAxiosError } from "../../auth/isAuthenticationAxiosError";
-import { refreshPartnerAuthentication } from "../../background/messenger/api";
+import { isAuthenticationAxiosError } from "@/auth/isAuthenticationAxiosError";
+import { refreshPartnerAuthentication } from "@/background/messenger/api";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL

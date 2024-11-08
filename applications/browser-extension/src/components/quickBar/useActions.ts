@@ -18,7 +18,7 @@
 import { type Action, useKBar } from "kbar";
 import React from "react";
 import quickBarRegistry from "./quickBarRegistry";
-import useOnMountOnly from "../../hooks/useOnMountOnly";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled

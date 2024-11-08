@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "../../types/schemaTypes";
 import { partial } from "lodash";
 import React from "react";

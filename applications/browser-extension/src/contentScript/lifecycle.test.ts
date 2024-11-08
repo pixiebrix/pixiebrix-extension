@@ -25,9 +25,9 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import { type Metadata, DefinitionKinds } from "@/types/registryTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
-import { type BrickPipeline } from "../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { RootReader, tick } from "../starterBricks/testHelpers";
-import brickRegistry from "../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { hydrateModComponentInnerDefinitions } from "../registry/hydrateInnerDefinitions";
 import {
   timestampFactory,

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../extensionConsole/testHelpers";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import {
   useOptionalModDefinition,
   useRequiredModDefinitions,
 } from "./modDefinitionHooks";
 import { validateRegistryId } from "@/types/helpers";
 import pDefer from "p-defer";
-import { registry } from "../background/messenger/api";
+import { registry } from "@/background/messenger/api";
 
 registry.syncRemote = jest.fn();
 

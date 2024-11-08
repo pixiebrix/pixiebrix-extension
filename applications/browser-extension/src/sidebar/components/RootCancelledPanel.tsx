@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { type CancelError } from "../../errors/businessErrors";
-import { getErrorMessage } from "../../errors/errorHelpers";
+import { type CancelError } from "@/errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 

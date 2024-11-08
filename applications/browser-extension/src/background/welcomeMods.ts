@@ -20,13 +20,13 @@ import sidebarSlice from "../store/sidebar/sidebarSlice";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
-} from "../data/service/apiClient";
+} from "@/data/service/apiClient";
 import {
   getModComponentState,
   saveModComponentState,
 } from "../store/modComponents/modComponentStorage";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { reloadModsEveryTab } from "../contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { type ModComponentState } from "../store/modComponents/modComponentTypes";
 import reportError from "../telemetry/reportError";
 import { debounce } from "lodash";
@@ -53,17 +53,17 @@ import {
 import {
   autoCreateDatabaseOptionsArgsInPlace,
   makeDatabasePreviewName,
-} from "../activation/modOptionsHelpers";
+} from "@/activation/modOptionsHelpers";
 import type { OptionsArgs } from "@/types/runtimeTypes";
-import { isDatabasePreviewField } from "../components/fields/schemaFields/fieldTypeCheckers";
+import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isRequired } from "../utils/schemaUtils";
 import type { Schema } from "@/types/schemaTypes";
 import { getBuiltInIntegrationConfigs } from "./getBuiltInIntegrationConfigs";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { getErrorMessage } from "../errors/errorHelpers";
-import { restrict } from "../auth/featureFlagStorage";
-import { RestrictedFeatures } from "../auth/featureFlags";
-import { API_PATHS } from "../data/service/urlPaths";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { restrict } from "@/auth/featureFlagStorage";
+import { RestrictedFeatures } from "@/auth/featureFlags";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { selectModInstanceMap } from "../store/modComponents/modInstanceSelectors";
 import { mapModInstanceToActivatedModComponents } from "../store/modComponents/modInstanceUtils";
 

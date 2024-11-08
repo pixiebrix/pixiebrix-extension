@@ -21,7 +21,7 @@ import { noop } from "lodash";
 import VariablesTree from "./VariablesTree";
 import VarMap, {
   ALLOW_ANY_CHILD,
-} from "../../../../../analysis/analysisVisitors/varAnalysis/varMap";
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import { render, screen } from "@testing-library/react";
 import { type UnknownRecord } from "type-fest";
 

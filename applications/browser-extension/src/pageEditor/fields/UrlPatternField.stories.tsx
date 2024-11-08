@@ -17,12 +17,10 @@
 
 import React from "react";
 import { type ComponentMeta, type ComponentStory } from "@storybook/react";
-import Form from "../../components/form/Form";
+import Form from "@/components/form/Form";
 import { action } from "@storybook/addon-actions";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
-import UrlPatternField, {
-  type UrlPatternFieldProps,
-} from "./UrlPatternField";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import UrlPatternField, { type UrlPatternFieldProps } from "./UrlPatternField";
 import { editorStore } from "../../testUtils/storyUtils";
 import { Provider } from "react-redux";
 

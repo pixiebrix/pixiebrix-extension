@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
-import widgetsRegistry from "../../components/fields/schemaFields/widgets/widgetsRegistry";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import widgetsRegistry from "@/components/fields/schemaFields/widgets/widgetsRegistry";
 
 type SelectorMatchFieldProps = {
   name: string;

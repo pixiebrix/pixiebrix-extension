@@ -18,8 +18,8 @@
 import { type ModsPageState } from "./modsPageSlice";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectAllModDefinitions } from "../../../modDefinitions/modDefinitionsSelectors";
-import { appApi } from "../../../data/service/api";
-import { selectOrganizations, selectScope } from "../../../auth/authSelectors";
+import { appApi } from "@/data/service/api";
+import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import buildModsList from "./utils/buildModsList";
 import buildGetModActivationStatus from "./utils/buildGetModActivationStatus";
 import buildGetModVersionStatus from "./utils/buildGetModVersionStatus";
@@ -30,7 +30,7 @@ import {
   FeatureFlags,
   mapRestrictedFeatureToFeatureFlag,
   RestrictedFeatures,
-} from "../../../auth/featureFlags";
+} from "@/auth/featureFlags";
 import { selectModInstanceMap } from "../../../store/modComponents/modInstanceSelectors";
 
 export type ModsPageRootState = {

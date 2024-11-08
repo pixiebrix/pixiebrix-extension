@@ -19,7 +19,7 @@ import SetToolbarBadge from "./setToolbarBadge";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { isLoadedInIframe } from "../../utils/iframeUtils";
-import { setToolbarBadge } from "../../background/messenger/api";
+import { setToolbarBadge } from "@/background/messenger/api";
 
 const brick = new SetToolbarBadge();
 jest.mock("../../utils/iframeUtils", () => ({

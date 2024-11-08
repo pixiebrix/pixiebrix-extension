@@ -18,7 +18,7 @@
 import { useCallback } from "react";
 import { type RegistryId } from "../../types/registryTypes";
 import { actions as editorActions } from "../store/editor/editorSlice";
-import { useModals } from "../../components/ConfirmationModal";
+import { useModals } from "@/components/ConfirmationModal";
 import { useDispatch, useSelector } from "react-redux";
 import useClearModComponentChanges from "./useClearModComponentChanges";
 import { selectGetModComponentFormStatesForMod } from "../store/editor/editorSelectors";

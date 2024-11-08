@@ -27,8 +27,8 @@ import {
   syncDeployments,
 } from "./deploymentUpdater";
 import reportEvent from "../telemetry/reportEvent";
-import { isLinked, readAuthData } from "../auth/authStorage";
-import { refreshRegistries } from "../hooks/useRefreshRegistries";
+import { isLinked, readAuthData } from "@/auth/authStorage";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "./installer";
 import {
   getSettingsState,
@@ -62,14 +62,14 @@ import { activatableDeploymentFactory } from "../testUtils/factories/deploymentF
 import { packageConfigDetailFactory } from "../testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
 import { resetMeApiMocks } from "../testUtils/userMock";
-import { TEST_deleteFeatureFlagsCache } from "../auth/featureFlagStorage";
+import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import {
   queueReloadModEveryTab,
   reloadModsEveryTab,
-} from "../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import { adapter } from "../pageEditor/starterBricks/adapter";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 TEST_setContext("background");
 

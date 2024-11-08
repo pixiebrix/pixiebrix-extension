@@ -19,7 +19,7 @@ import { type NodeAction } from "../../editorNodes/nodeActions/NodeActionsView";
 import { faPlusCircle, faPaste } from "@fortawesome/free-solid-svg-icons";
 import { actions } from "../../../../store/editor/editorSlice";
 import { useDispatch } from "react-redux";
-import { type PipelineFlavor } from "../../../../../bricks/types";
+import { type PipelineFlavor } from "@/bricks/types";
 import usePasteBrick from "../usePasteBrick";
 import useApiVersionAtLeast from "../../../../hooks/useApiVersionAtLeast";
 import { useCallback } from "react";

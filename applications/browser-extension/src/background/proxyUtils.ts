@@ -20,7 +20,7 @@ import {
   type ProxyResponseData,
   type ProxyResponseErrorData,
 } from "@/types/contract";
-import { safeGuessStatusText } from "../errors/networkErrorHelpers";
+import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
 /**
  * Return the error message from a 3rd party API proxied through the PixieBrix API proxy

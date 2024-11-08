@@ -15,17 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-} from "./testHelpers";
+import brickRegistry from "@/bricks/registry";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { reducePipeline } from "../reducePipeline";
 import { contextAsPlainObject } from "../extendModVariableContext";
 import { toExpression } from "../../utils/expressionUtils";
 import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
-import { MergeStrategies, StateNamespaces } from "../../platform/state/stateTypes";
+import {
+  MergeStrategies,
+  StateNamespaces,
+} from "../../platform/state/stateTypes";
 import { getPlatform } from "../../platform/platformContext";
 
 beforeEach(() => {

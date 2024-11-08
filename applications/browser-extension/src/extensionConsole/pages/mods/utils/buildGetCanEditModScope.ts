@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { AuthUserOrganization } from "../../../../auth/authTypes";
+import type { AuthUserOrganization } from "@/auth/authTypes";
 import type { Mod } from "../../../../types/modTypes";
 import { idHasScope } from "../../../../utils/modUtils";
 import { getScopeAndId } from "../../../../utils/registryUtils";
-import { isPackageEditorRole } from "../../../../auth/authUtils";
+import { isPackageEditorRole } from "@/auth/authUtils";
 
 export default function buildGetCanEditModScope(
   userScope: string,

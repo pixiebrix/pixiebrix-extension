@@ -26,7 +26,7 @@ import { Form, type FormControlProps } from "react-bootstrap";
 import { useField } from "formik";
 import { round } from "lodash";
 import { type SchemaFieldProps } from "../propTypes";
-import useAutoFocusConfiguration from "../../../../hooks/useAutoFocusConfiguration";
+import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 
 /**
  * A basic input widget for numbers

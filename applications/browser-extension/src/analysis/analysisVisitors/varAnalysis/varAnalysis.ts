@@ -17,32 +17,32 @@
 
 import PipelineExpressionVisitor, {
   type VisitDocumentBuilderElementArgs,
-} from "../../../bricks/PipelineExpressionVisitor";
+} from "@/bricks/PipelineExpressionVisitor";
 import {
   nestedPosition,
   type VisitBlockExtra,
   type VisitPipelineExtra,
-} from "../../../bricks/PipelineVisitor";
-import { type BrickConfig, type BrickPosition } from "../../../bricks/types";
+} from "@/bricks/PipelineVisitor";
+import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "../../../pageEditor/starterBricks/formStateTypes";
 import { getVariableKeyForSubPipeline } from "../../../pageEditor/utils";
 import { isEmpty } from "lodash";
-import {
-  type Analysis,
-  type AnalysisAnnotation,
-} from "../../analysisTypes";
+import { type Analysis, type AnalysisAnnotation } from "../../analysisTypes";
 import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "../../../telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import modRegistry from "../../../modDefinitions/registry";
-import brickRegistry, { type TypedBrickMap } from "../../../bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import {
   isDocumentBuilderElementArray,
   type ListElement,
 } from "../../../pageEditor/documentBuilder/documentBuilderTypes";
 import { fromJS } from "../../../starterBricks/factory";
 import { type Schema } from "../../../types/schemaTypes";
-import { type Expression, type TemplateEngine } from "../../../types/runtimeTypes";
+import {
+  type Expression,
+  type TemplateEngine,
+} from "../../../types/runtimeTypes";
 import { AnnotationType } from "../../../types/annotationTypes";
 import {
   isDeferExpression,
@@ -55,7 +55,7 @@ import { joinPathParts } from "../../../utils/formUtils";
 import makeIntegrationContextFromDependencies from "../../../integrations/util/makeIntegrationContextFromDependencies";
 import { getOutputReference, isOutputKey } from "../../../runtime/runtimeTypes";
 import { assertNotNullish } from "../../../utils/nullishUtils";
-import { BusinessError } from "../../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { adapterForComponent } from "../../../pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "../../../types/helpers";
 import { type DraftModState } from "../../../pageEditor/store/editor/pageEditorTypes";

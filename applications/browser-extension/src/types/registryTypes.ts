@@ -19,7 +19,7 @@ import { type UUID } from "./stringTypes";
 import { type ApiVersion } from "./runtimeTypes";
 import { type SetRequired, type Tagged, type ValueOf } from "type-fest";
 import { type Schema } from "./schemaTypes";
-import { type FeatureFlag } from "../auth/featureFlags";
+import { type FeatureFlag } from "@/auth/featureFlags";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`

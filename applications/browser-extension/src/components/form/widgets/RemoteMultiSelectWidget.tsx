@@ -17,14 +17,11 @@
 
 import React, { type ChangeEvent, useContext, useEffect } from "react";
 import Select, { type MultiValue } from "react-select";
-import {
-  type MultiSelectLike,
-  type Option,
-} from "./SelectWidget";
+import { type MultiSelectLike, type Option } from "./SelectWidget";
 import { type SanitizedIntegrationConfig } from "../../../integrations/integrationTypes";
 import { type OptionsFactory } from "./RemoteSelectWidget";
-import { getErrorMessage } from "../../../errors/errorHelpers";
-import useReportError from "../../../hooks/useReportError";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import useReportError from "@/hooks/useReportError";
 import type { CustomFieldWidgetProps } from "../FieldTemplate";
 import { useOptionsResolver } from "./useOptionsResolver";
 import FieldTemplateLocalErrorContext from "./FieldTemplateLocalErrorContext";

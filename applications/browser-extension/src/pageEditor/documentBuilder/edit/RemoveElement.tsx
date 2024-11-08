@@ -22,7 +22,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import useDeleteElement from "../hooks/useDeleteElement";
 import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
 import { useSelector } from "react-redux";
-import { assertNotNullish } from "../../../utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type RemoveElementProps = {
   documentBodyName: string;

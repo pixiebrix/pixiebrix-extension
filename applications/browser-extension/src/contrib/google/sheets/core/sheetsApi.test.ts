@@ -15,32 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  DRIVE_BASE_URL,
-  getAllSpreadsheets,
-} from "./sheetsApi";
+import { DRIVE_BASE_URL, getAllSpreadsheets } from "./sheetsApi";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { performConfiguredRequest as realProxyService } from "../../../../background/requests";
-import { performConfiguredRequestInBackground as apiProxyService } from "../../../../background/messenger/api";
+import { performConfiguredRequest as realProxyService } from "@/background/requests";
+import { performConfiguredRequestInBackground as apiProxyService } from "@/background/messenger/api";
 import { integrationConfigFactory } from "../../../../testUtils/factories/integrationFactories";
-import { integrationConfigLocator } from "../../../../background/integrationConfigLocator";
-import googleDefinition from "../../../../../contrib/integrations/google-oauth2-pkce.yaml";
+import { integrationConfigLocator } from "@/background/integrationConfigLocator";
+import googleDefinition from "@/contrib/integrations/google-oauth2-pkce.yaml";
 import { fromJS } from "../../../../integrations/UserDefinedIntegration";
 import {
   type AuthData,
   type IntegrationConfig,
 } from "../../../../integrations/integrationTypes";
 import { setPlatform } from "../../../../platform/platformContext";
-import backgroundPlatform from "../../../../background/backgroundPlatform";
+import backgroundPlatform from "@/background/backgroundPlatform";
 import { readRawConfigurations } from "../../../../integrations/util/readRawConfigurations";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
   setCachedAuthData,
-} from "../../../../background/auth/authStorage";
-import launchOAuth2Flow from "../../../../background/auth/launchOAuth2Flow";
-import { API_PATHS } from "../../../../data/service/urlPaths";
+} from "@/background/auth/authStorage";
+import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const axiosMock = new MockAdapter(axios);
 

@@ -20,7 +20,7 @@ import { Button, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "../../img/marketplace.svg";
-import useRequiredPartnerAuth from "../auth/useRequiredPartnerAuth";
+import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { useSelector } from "react-redux";
 import { selectSettings } from "../store/settings/settingsSelectors";
 import { DEFAULT_SERVICE_URL } from "../urlConstants";

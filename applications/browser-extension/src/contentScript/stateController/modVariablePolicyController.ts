@@ -22,7 +22,7 @@ import {
   SyncPolicies,
   type SyncPolicy,
 } from "../../platform/state/stateTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty, pickBy } from "lodash";
 import { tryParseSessionStorageKey } from "../../platform/state/stateHelpers";
 import type { Nullishable } from "../../utils/nullishUtils";

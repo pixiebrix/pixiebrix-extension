@@ -20,7 +20,7 @@ import cx from "classnames";
 import styles from "./NodeActionsView.module.scss";
 import { isEmpty } from "lodash";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import TooltipIconButton from "../../../../../components/TooltipIconButton";
+import TooltipIconButton from "@/components/TooltipIconButton";
 
 export type NodeAction = {
   /**

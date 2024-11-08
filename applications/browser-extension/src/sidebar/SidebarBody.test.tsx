@@ -19,7 +19,7 @@ import React from "react";
 import SidebarBody from "./SidebarBody";
 import { render } from "./testHelpers";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
-import useTheme from "../hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import { initialTheme } from "../themes/themeStore";
 import { waitForEffect } from "../testUtils/testHelpers";
 import {

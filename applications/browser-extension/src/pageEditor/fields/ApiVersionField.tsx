@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 /**
  * Developer-only component to select the brick runtime version for the mod. In general, developers should not

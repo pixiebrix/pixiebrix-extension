@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AnalysisAnnotation } from "../../analysis/analysisTypes";
+import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { type FieldAnnotation } from "./FieldAnnotation";
 import { isEqual } from "lodash";
 import { makeFieldActionForAnnotationAction } from "./makeFieldActionForAnnotationAction";

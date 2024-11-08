@@ -15,17 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SelectorAnalysis, {
-  findJQueryExtensions,
-} from "./selectorAnalysis";
+import SelectorAnalysis, { findJQueryExtensions } from "./selectorAnalysis";
 import {
   menuItemFormStateFactory,
   triggerFormStateFactory,
 } from "../../testUtils/factories/pageEditorFactories";
 import type { AttachMode } from "../../starterBricks/button/buttonStarterBrickTypes";
-import { HighlightEffect } from "../../bricks/effects/highlight";
-import brickRegistry from "../../bricks/registry";
-import { JQueryReader } from "../../bricks/transformers/jquery/JQueryReader";
+import { HighlightEffect } from "@/bricks/effects/highlight";
+import brickRegistry from "@/bricks/registry";
+import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 
 const highlight = new HighlightEffect();
 const reader = new JQueryReader();

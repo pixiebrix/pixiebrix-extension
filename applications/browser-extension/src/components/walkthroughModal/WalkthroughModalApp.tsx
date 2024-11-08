@@ -19,7 +19,7 @@ import styles from "./WalkthroughModal.module.scss";
 
 import { Button, Carousel, Col, Container, Modal, Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { closeWalkthroughModal } from "../../contentScript/messenger/api";
+import { closeWalkthroughModal } from "@/contentScript/messenger/api";
 import { type Target } from "../../types/messengerTypes";
 import { Events } from "../../telemetry/events";
 import inspectContextMenuImage from "../../../img/inspect-context-menu.png";

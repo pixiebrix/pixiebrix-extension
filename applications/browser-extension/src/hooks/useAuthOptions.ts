@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthOption, type AuthSharing } from "../auth/authTypes";
+import { type AuthOption, type AuthSharing } from "@/auth/authTypes";
 import { sortBy } from "lodash";
 import { type RemoteIntegrationConfig } from "@/types/contract";
 import { type IntegrationConfig } from "../integrations/integrationTypes";
@@ -24,7 +24,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "./useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "./useMergeAsyncState";
-import { useGetIntegrationAuthsQuery } from "../data/service/api";
+import { useGetIntegrationAuthsQuery } from "@/data/service/api";
 import getModDefinitionIntegrationIds from "../integrations/util/getModDefinitionIntegrationIds";
 import { type Nullishable } from "../utils/nullishUtils";
 import { readRawConfigurations } from "../integrations/util/readRawConfigurations";

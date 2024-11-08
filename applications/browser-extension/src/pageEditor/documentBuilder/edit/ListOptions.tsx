@@ -16,14 +16,14 @@
  */
 
 import React, { type ChangeEventHandler } from "react";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
-import KeyNameWidget from "../../../components/form/widgets/KeyNameWidget";
-import FieldTemplate from "../../../components/form/FieldTemplate";
-import SelectWidget from "../../../components/form/widgets/SelectWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { getAllowedChildTypes } from "../allowedElementTypes";
 import documentBuilderElementTypeLabels from "../elementTypeLabels";
-import { type SchemaFieldProps } from "../../../components/fields/schemaFields/propTypes";
-import SchemaField from "../../../components/fields/schemaFields/SchemaField";
+import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import {
   type DocumentBuilderElementType,
   type ListElement,

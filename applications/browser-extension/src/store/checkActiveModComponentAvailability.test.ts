@@ -22,13 +22,13 @@ import { actions, editorSlice } from "../pageEditor/store/editor/editorSlice";
 import modComponentSlice from "./modComponents/modComponentSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
-import { checkAvailable } from "../contentScript/messenger/api";
+import { checkAvailable } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import {
   checkAvailable as backgroundCheckAvailable,
   normalizeAvailability,
-} from "../bricks/available";
+} from "@/bricks/available";
 import { selectModComponentAvailability } from "../pageEditor/store/editor/editorSelectors";
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "../testUtils/factories/pageEditorFactories";

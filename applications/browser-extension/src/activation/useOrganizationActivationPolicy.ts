@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useFlags, { type FlagHelpers } from "../hooks/useFlags";
+import useFlags, { type FlagHelpers } from "@/hooks/useFlags";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { RestrictedFeatures } from "../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 import { useSelector } from "react-redux";
-import { selectOrganizations } from "../auth/authSelectors";
+import { selectOrganizations } from "@/auth/authSelectors";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import useMergeAsyncState from "../hooks/useMergeAsyncState";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 
 export type OrganizationActivationPolicyResult = {
   /**

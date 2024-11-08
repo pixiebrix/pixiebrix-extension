@@ -17,8 +17,8 @@
 
 /// <reference types="@types/dom-chromium-ai" />
 
-import { BusinessError } from "../../../errors/businessErrors";
-import { getErrorMessage } from "../../../errors/errorHelpers";
+import { BusinessError } from "@/errors/businessErrors";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const UNTESTED_LANGUAGE_ERROR =
   "The model attempted to output text in an untested language, and was prevented from doing so.";

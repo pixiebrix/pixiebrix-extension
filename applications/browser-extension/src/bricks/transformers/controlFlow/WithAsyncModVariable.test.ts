@@ -33,7 +33,7 @@ import { modComponentRefFactory } from "../../../testUtils/factories/modComponen
 import { reduceOptionsFactory } from "../../../testUtils/factories/runtimeFactories";
 import { StateNamespaces } from "../../../platform/state/stateTypes";
 import { getPlatform } from "../../../platform/platformContext";
-import { TEST_resetStateController } from "../../../contentScript/stateController/stateController";
+import { TEST_resetStateController } from "@/contentScript/stateController/stateController";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 

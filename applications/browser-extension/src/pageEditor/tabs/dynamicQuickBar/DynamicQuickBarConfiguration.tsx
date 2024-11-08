@@ -16,18 +16,18 @@
  */
 
 import React, { type ChangeEvent } from "react";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import UrlMatchPatternField from "../../fields/UrlMatchPatternField";
 import { makeLockableFieldProps } from "../../fields/makeLockableFieldProps";
-import IconWidget from "../../../components/fields/IconWidget";
+import IconWidget from "@/components/fields/IconWidget";
 import ExtraPermissionsSection from "../ExtraPermissionsSection";
 import { useField, useFormikContext } from "formik";
-import FieldTemplate from "../../../components/form/FieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 import { type DynamicQuickBarConfig } from "../../../starterBricks/dynamicQuickBar/dynamicQuickBarTypes";
 import { type DynamicQuickBarFormState } from "../../starterBricks/formStateTypes";
 import SwitchButtonWidget, {
   type CheckBoxLike,
-} from "../../../components/form/widgets/switchButton/SwitchButtonWidget";
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
 
 const DynamicQuickBarConfiguration: React.FC<{

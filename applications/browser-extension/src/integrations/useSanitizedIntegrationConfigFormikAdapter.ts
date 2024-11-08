@@ -20,9 +20,9 @@ import {
   type IntegrationDependency,
   type SanitizedIntegrationConfig,
 } from "./integrationTypes";
-import { integrationConfigLocator } from "../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
-import useAsyncState from "../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { uniq } from "lodash";
 import { PIXIEBRIX_INTEGRATION_ID } from "./constants";

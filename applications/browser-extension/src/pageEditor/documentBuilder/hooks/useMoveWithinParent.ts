@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useReduxState from "../../../hooks/useReduxState";
+import useReduxState from "@/hooks/useReduxState";
 import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSelectors";
 import { actions } from "../../store/editor/editorSlice";
 import { useField } from "formik";

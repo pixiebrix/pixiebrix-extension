@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
-import { type BrickPipeline } from "../../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 
-import { fromJS } from "../../bricks/transformers/brickFactory";
+import { fromJS } from "@/bricks/transformers/brickFactory";
 import { normalizeSemVerString } from "../../types/helpers";
 import { TEST_setContext } from "webext-detect";
 import { toExpression } from "../../utils/expressionUtils";

@@ -28,7 +28,7 @@ import {
   faCubes,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import MarketplaceListingIcon from "../../../../components/MarketplaceListingIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 
 type GridCardProps = {
   modViewItem: ModViewItem;

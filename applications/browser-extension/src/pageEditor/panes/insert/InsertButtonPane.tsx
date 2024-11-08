@@ -18,7 +18,7 @@
 import styles from "../Pane.module.scss";
 
 import React from "react";
-import Centered from "../../../components/Centered";
+import Centered from "@/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

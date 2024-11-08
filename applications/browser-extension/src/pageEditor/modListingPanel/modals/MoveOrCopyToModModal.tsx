@@ -17,7 +17,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
-import SelectWidget from "../../../components/form/widgets/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "../../store/editor/editorSlice";
 import {
@@ -26,12 +26,12 @@ import {
   getModalDataSelector,
   selectModMetadataMap,
 } from "../../store/editor/editorSelectors";
-import ConnectedFieldTemplate from "../../../components/form/ConnectedFieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
-} from "../../../components/form/Form";
+} from "@/components/form/Form";
 import { object, string } from "yup";
 import { type RegistryId } from "../../../types/registryTypes";
 import { assertNotNullish } from "../../../utils/nullishUtils";

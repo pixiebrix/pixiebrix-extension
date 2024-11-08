@@ -20,7 +20,7 @@ import {
   getState,
   setState,
   TEST_resetStateController,
-} from "../contentScript/stateController/stateController";
+} from "@/contentScript/stateController/stateController";
 import { MergeStrategies, StateNamespaces } from "../platform/state/stateTypes";
 import type { JSONSchema7Definition } from "json-schema";
 import {
@@ -28,7 +28,7 @@ import {
   deleteSynchronizedModVariablesForTab,
 } from "./stateControllerListeners";
 import { getThisFrame } from "webext-messenger";
-import { registerModVariables } from "../contentScript/stateController/modVariablePolicyController";
+import { registerModVariables } from "@/contentScript/stateController/modVariablePolicyController";
 
 beforeEach(async () => {
   await TEST_resetStateController();

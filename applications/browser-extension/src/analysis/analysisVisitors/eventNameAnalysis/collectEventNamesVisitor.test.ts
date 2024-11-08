@@ -19,7 +19,7 @@ import {
   formStateFactory,
   triggerFormStateFactory,
 } from "../../../testUtils/factories/pageEditorFactories";
-import CustomEventEffect from "../../../bricks/effects/customEvent";
+import CustomEventEffect from "@/bricks/effects/customEvent";
 import CollectEventNamesVisitor from "./collectEventNamesVisitor";
 
 import { toExpression } from "../../../utils/expressionUtils";

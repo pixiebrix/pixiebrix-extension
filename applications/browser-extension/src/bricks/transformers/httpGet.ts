@@ -16,7 +16,7 @@
  */
 
 import { TransformerABC } from "../../types/bricks/transformerTypes";
-import { PropError } from "../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "../../types/helpers";
 import { type Schema } from "../../types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";

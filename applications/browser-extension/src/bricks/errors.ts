@@ -17,12 +17,12 @@
 
 import { type OutputUnit } from "@cfworker/json-schema";
 import { type JsonObject } from "type-fest";
-import { BusinessError, CancelError } from "../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickArgsContext } from "@/types/runtimeTypes";
-import { isObject } from "../utils/objectUtils";
+import { isObject } from "@/utils/objectUtils";
 
 /**
  * Error bailing if a renderer component is encountered while running in "headless mode"

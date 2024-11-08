@@ -19,18 +19,16 @@ import { loadBrickYaml } from "../../runtime/brickYaml";
 import { waitForEffect } from "../../testUtils/testHelpers";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
-import brickRegistry from "../../bricks/registry";
-import MarkdownRenderer from "../../bricks/renderers/MarkdownRenderer";
-import * as contentScriptAPI from "../../contentScript/messenger/api";
+import brickRegistry from "@/bricks/registry";
+import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
+import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "../../types/helpers";
 import { buildDocumentBuilderSubtree } from "./documentTree";
 import {
   type DocumentBuilderElement,
   type DocumentBuilderElementType,
 } from "./documentBuilderTypes";
-import DocumentContext, {
-  initialValue,
-} from "./render/DocumentContext";
+import DocumentContext, { initialValue } from "./render/DocumentContext";
 import { toExpression } from "../../utils/expressionUtils";
 
 // Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandled rejection errors since we call

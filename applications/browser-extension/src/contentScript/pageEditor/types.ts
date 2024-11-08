@@ -28,8 +28,11 @@ import {
 import { type ElementInfo } from "../../utils/inference/selectorTypes";
 import { type ModComponentBase } from "../../types/modComponentTypes";
 import { type UUID } from "../../types/stringTypes";
-import { type ApiVersion, type BrickArgsContext } from "../../types/runtimeTypes";
-import { type BrickConfig } from "../../bricks/types";
+import {
+  type ApiVersion,
+  type BrickArgsContext,
+} from "../../types/runtimeTypes";
+import { type BrickConfig } from "@/bricks/types";
 
 export interface DraftModComponent<
   TStarterBrickDefinitionProp extends

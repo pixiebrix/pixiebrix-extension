@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickPosition } from "../bricks/types";
+import { type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "../pageEditor/starterBricks/formStateTypes";
 import type VarMap from "./analysisVisitors/varAnalysis/varMap";
 import { type BaseAnnotation } from "@/types/annotationTypes";

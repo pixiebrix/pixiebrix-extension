@@ -19,15 +19,15 @@ import { getModComponentState } from "../store/modComponents/modComponentStorage
 import starterBrickRegistry from "../starterBricks/registry";
 import { updateNavigationId } from "./context";
 import * as sidebar from "./sidebarController";
-import { NAVIGATION_RULES } from "../contrib/navigationRules";
-import { testMatchPatterns } from "../bricks/available";
+import { NAVIGATION_RULES } from "@/contrib/navigationRules";
+import { testMatchPatterns } from "@/bricks/available";
 import reportError from "../telemetry/reportError";
 import { compact, debounce, groupBy, intersection, uniq } from "lodash";
 import oneEvent from "one-event";
 import { hydrateModComponentInnerDefinitions } from "../registry/hydrateInnerDefinitions";
-import { traces } from "../background/messenger/api";
+import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "../utils/deploymentUtils";
-import { PromiseCancelled } from "../errors/genericErrors";
+import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";
 import {
   type StarterBrick,

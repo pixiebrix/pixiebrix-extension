@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "../../../types/helpers";
-import { waitForContentScript } from "../../../background/messenger/api";
+import { waitForContentScript } from "@/background/messenger/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type FrameConnectionState,

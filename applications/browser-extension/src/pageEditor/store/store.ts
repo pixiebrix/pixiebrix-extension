@@ -22,13 +22,10 @@ import {
   type Middleware,
 } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import {
-  editorSlice,
-  persistEditorConfig,
-} from "./editor/editorSlice";
+import { editorSlice, persistEditorConfig } from "./editor/editorSlice";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { appApi } from "../../data/service/api";
+import { appApi } from "@/data/service/api";
 import runtimeSlice from "./runtime/runtimeSlice";
 import settingsSlice from "../../store/settings/settingsSlice";
 import { persistModComponentOptionsConfig } from "../../store/modComponents/modComponentStorage";
@@ -37,9 +34,9 @@ import integrationsSlice, {
 } from "../../integrations/store/integrationsSlice";
 import modComponentSlice from "../../store/modComponents/modComponentSlice";
 import sessionSlice from "./session/sessionSlice";
-import { logSlice } from "../../components/logViewer/logSlice";
-import { authSlice, persistAuthConfig } from "../../auth/authSlice";
-import analysisSlice from "../../analysis/analysisSlice";
+import { logSlice } from "@/components/logViewer/logSlice";
+import { authSlice, persistAuthConfig } from "@/auth/authSlice";
+import analysisSlice from "@/analysis/analysisSlice";
 import pageEditorAnalysisManager from "./analysisManager";
 import { tabStateSlice } from "./tabState/tabStateSlice";
 import { modDefinitionsSlice } from "../../modDefinitions/modDefinitionsSlice";

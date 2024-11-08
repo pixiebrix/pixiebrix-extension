@@ -36,11 +36,11 @@ import {
 } from "../testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "../testUtils/factories/metadataFactory";
 import { databaseFactory } from "../testUtils/factories/databaseFactories";
-import { reloadModsEveryTab } from "../contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { appApiMock } from "../testUtils/appApiMock";
 import type MockAdapter from "axios-mock-adapter";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { waitForEffect } from "../testUtils/testHelpers";
 import { editablePackageMetadataFactory } from "../testUtils/factories/registryFactories";
 import notify from "../utils/notify";

@@ -17,9 +17,9 @@
 
 import { type Logger, type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
-import { notifyContextInvalidated } from "../errors/contextInvalidated";
+import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import { wasContextInvalidated } from "webext-events";
-import { recordLog } from "../background/messenger/api";
+import { recordLog } from "@/background/messenger/api";
 import { expectContext } from "../utils/expectContext";
 import reportError from "./reportError";
 

@@ -19,12 +19,12 @@ import { type Except, type Tagged } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "../utils/nullishUtils";
-import { type UserPartner } from "../data/model/UserPartner";
-import { type PartnerPrincipal } from "../data/model/PartnerPrincipal";
-import { type TeamTheme } from "../data/model/TeamTheme";
-import { type ControlRoom } from "../data/model/ControlRoom";
-import { type UserMilestone } from "../data/model/UserMilestone";
-import { type LegacyUserRole } from "../data/model/UserRole";
+import { type UserPartner } from "@/data/model/UserPartner";
+import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
+import { type TeamTheme } from "@/data/model/TeamTheme";
+import { type ControlRoom } from "@/data/model/ControlRoom";
+import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type LegacyUserRole } from "@/data/model/UserRole";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 

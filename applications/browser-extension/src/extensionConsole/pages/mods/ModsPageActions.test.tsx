@@ -31,7 +31,7 @@ import {
 } from "../../../testUtils/factories/modDefinitionFactories";
 import { array } from "cooky-cutter";
 import modComponentSlice from "../../../store/modComponents/modComponentSlice";
-import { API_PATHS, UI_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS, UI_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("react-router", () => {
   const actual = jest.requireActual("react-router");

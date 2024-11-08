@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetMeQuery } from "../data/service/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "./authSelectors";
 import { selectIntegrationConfigs } from "../integrations/store/integrationsSelectors";
 import { selectSettings } from "../store/settings/settingsSelectors";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "../data/service/constants";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import { type SettingsState } from "../store/settings/settingsTypes";
 import useManagedStorageState from "../store/enterprise/useManagedStorageState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -31,10 +31,10 @@ import {
 import useLinkState from "./useLinkState";
 import usePartnerAuthData from "./usePartnerAuthData";
 import { type Nullishable } from "../utils/nullishUtils";
-import { type UserPartner } from "../data/model/UserPartner";
-import { type ControlRoom } from "../data/model/ControlRoom";
-import { Milestones, type UserMilestone } from "../data/model/UserMilestone";
-import useAsyncState from "../hooks/useAsyncState";
+import { type UserPartner } from "@/data/model/UserPartner";
+import { type ControlRoom } from "@/data/model/ControlRoom";
+import { Milestones, type UserMilestone } from "@/data/model/UserMilestone";
+import useAsyncState from "@/hooks/useAsyncState";
 import { getDeploymentKey } from "./deploymentKey";
 import { getExtensionToken } from "./authStorage";
 

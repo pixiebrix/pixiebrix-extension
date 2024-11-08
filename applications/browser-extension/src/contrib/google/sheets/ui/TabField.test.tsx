@@ -19,11 +19,11 @@
 -- TODO: replace with native expect and it.each */
 
 import React from "react";
-import { expectToggleOptions } from "../../../../components/fields/schemaFields/testHelpers";
+import { expectToggleOptions } from "@/components/fields/schemaFields/testHelpers";
 import { render } from "../../../../pageEditor/testHelpers";
 import TabField from "./TabField";
 import { waitForEffect } from "../../../../testUtils/testHelpers";
-import registerDefaultWidgets from "../../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type Spreadsheet } from "../core/types";
 import { screen } from "@testing-library/react";
 import { selectSchemaFieldInputMode } from "../../../../testUtils/formHelpers";

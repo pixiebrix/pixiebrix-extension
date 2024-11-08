@@ -36,7 +36,7 @@ import { SidebarStarterBrickABC } from "../starterBricks/sidebar/sidebarStarterB
 import getType from "../runtime/getType";
 import { type BrickType } from "../runtime/runtimeTypes";
 import { type Metadata, type PackageInstance } from "@/types/registryTypes";
-import useAsyncState from "../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import MarketplaceListingIcon from "./MarketplaceListingIcon";
 import { type Nullishable } from "../utils/nullishUtils";
 

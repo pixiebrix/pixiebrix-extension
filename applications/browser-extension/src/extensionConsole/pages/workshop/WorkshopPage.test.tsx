@@ -25,10 +25,10 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { authStateFactory } from "../../../testUtils/factories/authFactories";
 import { waitForEffect } from "../../../testUtils/testHelpers";
-import { authSlice } from "../../../auth/authSlice";
+import { authSlice } from "@/auth/authSlice";
 import { appApiMock } from "../../../testUtils/appApiMock";
 import { MemoryRouter } from "react-router";
-import { API_PATHS } from "../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("useSearchOptions", () => {
   it("consolidates reader and block options", () => {

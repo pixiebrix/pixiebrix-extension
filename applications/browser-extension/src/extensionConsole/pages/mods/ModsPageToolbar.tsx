@@ -27,7 +27,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { type TableInstance } from "react-table";
-import useReduxState from "../../../hooks/useReduxState";
+import useReduxState from "@/hooks/useReduxState";
 import {
   selectActiveTab,
   selectGroupBy,

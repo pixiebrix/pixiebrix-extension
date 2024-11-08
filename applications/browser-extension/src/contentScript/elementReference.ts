@@ -16,7 +16,7 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { type ElementReference } from "@/types/runtimeTypes";
 
 type ElementOrDocument = HTMLElement | Document;

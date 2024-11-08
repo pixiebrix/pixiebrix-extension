@@ -16,8 +16,8 @@
  */
 
 import { ReaderABC } from "../../types/bricks/readerTypes";
-import * as session from "../../contentScript/context";
-import { getExtensionAuth } from "../../auth/authStorage";
+import * as session from "@/contentScript/context";
+import { getExtensionAuth } from "@/auth/authStorage";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "../../types/schemaTypes";
 

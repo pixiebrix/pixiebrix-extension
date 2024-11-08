@@ -18,7 +18,7 @@
 import React from "react";
 import { render, screen } from "../../testHelpers";
 import OptionsBody from "./OptionsBody";
-import registerDefaultWidgets from "../../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 beforeAll(() => {
   registerDefaultWidgets();

@@ -18,13 +18,13 @@
 import React from "react";
 import store from "../store/store";
 import { Provider } from "react-redux";
-import registerBuiltinBricks from "../../bricks/registerBuiltinBricks";
-import registerContribBricks from "../../contrib/registerContribBricks";
-import registerEditors from "../../contrib/editors";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
-import useRefreshRegistries from "../../hooks/useRefreshRegistries";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
+import registerContribBricks from "@/contrib/registerContribBricks";
+import registerEditors from "@/contrib/editors";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import PanelContent from "./PanelContent";
-import InvalidatedContextGate from "../../components/InvalidatedContextGate";
+import InvalidatedContextGate from "@/components/InvalidatedContextGate";
 import TabInspectionGate from "../context/TabInspectionGate";
 
 // Register the built-in bricks

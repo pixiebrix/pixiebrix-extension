@@ -29,7 +29,7 @@ import { RunReason } from "@/types/runtimeTypes";
 import {
   uninstallContextMenu,
   ensureContextMenu,
-} from "../../background/messenger/api";
+} from "@/background/messenger/api";
 import { getPlatform } from "../../platform/platformContext";
 import {
   type ContextMenuDefinition,

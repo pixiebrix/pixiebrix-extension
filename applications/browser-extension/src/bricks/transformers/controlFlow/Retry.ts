@@ -23,7 +23,7 @@ import {
 } from "../../../types/runtimeTypes";
 import { type Schema } from "../../../types/schemaTypes";
 import { validateRegistryId } from "../../../types/helpers";
-import { BusinessError } from "../../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { sleep } from "../../../utils/timeUtils";
 import { propertiesToSchema } from "../../../utils/schemaUtils";
 import castError from "../../../utils/castError";

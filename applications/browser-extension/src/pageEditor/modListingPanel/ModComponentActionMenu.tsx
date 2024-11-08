@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
-} from "../../components/ellipsisMenu/EllipsisMenu";
+} from "@/components/ellipsisMenu/EllipsisMenu";
 import useDeleteDraftModComponent from "../hooks/useDeleteDraftModComponent";
 import { type ModComponentFormState } from "../starterBricks/formStateTypes";
 import { useDispatch, useSelector } from "react-redux";

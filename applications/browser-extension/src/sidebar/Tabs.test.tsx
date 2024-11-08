@@ -24,7 +24,7 @@ import { sidebarEntryFactory } from "../testUtils/factories/sidebarEntryFactorie
 import { MOD_LAUNCHER } from "../store/sidebar/constants";
 import { waitForEffect } from "../testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import * as messengerApi from "../contentScript/messenger/api";
+import * as messengerApi from "@/contentScript/messenger/api";
 import { eventKeyForEntry } from "../store/sidebar/eventKeyUtils";
 import { mockAllApiEndpoints } from "../testUtils/appApiMock";
 import { type ModComponentRef } from "@/types/modComponentTypes";

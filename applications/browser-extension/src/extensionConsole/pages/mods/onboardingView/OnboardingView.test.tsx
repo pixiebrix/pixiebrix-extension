@@ -16,18 +16,21 @@
  */
 
 import React from "react";
-import useFlags from "../../../../hooks/useFlags";
-import { type Team } from "../../../../data/model/Team";
+import useFlags from "@/hooks/useFlags";
+import { type Team } from "@/data/model/Team";
 import useOnboarding from "./useOnboarding";
 import { useAllModDefinitions } from "../../../../modDefinitions/modDefinitionHooks";
 import DeploymentsContext, {
   type DeploymentsState,
 } from "../../deployments/DeploymentsContext";
-import { appApiMock, mockAllApiEndpoints } from "../../../../testUtils/appApiMock";
+import {
+  appApiMock,
+  mockAllApiEndpoints,
+} from "../../../../testUtils/appApiMock";
 import { renderHook } from "../../../testHelpers";
 
 import { organizationStateFactory } from "../../../../testUtils/factories/authFactories";
-import { API_PATHS } from "../../../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 jest.mock("../../../../hooks/useFlags");
 jest.mock("../../../../modDefinitions/modDefinitionHooks");

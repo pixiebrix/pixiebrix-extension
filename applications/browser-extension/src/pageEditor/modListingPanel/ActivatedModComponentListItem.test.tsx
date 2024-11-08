@@ -22,7 +22,7 @@ import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 import { modComponentFactory } from "../../testUtils/factories/modComponentFactories";
 import { formStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import { screen, waitFor } from "@testing-library/react";
-import { disableOverlay, enableOverlay } from "../../contentScript/messenger/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import userEvent from "@testing-library/user-event";
 import { StarterBrickTypes } from "../../types/starterBrickTypes";
 

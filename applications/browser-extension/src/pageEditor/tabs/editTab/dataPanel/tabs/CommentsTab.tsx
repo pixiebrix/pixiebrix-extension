@@ -16,10 +16,10 @@
  */
 import React, { useContext } from "react";
 import { DataPanelTabKey } from "../dataPanelTypes";
-import TextWidget from "../../../../../components/fields/schemaFields/widgets/TextWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { Events } from "../../../../../telemetry/events";
 import reportEvent from "../../../../../telemetry/reportEvent";
-import FieldRuntimeContext from "../../../../../components/fields/schemaFields/FieldRuntimeContext";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { type Schema } from "../../../../../types/schemaTypes";
 import DataTabPane from "../DataTabPane";
 import { useSelector } from "react-redux";

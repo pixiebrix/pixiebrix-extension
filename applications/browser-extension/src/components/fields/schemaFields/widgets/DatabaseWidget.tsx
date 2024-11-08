@@ -17,7 +17,7 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import { useField } from "formik";
-import useDatabaseOptions from "../../../../hooks/useDatabaseOptions";
+import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import DatabaseCreateModal from "./DatabaseCreateModal";
 import SelectWidget, {
   type Option,
@@ -28,7 +28,7 @@ import FieldRuntimeContext from "../FieldRuntimeContext";
 import { type UUID } from "../../../../types/stringTypes";
 import { type Expression } from "../../../../types/runtimeTypes";
 import { type SchemaFieldProps } from "../propTypes";
-import useIsMounted from "../../../../hooks/useIsMounted";
+import useIsMounted from "@/hooks/useIsMounted";
 import { isUUID } from "../../../../types/helpers";
 import { isExpression, toExpression } from "../../../../utils/expressionUtils";
 

@@ -23,9 +23,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "../jsonTree/JsonTree";
 import { selectAbsoluteUrl } from "../../utils/urlUtils";
-import { safeGuessStatusText } from "../../errors/networkErrorHelpers";
+import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
-import useAsyncState from "../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "../AsyncStateGate";
 import { type AxiosError } from "axios";
 

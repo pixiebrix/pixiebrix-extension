@@ -19,13 +19,10 @@ import {
   BusinessError,
   CancelError,
   RequestSupersededError,
-} from "../../errors/businessErrors";
-import {
-  selectExtraContext,
-  shouldIgnoreError,
-} from "./errorService";
+} from "@/errors/businessErrors";
+import { selectExtraContext, shouldIgnoreError } from "./errorService";
 import { serializeError } from "serialize-error";
-import { InteractiveLoginRequiredError } from "../../errors/authErrors";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 
 const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {

@@ -31,7 +31,7 @@ import { splitStartingEmoji } from "../../utils/stringUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_TEXT_ICON_COLOR } from "../../icons/constants";
-import MarketplaceListingIcon from "../../components/MarketplaceListingIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type ActivatedModComponent } from "../../types/modComponentTypes";
 import { selectModComponentFromEventKey } from "../sidebarSelectors";
 

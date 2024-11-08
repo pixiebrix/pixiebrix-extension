@@ -23,10 +23,10 @@ import {
 } from "../../store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
 import { actions } from "../../store/editor/editorSlice";
-import ErrorBoundary from "../../../components/ErrorBoundary";
-import Effect from "../../../components/Effect";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import Effect from "@/components/Effect";
 import styles from "./ModVariablesDefinitionEditor.module.scss";
-import Form, { type RenderBody } from "../../../components/form/Form";
+import Form, { type RenderBody } from "@/components/form/Form";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 import {
   mapDefinitionToFormValues,
@@ -35,7 +35,7 @@ import {
 import { type ModVariableFormValues } from "./modVariablesDefinitionEditorTypes";
 import useInferredModVariablesQuery from "./useInferredModVariablesQuery";
 import * as Yup from "yup";
-import useReportError from "../../../hooks/useReportError";
+import useReportError from "@/hooks/useReportError";
 import { isOutputKey } from "../../../runtime/runtimeTypes";
 import ModVariablesTable from "./ModVariablesTable";
 

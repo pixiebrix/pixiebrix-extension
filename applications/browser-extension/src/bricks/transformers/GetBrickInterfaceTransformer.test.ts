@@ -21,7 +21,7 @@ import { unsafeAssumeValidArg } from "../../runtime/runtimeTypes";
 import { brickOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 import GetBrickInterfaceTransformer from "./GetBrickInterfaceTransformer";
 import { pick } from "lodash";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 const brick = new GetBrickInterfaceTransformer(brickRegistry);
 

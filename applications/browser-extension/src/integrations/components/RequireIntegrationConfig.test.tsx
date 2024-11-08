@@ -16,15 +16,15 @@
  */
 
 import React from "react";
-import { integrationConfigLocator } from "../../background/messenger/api";
-import { useAuthOptions } from "../../hooks/useAuthOptions";
+import { integrationConfigLocator } from "@/background/messenger/api";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
 } from "../../testUtils/factories/integrationFactories";
 import { type SanitizedIntegrationConfig } from "../integrationTypes";
 import { valueToAsyncState } from "../../utils/asyncStateUtils";
-import { type AuthOption } from "../../auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import { render, screen, userEvent } from "../../pageEditor/testHelpers";
 import RequireIntegrationConfig from "./RequireIntegrationConfig";
 import { registryIdFactory } from "../../testUtils/factories/stringFactories";

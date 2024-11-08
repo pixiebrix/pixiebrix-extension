@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PipelineFlavor } from "../../../../../bricks/types";
+import { type PipelineFlavor } from "@/bricks/types";
 import { PIPELINE_BRICKS_FIELD_NAME } from "../../../../consts";
 import { FOUNDATION_NODE_ID } from "../../../../store/editor/uiState";
 import { decideFoundationStatus } from "../decideStatus";
@@ -23,7 +23,7 @@ import { type NodeAction } from "../../editorNodes/nodeActions/NodeActionsView";
 import { filterStarterBrickAnalysisAnnotations } from "../../../../utils";
 import { type OutputKey } from "../../../../../types/runtimeTypes";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import { selectModComponentAnnotations } from "../../../../../analysis/analysisSelectors";
+import { selectModComponentAnnotations } from "@/analysis/analysisSelectors";
 import {
   selectActiveModComponentFormState,
   selectActiveNodeId,

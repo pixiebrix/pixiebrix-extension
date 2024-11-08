@@ -19,7 +19,7 @@ import {
   getLatestRunByModComponentId,
   type TraceRecord,
 } from "../../telemetry/trace";
-import useInterval from "../../hooks/useInterval";
+import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
 import runtimeSlice from "../store/runtime/runtimeSlice";
 import { selectActiveModComponentId } from "../store/editor/editorSelectors";

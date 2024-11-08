@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isDatabasePreviewField } from "../components/fields/schemaFields/fieldTypeCheckers";
+import { isDatabasePreviewField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";
 import { isUUID } from "@/types/helpers";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
@@ -30,7 +30,7 @@ import {
   appApi,
   useCreateUserDeploymentMutation,
   useDeleteUserDeploymentMutation,
-} from "../data/service/api";
+} from "@/data/service/api";
 import { useCallback } from "react";
 import { type ModInstance } from "@/types/modInstanceTypes";
 import type { WizardValues } from "./wizardTypes";

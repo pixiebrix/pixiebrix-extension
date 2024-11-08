@@ -19,7 +19,7 @@ import { TransformerABC } from "../../types/bricks/transformerTypes";
 import type { BrickArgs, BrickOptions } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
 import type { NetworkRequestConfig } from "../../types/networkTypes";
-import { PropError } from "../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "../../types/helpers";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import type { PlatformCapability } from "../../platform/capabilities";

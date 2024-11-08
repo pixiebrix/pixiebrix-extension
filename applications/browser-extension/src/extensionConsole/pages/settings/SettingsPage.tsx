@@ -23,12 +23,12 @@ import LoggingSettings from "./LoggingSettings";
 import FactoryResetSettings from "./FactoryResetSettings";
 import AdvancedSettings from "./AdvancedSettings";
 import ExperimentalSettings from "./ExperimentalSettings";
-import useFlags from "../../../hooks/useFlags";
-import { selectOrganization } from "../../../auth/authSelectors";
+import useFlags from "@/hooks/useFlags";
+import { selectOrganization } from "@/auth/authSelectors";
 import { useSelector } from "react-redux";
 import StorageSettings from "./StorageSettings";
 import GeneralSettings from "./GeneralSettings";
-import { FeatureFlags, RestrictedFeatures } from "../../../auth/featureFlags";
+import { FeatureFlags, RestrictedFeatures } from "@/auth/featureFlags";
 import { type EmptyObject } from "type-fest";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution

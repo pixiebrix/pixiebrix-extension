@@ -19,7 +19,7 @@ import { waitForContentScript } from "./contentScript";
 import {
   CONTENT_SCRIPT_READY_NOTIFICATION,
   isTargetReady,
-} from "../contentScript/ready";
+} from "@/contentScript/ready";
 import { SimpleEventTarget } from "../utils/SimpleEventTarget";
 import { TEST_setContext } from "webext-detect";
 import { type Runtime, type Tabs } from "webextension-polyfill";

@@ -23,7 +23,9 @@ import { Button, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
-import workshopSlice, { type WorkshopState } from "../../../store/workshopSlice";
+import workshopSlice, {
+  type WorkshopState,
+} from "../../../store/workshopSlice";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Fuse from "fuse.js";
 import { push } from "connected-react-router";
@@ -32,10 +34,10 @@ import {
   type EnrichedPackageMetadata,
   type NavigateProps,
 } from "./workshopTypes";
-import { RequireScope } from "../../../auth/RequireScope";
+import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "./workshopUtils";
 import { PACKAGE_REGEX } from "../../../types/helpers";
-import { useGetEditablePackagesQuery } from "../../../data/service/api";
+import { useGetEditablePackagesQuery } from "@/data/service/api";
 import { type EditablePackageMetadata } from "../../../types/contract";
 import { type Nullishable } from "../../../utils/nullishUtils";
 

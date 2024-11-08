@@ -16,11 +16,11 @@
  */
 
 import { type EditorNodeProps } from "./types";
-import { type PipelineFlavor, type BrickConfig } from "../../../../../bricks/types";
+import { type PipelineFlavor, type BrickConfig } from "@/bricks/types";
 import { joinPathParts } from "../../../../../utils/formUtils";
 import { getBuilderPreviewElementId, getSubPipelinesForBrick } from "./helpers";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "../../../../documentBuilder/preview/ElementPreview";
-import { type AppDispatch } from "../../../../../extensionConsole/store";
+import { type AppDispatch } from "@/extensionConsole/store";
 import { useCreateNodeActions } from "./useCreateNodeActions";
 import { type useGetNodeState } from "./useGetNodeState";
 import { type useMapPipelineToNodes } from "./useMapPipelineToNodes";
@@ -29,7 +29,7 @@ import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "../../../../store/editor/editorSlice";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";
-import useTypedBrickMap from "../../../../../bricks/hooks/useTypedBrickMap";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import {
   selectActiveBuilderPreviewElement,
   selectActiveNodeId,

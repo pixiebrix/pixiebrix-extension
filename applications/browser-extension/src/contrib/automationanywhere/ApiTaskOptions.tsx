@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type BrickOptionProps } from "../../components/fields/schemaFields/genericOptionsFactory";
+import { type BrickOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { joinName } from "../../utils/formUtils";
 import RequireIntegrationConfig from "../../integrations/components/RequireIntegrationConfig";
@@ -25,8 +25,8 @@ import { type SanitizedIntegrationConfig } from "../../integrations/integrationT
 import { type Schema } from "../../types/schemaTypes";
 import { useField } from "formik";
 import { type WorkspaceType } from "./contract";
-import { type AsyncSelectStatusMessage } from "../../components/form/widgets/AsyncRemoteSelectWidget";
-import SchemaField from "../../components/fields/schemaFields/SchemaField";
+import { type AsyncSelectStatusMessage } from "@/components/form/widgets/AsyncRemoteSelectWidget";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import RemoteFileInputArguments from "./RemoteFileInputArguments";
 import useWorkspaceTypeOptionsFactoryArgs from "./useWorkspaceTypeOptionsFactoryArgs";
 import WorkspaceTypeField from "./WorkspaceTypeField";

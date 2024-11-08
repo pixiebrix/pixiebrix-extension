@@ -16,7 +16,7 @@
  */
 
 import { addAuthListener, removeAuthListener, isLinked } from "./authStorage";
-import useAsyncExternalStore from "../hooks/useAsyncExternalStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
 
 // NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains

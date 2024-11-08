@@ -21,7 +21,7 @@ import type { Target } from "@/types/messengerTypes";
 import {
   CONTENT_SCRIPT_READY_NOTIFICATION,
   isTargetReady,
-} from "../contentScript/ready";
+} from "@/contentScript/ready";
 import { type Runtime } from "webextension-polyfill";
 import { oneEvent } from "webext-events";
 

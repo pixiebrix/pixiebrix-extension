@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type SimpleErrorObject } from "../../../errors/errorHelpers";
+import { type SimpleErrorObject } from "@/errors/errorHelpers";
 
 export interface FrameConnectionState {
   frameId: number;

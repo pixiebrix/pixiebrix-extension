@@ -22,7 +22,7 @@ import BrickDataPanel from "./BrickDataPanel";
 import runtimeSlice from "../../../store/runtime/runtimeSlice";
 import { actions as editorActions } from "../../../store/editor/editorSlice";
 import { DataPanelTabKey } from "./dataPanelTypes";
-import bricksRegistry from "../../../../bricks/registry";
+import bricksRegistry from "@/bricks/registry";
 import { echoBrick } from "../../../../runtime/pipelineTests/testHelpers";
 import { formStateWithTraceDataFactory } from "../../../../testUtils/factories/pageEditorFactories";
 import reportEvent from "../../../../telemetry/reportEvent";

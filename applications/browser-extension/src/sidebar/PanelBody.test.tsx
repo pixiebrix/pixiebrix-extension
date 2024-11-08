@@ -20,9 +20,9 @@ import { render } from "./testHelpers";
 import PanelBody from "./PanelBody";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { serializeError } from "serialize-error";
-import { BusinessError, CancelError } from "../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { waitForEffect } from "../testUtils/testHelpers";
-import registerBuiltinBricks from "../bricks/registerBuiltinBricks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import {
   type RendererErrorPayload,
   type RendererRunPayload,

@@ -24,7 +24,7 @@ import notify from "../../../utils/notify";
 import reportEvent from "../../../telemetry/reportEvent";
 import { Events } from "../../../telemetry/events";
 import { writeToClipboard } from "../../../utils/clipboardUtils";
-import { useGetZapierKeyQuery } from "../../../data/service/api";
+import { useGetZapierKeyQuery } from "@/data/service/api";
 
 interface OwnProps {
   show: boolean;

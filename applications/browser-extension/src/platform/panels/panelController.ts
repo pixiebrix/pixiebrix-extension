@@ -21,8 +21,8 @@ import {
   type PanelAction,
   type TemporaryPanelEntry,
 } from "../../types/sidebarTypes";
-import { ClosePanelAction } from "../../bricks/errors";
-import { CancelError } from "../../errors/businessErrors";
+import { ClosePanelAction } from "@/bricks/errors";
+import { CancelError } from "@/errors/businessErrors";
 import { type Except, type SetOptional } from "type-fest";
 import { type Location } from "../../types/starterBrickTypes";
 import { isObject } from "../../utils/objectUtils";

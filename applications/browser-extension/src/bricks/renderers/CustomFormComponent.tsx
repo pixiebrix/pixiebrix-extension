@@ -22,20 +22,20 @@ import React, { useEffect, useRef, useState } from "react";
 import { type Schema, type UiSchema } from "../../types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
-import ErrorBoundary from "../../components/ErrorBoundary";
-import { Stylesheets } from "../../components/Stylesheets";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Stylesheets } from "@/components/Stylesheets";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "../../validators/formValidator";
 import { type IChangeEvent } from "@rjsf/core";
-import { templates } from "../../components/formBuilder/RjsfTemplates";
-import ImageCropWidget from "../../components/formBuilder/widgets/ImageCropWidget";
-import RjsfSelectWidget from "../../components/formBuilder/widgets/RjsfSelectWidget";
-import DescriptionField from "../../components/formBuilder/DescriptionField";
-import TextAreaWidget from "../../components/formBuilder/widgets/TextAreaWidget";
-import RjsfSubmitContext from "../../components/formBuilder/RjsfSubmitContext";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
+import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";
+import RjsfSelectWidget from "@/components/formBuilder/widgets/RjsfSelectWidget";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
+import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
+import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { cloneDeep } from "lodash";
-import { useStylesheetsContextWithFormDefault } from "../../components/StylesheetsContext";
-import RichTextWidget from "../../components/formBuilder/widgets/RichTextWidget";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
+import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 
 const FIELDS = {
   DescriptionField,

@@ -20,7 +20,7 @@ import React from "react";
 import Icon from "../../icons/Icon";
 import { splitStartingEmoji } from "../../utils/stringUtils";
 import { truncate } from "lodash";
-import useDocumentSelection from "../../hooks/useDocumentSelection";
+import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "../../utils/nullishUtils";
 import { getSelection } from "../../utils/selectionController";
 import { type RegisteredAction } from "./ActionRegistry";

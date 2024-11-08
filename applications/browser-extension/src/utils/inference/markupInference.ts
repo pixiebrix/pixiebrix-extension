@@ -22,7 +22,7 @@ import {
 } from "../../domConstants";
 import { BUTTON_TAGS, UNIQUE_ATTRIBUTES } from "./selectorInference";
 import { compact, intersection, unary, uniq } from "lodash";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank, matchesAnyPattern } from "../stringUtils";
 import { mostCommonElement } from "../arrayUtils";
 import { assertNotNullish } from "../nullishUtils";

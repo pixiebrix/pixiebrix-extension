@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { type RunBrickRequest } from "./messenger/runBrickTypes";
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import contentScriptPlatform from "./contentScriptPlatform";
 
 /**

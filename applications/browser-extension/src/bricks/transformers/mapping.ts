@@ -18,7 +18,7 @@
 import { TransformerABC } from "../../types/bricks/transformerTypes";
 import { type BrickArgs } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 export class MappingTransformer extends TransformerABC {
   override defaultOutputKey = "value";

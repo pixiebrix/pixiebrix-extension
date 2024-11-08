@@ -16,11 +16,11 @@
  */
 
 import refreshPartnerAuthentication from "./refreshPartnerAuthentication";
-import { type PartnerAuthData } from "../../../auth/authTypes";
+import { type PartnerAuthData } from "@/auth/authTypes";
 import { uuidSequence } from "../../../testUtils/factories/stringFactories";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { getPartnerAuthData, setPartnerAuthData } from "../../../auth/authStorage";
+import { getPartnerAuthData, setPartnerAuthData } from "@/auth/authStorage";
 import { setCachedAuthData } from "../authStorage";
 
 const axiosMock = new MockAdapter(axios);

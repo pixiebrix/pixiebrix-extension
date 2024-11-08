@@ -19,7 +19,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectShowPublishContext } from "../modModalsSelectors";
-import ActivationLink from "../../../../../activation/ActivationLink";
+import ActivationLink from "@/activation/ActivationLink";
 import PublishContentLayout from "./PublishContentLayout";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";
 

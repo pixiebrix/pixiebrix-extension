@@ -16,13 +16,13 @@
  */
 
 import React, { useState } from "react";
-import { getBaseURL } from "../../../data/service/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { useAsyncEffect } from "use-async-effect";
-import { isLinked } from "../../../auth/authStorage";
+import { isLinked } from "@/auth/authStorage";
 import { Card } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import useAsyncState from "../../../hooks/useAsyncState";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const ConnectExtensionCard: React.FunctionComponent = () => {
   const [hasExtensionKey, setHasExtensionKey] = useState(true);

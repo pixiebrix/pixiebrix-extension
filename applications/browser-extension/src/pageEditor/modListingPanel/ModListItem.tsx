@@ -35,7 +35,7 @@ import {
   selectExpandedModId,
 } from "../store/editor/editorSelectors";
 import * as semver from "semver";
-import { useGetModDefinitionQuery } from "../../data/service/api";
+import { useGetModDefinitionQuery } from "@/data/service/api";
 import { type ModMetadata } from "../../types/modComponentTypes";
 import ModActionMenu from "./ModActionMenu";
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "../extensionConsole/testHelpers";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import useSetDocumentTitle from "./useSetDocumentTitle";
 
 const TEST_TITLE = "Test Page";

@@ -46,7 +46,7 @@ import {
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uninstallContextMenu } from "./contextMenus/uninstallContextMenu";
-import { TEST_deleteFeatureFlagsCache } from "../auth/featureFlagStorage";
+import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import {
   personalDeploymentMetadataFactory,
   teamDeploymentMetadataFactory,

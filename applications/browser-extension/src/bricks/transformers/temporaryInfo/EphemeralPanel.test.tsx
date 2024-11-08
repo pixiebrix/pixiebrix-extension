@@ -24,7 +24,7 @@ import { waitForEffect } from "../../../testUtils/testHelpers";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
-} from "../../../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 
 import { sidebarEntryFactory } from "../../../testUtils/factories/sidebarEntryFactories";
 import userEvent from "@testing-library/user-event";

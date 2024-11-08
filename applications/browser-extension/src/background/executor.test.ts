@@ -18,11 +18,11 @@
 import { requestRunInAllFrames } from "./executor";
 import { registryIdFactory } from "../testUtils/factories/stringFactories";
 import { type MessengerMeta } from "webext-messenger";
-import { runBrick } from "../contentScript/messenger/api";
+import { runBrick } from "@/contentScript/messenger/api";
 import { type WebNavigation } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "../runtime/runtimeTypes";
 import { define, derive } from "cooky-cutter";
-import { type RemoteBrickOptions } from "../contentScript/messenger/runBrickTypes";
+import { type RemoteBrickOptions } from "@/contentScript/messenger/runBrickTypes";
 import { messengerMetaFactory } from "../testUtils/factories/messengerFactories";
 import { mapModComponentRefToMessageContext } from "../utils/modUtils";
 import { runMetadataFactory } from "../testUtils/factories/runtimeFactories";

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Option } from "../../../components/form/widgets/SelectWidget";
-import { type BrickWindow } from "../../../bricks/types";
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type BrickWindow } from "@/bricks/types";
 
 export const rootModeOptions: Option[] = [
   { label: "Document", value: "document" },

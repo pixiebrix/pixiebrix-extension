@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useTypedBrickMap from "../../../../../bricks/hooks/useTypedBrickMap";
-import { type BrickConfig } from "../../../../../bricks/types";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
+import { type BrickConfig } from "@/bricks/types";
 import { selectCollapsedNodes } from "../../../../store/editor/editorSelectors";
 import { getSubPipelinesForBrick } from "./helpers";
 import { assertNotNullish } from "../../../../../utils/nullishUtils";

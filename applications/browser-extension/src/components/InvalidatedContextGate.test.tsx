@@ -18,7 +18,7 @@
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import InvalidatedContextGate from "./InvalidatedContextGate";
-import useContextInvalidated from "../hooks/useContextInvalidated";
+import useContextInvalidated from "@/hooks/useContextInvalidated";
 
 jest.mock("../hooks/useContextInvalidated");
 

@@ -20,7 +20,7 @@ import {
   type AuthState,
   type OrganizationAuthState,
 } from "./authTypes";
-import { type Me } from "../data/model/Me";
+import { type Me } from "@/data/model/Me";
 import selectAuthUserOrganizations from "./selectAuthUserOrganizations";
 import {
   readReduxStorage,
@@ -28,7 +28,7 @@ import {
 } from "../utils/storageUtils";
 import { type Nullishable } from "../utils/nullishUtils";
 import { anonAuth } from "./authConstants";
-import { LegacyUserRole } from "../data/model/UserRole";
+import { LegacyUserRole } from "@/data/model/UserRole";
 
 const AUTH_SLICE_STORAGE_KEY = validateReduxStorageKey("persist:authOptions");
 

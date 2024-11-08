@@ -16,8 +16,8 @@
  */
 
 import { isContentScript } from "webext-detect";
-import { addAuthListener } from "../auth/authStorage";
-import type { UserData } from "../auth/authTypes";
+import { addAuthListener } from "@/auth/authStorage";
+import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
 import { datadogLogs } from "@datadog/browser-logs";
 import type { Nullishable } from "../utils/nullishUtils";

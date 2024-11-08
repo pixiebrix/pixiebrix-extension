@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DocumentRenderer } from "../../../bricks/renderers/document";
-import ForEach from "../../../bricks/transformers/controlFlow/ForEach";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { createNewDocumentBuilderElement } from "../../documentBuilder/createNewDocumentBuilderElement";
 import { PIPELINE_BRICKS_FIELD_NAME } from "../../consts";
 import { type PipelineExpression } from "../../../types/runtimeTypes";

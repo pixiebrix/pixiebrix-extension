@@ -29,11 +29,14 @@ import {
 } from "./documentBuilderTypes";
 import ButtonElement from "./render/ButtonElement";
 import ListElement from "./render/ListElement";
-import { BusinessError } from "../../errors/businessErrors";
-import Markdown from "../../components/Markdown";
+import { BusinessError } from "@/errors/businessErrors";
+import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 import { VALID_HEADER_TAGS } from "./allowedElementTypes";
-import { isExpression, isPipelineExpression } from "../../utils/expressionUtils";
+import {
+  isExpression,
+  isPipelineExpression,
+} from "../../utils/expressionUtils";
 import { boolean } from "../../utils/typeUtils";
 import { joinPathParts } from "../../utils/formUtils";
 import Icon from "../../icons/Icon";

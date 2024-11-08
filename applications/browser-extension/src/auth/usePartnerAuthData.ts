@@ -20,7 +20,7 @@ import {
   getPartnerAuthData,
   removeAuthListener,
 } from "./authStorage";
-import useAsyncExternalStore from "../hooks/useAsyncExternalStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
 import type { PartnerAuthData } from "./authTypes";
 

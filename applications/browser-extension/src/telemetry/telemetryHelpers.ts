@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UserData } from "../auth/authTypes";
+import type { UserData } from "@/auth/authTypes";
 import { type TelemetryUser } from "./telemetryTypes";
 import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";

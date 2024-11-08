@@ -3,7 +3,7 @@ import styles from "./ListFilters.module.scss";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, Nav, type NavLinkProps } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import useReduxState from "../../../hooks/useReduxState";
+import useReduxState from "@/hooks/useReduxState";
 import modsPageSlice, { type ActiveTab } from "./modsPageSlice";
 import { selectActiveTab, selectSearchQuery } from "./modsPageSelectors";
 import { useDebounce } from "use-debounce";
@@ -19,21 +19,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { type TableInstance } from "react-table";
 import { type ModViewItem } from "../../../types/modTypes";
-import useFlags from "../../../hooks/useFlags";
+import useFlags from "@/hooks/useFlags";
 import {
   useGetMeQuery,
   useGetStarterBlueprintsQuery,
-} from "../../../data/service/api";
+} from "@/data/service/api";
 import { kebabCase } from "lodash";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
 // eslint-disable-next-line no-restricted-imports -- Type only
 import type { BsPrefixRefForwardingComponent } from "react-bootstrap/esm/helpers";
-import useMilestones from "../../../hooks/useMilestones";
+import useMilestones from "@/hooks/useMilestones";
 import { type RegistryId } from "../../../types/registryTypes";
 
 import { MARKETPLACE_URL } from "../../../urlConstants";
-import { RestrictedFeatures } from "../../../auth/featureFlags";
+import { RestrictedFeatures } from "@/auth/featureFlags";
 
 type ModsPageSidebarProps = {
   teamFilters: string[];

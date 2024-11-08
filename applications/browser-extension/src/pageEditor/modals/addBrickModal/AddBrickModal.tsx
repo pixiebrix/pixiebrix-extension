@@ -33,45 +33,40 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import TagSearchInput from "./TagSearchInput";
-import TagList, {
-  type TagItem,
-} from "./TagList";
+import TagList, { type TagItem } from "./TagList";
 import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
-} from "../../../data/service/api";
+} from "@/data/service/api";
 import { type MarketplaceListing } from "../../../types/contract";
 import BrickDetail from "./BrickDetail";
-import Loader from "../../../components/Loader";
+import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Draft, produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
-import useTypedBrickMap from "../../../bricks/hooks/useTypedBrickMap";
+import useTypedBrickMap from "@/bricks/hooks/useTypedBrickMap";
 import useBrickSearch from "./useBrickSearch";
 import BrickGridItemRenderer from "./BrickGridItemRenderer";
 import groupListingsByTag from "./groupListingsByTag";
 import { actions } from "../../store/editor/editorSlice";
 import { selectEditorModalVisibilities } from "../../store/editor/editorSelectors";
-import {
-  BRICK_RESULT_COLUMN_COUNT,
-  TAG_ALL,
-} from "./addBrickModalConstants";
+import { BRICK_RESULT_COLUMN_COUNT, TAG_ALL } from "./addBrickModalConstants";
 import {
   type BrickGridData,
   type BrickSelectOption,
 } from "./addBrickModalTypes";
 import { getItemKey } from "./addBrickModalHelpers";
 import useAddBrick from "./useAddBrick";
-import useTheme from "../../../hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import aaLogo from "../../../../img/aa-logo-small.png";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { type RegistryId } from "../../../types/registryTypes";
 import { type Brick } from "../../../types/brickTypes";
-import useAsyncState from "../../../hooks/useAsyncState";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "../../../data/service/constants";
-import useFlags from "../../../hooks/useFlags";
+import useAsyncState from "@/hooks/useAsyncState";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
+import useFlags from "@/hooks/useFlags";
 import { fallbackValue } from "../../../utils/asyncStateUtils";
-import { type TypedBrickMap } from "../../../bricks/registry";
+import { type TypedBrickMap } from "@/bricks/registry";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";

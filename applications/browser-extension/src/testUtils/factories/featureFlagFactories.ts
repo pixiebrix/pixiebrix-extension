@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FeatureFlag } from "../../auth/featureFlags";
+import { type FeatureFlag } from "@/auth/featureFlags";
 
 let featureFlagId = 0;
 

@@ -27,7 +27,7 @@ import { selectActiveBuilderPreviewElement } from "../../store/editor/editorSele
 import { getProperty } from "../../../utils/objectUtils";
 import ConnectedCollapsibleFieldSection from "../../fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "../../../utils/formUtils";
-import CssSpacingField from "../../../components/fields/schemaFields/CssSpacingField";
+import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
 
 type ElementEditorProps = {
   documentBodyName: string;

@@ -18,7 +18,7 @@
 /** @file CKEditor methods that call JS methods on the CKEditor instance */
 
 import { forbidContext } from "../../utils/expectContext";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * https://ckeditor.com/docs/ckeditor5/latest/api/module_engine_model_position-Position.html

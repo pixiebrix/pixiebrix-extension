@@ -42,7 +42,7 @@ import { memoizeUntilSettled } from "../utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { focusCaptureDialog } from "./focusCaptureDialog";
 import { isLoadedInIframe } from "../utils/iframeUtils";
-import { showMySidePanel } from "../background/messenger/api";
+import { showMySidePanel } from "@/background/messenger/api";
 import { getTopLevelFrame, messenger } from "webext-messenger";
 import {
   getSidebarTargetForCurrentTab,

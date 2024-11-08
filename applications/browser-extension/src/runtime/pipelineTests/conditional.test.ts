@@ -16,15 +16,11 @@
  */
 
 import { type ApiVersion } from "../../types/runtimeTypes";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
-import { InputValidationError } from "../../bricks/errors";
-import { type BrickPipeline } from "../../bricks/types";
-import {
-  contextBrick,
-  echoBrick,
-  simpleInput,
-} from "./testHelpers";
+import { InputValidationError } from "@/bricks/errors";
+import { type BrickPipeline } from "@/bricks/types";
+import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { toExpression } from "../../utils/expressionUtils";
 import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

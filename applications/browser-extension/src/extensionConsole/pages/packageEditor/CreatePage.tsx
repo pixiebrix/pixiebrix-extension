@@ -24,7 +24,7 @@ import { Button, Form } from "react-bootstrap";
 import { Formik } from "formik";
 import Editor, { type EditorValues } from "./Editor";
 import useSubmitPackage from "./useSubmitPackage";
-import useSetDocumentTitle from "../../../hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 
 const initialValue: EditorValues = {
   config: "",

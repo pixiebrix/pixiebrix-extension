@@ -17,8 +17,8 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import useContextInvalidated from "../hooks/useContextInvalidated";
-import useDocumentVisibility from "../hooks/useDocumentVisibility";
+import useContextInvalidated from "@/hooks/useContextInvalidated";
+import useDocumentVisibility from "@/hooks/useDocumentVisibility";
 
 type ContextInvalidatedProps = {
   autoReload?: boolean;

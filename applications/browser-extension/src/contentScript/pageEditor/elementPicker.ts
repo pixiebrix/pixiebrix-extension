@@ -20,11 +20,11 @@ import Overlay from "../../vendors/Overlay";
 import ReactDOM from "react-dom";
 import { expandedCssSelector } from "../../utils/inference/selectorInference";
 import { compact, difference, uniq } from "lodash";
-import type { SelectionHandlerType } from "../../components/selectionToolPopover/SelectionToolPopover";
-import { BusinessError, CancelError } from "../../errors/businessErrors";
-import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "../../components/floatingActions/floatingActionsConstants";
+import type { SelectionHandlerType } from "@/components/selectionToolPopover/SelectionToolPopover";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
 import { onContextInvalidated } from "webext-events";
-import showSelectionToolPopover from "../../components/selectionToolPopover/showSelectionToolPopover";
+import showSelectionToolPopover from "@/components/selectionToolPopover/showSelectionToolPopover";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.

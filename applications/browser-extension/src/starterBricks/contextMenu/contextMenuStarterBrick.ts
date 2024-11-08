@@ -30,19 +30,19 @@ import {
   type StarterBrickDefinitionLike,
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
-import { checkAvailable } from "../../bricks/available";
-import { hasSpecificErrorCause } from "../../errors/errorHelpers";
+import { checkAvailable } from "@/bricks/available";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "../../telemetry/reportError";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
 import { selectEventData } from "../../telemetry/deployments";
 import { isDeploymentActive } from "../../utils/deploymentUtils";
 import apiVersionOptions from "../../runtime/apiVersionOptions";
-import { collectAllBricks } from "../../bricks/util";
-import { mergeReaders } from "../../bricks/readers/readerUtils";
+import { collectAllBricks } from "@/bricks/util";
+import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { guessSelectedElement } from "../../utils/selectionController";
 import { ContextMenuReader, contextMenuReaderShim } from "./contextMenuReader";
-import { BusinessError, CancelError } from "../../errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "../../types/bricks/readerTypes";
 import { type Schema } from "../../types/schemaTypes";
 import { type HydratedModComponent } from "../../types/modComponentTypes";
@@ -65,7 +65,7 @@ import type { Except } from "type-fest";
 import type { PlatformProtocol } from "../../platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "../starterBrickConstants";
 import { propertiesToSchema } from "../../utils/schemaUtils";
-import { initSelectionMenu } from "../../contentScript/textSelectionMenu/selectionMenuController";
+import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
 import {
   type ContextMenuTargetMode,
   type ContextMenuConfig,

@@ -21,11 +21,11 @@ import { actions, editorSlice } from "../pageEditor/store/editor/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { selectModComponentAvailability } from "../pageEditor/store/editor/editorSelectors";
-import { checkAvailable } from "../contentScript/messenger/api";
+import { checkAvailable } from "@/contentScript/messenger/api";
 import {
   checkAvailable as backgroundCheckAvailable,
   normalizeAvailability,
-} from "../bricks/available";
+} from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type ModComponentsRootState } from "./modComponents/modComponentTypes";

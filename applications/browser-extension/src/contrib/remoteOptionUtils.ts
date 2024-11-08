@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type OptionsFactory } from "../components/form/widgets/RemoteSelectWidget";
+import { type OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
 import { type SanitizedIntegrationConfig } from "../integrations/integrationTypes";
-import { type Option } from "../components/form/widgets/SelectWidget";
+import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type Nullishable } from "../utils/nullishUtils";
 
 type OptionalOptionsFactory<T = unknown> = (

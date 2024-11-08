@@ -28,10 +28,10 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import CopyPlugin from "copy-webpack-plugin";
 import { compact } from "lodash-es";
 import mergeWithShared from "./webpack.sharedConfig.js";
-import { parseEnv, loadEnv } from "../../scripts/env.mjs";
-import customizeManifest from "../../scripts/manifest.mjs";
+import { parseEnv, loadEnv } from "./scripts/env.mjs";
+import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
-import DiscardFilePlugin from "../../scripts/DiscardFilePlugin.mjs";
+import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 import isolatedComponentList from "./src/components/isolatedComponentList.mjs";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 

@@ -21,7 +21,7 @@ import DefaultPanel from "./DefaultPanel";
 import modComponentSlice from "../store/modComponents/modComponentSlice";
 import { activatedModComponentFactory } from "../testUtils/factories/modComponentFactories";
 import { appApiMock } from "../testUtils/appApiMock";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {

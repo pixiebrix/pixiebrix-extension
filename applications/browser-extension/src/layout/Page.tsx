@@ -18,8 +18,8 @@
 import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
-import useSetDocumentTitle from "../hooks/useSetDocumentTitle";
-import Loader from "../components/Loader";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
+import Loader from "@/components/Loader";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 

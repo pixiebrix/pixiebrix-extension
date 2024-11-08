@@ -18,7 +18,7 @@
 import React from "react";
 import OnboardingChecklistCard, {
   OnboardingStep,
-} from "../../../components/onboarding/OnboardingChecklistCard";
+} from "@/components/onboarding/OnboardingChecklistCard";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";

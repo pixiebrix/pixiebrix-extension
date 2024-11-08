@@ -19,9 +19,9 @@ import { type Integration, type IntegrationConfig } from "./integrationTypes";
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
-import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "../contrib/google/sheets/core/schemas";
-import { integrationConfigLocator } from "../background/messenger/api";
-import { getGoogleUserEmail } from "../contrib/google/sheets/core/sheetsApi";
+import { GOOGLE_OAUTH2_PKCE_INTEGRATION_ID } from "@/contrib/google/sheets/core/schemas";
+import { integrationConfigLocator } from "@/background/messenger/api";
+import { getGoogleUserEmail } from "@/contrib/google/sheets/core/sheetsApi";
 
 /**
  * A function to automatically configure an integration config. If null is returned, the config will be deleted instead.

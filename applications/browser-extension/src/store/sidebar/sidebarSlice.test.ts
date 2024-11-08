@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, {
-  fixActiveTabOnRemoveInPlace,
-} from "./sidebarSlice";
+import sidebarSlice, { fixActiveTabOnRemoveInPlace } from "./sidebarSlice";
 import { eventKeyForEntry } from "./eventKeyUtils";
 import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
-} from "../../contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
 import { sidebarEntryFactory } from "../../testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "../../types/sidebarTypes";
 import { uuidv4, validateRegistryId } from "../../types/helpers";

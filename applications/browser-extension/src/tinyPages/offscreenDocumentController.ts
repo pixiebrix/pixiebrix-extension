@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { type GetRecordingTabIdMessage } from "./offscreenProtocol";
 
 // Only one offscreen document can be active at a time. We use offscreen documents for error telemetry, so we won't

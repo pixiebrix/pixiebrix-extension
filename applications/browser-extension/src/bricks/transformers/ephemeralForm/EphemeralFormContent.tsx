@@ -21,19 +21,19 @@ import "../../renderers/customForm.css";
 import React from "react";
 import validator from "../../../validators/formValidator";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { cancelForm, resolveForm } from "../../../contentScript/messenger/api";
+import { cancelForm, resolveForm } from "@/contentScript/messenger/api";
 import { type Target } from "../../../types/messengerTypes";
 import { cloneDeep } from "lodash";
 import { type FormDefinition } from "../../../platform/forms/formTypes";
 import { type UUID } from "../../../types/stringTypes";
-import { templates } from "../../../components/formBuilder/RjsfTemplates";
-import ImageCropWidget from "../../../components/formBuilder/widgets/ImageCropWidget";
-import DescriptionField from "../../../components/formBuilder/DescriptionField";
-import RjsfSelectWidget from "../../../components/formBuilder/widgets/RjsfSelectWidget";
-import TextAreaWidget from "../../../components/formBuilder/widgets/TextAreaWidget";
-import { Stylesheets } from "../../../components/Stylesheets";
-import { useStylesheetsContextWithFormDefault } from "../../../components/StylesheetsContext";
-import RichTextWidget from "../../../components/formBuilder/widgets/RichTextWidget";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
+import ImageCropWidget from "@/components/formBuilder/widgets/ImageCropWidget";
+import DescriptionField from "@/components/formBuilder/DescriptionField";
+import RjsfSelectWidget from "@/components/formBuilder/widgets/RjsfSelectWidget";
+import TextAreaWidget from "@/components/formBuilder/widgets/TextAreaWidget";
+import { Stylesheets } from "@/components/Stylesheets";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
+import RichTextWidget from "@/components/formBuilder/widgets/RichTextWidget";
 
 export const fields = {
   DescriptionField,

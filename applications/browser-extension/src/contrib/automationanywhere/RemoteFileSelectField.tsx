@@ -18,12 +18,12 @@
 import React from "react";
 import AsyncRemoteSelectWidget, {
   type AsyncRemoteSelectWidgetProps,
-} from "../../components/form/widgets/AsyncRemoteSelectWidget";
-import ConnectedFieldTemplate from "../../components/form/ConnectedFieldTemplate";
+} from "@/components/form/widgets/AsyncRemoteSelectWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { type SanitizedIntegrationConfig } from "../../integrations/integrationTypes";
 import type { WorkspaceType } from "./contract";
 import { partial } from "lodash";
-import type { Option } from "../../components/form/widgets/SelectWidget";
+import type { Option } from "@/components/form/widgets/SelectWidget";
 
 type RemoteOptionsFactory = (
   config: SanitizedIntegrationConfig,

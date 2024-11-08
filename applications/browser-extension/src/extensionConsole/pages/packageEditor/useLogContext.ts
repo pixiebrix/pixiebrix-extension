@@ -18,7 +18,7 @@
 import { useDebounce } from "use-debounce";
 import { loadBrickYaml } from "../../../runtime/brickYaml";
 import { useDispatch } from "react-redux";
-import { logActions } from "../../../components/logViewer/logSlice";
+import { logActions } from "@/components/logViewer/logSlice";
 import { useEffect } from "react";
 import { type MessageContext } from "../../../types/loggerTypes";
 import { type Definition, DefinitionKinds } from "../../../types/registryTypes";

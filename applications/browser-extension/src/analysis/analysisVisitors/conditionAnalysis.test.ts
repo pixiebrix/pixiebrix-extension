@@ -22,7 +22,7 @@ import { AnnotationType } from "../../types/annotationTypes";
 import ConditionAnalysis from "./conditionAnalysis";
 import { toExpression } from "../../utils/expressionUtils";
 import { AnalysisAnnotationActionType } from "../analysisTypes";
-import IfElse from "../../bricks/transformers/controlFlow/IfElse";
+import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 
 describe("conditionAnalysis", () => {
   describe("brick condition", () => {

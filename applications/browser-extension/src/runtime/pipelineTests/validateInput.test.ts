@@ -16,9 +16,9 @@
  */
 
 import { type ApiVersion } from "../../types/runtimeTypes";
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
-import { InputValidationError } from "../../bricks/errors";
+import { InputValidationError } from "@/bricks/errors";
 import { validateOutputKey } from "../runtimeTypes";
 import { contextBrick, echoBrick, simpleInput } from "./testHelpers";
 import { extraEmptyModStateContext } from "../extendModVariableContext";
@@ -31,7 +31,7 @@ import {
   sanitizedIntegrationConfigFactory,
 } from "../../testUtils/factories/integrationFactories";
 import { metadataFactory } from "../../testUtils/factories/metadataFactory";
-import { ContextError } from "../../errors/genericErrors";
+import { ContextError } from "@/errors/genericErrors";
 import { propertiesToSchema } from "../../utils/schemaUtils";
 import { autoUUIDSequence } from "../../testUtils/factories/stringFactories";
 import makeIntegrationContextFromDependencies from "../../integrations/util/makeIntegrationContextFromDependencies";
@@ -40,7 +40,7 @@ import type {
   SanitizedIntegrationConfig,
 } from "../../integrations/integrationTypes";
 import { toExpression } from "../../utils/expressionUtils";
-import { integrationConfigLocator } from "../../background/messenger/api";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import apiVersionOptions from "../apiVersionOptions";
 import { reduceOptionsFactory } from "../../testUtils/factories/runtimeFactories";
 

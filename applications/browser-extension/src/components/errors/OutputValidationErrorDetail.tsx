@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type OutputValidationError } from "../../bricks/errors";
+import { type OutputValidationError } from "@/bricks/errors";
 import JsonTree from "../jsonTree/JsonTree";
 import styles from "./ErrorDetail.module.scss";
 

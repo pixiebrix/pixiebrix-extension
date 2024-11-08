@@ -18,7 +18,7 @@
 import { EffectABC } from "../../types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "../../types/runtimeTypes";
 import { type Schema } from "../../types/schemaTypes";
-import { PropError } from "../../errors/businessErrors";
+import { PropError } from "@/errors/businessErrors";
 import type { PlatformCapability } from "../../platform/capabilities";
 import { type JsonPrimitive } from "type-fest";
 

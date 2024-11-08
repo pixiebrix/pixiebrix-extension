@@ -18,7 +18,7 @@
 import { type ApiVersion } from "../../types/runtimeTypes";
 import { useField } from "formik";
 import { useContext } from "react";
-import FieldRuntimeContext from "../../components/fields/schemaFields/FieldRuntimeContext";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { isApiVersionAtLeast } from "../../runtime/runtimeUtils";
 
 function useApiVersionAtLeast(atLeast: ApiVersion): boolean {

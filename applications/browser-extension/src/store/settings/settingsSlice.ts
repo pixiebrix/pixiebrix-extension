@@ -25,7 +25,7 @@ import { DEFAULT_THEME } from "../../themes/themeTypes";
 import { type RegistryId } from "../../types/registryTypes";
 import { isRegistryId } from "../../types/helpers";
 import { revertAll } from "../commonActions";
-import { activateTheme } from "../../background/messenger/api";
+import { activateTheme } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect } from "react";
 import { selectSettings } from "./settingsSelectors";

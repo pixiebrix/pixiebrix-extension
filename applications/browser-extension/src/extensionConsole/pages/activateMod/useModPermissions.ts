@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useAsyncState from "../../../hooks/useAsyncState";
-import { integrationConfigLocator } from "../../../background/messenger/api";
+import useAsyncState from "@/hooks/useAsyncState";
+import { integrationConfigLocator } from "@/background/messenger/api";
 import { type ModDefinition } from "../../../types/modDefinitionTypes";
 import { checkModDefinitionPermissions } from "../../../modDefinitions/modDefinitionPermissionsHelpers";
 import { emptyPermissionsFactory } from "../../../permissions/permissionsUtils";

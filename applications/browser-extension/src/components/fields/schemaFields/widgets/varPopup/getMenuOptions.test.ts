@@ -17,13 +17,13 @@
 
 import VarAnalysis, {
   KnownSources,
-} from "../../../../../analysis/analysisVisitors/varAnalysis/varAnalysis";
+} from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import VarMap, {
   ALLOW_ANY_CHILD,
   IS_ARRAY,
   SELF_EXISTENCE,
   VarExistence,
-} from "../../../../../analysis/analysisVisitors/varAnalysis/varMap";
+} from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import getMenuOptions from "./getMenuOptions";
 import { type JsonObject } from "type-fest";
 import {
@@ -31,7 +31,7 @@ import {
   formStateFactory,
 } from "../../../../../testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "../../../../../testUtils/factories/brickFactories";
-import registerBuiltinBricks from "../../../../../bricks/registerBuiltinBricks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 beforeAll(() => {
   registerBuiltinBricks();

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import parseDataUrl, { convertDataUrl } from "./parseDataUrl";
-import { getErrorMessage } from "../errors/errorHelpers";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 // SVG images don't have any EXIF data
 const dataUrlBase64Image = /^data:image\/(png|jpg);base64,/;

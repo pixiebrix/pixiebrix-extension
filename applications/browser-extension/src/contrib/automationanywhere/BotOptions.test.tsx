@@ -22,9 +22,9 @@ import { render, screen } from "../../pageEditor/testHelpers";
 import { Formik } from "formik";
 import BotOptions from "./BotOptions";
 import useSanitizedIntegrationConfigFormikAdapter from "../../integrations/useSanitizedIntegrationConfigFormikAdapter";
-import registerDefaultWidgets from "../../components/fields/schemaFields/widgets/registerDefaultWidgets";
+import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type SanitizedConfig } from "../../integrations/integrationTypes";
-import { useAuthOptions } from "../../hooks/useAuthOptions";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { valueToAsyncState } from "../../utils/asyncStateUtils";
 import { menuItemFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import {

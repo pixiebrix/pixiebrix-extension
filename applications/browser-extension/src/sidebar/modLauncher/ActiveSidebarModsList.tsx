@@ -27,7 +27,7 @@ import { MARKETPLACE_URL } from "../../urlConstants";
 import { type PanelEntry } from "../../types/sidebarTypes";
 import { useSelector } from "react-redux";
 import { selectSidebarPanels } from "../sidebarSelectors";
-import useIsEnterpriseUser from "../../hooks/useIsEnterpriseUser";
+import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import { splitStartingEmoji } from "../../utils/stringUtils";
 
 const columns: Array<Column<PanelEntry>> = [

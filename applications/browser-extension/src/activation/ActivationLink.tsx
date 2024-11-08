@@ -22,7 +22,7 @@ import notify from "../utils/notify";
 import { Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import AsyncButton from "../components/AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 import { writeToClipboard } from "../utils/clipboardUtils";
 import { createActivationUrl } from "./activationLinkUtils";
 

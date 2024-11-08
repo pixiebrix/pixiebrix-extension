@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry from "../../bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "../reducePipeline";
 import { identityBrick, pipelineBrick, simpleInput } from "./testHelpers";
 import { toExpression } from "../../utils/expressionUtils";

@@ -21,11 +21,11 @@ import { buildDocumentBuilderSubtree } from "../../../pageEditor/documentBuilder
 import React from "react";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "../../../pageEditor/documentBuilder/render/DocumentContext";
-import { Stylesheets } from "../../../components/Stylesheets";
+import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "../../../utils/formUtils";
 import StylesheetsContext, {
   useStylesheetsContextWithDocumentDefault,
-} from "../../../components/StylesheetsContext";
+} from "@/components/StylesheetsContext";
 import { assertNotNullish } from "../../../utils/nullishUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({

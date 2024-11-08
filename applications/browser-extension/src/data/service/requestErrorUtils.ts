@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isErrorObject } from "../../errors/errorHelpers";
-import { testMatchPatterns } from "../../bricks/available";
+import { isErrorObject } from "@/errors/errorHelpers";
+import { testMatchPatterns } from "@/bricks/available";
 import { getBaseURL } from "./baseService";
-import { isAxiosError } from "../../errors/networkErrorHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { selectAbsoluteUrl, withoutTrailingSlash } from "../../utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "../../urlConstants";
 import { type AxiosError } from "axios";

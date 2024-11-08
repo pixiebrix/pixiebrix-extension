@@ -23,7 +23,7 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { isObject } from "./objectUtils";
-import { type BrickPipeline } from "../bricks/types";
+import { type BrickPipeline } from "@/bricks/types";
 
 const TEMPLATE_TYPES = [
   "mustache",

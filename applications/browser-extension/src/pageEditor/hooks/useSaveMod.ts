@@ -24,7 +24,7 @@ import {
 import {
   useGetEditablePackagesQuery,
   useUpdateModDefinitionMutation,
-} from "../../data/service/api";
+} from "@/data/service/api";
 import notify from "../../utils/notify";
 import { actions as editorActions } from "../store/editor/editorSlice";
 import { type RegistryId } from "../../types/registryTypes";
@@ -37,7 +37,7 @@ import type { ModDefinition } from "../../types/modDefinitionTypes";
 import useBuildAndValidateMod, {
   DataIntegrityError,
 } from "./useBuildAndValidateMod";
-import { reloadModsEveryTab } from "../../contentScript/messenger/api";
+import { reloadModsEveryTab } from "@/contentScript/messenger/api";
 import { assertNotNullish } from "../../utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "../../types/helpers";
 import {
@@ -45,7 +45,7 @@ import {
   mapModDefinitionUpsertResponseToModDefinition,
 } from "../utils";
 import updateReduxForSavedModDefinition from "./updateReduxForSavedModDefinition";
-import { isSpecificError } from "../../errors/errorHelpers";
+import { isSpecificError } from "@/errors/errorHelpers";
 import { type AppDispatch } from "../store/store";
 
 /** @internal */

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readAuthData } from "../auth/authStorage";
-import { FeatureFlags } from "../auth/featureFlags";
-import { flagOn } from "../auth/featureFlagStorage";
-import { selectExtraContext } from "../data/service/errorService";
-import { BusinessError } from "../errors/businessErrors";
-import { hasSpecificErrorCause } from "../errors/errorHelpers";
-import { isAxiosError } from "../errors/networkErrorHelpers";
+import { readAuthData } from "@/auth/authStorage";
+import { FeatureFlags } from "@/auth/featureFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
+import { selectExtraContext } from "@/data/service/errorService";
+import { BusinessError } from "@/errors/businessErrors";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { allowsTrack } from "./dnt";
 
 import { mapAppUserToTelemetryUser } from "./telemetryHelpers";

@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { getErrorMessage, selectSpecificError } from "../../errors/errorHelpers";
+import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBug,
   faExclamationCircle,
   faQuestionCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { BusinessError, NoRendererError } from "../../errors/businessErrors";
+import { BusinessError, NoRendererError } from "@/errors/businessErrors";
 
 const RootErrorPanel: React.VoidFunctionComponent<{ error: unknown }> = ({
   error,

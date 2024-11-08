@@ -18,14 +18,14 @@
 import React, { useCallback, useMemo } from "react";
 import { type SchemaFieldProps } from "../propTypes";
 import { PACKAGE_REGEX } from "../../../../types/helpers";
-import { type AuthOption } from "../../../../auth/authTypes";
+import { type AuthOption } from "@/auth/authTypes";
 import {
   type IntegrationsFormSlice,
   produceExcludeUnusedDependencies,
 } from "./integrationDependencyFieldUtils";
 import { produce } from "immer";
 import { setIn, useField, useFormikContext } from "formik";
-import { useAuthOptions } from "../../../../hooks/useAuthOptions";
+import { useAuthOptions } from "@/hooks/useAuthOptions";
 import { isEmpty, isEqual, unset } from "lodash";
 import { type SelectWidgetOnChange } from "../../../form/widgets/SelectWidget";
 import IntegrationAuthSelectWidget from "./IntegrationAuthSelectWidget";
@@ -37,7 +37,10 @@ import {
 import { type RegistryId } from "../../../../types/registryTypes";
 import { type SafeString, type UUID } from "../../../../types/stringTypes";
 import { type IntegrationDependency } from "../../../../integrations/integrationTypes";
-import { freshIdentifier, makeVariableExpression } from "../../../../utils/variableUtils";
+import {
+  freshIdentifier,
+  makeVariableExpression,
+} from "../../../../utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "../../../../telemetry/reportEvent";
 import { Events } from "../../../../telemetry/events";

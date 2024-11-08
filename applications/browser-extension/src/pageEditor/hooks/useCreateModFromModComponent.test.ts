@@ -22,7 +22,7 @@ import { modMetadataFactory } from "../../testUtils/factories/modComponentFactor
 import { menuItemFormStateFactory } from "../../testUtils/factories/pageEditorFactories";
 import reportEvent from "../../telemetry/reportEvent";
 import { Events } from "../../telemetry/events";
-import { API_PATHS } from "../../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 import { actions as editorActions } from "../store/editor/editorSlice";
 
 const reportEventMock = jest.mocked(reportEvent);

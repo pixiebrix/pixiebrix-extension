@@ -20,19 +20,19 @@ import { type Spreadsheet } from "../core/types";
 import { type Schema } from "../../../../types/schemaTypes";
 import useGoogleAccount from "../core/useGoogleAccount";
 import useSpreadsheetId from "../core/useSpreadsheetId";
-import useDeriveAsyncState from "../../../../hooks/useDeriveAsyncState";
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type SanitizedIntegrationConfig } from "../../../../integrations/integrationTypes";
 import { type AsyncState } from "../../../../types/sliceTypes";
-import AsyncStateGate from "../../../../components/AsyncStateGate";
+import AsyncStateGate from "@/components/AsyncStateGate";
 import { type Except } from "type-fest";
 import { joinName } from "../../../../utils/formUtils";
-import SchemaField from "../../../../components/fields/schemaFields/SchemaField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { AnnotationType } from "../../../../types/annotationTypes";
-import FieldAnnotationAlert from "../../../../components/annotationAlert/FieldAnnotationAlert";
-import { getErrorMessage } from "../../../../errors/errorHelpers";
+import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
+import { getErrorMessage } from "@/errors/errorHelpers";
 import { SHEET_FIELD_SCHEMA } from "../core/schemas";
 import { getSpreadsheet } from "../core/sheetsApi";
-import { hasCachedAuthData } from "../../../../background/messenger/api";
+import { hasCachedAuthData } from "@/background/messenger/api";
 import { assertNotNullish } from "../../../../utils/nullishUtils";
 
 type GoogleSheetState = {

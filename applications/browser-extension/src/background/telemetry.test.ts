@@ -15,14 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  flushEvents,
-  recordEvent,
-  TEST_flushAll,
-} from "./telemetry";
+import { flushEvents, recordEvent, TEST_flushAll } from "./telemetry";
 import { appApiMock } from "../testUtils/appApiMock";
 import { type TelemetryEvent } from "../telemetry/telemetryTypes";
-import { API_PATHS } from "../data/service/urlPaths";
+import { API_PATHS } from "@/data/service/urlPaths";
 
 const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {

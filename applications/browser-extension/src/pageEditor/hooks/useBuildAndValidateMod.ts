@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  buildNewMod,
-  type ModParts,
-} from "../panes/save/saveHelpers";
+import { buildNewMod, type ModParts } from "../panes/save/saveHelpers";
 import reportEvent from "../../telemetry/reportEvent";
 import { useCallback } from "react";
 import { Events } from "../../telemetry/events";
-import { BusinessError } from "../../errors/businessErrors";
+import { BusinessError } from "@/errors/businessErrors";
 import useCheckModStarterBrickInvariants from "./useCheckModStarterBrickInvariants";
 import useCompareModComponentCounts from "./useCompareModComponentCounts";
 import { type JsonObject } from "type-fest";

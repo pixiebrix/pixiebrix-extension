@@ -17,8 +17,8 @@
 
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { logActions } from "../../components/logViewer/logSlice";
-import LogCard from "../../components/logViewer/LogCard";
+import { logActions } from "@/components/logViewer/logSlice";
+import LogCard from "@/components/logViewer/LogCard";
 
 const Logs: React.VoidFunctionComponent = () => {
   const dispatch = useDispatch();

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationsQuery } from "../../data/service/api";
+import { useGetOrganizationsQuery } from "@/data/service/api";
 import { useMemo } from "react";
 
 function useGetAllTeamScopes() {

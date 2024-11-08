@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cancelTemporaryPanel } from "../../../contentScript/messenger/api";
+import { cancelTemporaryPanel } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "../../../sidebar/connectedTarget";
 import { eventKeyForEntry } from "../eventKeyUtils";
 import {

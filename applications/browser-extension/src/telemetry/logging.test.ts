@@ -28,11 +28,11 @@ import {
 } from "../testUtils/factories/logFactories";
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "../testUtils/factories/stringFactories";
-import { flagOn } from "../auth/featureFlagStorage";
+import { flagOn } from "@/auth/featureFlagStorage";
 import Reason = chrome.offscreen.Reason;
 import ManifestV3 = chrome.runtime.ManifestV3;
 import { serializeError } from "serialize-error";
-import { type FeatureFlag, FeatureFlags } from "../auth/featureFlags";
+import { type FeatureFlag, FeatureFlags } from "@/auth/featureFlags";
 import { waitFor } from "@testing-library/react";
 
 // Disable automatic __mocks__ resolution
