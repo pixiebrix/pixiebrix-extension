@@ -26,7 +26,6 @@ import {
   type AddBrickLocation,
   type EditorRootState,
   type EditorState,
-  type EditorStateEphemeral,
   type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
@@ -93,7 +92,6 @@ import {
   initialEphemeralState,
   initialState,
 } from "@/store/editorInitialState";
-import { type Simplify } from "type-fest";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
