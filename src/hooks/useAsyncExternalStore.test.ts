@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 describe("useAsyncExternalStore", () => {
   it("should subscribe once", async () => {

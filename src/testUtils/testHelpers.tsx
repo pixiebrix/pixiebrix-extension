@@ -295,7 +295,6 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
       "waitFor",
       "waitForValueToChange",
       "waitForNextUpdate",
-      "error",
     );
   };
 }

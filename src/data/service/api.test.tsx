@@ -23,7 +23,6 @@ import {
   useGetPackageQuery,
   useUpdatePackageMutation,
 } from "@/data/service/api";
-import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import React from "react";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -33,6 +32,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { isPlainObject } from "lodash";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { type RegistryId } from "@/types/registryTypes";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 function testStore() {
   return configureStore({

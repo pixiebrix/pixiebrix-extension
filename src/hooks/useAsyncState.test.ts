@@ -18,8 +18,7 @@
 import pDefer from "p-defer";
 import useAsyncState from "@/hooks/useAsyncState";
 import { renderHook } from "@/pageEditor/testHelpers";
-import { act } from "@testing-library/react-hooks";
-import { waitFor } from "@testing-library/react";
+import { act, waitFor } from "@testing-library/react";
 import { waitForNextUpdate } from "@/testUtils/renderHookHelpers";
 
 describe("useAsyncState", () => {

@@ -24,7 +24,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { type BrickConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 const staticDocumentConfig: BrickConfig = {
   id: validateRegistryId("@pixiebrix/document"),

@@ -22,7 +22,7 @@ import { deactivateMod } from "@/store/deactivateModHelpers";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 beforeEach(() => {
   jest.clearAllMocks();

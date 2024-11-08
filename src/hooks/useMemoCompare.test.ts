@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { renderHook } from "@testing-library/react-hooks";
 import useMemoCompare from "@/hooks/useMemoCompare";
 import deepEquals from "fast-deep-equal";
+import { renderHook } from "@/testUtils/renderWithCommonStore";
 
 describe("useMemoCompare", () => {
   it("returns same reference for deepEquals", async () => {

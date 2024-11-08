@@ -44,7 +44,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { normalizeModDefinition } from "@/utils/modUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),

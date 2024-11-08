@@ -49,7 +49,7 @@ import {
   type EditablePackageMetadata,
 } from "@/types/contract";
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
-import { act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react";
 
 jest.mock("@/contentScript/messenger/api");
 jest.mock("@/utils/notify");
