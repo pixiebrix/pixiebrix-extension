@@ -48,5 +48,5 @@ export const selectExpandedModId = ({ editor }: EditorRootState) =>
 export const selectEditorUpdateKey = ({ editor }: EditorRootState) =>
   editor.selectionSeq;
 
-export const selectIsEditorSidebarExpanded = ({ editor }: EditorRootState) =>
-  editor.isModListExpanded;
+export const selectIsModListingPanelExpanded = ({ editor }: EditorRootState) =>
+  editor.isModListingPanelExpanded;

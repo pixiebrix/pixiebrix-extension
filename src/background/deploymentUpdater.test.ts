@@ -35,10 +35,8 @@ import {
   saveSettingsState,
 } from "@/store/settings/settingsStorage";
 import { getEditorState, saveEditorState } from "@/store/editorStorage";
-import {
-  editorSlice,
-  initialState as initialEditorState,
-} from "@/pageEditor/store/editor/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { initialState as initialEditorState } from "@/store/editorInitialState";
 import { type ButtonFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
 import { registry } from "@/background/messenger/api";

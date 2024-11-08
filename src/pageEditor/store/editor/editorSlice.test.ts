@@ -18,7 +18,6 @@
 import {
   editorSlice,
   actions,
-  initialState,
   persistEditorConfig,
 } from "@/pageEditor/store/editor/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
@@ -49,6 +48,7 @@ import {
   selectModIsDirty,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { initialState } from "@/store/editorInitialState";
 
 function getTabState(
   state: EditorState,

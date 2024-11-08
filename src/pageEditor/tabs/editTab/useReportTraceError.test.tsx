@@ -17,10 +17,8 @@
  */
 
 import React from "react";
-import {
-  editorSlice,
-  initialState as editorInitialState,
-} from "@/pageEditor/store/editor/editorSlice";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import { initialState as editorInitialState } from "@/store/editorInitialState";
 import runtimeSlice from "@/pageEditor/store/runtime/runtimeSlice";
 import sessionSlice from "@/pageEditor/store/session/sessionSlice";
 import { configureStore } from "@reduxjs/toolkit";
