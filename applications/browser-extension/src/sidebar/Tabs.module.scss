@@ -1,0 +1,210 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import "@/themes/colors";
+
+// Overrides for Bootstraps opinionated styling of tab content
+.paneOverrides {
+  text-align: initial;
+}
+
+.tabContainer {
+  flex-wrap: nowrap;
+  // Position relative is needed so that the blur overlay only covers the panel content area, and does not cover the whole sidebar (including the tabs and logo).
+  position: relative;
+}
+
+.tabWrapper {
+  display: flex;
+  align-items: stretch;
+  // Copying bootstraps alignment rule for Nav.Link
+  margin-bottom: -1px;
+
+  flex: 1;
+
+  // Only show first 8 items
+  display: none;
+  &:nth-child(-n + 8) {
+    display: flex;
+  }
+  border-radius: 0.5rem 0.5rem 0 0;
+
+  background: $S2;
+  &:hover {
+    background: $S3;
+  }
+
+  // We had to remove overflow:hidden to show the outer corner
+  // decorations but that broke the clamping. By setting the width
+  // to 0 we can rely on the flex justify-content property to size
+  // the tabs equally
+  width: 0;
+
+  // Position relative so the outside decorations can be positioned
+  position: relative;
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    background: transparent;
+    height: 10px;
+    width: 30px;
+    bottom: 0;
+  }
+
+  &::after {
+    right: -30px;
+    border-bottom-left-radius: 10px;
+    pointer-events: none;
+  }
+  &::before {
+    // 2px left extra to account for the border that hides the left divider
+    left: -32px;
+    border-bottom-right-radius: 10px;
+    pointer-events: none;
+  }
+
+  &:hover {
+    &::before {
+      box-shadow: 20px 0px 0px 0px $S3;
+      z-index: 1;
+    }
+
+    &::after {
+      box-shadow: -20px 0px 0px 0px $S3;
+      z-index: 1;
+    }
+  }
+
+  &.active {
+    // Trickery to hide the divider on the left. Move the item over the divider,
+    // then add a border to maintain the position
+    margin-left: -2px;
+    border-left: 2px solid $S0;
+    z-index: 2;
+    // Disable cursor:pointer because there's no action
+    // This also makes it easier to see when you're hovering the close button
+    cursor: default;
+    background: $S0;
+    &:hover {
+      background: $S0;
+    }
+
+    &::before {
+      box-shadow: 20px 0px 0px 0px $S0;
+      z-index: 2;
+    }
+
+    &::after {
+      box-shadow: -20px 0px 0px 0px $S0;
+      z-index: 2;
+    }
+  }
+
+  .tabDivider {
+    display: none;
+    width: 1px;
+    margin: 10px 0;
+    background: $S4;
+  }
+
+  // We don't want a divider on the far right
+  // If we have 8+ items; only show the first 7
+  &:nth-child(-n + 7) {
+    .tabDivider {
+      display: block;
+      z-index: 1;
+    }
+  }
+
+  // If we have < 8 items; don't show on the last item
+  // Don't show on active tab. This only hides the right-side divider. We use a border trick to hide
+  // the one on the left
+  &:last-child,
+  &.active {
+    .tabDivider {
+      display: none;
+      z-index: 1;
+    }
+  }
+}
+
+.tabHeader {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-grow: 1;
+  align-items: center;
+
+  border: none !important;
+  background: transparent !important;
+  padding: 0.5rem 0.5rem 0.7rem !important;
+
+  overflow: hidden;
+
+  // Add padding between each item without padding the outside
+  & > * {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  & > *:first-child {
+    padding-left: 0;
+  }
+  & > *:last-child {
+    padding-right: 0;
+  }
+
+  :global .close {
+    // The close icon is the actual letter "X" so this thins the icon
+    font-weight: 400;
+    font-size: 20px;
+    border-radius: 4px;
+    padding: 0 2px 2px;
+    text-align: center;
+    line-height: 11px;
+    &:hover {
+      background: $S4;
+    }
+  }
+}
+
+.tabTitle {
+  margin: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0; // Avoid stretching the flex parent
+}
+
+.addButton {
+  color: $N300;
+  // 3px is the default margin-right for the bootstrap link-variant button
+  margin-right: 3px;
+
+  svg {
+    width: 0.625rem;
+    margin-left: 0.125rem;
+  }
+
+  &:hover {
+    color: $N800;
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+}
+
+.tabContainer {
+  z-index: 10;
+}

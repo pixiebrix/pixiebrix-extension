@@ -1,0 +1,154 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { type SchemaFieldProps } from "../propTypes";
+import { FieldArray, useField } from "formik";
+import { Button } from "react-bootstrap";
+import React, { useMemo } from "react";
+import { type Schema } from "../../../../types/schemaTypes";
+import {
+  booleanPredicate,
+  findOneOf,
+  textPredicate,
+} from "../schemaUtils";
+import { defaultBrickConfig } from "../../../../bricks/util";
+import ArrowUpwardIcon from "../../../../icons/arrow-upward.svg?loadAsComponent";
+import ArrowDownwardIcon from "../../../../icons/arrow-downward.svg?loadAsComponent";
+import SchemaField from "../SchemaField";
+import styles from "./ArrayWidget.module.scss";
+import { joinName } from "../../../../utils/formUtils";
+
+type ArrayWidgetProps = SchemaFieldProps & {
+  addButtonCaption?: string;
+};
+
+// Empty value for text fields for the Formik state
+const EMPTY_TEXT_VALUE = "";
+
+function getDefaultArrayItem(schema: Schema): unknown {
+  // TODO: handle enum and const
+
+  if (schema.default) {
+    return schema.default;
+  }
+
+  if (textPredicate(schema)) {
+    return EMPTY_TEXT_VALUE;
+  }
+
+  if (schema.type === "object") {
+    return defaultBrickConfig(schema);
+  }
+
+  if (findOneOf(schema, booleanPredicate)) {
+    return false;
+  }
+
+  if (findOneOf(schema, textPredicate)) {
+    return EMPTY_TEXT_VALUE;
+  }
+
+  return null;
+}
+
+const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
+  schema,
+  validationSchema,
+  name,
+  addButtonCaption = "Add Item",
+}) => {
+  const [field] = useField<UnknownObject[]>(name);
+
+  if (Array.isArray(schema.items)) {
+    throw new TypeError("Support for arrays of mixed types is not implemented");
+  }
+
+  if (typeof schema.items === "boolean") {
+    throw new TypeError("Schema required for items");
+  }
+
+  const schemaItems = useMemo<Schema>(
+    // Cast is okay here since we've already checked for array/boolean types
+    () => (schema.items as Schema) ?? { additionalProperties: true },
+    [schema.items],
+  );
+
+  return (
+    <FieldArray name={name}>
+      {({ push, swap }) => (
+        <>
+          <ul className="list-group mb-2">
+            {field.value?.map((_, index) => {
+              const canMoveUp = index > 0;
+              const canMoveDown = index < field.value.length - 1;
+
+              return (
+                // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
+                <li className="list-group-item py-1 d-flex pl-1" key={index}>
+                  <div>
+                    <Button
+                      className={styles.moveButton}
+                      title="Move up"
+                      variant="link"
+                      disabled={!canMoveUp}
+                      onClick={() => {
+                        swap(index, index - 1);
+                      }}
+                    >
+                      <ArrowUpwardIcon />
+                    </Button>
+                    <Button
+                      className={styles.moveButton}
+                      title="Move down"
+                      variant="link"
+                      disabled={!canMoveDown}
+                      onClick={() => {
+                        swap(index, index + 1);
+                      }}
+                    >
+                      <ArrowDownwardIcon />
+                    </Button>
+                  </div>
+                  <div className="flex-grow-1">
+                    <SchemaField
+                      name={joinName(name, String(index))}
+                      schema={schemaItems}
+                      validationSchema={validationSchema}
+                      hideLabel
+                      isArrayItem
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <Button
+            variant="link"
+            className={styles.addButton}
+            onClick={() => {
+              push(getDefaultArrayItem(schemaItems));
+            }}
+          >
+            {addButtonCaption}
+          </Button>
+        </>
+      )}
+    </FieldArray>
+  );
+};
+
+export default ArrayWidget;

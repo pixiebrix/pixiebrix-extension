@@ -1,0 +1,116 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import "@/themes/colors";
+
+$button-color: $primary-bg;
+$lg-breakpoint: 992px;
+$xl-breakpoint: 1200px;
+
+.bgImage {
+  position: absolute;
+  top: 3.5rem;
+  // using pixels to match the column padding
+  right: 15px;
+  z-index: -1;
+
+  @media (min-width: $lg-breakpoint) {
+    right: 12.5rem;
+  }
+  @media (min-width: $xl-breakpoint) {
+    right: auto;
+    left: 20rem;
+  }
+}
+
+.title {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: $S800;
+}
+
+.lead {
+  color: $S600;
+  font-size: 0.75em;
+  margin-bottom: 1em;
+  // XXX: design calls for 500
+  font-weight: 600;
+}
+
+.text {
+  font-size: 1em;
+  color: $S800;
+  margin-bottom: 0.875em;
+  // XXX: design calls for 500
+  font-weight: 600;
+
+  max-width: 600px;
+}
+
+.button {
+  font-size: 1em;
+  padding: 10px 16px;
+  background-color: $button-color;
+  border-color: $button-color;
+  width: 100%;
+
+  @media (min-width: $lg-breakpoint) {
+    width: auto;
+  }
+}
+
+.links {
+  border-radius: 4px;
+  background-color: $S1;
+  padding: 1em;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      line-height: 1.3em;
+    }
+  }
+
+  ul:not(:first-child) {
+    margin-top: 1em;
+  }
+
+  a {
+    text-decoration: underline;
+    font-size: 0.75em;
+    color: $button-color;
+  }
+
+  button {
+    text-decoration: underline;
+    font-size: 0.75em;
+    color: $button-color;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+  }
+}
+
+.linkSectionHeader {
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $S700;
+  font-size: 9px;
+}

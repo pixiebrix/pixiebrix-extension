@@ -54,11 +54,11 @@ pixiebrix-extension-*.zip
 storybook-static
 
 # Playwright
-/end-to-end-tests/.output/
-/end-to-end-tests/.report/
-/end-to-end-tests/.blob-report/
-/end-to-end-tests/.auth/
+/applications/browser-extension/end-to-end-tests/.output/
+/applications/browser-extension/end-to-end-tests/.report/
+/applications/browser-extension/end-to-end-tests/.blob-report/
+/applications/browser-extension/end-to-end-tests/.auth/
 /playwright/.cache/
-/end-to-end-tests/blob-report.7z
+/applications/browser-extension/end-to-end-tests/blob-report.7z
 /playwright-report/
 .playwright-report/

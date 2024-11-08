@@ -19,7 +19,7 @@ import axios from "axios";
 import {
   lexicon,
   transformLexiconMapToRequestSchema,
-} from "../src/telemetry/lexicon";
+} from "../applications/browser-extension/src/telemetry/lexicon";
 
 async function uploadMixpanelLexicon() {
   const transformedLexicon = transformLexiconMapToRequestSchema(lexicon);

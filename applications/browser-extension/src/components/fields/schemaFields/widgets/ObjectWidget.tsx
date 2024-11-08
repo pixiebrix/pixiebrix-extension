@@ -1,0 +1,291 @@
+/* eslint-disable security/detect-object-injection -- working with object props a lot here */
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import React, { useCallback, useMemo, useRef } from "react";
+// eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
+import { Button, Form, Table } from "react-bootstrap";
+import { type SchemaFieldProps } from "../propTypes";
+import { type FieldValidator, useField, useFormikContext } from "formik";
+import { produce } from "immer";
+import SchemaField from "../SchemaField";
+import { getFieldNamesFromPathString } from "../../../../runtime/pathHelpers";
+import { isCustomizableObjectSchema } from "./widgetUtils";
+import { type Schema } from "../../../../types/schemaTypes";
+import { type SafeString } from "../../../../types/stringTypes";
+import { joinName } from "../../../../utils/formUtils";
+import { freshIdentifier } from "../../../../utils/variableUtils";
+
+type PropertyRowProps = {
+  name: string;
+  readOnly: boolean;
+  schema: Schema;
+  onDelete?: () => void;
+  onRename?: (newName: string) => void;
+  isRequired?: boolean;
+  validate?: FieldValidator;
+};
+
+type RowProps = {
+  parentSchema: Schema;
+  name: string;
+  property: string;
+  defined: boolean;
+  onDelete: (prop: string) => void;
+  onRename: (oldProp: string, newProp: string) => void;
+};
+
+const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
+  name,
+  schema,
+  isRequired,
+}) => (
+  <tr>
+    <td colSpan={2}>
+      <SchemaField
+        hideLabel
+        isObjectProperty
+        isRequired={isRequired}
+        name={name}
+        schema={schema}
+      />
+    </td>
+  </tr>
+);
+
+const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
+  readOnly,
+  onRename,
+  schema,
+  isRequired,
+  name,
+}) => {
+  const [field] = useField(name);
+
+  const updateName = useCallback(
+    ({ target }: React.FocusEvent<HTMLInputElement>) => {
+      onRename?.(target.value);
+    },
+    [onRename],
+  );
+
+  const currentProperty = getFieldNamesFromPathString(field.name)[1];
+
+  return (
+    <tr>
+      <td>
+        <Form.Control
+          type="text"
+          readOnly={readOnly}
+          defaultValue={currentProperty}
+          onBlur={updateName}
+          data-testid={`${name}-name`}
+        />
+      </td>
+      <td>
+        <SchemaField
+          hideLabel
+          isObjectProperty
+          {...field}
+          schema={schema}
+          isRequired={isRequired}
+        />
+      </td>
+    </tr>
+  );
+};
+
+const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
+  parentSchema,
+  defined,
+  name,
+  property,
+  onDelete,
+  onRename,
+}) => {
+  const propertySchema: Schema = useMemo(() => {
+    // As of v3, we allow object props of any type, not just string
+    const defaultSchema: Schema = {};
+    const rawSchema = defined
+      ? parentSchema.properties?.[property] ?? defaultSchema
+      : parentSchema.additionalProperties ?? defaultSchema;
+
+    return typeof rawSchema === "boolean" ? defaultSchema : rawSchema;
+  }, [
+    defined,
+    parentSchema.properties,
+    parentSchema.additionalProperties,
+    property,
+  ]);
+
+  const isRequired = parentSchema.required?.includes(property) ?? false;
+
+  const PropertyRowComponent = useMemo(
+    () => getPropertyRow(propertySchema),
+    [propertySchema],
+  );
+
+  const deleteProp = useCallback(() => {
+    onDelete(property);
+  }, [property, onDelete]);
+
+  const renameProp = useCallback(
+    (newProp: string) => {
+      onRename(property, newProp);
+    },
+    [property, onRename],
+  );
+
+  return (
+    <PropertyRowComponent
+      key={property}
+      name={name}
+      readOnly={defined}
+      schema={propertySchema}
+      onDelete={defined ? undefined : deleteProp}
+      onRename={defined ? undefined : renameProp}
+      isRequired={isRequired}
+    />
+  );
+};
+
+function getPropertyRow(
+  schema: Schema,
+): React.FunctionComponent<PropertyRowProps> {
+  switch (schema?.type) {
+    case "array":
+    case "object": {
+      return CompositePropertyRow;
+    }
+
+    default: {
+      return ValuePropertyRow;
+    }
+  }
+}
+
+type ObjectValue = UnknownObject;
+
+const ObjectWidget: React.VFC<SchemaFieldProps> = (props) => {
+  const { name, schema } = props;
+
+  // Allow additional properties for empty schema (empty schema allows shape)
+  const isCustomizable = isCustomizableObjectSchema(schema);
+
+  // Helpers.setValue changes on every render, so use setFieldValue instead
+  // https://github.com/formium/formik/issues/2268
+  const [field] = useField<ObjectValue>(props);
+  const { setFieldValue } = useFormikContext();
+
+  // UseRef indirection layer so the callbacks below don't re-calculate on every change
+  const valueRef = useRef(field.value);
+  valueRef.current = field.value ?? {};
+
+  const [properties, declaredProperties] = useMemo(() => {
+    const declared = schema.properties ?? {};
+    const additional = Object.fromEntries(
+      Object.entries(field.value ?? {}).filter(
+        ([property]) => !declared[property],
+      ),
+    );
+    return [[...Object.keys(declared), ...Object.keys(additional)], declared];
+  }, [field.value, schema.properties]);
+
+  const onDelete = useCallback(
+    (property: string) => {
+      void setFieldValue(
+        name,
+        produce(valueRef.current, (draft) => {
+          if (draft) {
+            delete draft[property];
+          }
+        }),
+      );
+    },
+    [name, setFieldValue, valueRef],
+  );
+
+  const onRename = useCallback(
+    (oldProp: string, newProp: string) => {
+      if (oldProp !== newProp) {
+        const previousValue = valueRef.current;
+
+        console.debug("Renaming property", {
+          newProp,
+          oldProp,
+          previousValue,
+        });
+
+        void setFieldValue(
+          name,
+          produce(previousValue, (draft) => {
+            draft[newProp] = draft[oldProp] ?? "";
+            delete draft[oldProp];
+          }),
+        );
+      }
+    },
+    [name, setFieldValue, valueRef],
+  );
+
+  const addProperty = useCallback(() => {
+    void setFieldValue(
+      name,
+      produce(valueRef.current, (draft) => {
+        const prop = freshIdentifier(
+          "property" as SafeString,
+          Object.keys(draft),
+        );
+        draft[prop] = "";
+      }),
+    );
+  }, [name, setFieldValue, valueRef]);
+
+  return (
+    <div>
+      <Table size="sm" className="mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Property name</th>
+            <th scope="col">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {properties.map((property) => (
+            <ObjectFieldRow
+              key={property}
+              parentSchema={schema}
+              name={
+                // Always use nesting even if property name is empty
+                property == null || property === ""
+                  ? `${field.name}.`
+                  : joinName(field.name, property)
+              }
+              property={property}
+              defined={Object.hasOwn(declaredProperties, property)}
+              onDelete={onDelete}
+              onRename={onRename}
+            />
+          ))}
+        </tbody>
+      </Table>
+      {isCustomizable && <Button onClick={addProperty}>Add Property</Button>}
+    </div>
+  );
+};
+
+export default ObjectWidget;
