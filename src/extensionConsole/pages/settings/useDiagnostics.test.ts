@@ -18,6 +18,7 @@
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
 import download from "downloadjs";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("downloadjs");
 
@@ -31,11 +32,11 @@ describe("useDiagnostics", () => {
   it("smoke test", async () => {
     const downloadMock = jest.mocked(download);
 
-    const wrapper = renderHook(() => useDiagnostics());
+    const { result } = renderHook(() => useDiagnostics());
 
-    await wrapper.waitForEffect();
+    await waitForEffect();
 
-    await wrapper.result.current.exportDiagnostics();
+    await result.current.exportDiagnostics();
     expect(downloadMock).toHaveBeenCalledOnce();
   });
 });

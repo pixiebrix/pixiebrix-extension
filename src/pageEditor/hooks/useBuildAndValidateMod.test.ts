@@ -21,7 +21,7 @@ import {
   lookupStarterBrick,
 } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { hookAct, renderHook } from "@/pageEditor/testHelpers";
+import { renderHook } from "@/pageEditor/testHelpers";
 import {
   type StarterBrickDefinitionLike,
   type StarterBrickDefinitionProp,
@@ -44,6 +44,7 @@ import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice"
 import { normalizeModDefinition } from "@/utils/modUtils";
 import { DefinitionKinds } from "@/types/registryTypes";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { act } from "@testing-library/react-hooks";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -145,7 +146,7 @@ describe("useBuildAndValidateMod", () => {
         },
       });
 
-      await hookAct(async () => {
+      await act(async () => {
         const actualModDefinition = await result.current.buildAndValidateMod({
           sourceModDefinition: modDefinition,
           draftModComponents: [
@@ -205,7 +206,7 @@ describe("useBuildAndValidateMod", () => {
 
     const state = getReduxStore().getState().options as ModComponentState;
 
-    await hookAct(async () => {
+    await act(async () => {
       await expect(
         result.current.buildAndValidateMod({
           sourceModDefinition: activatedModDefinition,

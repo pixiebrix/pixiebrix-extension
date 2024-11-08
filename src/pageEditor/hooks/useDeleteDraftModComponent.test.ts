@@ -24,6 +24,7 @@ import {
 import { removeDraftModComponents } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { act } from "@testing-library/react-hooks";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -44,7 +45,6 @@ describe("useDeleteModComponent", () => {
     const {
       result: { current: deleteDraftModComponent },
       getReduxStore,
-      act,
     } = renderHook(() => useDeleteDraftModComponent(), {
       setupRedux(dispatch, { store }) {
         jest.spyOn(store, "dispatch");

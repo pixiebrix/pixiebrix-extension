@@ -22,6 +22,7 @@ import { deactivateMod } from "@/store/deactivateModHelpers";
 import { type ModComponentsRootState } from "@/store/modComponents/modComponentTypes";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { selectActivatedModComponents } from "@/store/modComponents/modComponentSelectors";
+import { act } from "@testing-library/react-hooks";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -32,7 +33,6 @@ test("deactivates mod components", async () => {
 
   const {
     result: { current: reactivateMod },
-    act,
     getReduxStore,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
@@ -64,7 +64,6 @@ test("dispatches activate mod action", async () => {
 
   const {
     result: { current: reactivateMod },
-    act,
   } = renderHook(() => useReactivateMod(), {
     setupRedux(dispatch) {
       dispatch(
