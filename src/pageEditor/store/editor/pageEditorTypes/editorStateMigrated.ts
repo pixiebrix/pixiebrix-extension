@@ -28,8 +28,6 @@ import {
   type BaseFormStateV8,
 } from "@/pageEditor/store/editor/baseFormStateTypes";
 import {
-  type EditorStateEphemeral,
-  type EditorStateSynced,
   type ModMetadataFormState,
   type ModalDefinition,
 } from "@/pageEditor/store/editor/pageEditorTypes";
@@ -382,13 +380,20 @@ export type EditorStateMigratedV11 = Except<
 /**
  * Version bump to split state types that do not need to be migrated from the other types
  *
- * @see editorStateSynced
- * @see editorStateEphemeral
+ * @see EditorStateSynced
+ * @see EditorStateEphemeral
  *
  * @deprecated - Do not use versioned state types directly, exported for testing
  * @since 2.1.8
  */
-export type EditorStateMigratedV12 = Except<
+export type EditorStateMigratedV12 = Pick<
   EditorStateMigratedV11,
-  keyof EditorStateSynced | keyof EditorStateEphemeral
+  | "dirty"
+  | "dirtyModVariablesDefinitionById"
+  | "isDimensionsWarningDismissed"
+  | "dirtyModMetadataById"
+  | "dirtyModOptionsArgsById"
+  | "modComponentFormStates"
+  | "deletedModComponentFormStateIdsByModId"
+  | "dirtyModOptionsDefinitionById"
 >;

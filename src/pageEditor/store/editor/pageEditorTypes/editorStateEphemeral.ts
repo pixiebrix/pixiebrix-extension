@@ -22,15 +22,17 @@ import { type UUID } from "@/types/stringTypes";
 
 /**
  * Page Editor Slice state that should not be persisted using redux-persist.
+ * Prefer `null` to `undefined` to require the keys in initialEphemeralState
  *
- * @see editorStateMigrated
- * @see editorStateSynced
+ * @see EditorStateMigratedV<N>
+ * @see EditorStateSynced
+ * @see initialEphemeralState
  */
 export type EditorStateEphemeral = {
   /**
    * A clipboard-style-copy of a brick ready to paste into a brick pipeline
    */
-  copiedBrick?: BrickConfig;
+  copiedBrick: BrickConfig | null;
 
   /**
    * A serialized error that has occurred in the page editor

@@ -24,9 +24,11 @@ import { type UUID } from "@/types/stringTypes";
  * should be reset to initial state during a redux-persist migration.
  *
  * Changing the keys in the future does not require a migration.
+ * Prefer `null` to `undefined` to require the keys in initialSyncedState
  *
- * @see editorStateEphemeral
- * @see editorStateMigrated
+ * @see EditorStateEphemeral
+ * @see EditorStateMigratedV<N>
+ * @see initialSyncedState
  */
 export type EditorStateSynced = {
   /**
@@ -67,5 +69,5 @@ export type EditorStateSynced = {
   /**
    * Is mod listing panel expanded or collapsed
    */
-  isModListExpanded: boolean;
+  isModListingPanelExpanded: boolean;
 };

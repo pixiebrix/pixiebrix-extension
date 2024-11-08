@@ -26,7 +26,6 @@ import {
   type AddBrickLocation,
   type EditorRootState,
   type EditorState,
-  type EditorStateEphemeral,
   type ModalDefinition,
   ModalKey,
   type ModMetadataFormState,
@@ -89,8 +88,10 @@ import {
   inspectedTab,
 } from "@/pageEditor/context/connection";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import { type UnionToTuple, type Except } from "type-fest";
-import { initialState } from "@/store/editorInitialState";
+import {
+  initialEphemeralState,
+  initialState,
+} from "@/store/editorInitialState";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -394,7 +395,7 @@ export const editorSlice = createSlice({
       state,
       { payload }: PayloadAction<{ isExpanded: boolean }>,
     ) {
-      state.isModListExpanded = payload.isExpanded;
+      state.isModListingPanelExpanded = payload.isExpanded;
     },
 
     ///
@@ -874,7 +875,7 @@ export const editorSlice = createSlice({
     },
 
     clearCopiedBrickConfig(state) {
-      delete state.copiedBrick;
+      state.copiedBrick = null;
     },
 
     ///
@@ -1061,31 +1062,14 @@ export const actions = {
   checkActiveModComponentAvailability,
 };
 
-type PageEditorPersistConfig = Except<
-  PersistConfig<EditorState>,
-  "blacklist"
-> & {
-  blacklist: UnionToTuple<keyof EditorStateEphemeral>;
-};
-
-export const persistEditorConfig: PageEditorPersistConfig = {
+export const persistEditorConfig: PersistConfig<EditorState> = {
   key: "editor",
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
   version: 12,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: [
-    "selectionSeq",
-    "error",
-    "visibleModal",
-    "isVariablePopoverVisible",
-    "copiedBrick",
-    "availableActivatedModComponentIds",
-    "isPendingAvailableActivatedModComponents",
-    "availableDraftModComponentIds",
-    "isPendingDraftModComponents",
-  ],
+  blacklist: Object.keys(initialEphemeralState),
 };
 
 function validateActiveModComponentId(state: Draft<EditorState>) {

@@ -49,4 +49,4 @@ export const selectEditorUpdateKey = ({ editor }: EditorRootState) =>
   editor.selectionSeq;
 
 export const selectIsEditorSidebarExpanded = ({ editor }: EditorRootState) =>
-  editor.isModListExpanded;
+  editor.isModListingPanelExpanded;

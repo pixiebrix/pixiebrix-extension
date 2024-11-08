@@ -21,7 +21,8 @@ import {
   type EditorStateSynced,
 } from "@/pageEditor/store/editor/pageEditorTypes";
 
-const initialEphemeralState: EditorStateEphemeral = {
+export const initialEphemeralState: EditorStateEphemeral = {
+  copiedBrick: null,
   error: null,
   selectionSeq: 0,
   visibleModal: null,
@@ -30,7 +31,7 @@ const initialEphemeralState: EditorStateEphemeral = {
   availableDraftModComponentIds: [],
   isPendingDraftModComponents: false,
   isVariablePopoverVisible: false,
-};
+} as const;
 
 export const initialSyncedState: EditorStateSynced = {
   activeModComponentId: null,
@@ -38,8 +39,8 @@ export const initialSyncedState: EditorStateSynced = {
   expandedModId: null,
   brickPipelineUIStateById: {},
   isDataPanelExpanded: true,
-  isModListExpanded: true,
-};
+  isModListingPanelExpanded: true,
+} as const;
 
 /** @internal */
 export const initialState: EditorState = {
@@ -53,4 +54,4 @@ export const initialState: EditorState = {
   dirtyModOptionsArgsById: {},
   deletedModComponentFormStateIdsByModId: {},
   isDimensionsWarningDismissed: false,
-};
+} as const;

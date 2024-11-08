@@ -16,7 +16,7 @@
  */
 
 import { type MigrationManifest, type PersistedState } from "redux-persist";
-import { cloneDeep, mapValues, omit, pick } from "lodash";
+import { mapValues, omit } from "lodash";
 import {
   type BaseFormStateV1,
   type BaseFormStateV2,
@@ -56,7 +56,7 @@ import {
   emptyModVariablesDefinitionFactory,
 } from "@/utils/modUtils";
 import { type SetOptional } from "type-fest";
-import { initialState, initialSyncedState } from "@/store/editorInitialState";
+import { initialSyncedState } from "@/store/editorInitialState";
 
 export const migrations: MigrationManifest = {
   // Redux-persist defaults to version: -1; Initialize to positive-1-indexed
