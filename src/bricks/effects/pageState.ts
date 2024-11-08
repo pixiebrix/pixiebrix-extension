@@ -23,7 +23,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
 import { isObject } from "@/utils/objectUtils";
 import { mapValues } from "lodash";
-import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { castTextLiteralOrThrow, isExpression } from "@/utils/expressionUtils";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import {
   MergeStrategies,
@@ -122,7 +122,7 @@ export class SetPageState extends TransformerABC {
       return;
     }
 
-    if (isObject(data)) {
+    if (isObject(data) && !isExpression(data)) {
       return {
         type: "object",
         // Only track the existence of the properties, not their values

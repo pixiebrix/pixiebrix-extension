@@ -27,12 +27,12 @@ beforeEach(async () => {
 });
 
 describe("@pixiebrix/state/get", () => {
-  test("default to mod namespace", async () => {
+  it("defaults to mod namespace", async () => {
     const brick = new GetPageState();
     await brick.transform(unsafeAssumeValidArg({}), brickOptionsFactory());
   });
 
-  test("is page state aware", async () => {
+  it("is page state aware", async () => {
     const brick = new GetPageState();
     await expect(brick.isPageStateAware()).resolves.toBe(true);
   });
@@ -140,7 +140,7 @@ describe("@pixiebrix/state/set", () => {
 });
 
 describe("set and get", () => {
-  test("default to blueprint state", async () => {
+  it("defaults to mod state", async () => {
     const setState = new SetPageState();
     const getState = new GetPageState();
     const brickOptions = brickOptionsFactory();
@@ -169,8 +169,48 @@ describe("set and get", () => {
     expect(result).toStrictEqual({});
   });
 
-  test("is page state aware", async () => {
+  it("is page state aware", async () => {
     const brick = new SetPageState();
     await expect(brick.isPageStateAware()).resolves.toBe(true);
+  });
+});
+
+describe("getModVariableSchema", () => {
+  it("includes object literal", async () => {
+    const brick = new SetPageState();
+    await expect(
+      brick.getModVariableSchema({
+        id: SetPageState.BRICK_ID,
+        config: {
+          namespace: StateNamespaces.MOD,
+          data: {
+            foo: toExpression("var", "@hello"),
+          },
+        },
+      }),
+    ).resolves.toStrictEqual({
+      type: "object",
+      properties: {
+        foo: true,
+      },
+      required: ["foo"],
+      additionalProperties: false,
+    });
+  });
+
+  it("ignores variable data", async () => {
+    const brick = new SetPageState();
+    await expect(
+      brick.getModVariableSchema({
+        id: SetPageState.BRICK_ID,
+        config: {
+          namespace: StateNamespaces.MOD,
+          data: toExpression("var", "@hello"),
+        },
+      }),
+    ).resolves.toStrictEqual({
+      type: "object",
+      additionalProperties: true,
+    });
   });
 });
