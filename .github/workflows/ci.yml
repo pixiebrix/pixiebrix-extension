@@ -223,15 +223,15 @@ jobs:
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./blob-reports "./7z-blob-reports/*.7z"
+        run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./applications/browser-extension/blob-reports "./applications/browser-extension/7z-blob-reports/*.7z"
       - name: Merge blob reports
-        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./playwright-report/results.json npx playwright merge-reports --reporter=html,json ./blob-reports
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./applications/browser-extension/playwright-report/results.json npx playwright merge-reports --reporter=html,json ./applications/browser-extension/blob-reports
       - name: Password protect merged Playwright report
         if: always()
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z a ./playwright-report.7z ./playwright-report/* -p"$ARTIFACT_ZIP_PASSWORD"
+        run: 7z a ./applications/browser-extension/playwright-report.7z ./applications/browser-extension/playwright-report/* -p"$ARTIFACT_ZIP_PASSWORD"
       - name: Upload zipped merged Playwright Report to GitHub Actions Artifacts
         id: upload-merged-playwright-report-step
         if: always()
