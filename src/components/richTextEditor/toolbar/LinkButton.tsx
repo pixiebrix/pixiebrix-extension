@@ -32,6 +32,12 @@ const LinkButton: React.FunctionComponent = () => {
     return null;
   }
 
+  editor.on("selectionUpdate", ({ editor }) => {
+    if (editor.isActive("link")) {
+      setShowInputPopover(true);
+    }
+  });
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -75,6 +81,7 @@ const LinkButton: React.FunctionComponent = () => {
         target={target.current}
         placement="top"
         rootClose
+        rootCloseEvent="mousedown"
         onHide={() => {
           setShowInputPopover(false);
         }}
