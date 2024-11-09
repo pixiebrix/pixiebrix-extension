@@ -30,6 +30,7 @@ import {
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import NodeFormStateTab from "./tabs/NodeFormStateTab";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
+import SearchTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/SearchTab";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import BrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab";
@@ -119,6 +120,10 @@ const BrickDataPanel: React.FC = () => {
           />
 
           <NavItem eventKey={DataPanelTabKey.Comments} label="Comments" />
+
+          {flagOn(FeatureFlags.PAGE_EDITOR_SEARCH) && (
+            <NavItem eventKey={DataPanelTabKey.Search} label="Search" />
+          )}
         </Nav>
         <Tab.Content
           className={dataPanelStyles.tabContent}
@@ -144,6 +149,8 @@ const BrickDataPanel: React.FC = () => {
           {showDocumentDesign && <OutlineTab />}
 
           <CommentsTab />
+
+          {flagOn(FeatureFlags.PAGE_EDITOR_SEARCH) && <SearchTab />}
         </Tab.Content>
       </div>
     </Tab.Container>
