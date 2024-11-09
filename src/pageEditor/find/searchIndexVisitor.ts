@@ -31,14 +31,27 @@ import {
 import type { Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import type { Schema } from "@/types/schemaTypes";
-import { isArray } from "lodash";
+import { flatten, isArray, omit } from "lodash";
 import { isObject } from "@/utils/objectUtils";
 import type { SetRequired } from "type-fest";
 import { isPrimitive } from "@/utils/typeUtils";
+import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
+import { adapter } from "@/pageEditor/starterBricks/adapter";
+import { type Nullishable } from "@/utils/nullishUtils";
+
+export type StarterBrickContext = {
+  typeLabel: string;
+};
 
 export type BrickContext = {
-  brick: Brick | undefined;
+  /**
+   * The brick configuration.
+   */
   brickConfig: BrickConfig;
+  /**
+   * The brick instance, or undefined if not found in the registry.
+   */
+  brick: Brick | undefined;
 };
 
 /**
@@ -64,9 +77,9 @@ export type LocationRef = {
    */
   modComponentId: UUID;
   /**
-   * The brick nesting position.
+   * The nested brick stack.
    */
-  brickStack: BrickContext[];
+  brickStack: Array<BrickContext | StarterBrickContext>;
   /**
    * The associated brick field reference, if any.
    */
@@ -113,6 +126,18 @@ export type FieldValueItem = {
 
 export type IndexedItem = BrickLabelItem | BrickCommentsItem | FieldValueItem;
 
+export function isStarterBrickContext(
+  context: Nullishable<BrickContext | StarterBrickContext>,
+): context is StarterBrickContext {
+  return context != null && "typeLabel" in context;
+}
+
+export function isBrickContext(
+  context: Nullishable<BrickContext | StarterBrickContext>,
+): context is BrickContext {
+  return context != null && "brickConfig" in context;
+}
+
 export function isBrickCommentsItem(
   item: IndexedItem,
 ): item is BrickCommentsItem {
@@ -130,7 +155,7 @@ export function isFieldValueItem(item: IndexedItem): item is FieldValueItem {
 class SearchIndexVisitor extends PipelineVisitor {
   readonly items: IndexedItem[] = [];
 
-  readonly brickStack: BrickContext[] = [];
+  readonly brickStack: Array<BrickContext | StarterBrickContext> = [];
 
   constructor(
     readonly modComponentId: UUID,
@@ -254,6 +279,15 @@ class SearchIndexVisitor extends PipelineVisitor {
       });
     }
 
+    if (brickConfig.outputKey) {
+      this.visitFieldValue(brickConfig.outputKey, {
+        prop: "if",
+        schema: {
+          title: "Output Variable",
+        },
+      });
+    }
+
     for (const [prop, value] of Object.entries(brickConfig.config)) {
       // Pipeline expressions are handled by super.visitBrick
       if (!isPipelineExpression(value)) {
@@ -270,15 +304,38 @@ class SearchIndexVisitor extends PipelineVisitor {
     this.brickStack.pop();
   }
 
+  async visitStarterBrick(starterBrick: BaseStarterBrickState) {
+    this.brickStack.push({
+      typeLabel: adapter(starterBrick.definition.type).label,
+    });
+
+    for (const [prop, value] of Object.entries(
+      omit(starterBrick.definition, "reader", "type"),
+    )) {
+      this.visitFieldValue(value, {
+        prop,
+        // TODO: provide field title. They're currently hard-coded in the React components
+        schema: undefined,
+      });
+    }
+
+    this.brickStack.pop();
+  }
+
   static async collectItems(
     formStates: ModComponentFormState[],
   ): Promise<IndexedItem[]> {
     const allBricks = await brickRegistry.allTyped();
-    return formStates.flatMap((formState) => {
-      const visitor = new SearchIndexVisitor(formState.uuid, allBricks);
-      visitor.visitRootPipeline(formState.modComponent.brickPipeline);
-      return visitor.items;
-    });
+    return flatten(
+      await Promise.all(
+        formStates.map(async (formState) => {
+          const visitor = new SearchIndexVisitor(formState.uuid, allBricks);
+          visitor.visitRootPipeline(formState.modComponent.brickPipeline);
+          await visitor.visitStarterBrick(formState.starterBrick);
+          return visitor.items;
+        }),
+      ),
+    );
   }
 }
 

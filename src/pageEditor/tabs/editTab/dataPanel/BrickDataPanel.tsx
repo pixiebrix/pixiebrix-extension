@@ -30,7 +30,7 @@ import {
 import ModComponentFormStateTab from "./tabs/ModComponentFormStateTab";
 import NodeFormStateTab from "./tabs/NodeFormStateTab";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
-import FindTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab";
+import FindTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/FindTab";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import BrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/BrickInputTab";

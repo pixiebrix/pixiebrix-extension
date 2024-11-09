@@ -24,8 +24,16 @@ import SearchIndexVisitor, {
   type IndexedItem,
 } from "@/pageEditor/find/searchIndexVisitor";
 import Fuse, { type FuseResult } from "fuse.js";
+import type { SetRequired } from "type-fest";
 
-function useFind(query: string): Array<FuseResult<IndexedItem>> {
+type FindResults = Array<SetRequired<FuseResult<IndexedItem>, "matches">>;
+
+/**
+ * Hook to find query within the current mod.
+ */
+function useFind(
+  query: string,
+): Array<SetRequired<FuseResult<IndexedItem>, "matches">> {
   const currentModId = useSelector(selectCurrentModId);
   const getDraftFormStatesPromiseForModId = useSelector(
     selectGetDraftFormStatesPromiseForModId,
@@ -38,17 +46,28 @@ function useFind(query: string): Array<FuseResult<IndexedItem>> {
     const items = await SearchIndexVisitor.collectItems(formStates);
 
     return new Fuse(items, {
+      // https://www.fusejs.io/api/options.html#includematches
+      includeMatches: true,
+      // XXX: consider including all matches
+      // https://www.fusejs.io/api/options.html#findallmatches
+      findAllMatches: false,
       keys: [
         "data.label",
         "data.value",
         "data.comments",
         "data.brick.name",
+        // Put brick id last - typically if someone is search it, it's because they're searching by the
+        // exact brick id
         "data.brick.id",
       ],
     });
   }, [currentModId, getDraftFormStatesPromiseForModId]);
 
-  return useMemo(() => fuse.data?.search(query) ?? [], [fuse.data, query]);
+  // `matches` will be present because `includeMatches: true` in the Fuse constructor
+  return useMemo(
+    () => fuse.data?.search(query) ?? [],
+    [fuse.data, query],
+  ) as FindResults;
 }
 
 export default useFind;

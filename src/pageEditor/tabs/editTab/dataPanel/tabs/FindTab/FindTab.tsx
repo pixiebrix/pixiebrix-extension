@@ -23,98 +23,10 @@ import { ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import {
-  selectGetModComponentFormStateByModComponentId,
-  selectGetModDraftStateForModId,
-  selectNodeDataPanelTabState,
-} from "@/pageEditor/store/editor/editorSelectors";
-import {
-  type BrickContext,
-  isFieldValueItem,
-  type IndexedItem,
-  isBrickCommentsItem,
-} from "@/pageEditor/find/searchIndexVisitor";
-import { assertNotNullish } from "@/utils/nullishUtils";
-
-function getLocationBrickLabel(brickContext: BrickContext): string {
-  return (
-    brickContext.brickConfig.label ??
-    brickContext.brick?.name ??
-    brickContext.brickConfig.id
-  );
-}
-
-const ResultPath: React.VFC<{ paths: string[] }> = ({ paths }) => (
-  <div className="small">{paths.join(" > ")}</div>
-);
-
-const ResultItem: React.VFC<{ item: IndexedItem; onClick: () => void }> = ({
-  item,
-  onClick,
-}) => {
-  const getModComponentFormStateByModComponentId = useSelector(
-    selectGetModComponentFormStateByModComponentId,
-  );
-  const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
-
-  const formState = getModComponentFormStateByModComponentId(
-    item.location.modComponentId,
-  );
-  assertNotNullish(formState, "Form State not found for mod");
-
-  const draftState = getModDraftStateForModId(formState?.modMetadata.id);
-
-  assertNotNullish(draftState, "Draft state not found for mod");
-
-  if (isBrickCommentsItem(item)) {
-    return (
-      <ListGroup.Item onClick={onClick}>
-        <div>{item.data.comments}</div>
-        <ResultPath
-          paths={[
-            formState.label,
-            ...item.location.brickStack.map((x) => getLocationBrickLabel(x)),
-          ]}
-        />
-      </ListGroup.Item>
-    );
-  }
-
-  if (isFieldValueItem(item)) {
-    const { prop, schema } = item.location.fieldRef;
-    return (
-      <ListGroup.Item onClick={onClick}>
-        <div>{item.data.value}</div>
-        <ResultPath
-          paths={[
-            formState.label,
-            ...item.location.brickStack.map((x) => getLocationBrickLabel(x)),
-            schema?.title ?? prop,
-          ]}
-        />
-      </ListGroup.Item>
-    );
-  }
-
-  const brickContext = item.location.brickStack.at(-1);
-  assertNotNullish(brickContext, "Expected context for brick match");
-
-  const brickLabel = getLocationBrickLabel(brickContext);
-
-  return (
-    <ListGroup.Item onClick={onClick}>
-      <div>{brickLabel}</div>
-      <ResultPath
-        paths={[
-          formState.label,
-          ...item.location.brickStack
-            .slice(0, -1)
-            .map((x) => getLocationBrickLabel(x)),
-        ]}
-      />
-    </ListGroup.Item>
-  );
-};
+import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
+import ResultItem, {
+  useMatchData,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/ResultItem";
 
 const FindTab: React.VFC = () => {
   const dispatch = useDispatch();
@@ -125,6 +37,7 @@ const FindTab: React.VFC = () => {
     ) ?? {};
 
   const searchResults = useFind(query);
+  const matches = useMatchData(searchResults);
 
   return (
     <DataTabPane
@@ -150,10 +63,10 @@ const FindTab: React.VFC = () => {
         />
       </div>
       <ListGroup>
-        {searchResults.map(({ refIndex, item }) => (
+        {matches.map(({ refIndex, item, ...data }) => (
           <ResultItem
             key={refIndex}
-            item={item}
+            data={data}
             onClick={() => {
               dispatch(
                 editorActions.setActiveModComponentId(
@@ -161,11 +74,11 @@ const FindTab: React.VFC = () => {
                 ),
               );
               // FIXME: instanceId won't be available unless the user has clicked into the item
-              dispatch(
-                editorActions.setActiveNodeId(
-                  item.location.brickStack.at(-1)!.brickConfig.instanceId!,
-                ),
-              );
+              // dispatch(
+              //   editorActions.setActiveNodeId(
+              //     item.location.brickStack.at(-1)!.brickConfig.instanceId!,
+              //   ),
+              // );
 
               // HACK: make the search tab persist when clicking into a result
               dispatch(

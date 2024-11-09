@@ -30,7 +30,7 @@ import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import StarterBrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickInputTab";
 import StarterBrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickOutputTab";
 import { FeatureFlags } from "@/auth/featureFlags";
-import FindTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab";
+import FindTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/FindTab";
 
 /**
  * @see DataPanel
