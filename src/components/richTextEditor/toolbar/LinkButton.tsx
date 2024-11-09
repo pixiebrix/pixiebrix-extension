@@ -67,7 +67,7 @@ const LinkEditForm: React.FC<{
   </Form>
 );
 
-const LinkOverlay: React.FunctionComponent<{
+const LinkEditorOverlay: React.FunctionComponent<{
   showPopover: boolean;
   popoverView: "editForm" | "linkPreview";
   target: React.RefObject<HTMLElement>;
@@ -199,7 +199,7 @@ const LinkButton: React.FunctionComponent = () => {
         <FontAwesomeIcon icon={faLink} />
       </Button>
 
-      <LinkOverlay
+      <LinkEditorOverlay
         showPopover={showPopover}
         popoverView={popoverView}
         target={target}
