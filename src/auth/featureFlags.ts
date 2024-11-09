@@ -83,10 +83,10 @@ export const FeatureFlags = {
   PAGE_EDITOR_MOD_VARIABLES_DEFINITION: "page-editor-mod-variables-definition",
 
   /**
-   * Feature flag to show search affordances in the Page Editor.
+   * Feature flag to show find/search affordances in the Page Editor.
    * @since 2.1.8
    */
-  PAGE_EDITOR_SEARCH: "page-editor-search",
+  PAGE_EDITOR_FIND: "page-editor-find",
 
   /**
    * Show publish to public marketplace UI.

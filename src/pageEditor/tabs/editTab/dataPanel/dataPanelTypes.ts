@@ -56,5 +56,5 @@ export enum DataPanelTabKey {
    * Find/search within a mod
    * @since 2.1.8
    */
-  Search = "search",
+  Find = "find",
 }

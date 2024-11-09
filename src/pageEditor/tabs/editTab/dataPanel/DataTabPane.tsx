@@ -35,6 +35,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 const DataTabPane: React.FC<
   React.PropsWithChildren<
     TabPaneProps & {
+      role?: React.AriaRole;
       isDeveloperOnly?: boolean;
     }
   >

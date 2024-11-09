@@ -22,10 +22,10 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { selectGetDraftFormStatesPromiseForModId } from "@/pageEditor/starterBricks/adapter";
 import SearchIndexVisitor, {
   type IndexedItem,
-} from "@/pageEditor/search/searchIndexVisitor";
+} from "@/pageEditor/find/searchIndexVisitor";
 import Fuse, { type FuseResult } from "fuse.js";
 
-function useSearch(query: string): Array<FuseResult<IndexedItem>> {
+function useFind(query: string): Array<FuseResult<IndexedItem>> {
   const currentModId = useSelector(selectCurrentModId);
   const getDraftFormStatesPromiseForModId = useSelector(
     selectGetDraftFormStatesPromiseForModId,
@@ -35,14 +35,20 @@ function useSearch(query: string): Array<FuseResult<IndexedItem>> {
     const formStates = currentModId
       ? await getDraftFormStatesPromiseForModId(currentModId)
       : [];
-    const { items } = await SearchIndexVisitor.collectItems(formStates);
+    const items = await SearchIndexVisitor.collectItems(formStates);
 
     return new Fuse(items, {
-      keys: ["data.label", "data.value", "data.comments"],
+      keys: [
+        "data.label",
+        "data.value",
+        "data.comments",
+        "data.brick.name",
+        "data.brick.id",
+      ],
     });
   }, [currentModId, getDraftFormStatesPromiseForModId]);
 
   return useMemo(() => fuse.data?.search(query) ?? [], [fuse.data, query]);
 }
 
-export default useSearch;
+export default useFind;
