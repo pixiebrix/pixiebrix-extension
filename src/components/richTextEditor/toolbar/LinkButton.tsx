@@ -15,34 +15,74 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from "react";
-import { useCurrentEditor } from "@tiptap/react";
+import React, { useEffect, useRef, useState } from "react";
+import { type Editor, useCurrentEditor } from "@tiptap/react";
 // eslint-disable-next-line no-restricted-imports -- we need flexible styling for this component
 import { Button, Form, Overlay, Popover } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import styles from "./LinkButton.module.scss";
 
-const LinkButton: React.FunctionComponent = () => {
+const LinkPreviewActions: React.FC<{
+  href: string;
+  onEdit: () => void;
+  onRemove: () => void;
+}> = ({ href, onEdit, onRemove }) => (
+  <span>
+    Visit url:{" "}
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      {href}
+    </a>
+    <Button variant="link" onClick={onEdit}>
+      Edit
+    </Button>
+    <Button variant="link" onClick={onRemove}>
+      Remove
+    </Button>
+  </span>
+);
+
+const LinkEditForm: React.FC<{
+  initialHref: string;
+  onSubmit: (url: string) => void;
+}> = ({ initialHref, onSubmit }) => (
+  <Form
+    inline
+    onSubmit={(event) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      onSubmit(formData.get("newUrl") as string);
+    }}
+  >
+    <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
+    <Form.Control
+      id="newUrl"
+      name="newUrl"
+      size="sm"
+      defaultValue={initialHref}
+    />
+    <Button variant="link" type="submit" size="sm">
+      Submit
+    </Button>
+  </Form>
+);
+
+const LinkOverlay: React.FunctionComponent<{
+  showPopover: boolean;
+  popoverView: "editForm" | "linkPreview";
+  target: React.RefObject<HTMLElement>;
+  setPopoverState: (state: {
+    showPopover: boolean;
+    popoverView: "editForm" | "linkPreview";
+  }) => void;
+}> = ({ showPopover, popoverView, target, setPopoverState }) => {
   const { editor } = useCurrentEditor();
-  const [showInputPopover, setShowInputPopover] = useState(false);
-  const target = useRef(null);
 
   if (!editor) {
     return null;
   }
 
-  editor.on("selectionUpdate", ({ editor }) => {
-    if (editor.isActive("link")) {
-      setShowInputPopover(true);
-    }
-  });
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const url = formData.get("newUrl") as string;
-
+  const handleSubmit = async (url: string) => {
     if (!url || url === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
     } else {
@@ -54,9 +94,89 @@ const LinkButton: React.FunctionComponent = () => {
         .run();
     }
 
-    setShowInputPopover(false);
-    editor.commands.focus();
+    setPopoverState({ showPopover: false, popoverView: "editForm" });
   };
+
+  const renderContent = () => {
+    if (popoverView === "linkPreview") {
+      return (
+        <LinkPreviewActions
+          href={editor.getAttributes("link").href}
+          onEdit={() => {
+            setPopoverState({
+              showPopover: true,
+              popoverView: "editForm",
+            });
+          }}
+          onRemove={() => {
+            editor.chain().focus().extendMarkRange("link").unsetLink().run();
+            setPopoverState({ showPopover: false, popoverView: "linkPreview" });
+          }}
+        />
+      );
+    }
+
+    if (popoverView === "editForm") {
+      return (
+        <LinkEditForm
+          initialHref={editor.getAttributes("link").href ?? ""}
+          onSubmit={handleSubmit}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <Overlay
+      show={showPopover}
+      target={target.current}
+      placement="top"
+      rootClose
+      rootCloseEvent="mousedown"
+      onHide={() => {
+        setPopoverState({ showPopover: false, popoverView });
+      }}
+    >
+      <Popover id="urlInputPopover" className={styles.bubbleMenu}>
+        {renderContent()}
+      </Popover>
+    </Overlay>
+  );
+};
+
+const LinkButton: React.FunctionComponent = () => {
+  const { editor } = useCurrentEditor();
+  const [{ showPopover, popoverView }, setPopoverState] = useState<{
+    showPopover: boolean;
+    popoverView: "linkPreview" | "editForm";
+  }>({
+    showPopover: false,
+    popoverView: "editForm",
+  });
+  const target = useRef(null);
+
+  useEffect(() => {
+    const onSelectionUpdate = ({ editor }: { editor: Editor }) => {
+      if (editor.isActive("link")) {
+        setPopoverState({
+          showPopover: true,
+          popoverView: "linkPreview",
+        });
+      }
+    };
+
+    editor?.on("selectionUpdate", onSelectionUpdate);
+
+    return () => {
+      editor?.off("selectionUpdate", onSelectionUpdate);
+    };
+  }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <>
@@ -66,41 +186,25 @@ const LinkButton: React.FunctionComponent = () => {
         active={editor.isActive("link")}
         aria-label="Link"
         onClick={() => {
-          if (!editor.isActive("link") && editor.state.selection.empty) {
+          if (editor.state.selection.empty) {
             return;
           }
 
-          setShowInputPopover(!showInputPopover);
+          setPopoverState({
+            showPopover: true,
+            popoverView: editor.isActive("link") ? "linkPreview" : "editForm",
+          });
         }}
       >
         <FontAwesomeIcon icon={faLink} />
       </Button>
 
-      <Overlay
-        show={showInputPopover}
-        target={target.current}
-        placement="top"
-        rootClose
-        rootCloseEvent="mousedown"
-        onHide={() => {
-          setShowInputPopover(false);
-        }}
-      >
-        <Popover id="urlInputPopover" className={styles.bubbleMenu}>
-          <Form inline onSubmit={handleSubmit}>
-            <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
-            <Form.Control
-              id="newUrl"
-              name="newUrl"
-              size="sm"
-              defaultValue={editor.getAttributes("link").href ?? ""}
-            />
-            <Button variant="link" type="submit" size="sm">
-              Submit
-            </Button>
-          </Form>
-        </Popover>
-      </Overlay>
+      <LinkOverlay
+        showPopover={showPopover}
+        popoverView={popoverView}
+        target={target}
+        setPopoverState={setPopoverState}
+      />
     </>
   );
 };
