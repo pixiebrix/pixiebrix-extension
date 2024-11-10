@@ -48,9 +48,9 @@ export type DocumentBuilderElementBreadcrumb = {
   builderElement: DocumentBuilderElement;
 
   /**
-   * Path to the element within the document builder config.
+   * Path to the element within the document builder body (not the brick configuration).
    */
-  path: string;
+  bodyPath: string;
 };
 
 /**

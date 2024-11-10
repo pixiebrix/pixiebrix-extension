@@ -100,7 +100,7 @@ const selectGetMatchDataForResult = createSelector(
       const match = matches?.[0] as Nullishable<
         SetRequired<FuseResultMatch, "value">
       >;
-      assertNotNullish(match, "Expected at least one match");
+      assertNotNullish(match, "Expected at least one Fuse.js match");
 
       const common = {
         item,
@@ -132,11 +132,11 @@ const selectGetMatchDataForResult = createSelector(
       }
 
       if (isBrickLabelItem(item)) {
-        // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
         const brickBreadcrumb = breadcrumbs
+          // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
           .filter((x) => isBrickBreadcrumb(x))
           .at(-1);
-        assertNotNullish(brickBreadcrumb, "Expected context for brick match");
+        assertNotNullish(brickBreadcrumb, "Expected brick breadcrumb");
 
         if (
           (match.key !== "data.label" && brickBreadcrumb.brickConfig.label) ||
@@ -158,7 +158,7 @@ const selectGetMatchDataForResult = createSelector(
           breadcrumbLabels: [
             formState.label,
             ...breadcrumbs
-              // Exclude the last brick in the stack from the path because that's the matched value
+              // Exclude the last brick label in the stack from the path because it's the matched value
               .slice(0, -1)
               .map((x) => getBreadcrumbLabel(x)),
           ],
@@ -188,8 +188,8 @@ const ResultItem: React.VFC<{
   const activeNodeId = useSelector(selectActiveNodeId);
   const activeModComponentId = useSelector(selectActiveModComponentId);
 
-  // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
   const lastNodeBreadcrumb = item.location.breadcrumbs
+    // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
     .filter((x) => isNodeBreadcrumb(x))
     .at(-1);
 

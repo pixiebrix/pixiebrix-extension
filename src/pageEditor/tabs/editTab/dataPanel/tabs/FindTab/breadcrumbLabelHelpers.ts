@@ -21,11 +21,12 @@ import {
   isStarterBrickBreadcrumb,
   type ItemBreadcrumb,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/findTypes";
-import { groupBy, startCase, uniq } from "lodash";
+import { groupBy, uniq } from "lodash";
 import { truncateMiddle } from "@/utils/stringUtils";
+import documentBuilderElementTypeLabels from "@/pageEditor/documentBuilder/elementTypeLabels";
 
 /**
- * Return the human-readable label for a breadcrumb.
+ * Returns the human-readable label for a breadcrumb.
  */
 export function getBreadcrumbLabel(breadcrumb: ItemBreadcrumb): string {
   if (isBrickBreadcrumb(breadcrumb)) {
@@ -41,7 +42,7 @@ export function getBreadcrumbLabel(breadcrumb: ItemBreadcrumb): string {
   }
 
   if (isDocumentBuilderElementBreadcrumb(breadcrumb)) {
-    return startCase(breadcrumb.builderElement.type);
+    return documentBuilderElementTypeLabels[breadcrumb.builderElement.type];
   }
 
   throw new TypeError("Unexpected breadcrumb type");

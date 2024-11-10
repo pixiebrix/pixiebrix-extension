@@ -57,7 +57,28 @@ function jumpToItemLocationAction(item: IndexedItem) {
         editorActions.setActiveNodeId(lastBreadcrumb.brickConfig.instanceId),
       );
     } else if (isDocumentBuilderElementBreadcrumb(lastBreadcrumb)) {
-      throw new Error("Not implemented");
+      const brickBreadcrumb = item.location.breadcrumbs
+        // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
+        .filter((x) => isBrickBreadcrumb(x))
+        .at(-1);
+
+      assertNotNullish(brickBreadcrumb, "Expected brick breadcrumb");
+
+      assertNotNullish(
+        brickBreadcrumb.brickConfig.instanceId,
+        "Expected instanceId",
+      );
+
+      // Must set active node first because setActiveBuilderPreviewElement sets the selection in the context
+      // of the active node
+
+      dispatch(
+        editorActions.setActiveNodeId(brickBreadcrumb.brickConfig.instanceId),
+      );
+
+      dispatch(
+        editorActions.setActiveBuilderPreviewElement(lastBreadcrumb.bodyPath),
+      );
     } else {
       throw new TypeError("Unexpected breadcrumb type");
     }

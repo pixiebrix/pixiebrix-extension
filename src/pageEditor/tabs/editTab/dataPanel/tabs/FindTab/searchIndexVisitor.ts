@@ -40,6 +40,7 @@ import type {
 import PipelineExpressionVisitor, {
   type VisitDocumentBuilderElementArgs,
 } from "@/bricks/PipelineExpressionVisitor";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 
 /**
  * Visitor to collect mod fragments for search within a mod.
@@ -211,23 +212,26 @@ class SearchIndexVisitor extends PipelineExpressionVisitor {
 
     if (brickConfig.outputKey) {
       this.visitFieldValue(brickConfig.outputKey, {
-        prop: "if",
+        prop: "outputKey",
         schema: {
           title: "Output",
         },
       });
     }
 
-    for (const [prop, value] of Object.entries(brickConfig.config)) {
-      // Pipeline expressions are handled by super.visitBrick
-      if (!isPipelineExpression(value)) {
-        // eslint-disable-next-line security/detect-object-injection -- prop from brick configuration
-        const schema = brick?.inputSchema.properties?.[prop];
+    // Document renderer elements handled via visitDocumentBuilderElement
+    if (brickConfig.id !== DocumentRenderer.BRICK_ID) {
+      for (const [prop, value] of Object.entries(brickConfig.config)) {
+        // Pipeline expressions are handled by super.visitBrick
+        if (!isPipelineExpression(value)) {
+          // eslint-disable-next-line security/detect-object-injection -- prop from brick configuration
+          const schema = brick?.inputSchema.properties?.[prop];
 
-        this.visitFieldValue(value, {
-          prop,
-          schema: typeof schema === "object" ? schema : undefined,
-        });
+          this.visitFieldValue(value, {
+            prop,
+            schema: typeof schema === "object" ? schema : undefined,
+          });
+        }
       }
     }
 
@@ -242,7 +246,8 @@ class SearchIndexVisitor extends PipelineExpressionVisitor {
   }: VisitDocumentBuilderElementArgs) {
     this.breadcrumbs.push({
       builderElement: documentBuilderElement,
-      path: pathInBlock,
+      // Path in body, not path in brickConfig to avoid duplication
+      bodyPath: pathInBlock.slice("config.body.".length),
     });
 
     super.visitDocumentBuilderElement({
@@ -251,6 +256,16 @@ class SearchIndexVisitor extends PipelineExpressionVisitor {
       documentBuilderElement,
       pathInBlock,
     });
+
+    for (const [prop, value] of Object.entries(documentBuilderElement.config)) {
+      // Pipelines handled by super.visitDocumentBuilderElement
+      if (!isPipelineExpression(value)) {
+        this.visitFieldValue(value, {
+          prop,
+          schema: undefined,
+        });
+      }
+    }
 
     this.breadcrumbs.pop();
   }
