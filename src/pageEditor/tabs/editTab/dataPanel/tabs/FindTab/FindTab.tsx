@@ -22,8 +22,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import type { RootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSelectors";
+import { selectCurrentFindQueryOptions } from "@/pageEditor/store/editor/editorSelectors";
 import ResultItem, {
   useMatchData,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/ResultItem";
@@ -35,13 +34,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type AppDispatch } from "@/pageEditor/store/store";
 
-function jumpToItemLocationAction({
-  item,
-  query,
-}: {
-  item: IndexedItem;
-  query: string;
-}) {
+function jumpToItemLocationAction(item: IndexedItem) {
   return (dispatch: AppDispatch) => {
     const context = item.location.brickStack.at(-1);
     assertNotNullish(context, "brickStack is empty");
@@ -57,25 +50,13 @@ function jumpToItemLocationAction({
       assertNotNullish(context.brickConfig.instanceId, "Expected instanceId");
       dispatch(editorActions.setActiveNodeId(context.brickConfig.instanceId));
     }
-
-    // HACK: make the search tab persist when clicking into a result
-    dispatch(editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Find));
-    dispatch(
-      editorActions.setNodeDataPanelTabSearchQuery({
-        tabKey: DataPanelTabKey.Find,
-        query,
-      }),
-    );
   };
 }
 
 const FindTab: React.VFC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { query = "" } =
-    useSelector((state: RootState) =>
-      selectNodeDataPanelTabState(state, DataPanelTabKey.Find),
-    ) ?? {};
+  const { query } = useSelector(selectCurrentFindQueryOptions);
 
   const searchResults = useFind(query);
   const matches = useMatchData(searchResults);
@@ -96,8 +77,7 @@ const FindTab: React.VFC = () => {
             placeholder="Find within mod"
             onChange={({ target }: React.ChangeEvent<HTMLInputElement>) => {
               dispatch(
-                editorActions.setNodeDataPanelTabSearchQuery({
-                  tabKey: DataPanelTabKey.Find,
+                editorActions.setDataPanelTabFindQuery({
                   query: target.value,
                 }),
               );
@@ -115,9 +95,7 @@ const FindTab: React.VFC = () => {
                 key={data.refIndex}
                 data={data}
                 onClick={() => {
-                  dispatch(
-                    jumpToItemLocationAction({ item: data.item, query }),
-                  );
+                  dispatch(jumpToItemLocationAction(data.item));
                 }}
               />
             ))}

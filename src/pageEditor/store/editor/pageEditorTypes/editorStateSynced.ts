@@ -20,6 +20,13 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 
 /**
+ * The "Find in mod" query options.
+ */
+type FindQueryOptions = {
+  query: string;
+};
+
+/**
  * Page Editor Slice state that is persisted using redux-persist, but
  * should be reset to initial state during a redux-persist migration.
  *
@@ -72,4 +79,9 @@ export type EditorStateSynced = {
    * Is mod listing panel expanded or collapsed
    */
   isModListingPanelExpanded: boolean;
+
+  /**
+   * Find data panel options by mod id
+   */
+  findOptionsByModId: Record<RegistryId, FindQueryOptions> | null;
 };

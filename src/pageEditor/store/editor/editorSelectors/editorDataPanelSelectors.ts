@@ -16,11 +16,12 @@
  */
 
 import type { EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
-import type { Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import type { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { createSelector } from "@reduxjs/toolkit";
 import type { DataPanelTabUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { selectActiveBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSelectors/editorPipelineSelectors";
+import { selectCurrentModId } from "@/pageEditor/store/editor/editorSelectors/editorModSelectors";
 
 export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;
@@ -48,3 +49,16 @@ export function selectNodeDataPanelTabState(
   // eslint-disable-next-line security/detect-object-injection -- tabKeys will be hard-coded strings
   return brickConfigurationUIState?.dataPanel[tabKey];
 }
+
+/**
+ * Select the find query options for the current mod.
+ */
+export const selectCurrentFindQueryOptions = createSelector(
+  ({ editor }: EditorRootState) => editor.findOptionsByModId,
+  selectCurrentModId,
+  (findOptionsByModId, modId) => {
+    assertNotNullish(modId, "Expected currentModId");
+    // eslint-disable-next-line security/detect-object-injection -- registry id
+    return findOptionsByModId?.[modId] ?? { query: "" };
+  },
+);
