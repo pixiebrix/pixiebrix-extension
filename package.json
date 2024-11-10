@@ -249,7 +249,7 @@
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.5",
     "@types/whatwg-mimetype": "^3.0.2",
-    "@typescript-eslint/rule-tester": "^8.11.0",
+    "@typescript-eslint/rule-tester": "^8.13.0",
     "axios-mock-adapter": "^2.1.0",
     "blob-polyfill": "^9.0.20240710",
     "compass-mixins": "^0.12.10",
