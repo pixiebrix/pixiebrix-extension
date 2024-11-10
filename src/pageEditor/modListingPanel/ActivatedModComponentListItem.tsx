@@ -46,7 +46,6 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { appApi } from "@/data/service/api";
 import useAsyncState from "@/hooks/useAsyncState";
 import { inspectedTab } from "@/pageEditor/context/connection";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -67,8 +66,6 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
     async () => selectType(modComponent),
     [modComponent.extensionPointId],
   );
-
-  const [getModDefinition] = appApi.endpoints.getModDefinition.useLazyQuery();
 
   const activeModId = useSelector(selectActiveModId);
   const activeModComponentFormState = useSelector(
@@ -114,7 +111,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: modComponent.id, error }));
       }
     },
-    [sessionId, dispatch, type, getModDefinition],
+    [sessionId, dispatch, type],
   );
 
   const isButton = type === StarterBrickTypes.BUTTON;

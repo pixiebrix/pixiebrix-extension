@@ -26,12 +26,20 @@ import {
 import React, { useMemo } from "react";
 import type { SetRequired } from "type-fest";
 import type { FuseResult, FuseResultMatch } from "fuse.js";
-import { selectGetModComponentFormStateByModComponentId } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectActiveModComponentId,
+  selectActiveNodeId,
+  selectGetModComponentFormStateByModComponentId,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { ListGroup } from "react-bootstrap";
 import { createSelector } from "@reduxjs/toolkit";
 import { groupBy, memoize, uniq } from "lodash";
 import { useSelector } from "react-redux";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
+import cx from "classnames";
+
+import styles from "./ResultItem.module.scss";
 
 function getLocationBrickLabel(brickContext: BrickContext): string {
   return (
@@ -51,14 +59,14 @@ const HighlightedMatch: React.VFC<{
   for (const [start, end] of indices) {
     parts.push(
       <span>{value.slice(lastIndex, start)}</span>,
-      <mark>{value.slice(start, end + 1)}</mark>,
+      <mark className={styles.highlight}>{value.slice(start, end + 1)}</mark>,
     );
     lastIndex = end + 1;
   }
 
-  parts.push(value.slice(lastIndex));
+  parts.push(<span>{value.slice(lastIndex)}</span>);
 
-  return <>{parts}</>;
+  return <div>{parts}</div>;
 };
 
 type MatchData = {
@@ -235,15 +243,32 @@ export function useMatchData(
 }
 
 const ResultItem: React.VFC<{
-  data: Pick<MatchData, "match" | "paths">;
+  data: Pick<MatchData, "item" | "match" | "paths">;
   onClick: () => void;
-}> = ({ data: { match, paths }, onClick }) => (
-  <ListGroup.Item onClick={onClick}>
-    <div>
-      <HighlightedMatch match={match} />
-    </div>
-    <div className="small">{paths.join(" > ")}</div>
-  </ListGroup.Item>
-);
+}> = ({ data: { match, paths, item }, onClick }) => {
+  const activeNodeId = useSelector(selectActiveNodeId);
+  const activeModComponentId = useSelector(selectActiveModComponentId);
+
+  const context = item.location.brickStack.at(-1);
+
+  const isActiveNode =
+    item.location.modComponentId === activeModComponentId &&
+    ((isStarterBrickContext(context) && activeNodeId === FOUNDATION_NODE_ID) ||
+      (isBrickContext(context) &&
+        activeNodeId === context.brickConfig.instanceId));
+
+  return (
+    <ListGroup.Item
+      onClick={onClick}
+      aria-label={match.value}
+      className={cx(styles.root, { [styles.activeNode ?? ""]: isActiveNode })}
+    >
+      <div>
+        <HighlightedMatch match={match} />
+      </div>
+      <div className="small">{paths.join(" > ")}</div>
+    </ListGroup.Item>
+  );
+};
 
 export default ResultItem;

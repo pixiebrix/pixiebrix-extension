@@ -27,9 +27,50 @@ import { selectNodeDataPanelTabState } from "@/pageEditor/store/editor/editorSel
 import ResultItem, {
   useMatchData,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/ResultItem";
+import {
+  type IndexedItem,
+  isStarterBrickContext,
+} from "@/pageEditor/find/searchIndexVisitor";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
+import { type AppDispatch } from "@/pageEditor/store/store";
+
+function jumpToItemLocationAction({
+  item,
+  query,
+}: {
+  item: IndexedItem;
+  query: string;
+}) {
+  return (dispatch: AppDispatch) => {
+    const context = item.location.brickStack.at(-1);
+    assertNotNullish(context, "brickStack is empty");
+
+    dispatch(
+      editorActions.setActiveModComponentId(item.location.modComponentId),
+    );
+
+    if (isStarterBrickContext(context)) {
+      dispatch(editorActions.setActiveNodeId(FOUNDATION_NODE_ID));
+    } else {
+      // `useFind` uses useEnsureFormStates to ensure all mod components have been mapped to form states
+      assertNotNullish(context.brickConfig.instanceId, "Expected instanceId");
+      dispatch(editorActions.setActiveNodeId(context.brickConfig.instanceId));
+    }
+
+    // HACK: make the search tab persist when clicking into a result
+    dispatch(editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Find));
+    dispatch(
+      editorActions.setNodeDataPanelTabSearchQuery({
+        tabKey: DataPanelTabKey.Find,
+        query,
+      }),
+    );
+  };
+}
 
 const FindTab: React.VFC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const { query = "" } =
     useSelector((state: RootState) =>
@@ -45,55 +86,44 @@ const FindTab: React.VFC = () => {
       role="search"
       aria-label="Within mod"
     >
-      <div>
-        <FieldTemplate
-          value={query}
-          name="search"
-          type="search"
-          label="Search"
-          placeholder="Search within mod"
-          onChange={({ target }: React.ChangeEvent<HTMLInputElement>) => {
-            dispatch(
-              editorActions.setNodeDataPanelTabSearchQuery({
-                tabKey: DataPanelTabKey.Find,
-                query: target.value,
-              }),
-            );
-          }}
-        />
-      </div>
-      <ListGroup>
-        {matches.map(({ refIndex, item, ...data }) => (
-          <ResultItem
-            key={refIndex}
-            data={data}
-            onClick={() => {
-              dispatch(
-                editorActions.setActiveModComponentId(
-                  item.location.modComponentId,
-                ),
-              );
-              // FIXME: instanceId won't be available unless the user has clicked into the item
-              // dispatch(
-              //   editorActions.setActiveNodeId(
-              //     item.location.brickStack.at(-1)!.brickConfig.instanceId!,
-              //   ),
-              // );
-
-              // HACK: make the search tab persist when clicking into a result
-              dispatch(
-                editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Find),
-              );
+      <div className="d-flex flex-column h-100">
+        <div>
+          <FieldTemplate
+            value={query}
+            name="find"
+            type="search"
+            label="Find"
+            placeholder="Find within mod"
+            onChange={({ target }: React.ChangeEvent<HTMLInputElement>) => {
               dispatch(
                 editorActions.setNodeDataPanelTabSearchQuery({
                   tabKey: DataPanelTabKey.Find,
-                  query,
+                  query: target.value,
                 }),
               );
             }}
           />
-        ))}
-      </ListGroup>
+        </div>
+
+        <div
+          // XXX: scroll is broken in DataTabPane: the whole data panel scrolls
+          className="flex-grow-1 overflow-auto"
+        >
+          <ListGroup>
+            {matches.map((data) => (
+              <ResultItem
+                key={data.refIndex}
+                data={data}
+                onClick={() => {
+                  dispatch(
+                    jumpToItemLocationAction({ item: data.item, query }),
+                  );
+                }}
+              />
+            ))}
+          </ListGroup>
+        </div>
+      </div>
     </DataTabPane>
   );
 };

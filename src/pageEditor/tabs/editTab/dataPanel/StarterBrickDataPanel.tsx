@@ -79,7 +79,7 @@ const StarterBrickDataPanel: React.FC = () => {
         />
 
         {flagOn(FeatureFlags.PAGE_EDITOR_FIND) && (
-          <NavItem eventKey={DataPanelTabKey.Find} label="Search" />
+          <NavItem eventKey={DataPanelTabKey.Find} label="Find" />
         )}
       </Nav>
       <Tab.Content>

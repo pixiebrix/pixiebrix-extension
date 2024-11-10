@@ -16,15 +16,19 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectCurrentModId } from "@/pageEditor/store/editor/editorSelectors";
+import {
+  selectCurrentModId,
+  selectGetModComponentFormStatesForMod,
+} from "@/pageEditor/store/editor/editorSelectors";
 import { useMemo } from "react";
 import useAsyncState from "@/hooks/useAsyncState";
-import { selectGetDraftFormStatesPromiseForModId } from "@/pageEditor/starterBricks/adapter";
 import SearchIndexVisitor, {
   type IndexedItem,
 } from "@/pageEditor/find/searchIndexVisitor";
 import Fuse, { type FuseResult } from "fuse.js";
 import type { SetRequired } from "type-fest";
+import useEnsureFormStates from "@/pageEditor/hooks/useEnsureFormStates";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type FindResults = Array<SetRequired<FuseResult<IndexedItem>, "matches">>;
 
@@ -34,16 +38,20 @@ type FindResults = Array<SetRequired<FuseResult<IndexedItem>, "matches">>;
 function useFind(
   query: string,
 ): Array<SetRequired<FuseResult<IndexedItem>, "matches">> {
+  // Find/search depends on all mod components having form states with instanceIds assigned
+  useEnsureFormStates();
+
   const currentModId = useSelector(selectCurrentModId);
-  const getDraftFormStatesPromiseForModId = useSelector(
-    selectGetDraftFormStatesPromiseForModId,
+  assertNotNullish(currentModId, "Expected currentModId");
+
+  const getModComponentFormStatesForMod = useSelector(
+    selectGetModComponentFormStatesForMod,
   );
 
+  const modComponentFormStates = getModComponentFormStatesForMod(currentModId);
+
   const fuse = useAsyncState(async () => {
-    const formStates = currentModId
-      ? await getDraftFormStatesPromiseForModId(currentModId)
-      : [];
-    const items = await SearchIndexVisitor.collectItems(formStates);
+    const items = await SearchIndexVisitor.collectItems(modComponentFormStates);
 
     return new Fuse(items, {
       // https://www.fusejs.io/api/options.html#includematches
@@ -61,7 +69,7 @@ function useFind(
         "data.brick.id",
       ],
     });
-  }, [currentModId, getDraftFormStatesPromiseForModId]);
+  }, [modComponentFormStates]);
 
   // `matches` will be present because `includeMatches: true` in the Fuse constructor
   return useMemo(

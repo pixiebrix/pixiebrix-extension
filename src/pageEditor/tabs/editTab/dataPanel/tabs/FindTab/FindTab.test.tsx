@@ -66,8 +66,9 @@ describe("FindTab", () => {
 
     // Search value
     await userEvent.type(screen.getByRole("searchbox"), "Hello");
-    expect(screen.getByText(message)).toBeInTheDocument();
-    expect(screen.queryByText(alertBrick.name)).not.toBeInTheDocument();
+    // Get by label text because the highlights split the text
+    expect(screen.getByLabelText(message)).toBeInTheDocument();
+    expect(screen.queryByLabelText(alertBrick.name)).not.toBeInTheDocument();
 
     // Search beginning of the brick name
     await userEvent.clear(screen.getByRole("searchbox"));
@@ -75,19 +76,19 @@ describe("FindTab", () => {
       screen.getByRole("searchbox"),
       alertBrick.name.slice(0, 2),
     );
-    expect(screen.getByText(alertBrick.name)).toBeInTheDocument();
-    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(screen.getByLabelText(alertBrick.name)).toBeInTheDocument();
+    expect(screen.getByLabelText(message)).toBeInTheDocument();
     // Brick name match should be preferred
     expect(
       screen
-        .getByText(alertBrick.name)
-        .compareDocumentPosition(screen.getByText(message)),
+        .getByLabelText(alertBrick.name)
+        .compareDocumentPosition(screen.getByLabelText(message)),
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
 
     // Search brick name
     await userEvent.clear(screen.getByRole("searchbox"));
     await userEvent.type(screen.getByRole("searchbox"), alertBrick.name);
-    expect(screen.getByText(alertBrick.name)).toBeInTheDocument();
-    expect(screen.queryByText(message)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(alertBrick.name)).toBeInTheDocument();
+    expect(screen.queryByLabelText(message)).not.toBeInTheDocument();
   });
 });
