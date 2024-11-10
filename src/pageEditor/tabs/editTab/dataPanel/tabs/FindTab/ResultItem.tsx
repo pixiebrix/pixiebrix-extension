@@ -153,7 +153,10 @@ const selectGetMatchDataForResult = createSelector(
       const brickContext = brickContexts.at(-1);
       assertNotNullish(brickContext, "Expected context for brick match");
 
-      if (match.key !== "data.label" && brickContext.brickConfig.label) {
+      if (
+        (match.key !== "data.label" && brickContext.brickConfig.label) ||
+        match.key === "data.brick.id"
+      ) {
         return {
           ...common,
           paths: [

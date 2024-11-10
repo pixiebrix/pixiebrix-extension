@@ -33,6 +33,7 @@ import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
+Element.prototype.scrollIntoView = jest.fn();
 jest.mock("@/hooks/useFlags");
 
 const alertBrick = new AlertEffect();
@@ -78,11 +79,11 @@ describe("FindTab", () => {
     await userEvent.clear(screen.getByRole("searchbox"));
     await userEvent.type(
       screen.getByRole("searchbox"),
-      alertBrick.name.slice(0, 2),
+      alertBrick.name.slice(0, 1),
     );
     expect(screen.getByLabelText(alertBrick.name)).toBeInTheDocument();
     expect(screen.getByLabelText(message)).toBeInTheDocument();
-    // Brick name match should be preferred
+    // Expect brick name match should be preferred (appear first)
     expect(
       screen
         .getByLabelText(alertBrick.name)
