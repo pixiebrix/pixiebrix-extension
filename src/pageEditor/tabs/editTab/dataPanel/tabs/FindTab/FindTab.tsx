@@ -17,7 +17,7 @@
 import React from "react";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
-import useFind from "@/pageEditor/find/useFind";
+import useFind from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/useFind";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,29 +26,40 @@ import { selectCurrentFindQueryOptions } from "@/pageEditor/store/editor/editorS
 import ResultItem, {
   useMatchData,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/ResultItem";
-import {
-  type IndexedItem,
-  isStarterBrickContext,
-} from "@/pageEditor/find/searchIndexVisitor";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import { type AppDispatch } from "@/pageEditor/store/store";
+import {
+  type IndexedItem,
+  isBrickBreadcrumb,
+  isDocumentBuilderElementBreadcrumb,
+  isStarterBrickBreadcrumb,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/findTypes";
 
 function jumpToItemLocationAction(item: IndexedItem) {
   return (dispatch: AppDispatch) => {
-    const context = item.location.brickStack.at(-1);
-    assertNotNullish(context, "brickStack is empty");
+    const lastBreadcrumb = item.location.breadcrumbs.at(-1);
+    assertNotNullish(lastBreadcrumb, "Expected breadcrumb");
 
     dispatch(
       editorActions.setActiveModComponentId(item.location.modComponentId),
     );
 
-    if (isStarterBrickContext(context)) {
+    if (isStarterBrickBreadcrumb(lastBreadcrumb)) {
       dispatch(editorActions.setActiveNodeId(FOUNDATION_NODE_ID));
-    } else {
+    } else if (isBrickBreadcrumb(lastBreadcrumb)) {
       // `useFind` uses useEnsureFormStates to ensure all mod components have been mapped to form states
-      assertNotNullish(context.brickConfig.instanceId, "Expected instanceId");
-      dispatch(editorActions.setActiveNodeId(context.brickConfig.instanceId));
+      assertNotNullish(
+        lastBreadcrumb.brickConfig.instanceId,
+        "Expected instanceId",
+      );
+      dispatch(
+        editorActions.setActiveNodeId(lastBreadcrumb.brickConfig.instanceId),
+      );
+    } else if (isDocumentBuilderElementBreadcrumb(lastBreadcrumb)) {
+      throw new Error("Not implemented");
+    } else {
+      throw new TypeError("Unexpected breadcrumb type");
     }
   };
 }

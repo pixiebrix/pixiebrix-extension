@@ -36,22 +36,22 @@ export function mostCommonElement<T>(items: T[]): T {
 
 /**
  * Return the first item with the maximum value of a key.
+ * @param items the array of items
+ * @param key value generator
  */
 export function argmax<T>(
   items: readonly T[],
   key: (item: T) => number,
 ): T | undefined {
   // No lodash support: https://github.com/lodash/lodash/issues/3141
-  let maxArg: T | undefined;
-  let maxValue = -Number.MIN_VALUE;
+  let maxArg: { item: T; value: number } | undefined;
 
   for (const item of items) {
     const value = key(item);
-    if (value > maxValue) {
-      maxArg = item;
-      maxValue = value;
+    if (maxArg === undefined || value > maxArg.value) {
+      maxArg = { item, value };
     }
   }
 
-  return maxArg;
+  return maxArg?.item;
 }

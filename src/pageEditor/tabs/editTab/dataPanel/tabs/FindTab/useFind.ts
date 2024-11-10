@@ -22,13 +22,12 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useMemo } from "react";
 import useAsyncState from "@/hooks/useAsyncState";
-import SearchIndexVisitor, {
-  type IndexedItem,
-} from "@/pageEditor/find/searchIndexVisitor";
+import SearchIndexVisitor from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/searchIndexVisitor";
 import Fuse, { type FuseResult } from "fuse.js";
 import type { SetRequired } from "type-fest";
 import useEnsureFormStates from "@/pageEditor/hooks/useEnsureFormStates";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import type { IndexedItem } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/findTypes";
 
 type FindResults = Array<SetRequired<FuseResult<IndexedItem>, "matches">>;
 

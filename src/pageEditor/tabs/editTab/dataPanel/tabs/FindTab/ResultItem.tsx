@@ -15,14 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type BrickContext,
-  type IndexedItem,
-  isBrickCommentsItem,
-  isBrickContext,
-  isFieldValueItem,
-  isStarterBrickContext,
-} from "@/pageEditor/find/searchIndexVisitor";
 import React, { useLayoutEffect, useMemo } from "react";
 import type { SetRequired } from "type-fest";
 import type { FuseResult, FuseResultMatch, RangeTuple } from "fuse.js";
@@ -34,21 +26,33 @@ import {
 import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { ListGroup } from "react-bootstrap";
 import { createSelector } from "@reduxjs/toolkit";
-import { groupBy, memoize, uniq } from "lodash";
+import { memoize } from "lodash";
 import { useSelector } from "react-redux";
 import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import cx from "classnames";
-
-import styles from "./ResultItem.module.scss";
 import { argmax } from "@/utils/arrayUtils";
+import styles from "./ResultItem.module.scss";
+import {
+  type IndexedItem,
+  isBrickCommentsItem,
+  isBrickBreadcrumb,
+  isFieldValueItem,
+  isNodeBreadcrumb,
+  isStarterBrickBreadcrumb,
+  isBrickLabelItem,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/findTypes";
+import {
+  getBreadcrumbLabel,
+  truncateBreadcrumbLabelsInPlace,
+} from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/breadcrumbLabelHelpers";
+import { fieldLabel } from "@/components/fields/fieldUtils";
 
-function getLocationBrickLabel(brickContext: BrickContext): string {
-  return (
-    brickContext.brickConfig.label ??
-    brickContext.brick?.name ??
-    brickContext.brickConfig.id
-  );
-}
+type MatchData = {
+  refIndex: number;
+  item: IndexedItem;
+  match: SetRequired<FuseResultMatch, "value">;
+  breadcrumbLabels: string[];
+};
 
 const HighlightedMatch: React.VFC<{
   match: SetRequired<FuseResultMatch, "value">;
@@ -83,30 +87,20 @@ const HighlightedMatch: React.VFC<{
   );
 };
 
-type MatchData = {
-  refIndex: number;
-  item: IndexedItem;
-  match: SetRequired<FuseResultMatch, "value">;
-  paths: string[];
-};
-
 const selectGetMatchDataForResult = createSelector(
   selectGetModComponentFormStateByModComponentId,
   (getModComponentFormStateByModComponentId) =>
     memoize(({ item, matches, refIndex }: FuseResult<IndexedItem>) => {
-      const formState = getModComponentFormStateByModComponentId(
-        item.location.modComponentId,
-      );
+      const { modComponentId, breadcrumbs } = item.location;
+
+      const formState =
+        getModComponentFormStateByModComponentId(modComponentId);
       assertNotNullish(formState, "Form State not found for mod");
 
       const match = matches?.[0] as Nullishable<
         SetRequired<FuseResultMatch, "value">
       >;
       assertNotNullish(match, "Expected at least one match");
-
-      const brickContexts = item.location.brickStack.filter((x) =>
-        isBrickContext(x),
-      );
 
       const common = {
         item,
@@ -117,9 +111,9 @@ const selectGetMatchDataForResult = createSelector(
       if (isBrickCommentsItem(item)) {
         return {
           ...common,
-          paths: [
+          breadcrumbLabels: [
             formState.label,
-            ...brickContexts.map((x) => getLocationBrickLabel(x)),
+            ...breadcrumbs.map((x) => getBreadcrumbLabel(x)),
           ],
         };
       }
@@ -127,125 +121,53 @@ const selectGetMatchDataForResult = createSelector(
       if (isFieldValueItem(item)) {
         const { prop, schema } = item.location.fieldRef;
 
-        const firstContext = item.location.brickStack[0];
+        return {
+          ...common,
+          breadcrumbLabels: [
+            formState.label,
+            ...breadcrumbs.map((x) => getBreadcrumbLabel(x)),
+            schema?.title ?? fieldLabel(prop),
+          ],
+        };
+      }
 
-        if (isStarterBrickContext(firstContext)) {
+      if (isBrickLabelItem(item)) {
+        // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
+        const brickBreadcrumb = breadcrumbs
+          .filter((x) => isBrickBreadcrumb(x))
+          .at(-1);
+        assertNotNullish(brickBreadcrumb, "Expected context for brick match");
+
+        if (
+          (match.key !== "data.label" && brickBreadcrumb.brickConfig.label) ||
+          match.key === "data.brick.id"
+        ) {
           return {
             ...common,
-            paths: [
+            breadcrumbLabels: [
               formState.label,
-              firstContext.typeLabel,
-              schema?.title ?? prop,
+              ...breadcrumbs.map((x) => getBreadcrumbLabel(x)),
+              "Brick",
             ],
           };
         }
 
+        // Brick label match, or brick name match for bricks without a label
         return {
           ...common,
-          paths: [
+          breadcrumbLabels: [
             formState.label,
-            ...brickContexts.map((x) => getLocationBrickLabel(x)),
-            schema?.title ?? prop,
+            ...breadcrumbs
+              // Exclude the last brick in the stack from the path because that's the matched value
+              .slice(0, -1)
+              .map((x) => getBreadcrumbLabel(x)),
           ],
         };
       }
 
-      const brickContext = brickContexts.at(-1);
-      assertNotNullish(brickContext, "Expected context for brick match");
-
-      if (
-        (match.key !== "data.label" && brickContext.brickConfig.label) ||
-        match.key === "data.brick.id"
-      ) {
-        return {
-          ...common,
-          paths: [
-            formState.label,
-            ...brickContexts.map((x) => getLocationBrickLabel(x)),
-            "Brick",
-          ],
-        };
-      }
-
-      // Brick label match, or brick name match for bricks without a label
-      return {
-        ...common,
-        paths: [
-          formState.label,
-          ...brickContexts
-            // Exclude the last brick in the stack from the path because that's the matched value
-            .slice(0, -1)
-            .map((x) => getLocationBrickLabel(x)),
-        ],
-      };
+      throw new TypeError("Unexpected indexed item type");
     }),
 );
-
-/**
- * Truncate the middle of a string to a maximum length
- */
-function truncateMiddle(text: string, maxLength: number): string {
-  if (text.length <= maxLength) {
-    return text;
-  }
-
-  const half = Math.floor(maxLength / 2);
-  return `${text.slice(0, half).trim()}...${text.slice(-half).trim()}`;
-}
-
-/**
- * Build truncation map where truncation preserves uniqueness
- */
-function buildTruncationMap(
-  segments: string[],
-  initialMaxLength = 10,
-): Map<string, string> {
-  const result = new Map<string, string>();
-
-  const uniqueSegments = uniq(segments);
-
-  // Start with initial max length and relax constraint until all segments are unique
-  for (
-    let maxLength = initialMaxLength;
-    maxLength < Math.max(...segments.map((x) => x.length));
-    maxLength++
-  ) {
-    const remainingSegments = uniqueSegments.filter((x) => !result.has(x));
-    for (const [truncated, sources] of Object.entries(
-      groupBy(remainingSegments, (x) => truncateMiddle(x, maxLength)),
-    )) {
-      // Truncation yielded unique value
-      if (sources.length === 1) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- length check
-        result.set(sources[0]!, truncated);
-      }
-    }
-  }
-
-  return result;
-}
-
-/**
- * Truncate path segments in place. Mutates the input array.
- */
-function truncatePathSegmentsInPlace(matches: MatchData[]): void {
-  for (let i = 0; i < Math.max(...matches.map((x) => x.paths.length)); i++) {
-    const truncationMap = buildTruncationMap(
-      matches.map((x) => x.paths[i]).filter((x) => x != null),
-    );
-
-    for (const match of matches) {
-      // Never truncate last segment, unless it's the first segment
-      if (i === 0 || i < match.paths.length - 1) {
-        // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- array index
-        const currentPath = match.paths[i]!;
-
-        // eslint-disable-next-line security/detect-object-injection -- array index
-        match.paths[i] = truncationMap.get(currentPath) ?? currentPath;
-      }
-    }
-  }
-}
 
 export function useMatchData(
   results: Array<FuseResult<IndexedItem>>,
@@ -254,25 +176,29 @@ export function useMatchData(
 
   return useMemo(() => {
     const matches = results.map((result) => getMatchDataForResult(result));
-    truncatePathSegmentsInPlace(matches);
+    truncateBreadcrumbLabelsInPlace(matches);
     return matches;
   }, [getMatchDataForResult, results]);
 }
 
 const ResultItem: React.VFC<{
-  data: Pick<MatchData, "item" | "match" | "paths">;
+  data: Pick<MatchData, "item" | "match" | "breadcrumbLabels">;
   onClick: () => void;
-}> = ({ data: { match, paths, item }, onClick }) => {
+}> = ({ data: { match, breadcrumbLabels, item }, onClick }) => {
   const activeNodeId = useSelector(selectActiveNodeId);
   const activeModComponentId = useSelector(selectActiveModComponentId);
 
-  const context = item.location.brickStack.at(-1);
+  // eslint-disable-next-line unicorn/prefer-array-find -- target: es2023 in tsconfg.json not taking effect?
+  const lastNodeBreadcrumb = item.location.breadcrumbs
+    .filter((x) => isNodeBreadcrumb(x))
+    .at(-1);
 
   const isActiveNode =
     item.location.modComponentId === activeModComponentId &&
-    ((isStarterBrickContext(context) && activeNodeId === FOUNDATION_NODE_ID) ||
-      (isBrickContext(context) &&
-        activeNodeId === context.brickConfig.instanceId));
+    ((isStarterBrickBreadcrumb(lastNodeBreadcrumb) &&
+      activeNodeId === FOUNDATION_NODE_ID) ||
+      (isBrickBreadcrumb(lastNodeBreadcrumb) &&
+        activeNodeId === lastNodeBreadcrumb.brickConfig.instanceId));
 
   return (
     <ListGroup.Item
@@ -283,7 +209,7 @@ const ResultItem: React.VFC<{
       <div>
         <HighlightedMatch match={match} />
       </div>
-      <div className="small text-muted">{paths.join(" > ")}</div>
+      <div className="small text-muted">{breadcrumbLabels.join(" > ")}</div>
     </ListGroup.Item>
   );
 };

@@ -18,12 +18,11 @@
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import brickRegistry from "@/bricks/registry";
 import { AlertEffect } from "@/bricks/effects/alert";
-import SearchIndexVisitor, {
-  type LocationRef,
-} from "@/pageEditor/find/searchIndexVisitor";
+import SearchIndexVisitor from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/searchIndexVisitor";
 import type { BrickConfig } from "@/bricks/types";
 import { toExpression } from "@/utils/expressionUtils";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import type { LocationRef } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/findTypes";
 
 const alertBrick = new AlertEffect();
 
@@ -46,7 +45,7 @@ describe("searchIndexVisitor", () => {
 
     const location: LocationRef = {
       modComponentId: formState.uuid,
-      brickStack: [{ brickConfig, brick: alertBrick }],
+      breadcrumbs: [{ brickConfig, brick: alertBrick }],
     };
 
     await expect(
@@ -77,7 +76,7 @@ describe("searchIndexVisitor", () => {
 
     const location: LocationRef = {
       modComponentId: formState.uuid,
-      brickStack: [{ brickConfig, brick: alertBrick }],
+      breadcrumbs: [{ brickConfig, brick: alertBrick }],
     };
 
     await expect(
@@ -104,7 +103,7 @@ describe("searchIndexVisitor", () => {
 
     const location: LocationRef = {
       modComponentId: formState.uuid,
-      brickStack: [{ brickConfig, brick: alertBrick }],
+      breadcrumbs: [{ brickConfig, brick: alertBrick }],
     };
 
     await expect(
@@ -136,7 +135,7 @@ describe("searchIndexVisitor", () => {
 
     const location: LocationRef = {
       modComponentId: formState.uuid,
-      brickStack: [{ brickConfig, brick: alertBrick }],
+      breadcrumbs: [{ brickConfig, brick: alertBrick }],
     };
 
     await expect(
