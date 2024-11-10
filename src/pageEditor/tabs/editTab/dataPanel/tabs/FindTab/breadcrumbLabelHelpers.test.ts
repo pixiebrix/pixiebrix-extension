@@ -16,7 +16,7 @@
  */
 
 import { truncateBreadcrumbLabelsInPlace } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/breadcrumbLabelHelpers";
-import { repeat } from "lodash";
+import { cloneDeep, repeat } from "lodash";
 
 describe("truncateBreadcrumbLabelsInPlace", () => {
   it("truncates label", () => {
@@ -57,11 +57,11 @@ describe("truncateBreadcrumbLabelsInPlace", () => {
       { breadcrumbLabels: [repeat("a", 8) + "2" + repeat("a", 8)] },
     ];
 
+    // Clone because method modifies the input in place
+    const target = cloneDeep(matches);
+
     truncateBreadcrumbLabelsInPlace(matches);
 
-    expect(matches).toStrictEqual([
-      { breadcrumbLabels: ["aaaaaaaa1aaaaaaaa"] },
-      { breadcrumbLabels: ["aaaaaaaa2aaaaaaaa"] },
-    ]);
+    expect(matches).toStrictEqual(target);
   });
 });

@@ -549,6 +549,9 @@ export const editorSlice = createSlice({
       delete state.dirtyModOptionsArgsById[modId];
       delete state.dirtyModMetadataById[modId];
       delete state.deletedModComponentFormStateIdsByModId[modId];
+      if (state.findOptionsByModId) {
+        delete state.findOptionsByModId[modId];
+      }
     },
 
     ///
