@@ -23,9 +23,9 @@ import {
   isFieldValueItem,
   isStarterBrickContext,
 } from "@/pageEditor/find/searchIndexVisitor";
-import React, { useMemo } from "react";
+import React, { useLayoutEffect, useMemo } from "react";
 import type { SetRequired } from "type-fest";
-import type { FuseResult, FuseResultMatch } from "fuse.js";
+import type { FuseResult, FuseResultMatch, RangeTuple } from "fuse.js";
 import {
   selectActiveModComponentId,
   selectActiveNodeId,
@@ -40,6 +40,7 @@ import { FOUNDATION_NODE_ID } from "@/pageEditor/store/editor/uiState";
 import cx from "classnames";
 
 import styles from "./ResultItem.module.scss";
+import { argmax } from "@/utils/arrayUtils";
 
 function getLocationBrickLabel(brickContext: BrickContext): string {
   return (
@@ -52,21 +53,34 @@ function getLocationBrickLabel(brickContext: BrickContext): string {
 const HighlightedMatch: React.VFC<{
   match: SetRequired<FuseResultMatch, "value">;
 }> = ({ match: { indices, value } }) => {
-  let lastIndex = 0;
+  const markRef = React.createRef<HTMLSpanElement>();
 
-  const parts = [];
+  const bestIndex = argmax(
+    indices,
+    (rangeTuple: RangeTuple) => rangeTuple[1] - rangeTuple[0],
+  );
+  assertNotNullish(bestIndex, "Expected at least one match index");
 
-  for (const [start, end] of indices) {
-    parts.push(
-      <span>{value.slice(lastIndex, start)}</span>,
-      <mark className={styles.highlight}>{value.slice(start, end + 1)}</mark>,
-    );
-    lastIndex = end + 1;
-  }
+  useLayoutEffect(() => {
+    // Ensure the mark is visible in long content
+    if (markRef.current) {
+      markRef.current.scrollIntoView({
+        inline: "center",
+        behavior: "instant",
+      });
+    }
+  }, [markRef]);
 
-  parts.push(<span>{value.slice(lastIndex)}</span>);
-
-  return <div>{parts}</div>;
+  const [start, end] = bestIndex;
+  return (
+    <div className={styles.match}>
+      <span>{value.slice(0, start)}</span>
+      <mark ref={markRef} className={styles.highlight}>
+        {value.slice(start, end + 1)}
+      </mark>
+      <span>{value.slice(end + 1)}</span>
+    </div>
+  );
 };
 
 type MatchData = {
@@ -266,7 +280,7 @@ const ResultItem: React.VFC<{
       <div>
         <HighlightedMatch match={match} />
       </div>
-      <div className="small">{paths.join(" > ")}</div>
+      <div className="small text-muted">{paths.join(" > ")}</div>
     </ListGroup.Item>
   );
 };

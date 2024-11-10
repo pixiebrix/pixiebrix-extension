@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,27 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  cursor: pointer;
+import { argmax } from "@/utils/arrayUtils";
+import { identity } from "lodash";
 
-  &:hover {
-    // lightskyblue, 70% alpha
-    background: rgba(135, 206, 250, 0.7);
-  }
-}
+describe("argmax", () => {
+  it("returns undefined for empty array", () => {
+    expect(argmax<string>([], identity)).toBeUndefined();
+  });
 
-.activeNode {
-  // lightskyblue, 20% alpha
-  background: rgba(135, 206, 250, 0.2);
-}
-
-.highlight {
-  background-color: yellow;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.match {
-  overflow: hidden;
-  white-space: nowrap;
-}
+  it("returns first max", () => {
+    expect(argmax(["a", "b"], (x) => x.length)).toBe("a");
+  });
+});

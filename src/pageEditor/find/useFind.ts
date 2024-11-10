@@ -59,6 +59,10 @@ function useFind(
       // XXX: consider including all matches
       // https://www.fusejs.io/api/options.html#findallmatches
       findAllMatches: false,
+      // Search the whole string: https://www.fusejs.io/api/options.html#ignorelocation
+      ignoreLocation: true,
+      threshold: 0.2,
+      distance: Number.MAX_SAFE_INTEGER,
       keys: [
         "data.label",
         "data.value",
