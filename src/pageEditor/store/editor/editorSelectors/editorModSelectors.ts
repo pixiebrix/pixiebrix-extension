@@ -161,7 +161,10 @@ export const selectGetUntouchedActivatedModComponentsForMod = createSelector(
       const formStateIds = new Set(
         getModComponentFormStateByModId(modId).map((x) => x.uuid),
       );
-      return activatedModComponents.filter((x) => !formStateIds.has(x.id));
+
+      return activatedModComponents.filter(
+        (x) => x.modMetadata.id === modId && !formStateIds.has(x.id),
+      );
     }),
 );
 

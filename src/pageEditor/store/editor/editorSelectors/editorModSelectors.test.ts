@@ -31,7 +31,14 @@ import {
   DefinitionKinds,
 } from "@/types/registryTypes";
 import { starterBrickDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/store/editor/editorSelectors/editorModSelectors";
+import {
+  selectGetCleanComponentsAndDirtyFormStatesForMod,
+  selectGetUntouchedActivatedModComponentsForMod,
+} from "@/pageEditor/store/editor/editorSelectors/editorModSelectors";
+import { editorSlice } from "@/pageEditor/store/editor/editorSlice";
+import modComponentSlice from "@/store/modComponents/modComponentSlice";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 let starterBrickCount = 0;
 function newStarterBrickId(): InnerDefinitionRef {
@@ -268,4 +275,49 @@ describe("selectGetCleanComponentsAndDirtyFormStatesForMod", () => {
       });
     },
   );
+});
+
+describe("selectGetUntouchedActivatedModComponentsForMod", () => {
+  it("excludes components from other mods", () => {
+    const target = activatedModComponentFactory();
+
+    const options = modComponentSlice.reducer(
+      undefined,
+      modComponentSlice.actions.UNSAFE_setModComponents([
+        activatedModComponentFactory(),
+        target,
+      ]),
+    );
+
+    expect(
+      selectGetUntouchedActivatedModComponentsForMod({
+        options,
+        editor: editorSlice.getInitialState(),
+      })(target.modMetadata.id),
+    ).toStrictEqual([target]);
+  });
+
+  it("excludes mod components with form state", async () => {
+    const modInstance = modInstanceFactory();
+    const components = mapModInstanceToActivatedModComponents(modInstance);
+
+    const options = modComponentSlice.reducer(
+      undefined,
+      modComponentSlice.actions.UNSAFE_setModComponents(components),
+    );
+
+    const editor = editorSlice.reducer(
+      undefined,
+      editorSlice.actions.addModComponentFormState(
+        await modComponentToFormState(components[0]!),
+      ),
+    );
+
+    expect(
+      selectGetUntouchedActivatedModComponentsForMod({
+        options,
+        editor,
+      })(modInstance.definition.metadata.id),
+    ).toStrictEqual([]);
+  });
 });
