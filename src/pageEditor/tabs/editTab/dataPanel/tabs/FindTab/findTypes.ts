@@ -88,13 +88,9 @@ export type LocationRef = {
    */
   breadcrumbs: ItemBreadcrumb[];
   /**
-   * The associated brick field reference, if any.
+   * The associated field reference (on the brick or document builder element), if any.
    */
   fieldRef?: FieldRef;
-  /**
-   * The associated document or form builder element path, if any.
-   */
-  builderElementPath?: string;
 };
 
 /**
@@ -131,6 +127,9 @@ export type FieldValueItem = {
   };
 };
 
+/**
+ * A findable item in the mod.
+ */
 export type IndexedItem = BrickLabelItem | BrickCommentsItem | FieldValueItem;
 
 export function isStarterBrickBreadcrumb(

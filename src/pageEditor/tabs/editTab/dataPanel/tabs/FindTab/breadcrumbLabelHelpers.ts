@@ -83,6 +83,8 @@ function buildTruncationMap(
 
 /**
  * Truncate path segments in place. Mutates the input array.
+ *
+ * Ensures that truncation preserves uniqueness for each breadcrumb level.
  */
 export function truncateBreadcrumbLabelsInPlace(
   matches: Array<{ breadcrumbLabels: string[] }>,
@@ -92,6 +94,7 @@ export function truncateBreadcrumbLabelsInPlace(
     i < Math.max(...matches.map((x) => x.breadcrumbLabels.length));
     i++
   ) {
+    // In the future, to increase truncation, we might consider prefix uniqueness vs. uniqueness at each level
     const truncationMap = buildTruncationMap(
       // eslint-disable-next-line security/detect-object-injection -- array index
       matches.map((x) => x.breadcrumbLabels[i]).filter((x) => x != null),

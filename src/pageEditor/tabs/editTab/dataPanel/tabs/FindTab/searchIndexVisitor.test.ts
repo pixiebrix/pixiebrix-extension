@@ -23,11 +23,14 @@ import type { BrickConfig } from "@/bricks/types";
 import { toExpression } from "@/utils/expressionUtils";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import type { LocationRef } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/findTypes";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { getExampleBrickConfig } from "@/bricks/exampleBrickConfigs";
 
 const alertBrick = new AlertEffect();
+const documentRendererBrick = new DocumentRenderer();
 
 beforeAll(() => {
-  brickRegistry.register([alertBrick]);
+  brickRegistry.register([alertBrick, documentRendererBrick]);
 });
 
 describe("searchIndexVisitor", () => {
@@ -150,6 +153,47 @@ describe("searchIndexVisitor", () => {
       },
       data: {
         value: message.__value__,
+      },
+    });
+  });
+
+  it("indexes document builder header title", async () => {
+    const brickConfig = brickConfigFactory({
+      id: DocumentRenderer.BRICK_ID,
+      config: getExampleBrickConfig(DocumentRenderer.BRICK_ID)!,
+    });
+
+    const formState = formStateFactory({
+      brickPipeline: [brickConfig],
+    });
+
+    await expect(
+      SearchIndexVisitor.collectItems([formState]),
+    ).resolves.toContainEqual({
+      location: {
+        modComponentId: formState.uuid,
+        breadcrumbs: [
+          { brickConfig, brick: expect.toBeObject() },
+          { bodyPath: "0", builderElement: expect.toBeObject() },
+          { bodyPath: "0.children.0", builderElement: expect.toBeObject() },
+          {
+            bodyPath: "0.children.0.children.0",
+            builderElement: expect.toBeObject(),
+          },
+          {
+            bodyPath: "0.children.0.children.0.children.0",
+            builderElement: expect.objectContaining({
+              type: "header",
+            }),
+          },
+        ],
+        fieldRef: {
+          prop: "title",
+          schema: undefined,
+        },
+      },
+      data: {
+        value: "Example document",
       },
     });
   });
