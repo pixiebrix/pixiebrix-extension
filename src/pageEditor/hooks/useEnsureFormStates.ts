@@ -19,7 +19,7 @@ import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import {
   selectCurrentModId,
-  selectGetCleanComponentsAndDirtyFormStatesForMod,
+  selectGetUntouchedActivatedModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useAsyncEffect from "use-async-effect";
@@ -31,26 +31,27 @@ import useAsyncEffect from "use-async-effect";
 function useEnsureFormStates(): void {
   const dispatch = useDispatch();
   const currentModId = useSelector(selectCurrentModId);
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  const getUntouchedActivatedModComponentsForMod = useSelector(
+    selectGetUntouchedActivatedModComponentsForMod,
   );
 
-  const result = currentModId
-    ? getCleanComponentsAndDirtyFormStatesForMod(currentModId)
+  const untouchedModComponents = currentModId
+    ? getUntouchedActivatedModComponentsForMod(currentModId)
     : null;
 
   useAsyncEffect(async () => {
     await Promise.all(
-      (result?.cleanModComponents ?? []).map(async (modComponent) => {
+      (untouchedModComponents ?? []).map(async (modComponent) => {
         dispatch(
           actions.addModComponentFormState({
             modComponentFormState: await modComponentToFormState(modComponent),
             dirty: false,
+            activate: false,
           }),
         );
       }),
     );
-  }, [result]);
+  }, [untouchedModComponents]);
 }
 
 export default useEnsureFormStates;

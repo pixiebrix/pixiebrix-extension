@@ -565,15 +565,23 @@ export const editorSlice = createSlice({
       // Expose simpler payload type for most common use cases
       action: PayloadAction<
         | ModComponentFormState
-        | { modComponentFormState: ModComponentFormState; dirty: boolean }
+        | {
+            modComponentFormState: ModComponentFormState;
+            dirty: boolean;
+            activate: boolean;
+          }
       >,
     ) {
       // Ensure the form state is writeable for normalization
-      const { modComponentFormState, dirty } = cloneDeep(
+      const { modComponentFormState, dirty, activate } = cloneDeep(
         "modComponentFormState" in action.payload
           ? action.payload
           : // Default dirty to true
-            { modComponentFormState: action.payload, dirty: true },
+            {
+              modComponentFormState: action.payload,
+              dirty: true,
+              activate: true,
+            },
       );
 
       const modComponentId = modComponentFormState.uuid;
@@ -585,7 +593,9 @@ export const editorSlice = createSlice({
       state.modComponentFormStates.push(modComponentFormState);
       state.dirty[modComponentId] = dirty;
 
-      setActiveModComponentId(state, modComponentFormState);
+      if (activate) {
+        setActiveModComponentId(state, modComponentFormState);
+      }
     },
 
     /**

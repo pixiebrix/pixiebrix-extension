@@ -148,6 +148,23 @@ export const selectGetModComponentFormStatesForMod = createSelector(
     ),
 );
 
+/**
+ * Returns a getter for activated mod components that haven't been converted to form states yet
+ * @see useEnsureFormStates
+ */
+export const selectGetUntouchedActivatedModComponentsForMod = createSelector(
+  selectNotDeletedActivatedModComponents,
+  selectGetModComponentFormStatesForMod,
+  (activatedModComponents, getModComponentFormStateByModId) =>
+    // Memoize because filter constructs a fresh object reference
+    memoize((modId: RegistryId) => {
+      const formStateIds = new Set(
+        getModComponentFormStateByModId(modId).map((x) => x.uuid),
+      );
+      return activatedModComponents.filter((x) => !formStateIds.has(x.id));
+    }),
+);
+
 export const selectGetCleanComponentsAndDirtyFormStatesForMod = createSelector(
   selectNotDeletedActivatedModComponents,
   selectGetModComponentFormStatesForMod,

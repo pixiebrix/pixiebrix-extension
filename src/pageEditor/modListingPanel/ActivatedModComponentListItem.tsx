@@ -90,6 +90,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           actions.addModComponentFormState({
             modComponentFormState: await modComponentToFormState(modComponent),
             dirty: false,
+            activate: true,
           }),
         );
 

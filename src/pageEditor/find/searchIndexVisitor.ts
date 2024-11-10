@@ -35,7 +35,6 @@ import { flatten, isArray, omit } from "lodash";
 import { isObject } from "@/utils/objectUtils";
 import type { SetRequired } from "type-fest";
 import { isPrimitive } from "@/utils/typeUtils";
-import { type BaseStarterBrickState } from "@/pageEditor/store/editor/baseFormStateTypes";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
 import { type Nullishable } from "@/utils/nullishUtils";
 
@@ -304,7 +303,10 @@ class SearchIndexVisitor extends PipelineVisitor {
     this.brickStack.pop();
   }
 
-  async visitStarterBrick(starterBrick: BaseStarterBrickState) {
+  // TODO: provide field title. They're currently hard-coded in the React components
+  async visitStarterBrick(formState: ModComponentFormState) {
+    const { starterBrick, modComponent } = formState;
+
     this.brickStack.push({
       typeLabel: adapter(starterBrick.definition.type).label,
     });
@@ -314,7 +316,16 @@ class SearchIndexVisitor extends PipelineVisitor {
     )) {
       this.visitFieldValue(value, {
         prop,
-        // TODO: provide field title. They're currently hard-coded in the React components
+        schema: undefined,
+      });
+    }
+
+    for (const [prop, value] of Object.entries(
+      // Starter Brick configuration for the mod component is on the mod component property
+      omit(modComponent, "brickPipeline"),
+    )) {
+      this.visitFieldValue(value, {
+        prop,
         schema: undefined,
       });
     }
@@ -331,7 +342,7 @@ class SearchIndexVisitor extends PipelineVisitor {
         formStates.map(async (formState) => {
           const visitor = new SearchIndexVisitor(formState.uuid, allBricks);
           visitor.visitRootPipeline(formState.modComponent.brickPipeline);
-          await visitor.visitStarterBrick(formState.starterBrick);
+          await visitor.visitStarterBrick(formState);
           return visitor.items;
         }),
       ),

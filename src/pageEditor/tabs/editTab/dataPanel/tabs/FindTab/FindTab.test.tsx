@@ -18,6 +18,7 @@
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
+import { actions as modComponentsActions } from "@/store/modComponents/modComponentSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { AlertEffect } from "@/bricks/effects/alert";
 import brickRegistry from "@/bricks/registry";
@@ -28,6 +29,9 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import BrickDataPanel from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import useFlags from "@/hooks/useFlags";
 import { FeatureFlags } from "@/auth/featureFlags";
+import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { mapModInstanceToActivatedModComponents } from "@/store/modComponents/modInstanceUtils";
 
 jest.mock("@/hooks/useFlags");
 
@@ -43,7 +47,7 @@ beforeAll(() => {
 });
 
 describe("FindTab", () => {
-  it("find brick name or literal value", async () => {
+  it("finds brick name or literal value", async () => {
     const message = "Hello, world!";
 
     const brickConfig = brickConfigFactory({
@@ -90,5 +94,47 @@ describe("FindTab", () => {
     await userEvent.type(screen.getByRole("searchbox"), alertBrick.name);
     expect(screen.getByLabelText(alertBrick.name)).toBeInTheDocument();
     expect(screen.queryByLabelText(message)).not.toBeInTheDocument();
+  });
+
+  it("searches activated mod component", async () => {
+    const message = "Hello, world!";
+
+    const brickConfig = brickConfigFactory({
+      id: alertBrick.id,
+      config: { message },
+    });
+
+    const formState = formStateFactory({
+      brickPipeline: [brickConfig],
+    });
+
+    const modInstance = modInstanceFactory({
+      definition: modDefinitionFactory({
+        metadata: formState.modMetadata,
+      }),
+    });
+
+    const buttonCaption = "Activated Mod Caption";
+    modInstance.definition.extensionPoints[0]!.config.caption = buttonCaption;
+
+    render(<BrickDataPanel />, {
+      setupRedux(dispatch) {
+        dispatch(
+          modComponentsActions.UNSAFE_setModComponents(
+            mapModInstanceToActivatedModComponents(modInstance),
+          ),
+        );
+        // Search from the other draft mod component
+        dispatch(editorActions.addModComponentFormState(formState));
+        dispatch(editorActions.setActiveNodeId(brickConfig.instanceId!));
+        dispatch(
+          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Find),
+        );
+      },
+    });
+
+    // Search value
+    await userEvent.type(screen.getByRole("searchbox"), buttonCaption);
+    expect(screen.getByLabelText(buttonCaption)).toBeInTheDocument();
   });
 });
