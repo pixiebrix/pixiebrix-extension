@@ -25,11 +25,7 @@ import OutputDetail from "@/components/logViewer/details/OutputDetail";
 import getErrorDetails from "@/components/errors/getErrorDetails";
 import styles from "./EntryRow.module.scss";
 import cx from "classnames";
-
-const dateFormat = new Intl.DateTimeFormat("en-US", {
-  dateStyle: "short",
-  timeStyle: "short",
-});
+import { dateFormat } from "@/utils/stringUtils";
 
 const ErrorDetail: React.FunctionComponent<{ error: LogEntry["error"] }> = ({
   error,

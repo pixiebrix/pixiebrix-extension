@@ -125,3 +125,8 @@ export function extractMarkdownLink(text: string) {
 
   return null;
 }
+
+export const dateFormat = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
