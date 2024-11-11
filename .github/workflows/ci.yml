@@ -36,14 +36,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run test -- --coverage
+      - run: npm run test --workspace=applications/browser-extension -- --coverage
       - uses: actions/upload-artifact@v4
         with:
           name: extension-test-coverage
-          path: coverage/coverage-final.json
+          path: applications/browser-extension/coverage/coverage-final.json
 
   upload-to-codecov:
     needs: test
@@ -55,7 +55,7 @@ jobs:
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v3.7.0
+        uses: Wandalen/wretry.action@v3.7.2
         with:
           action: codecov/codecov-action@v4
           with: |
@@ -77,10 +77,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run build:webpack
+      - run: npm run build:webpack --workspace=applications/browser-extension
         env:
           MV: 3
           RELEASE_CHANNEL: stable
@@ -97,27 +97,27 @@ jobs:
         with:
           name: build-staging
           path: |
-            dist
-            !dist/**/*.map
+            applications/browser-extension/dist
+            !applications/browser-extension/dist/**/*.map
           retention-days: 5
           if-no-files-found: error
 
       # The polyfill cannot be used outside the extension context
-      - run: "! grep 'loaded in a browser extension' dist/pageScript.js --files-with-matches"
+      - run: "! grep 'loaded in a browser extension' applications/browser-extension/dist/pageScript.js --files-with-matches"
         name: Detect browser-polyfill in pageScript.js
 
       # The messenger cannot be executed twice; only load it in contentScriptCore
       # https://github.com/pixiebrix/webext-messenger/issues/88
       # - contentScript.js can't have it because the file could be injected multiple times, guarding contentScriptCore
       # - loadActivationEnhancements.js can't have it because it's always loaded alongside contentScript.js
-      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js dist/setExtensionIdInApp.js --files-with-matches"
+      - run: "! grep '__getTabData' applications/browser-extension/dist/loadActivationEnhancements.js applications/browser-extension/dist/contentScript.js applications/browser-extension/dist/setExtensionIdInApp.js --files-with-matches"
         name: Detect webext-messenger unwanted bundles
 
       - uses: actions/upload-artifact@v4
         name: Save report.html
         with:
           name: build-staging-bundle-dependency-report
-          path: report.html
+          path: applications/browser-extension/report.html
           retention-days: 5
           if-no-files-found: error
 
@@ -128,15 +128,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run generate:headers
+      - run: npm run generate:headers --workspace=applications/browser-extension
       - uses: actions/upload-artifact@v4
         name: Save headers.json
         with:
           name: brick-headers
-          path: headers.json
+          path: applications/browser-extension/headers.json
           retention-days: 5
           if-no-files-found: error
 
@@ -148,10 +148,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run build:typescript
+      - run: npm run build:typescript --workspace=applications/browser-extension
 
   lint:
     runs-on: ubuntu-latest
@@ -160,10 +160,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run lint:full
+      - run: npm run lint:full --workspace=applications/browser-extension
 
   dead-code:
     runs-on: ubuntu-latest
@@ -172,15 +172,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
       # Detect dead code with enforced rules
-      - run: npm run dead-code
+      - run: npm run dead-code --workspace=applications/browser-extension
       # Detect dead code that is only used by tests
-      - run: npm run dead-code:prod
+      - run: npm run dead-code:prod --workspace=applications/browser-extension
       # Also run the remaining "warn" rules
-      - run: npm run dead-code:base -- --no-exit-code
+      - run: npm run dead-code:base --workspace=applications/browser-extension -- --no-exit-code
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
@@ -210,12 +210,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: package.json
+          node-version-file: applications/browser-extension/package.json
           cache: npm
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: 7z-blob-reports
+          path: applications/browser-extension/7z-blob-reports
           pattern: end-to-end-tests-report-*
           merge-multiple: true
       - name: Unzip password protected Playwright reports
@@ -223,22 +223,22 @@ jobs:
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./blob-reports "./7z-blob-reports/*.7z"
+        run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./applications/browser-extension/blob-reports "./applications/browser-extension/7z-blob-reports/*.7z"
       - name: Merge blob reports
-        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./playwright-report/results.json npx playwright merge-reports --reporter=html,json ./blob-reports
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./applications/browser-extension/playwright-report/results.json npx playwright merge-reports --reporter=html,json ./applications/browser-extension/blob-reports
       - name: Password protect merged Playwright report
         if: always()
         shell: bash
         env:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
-        run: 7z a ./playwright-report.7z ./playwright-report/* -p"$ARTIFACT_ZIP_PASSWORD"
+        run: 7z a ./applications/browser-extension/playwright-report.7z ./applications/browser-extension/playwright-report/* -p"$ARTIFACT_ZIP_PASSWORD"
       - name: Upload zipped merged Playwright Report to GitHub Actions Artifacts
         id: upload-merged-playwright-report-step
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: end-to-end-tests-report
-          path: ./playwright-report.7z
+          path: applications/browser-extension/playwright-report.7z
           retention-days: 5
           compression-level: 0 # already compressed with 7z
       - name: Create report comment
@@ -246,7 +246,7 @@ jobs:
         uses: daun/playwright-report-summary@v3
         with:
           comment-title: "Playwright test results"
-          report-file: ./playwright-report/results.json
+          report-file: ./applications/browser-extension/playwright-report/results.json
           report-url: ${{ steps.upload-merged-playwright-report-step.outputs.artifact-url }}
           custom-info: "For more information on how to debug and view this report, [see our readme](https://github.com/pixiebrix/pixiebrix-extension/blob/main/end-to-end-tests/README.md#github-ci-integration)"
 
