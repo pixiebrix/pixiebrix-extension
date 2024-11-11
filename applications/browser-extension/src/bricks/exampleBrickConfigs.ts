@@ -129,25 +129,6 @@ export function getExampleBrickConfig(
     }
 
     case "@pixiebrix/document": {
-      if (parentBrickId === "@pixiebrix/tour/step") {
-        // Single row with text markdown
-        const containerElement = createNewDocumentBuilderElement("container");
-
-        // Adding text to the second row
-        const textElement = createNewDocumentBuilderElement("text");
-        textElement.config.text =
-          "Example step content. **Markdown** is supported.";
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know this is safe
-        containerElement.children![0]!.children![0]!.children!.push(
-          textElement,
-        );
-
-        return {
-          body: [containerElement],
-        };
-      }
-
       // Creating container with 2 rows and 1 column in each row
       const containerElement = createNewDocumentBuilderElement("container");
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know this is safe

@@ -30,6 +30,7 @@ import { NavItem } from "@/pageEditor/tabs/editTab/dataPanel/BrickDataPanel";
 import StarterBrickInputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickInputTab";
 import StarterBrickOutputTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/StarterBrickOutputTab";
 import { FeatureFlags } from "@/auth/featureFlags";
+import FindTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/FindTab";
 
 /**
  * @see DataPanel
@@ -76,6 +77,10 @@ const StarterBrickDataPanel: React.FC = () => {
           eventKey={DataPanelTabKey.ModVariables}
           label="Mod Variables"
         />
+
+        {flagOn(FeatureFlags.PAGE_EDITOR_FIND) && (
+          <NavItem eventKey={DataPanelTabKey.Find} label="Find" />
+        )}
       </Nav>
       <Tab.Content>
         {showDeveloperTabs && (
@@ -90,6 +95,8 @@ const StarterBrickDataPanel: React.FC = () => {
         <StarterBrickOutputTab />
 
         <ModVariablesTab />
+
+        {flagOn(FeatureFlags.PAGE_EDITOR_FIND) && <FindTab />}
       </Tab.Content>
     </Tab.Container>
   );

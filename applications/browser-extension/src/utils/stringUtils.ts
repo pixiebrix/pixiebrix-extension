@@ -126,6 +126,26 @@ export function extractMarkdownLink(text: string) {
   return null;
 }
 
+/**
+ * Truncate the middle of a string to a maximum length.
+ * @param text The string to truncate.
+ * @param length The maximum string length.
+ * @param omission The string to indicate text is omitted.
+ */
+export function truncateMiddle(
+  text: string,
+  { length, omission = "..." }: { length: number; omission?: string },
+): string {
+  const half = Math.floor(length / 2);
+  const truncatedLength = half * 2 + omission.length;
+
+  if (truncatedLength >= text.length) {
+    return text;
+  }
+
+  return `${text.slice(0, half).trim()}${omission}${text.slice(-half).trim()}`;
+}
+
 export const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",
   timeStyle: "short",

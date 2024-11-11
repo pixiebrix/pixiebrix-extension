@@ -28,13 +28,13 @@ import {
   timestampFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { type ApiVersion } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { personalSharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { DefinitionKinds, type Metadata } from "@/types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import { validateTimestamp } from "@/utils/timeUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const modComponentRefFactory = define<ModComponentRef>({
   // Don't repeat UUIDs across contexts
@@ -52,21 +52,14 @@ export const modMetadataFactory = extend<Metadata, ModMetadata>(
 );
 
 export const modComponentConfigFactory = define<ModComponentBase["config"]>({
-  apiVersion: "v3" as ApiVersion,
-  kind: DefinitionKinds.BRICK,
+  apiVersion: "v3",
   metadata: (n: number) =>
     metadataFactory({
       id: validateRegistryId(`test/component-${n}`),
       name: "Test config",
     }),
-  inputSchema() {
-    return {
-      $schema: "https://json-schema.org/draft/2019-09/schema#",
-      type: "object",
-      properties: {},
-      required: [] as string[],
-    };
-  },
+
+  inputSchema: minimalSchemaFactory,
 
   // `action` is the pipeline prop for the button starter brick
   action() {
@@ -86,7 +79,7 @@ export const modComponentConfigFactory = define<ModComponentBase["config"]>({
 
 export const modComponentFactory = define<ModComponentBase>({
   id: uuidSequence,
-  apiVersion: "v3" as ApiVersion,
+  apiVersion: "v3",
   extensionPointId: (n: number) =>
     validateRegistryId(`test/starter-brick-${n}`),
   // @since 2.1.5 includes mod metadata
