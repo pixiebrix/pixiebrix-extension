@@ -240,7 +240,7 @@
     "@types/react-table": "^7.7.20",
     "@types/react-virtualized-auto-sizer": "^1.0.4",
     "@types/react-window": "^1.8.8",
-    "@types/redux-logger": "^3.0.12",
+    "@types/redux-logger": "^3.0.13",
     "@types/redux-persist-webextension-storage": "^1.0.3",
     "@types/redux-state-sync": "^3.1.10",
     "@types/semver": "^7.5.8",
