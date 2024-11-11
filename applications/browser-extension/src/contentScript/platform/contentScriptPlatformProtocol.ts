@@ -7,7 +7,7 @@ import type { ElementReference } from "@/types/runtimeTypes";
 
 /**
  * Extended platform protocol for content scripts.
- * @since 2.1.8
+ * @since 2.2.0
  * @see isContentScriptPlatformProtocol
  */
 export interface ContentScriptPlatformProtocol extends PlatformProtocol {

@@ -384,7 +384,7 @@ export type EditorStateMigratedV11 = Except<
  * @see EditorStateEphemeral
  *
  * @deprecated - Do not use versioned state types directly, exported for testing
- * @since 2.1.8
+ * @since 2.2.0
  */
 export type EditorStateMigratedV12 = Pick<
   EditorStateMigratedV11,
