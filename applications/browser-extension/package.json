@@ -253,7 +253,7 @@
     "@typescript-eslint/rule-tester": "^8.11.0",
     "axios-mock-adapter": "^2.1.0",
     "blob-polyfill": "^9.0.20240710",
-    "compass-mixins": "^0.12.10",
+    "compass-mixins": "^0.12.12",
     "concurrently": "^9.1.0",
     "cooky-cutter": "^1.5.4",
     "copy-webpack-plugin": "^12.0.2",
