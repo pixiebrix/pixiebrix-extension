@@ -155,7 +155,7 @@
     "redux-persist-webextension-storage": "^1.0.2",
     "redux-state-sync": "^3.1.4",
     "regenerator-runtime": "^0.14.1",
-    "schema-to-yup": "1.12.14",
+    "schema-to-yup": "1.12.18",
     "semver": "^7.6.3",
     "serialize-error": "^11.0.3",
     "simple-icons": "^5.8.0",
