@@ -58,7 +58,7 @@ jobs:
         id: changedfiles
         uses: tj-actions/changed-files@v45
         with:
-          files: "src/vendors/**/*.*"
+          files: "applications/browser-extension/src/vendors/**/*.*"
       - name: Leave annotations
         if: steps.changedfiles.outputs.any_changed == 'true'
         env:
