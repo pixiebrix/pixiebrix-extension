@@ -39,7 +39,7 @@ jobs:
           node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run test -ws -- --coverage
+      - run: npm run test --workspace=applications/browser-extension -- --coverage
       - uses: actions/upload-artifact@v4
         with:
           name: extension-test-coverage
