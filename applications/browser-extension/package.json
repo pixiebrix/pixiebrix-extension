@@ -16,9 +16,9 @@
     "watch:webpack": "ENV_FILE='.env.development' webpack ${HMR:-watch} --mode development",
     "watch:webpack-hmr": "HMR=serve npm run watch:webpack",
     "watch:typescript": "tsc --noEmit --watch",
-    "build": "concurrently npm:build:webpack npm:build:typescript -r",
+    "build": "concurrently npm:build:webpack npm:build:typecheck -r",
     "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
-    "build:typescript": "tsc --noEmit",
+    "build:typecheck": "tsc --noEmit",
     "generate:headers": "npm run test -- src/development/headers.test.ts --no-silent",
     "storybook": "storybook dev -p 6006 -s public",
     "build-storybook": "storybook build",
@@ -26,11 +26,6 @@
     "dead-code:base_BROKEN_DUE_TO_NOT_BEING_RUN_IN_ROOT": "knip --config knip.mjs --tags=-knip",
     "dead-code:base": "echo 'skipping knip until fixed in next changeset. See: https://knip.dev/guides/handling-issues#missing-binaries'",
     "dead-code:prod": "npm run dead-code -- --production"
-  },
-  "engine-strict": true,
-  "engines": {
-    "node": "20.12.0",
-    "npm": "10.5.0"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
