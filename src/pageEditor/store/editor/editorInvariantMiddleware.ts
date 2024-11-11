@@ -72,7 +72,7 @@ export function assertEditorInvariants(
 
   // Assert that the expanded mod must correspond to the selected mod or mod component
   const expandedModId = selectExpandedModId(state);
-  if (expandedModId && selectActiveModId(state) !== expandedModId) {
+  if (expandedModId && activeModId !== expandedModId) {
     throw new InvariantViolationError(
       "expandedModId does not match active mod",
     );

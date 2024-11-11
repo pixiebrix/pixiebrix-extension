@@ -131,7 +131,7 @@ const ModSidebarListItems: React.FunctionComponent = () => {
 
       {/* Mod Component List */}
       <Accordion activeKey={expandedModId ?? undefined} className={styles.list}>
-        <ListGroup>{listItems}</ListGroup>
+        {listItems}
       </Accordion>
     </>
   );

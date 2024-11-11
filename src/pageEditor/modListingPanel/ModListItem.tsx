@@ -81,13 +81,11 @@ const ModListItem: React.FC<
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isModActive && !isModComponentActive}
-        key={`mod-${modId}`}
+        key={modId}
         onClick={() => {
           dispatch(actions.setActiveModId(modId));
           // Collapse if the user clicks the mod item when it's already active/selected in the listing pane
-          dispatch(
-            actions.setExpandedModId(isExpanded && isModActive ? null : modId),
-          );
+          dispatch(actions.setExpandedModId(isExpanded ? null : modId));
         }}
       >
         <span className={styles.icon}>
