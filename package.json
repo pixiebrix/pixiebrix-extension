@@ -126,7 +126,7 @@
     "primereact": "^7.1.0",
     "prop-types": "^15.7.2",
     "proper-event": "^0.9.2",
-    "psl": "^1.8.0",
+    "psl": "^1.10.0",
     "react": "^17.0.2",
     "react-ace": "^13.0.0",
     "react-autosuggest": "^10.1.0",
