@@ -146,7 +146,7 @@
     "react-select-virtualized": "^5.6.0",
     "react-shadow": "^20.5.0",
     "react-spinners": "^0.13.0",
-    "react-table": "^7.7.0",
+    "react-table": "^7.8.0",
     "react-virtualized": "^9.22.5",
     "react-virtualized-auto-sizer": "^1.0.24",
     "react-window": "^1.8.10",
