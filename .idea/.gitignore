@@ -14,3 +14,5 @@
 codestream.xml
 # GitHub Copilot persisted chat sessions
 /copilot/chatSessions
+# Prettier defines code styles for the project
+codeStyles
