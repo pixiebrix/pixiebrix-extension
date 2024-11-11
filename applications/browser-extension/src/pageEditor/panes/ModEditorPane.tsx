@@ -32,6 +32,7 @@ import useRegisterDraftModInstanceOnAllFrames from "@/pageEditor/hooks/useRegist
 import { assertNotNullish } from "@/utils/nullishUtils";
 import ModVariablesDefinitionEditor from "@/pageEditor/tabs/modVariablesDefinition/ModVariablesDefinitionEditor";
 import { FeatureFlags } from "@/auth/featureFlags";
+import ModVersionHistory from "@/pageEditor/tabs/modVersionHistory/ModVersionHistory";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -71,6 +72,11 @@ const ModEditorPane: React.VFC = () => {
       badgeCount: unreadLogsCount,
       badgeVariant: logsBadgeVariant,
       TabContent: Logs,
+    },
+    {
+      name: "Version History",
+      TabContent: ModVersionHistory,
+      flag: FeatureFlags.PAGE_EDITOR_MOD_VERSION_HISTORY,
     },
   ];
 

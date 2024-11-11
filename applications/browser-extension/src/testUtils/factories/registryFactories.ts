@@ -15,15 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define } from "cooky-cutter";
+import { define, derive } from "cooky-cutter";
 import { type Sharing } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type EditablePackageMetadata } from "@/types/contract";
+import {
+  type EditablePackageMetadata,
+  type PackageVersionDeprecated,
+} from "@/types/contract";
 import {
   autoUUIDSequence,
   registryIdFactory,
   timestampFactory,
 } from "@/testUtils/factories/stringFactories";
+import { dumpBrickYaml } from "@/runtime/brickYaml";
 
 export const personalSharingDefinitionFactory = define<Sharing>({
   public: false,
@@ -41,12 +45,32 @@ export const teamSharingDefinitionFactory = define<Sharing>({
 });
 
 export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
-  id: autoUUIDSequence(),
-  name: registryIdFactory(),
+  id: autoUUIDSequence,
+  name: registryIdFactory,
   verbose_name: (n: number) => `Editable Package ${n}`,
   version: "1.0.0",
   kind: "Blueprint",
-  updated_at: timestampFactory(),
+  updated_at: timestampFactory,
   sharing: personalSharingDefinitionFactory,
   _editableBrickBrand: undefined as never,
 });
+
+/**
+ * @deprecated see https://github.com/pixiebrix/pixiebrix-extension/issues/7692
+ */
+// TODO remove in https://github.com/pixiebrix/pixiebrix-extension/issues/7692
+export const packageVersionDeprecatedFactory = define<PackageVersionDeprecated>(
+  {
+    id: autoUUIDSequence(),
+    version: "1.0.0",
+    config() {
+      throw new Error("Provide a definition factory for 'config'");
+    },
+    raw_config: derive<
+      PackageVersionDeprecated,
+      PackageVersionDeprecated["raw_config"]
+    >(({ config }) => dumpBrickYaml(config), "config"),
+    created_at: timestampFactory,
+    updated_at: timestampFactory,
+  },
+);
