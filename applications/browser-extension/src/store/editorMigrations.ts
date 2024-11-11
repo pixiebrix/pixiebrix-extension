@@ -85,6 +85,8 @@ export const migrations: MigrationManifest = {
     migrateEditorStateV10(state),
   12: (state: EditorStateMigratedV11 & PersistedState) =>
     migrateEditorStateV11(state),
+  13: (state: EditorStateMigratedV11 & PersistedState) =>
+    resetEditorStateSynced(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -405,5 +407,19 @@ export function migrateEditorStateV11(
     deletedModComponentFormStateIdsByModId,
     dirtyModOptionsDefinitionById,
     _persist,
+  };
+}
+
+/**
+ * Reset the synced editor state to its initial state.
+ */
+// XXX: a limitation is that the function won't delete keys removed from the EditorStateSynced type. The assumption
+// is size/storage of those keys will be negligible.
+export function resetEditorStateSynced<T extends PersistedState>(
+  state: T,
+): T & Required<EditorStateSynced> {
+  return {
+    ...state,
+    ...initialSyncedState,
   };
 }

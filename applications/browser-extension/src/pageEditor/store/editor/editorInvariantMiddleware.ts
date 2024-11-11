@@ -26,8 +26,6 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import type { EmptyObject } from "type-fest";
 import { uniqBy } from "lodash";
-import { type AppDispatch } from "@/pageEditor/store/store";
-import { actions } from "@/pageEditor/store/editor/editorSlice";
 
 class InvariantViolationError extends Error {
   override name = "InvariantViolationError";
@@ -47,17 +45,10 @@ class InvariantViolationError extends Error {
  * @see editorInvariantMiddleware
  */
 // XXX: in production, should we be attempting to auto-fix these invariants?
-export function assertEditorInvariants(
-  state: EditorRootState,
-  dispatch: AppDispatch,
-): void {
+export function assertEditorInvariants(state: EditorRootState): void {
   // Assert that a mod and mod component item cannot be selected at the same time
   const activeModId = selectActiveModId(state);
   const activeModComponentId = selectActiveModComponentFormState(state);
-
-  if (activeModComponentId && !activeModId) {
-    dispatch(actions.setActiveModId(activeModComponentId.modMetadata.id));
-  }
 
   if (
     activeModComponentId &&
@@ -113,7 +104,7 @@ const editorInvariantMiddleware: Middleware<EmptyObject, EditorRootState> =
     const result = next(action);
 
     try {
-      assertEditorInvariants(storeAPI.getState(), storeAPI.dispatch);
+      assertEditorInvariants(storeAPI.getState());
     } catch (error) {
       throw new Error(`Action violated invariant: ${action.type}`, {
         cause: error,
