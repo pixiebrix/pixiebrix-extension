@@ -413,9 +413,10 @@ export function migrateEditorStateV11(
 
 /**
  * Reset the synced editor state to its initial state.
+ *
+ * If any keys were dropped from EditorStateSynced, they'll be dropped via the next redux-persist write/flush cycle:
+ * https://github.com/rt2zz/redux-persist/blob/d8b01a085e3679db43503a3858e8d4759d6f22fa/src/createPersistoid.ts#L37
  */
-// XXX: a limitation is that the function won't delete keys removed from the EditorStateSynced type. The assumption
-// is size/storage of those keys will be negligible.
 export function resetEditorStateSynced<T extends PersistedState>(
   state: T,
 ): T & Required<EditorStateSynced> {
