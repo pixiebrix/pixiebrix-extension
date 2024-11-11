@@ -158,7 +158,7 @@
     "schema-to-yup": "1.12.14",
     "semver": "^7.6.3",
     "serialize-error": "^11.0.3",
-    "simple-icons": "^5.8.0",
+    "simple-icons": "^13.16.0",
     "slugify": "^1.6.6",
     "stemmer": "^2.0.1",
     "uint8array-extras": "^1.4.0",
