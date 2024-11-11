@@ -23,6 +23,10 @@ describe("argmax", () => {
     expect(argmax<string>([], identity)).toBeUndefined();
   });
 
+  it("returns max", () => {
+    expect(argmax(["a", "aaa", "aa"], (x) => x.length)).toBe("aaa");
+  });
+
   it("returns first max", () => {
     expect(argmax(["a", "b"], (x) => x.length)).toBe("a");
   });

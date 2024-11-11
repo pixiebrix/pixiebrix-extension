@@ -17,7 +17,7 @@
 import React from "react";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTabPane from "@/pageEditor/tabs/editTab/dataPanel/DataTabPane";
-import useFind from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/useFind";
+import useFindInMod from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/useFindInMod";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -90,7 +90,7 @@ const FindTab: React.VFC = () => {
 
   const { query } = useSelector(selectCurrentFindQueryOptions);
 
-  const searchResults = useFind(query);
+  const searchResults = useFindInMod(query);
   const matches = useMatchData(searchResults);
 
   return (

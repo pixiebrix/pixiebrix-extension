@@ -22,7 +22,7 @@ import {
   selectGetUntouchedActivatedModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import useAsyncEffect from "use-async-effect";
+import { useEffect } from "react";
 
 /**
  * Hook to ensure all mod components have draft form states in the editor. For example, if you need to ensure
@@ -39,8 +39,8 @@ function useEnsureFormStates(): void {
     ? getUntouchedActivatedModComponentsForMod(currentModId)
     : null;
 
-  useAsyncEffect(async () => {
-    await Promise.all(
+  useEffect(() => {
+    void Promise.all(
       (untouchedModComponents ?? []).map(async (modComponent) => {
         dispatch(
           actions.addModComponentFormState({
@@ -51,7 +51,7 @@ function useEnsureFormStates(): void {
         );
       }),
     );
-  }, [untouchedModComponents]);
+  }, [dispatch, untouchedModComponents]);
 }
 
 export default useEnsureFormStates;

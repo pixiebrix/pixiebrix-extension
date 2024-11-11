@@ -34,7 +34,7 @@ type FindResults = Array<SetRequired<FuseResult<IndexedItem>, "matches">>;
 /**
  * Hook to find query within the current mod.
  */
-function useFind(
+function useFindInMod(
   query: string,
 ): Array<SetRequired<FuseResult<IndexedItem>, "matches">> {
   // Find/search depends on all mod components having form states with instanceIds assigned
@@ -55,7 +55,7 @@ function useFind(
     return new Fuse(items, {
       // https://www.fusejs.io/api/options.html#includematches
       includeMatches: true,
-      // XXX: consider including all matches
+      // Make the default explicit. We only show the first match in the UI so additional matches would be ignored
       // https://www.fusejs.io/api/options.html#findallmatches
       findAllMatches: false,
       // Search the whole string: https://www.fusejs.io/api/options.html#ignorelocation
@@ -67,18 +67,18 @@ function useFind(
         "data.value",
         "data.comments",
         "data.brick.name",
-        // Put brick id last - typically if someone is search it, it's because they're searching by the
+        // Put brick id last - typically if someone is searching for brick id, it's because they're searching by the
         // exact brick id
         "data.brick.id",
       ],
     });
   }, [modComponentFormStates]);
 
-  // `matches` will be present because `includeMatches: true` in the Fuse constructor
   return useMemo(
-    () => fuse.data?.search(query) ?? [],
+    // `matches` will be present because `includeMatches: true` in the Fuse constructor
+    () => (fuse.data?.search(query) ?? []) as FindResults,
     [fuse.data, query],
-  ) as FindResults;
+  );
 }
 
-export default useFind;
+export default useFindInMod;
