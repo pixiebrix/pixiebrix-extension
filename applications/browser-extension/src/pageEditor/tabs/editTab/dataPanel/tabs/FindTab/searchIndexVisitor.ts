@@ -44,7 +44,7 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 
 /**
  * Visitor to collect mod fragments for search within a mod.
- * @since 2.1.8
+ * @since 2.2.0
  */
 class SearchIndexVisitor extends PipelineExpressionVisitor {
   readonly items: IndexedItem[] = [];

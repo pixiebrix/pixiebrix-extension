@@ -22,7 +22,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
-import { selectCurrentFindQueryOptions } from "@/pageEditor/store/editor/editorSelectors";
+import { selectCurrentFindInModQuery } from "@/pageEditor/store/editor/editorSelectors";
 import ResultItem, {
   useMatchData,
 } from "@/pageEditor/tabs/editTab/dataPanel/tabs/FindTab/ResultItem";
@@ -88,7 +88,7 @@ function jumpToItemLocationAction(item: IndexedItem) {
 const FindTab: React.VFC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { query } = useSelector(selectCurrentFindQueryOptions);
+  const { query } = useSelector(selectCurrentFindInModQuery);
 
   const searchResults = useFindInMod(query);
   const matches = useMatchData(searchResults);

@@ -51,14 +51,14 @@ export function selectNodeDataPanelTabState(
 }
 
 /**
- * Select the find query options for the current mod.
+ * Select the "find in mod" query options for the current mod.
  */
-export const selectCurrentFindQueryOptions = createSelector(
-  ({ editor }: EditorRootState) => editor.findOptionsByModId,
+export const selectCurrentFindInModQuery = createSelector(
+  ({ editor }: EditorRootState) => editor.findInModQueryByModId,
   selectCurrentModId,
-  (findOptionsByModId, modId) => {
+  (findInModQueryByModId, modId) => {
     assertNotNullish(modId, "Expected currentModId");
     // eslint-disable-next-line security/detect-object-injection -- registry id
-    return findOptionsByModId?.[modId] ?? { query: "" };
+    return findInModQueryByModId[modId] ?? { query: "" };
   },
 );

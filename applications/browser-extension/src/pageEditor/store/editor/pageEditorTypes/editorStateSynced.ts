@@ -82,6 +82,7 @@ export type EditorStateSynced = {
 
   /**
    * Find data panel options by mod id
+   * @since 2.2.0
    */
-  findOptionsByModId: Record<RegistryId, FindQueryOptions> | null;
+  findInModQueryByModId: Record<RegistryId, FindQueryOptions>;
 };

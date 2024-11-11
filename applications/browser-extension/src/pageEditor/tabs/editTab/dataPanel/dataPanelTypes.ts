@@ -54,7 +54,7 @@ export enum DataPanelTabKey {
   NodeFormState = "nodeFormState",
   /**
    * Find/search within a mod
-   * @since 2.1.8
+   * @since 2.2.0
    */
   Find = "find",
 }

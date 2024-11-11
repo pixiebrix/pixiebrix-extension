@@ -75,6 +75,7 @@ import {
   migrateEditorStateV7,
   migrateEditorStateV8,
   migrateEditorStateV9,
+  resetEditorStateSynced,
 } from "@/store/editorMigrations";
 import { type FactoryConfig } from "cooky-cutter/dist/define";
 import { StarterBrickTypes } from "@/types/starterBrickTypes";
@@ -1008,6 +1009,15 @@ describe("editor state migrations", () => {
       const unmigrated = unmigrateEditorStateV12toV11(editorStateV12);
 
       expect(migrateEditorStateV11(unmigrated)).toStrictEqual(editorStateV12);
+    });
+  });
+
+  describe("migrates V12", () => {
+    it("migrates empty state", () => {
+      expect(resetEditorStateSynced(initialStateV12)).toStrictEqual({
+        ...initialStateV12,
+        findInModQueryByModId: {},
+      });
     });
   });
 });
