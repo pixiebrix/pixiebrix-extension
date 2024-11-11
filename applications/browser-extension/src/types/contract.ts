@@ -19,7 +19,7 @@
  * Type contract between the backend and front-end.
  */
 import { type components } from "@/types/swagger";
-import { type Except } from "type-fest";
+import { type Except, type SetRequired } from "type-fest";
 import { type AxiosResponse } from "axios";
 import type { IconName, IconPrefix } from "@fortawesome/free-solid-svg-icons";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
@@ -44,9 +44,14 @@ export type Group = components["schemas"]["Group"];
 
 export type Database = components["schemas"]["Database"];
 
-// TODO: Remove in https://github.com/pixiebrix/pixiebrix-extension/issues/7692
-export type PackageVersionDeprecated =
-  components["schemas"]["PackageVersionDeprecated"];
+/**
+ * @deprecated see https://github.com/pixiebrix/pixiebrix-extension/issues/7692
+ */
+// TODO remove in https://github.com/pixiebrix/pixiebrix-extension/issues/7692
+export type PackageVersionDeprecated = SetRequired<
+  components["schemas"]["PackageVersionDeprecated"],
+  "updated_at" | "created_at" | "id"
+>;
 
 export type PendingInvitation = components["schemas"]["PendingInvitation"];
 

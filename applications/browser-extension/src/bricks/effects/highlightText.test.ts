@@ -28,7 +28,7 @@ describe("ReplaceTextEffect", () => {
       document.body,
       NodeFilter.SHOW_ELEMENT,
     );
-    nodeIterator.nextNode();
+    expect(() => nodeIterator.nextNode()).not.toThrow();
   });
 
   test.each([[undefined], ["yellow"]])(

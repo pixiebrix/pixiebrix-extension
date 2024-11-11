@@ -145,3 +145,8 @@ export function truncateMiddle(
 
   return `${text.slice(0, half).trim()}${omission}${text.slice(-half).trim()}`;
 }
+
+export const dateFormat = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
