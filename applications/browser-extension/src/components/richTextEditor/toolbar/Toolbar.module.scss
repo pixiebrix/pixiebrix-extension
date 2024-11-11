@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,29 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  // To replicate the Bootstrap .form-control class
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  color: #495057;
-  transition:
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
-
-  &:focus-within {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 3.2px rgba(0, 123, 255, 0.25);
-    background-color: #fff;
-    outline: 0;
+.toolbarButtons {
+  :global(.btn-group) {
+    flex-direction: row;
   }
 
-  :global(.tiptap) {
-    padding: 6px 12px 6px 12px;
-    max-height: 300px;
-    overflow-y: auto;
+  :global(.btn) {
+    &:global(.active) {
+      color: #007bff;
+    }
+
+    &:not([disabled]):hover {
+      color: #0056b3;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
   }
 
-  :global(.ProseMirror-focused) {
-    outline: 0;
+  :global(.heading-level__control) {
+    border: none;
+    box-shadow: none;
   }
+}
+
+.toolbar {
+  border-bottom: 1px solid #ced4da;
+
+  @extend .toolbarButtons;
 }

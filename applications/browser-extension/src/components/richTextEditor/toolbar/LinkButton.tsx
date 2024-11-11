@@ -15,13 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { type Editor, useCurrentEditor } from "@tiptap/react";
 // eslint-disable-next-line no-restricted-imports -- we need flexible styling for this component
 import { Button, Form, Overlay, Popover } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import styles from "./LinkButton.module.scss";
+import styles from "@/components/richTextEditor/toolbar/LinkButton.module.scss";
+import { ValueOf } from "type-fest";
+
+const POPOVER_VIEW = {
+  linkPreview: "linkPreview",
+  editForm: "editForm",
+} as const;
+
+type PopoverState = {
+  showPopover: boolean;
+  popoverView: ValueOf<typeof POPOVER_VIEW>;
+};
 
 const LinkPreviewActions: React.FC<{
   href: string;
@@ -67,22 +85,20 @@ const LinkEditForm: React.FC<{
   </Form>
 );
 
-const LinkEditorOverlay: React.FunctionComponent<{
-  showPopover: boolean;
-  popoverView: "editForm" | "linkPreview";
-  target: React.RefObject<HTMLElement>;
-  setPopoverState: (state: {
-    showPopover: boolean;
-    popoverView: "editForm" | "linkPreview";
-  }) => void;
-}> = ({ showPopover, popoverView, target, setPopoverState }) => {
+const UrlInputPopover = ({
+  setPopoverState,
+  popoverView,
+}: {
+  setPopoverState: Dispatch<SetStateAction<PopoverState>>;
+  popoverView: PopoverState["popoverView"];
+}) => {
   const { editor } = useCurrentEditor();
 
   if (!editor) {
     return null;
   }
 
-  const handleSubmit = async (url: string) => {
+  const handleSubmit = useCallback((url: string) => {
     if (!url || url === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
     } else {
@@ -94,75 +110,57 @@ const LinkEditorOverlay: React.FunctionComponent<{
         .run();
     }
 
-    setPopoverState({ showPopover: false, popoverView: "editForm" });
-  };
+    setPopoverState({ showPopover: false, popoverView: POPOVER_VIEW.editForm });
+  }, []);
 
-  const renderContent = () => {
-    if (popoverView === "linkPreview") {
-      return (
-        <LinkPreviewActions
-          href={editor.getAttributes("link").href}
-          onEdit={() => {
-            setPopoverState({
-              showPopover: true,
-              popoverView: "editForm",
-            });
-          }}
-          onRemove={() => {
-            editor.chain().focus().extendMarkRange("link").unsetLink().run();
-            setPopoverState({ showPopover: false, popoverView: "linkPreview" });
-          }}
-        />
-      );
-    }
+  if (popoverView === POPOVER_VIEW.linkPreview) {
+    return (
+      <LinkPreviewActions
+        href={editor.getAttributes("link").href}
+        onEdit={() => {
+          setPopoverState({
+            showPopover: true,
+            popoverView: POPOVER_VIEW.editForm,
+          });
+        }}
+        onRemove={() => {
+          editor.chain().focus().extendMarkRange("link").unsetLink().run();
+          setPopoverState({
+            showPopover: false,
+            popoverView: POPOVER_VIEW.linkPreview,
+          });
+        }}
+      />
+    );
+  }
 
-    if (popoverView === "editForm") {
-      return (
-        <LinkEditForm
-          initialHref={editor.getAttributes("link").href ?? ""}
-          onSubmit={handleSubmit}
-        />
-      );
-    }
+  if (popoverView === POPOVER_VIEW.editForm) {
+    return (
+      <LinkEditForm
+        initialHref={editor.getAttributes("link").href ?? ""}
+        onSubmit={handleSubmit}
+      />
+    );
+  }
 
-    return null;
-  };
-
-  return (
-    <Overlay
-      show={showPopover}
-      target={target.current}
-      placement="top"
-      rootClose
-      rootCloseEvent="mousedown"
-      onHide={() => {
-        setPopoverState({ showPopover: false, popoverView });
-      }}
-    >
-      <Popover id="urlInputPopover" className={styles.bubbleMenu}>
-        {renderContent()}
-      </Popover>
-    </Overlay>
-  );
+  return null;
 };
 
 const LinkButton: React.FunctionComponent = () => {
   const { editor } = useCurrentEditor();
-  const [{ showPopover, popoverView }, setPopoverState] = useState<{
-    showPopover: boolean;
-    popoverView: "linkPreview" | "editForm";
-  }>({
-    showPopover: false,
-    popoverView: "editForm",
-  });
-  const target = useRef(null);
+  const [{ showPopover, popoverView }, setPopoverState] =
+    useState<PopoverState>({
+      showPopover: false,
+      popoverView: POPOVER_VIEW.editForm,
+    });
+  const buttonRef = useRef(null);
 
   useEffect(() => {
     const onSelectionUpdate = ({ editor }: { editor: Editor }) => {
       if (editor.isActive("link")) {
         setPopoverState({
           showPopover: true,
-          popoverView: "linkPreview",
+          popoverView: POPOVER_VIEW.linkPreview,
         });
       }
     };
@@ -178,10 +176,20 @@ const LinkButton: React.FunctionComponent = () => {
     return null;
   }
 
+  const handleHide = useCallback((event: Event) => {
+    // Check if the click path includes our button
+    const path = event.composedPath();
+    if (buttonRef.current && path.includes(buttonRef.current)) {
+      return;
+    }
+
+    setPopoverState((state) => ({ ...state, showPopover: false }));
+  }, []);
+
   return (
     <>
       <Button
-        ref={target}
+        ref={buttonRef}
         variant="default"
         active={editor.isActive("link")}
         aria-label="Link"
@@ -192,19 +200,29 @@ const LinkButton: React.FunctionComponent = () => {
 
           setPopoverState({
             showPopover: true,
-            popoverView: editor.isActive("link") ? "linkPreview" : "editForm",
+            popoverView: editor.isActive("link")
+              ? POPOVER_VIEW.linkPreview
+              : POPOVER_VIEW.editForm,
           });
         }}
       >
         <FontAwesomeIcon icon={faLink} />
       </Button>
 
-      <LinkEditorOverlay
-        showPopover={showPopover}
-        popoverView={popoverView}
-        target={target}
-        setPopoverState={setPopoverState}
-      />
+      <Overlay
+        show={showPopover}
+        target={buttonRef.current}
+        placement="top"
+        rootClose
+        onHide={handleHide}
+      >
+        <Popover id="urlInputPopover" className={styles.bubbleMenu}>
+          <UrlInputPopover
+            setPopoverState={setPopoverState}
+            popoverView={popoverView}
+          />
+        </Popover>
+      </Overlay>
     </>
   );
 };

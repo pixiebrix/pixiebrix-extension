@@ -16,43 +16,19 @@
  */
 
 import React from "react";
-import {
-  ButtonGroup,
-  ButtonToolbar,
-  Button,
-  Popover,
-  OverlayTrigger,
-} from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
-import styles from "@/components/richTextEditor/RichTextEditor.module.scss";
+import { ButtonGroup, ButtonToolbar } from "react-bootstrap";
+import styles from "@/components/richTextEditor/toolbar/Toolbar.module.scss";
 import HeadingLevelDropdown from "@/components/richTextEditor/toolbar/HeadingLevelDropdown";
-import UnderlineButton from "@/components/richTextEditor/toolbar/UnderlineButton";
 import BoldButton from "@/components/richTextEditor/toolbar/BoldButton";
 import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
-import StrikethroughButton from "@/components/richTextEditor/toolbar/StrikethroughButton";
 import BulletedListButton from "@/components/richTextEditor/toolbar/BulletedListButton";
 import NumberedListButton from "@/components/richTextEditor/toolbar/NumberedListButton";
-import HorizontalRuleButton from "@/components/richTextEditor/toolbar/HorizontalRuleButton";
-import RemoveTextFormattingButton from "@/components/richTextEditor/toolbar/RemoveTextFormattingButton";
 // Required for font-awesome styles to be available in IsolatedComponents
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import LinkButton from "@/components/richTextEditor/toolbar/LinkButton";
+import ToolbarOverflow from "@/components/richTextEditor/toolbar/ToolbarOverflow";
 
 const Toolbar: React.FunctionComponent = () => {
-  const OverflowPopover = (
-    <Popover id="toolbar-overflow-popover" className={styles.toolbarButtons}>
-      <ButtonGroup size="sm" className="mr-2">
-        <UnderlineButton />
-        <StrikethroughButton />
-      </ButtonGroup>
-      <ButtonGroup size="sm">
-        <HorizontalRuleButton />
-        <RemoveTextFormattingButton />
-      </ButtonGroup>
-    </Popover>
-  );
-
   return (
     <ButtonToolbar
       className={styles.toolbar}
@@ -71,16 +47,7 @@ const Toolbar: React.FunctionComponent = () => {
       </ButtonGroup>
 
       <ButtonGroup size="sm">
-        <OverlayTrigger
-          trigger="click"
-          placement="bottom"
-          rootClose
-          overlay={OverflowPopover}
-        >
-          <Button variant="default" aria-label="More editing options">
-            <FontAwesomeIcon icon={faEllipsisH} />
-          </Button>
-        </OverlayTrigger>
+        <ToolbarOverflow />
       </ButtonGroup>
     </ButtonToolbar>
   );
