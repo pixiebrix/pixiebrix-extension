@@ -89,7 +89,7 @@
     "formik": "^2.4.6",
     "fuse.js": "^7.0.0",
     "handlebars": "^4.7.8",
-    "history": "^4.10.1",
+    "history": "^5.3.0",
     "holderjs": "^2.9.9",
     "html-to-text": "^9.0.5",
     "htmlmetaparser": "^2.1.3",
