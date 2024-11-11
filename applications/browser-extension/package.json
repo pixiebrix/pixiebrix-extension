@@ -197,7 +197,7 @@
     "@storybook/react": "^7.6.17",
     "@storybook/react-webpack5": "^7.6.17",
     "@svgr/webpack": "^8.1.0",
-    "@swc/core": "^1.7.42",
+    "@swc/core": "^1.9.2",
     "@swc/jest": "^0.2.37",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^12.1.5",
