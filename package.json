@@ -7,11 +7,11 @@
     "libraries/*"
   ],
   "scripts": {
-    "test": "npm run test --workspaces",
+    "test": "nx test",
     "test:e2e:debug": "PWDEBUG=console playwright test",
-    "lint": "npm run lint --workspaces",
-    "build": "npm run build --workspaces",
-    "build:typecheck": "npm run build:typecheck --workspaces",
+    "lint": "nx lint",
+    "build": "nx build",
+    "build:typecheck": "nx build:typecheck",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
     "dead-code:prod": "npm run dead-code -- --production",
@@ -28,6 +28,8 @@
   },
   "devDependencies": {
     "knip": "^5.36.7",
-    "prettier": "3.1.0"
+    "prettier": "3.1.0",
+    "@sindresorhus/tsconfig": "^6.0.0",
+    "nx": "20.1.0"
   }
 }

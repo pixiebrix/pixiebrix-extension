@@ -4,9 +4,8 @@
   "description": "PixieBrix Utility Library",
   "scripts": {
     "test": "TZ=UTC jest",
-    "lint": "npm run lint:full -- --rule '{\"import/no-cycle\": \"off\"}'",
+    "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
-    "lint:full": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "build": "echo 'buildless package'",
     "build:typecheck": "tsc --noEmit"
   },
@@ -19,6 +18,7 @@
     "@swc/core": "^1.9.2",
     "@swc/jest": "^0.2.37",
     "eslint": "^8.57.0",
+    "eslint-config-pixiebrix": "^0.41.1",
     "jest": "^29.7.0",
     "typescript": "^5.6.3"
   }

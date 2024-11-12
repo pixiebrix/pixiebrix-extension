@@ -160,10 +160,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: applications/browser-extension/package.json
+          node-version-file: package.json
           cache: npm
       - run: npm ci
-      - run: npm run lint:full --workspace=applications/browser-extension
+      - run: npm run lint
 
   dead-code:
     runs-on: ubuntu-latest
