@@ -19,6 +19,7 @@ import styles from "./RichTextEditor.module.scss";
 import { EditorProvider, type EditorProviderProps } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Underline } from "@tiptap/extension-underline";
+import { Image } from "@tiptap/extension-image";
 import React from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
 
@@ -27,7 +28,7 @@ const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
 ) => (
   <div className={styles.root}>
     <EditorProvider
-      extensions={[StarterKit, Underline]}
+      extensions={[StarterKit, Underline, Image]}
       slotBefore={<Toolbar />}
       {...props}
     />
