@@ -27,6 +27,7 @@ import NumberedListButton from "@/components/richTextEditor/toolbar/NumberedList
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import LinkButton from "@/components/richTextEditor/toolbar/LinkButton";
 import ToolbarOverflow from "@/components/richTextEditor/toolbar/ToolbarOverflow";
+import ImageButton from "@/components/richTextEditor/toolbar/ImageButton";
 
 const Toolbar: React.FunctionComponent = () => (
   <ButtonToolbar
@@ -38,6 +39,7 @@ const Toolbar: React.FunctionComponent = () => (
       <BoldButton />
       <ItalicButton />
       <LinkButton />
+      <ImageButton />
     </ButtonGroup>
 
     <ButtonGroup size="sm">
