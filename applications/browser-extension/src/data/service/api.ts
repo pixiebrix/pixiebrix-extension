@@ -34,6 +34,7 @@ import {
   type DeploymentPayload,
   type ActivatedDeployment,
   AssetPreUpload,
+  Asset,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -512,6 +513,15 @@ export const appApi = createApi({
         };
       },
       invalidatesTags: ["Assets"],
+    }),
+    updateAsset: builder.mutation<Asset, { databaseId: UUID; assetId: UUID }>({
+      query({ databaseId, assetId }) {
+        return {
+          url: API_PATHS.ASSET(databaseId, assetId),
+          method: "patch",
+        };
+      },
+      invalidatesTags: ["Assets", { type: "Assets", id: assetId }],
     }),
   }),
 });

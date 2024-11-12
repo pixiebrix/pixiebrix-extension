@@ -280,3 +280,4 @@ export type ActivatedDeployment = {
 };
 
 export type AssetPreUpload = components["schemas"]["AssetPreUpload"];
+export type Asset = components["schemas"]["Asset"];
