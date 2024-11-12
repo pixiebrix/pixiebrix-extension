@@ -29,6 +29,12 @@ const knipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
 
   workspaces: {
+    ".": {
+      ignoreDependencies: [
+        // Provided for use in IDE. See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/9503
+        "prettier",
+      ],
+    },
     "applications/browser-extension": {
       entry: [
         // ! suffix files are included in production mode
@@ -102,24 +108,19 @@ const knipConfig = {
         "@fortawesome/free-regular-svg-icons",
         "@szhsin/react-menu",
         "ace-builds",
-        "bootstrap-icons",
         "fit-textarea",
         "holderjs",
-        "jquery",
         "jszip",
-        "lodash-es",
         "react-ace",
         "react-autosuggest",
         "react-hot-toast",
         "react-hotkeys",
         "react-image-crop",
         "react-outside-click-handler",
-        "react-router-dom",
         "react-select-virtualized",
         "react-spinners",
         "react-virtualized-auto-sizer",
         "react-window",
-        "simple-icons",
 
         // PeerDependency of react-select-virtualized
         "react-virtualized",
@@ -152,6 +153,14 @@ const knipConfig = {
         "@tiptap/starter-kit",
         "@tiptap/react",
         "@tiptap/extension-underline",
+
+        // False positives flagged in --production checks.
+        // In non-production runs, these entries are flagged as unnecessary ignoreDependencies entries
+        "bootstrap-icons",
+        "jquery",
+        "lodash-es",
+        "react-router-dom",
+        "simple-icons",
       ],
       // False positive for PackageInstance.featureFlag
       ignoreMembers: ["featureFlag"],

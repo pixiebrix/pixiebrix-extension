@@ -172,15 +172,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: applications/browser-extension/package.json
+          node-version-file: package.json
           cache: npm
       - run: npm ci
+      # Running over all workspaces. To run for single workspace, pass workspace arg, e.g., --workspace=applications/browser-extension
       # Detect dead code with enforced rules
-      - run: npm run dead-code -- --workspace=applications/browser-extension
+      - run: npm run dead-code
       # Detect dead code that is only used by tests
-      - run: npm run dead-code:prod --workspace=applications/browser-extension
+      - run: npm run dead-code:prod
       # Also run the remaining "warn" rules
-      - run: npm run dead-code:base -- --workspace=applications/browser-extension --no-exit-code
+      - run: npm run dead-code:base -- --no-exit-code
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
@@ -225,7 +226,9 @@ jobs:
           ARTIFACT_ZIP_PASSWORD: ${{ secrets.ARTIFACT_ZIP_PASSWORD }}
         run: 7z -y x -p"$ARTIFACT_ZIP_PASSWORD" -o./applications/browser-extension/blob-reports "./applications/browser-extension/7z-blob-reports/*.7z"
       - name: Merge blob reports
-        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./applications/browser-extension/playwright-report/results.json npx playwright merge-reports --reporter=html,json ./applications/browser-extension/blob-reports
+        # Provide `--yes` for knip. Even though playwright will be available via @playwright/test, knip doesn't
+        #   associate it with the playwright command
+        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./applications/browser-extension/playwright-report/results.json npx --yes playwright merge-reports --reporter=html,json ./applications/browser-extension/blob-reports
       - name: Password protect merged Playwright report
         if: always()
         shell: bash
