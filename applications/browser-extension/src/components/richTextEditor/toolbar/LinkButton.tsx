@@ -32,6 +32,7 @@ import styles from "@/components/richTextEditor/toolbar/LinkButton.module.scss";
 import { type ValueOf } from "type-fest";
 // eslint-disable-next-line no-restricted-imports -- Not a schema-driven form
 import { Formik } from "formik";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const POPOVER_VIEW = {
   linkPreview: "linkPreview",
@@ -64,49 +65,18 @@ const LinkPreviewActions: React.FC<{
 
 const LinkEditForm: React.FC<{
   initialHref: string;
-  onSubmit: (url: string) => void;
-}> = ({ initialHref, onSubmit }) => (
-  <Formik
-    initialValues={{ newUrl: initialHref }}
-    onSubmit={(values) => {
-      onSubmit(values.newUrl);
-    }}
-  >
-    {({ handleSubmit, handleChange, handleBlur, values }) => (
-      <Form inline className="flex-nowrap" onSubmit={handleSubmit}>
-        <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
-        <Form.Control
-          id="newUrl"
-          name="newUrl"
-          size="sm"
-          onChange={handleChange}
-          onBlur={handleBlur}
-          value={values.newUrl}
-        />
-        <Button variant="link" type="submit" size="sm">
-          Submit
-        </Button>
-      </Form>
-    )}
-  </Formik>
-);
-
-const UrlInputPopover = ({
-  setPopoverState,
-  popoverView,
-}: {
   setPopoverState: Dispatch<SetStateAction<PopoverState>>;
-  popoverView: PopoverState["popoverView"];
-}) => {
+}> = ({ initialHref, setPopoverState }) => {
   const { editor } = useCurrentEditor();
+  assertNotNullish(editor, "Tiptap editor must be in scope");
 
-  const handleSubmit = useCallback(
+  const onSubmit = useCallback(
     (url: string) => {
       if (!url || url === "") {
-        editor?.chain().focus().extendMarkRange("link").unsetLink().run();
+        editor.chain().focus().extendMarkRange("link").unsetLink().run();
       } else {
         editor
-          ?.chain()
+          .chain()
           .focus()
           .extendMarkRange("link")
           .setLink({ href: url })
@@ -121,9 +91,42 @@ const UrlInputPopover = ({
     [editor, setPopoverState],
   );
 
-  if (!editor) {
-    return null;
-  }
+  return (
+    <Formik
+      initialValues={{ newUrl: initialHref }}
+      onSubmit={(values) => {
+        onSubmit(values.newUrl);
+      }}
+    >
+      {({ handleSubmit, handleChange, handleBlur, values }) => (
+        <Form inline className="flex-nowrap" onSubmit={handleSubmit}>
+          <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
+          <Form.Control
+            id="newUrl"
+            name="newUrl"
+            size="sm"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.newUrl}
+          />
+          <Button variant="link" type="submit" size="sm">
+            Submit
+          </Button>
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
+const UrlInputPopover = ({
+  setPopoverState,
+  popoverView,
+}: {
+  setPopoverState: Dispatch<SetStateAction<PopoverState>>;
+  popoverView: PopoverState["popoverView"];
+}) => {
+  const { editor } = useCurrentEditor();
+  assertNotNullish(editor, "Tiptap editor must be in scope");
 
   switch (popoverView) {
     case POPOVER_VIEW.linkPreview: {
@@ -151,7 +154,7 @@ const UrlInputPopover = ({
       return (
         <LinkEditForm
           initialHref={(editor.getAttributes("link").href as string) ?? ""}
-          onSubmit={handleSubmit}
+          setPopoverState={setPopoverState}
         />
       );
     }
