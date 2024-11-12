@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,29 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  // To replicate the Bootstrap .form-control class
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  color: #495057;
-  transition:
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
+import { type ValueOf } from "type-fest";
 
-  &:focus-within {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 3.2px rgba(0, 123, 255, 0.25);
-    background-color: #fff;
-    outline: 0;
-  }
+export const POPOVER_VIEW = {
+  linkPreview: "linkPreview",
+  editForm: "editForm",
+} as const;
 
-  :global(.tiptap) {
-    padding: 6px 12px 6px 12px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  :global(.ProseMirror-focused) {
-    outline: 0;
-  }
-}
+export type PopoverState = {
+  showPopover: boolean;
+  popoverView: ValueOf<typeof POPOVER_VIEW>;
+};

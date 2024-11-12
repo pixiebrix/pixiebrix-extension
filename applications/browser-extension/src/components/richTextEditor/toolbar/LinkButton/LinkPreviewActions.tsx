@@ -15,28 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./RichTextEditor.module.scss";
-import { EditorProvider, type EditorProviderProps } from "@tiptap/react";
-import { StarterKit } from "@tiptap/starter-kit";
-import { Underline } from "@tiptap/extension-underline";
-import { Link } from "@tiptap/extension-link";
+import { truncate } from "lodash";
 import React from "react";
-import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
+import { Button } from "react-bootstrap";
 
-const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
-  props: EditorProviderProps,
-) => (
-  <div className={styles.root}>
-    <EditorProvider
-      extensions={[
-        StarterKit,
-        Underline,
-        Link.extend({ inclusive: false }).configure({ openOnClick: false }),
-      ]}
-      slotBefore={<Toolbar />}
-      {...props}
-    />
-  </div>
+const LinkPreviewActions: React.FC<{
+  href: string;
+  onEdit: () => void;
+  onRemove: () => void;
+}> = ({ href, onEdit, onRemove }) => (
+  <span className="d-flex align-items-center">
+    <span className="text-nowrap mr-1">Visit url:</span>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="mr-2">
+      {truncate(href, {
+        length: 20,
+        omission: "...",
+      })}
+    </a>
+    <Button variant="link" onClick={onEdit} className="mr-2">
+      Edit
+    </Button>
+    <Button variant="link" onClick={onRemove}>
+      Remove
+    </Button>
+  </span>
 );
 
-export default RichTextEditor;
+export default LinkPreviewActions;

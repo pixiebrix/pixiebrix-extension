@@ -14,7 +14,8 @@
     "build:typecheck": "npm run build:typecheck --workspaces",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
-    "dead-code:prod": "npm run dead-code -- --production"
+    "dead-code:prod": "npm run dead-code -- --production",
+    "watch": "npm run watch --workspaces"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
