@@ -10,6 +10,9 @@
       <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/scripts/bin" />
       <excludeFolder url="file://$MODULE_DIR$/.playwright-report" />
       <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/node_modules" />
+      <excludeFolder url="file://$MODULE_DIR$/libraries/utils/coverage" />
+      <excludePattern pattern="applications/browser-extension/report.html" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
