@@ -85,6 +85,9 @@ export const migrations: MigrationManifest = {
     migrateEditorStateV10(state),
   12: (state: EditorStateMigratedV11 & PersistedState) =>
     migrateEditorStateV11(state),
+  13: (state: EditorStateMigratedV12 & PersistedState) =>
+    // Added findInModOptionsByModId to EditorStateSynced
+    resetEditorStateSynced(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(
@@ -405,5 +408,20 @@ export function migrateEditorStateV11(
     deletedModComponentFormStateIdsByModId,
     dirtyModOptionsDefinitionById,
     _persist,
+  };
+}
+
+/**
+ * Reset the synced editor state to its initial state.
+ *
+ * If any keys were dropped from EditorStateSynced, they'll be dropped via the next redux-persist write/flush cycle:
+ * https://github.com/rt2zz/redux-persist/blob/d8b01a085e3679db43503a3858e8d4759d6f22fa/src/createPersistoid.ts#L37
+ */
+export function resetEditorStateSynced<T extends PersistedState>(
+  state: T,
+): T & Required<EditorStateSynced> {
+  return {
+    ...state,
+    ...initialSyncedState,
   };
 }

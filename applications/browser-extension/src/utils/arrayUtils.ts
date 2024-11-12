@@ -33,3 +33,25 @@ export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
   return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
 }
+
+/**
+ * Return the first item with the maximum value of a key.
+ * @param items the array of items
+ * @param key value generator
+ */
+export function argmax<T>(
+  items: readonly T[],
+  key: (item: T) => number,
+): T | undefined {
+  // No lodash support: https://github.com/lodash/lodash/issues/3141
+  let maxArg: { item: T; value: number } | undefined;
+
+  for (const item of items) {
+    const value = key(item);
+    if (maxArg === undefined || value > maxArg.value) {
+      maxArg = { item, value };
+    }
+  }
+
+  return maxArg?.item;
+}

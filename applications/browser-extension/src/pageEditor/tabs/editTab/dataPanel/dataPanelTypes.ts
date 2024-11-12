@@ -52,4 +52,9 @@ export enum DataPanelTabKey {
    * Developer Only: Formik form state for the selected node, i.e., brick or starter brick
    */
   NodeFormState = "nodeFormState",
+  /**
+   * Find/search within a mod
+   * @since 2.2.0
+   */
+  Find = "find",
 }

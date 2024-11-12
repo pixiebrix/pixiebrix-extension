@@ -38,7 +38,7 @@ import useBuildAndValidateMod, {
   DataIntegrityError,
 } from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { reloadModsEveryTab } from "@/contentScript/messenger/api";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import {
   isModComponentFormState,
@@ -51,11 +51,11 @@ import { type AppDispatch } from "@/pageEditor/store/store";
 /** @internal */
 export function isModEditable(
   editablePackages: EditablePackageMetadata[],
-  modDefinition: ModDefinition,
-): boolean {
-  // The user might lose access to the mod while they were editing it (the mod or a mod component)
+  // Nullishable because the user might lose access to the mod while they were editing it (the mod or a mod component)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
-  const modId = modDefinition?.metadata?.id;
+  modDefinition: Nullishable<ModDefinition>,
+): boolean {
+  const modId = modDefinition?.metadata.id;
   return modId != null && editablePackages.some((x) => x.name === modId);
 }
 

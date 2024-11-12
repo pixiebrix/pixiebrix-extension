@@ -52,20 +52,24 @@ describe("WaitElementEffect", () => {
   it.each([undefined, false])(
     "wait element isRootAware: %s",
     async (isRootAware) => {
-      await brick.run(
-        unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        brickOptionsFactory(),
-      );
+      await expect(
+        brick.run(
+          unsafeAssumeValidArg({ selector: "button", isRootAware }),
+          brickOptionsFactory(),
+        ),
+      ).resolves.not.toThrow();
     },
   );
 
   it("wait element for isRootAware: true", async () => {
-    await brick.run(
-      unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
-      brickOptionsFactory({
-        root: document.querySelector<HTMLElement>("#hasButton")!,
-      }),
-    );
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({ selector: "button", isRootAware: true }),
+        brickOptionsFactory({
+          root: document.querySelector<HTMLElement>("#hasButton")!,
+        }),
+      ),
+    ).resolves.not.toThrow();
   });
 
   test("throws BusinessError on timeout", async () => {
@@ -84,9 +88,11 @@ describe("WaitElementEffect", () => {
   });
 
   test("array of selectors", async () => {
-    await brick.run(
-      unsafeAssumeValidArg({ selector: ["#hasButton", "button"] }),
-      brickOptionsFactory(),
-    );
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({ selector: ["#hasButton", "button"] }),
+        brickOptionsFactory(),
+      ),
+    ).resolves.not.toThrow();
   });
 });

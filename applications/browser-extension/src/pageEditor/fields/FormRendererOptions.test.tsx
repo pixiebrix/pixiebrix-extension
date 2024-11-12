@@ -10,6 +10,8 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import FormRendererOptions from "@/pageEditor/fields/FormRendererOptions";
 import { toggleBootstrapSwitch } from "@/testUtils/userEventHelpers";
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToBeCollapsed"] }] -- TODO: replace with native expect and it.each */
+
 beforeAll(() => {
   registerDefaultWidgets();
 });
