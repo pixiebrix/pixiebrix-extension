@@ -20,24 +20,42 @@ import { EditorProvider, type EditorProviderProps } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Underline } from "@tiptap/extension-underline";
 import { Link } from "@tiptap/extension-link";
-import { Image } from "@tiptap/extension-image";
+import { Image, type ImageOptions } from "@tiptap/extension-image";
 import React from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
+import { type UUID } from "@/types/stringTypes";
 
 type EditorProps = EditorProviderProps & {
-  disabledExtensions?: string[];
+  // A PixieBrix asset database ID to use for uploading images. If not included, the image extension will be disabled.
+  assetDatabaseId?: UUID;
 };
 
-const RichTextEditor: React.FunctionComponent<EditorProps> = (
-  props: EditorProps,
-) => (
+interface ImageWithAssetDatabaseOptions extends ImageOptions {
+  assetDatabaseId: UUID | null;
+}
+
+const ImageWithAssetDatabase = Image.extend<ImageWithAssetDatabaseOptions>({
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      assetDatabaseId: null,
+    };
+  },
+});
+
+const RichTextEditor: React.FunctionComponent<EditorProps> = ({
+  assetDatabaseId,
+  ...props
+}: EditorProps) => (
   <div className={styles.root}>
     <EditorProvider
       extensions={[
         StarterKit,
         Underline,
         Link.extend({ inclusive: false }).configure({ openOnClick: false }),
-        ...(props.disabledExtensions?.includes("image") ? [] : [Image]),
+        ...(assetDatabaseId
+          ? [ImageWithAssetDatabase.configure({ assetDatabaseId })]
+          : []),
       ]}
       slotBefore={<Toolbar />}
       {...props}

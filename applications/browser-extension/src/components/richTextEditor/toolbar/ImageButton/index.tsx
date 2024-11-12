@@ -31,11 +31,11 @@ const ImageButton: React.FunctionComponent = () => {
     "ImageButton must be used within a TipTap editor context",
   );
 
-  const isImageExtensionEnabled = !editor.options.extensions.some(
+  const imageExtension = editor.options.extensions.find(
     (extension) => extension.name === "image",
   );
 
-  if (!isImageExtensionEnabled) {
+  if (!imageExtension?.options.assetDatabaseId) {
     return null;
   }
 
