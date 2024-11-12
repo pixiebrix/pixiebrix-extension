@@ -9,6 +9,7 @@
   "scripts": {
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
+    "lint:full": "npm run lint:full --workspaces",
     "build": "npm run build --workspaces",
     "build:typecheck": "npm run build:typecheck --workspaces",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "knip": "^5.36.7",
-    "prettier": "3.1.0"
+    "prettier": "3.1.0",
+    "@sindresorhus/tsconfig": "^6.0.0"
   }
 }
