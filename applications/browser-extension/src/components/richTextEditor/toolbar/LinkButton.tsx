@@ -30,6 +30,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import styles from "@/components/richTextEditor/toolbar/LinkButton.module.scss";
 import { type ValueOf } from "type-fest";
+// eslint-disable-next-line no-restricted-imports -- Not a schema-driven form
+import { Formik } from "formik";
 
 const POPOVER_VIEW = {
   linkPreview: "linkPreview",
@@ -64,26 +66,29 @@ const LinkEditForm: React.FC<{
   initialHref: string;
   onSubmit: (url: string) => void;
 }> = ({ initialHref, onSubmit }) => (
-  <Form
-    inline
-    className="flex-nowrap"
-    onSubmit={(event) => {
-      event.preventDefault();
-      const formData = new FormData(event.currentTarget);
-      onSubmit(formData.get("newUrl") as string);
+  <Formik
+    initialValues={{ newUrl: initialHref }}
+    onSubmit={(values) => {
+      onSubmit(values.newUrl);
     }}
   >
-    <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
-    <Form.Control
-      id="newUrl"
-      name="newUrl"
-      size="sm"
-      defaultValue={initialHref}
-    />
-    <Button variant="link" type="submit" size="sm">
-      Submit
-    </Button>
-  </Form>
+    {({ handleSubmit, handleChange, handleBlur, values }) => (
+      <Form inline className="flex-nowrap" onSubmit={handleSubmit}>
+        <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
+        <Form.Control
+          id="newUrl"
+          name="newUrl"
+          size="sm"
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.newUrl}
+        />
+        <Button variant="link" type="submit" size="sm">
+          Submit
+        </Button>
+      </Form>
+    )}
+  </Formik>
 );
 
 const UrlInputPopover = ({
