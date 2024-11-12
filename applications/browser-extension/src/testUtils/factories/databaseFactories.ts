@@ -27,4 +27,5 @@ export const databaseFactory = define<Database>({
   name: (n: number) => `Test Database ${n}`,
   created_at: timestampFactory,
   last_write_at: timestampFactory,
+  kind: "Record",
 });
