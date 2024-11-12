@@ -68,6 +68,8 @@ const ToolbarOverflow = () => {
         <FontAwesomeIcon icon={faEllipsisH} />
       </Button>
       <Overlay
+        // Attach the portal to the button so it receives
+        // the correct styling from IsolatedComponent
         container={buttonElement}
         target={buttonElement}
         show={show}

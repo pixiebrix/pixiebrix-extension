@@ -229,9 +229,11 @@ const LinkButton: React.FunctionComponent = () => {
       </Button>
 
       <Overlay
-        show={showPopover}
         target={buttonElement}
+        // Attach the portal to the button so it receives
+        // the correct styling from IsolatedComponent
         container={buttonElement}
+        show={showPopover}
         placement="top"
         rootClose
         onHide={handleHide}
