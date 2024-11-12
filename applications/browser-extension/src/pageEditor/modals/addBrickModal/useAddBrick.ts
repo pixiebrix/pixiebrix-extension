@@ -74,7 +74,9 @@ function useAddBrick(): AddBrick {
         brick,
         compact([
           "input" as OutputKey,
-          ...Object.values(pipelineMap).map((x) => x.blockConfig.outputKey),
+          ...Object.values(pipelineMap ?? {}).map(
+            (x) => x.blockConfig.outputKey,
+          ),
         ]),
       );
       const newBrick = createNewConfiguredBrick(brick.id, {
