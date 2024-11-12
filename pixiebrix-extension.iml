@@ -12,6 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/dist" />
       <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/libraries/utils/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/.nx" />
       <excludePattern pattern="applications/browser-extension/report.html" />
     </content>
     <orderEntry type="inheritedJdk" />
