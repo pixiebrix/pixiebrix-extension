@@ -37,7 +37,7 @@ import HorizontalRuleButton from "@/components/richTextEditor/toolbar/Horizontal
 import RemoveTextFormattingButton from "@/components/richTextEditor/toolbar/RemoveTextFormattingButton";
 // Required for font-awesome styles to be available in IsolatedComponents
 import "@fortawesome/fontawesome-svg-core/styles.css";
-import ImageButton from "@/components/richTextEditor/toolbar/ImageButton";
+import Index from "@/components/richTextEditor/toolbar/ImageButton";
 
 const Toolbar: React.FunctionComponent = () => {
   const OverflowPopover = (
@@ -70,7 +70,7 @@ const Toolbar: React.FunctionComponent = () => {
       </ButtonGroup>
 
       <ButtonGroup size="sm" className="mr-2">
-        <ImageButton />
+        <Index />
       </ButtonGroup>
 
       <ButtonGroup size="sm">
