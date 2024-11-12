@@ -9,6 +9,7 @@
   "scripts": {
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
+    "lint:full": "npm run lint:full --workspaces",
     "build": "npm run build --workspaces",
     "build:typecheck": "npm run build:typecheck --workspaces",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
