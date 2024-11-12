@@ -49,8 +49,19 @@ const ImageButton: React.FunctionComponent = () => {
 
     input.addEventListener("change", async (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
-      if (file) {
+      if (!file) {
+        return;
+      }
+
+      try {
         await uploadAsset(assetDatabaseId, file);
+      } catch (error) {
+        // TODO: Implement error message handling in UI
+        reportError(
+          new Error("Failed to upload image asset", {
+            cause: error,
+          }),
+        );
       }
     });
 
