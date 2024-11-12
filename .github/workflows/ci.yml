@@ -176,11 +176,11 @@ jobs:
           cache: npm
       - run: npm ci
       # Detect dead code with enforced rules
-      - run: npm run dead-code --workspace=applications/browser-extension
+      - run: npm run dead-code -- --workspace applications/browser-extension
       # Detect dead code that is only used by tests
-      - run: npm run dead-code:prod --workspace=applications/browser-extension
+      - run: npm run dead-code:prod --workspace applications/browser-extension
       # Also run the remaining "warn" rules
-      - run: npm run dead-code:base --workspace=applications/browser-extension -- --no-exit-code
+      - run: npm run dead-code:base -- --workspace applications/browser-extension --no-exit-code
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
