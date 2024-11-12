@@ -1,0 +1,22 @@
+{
+  "name": "@pixiebrix/utils",
+  "version": "1.0.0",
+  "description": "PixieBrix Utility Library",
+  "scripts": {
+    "test": "TZ=UTC jest",
+    "lint": "echo 'missing eslint'",
+    "build": "echo 'buildless package'",
+    "build:typecheck": "tsc --noEmit"
+  },
+  "license": "AGPL-3.0",
+  "repository": "https://github.com/pixiebrix/pixiebrix-extension",
+  "dependencies": {
+    "formik": "^2.4.6"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.7.42",
+    "@swc/jest": "^0.2.37",
+    "eslint": "^8.57.0",
+    "typescript": "^5.6.3"
+  }
+}
