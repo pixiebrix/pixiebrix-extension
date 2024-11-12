@@ -504,12 +504,13 @@ export const appApi = createApi({
     }),
     createAssetPreUpload: builder.mutation<
       AssetPreUpload,
-      { databaseId: UUID }
+      { databaseId: UUID; filename: string }
     >({
-      query({ databaseId }) {
+      query({ databaseId, filename }) {
         return {
           url: API_PATHS.ASSET_PRE_UPLOAD(databaseId),
           method: "post",
+          data: { filename },
         };
       },
       invalidatesTags: [{ type: "Asset", id: "LIST" }],
@@ -575,5 +576,6 @@ export const {
   useGetDeploymentsQuery,
   useCreateUserDeploymentMutation,
   useDeleteUserDeploymentMutation,
+  useCreateAssetPreUploadMutation,
   util,
 } = appApi;

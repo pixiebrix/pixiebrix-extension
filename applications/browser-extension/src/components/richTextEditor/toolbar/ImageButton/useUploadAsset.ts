@@ -15,10 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const todo = () => {
-  console.log("Implement me!");
-};
+import { useCreateAssetPreUploadMutation } from "@/data/service/api";
+import { type UUID } from "@/types/stringTypes";
 
-const useUploadAsset = () => todo;
+const useUploadAsset: () => (
+  databaseId: UUID,
+  file: File,
+) => Promise<void> = () => {
+  const [createAssetPreUpload] = useCreateAssetPreUploadMutation();
+
+  return async (databaseId: UUID, file: File) => {
+    const result = await createAssetPreUpload({
+      databaseId,
+      filename: file.name,
+    }).unwrap();
+    console.log("*** result", result);
+  };
+};
 
 export default useUploadAsset;

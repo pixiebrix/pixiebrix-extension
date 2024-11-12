@@ -22,6 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useUploadAsset from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
+import { validateUUID } from "@/types/helpers";
 
 const ImageButton: React.FunctionComponent = () => {
   const uploadAsset = useUploadAsset();
@@ -39,12 +40,28 @@ const ImageButton: React.FunctionComponent = () => {
     return null;
   }
 
+  const assetDatabaseId = validateUUID(imageExtension.options.assetDatabaseId);
+
+  const openFilePicker = async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.addEventListener("change", async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        await uploadAsset(assetDatabaseId, file);
+      }
+    });
+
+    input.click();
+    input.remove();
+  };
+
   return (
     <Button
       variant="default"
-      onClick={() => {
-        uploadAsset();
-      }}
+      onClick={openFilePicker}
       disabled={
         editor.isEditable
           ? !editor.can().chain().focus().setImage({ src: "" }).run()
