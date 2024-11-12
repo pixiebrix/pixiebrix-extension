@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type WidgetProps } from "@rjsf/utils";
+import { type ErrorSchema, type WidgetProps } from "@rjsf/utils";
 import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
 
 const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
@@ -26,20 +26,33 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   onBlur,
   disabled,
   readonly,
-}) => (
-  <RichTextEditor
-    onUpdate={({ editor }) => {
-      onChange(editor.getHTML());
-    }}
-    onFocus={({ editor }) => {
-      editor.commands.focus();
-      onFocus(id, editor.getHTML());
-    }}
-    onBlur={({ editor }) => {
-      onBlur(id, editor.getHTML());
-    }}
-    editable={!(disabled || readonly)}
-  />
-);
+  options,
+  value,
+}) => {
+  const { database } = options;
+
+  if (!database) {
+    const databaseConfigurationError: ErrorSchema = {
+      __errors: ["Rich text field asset database is required"],
+    };
+    onChange(value, databaseConfigurationError);
+  }
+
+  return (
+    <RichTextEditor
+      onUpdate={({ editor }) => {
+        onChange(editor.getHTML());
+      }}
+      onFocus={({ editor }) => {
+        editor.commands.focus();
+        onFocus(id, editor.getHTML());
+      }}
+      onBlur={({ editor }) => {
+        onBlur(id, editor.getHTML());
+      }}
+      editable={!(disabled || readonly)}
+    />
+  );
+};
 
 export default RichTextWidget;
