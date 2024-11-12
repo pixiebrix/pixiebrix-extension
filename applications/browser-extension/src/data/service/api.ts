@@ -70,7 +70,7 @@ export const appApi = createApi({
     "StarterBlueprints",
     "ZapierKey",
     "Deployments",
-    "Assets",
+    "Asset",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -512,7 +512,7 @@ export const appApi = createApi({
           method: "post",
         };
       },
-      invalidatesTags: ["Assets"],
+      invalidatesTags: [{ type: "Asset", id: "LIST" }],
     }),
     updateAsset: builder.mutation<Asset, { databaseId: UUID; assetId: UUID }>({
       query({ databaseId, assetId }) {
@@ -521,7 +521,28 @@ export const appApi = createApi({
           method: "patch",
         };
       },
-      invalidatesTags: ["Assets", { type: "Assets", id: assetId }],
+      invalidatesTags(result, error, { assetId }) {
+        if (isAxiosError(error) && error.response?.status === 400) {
+          return [];
+        }
+
+        return [
+          { type: "Asset", id: assetId },
+          { type: "Asset", id: "LIST" },
+        ];
+      },
+    }),
+    downloadAsset: builder.query<Blob, { databaseId: UUID; assetId: UUID }>({
+      query({ databaseId, assetId }) {
+        return {
+          url: API_PATHS.ASSET(databaseId, assetId),
+          method: "get",
+          responseType: "blob",
+        };
+      },
+      providesTags: (result, error, { assetId }) => [
+        { type: "Asset", id: assetId },
+      ],
     }),
   }),
 });
