@@ -31,9 +31,9 @@ const RichTextFields: React.FunctionComponent<{ uiOptionsPath: string }> = ({
       isRequired
       schema={{
         $ref: "https://app.pixiebrix.com/schemas/database#",
-        title: "Database",
+        title: "Asset Database",
         description:
-          "Asset database to use for image upload. Asset databases are a specific kind of database and" +
+          "Asset database to use for image upload. Asset databases are a specific kind of database that" +
           " can be created in the Admin Console.",
       }}
       uiSchema={{
