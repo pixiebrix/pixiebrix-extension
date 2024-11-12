@@ -46,7 +46,7 @@ const LinkButton: React.FunctionComponent = () => {
 
   useEffect(() => {
     const onSelectionUpdate = ({ editor }: { editor: Editor }) => {
-      if (editor.isActive("link")) {
+      if (editor.isActive("link") && !showPopover) {
         setPopoverState({
           showPopover: true,
           popoverView: POPOVER_VIEW.linkPreview,
@@ -59,11 +59,12 @@ const LinkButton: React.FunctionComponent = () => {
     return () => {
       editor?.off("selectionUpdate", onSelectionUpdate);
     };
-  }, [editor]);
+  }, [editor, showPopover]);
 
   const handleHide = useCallback((event: Event) => {
     // Check if the click path includes our button
     const path = event.composedPath();
+    console.log("onSelectionUpdate handleHide", path);
     const buttonParent = buttonRef.current?.parentElement as EventTarget;
     if (path.includes(buttonParent)) {
       return;
@@ -109,14 +110,22 @@ const LinkButton: React.FunctionComponent = () => {
         // the correct styling from IsolatedComponent
         container={buttonElement?.parentElement}
         show={showPopover}
-        placement="top-end"
+        placement="top"
         rootClose
+        // Prevent handleHide from triggering due to the onSelectionChange event
+        rootCloseEvent="mousedown"
         onHide={handleHide}
         popperConfig={{
           strategy: "fixed",
         }}
       >
-        <Popover id="urlInputPopover" className={styles.bubbleMenu}>
+        <Popover
+          // Remount the popover to force the placement to be recalculated when the
+          // popover view changes
+          key={popoverView}
+          id="urlInputPopover"
+          className={styles.bubbleMenu}
+        >
           <UrlInputPopover
             setPopoverState={setPopoverState}
             popoverView={popoverView}
