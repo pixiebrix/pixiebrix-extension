@@ -177,7 +177,7 @@ const LinkButton: React.FunctionComponent = () => {
       popoverView: POPOVER_VIEW.editForm,
     });
 
-  const buttonRef = useRef(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(
     null,
   );
@@ -206,7 +206,8 @@ const LinkButton: React.FunctionComponent = () => {
   const handleHide = useCallback((event: Event) => {
     // Check if the click path includes our button
     const path = event.composedPath();
-    if (buttonRef.current && path.includes(buttonRef.current)) {
+    const buttonParent = buttonRef.current?.parentElement as EventTarget;
+    if (path.includes(buttonParent)) {
       return;
     }
 
@@ -246,11 +247,11 @@ const LinkButton: React.FunctionComponent = () => {
 
       <Overlay
         target={buttonElement}
-        // Attach the portal to the button so it receives
+        // Attach the portal to the button's parent so it receives
         // the correct styling from IsolatedComponent
-        container={buttonElement}
+        container={buttonElement?.parentElement}
         show={showPopover}
-        placement="top"
+        placement="top-end"
         rootClose
         onHide={handleHide}
         popperConfig={{

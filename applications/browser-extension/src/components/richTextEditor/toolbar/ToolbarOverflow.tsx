@@ -48,7 +48,8 @@ const ToolbarOverflow = () => {
   const handleHide = useCallback((event: Event) => {
     // Check if the click path includes our button
     const path = event.composedPath();
-    if (buttonRef.current && path.includes(buttonRef.current)) {
+    const buttonParent = buttonRef.current?.parentElement as EventTarget;
+    if (path.includes(buttonParent)) {
       return;
     }
 
@@ -68,9 +69,9 @@ const ToolbarOverflow = () => {
         <FontAwesomeIcon icon={faEllipsisH} />
       </Button>
       <Overlay
-        // Attach the portal to the button so it receives
+        // Attach the portal to the button's parent so it receives
         // the correct styling from IsolatedComponent
-        container={buttonElement}
+        container={buttonElement?.parentElement}
         target={buttonElement}
         show={show}
         placement="bottom"
