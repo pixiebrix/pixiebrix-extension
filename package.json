@@ -11,7 +11,7 @@
     "lint": "npm run lint --workspaces",
     "build": "npm run build --workspaces",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
-    "dead-code:base": "knip --tags=-knip",
+    "dead-code:base": "knip --config knip.mjs --tags=-knip",
     "dead-code:prod": "npm run dead-code -- --production"
   },
   "author": "Todd Schiller",
