@@ -74,6 +74,7 @@ const ToolbarOverflow = () => {
         target={buttonElement}
         show={show}
         placement="bottom"
+        rootClose
         onHide={handleHide}
       >
         <Popover
