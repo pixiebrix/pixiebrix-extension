@@ -19,6 +19,7 @@
     "@swc/core": "^1.9.2",
     "@swc/jest": "^0.2.37",
     "eslint": "^8.57.0",
+    "eslint-config-pixiebrix": "^0.41.1",
     "jest": "^29.7.0",
     "typescript": "^5.6.3"
   }
