@@ -21,7 +21,7 @@ import type { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPa
 import { createSelector } from "@reduxjs/toolkit";
 import type { DataPanelTabUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { selectActiveBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSelectors/editorPipelineSelectors";
-import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors";
+import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors/editorNavigationSelectors";
 
 export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;
