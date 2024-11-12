@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
-import { SidebarState } from "@/types/sidebarTypes";
-import { Draft } from "immer";
+import { type EditorState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { type SidebarState } from "@/types/sidebarTypes";
+import { type Draft } from "immer";
 
 function castState(state: Draft<EditorState>): EditorState;
 function castState(state: Draft<SidebarState>): SidebarState;
