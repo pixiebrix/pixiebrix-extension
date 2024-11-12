@@ -33,6 +33,7 @@ import { type ValueOf } from "type-fest";
 // eslint-disable-next-line no-restricted-imports -- Not a schema-driven form
 import { Formik } from "formik";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { truncate } from "lodash";
 
 const POPOVER_VIEW = {
   linkPreview: "linkPreview",
@@ -49,10 +50,13 @@ const LinkPreviewActions: React.FC<{
   onEdit: () => void;
   onRemove: () => void;
 }> = ({ href, onEdit, onRemove }) => (
-  <span className="d-flex flex-nowrap align-items-center">
+  <span className="d-flex align-items-center">
     <span className="text-nowrap mr-1">Visit url:</span>
     <a href={href} target="_blank" rel="noopener noreferrer" className="mr-2">
-      {href}
+      {truncate(href, {
+        length: 20,
+        omission: "...",
+      })}
     </a>
     <Button variant="link" onClick={onEdit} className="mr-2">
       Edit
@@ -99,7 +103,7 @@ const LinkEditForm: React.FC<{
       }}
     >
       {({ handleSubmit, handleChange, handleBlur, values }) => (
-        <Form inline className="flex-nowrap" onSubmit={handleSubmit}>
+        <Form inline onSubmit={handleSubmit}>
           <Form.Label htmlFor="newUrl">Enter link:</Form.Label>
           <Form.Control
             id="newUrl"
@@ -221,16 +225,20 @@ const LinkButton: React.FunctionComponent = () => {
         active={editor.isActive("link")}
         aria-label="Link"
         onClick={() => {
-          if (editor.state.selection.empty) {
+          if (editor.state.selection.empty && !showPopover) {
             return;
           }
 
-          setPopoverState({
-            showPopover: true,
-            popoverView: editor.isActive("link")
-              ? POPOVER_VIEW.linkPreview
-              : POPOVER_VIEW.editForm,
-          });
+          if (showPopover) {
+            setPopoverState((state) => ({ ...state, showPopover: false }));
+          } else {
+            setPopoverState({
+              showPopover: true,
+              popoverView: editor.isActive("link")
+                ? POPOVER_VIEW.linkPreview
+                : POPOVER_VIEW.editForm,
+            });
+          }
         }}
       >
         <FontAwesomeIcon icon={faLink} />
@@ -245,6 +253,9 @@ const LinkButton: React.FunctionComponent = () => {
         placement="top"
         rootClose
         onHide={handleHide}
+        popperConfig={{
+          strategy: "fixed",
+        }}
       >
         <Popover id="urlInputPopover" className={styles.bubbleMenu}>
           <UrlInputPopover
