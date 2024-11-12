@@ -162,4 +162,30 @@ describe("RichTextEditor", () => {
 
     expect(editor?.innerHTML).toBe("<p>regular<s>struck through</s></p>");
   });
+
+  //  User.pointer is successfully selecting the test, but Tiptap isn't seeing it
+  // eslint-disable-next-line jest/no-disabled-tests -- TODO: playwright test for this when RichTextEditor is complete
+  test.skip("applies link formatting using toolbar button", async () => {
+    render(<RichTextEditor />);
+
+    const editor = screen.getByRole("textbox");
+    await user.type(editor, "This is my link");
+
+    await user.pointer([
+      // First char of "link"
+      { target: editor, offset: 11, keys: "[MouseLeft>]" },
+      // Drag to end of "link"
+      { offset: 15 },
+      { keys: "[/MouseLeft]" },
+    ]);
+
+    const selection = document.getSelection()?.toString();
+    expect(selection).toBe("link");
+
+    await user.click(screen.getByRole("button", { name: /link/i }));
+
+    expect(
+      screen.getByRole("textbox", { name: /newurl/i }),
+    ).toBeInTheDocument();
+  });
 });

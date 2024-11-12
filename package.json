@@ -14,7 +14,8 @@
     "build:typecheck": "npm run build:typecheck --workspaces",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
-    "dead-code:prod": "npm run dead-code -- --production"
+    "dead-code:prod": "npm run dead-code -- --production",
+    "watch": "npm run watch --workspaces"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
@@ -25,6 +26,7 @@
     "npm": "10.5.0"
   },
   "devDependencies": {
+    "@sindresorhus/tsconfig": "^6.0.0",
     "knip": "^5.36.7",
     "prettier": "3.3.3"
   }

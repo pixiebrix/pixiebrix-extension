@@ -3,7 +3,7 @@ import {
   type SelectStringOption,
   type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
-import FieldEditor from "./FieldEditor";
+import FieldEditor from "./fieldEditor/FieldEditor";
 import {
   moveStringInArray,
   getNormalizedUiOrder,
