@@ -132,6 +132,7 @@ describe("DataPanel state", () => {
 
 describe("Add/Remove Bricks", () => {
   let editor: EditorState;
+  let consoleErrorSpy: jest.SpyInstance;
 
   const source = formStateFactory({
     formStateConfig: {
@@ -155,6 +156,12 @@ describe("Add/Remove Bricks", () => {
       initialState,
       actions.addModComponentFormState(source),
     );
+
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   test("Add Brick", async () => {
@@ -176,6 +183,42 @@ describe("Add/Remove Bricks", () => {
     expect(
       editor.modComponentFormStates[0]!.modComponent.brickPipeline,
     ).toBeArrayOfSize(initialBricks.length + 1);
+  });
+
+  test("Add Brick - bad pipeline path error", async () => {
+    // Add a Brick
+    expect(() =>
+      editorSlice.reducer(
+        editor,
+        actions.addNode({
+          block: standardBrick,
+          pipelinePath: "badPath.to.modComponent",
+          pipelineIndex: 0,
+        }),
+      ),
+    ).toThrowError(
+      "Invalid pipeline path for mod component form state: badPath.to.modComponent",
+    );
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Invalid pipeline path for mod component form state: %s",
+      "badPath.to.modComponent",
+      {
+        block: {
+          config: {},
+          id: "test/teapot",
+          instanceId: "00000001-0000-4000-A000-000000000000",
+          outputKey: "teapotOutput",
+        },
+        element: expect.any(Object),
+        invalidPath: {
+          invalidPath: "badPath",
+          values: expect.any(Object),
+        },
+        pipelineIndex: 0,
+        pipelinePath: "badPath.to.modComponent",
+      },
+    );
   });
 
   test("Remove Brick with Integration Dependency", async () => {
