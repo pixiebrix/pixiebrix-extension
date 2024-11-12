@@ -46,7 +46,7 @@ const ToolbarOverflow = () => {
   }, []);
 
   const handleHide = useCallback((event: Event) => {
-    // Check if the click path includes our button
+    // Prevent the click outside behavior from closing when the button or the container are clicked
     const path = event.composedPath();
     const buttonParent = buttonRef.current?.parentElement as EventTarget;
     if (path.includes(buttonParent)) {

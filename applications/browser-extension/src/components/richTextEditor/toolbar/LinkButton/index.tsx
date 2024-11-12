@@ -62,10 +62,9 @@ const LinkButton: React.FunctionComponent = () => {
   }, [editor, showPopover]);
 
   const handleHide = useCallback((event: Event) => {
-    // Check if the click path includes our button
-    const path = event.composedPath();
-    console.log("onSelectionUpdate handleHide", path);
     const buttonParent = buttonRef.current?.parentElement as EventTarget;
+    // Prevent the click outside behavior from closing when the button or the container are clicked
+    const path = event.composedPath();
     if (path.includes(buttonParent)) {
       return;
     }
@@ -124,7 +123,7 @@ const LinkButton: React.FunctionComponent = () => {
           // popover view changes
           key={popoverView}
           id="urlInputPopover"
-          className={styles.bubbleMenu}
+          className={styles.linkPopover}
         >
           <UrlInputPopover
             setPopoverState={setPopoverState}
