@@ -15,17 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getInvalidPath } from "@/utils/debugUtils";
-
-describe("getInvalidPath", () => {
-  it("returns invalid path", () => {
-    expect(getInvalidPath({ foo: { baz: 42 } }, "foo.bar")).toStrictEqual({
-      invalidPath: "foo.bar",
-      values: { baz: 42 },
-    });
-    expect(getInvalidPath({ foo: { baz: 42 } }, "quoz.bar")).toStrictEqual({
-      invalidPath: "quoz",
-      values: { foo: { baz: 42 } },
-    });
-  });
-});
+/* eslint-disable-next-line no-restricted-syntax --
+ * Type to be preferred over a plain `object`
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md */
+type UnknownObject = Record<string, unknown>;

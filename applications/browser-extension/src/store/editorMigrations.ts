@@ -416,6 +416,8 @@ export function migrateEditorStateV11(
  *
  * If any keys were dropped from EditorStateSynced, they'll be dropped via the next redux-persist write/flush cycle:
  * https://github.com/rt2zz/redux-persist/blob/d8b01a085e3679db43503a3858e8d4759d6f22fa/src/createPersistoid.ts#L37
+ *
+ * @internal
  */
 export function resetEditorStateSynced<T extends PersistedState>(
   state: T,
