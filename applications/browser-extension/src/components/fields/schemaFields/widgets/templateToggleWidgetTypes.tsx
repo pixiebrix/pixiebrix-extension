@@ -33,7 +33,9 @@ interface InputModeOptionBase<
   interpretValue?: (oldValue: unknown) => unknown;
 }
 
-export type StringOption = InputModeOptionBase<"string" | "select" | "var"> & {
+export type StringOption = InputModeOptionBase<
+  "string" | "select" | "var" | "javascript"
+> & {
   interpretValue: (oldValue: unknown) => string | Expression | null;
 };
 type NumberOption = InputModeOptionBase<"number"> & {

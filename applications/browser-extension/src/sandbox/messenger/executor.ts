@@ -111,3 +111,12 @@ export async function runUserJs({
     });
   }
 }
+
+export async function validateUserJs({
+  code,
+}: {
+  code: string;
+}): Promise<void> {
+  // eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment -- sandbox
+  new Function(`return ${code}`);
+}

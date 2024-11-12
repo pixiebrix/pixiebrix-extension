@@ -133,6 +133,19 @@ export function engineRenderer(
       };
     }
 
+    case "javascript": {
+      return async (template, ctxt) => {
+        if (template == null) {
+          return template;
+        }
+
+        return getPlatform().runSandboxedJavascript({
+          code: `function(vars) { return ${template}; }`,
+          data: ctxt as JsonObject,
+        });
+      };
+    }
+
     default: {
       return null;
     }

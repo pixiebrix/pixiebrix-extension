@@ -29,6 +29,7 @@ const TEMPLATE_TYPES = [
   "mustache",
   "nunjucks",
   "handlebars",
+  "javascript",
   "var",
 ] as const satisfies TemplateEngine[];
 
@@ -74,6 +75,16 @@ export function isNunjucksExpression(
   value: unknown,
 ): value is Expression<string, "nunjucks"> {
   return isExpression(value) && value.__type__ === "nunjucks";
+}
+
+/**
+ * Returns true if value represents a Javascript expression
+ * @see isExpression
+ */
+export function isJavascriptExpression(
+  value: unknown,
+): value is Expression<string, "javascript"> {
+  return isExpression(value) && value.__type__ === "javascript";
 }
 
 /**

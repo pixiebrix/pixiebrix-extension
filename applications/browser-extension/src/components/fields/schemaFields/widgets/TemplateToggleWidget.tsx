@@ -140,6 +140,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         "number",
         "boolean",
         "var",
+        "javascript",
         "array",
         "object",
       ];

@@ -23,6 +23,7 @@ import {
   renderNunjucksTemplate,
   validateNunjucksTemplate,
   runUserJs,
+  validateUserJs,
 } from "./executor";
 
 export default function registerMessenger(): void {
@@ -30,5 +31,6 @@ export default function registerMessenger(): void {
   addPostMessageListener("VALIDATE_NUNJUCKS", validateNunjucksTemplate);
   addPostMessageListener("RENDER_HANDLEBARS", renderHandlebarsTemplate);
   addPostMessageListener("RUN_USER_JS", runUserJs);
+  addPostMessageListener("VALIDATE_USER_JS", validateUserJs);
   addPostMessageListener("SANDBOX_PING", async (payload) => "pong");
 }

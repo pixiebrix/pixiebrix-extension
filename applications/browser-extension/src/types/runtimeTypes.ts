@@ -99,7 +99,9 @@ export type TextTemplateEngine =
   // https://mozilla.github.io/nunjucks/
   | "nunjucks"
   // https://handlebarsjs.com/
-  | "handlebars";
+  | "handlebars"
+  // Run expression in JS sandbox
+  | "javascript";
 
 /**
  * The tag of an available template engine for rendering an expression given a context.

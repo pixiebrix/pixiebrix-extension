@@ -32,12 +32,14 @@ import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 export type FieldInputMode =
   | "string"
   | "var"
+  | "javascript"
   | "number"
   | "boolean"
   | "array"
   | "object"
   | "select"
-  | "omit"; // An input option to remove a property
+  // An input option to remove a property
+  | "omit";
 
 const DEFAULT_OPTIONS = {
   safeDefault: true,
@@ -119,8 +121,8 @@ export function inferInputMode(
   }
 
   if (isTemplateExpression(value)) {
-    if (value.__type__ === "var") {
-      return "var";
+    if (["var", "javascript"].includes(value.__type__)) {
+      return value.__type__ as "var" | "javascript";
     }
 
     return "string";

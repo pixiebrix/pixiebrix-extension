@@ -26,10 +26,14 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { type Expression } from "@/types/runtimeTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import {
+  isJavascriptExpression,
   isNunjucksExpression,
   isTemplateExpression,
 } from "@/utils/expressionUtils";
-import { validateNunjucksTemplate } from "@/sandbox/messenger/api";
+import {
+  validateNunjucksTemplate,
+  validateUserJs,
+} from "@/sandbox/messenger/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 const TEMPLATE_ERROR_MESSAGE =
@@ -44,7 +48,7 @@ type PushAnnotationArgs = {
 class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
   // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
   // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
-  private readonly nunjucksValidationPromises: Array<Promise<void>> = [];
+  private readonly expressionValidationPromises: Array<Promise<void>> = [];
 
   get id() {
     return "template";
@@ -60,7 +64,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
       starterBrickType: formState.starterBrick.definition.type,
     });
 
-    await Promise.all(this.nunjucksValidationPromises);
+    await Promise.all(this.expressionValidationPromises);
   }
 
   private pushErrorAnnotation({
@@ -100,7 +104,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
         expression,
       });
     } else if (isNunjucksExpression(expression)) {
-      this.nunjucksValidationPromises.push(
+      this.expressionValidationPromises.push(
         (async () => {
           try {
             await validateNunjucksTemplate(expression.__value__);
@@ -108,6 +112,22 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
             this.pushErrorAnnotation({
               position,
               message: getErrorMessage(error),
+              expression,
+            });
+          }
+        })(),
+      );
+    } else if (isJavascriptExpression(expression)) {
+      this.expressionValidationPromises.push(
+        (async () => {
+          try {
+            await validateUserJs(expression.__value__);
+          } catch (error) {
+            this.pushErrorAnnotation({
+              position,
+              message: `Invalid JavaScript expression: ${getErrorMessage(
+                error,
+              )}`,
               expression,
             });
           }

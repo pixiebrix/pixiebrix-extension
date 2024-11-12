@@ -17,6 +17,7 @@
 
 import React from "react";
 import VariableIcon from "./icons/var.svg?loadAsComponent";
+import JavaScriptIcon from "./icons/javascript.svg?loadAsComponent";
 import ArrayIcon from "./icons/array.svg?loadAsComponent";
 import ObjectIcon from "./icons/object.svg?loadAsComponent";
 import ToggleIcon from "./icons/toggle.svg?loadAsComponent";
@@ -30,6 +31,7 @@ import styles from "./OptionIcon.module.scss";
 
 const components = {
   variable: VariableIcon,
+  javascript: JavaScriptIcon,
   array: ArrayIcon,
   object: ObjectIcon,
   toggle: ToggleIcon,

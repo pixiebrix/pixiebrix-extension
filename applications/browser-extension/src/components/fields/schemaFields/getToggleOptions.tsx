@@ -124,7 +124,27 @@ export function getToggleOptions({
           return toExpression("var", newValue);
         },
       };
-      pushOptions(varOption);
+
+      const javascriptOption: StringOption = {
+        label: "JavaScript",
+        value: "javascript",
+        symbol: <OptionIcon icon="javascript" />,
+        Widget: widgetsRegistry.TextWidget,
+        interpretValue(oldValue: unknown) {
+          let newValue = "";
+          if (typeof oldValue === "string") {
+            newValue = oldValue;
+          } else if (typeof oldValue === "number") {
+            newValue = String(oldValue);
+          } else if (isTemplateExpression(oldValue)) {
+            newValue = oldValue.__value__;
+          }
+
+          return toExpression("javascript", newValue);
+        },
+      };
+
+      pushOptions(varOption, javascriptOption);
     }
   }
 

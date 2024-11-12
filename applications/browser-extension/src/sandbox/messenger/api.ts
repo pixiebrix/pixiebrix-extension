@@ -183,3 +183,10 @@ export async function runUserJs(payload: JavaScriptPayload) {
     type: "RUN_USER_JS",
   });
 }
+
+export async function validateUserJs(code: string) {
+  await postSandboxMessage({
+    payload: { code },
+    type: "VALIDATE_USER_JS",
+  });
+}
