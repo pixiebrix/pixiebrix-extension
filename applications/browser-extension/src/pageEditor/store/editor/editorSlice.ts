@@ -39,7 +39,7 @@ import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,
   selectActiveModComponentFormState,
-  selectCurrentModId,
+  selectActiveModId,
   selectGetModComponentFormStateByModComponentId,
   selectGetModComponentFormStatesForMod,
   selectModComponentFormStates,
@@ -982,10 +982,10 @@ export const editorSlice = createSlice({
     setDataPanelTabFindQuery(state, action: PayloadAction<{ query: string }>) {
       const { query } = action.payload;
 
-      const currentModId = selectCurrentModId({ editor: state });
-      assertNotNullish(currentModId, "Expected currentModId");
+      const activeModId = selectActiveModId({ editor: state });
+      assertNotNullish(activeModId, "Expected activeModId");
 
-      state.findInModQueryByModId[currentModId] = { query };
+      state.findInModQueryByModId[activeModId] = { query };
     },
 
     /**

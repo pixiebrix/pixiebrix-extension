@@ -21,7 +21,7 @@ import type { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPa
 import { createSelector } from "@reduxjs/toolkit";
 import type { DataPanelTabUIState } from "@/pageEditor/store/editor/uiStateTypes";
 import { selectActiveBrickConfigurationUIState } from "@/pageEditor/store/editor/editorSelectors/editorPipelineSelectors";
-import { selectCurrentModId } from "@/pageEditor/store/editor/editorSelectors/editorModSelectors";
+import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors";
 
 export const selectIsDataPanelExpanded = ({ editor }: EditorRootState) =>
   editor.isDataPanelExpanded;
@@ -55,9 +55,9 @@ export function selectNodeDataPanelTabState(
  */
 export const selectCurrentFindInModQuery = createSelector(
   ({ editor }: EditorRootState) => editor.findInModQueryByModId,
-  selectCurrentModId,
+  selectActiveModId,
   (findInModQueryByModId, modId) => {
-    assertNotNullish(modId, "Expected currentModId");
+    assertNotNullish(modId, "Expected activeModId");
     // eslint-disable-next-line security/detect-object-injection -- registry id
     return findInModQueryByModId[modId] ?? { query: "" };
   },
