@@ -133,60 +133,59 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     [dispatch],
   );
 
-  const renderBody: RenderBody = ({ values }) => (
-    <IntegrationsSliceModIntegrationsContextAdapter>
-      <Effect values={values} onChange={updateRedux} delayMillis={100} />
+  const renderBody: RenderBody = ({ values }) =>
+    console.log("ModMetadataEditor", { values }) || (
+      <IntegrationsSliceModIntegrationsContextAdapter>
+        <Effect values={values} onChange={updateRedux} delayMillis={100} />
 
-      <Card>
-        <Card.Header>Mod Metadata</Card.Header>
-        <Card.Body>
-          {showOldModVersionWarning && (
-            <OldModVersionAlert
-              modId={modId}
-              activatedModVersion={activatedModVersion}
-              latestModVersion={latestModVersion}
-            />
-          )}
-          <div className={styles.modIdField}>
-            {isInnerDefinitionRegistryId(
-              (values as ModMetadataFormState).id,
-            ) ? (
-              <FieldTemplate
-                name="id"
-                label="Mod ID"
-                description={FieldDescriptions.MOD_ID}
-                placeholder="Save the mod to assign a Mod ID"
-                readOnly
-              />
-            ) : (
-              <ConnectedFieldTemplate
-                name="id"
-                label="Mod ID"
-                description={FieldDescriptions.MOD_ID}
-                // Mod IDs may not be changed after creation
-                readOnly
+        <Card>
+          <Card.Header>Mod Metadata</Card.Header>
+          <Card.Body>
+            {showOldModVersionWarning && (
+              <OldModVersionAlert
+                modId={modId}
+                activatedModVersion={activatedModVersion}
+                latestModVersion={latestModVersion}
               />
             )}
-          </div>
-          <ConnectedFieldTemplate
-            name="name"
-            label="Name"
-            description={FieldDescriptions.MOD_NAME}
-          />
-          <ConnectedFieldTemplate
-            name="version"
-            label="Version"
-            description={FieldDescriptions.MOD_VERSION}
-          />
-          <ConnectedFieldTemplate
-            name="description"
-            label="Description"
-            description={FieldDescriptions.MOD_DESCRIPTION}
-          />
-        </Card.Body>
-      </Card>
-    </IntegrationsSliceModIntegrationsContextAdapter>
-  );
+            <div className={styles.modIdField}>
+              {isInnerDefinitionRegistryId(values.id) ? (
+                <FieldTemplate
+                  name="id"
+                  label="Mod ID"
+                  description={FieldDescriptions.MOD_ID}
+                  placeholder="Save the mod to assign a Mod ID"
+                  readOnly
+                />
+              ) : (
+                <ConnectedFieldTemplate
+                  name="id"
+                  label="Mod ID"
+                  description={FieldDescriptions.MOD_ID}
+                  // Mod IDs may not be changed after creation
+                  readOnly
+                />
+              )}
+            </div>
+            <ConnectedFieldTemplate
+              name="name"
+              label="Name"
+              description={FieldDescriptions.MOD_NAME}
+            />
+            <ConnectedFieldTemplate
+              name="version"
+              label="Version"
+              description={FieldDescriptions.MOD_VERSION}
+            />
+            <ConnectedFieldTemplate
+              name="description"
+              label="Description"
+              description={FieldDescriptions.MOD_DESCRIPTION}
+            />
+          </Card.Body>
+        </Card>
+      </IntegrationsSliceModIntegrationsContextAdapter>
+    );
 
   return (
     <Container className={cx(styles.root, "max-750 ml-0")}>

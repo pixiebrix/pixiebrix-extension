@@ -77,7 +77,7 @@ const ModListItem: React.FC<
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
           // Set the alternate background if a mod component in this mod is active
-          [styles.modBackground ?? ""]: isModComponentActive,
+          [styles.modBackground ?? ""]: isModActive && isModComponentActive,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isModActive && !isModComponentActive}

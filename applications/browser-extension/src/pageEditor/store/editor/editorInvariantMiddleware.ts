@@ -26,6 +26,7 @@ import {
 } from "@/pageEditor/store/editor/editorSelectors";
 import type { EmptyObject } from "type-fest";
 import { uniqBy } from "lodash";
+import { isInternalRegistryId } from "@/utils/registryUtils";
 
 class InvariantViolationError extends Error {
   override name = "InvariantViolationError";
@@ -48,11 +49,14 @@ class InvariantViolationError extends Error {
 export function assertEditorInvariants(state: EditorRootState): void {
   // Assert that a mod and mod component item cannot be selected at the same time
   const activeModId = selectActiveModId(state);
-  const activeModComponentId = selectActiveModComponentFormState(state);
+  const activeModComponent = selectActiveModComponentFormState(state);
 
   if (
-    activeModComponentId &&
-    activeModId !== activeModComponentId?.modMetadata.id
+    activeModId &&
+    activeModComponent &&
+    activeModId !== activeModComponent?.modMetadata.id &&
+    // When saving, the activeModId and activeModComponent.modMetadata.id aren't updated at the same time.
+    !isInternalRegistryId(activeModId)
   ) {
     // Should we dispatch(actions.setActiveModComponentId(null))
     // Would need to change the behavior of the action to handle null
