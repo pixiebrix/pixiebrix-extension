@@ -2,13 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": false,
-
-    // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "strictFunctionTypes": false,
-    "noPropertyAccessFromIndexSignature": false,
-    "noImplicitReturns": false,
-    "noUnusedParameters": false,
     "paths": {
       "@/*": ["src/*"]
     }
