@@ -28,7 +28,7 @@ type InvalidPathInformation = {
  * @param path period separated path
  */
 export function getInvalidPath(
-  value: Record<string, unknown>,
+  value: UnknownObject,
   path: string,
 ): InvalidPathInformation {
   const parts = path.split(".");

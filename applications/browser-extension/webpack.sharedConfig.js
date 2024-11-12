@@ -20,7 +20,9 @@ const path = require("node:path");
 const JSON5 = require("json5");
 const { merge } = require("webpack-merge");
 
-const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
+const tsconfig = JSON5.parse(
+  fs.readFileSync(path.resolve(__dirname, "./tsconfig.json"), "utf8"),
+);
 
 const isProd = process.argv.includes("production");
 const isHMR = Boolean(process.env.HMR);
