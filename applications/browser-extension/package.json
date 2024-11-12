@@ -237,6 +237,7 @@
     "@types/redux-state-sync": "^3.1.10",
     "@types/semver": "^7.5.8",
     "@types/sinonjs__fake-timers": "^8.1.5",
+    "@types/trusted-types": "^2.0.7",
     "@types/use-sync-external-store": "^0.0.6",
     "@types/webextension-polyfill": "^0.12.1",
     "@types/webpack": "^5.28.5",
