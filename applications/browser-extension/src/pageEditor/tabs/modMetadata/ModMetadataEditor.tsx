@@ -148,7 +148,9 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
             />
           )}
           <div className={styles.modIdField}>
-            {isInnerDefinitionRegistryId(values.id) ? (
+            {isInnerDefinitionRegistryId(
+              (values as ModMetadataFormState).id,
+            ) ? (
               <FieldTemplate
                 name="id"
                 label="Mod ID"
