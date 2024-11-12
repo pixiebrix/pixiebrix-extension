@@ -43,9 +43,9 @@ export function ensureBrickPipelineUIState(
       makeInitialBrickPipelineUIState();
 
     const modComponentFormState =
-      selectGetModComponentFormStateByModComponentId({ editor: state })(
-        modComponentId,
-      );
+      selectGetModComponentFormStateByModComponentId({
+        editor: state as EditorState,
+      })(modComponentId);
     const pipeline = modComponentFormState?.modComponent.brickPipeline;
 
     assertNotNullish(

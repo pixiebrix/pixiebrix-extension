@@ -380,7 +380,9 @@ export const editorSlice = createSlice({
     setActiveModComponentId(state, action: PayloadAction<UUID>) {
       const modComponentId = action.payload;
       const getModComponentFormStateByModComponentId =
-        selectGetModComponentFormStateByModComponentId({ editor: state });
+        selectGetModComponentFormStateByModComponentId({
+          editor: state as EditorState,
+        });
       const modComponentFormState =
         getModComponentFormStateByModComponentId(modComponentId);
 
@@ -481,7 +483,7 @@ export const editorSlice = createSlice({
     ) {
       const { modId, modMetadata } = action.payload;
       const getModComponentFormStatesForMod =
-        selectGetModComponentFormStatesForMod({ editor: state });
+        selectGetModComponentFormStatesForMod({ editor: state as EditorState });
       const modComponentFormStatesForMod =
         getModComponentFormStatesForMod(modId);
 
@@ -502,7 +504,7 @@ export const editorSlice = createSlice({
     markModAsCleanById(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
       const getModComponentFormStatesForMod =
-        selectGetModComponentFormStatesForMod({ editor: state });
+        selectGetModComponentFormStatesForMod({ editor: state as EditorState });
       const modComponentFormStatesForMod =
         getModComponentFormStatesForMod(modId);
 
@@ -525,7 +527,7 @@ export const editorSlice = createSlice({
       const modId = action.payload;
 
       const getModComponentFormStatesForMod =
-        selectGetModComponentFormStatesForMod({ editor: state });
+        selectGetModComponentFormStatesForMod({ editor: state as EditorState });
       const modComponentFormStatesForMod =
         getModComponentFormStatesForMod(modId);
 
@@ -655,7 +657,9 @@ export const editorSlice = createSlice({
       const modComponentId = action.payload;
 
       const getModComponentFormStateByModComponentId =
-        selectGetModComponentFormStateByModComponentId({ editor: state });
+        selectGetModComponentFormStateByModComponentId({
+          editor: state as EditorState,
+        });
       const modComponentFormState =
         getModComponentFormStateByModComponentId(modComponentId);
 
@@ -735,7 +739,9 @@ export const editorSlice = createSlice({
       );
 
       const getModComponentFormStateByModComponentId =
-        selectGetModComponentFormStateByModComponentId({ editor: state });
+        selectGetModComponentFormStateByModComponentId({
+          editor: state as EditorState,
+        });
       const modComponentFormState = getModComponentFormStateByModComponentId(
         state.activeModComponentId,
       );
@@ -788,7 +794,7 @@ export const editorSlice = createSlice({
     ) {
       const { nodeId, direction } = action.payload;
       const activeModComponentFormState = selectActiveModComponentFormState({
-        editor: state,
+        editor: state as EditorState,
       });
       assertNotNullish(
         activeModComponentFormState,
@@ -796,7 +802,7 @@ export const editorSlice = createSlice({
       );
 
       const activeBrickPipelineUIState = selectActiveBrickPipelineUIState({
-        editor: state,
+        editor: state as EditorState,
       });
       const node = activeBrickPipelineUIState?.pipelineMap[nodeId];
       assertNotNullish(node, `Node not found in pipeline map: ${nodeId}`);
@@ -831,7 +837,7 @@ export const editorSlice = createSlice({
     removeNode(state, action: PayloadAction<UUID>) {
       const nodeIdToRemove = action.payload;
       const activeModComponentFormState = selectActiveModComponentFormState({
-        editor: state,
+        editor: state as EditorState,
       });
       assertNotNullish(
         activeModComponentFormState,
@@ -839,7 +845,7 @@ export const editorSlice = createSlice({
       );
 
       const activeBrickPipelineUIState = selectActiveBrickPipelineUIState({
-        editor: state,
+        editor: state as EditorState,
       });
       assertNotNullish(
         activeBrickPipelineUIState,
@@ -899,7 +905,7 @@ export const editorSlice = createSlice({
       { payload }: PayloadAction<{ id: string; isExpanded: boolean }>,
     ) {
       const uiState = selectActiveBrickConfigurationUIState({
-        editor: state,
+        editor: state as EditorState,
       });
       assertNotNullish(uiState, "Active node UI state not found");
 
@@ -982,7 +988,7 @@ export const editorSlice = createSlice({
     setDataPanelTabFindQuery(state, action: PayloadAction<{ query: string }>) {
       const { query } = action.payload;
 
-      const currentModId = selectCurrentModId({ editor: state });
+      const currentModId = selectCurrentModId({ editor: state as EditorState });
       assertNotNullish(currentModId, "Expected currentModId");
 
       state.findInModQueryByModId[currentModId] = { query };

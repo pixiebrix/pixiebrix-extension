@@ -207,7 +207,7 @@ const sidebarSlice = createSlice({
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
       // Calling selectTab with a stale event key shouldn't change the current tab
-      if (eventKeyExists(state, action.payload)) {
+      if (eventKeyExists(state as SidebarState, action.payload)) {
         state.activeKey = action.payload;
         state.closedTabs[action.payload] = false;
       }
@@ -220,7 +220,10 @@ const sidebarSlice = createSlice({
 
       const entry = remove(state.forms, (form) => form.nonce === nonce)[0];
 
-      fixActiveTabOnRemoveInPlace(state, entry);
+      fixActiveTabOnRemoveInPlace(
+        state as SidebarState,
+        entry as FormPanelEntry,
+      );
     },
     invalidatePanels(state) {
       for (const panel of state.panels) {
@@ -268,7 +271,7 @@ const sidebarSlice = createSlice({
     activatePanel(state, { payload }: PayloadAction<ActivatePanelOptions>) {
       state.pendingActivePanel = null;
 
-      const visiblePanelCount = getVisiblePanelCount(state);
+      const visiblePanelCount = getVisiblePanelCount(state as SidebarState);
       const isModLauncherOnlyTabVisible =
         visiblePanelCount === 1 &&
         !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)];
@@ -285,7 +288,7 @@ const sidebarSlice = createSlice({
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
       }
 
-      const next = findNextActiveKey(state, payload);
+      const next = findNextActiveKey(state as SidebarState, payload);
 
       if (next) {
         state.activeKey = next;
@@ -316,7 +319,10 @@ const sidebarSlice = createSlice({
 
       // Try fulfilling the pendingActivePanel request
       if (state.pendingActivePanel) {
-        const next = findNextActiveKey(state, state.pendingActivePanel);
+        const next = findNextActiveKey(
+          state as SidebarState,
+          state.pendingActivePanel,
+        );
         if (next) {
           state.activeKey = next;
           state.pendingActivePanel = null;
@@ -325,8 +331,11 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab.
-      if (!eventKeyExists(state, state.activeKey)) {
-        state.activeKey = defaultEventKey(state, state.closedTabs);
+      if (!eventKeyExists(state as SidebarState, state.activeKey)) {
+        state.activeKey = defaultEventKey(
+          state as SidebarState,
+          state.closedTabs,
+        );
       }
     },
     showModActivationPanel(
@@ -343,25 +352,28 @@ const sidebarSlice = createSlice({
       const { modActivationPanel: entry, closedTabs } = state;
       state.modActivationPanel = null;
 
-      if (getVisiblePanelCount(state) === 0) {
+      if (getVisiblePanelCount(state as SidebarState) === 0) {
         closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
-      fixActiveTabOnRemoveInPlace(state, entry);
+      fixActiveTabOnRemoveInPlace(state as SidebarState, entry);
     },
     closeTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = true;
 
       const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
       if (
-        getVisiblePanelCount(state) === 0 &&
+        getVisiblePanelCount(state as SidebarState) === 0 &&
         action.payload !== modLauncherEventKey
       ) {
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
       if (state.activeKey === action.payload) {
-        state.activeKey = defaultEventKey(state, state.closedTabs);
+        state.activeKey = defaultEventKey(
+          state as SidebarState,
+          state.closedTabs,
+        );
       }
     },
     openTab(state, action: PayloadAction<string>) {
@@ -383,7 +395,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, forms } = action.payload;
 
           state.forms = castDraft(forms);
-          fixActiveTabOnRemoveInPlace(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(state as SidebarState, removedEntry);
         }
       })
       .addCase(addTemporaryPanel.fulfilled, (state, action) => {
@@ -398,7 +410,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemoveInPlace(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(state as SidebarState, removedEntry);
         }
       })
       .addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
@@ -406,7 +418,7 @@ const sidebarSlice = createSlice({
           const { resolvedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemoveInPlace(state, resolvedEntry);
+          fixActiveTabOnRemoveInPlace(state as SidebarState, resolvedEntry);
         }
       });
   },
