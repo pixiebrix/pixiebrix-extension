@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { type ErrorSchema, type WidgetProps } from "@rjsf/utils";
+import { type WidgetProps } from "@rjsf/utils";
 import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
 
 const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
@@ -27,18 +27,8 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   disabled,
   readonly,
   options,
-  value,
 }) => {
   const { database } = options;
-
-  if (!database) {
-    // TODO: Can't figure out how to satisfy this type without casting, but this is how it's done in the docs
-    //  https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/custom-widgets-fields/#raising-errors-from-within-a-custom-widget-or-field
-    const databaseConfigurationError = {
-      __errors: ["Rich text field asset database is required"],
-    } as ErrorSchema;
-    onChange(value, databaseConfigurationError);
-  }
 
   return (
     <RichTextEditor
@@ -53,6 +43,7 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
         onBlur(id, editor.getHTML());
       }}
       editable={!(disabled || readonly)}
+      disabledExtensions={database ? [] : ["image"]}
     />
   );
 };

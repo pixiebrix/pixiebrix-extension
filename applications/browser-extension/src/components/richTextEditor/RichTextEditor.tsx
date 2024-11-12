@@ -23,12 +23,20 @@ import { Image } from "@tiptap/extension-image";
 import React from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
 
-const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
-  props: EditorProviderProps,
+type EditorProps = EditorProviderProps & {
+  disabledExtensions?: string[];
+};
+
+const RichTextEditor: React.FunctionComponent<EditorProps> = (
+  props: EditorProps,
 ) => (
   <div className={styles.root}>
     <EditorProvider
-      extensions={[StarterKit, Underline, Image]}
+      extensions={[
+        StarterKit,
+        Underline,
+        ...(props.disabledExtensions?.includes("image") ? [] : [Image]),
+      ]}
       slotBefore={<Toolbar />}
       {...props}
     />

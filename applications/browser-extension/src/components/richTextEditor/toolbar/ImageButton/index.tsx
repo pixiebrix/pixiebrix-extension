@@ -31,6 +31,14 @@ const ImageButton: React.FunctionComponent = () => {
     "ImageButton must be used within a TipTap editor context",
   );
 
+  const isImageExtensionEnabled = !editor.options.extensions.some(
+    (extension) => extension.name === "image",
+  );
+
+  if (!isImageExtensionEnabled) {
+    return null;
+  }
+
   return (
     <Button
       variant="default"
@@ -39,7 +47,7 @@ const ImageButton: React.FunctionComponent = () => {
       }}
       disabled={
         editor.isEditable
-          ? !editor.can().chain().focus().setImage({ src: "url" }).run()
+          ? !editor.can().chain().focus().setImage({ src: "" }).run()
           : true
       }
       active={editor.isActive("bold")}
