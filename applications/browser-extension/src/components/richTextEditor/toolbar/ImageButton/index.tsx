@@ -21,8 +21,10 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import useUploadAsset from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 
 const ImageButton: React.FunctionComponent = () => {
+  const uploadAsset = useUploadAsset();
   const { editor } = useCurrentEditor();
   assertNotNullish(
     editor,
@@ -33,7 +35,7 @@ const ImageButton: React.FunctionComponent = () => {
     <Button
       variant="default"
       onClick={() => {
-        console.log("Implement me!");
+        uploadAsset();
       }}
       disabled={
         editor.isEditable
