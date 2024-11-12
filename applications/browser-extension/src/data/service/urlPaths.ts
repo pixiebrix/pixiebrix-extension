@@ -39,6 +39,9 @@ type PathsValues = Record<
 >;
 
 export const API_PATHS = {
+  ASSET_PRE_UPLOAD: (databaseId: string) =>
+    `/api/databases/${databaseId}/assets/`,
+
   BRICKS: "/api/bricks/",
   BRICK: (id: string) => `/api/bricks/${id}/`,
   BRICK_VERSIONS: (id: string) => `/api/bricks/${id}/versions/`,

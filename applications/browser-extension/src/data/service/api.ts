@@ -33,6 +33,7 @@ import {
   type RemoteIntegrationConfig,
   type DeploymentPayload,
   type ActivatedDeployment,
+  AssetPreUpload,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -68,6 +69,7 @@ export const appApi = createApi({
     "StarterBlueprints",
     "ZapierKey",
     "Deployments",
+    "Assets",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -498,6 +500,18 @@ export const appApi = createApi({
         return { url: API_PATHS.USER_DEPLOYMENT(id), method: "delete" };
       },
       invalidatesTags: ["Deployments"],
+    }),
+    createAssetPreUpload: builder.mutation<
+      AssetPreUpload,
+      { databaseId: UUID }
+    >({
+      query({ databaseId }) {
+        return {
+          url: API_PATHS.ASSET_PRE_UPLOAD(databaseId),
+          method: "post",
+        };
+      },
+      invalidatesTags: ["Assets"],
     }),
   }),
 });
