@@ -1,25 +1,9 @@
 {
-  // You can see the full details at https://github.com/sindresorhus/tsconfig/blob/main/tsconfig.json
-  // Note: `strict: true` enables many flags that aren’t explicitly listed in that file
-  "extends": "@sindresorhus/tsconfig",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "sourceMap": true,
-    "module": "esnext",
-    "target": "es2023",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
     "baseUrl": ".",
-    "outDir": null,
-    "declaration": false,
-
-    // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "strictFunctionTypes": false,
-    "noPropertyAccessFromIndexSignature": false,
-    "noImplicitReturns": false,
-    "noUnusedParameters": false,
     "paths": {
       "@/*": ["src/*"]
     }
-  },
-  "exclude": ["node_modules"]
+  }
 }

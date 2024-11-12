@@ -19,6 +19,7 @@ import styles from "./RichTextEditor.module.scss";
 import { EditorProvider, type EditorProviderProps } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Underline } from "@tiptap/extension-underline";
+import { Link } from "@tiptap/extension-link";
 import { Image } from "@tiptap/extension-image";
 import React from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
@@ -35,6 +36,7 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = (
       extensions={[
         StarterKit,
         Underline,
+        Link.extend({ inclusive: false }).configure({ openOnClick: false }),
         ...(props.disabledExtensions?.includes("image") ? [] : [Image]),
       ]}
       slotBefore={<Toolbar />}
