@@ -43,7 +43,7 @@ import SelectWidget, {
 import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import { uniq, partial } from "lodash";
+import { uniq } from "lodash";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import databaseSchema from "@schemas/database.json";
@@ -55,9 +55,9 @@ import {
 import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { Collapse } from "react-bootstrap";
-import { joinName, joinPathParts } from "@/utils/formUtils";
+import { joinPathParts } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import TextAreaFields from "@/components/formBuilder/edit/fieldEditor/TextAreaFields";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -94,60 +94,6 @@ function shouldShowPlaceholderText(uiType: UiType): boolean {
     }
   }
 }
-
-const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
-  uiOptionsPath,
-}) => {
-  const configName = partial(joinName, uiOptionsPath);
-  const [{ value: showSubmitToolbar }] = useField<boolean | null>(
-    configName("submitToolbar", "show"),
-  );
-
-  return (
-    <>
-      <SchemaField
-        name={configName("rows")}
-        schema={{
-          type: "number",
-          title: "# Rows",
-          description:
-            "The number of visible text lines for the control. If it is not specified, the default value is 2.",
-        }}
-      />
-      <SchemaField
-        name={configName("submitOnEnter")}
-        schema={{
-          type: "boolean",
-          title: "Submit Form on Enter?",
-          description:
-            "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
-        }}
-        isRequired
-      />
-      <SchemaField
-        name={configName("submitToolbar", "show")}
-        schema={{
-          type: "boolean",
-          title: "Include Submit Toolbar?",
-          description:
-            "Enable the submit toolbar that has a selectable icon to act as a submit button",
-        }}
-        isRequired
-      />
-      <Collapse in={showSubmitToolbar ?? false}>
-        <SchemaField
-          name={configName("submitToolbar", "icon")}
-          schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
-          label="Select Icon"
-          description="Select the icon that appears in the bottom right of the Submit Toolbar"
-          uiSchema={{
-            "ui:widget": "IconWidget",
-          }}
-        />
-      </Collapse>
-    </>
-  );
-};
 
 const FieldEditor: React.FC<{
   name: string;
