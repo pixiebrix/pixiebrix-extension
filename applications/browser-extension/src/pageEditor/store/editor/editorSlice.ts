@@ -348,15 +348,21 @@ export const editorSlice = createSlice({
     ///
 
     /**
-     * Activate the mod with the given id. Expands the mod listing pane item if not already expanded
+     * Select the mod with the given id. Expands the mod listing pane item if not already expanded
      * @see toggleExpandedModId
      */
     setActiveModId(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
+      const activeModComponent = selectActiveModComponentFormState({
+        editor: state,
+      });
 
       state.error = null;
-      state.activeModComponentId = null;
       state.activeModId = modId;
+
+      if (activeModComponent?.modMetadata.id !== modId) {
+        state.activeModComponentId = null;
+      }
 
       if (state.expandedModId !== modId) {
         state.expandedModId = modId;
