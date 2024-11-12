@@ -49,6 +49,7 @@ export const initialSyncedState: Required<EditorStateSynced> = {
   brickPipelineUIStateById: {},
   isDataPanelExpanded: true,
   isModListingPanelExpanded: true,
+  findInModQueryByModId: {},
 } as const;
 
 export const initialState: EditorState = {

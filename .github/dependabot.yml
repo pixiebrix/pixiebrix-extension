@@ -1,5 +1,5 @@
 # Documentation
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 # Updates can also be manually requested by clicking "Last checked 3 days ago" on the page
 # https://github.com/pixiebrix/pixiebrix-extension/network/updates
@@ -7,7 +7,9 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /applications/browser-extension/
+    # Dependabot doesn't support having a different configuration for each npm workspace
+    # https://github.com/dependabot/dependabot-core/issues/6346#issuecomment-1580691400
+    directory: /
     schedule:
       interval: weekly
       day: sunday
@@ -36,6 +38,11 @@ updates:
       datadog:
         patterns:
           - "@datadog/*"
+      object-hash:
+        patterns:
+          - "object-hash"
+          - "@types/object-hash"
+
     ignore:
       # Until https://github.com/pixiebrix/pixiebrix-extension/issues/7915
       - dependency-name: "*storybook*"

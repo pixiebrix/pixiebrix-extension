@@ -21,6 +21,7 @@ import {
   smartAppendPeriod,
   splitStartingEmoji,
   trimEndOnce,
+  truncateMiddle,
 } from "@/utils/stringUtils";
 
 describe("string utilities", () => {
@@ -200,5 +201,22 @@ describe("extractMarkdownLink", () => {
       "This is a [Markdown link](https://example.com) in the middle of a test string";
     const result = extractMarkdownLink(text);
     expect(result).toBeNull();
+  });
+
+  describe("truncateMiddle", () => {
+    it("does not truncate short strings", () => {
+      const text = "short";
+      expect(truncateMiddle(text, { length: text.length })).toBe(text);
+    });
+
+    it("truncates long string", () => {
+      expect(truncateMiddle("a b c d e f g h", { length: 10 })).toBe(
+        "a b c...f g h",
+      );
+    });
+
+    it("doesn't lengthen string", () => {
+      expect(truncateMiddle("abcde", { length: 2 })).toBe("abcde");
+    });
   });
 });

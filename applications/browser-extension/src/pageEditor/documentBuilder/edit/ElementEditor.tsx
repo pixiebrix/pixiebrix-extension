@@ -28,6 +28,7 @@ import { getProperty } from "@/utils/objectUtils";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import CssSpacingField from "@/components/fields/schemaFields/CssSpacingField";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ElementEditorProps = {
   documentBodyName: string;
@@ -35,9 +36,19 @@ type ElementEditorProps = {
 
 const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
   const activeElement = useSelector(selectActiveBuilderPreviewElement);
+  assertNotNullish(activeElement, "Expected activeElement");
+
   const elementName = `${documentBodyName}.${activeElement}`;
-  const [{ value: documentBuilderElement }] =
-    useField<DocumentBuilderElement>(elementName);
+
+  const [{ value: documentBuilderElement }] = useField<
+    DocumentBuilderElement | undefined
+  >(elementName);
+
+  assertNotNullish(
+    documentBuilderElement,
+    `documentBuilderElement not found: ${elementName}`,
+  );
+
   const ElementOptions = useElementOptions(documentBuilderElement, elementName);
 
   const currentElementName: string =
