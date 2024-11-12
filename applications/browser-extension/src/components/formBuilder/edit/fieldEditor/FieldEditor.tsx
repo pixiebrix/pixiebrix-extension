@@ -58,6 +58,7 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import TextAreaFields from "@/components/formBuilder/edit/fieldEditor/TextAreaFields";
+import RichTextFields from "@/components/formBuilder/edit/fieldEditor/RichTextFields";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -337,6 +338,17 @@ const FieldEditor: React.FC<{
         value={selectedUiTypeOption.value}
         onChange={onUiTypeChange}
       />
+
+      {uiType.uiWidget === "richText" && (
+        <RichTextFields
+          uiOptionsPath={joinPathParts(
+            name,
+            "uiSchema",
+            propertyName,
+            "ui:options",
+          )}
+        />
+      )}
 
       {uiType.uiWidget === "imageCrop" && (
         <SchemaField
