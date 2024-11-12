@@ -32,9 +32,11 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   const { database } = options;
 
   if (!database) {
-    const databaseConfigurationError: ErrorSchema = {
+    // TODO: Can't figure out how to satisfy this type without casting, but this is how it's done in the docs
+    //  https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/custom-widgets-fields/#raising-errors-from-within-a-custom-widget-or-field
+    const databaseConfigurationError = {
       __errors: ["Rich text field asset database is required"],
-    };
+    } as ErrorSchema;
     onChange(value, databaseConfigurationError);
   }
 
