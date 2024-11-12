@@ -21,11 +21,7 @@
     "build:typescript": "tsc --noEmit",
     "generate:headers": "npm run test -- src/development/headers.test.ts --no-silent",
     "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build",
-    "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
-    "dead-code:base_BROKEN_DUE_TO_NOT_BEING_RUN_IN_ROOT": "knip --config knip.mjs --tags=-knip",
-    "dead-code:base": "echo 'skipping knip until fixed in next changeset. See: https://knip.dev/guides/handling-issues#missing-binaries'",
-    "dead-code:prod": "npm run dead-code -- --production"
+    "build-storybook": "storybook build"
   },
   "engine-strict": true,
   "engines": {
@@ -274,7 +270,6 @@
     "jest-webextension-mock": "^3.9.0",
     "jsdom": "^25.0.1",
     "jsdom-testing-mocks": "^1.13.1",
-    "knip": "^5.36.2",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
     "msw": "^1.3.5",

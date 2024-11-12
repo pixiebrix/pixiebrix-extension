@@ -9,12 +9,16 @@
   "scripts": {
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
-    "build": "npm run build --workspaces"
+    "build": "npm run build --workspaces",
+    "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
+    "dead-code:base": "knip --tags=-knip",
+    "dead-code:prod": "npm run dead-code -- --production"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "devDependencies": {
+    "knip": "^5.36.7",
     "prettier": "3.1.0"
   }
 }
