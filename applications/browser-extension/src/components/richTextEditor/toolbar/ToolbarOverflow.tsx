@@ -26,34 +26,24 @@ import { Button, ButtonGroup, Overlay, Popover } from "react-bootstrap";
 import styles from "@/components/richTextEditor/toolbar/Toolbar.module.scss";
 
 const OverflowPopover = () => (
-  <>
-    <ButtonGroup size="sm" className="mr-2">
-      <UnderlineButton />
-      <StrikethroughButton />
-    </ButtonGroup>
-    <ButtonGroup size="sm">
-      <HorizontalRuleButton />
-      <RemoveTextFormattingButton />
-    </ButtonGroup>
-  </>
+  <ButtonGroup size="sm">
+    <UnderlineButton />
+    <StrikethroughButton />
+    <HorizontalRuleButton />
+    <RemoveTextFormattingButton />
+  </ButtonGroup>
 );
 
 const ToolbarOverflow = () => {
   const [show, setShow] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [container, setContainer] = useState<HTMLElement | null>(null);
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (buttonRef.current) {
-      const rootNode = buttonRef.current.getRootNode({ composed: false });
-
-      if (rootNode instanceof ShadowRoot) {
-        setContainer(rootNode.host as HTMLElement);
-      } else if (rootNode instanceof HTMLElement) {
-        setContainer(rootNode);
-      }
-    }
-  });
+    setButtonElement(buttonRef.current);
+  }, []);
 
   const handleHide = useCallback((event: Event) => {
     // Check if the click path includes our button
@@ -78,11 +68,10 @@ const ToolbarOverflow = () => {
         <FontAwesomeIcon icon={faEllipsisH} />
       </Button>
       <Overlay
-        container={container}
-        target={buttonRef.current}
+        container={buttonElement}
+        target={buttonElement}
         show={show}
         placement="bottom"
-        // rootClose
         onHide={handleHide}
       >
         <Popover

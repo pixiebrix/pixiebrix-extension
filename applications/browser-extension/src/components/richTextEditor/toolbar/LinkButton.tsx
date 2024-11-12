@@ -16,8 +16,8 @@
  */
 
 import React, {
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   useCallback,
   useEffect,
   useRef,
@@ -29,7 +29,7 @@ import { Button, Form, Overlay, Popover } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import styles from "@/components/richTextEditor/toolbar/LinkButton.module.scss";
-import { ValueOf } from "type-fest";
+import { type ValueOf } from "type-fest";
 
 const POPOVER_VIEW = {
   linkPreview: "linkPreview",
@@ -46,12 +46,12 @@ const LinkPreviewActions: React.FC<{
   onEdit: () => void;
   onRemove: () => void;
 }> = ({ href, onEdit, onRemove }) => (
-  <span>
-    Visit url:{" "}
-    <a href={href} target="_blank" rel="noopener noreferrer">
+  <span className="d-flex flex-nowrap align-items-center">
+    <span className="text-nowrap mr-1">Visit url:</span>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="mr-2">
       {href}
     </a>
-    <Button variant="link" onClick={onEdit}>
+    <Button variant="link" onClick={onEdit} className="mr-2">
       Edit
     </Button>
     <Button variant="link" onClick={onRemove}>
@@ -66,6 +66,7 @@ const LinkEditForm: React.FC<{
 }> = ({ initialHref, onSubmit }) => (
   <Form
     inline
+    className="flex-nowrap"
     onSubmit={(event) => {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
@@ -94,56 +95,66 @@ const UrlInputPopover = ({
 }) => {
   const { editor } = useCurrentEditor();
 
+  const handleSubmit = useCallback(
+    (url: string) => {
+      if (!url || url === "") {
+        editor?.chain().focus().extendMarkRange("link").unsetLink().run();
+      } else {
+        editor
+          ?.chain()
+          .focus()
+          .extendMarkRange("link")
+          .setLink({ href: url })
+          .run();
+      }
+
+      setPopoverState({
+        showPopover: false,
+        popoverView: POPOVER_VIEW.editForm,
+      });
+    },
+    [editor, setPopoverState],
+  );
+
   if (!editor) {
     return null;
   }
 
-  const handleSubmit = useCallback((url: string) => {
-    if (!url || url === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-    } else {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: url })
-        .run();
+  switch (popoverView) {
+    case POPOVER_VIEW.linkPreview: {
+      return (
+        <LinkPreviewActions
+          href={editor.getAttributes("link").href as string}
+          onEdit={() => {
+            setPopoverState({
+              showPopover: true,
+              popoverView: POPOVER_VIEW.editForm,
+            });
+          }}
+          onRemove={() => {
+            editor.chain().focus().extendMarkRange("link").unsetLink().run();
+            setPopoverState({
+              showPopover: false,
+              popoverView: POPOVER_VIEW.linkPreview,
+            });
+          }}
+        />
+      );
     }
 
-    setPopoverState({ showPopover: false, popoverView: POPOVER_VIEW.editForm });
-  }, []);
+    case POPOVER_VIEW.editForm: {
+      return (
+        <LinkEditForm
+          initialHref={(editor.getAttributes("link").href as string) ?? ""}
+          onSubmit={handleSubmit}
+        />
+      );
+    }
 
-  if (popoverView === POPOVER_VIEW.linkPreview) {
-    return (
-      <LinkPreviewActions
-        href={editor.getAttributes("link").href}
-        onEdit={() => {
-          setPopoverState({
-            showPopover: true,
-            popoverView: POPOVER_VIEW.editForm,
-          });
-        }}
-        onRemove={() => {
-          editor.chain().focus().extendMarkRange("link").unsetLink().run();
-          setPopoverState({
-            showPopover: false,
-            popoverView: POPOVER_VIEW.linkPreview,
-          });
-        }}
-      />
-    );
+    default: {
+      return null;
+    }
   }
-
-  if (popoverView === POPOVER_VIEW.editForm) {
-    return (
-      <LinkEditForm
-        initialHref={editor.getAttributes("link").href ?? ""}
-        onSubmit={handleSubmit}
-      />
-    );
-  }
-
-  return null;
 };
 
 const LinkButton: React.FunctionComponent = () => {
@@ -153,7 +164,15 @@ const LinkButton: React.FunctionComponent = () => {
       showPopover: false,
       popoverView: POPOVER_VIEW.editForm,
     });
+
   const buttonRef = useRef(null);
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(
+    null,
+  );
+
+  useEffect(() => {
+    setButtonElement(buttonRef.current);
+  }, []);
 
   useEffect(() => {
     const onSelectionUpdate = ({ editor }: { editor: Editor }) => {
@@ -172,10 +191,6 @@ const LinkButton: React.FunctionComponent = () => {
     };
   }, [editor]);
 
-  if (!editor) {
-    return null;
-  }
-
   const handleHide = useCallback((event: Event) => {
     // Check if the click path includes our button
     const path = event.composedPath();
@@ -185,6 +200,10 @@ const LinkButton: React.FunctionComponent = () => {
 
     setPopoverState((state) => ({ ...state, showPopover: false }));
   }, []);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <>
@@ -211,7 +230,8 @@ const LinkButton: React.FunctionComponent = () => {
 
       <Overlay
         show={showPopover}
-        target={buttonRef.current}
+        target={buttonElement}
+        container={buttonElement}
         placement="top"
         rootClose
         onHide={handleHide}

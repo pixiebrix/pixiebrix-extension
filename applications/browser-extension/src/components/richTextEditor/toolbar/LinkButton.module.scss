@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors";
 
 .bubbleMenu {
-  font-size: 14px;
+  font-size: 1rem;
   padding: 4px 8px;
   max-width: none;
 
@@ -33,5 +34,9 @@
 
   :global(.btn) {
     padding: 0;
+  }
+
+  span {
+    color: $N800;
   }
 }

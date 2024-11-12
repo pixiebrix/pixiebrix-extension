@@ -28,29 +28,27 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import LinkButton from "@/components/richTextEditor/toolbar/LinkButton";
 import ToolbarOverflow from "@/components/richTextEditor/toolbar/ToolbarOverflow";
 
-const Toolbar: React.FunctionComponent = () => {
-  return (
-    <ButtonToolbar
-      className={styles.toolbar}
-      aria-label="Rich-Text Editor Toolbar"
-    >
-      <HeadingLevelDropdown />
-      <ButtonGroup size="sm" className="mr-2">
-        <BoldButton />
-        <ItalicButton />
-        <LinkButton />
-      </ButtonGroup>
+const Toolbar: React.FunctionComponent = () => (
+  <ButtonToolbar
+    className={styles.toolbar}
+    aria-label="Rich-Text Editor Toolbar"
+  >
+    <HeadingLevelDropdown />
+    <ButtonGroup size="sm">
+      <BoldButton />
+      <ItalicButton />
+      <LinkButton />
+    </ButtonGroup>
 
-      <ButtonGroup size="sm" className="mr-2">
-        <BulletedListButton />
-        <NumberedListButton />
-      </ButtonGroup>
+    <ButtonGroup size="sm">
+      <BulletedListButton />
+      <NumberedListButton />
+    </ButtonGroup>
 
-      <ButtonGroup size="sm">
-        <ToolbarOverflow />
-      </ButtonGroup>
-    </ButtonToolbar>
-  );
-};
+    <ButtonGroup size="sm">
+      <ToolbarOverflow />
+    </ButtonGroup>
+  </ButtonToolbar>
+);
 
 export default Toolbar;
