@@ -75,14 +75,12 @@ browser.permissions = {
   remove: jest
     .fn()
     .mockImplementation(async (toRemove: Permissions.AnyPermissions) => {
-      remove(
-        extensionPermissions.permissions,
-        (permission) => toRemove.permissions?.includes(permission),
+      remove(extensionPermissions.permissions, (permission) =>
+        toRemove.permissions?.includes(permission),
       );
       // XXX: only handles exact matches
-      remove(
-        extensionPermissions.origins,
-        (permission) => toRemove.origins?.includes(permission),
+      remove(extensionPermissions.origins, (permission) =>
+        toRemove.origins?.includes(permission),
       );
 
       for (const listener of removeListeners) {

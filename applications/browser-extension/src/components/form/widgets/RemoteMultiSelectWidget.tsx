@@ -90,8 +90,8 @@ const RemoteMultiSelectWidget = <TOption extends Option<TOption["value"]>>({
     } as ChangeEvent<MultiSelectLike<TOption>>);
   };
 
-  const selectedOptions = options.filter(
-    (option: Option) => value?.includes(option.value),
+  const selectedOptions = options.filter((option: Option) =>
+    value?.includes(option.value),
   );
 
   return (
