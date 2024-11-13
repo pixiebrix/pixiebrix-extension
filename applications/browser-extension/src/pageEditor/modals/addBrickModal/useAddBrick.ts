@@ -143,7 +143,7 @@ function useAddBrick(): AddBrick {
 
       return {};
     },
-    [activeModComponent, modalData, makeNewBrick],
+    [activeModComponent, modalData, makeNewBrick, getModDraftStateForModId],
   );
 
   const addBrick = useCallback(

@@ -73,6 +73,8 @@ export class PageEditorPage extends BasePageObject {
     name: "Launch Template Gallery",
   });
 
+  toastLocator = this.getByRole("status");
+
   constructor(
     page: Page,
     private readonly urlToConnectTo: string,

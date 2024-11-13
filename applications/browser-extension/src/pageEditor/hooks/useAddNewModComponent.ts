@@ -24,7 +24,6 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import { type ModComponentFormStateAdapter } from "@/pageEditor/starterBricks/modComponentFormStateAdapter";
 import { updateDraftModComponent } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
-import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -39,7 +38,10 @@ import { StarterBrickTypes } from "@/types/starterBrickTypes";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { useInsertPane } from "@/pageEditor/panes/insert/InsertPane";
 import { type ModMetadata } from "@/types/modComponentTypes";
-import { createNewUnsavedModMetadata } from "@/utils/modUtils";
+import {
+  createNewUnsavedModMetadata,
+  emptyModVariablesDefinitionFactory,
+} from "@/utils/modUtils";
 import {
   selectGetModDraftStateForModId,
   selectModMetadatas,
@@ -71,10 +73,6 @@ function useFreshModNameGenerator(): () => string {
 function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
   const dispatch = useDispatch<AppDispatch>();
   const { setInsertingStarterBrickType } = useInsertPane();
-  // XXX: useFlags is async. The flag query might not be initialized by the time the callback is called. Ensure
-  // useFlags has already been used on the page, e.g., the AddStarterBrickButton, to ensure the flags have loaded by
-  // the time the returned callback is called.
-  const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
     (x) => x.settings.suggestElements ?? false,
   );
@@ -128,14 +126,20 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
         dispatch(actions.addModComponentFormState(initialFormState));
         // Need to explicitly check availability of the new component form state
         // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/9389
-        void dispatch(actions.checkActiveModComponentAvailability());
+        void dispatch(actions.checkAvailableDraftModComponents());
+
+        // Mod won't exist in getModDraftStateForModId (method will throw) because it captures the state
+        // from the render, not the current state of the store
+        const draftModState = modMetadata
+          ? getModDraftStateForModId(initialFormState.modMetadata.id)
+          : {
+              variablesDefinition: emptyModVariablesDefinitionFactory(),
+              optionsArgs: {},
+            };
 
         updateDraftModComponent(
           allFramesInInspectedTab,
-          adapter.asDraftModComponent(
-            initialFormState,
-            getModDraftStateForModId(initialFormState.modMetadata.id),
-          ),
+          adapter.asDraftModComponent(initialFormState, draftModState),
           {
             isSelectedInEditor: true,
             runReason: RunReason.PAGE_EDITOR_REGISTER,
@@ -171,7 +175,6 @@ function useAddNewModComponent(modMetadata?: ModMetadata): AddNewModComponent {
     },
     [
       dispatch,
-      flagOff,
       getInitialModComponentFormState,
       getModDraftStateForModId,
       modMetadata,
