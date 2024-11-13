@@ -45,7 +45,7 @@ const ImageButton: React.FunctionComponent = () => {
   const openFilePicker = async () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = "image/*";
+    input.accept = "image/png, image/jpeg, image/gif";
 
     input.addEventListener("change", async (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];

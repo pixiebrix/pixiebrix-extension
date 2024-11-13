@@ -26,6 +26,7 @@ import isolatedComponentList from "./isolatedComponentList";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
+import { s3UploadApi } from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
@@ -154,9 +155,12 @@ export default function IsolatedComponent<T>({
       configureStore({
         reducer: {
           [appApi.reducerPath]: appApi.reducer,
+          [s3UploadApi.reducerPath]: s3UploadApi.reducer,
         },
         middleware(getDefaultMiddleware) {
-          return getDefaultMiddleware().concat(appApi.middleware);
+          return getDefaultMiddleware()
+            .concat(appApi.middleware)
+            .concat(s3UploadApi.middleware);
         },
       }),
     [],
