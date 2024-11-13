@@ -14,11 +14,11 @@ set -e
 
 # Upload to S3 for debugging in Chrome
 S3_UPLOAD_BASE_URL="s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH"
-aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.js.map' --include '*.js' --recursive --no-progress
+aws s3 cp ./applications/browser-extension/dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.js.map' --include '*.js' --recursive --no-progress
 
 # Datadog uses release-version, not the code commit version. So get from produced manifest
 # Clean-up the name because it's not clear if the cli normalized the name like the JS library does
-RELEASE_VERSION=$(jq -r '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/manifest.json)
+RELEASE_VERSION=$(jq -r '.version_name | gsub("\\+"; "_") | ascii_downcase' applications/browser-extension/dist/manifest.json)
 
 # Should match the path that appears in minified stack trace
 # See sourceMapPublicUrl in webpack.config.mjs
@@ -32,7 +32,7 @@ echo "Uploading sourcemaps to Datadog for version [[$RELEASE_VERSION]] with mini
 # Reference: https://github.com/DataDog/datadog-ci/tree/master/src/commands/sourcemaps#commands
 # `release-version` must match the version in initErrorReporter.ts and performance.ts
 # project-path is the prefix before src in the map: webpack:///./src/bricks/registry.ts
-npx --yes @datadog/datadog-ci sourcemaps upload ./dist \
+npx --yes @datadog/datadog-ci sourcemaps upload ./applications/browser-extension/dist \
   --service="pixiebrix-browser-extension" \
   --release-version="$RELEASE_VERSION" \
   --minified-path-prefix="$MINIFIED_PATH_PREFIX" \
