@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false, // Could this replace the need for our watch commands?
+  "files": [], // intentionally empty
+  "references": [
+    // UPDATED BY PROJECT GENERATORS
+    // All projects in the repository
+    {
+      "path": "./applications/browser-extension"
+    },
+    {
+      "path": "./libraries/utils"
+    }
+  ]
+}

@@ -6,7 +6,7 @@
     "test": "TZ=UTC jest",
     "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
-    "build": "echo 'buildless package'",
+    "build": "tsc --build",
     "build:typecheck": "tsc --noEmit"
   },
   "license": "AGPL-3.0",

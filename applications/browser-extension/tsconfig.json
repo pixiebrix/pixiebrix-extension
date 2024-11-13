@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "composite": false,
+    "declaration": false,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
@@ -10,5 +12,12 @@
     },
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
+  "references": [
+    // UPDATED BY NX SYNC
+    // All project dependencies
+    {
+      "path": "../../libraries/utils"
+    }
+  ],
   "exclude": ["venv", "dist", "node_modules"]
 }
