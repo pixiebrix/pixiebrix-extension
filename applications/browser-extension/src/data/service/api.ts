@@ -523,10 +523,6 @@ export const appApi = createApi({
         };
       },
       invalidatesTags(result, error, { assetId }) {
-        if (isAxiosError(error) && error.response?.status === 400) {
-          return [];
-        }
-
         return [
           { type: "Asset", id: assetId },
           { type: "Asset", id: "LIST" },

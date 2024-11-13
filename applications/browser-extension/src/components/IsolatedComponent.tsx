@@ -23,6 +23,9 @@ import React, { Suspense, useMemo } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import isolatedComponentList from "./isolatedComponentList";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { appApi } from "@/data/service/api";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
@@ -146,13 +149,27 @@ export default function IsolatedComponent<T>({
 
   const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
 
+  const store = useMemo(
+    () =>
+      configureStore({
+        reducer: {
+          [appApi.reducerPath]: appApi.reducer,
+        },
+        middleware(getDefaultMiddleware) {
+          return getDefaultMiddleware().concat(appApi.middleware);
+        },
+      }),
+    [],
+  );
+
   return (
     // `pb-name` is used to visually identify it in the dev tools
     <EmotionShadowRoot mode={MODE} pb-name={name} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
-        {/* Must call the factory on each render to pick up changes to the component props */}
-        <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
+        <Provider store={store}>
+          <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
+        </Provider>
       </Stylesheets>
     </EmotionShadowRoot>
   );
