@@ -28,7 +28,10 @@ import { type TabStateRootState } from "@/pageEditor/store/tabState/tabStateType
 import { type ModDefinitionsRootState } from "@/modDefinitions/modDefinitionsTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SessionRootState } from "@/pageEditor/store/session/sessionSliceTypes";
-import { type ModVariablesDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModDefinition,
+  type ModVariablesDefinition,
+} from "@/types/modDefinitionTypes";
 import { type EmptyObject, type Except } from "type-fest";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type EditorStateMigratedV12 } from "@/pageEditor/store/editor/pageEditorTypes/editorStateMigrated";
@@ -73,6 +76,7 @@ export enum ModalKey {
   MOVE_COPY_TO_MOD,
   SAVE_AS_NEW_MOD,
   CREATE_MOD,
+  SAVE_MOD_VERSION,
   ADD_BRICK,
   SAVE_DATA_INTEGRITY_ERROR,
 }
@@ -80,6 +84,10 @@ export enum ModalKey {
 export type ModalDefinition =
   | { type: ModalKey.ADD_BRICK; data: { addBrickLocation: AddBrickLocation } }
   | { type: ModalKey.SAVE_AS_NEW_MOD; data: EmptyObject }
+  | {
+      type: ModalKey.SAVE_MOD_VERSION;
+      data: { modId: RegistryId; sourceModDefinition: ModDefinition };
+    }
   | {
       type: ModalKey.CREATE_MOD;
       data: { keepLocalCopy: boolean } & (

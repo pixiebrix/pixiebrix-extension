@@ -73,6 +73,7 @@ import { removeUnusedDependencies } from "@/components/fields/schemaFields/integ
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
+  type ModDefinition,
   type ModOptionsDefinition,
   type ModVariablesDefinition,
 } from "@/types/modDefinitionTypes";
@@ -422,6 +423,27 @@ export const editorSlice = createSlice({
       state.visibleModal = {
         type: ModalKey.SAVE_AS_NEW_MOD,
         data: {},
+      };
+    },
+
+    showSaveModVersionModal(
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        modId: RegistryId;
+        sourceModDefinition: ModDefinition;
+      }>,
+    ) {
+      const { modId, sourceModDefinition } = payload;
+
+      state.visibleModal = {
+        type: ModalKey.SAVE_MOD_VERSION,
+        data: {
+          modId,
+          // Cast required due to draft/immutable shenanigans with RJSF uiSchema
+          sourceModDefinition: sourceModDefinition as Draft<ModDefinition>,
+        },
       };
     },
 
