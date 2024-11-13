@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ComponentProps, useCallback } from "react";
+import React, { type ComponentProps } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import AsyncButton from "./AsyncButton";
 import { ModalProvider, useModals } from "@/components/ConfirmationModal";
@@ -48,17 +48,22 @@ const ChildComponent = ({
   cancelCaption,
 }: ChildComponentType) => {
   const { showConfirmation } = useModals();
-  const buttonAction = useCallback(async () => {
-    await showConfirmation({
-      title,
-      message,
-      submitCaption,
-      cancelCaption,
-    });
+  return (
+    <AsyncButton
+      onClick={async () => {
+        await showConfirmation({
+          title,
+          message,
+          submitCaption,
+          cancelCaption,
+        });
 
-    // Do any action here if confirm === true
-  }, [showConfirmation]);
-  return <AsyncButton onClick={buttonAction}>Confirm Modal</AsyncButton>;
+        // Do any action here if confirm === true
+      }}
+    >
+      Confirm Modal
+    </AsyncButton>
+  );
 };
 
 const Template: Story<StoryType> = (args) => {

@@ -203,6 +203,7 @@ const ModsPageActions: React.FunctionComponent<{
       history,
       marketplaceListingUrl,
       modId,
+      editablePackageId,
       name,
       showDeactivate,
       showDelete,

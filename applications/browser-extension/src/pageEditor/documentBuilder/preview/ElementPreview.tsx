@@ -111,7 +111,7 @@ const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
         scrollIntoView,
       );
     };
-  }, []);
+  }, [elementName, isActive]);
 
   return elementRef;
 };

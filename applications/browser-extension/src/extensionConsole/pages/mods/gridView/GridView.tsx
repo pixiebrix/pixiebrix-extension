@@ -114,7 +114,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
   // Re-render the list when expandedRows changes.
   useEffect(() => {
     listRef.current?.resetAfterIndex(0);
-  }, [expandedGridRows, columnCount]);
+  }, [listRef, expandedGridRows, columnCount]);
 
   const GridRow = useCallback(
     ({
