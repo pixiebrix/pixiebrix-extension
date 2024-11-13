@@ -18,18 +18,83 @@
 import { useCreateAssetPreUploadMutation } from "@/data/service/api";
 import { type UUID } from "@/types/stringTypes";
 
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { type BaseQueryFn } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import axios from "axios";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { serializeError } from "serialize-error";
+
+interface PresignedUrlRequest {
+  url: string;
+  fields: Record<string, string>;
+  file: File;
+}
+
+const presignedUrlBaseQuery: BaseQueryFn<PresignedUrlRequest, void> = async ({
+  url,
+  fields,
+  file,
+}) => {
+  try {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(fields)) {
+      formData.append(key, value);
+    }
+
+    formData.append("file", file);
+
+    const response = await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return { data: response.data };
+  } catch (error) {
+    // Modeled after baseQuery.ts for PixieBrix API
+    if (isAxiosError(error)) {
+      error.name = "AxiosError";
+      return {
+        error: serializeError(error, { useToJSON: false }),
+      };
+    }
+
+    return {
+      error: serializeError(error),
+    };
+  }
+};
+
+export const s3UploadApi = createApi({
+  reducerPath: "s3UploadApi",
+  baseQuery: presignedUrlBaseQuery,
+  endpoints: (builder) => ({
+    uploadToS3: builder.mutation<void, PresignedUrlRequest>({
+      query: (request) => request,
+    }),
+  }),
+});
+
 const useUploadAsset: () => (
   databaseId: UUID,
   file: File,
 ) => Promise<void> = () => {
   const [createAssetPreUpload] = useCreateAssetPreUploadMutation();
+  const [uploadToS3] = s3UploadApi.useUploadToS3Mutation();
 
   return async (databaseId: UUID, file: File) => {
-    const result = await createAssetPreUpload({
+    // TODO: create transformer for this endpoint
+    const { upload_url: uploadUrl, fields } = await createAssetPreUpload({
       databaseId,
       filename: file.name,
     }).unwrap();
-    console.log("*** result", result);
+
+    await uploadToS3({
+      url: uploadUrl,
+      // @ts-expect-error -- `fields` on the swagger type is wrong
+      fields: fields as Record<string, string>,
+      file,
+    });
   };
 };
 
