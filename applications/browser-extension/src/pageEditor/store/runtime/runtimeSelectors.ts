@@ -38,7 +38,7 @@ export const selectActiveModComponentTraces: EditorSelector<TraceRecord[]> =
     (activeModComponentId, modComponentTraces) =>
       activeModComponentId
         ? // eslint-disable-next-line security/detect-object-injection -- UUID
-          modComponentTraces[activeModComponentId] ?? []
+          (modComponentTraces[activeModComponentId] ?? [])
         : [],
   );
 

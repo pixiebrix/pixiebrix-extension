@@ -41,8 +41,9 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
     }
 
     default: {
-      const brickConfig = nodes.find((node) => node.path === source)
-        ?.blockConfig;
+      const brickConfig = nodes.find(
+        (node) => node.path === source,
+      )?.blockConfig;
       if (brickConfig == null) {
         label = source;
       } else {
