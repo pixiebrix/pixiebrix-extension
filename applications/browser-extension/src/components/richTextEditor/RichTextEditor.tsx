@@ -54,7 +54,12 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = ({
         Underline,
         Link.extend({ inclusive: false }).configure({ openOnClick: false }),
         ...(assetDatabaseId
-          ? [ImageWithAssetDatabase.configure({ assetDatabaseId })]
+          ? [
+              ImageWithAssetDatabase.configure({
+                assetDatabaseId,
+                HTMLAttributes: { style: "max-width: 100%" },
+              }),
+            ]
           : []),
       ]}
       slotBefore={<Toolbar />}

@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCreateAssetPreUploadMutation } from "@/data/service/api";
+import {
+  useCreateAssetPreUploadMutation,
+  useUpdateAssetMutation,
+} from "@/data/service/api";
 import { type UUID } from "@/types/stringTypes";
 
 import { createApi } from "@reduxjs/toolkit/query/react";
@@ -23,6 +26,7 @@ import { type BaseQueryFn } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import axios from "axios";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { serializeError } from "serialize-error";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 interface PresignedUrlRequest {
   url: string;
@@ -78,23 +82,41 @@ export const s3UploadApi = createApi({
 const useUploadAsset: () => (
   databaseId: UUID,
   file: File,
-) => Promise<void> = () => {
+) => Promise<string> = () => {
   const [createAssetPreUpload] = useCreateAssetPreUploadMutation();
+  const [updateAsset] = useUpdateAssetMutation();
   const [uploadToS3] = s3UploadApi.useUploadToS3Mutation();
 
   return async (databaseId: UUID, file: File) => {
     // TODO: create transformer for this endpoint
-    const { upload_url: uploadUrl, fields } = await createAssetPreUpload({
+    const {
+      asset: { id: assetId },
+      upload_url: uploadUrl,
+      fields,
+    } = await createAssetPreUpload({
       databaseId,
       filename: file.name,
     }).unwrap();
+
+    assertNotNullish(assetId, "Expected assetId to be defined");
 
     await uploadToS3({
       url: uploadUrl,
       // @ts-expect-error -- `fields` on the swagger type is wrong
       fields: fields as Record<string, string>,
       file,
-    });
+    }).unwrap();
+
+    const { download_url: downloadUrl } = await updateAsset({
+      databaseId,
+      assetId,
+      // TODO: create transformer for this endpoint/remove snakecase
+      asset: { is_uploaded: true },
+    }).unwrap();
+
+    assertNotNullish(downloadUrl, "Expected downloadUrl to be defined");
+
+    return downloadUrl;
   };
 };
 

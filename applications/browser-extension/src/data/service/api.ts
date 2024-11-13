@@ -515,11 +515,19 @@ export const appApi = createApi({
       },
       invalidatesTags: [{ type: "Asset", id: "LIST" }],
     }),
-    updateAsset: builder.mutation<Asset, { databaseId: UUID; assetId: UUID }>({
-      query({ databaseId, assetId }) {
+    updateAsset: builder.mutation<
+      Asset,
+      {
+        databaseId: UUID;
+        assetId: UUID;
+        asset: Partial<Asset>;
+      }
+    >({
+      query({ databaseId, assetId, asset }) {
         return {
           url: API_PATHS.ASSET(databaseId, assetId),
           method: "patch",
+          data: asset,
         };
       },
       invalidatesTags(result, error, { assetId }) {
@@ -528,18 +536,6 @@ export const appApi = createApi({
           { type: "Asset", id: "LIST" },
         ];
       },
-    }),
-    downloadAsset: builder.query<Blob, { databaseId: UUID; assetId: UUID }>({
-      query({ databaseId, assetId }) {
-        return {
-          url: API_PATHS.ASSET(databaseId, assetId),
-          method: "get",
-          responseType: "blob",
-        };
-      },
-      providesTags: (result, error, { assetId }) => [
-        { type: "Asset", id: assetId },
-      ],
     }),
   }),
 });
@@ -573,5 +569,6 @@ export const {
   useCreateUserDeploymentMutation,
   useDeleteUserDeploymentMutation,
   useCreateAssetPreUploadMutation,
+  useUpdateAssetMutation,
   util,
 } = appApi;
