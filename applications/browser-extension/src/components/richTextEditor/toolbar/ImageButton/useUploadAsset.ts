@@ -88,10 +88,9 @@ const useUploadAsset: () => (
   const [uploadToS3] = s3UploadApi.useUploadToS3Mutation();
 
   return async (databaseId: UUID, file: File) => {
-    // TODO: create transformer for this endpoint
     const {
       asset: { id: assetId },
-      upload_url: uploadUrl,
+      uploadUrl,
       fields,
     } = await createAssetPreUpload({
       databaseId,
@@ -102,8 +101,7 @@ const useUploadAsset: () => (
 
     await uploadToS3({
       url: uploadUrl,
-      // @ts-expect-error -- `fields` on the swagger type is wrong
-      fields: fields as Record<string, string>,
+      fields,
       file,
     }).unwrap();
 

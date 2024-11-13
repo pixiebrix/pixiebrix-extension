@@ -278,6 +278,3 @@ export type ActivatedDeployment = {
   blueprint: RegistryId;
   blueprintVersion: SemVerString;
 };
-
-export type AssetPreUpload = components["schemas"]["AssetPreUpload"];
-export type Asset = components["schemas"]["Asset"];

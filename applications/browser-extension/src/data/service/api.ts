@@ -33,8 +33,6 @@ import {
   type RemoteIntegrationConfig,
   type DeploymentPayload,
   type ActivatedDeployment,
-  AssetPreUpload,
-  Asset,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -49,6 +47,10 @@ import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
+import {
+  AssetPreUpload,
+  transformAssetPreUploadResponse,
+} from "@/data/model/Asset";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -514,6 +516,7 @@ export const appApi = createApi({
         };
       },
       invalidatesTags: [{ type: "Asset", id: "LIST" }],
+      transformResponse: transformAssetPreUploadResponse,
     }),
     updateAsset: builder.mutation<
       Asset,
