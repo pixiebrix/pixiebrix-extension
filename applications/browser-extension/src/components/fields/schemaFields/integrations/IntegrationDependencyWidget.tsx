@@ -94,8 +94,8 @@ function lookupAuthId(
 
   return dependency == null
     ? null
-    : authOptions.find(({ value }) => value === dependency.configId)?.value ??
-        null;
+    : (authOptions.find(({ value }) => value === dependency.configId)?.value ??
+        null);
 }
 
 /**

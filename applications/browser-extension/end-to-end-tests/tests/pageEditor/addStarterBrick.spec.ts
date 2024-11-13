@@ -41,6 +41,9 @@ test("Add new mod with different starter brick components", async ({
       page.getByRole("link", { name: "navigation" }),
     );
 
+    // Check for https://github.com/pixiebrix/pixiebrix-extension/issues/9511
+    await expect(pageEditorPage.toastLocator).toBeHidden();
+
     await expect(
       pageEditorPage.getByText(modComponentNameMatcher),
     ).toBeVisible();

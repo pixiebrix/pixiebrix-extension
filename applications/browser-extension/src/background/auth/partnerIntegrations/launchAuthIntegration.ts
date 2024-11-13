@@ -135,7 +135,7 @@ export async function launchAuthIntegration({
       "Integration did not return an OAuth2 context",
     );
 
-    const refreshUrl = refreshToken ? oAuth2Context.tokenUrl ?? null : null;
+    const refreshUrl = refreshToken ? (oAuth2Context.tokenUrl ?? null) : null;
 
     console.info("Setting partner auth for Control Room %s", controlRoomUrl);
 

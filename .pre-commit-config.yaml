@@ -21,6 +21,12 @@ repos:
     rev: v3.1.0
     hooks:
       - id: prettier
+        additional_dependencies:
+          # mirrors-prettier won't receive updates after v3.1.0 because prettier changed their
+          # plugin system: "prettier made some changes that breaks plugins entirely"
+          # See: https://github.com/pre-commit/pre-commit/issues/3133
+          # The additional_dependencies aren't updated with `pre-commit autoupdate`
+          - prettier@3.3.3
   # TODO: restore in https://github.com/pixiebrix/pixiebrix-extension/issues/9441
   # - repo: local
   #   hooks:

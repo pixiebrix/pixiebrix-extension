@@ -118,9 +118,10 @@ function useSubmitPackage({ create = false }: SubmitOptions): SubmitCallbacks {
       const { kind, metadata } = unsavedPackageJson;
 
       try {
-        const data = await (create
-          ? createPackage({ ...values, kind })
-          : updatePackage({ ...values, kind })
+        const data = await (
+          create
+            ? createPackage({ ...values, kind })
+            : updatePackage({ ...values, kind })
         ).unwrap();
 
         // We attach the handler below, and don't want it to block the save
