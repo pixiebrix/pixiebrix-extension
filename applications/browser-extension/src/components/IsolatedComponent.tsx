@@ -158,9 +158,11 @@ export default function IsolatedComponent<T>({
           [s3UploadApi.reducerPath]: s3UploadApi.reducer,
         },
         middleware(getDefaultMiddleware) {
+          /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
           return getDefaultMiddleware()
             .concat(appApi.middleware)
             .concat(s3UploadApi.middleware);
+          /* eslint-enable unicorn/prefer-spread  */
         },
       }),
     [],

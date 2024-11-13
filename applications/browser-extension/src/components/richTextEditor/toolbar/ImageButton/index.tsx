@@ -55,7 +55,7 @@ const ImageButton: React.FunctionComponent = () => {
 
       try {
         const downloadUrl = await uploadAsset(assetDatabaseId, file);
-        editor.chain().focus().setImage({ src: downloadUrl }).run();
+        editor.chain().focus().setImage({ src: downloadUrl, alt: "" }).run();
       } catch (error) {
         // TODO: Implement error message handling in UI
         reportError(
