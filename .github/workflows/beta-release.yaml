@@ -44,7 +44,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: bash scripts/upload-sourcemaps.sh
+      - run: bash applications/browser-extension/scripts/upload-sourcemaps.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
