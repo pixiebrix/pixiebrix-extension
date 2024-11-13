@@ -8,7 +8,6 @@
   ],
   "scripts": {
     "test": "nx test",
-    "test:e2e:debug": "PWDEBUG=console playwright test",
     "lint": "nx lint",
     "build": "nx build",
     "build:typecheck": "nx build:typecheck",
