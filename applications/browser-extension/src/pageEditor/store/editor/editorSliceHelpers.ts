@@ -30,6 +30,7 @@ import { clearModComponentTraces } from "@/telemetry/trace";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { remove } from "lodash";
 import { selectGetModComponentFormStateByModComponentId } from "@/pageEditor/store/editor/editorSelectors";
+import castEditorState from "@/pageEditor/store/castState";
 
 /* eslint-disable security/detect-object-injection -- lots of immer-style code here dealing with Records */
 
@@ -43,9 +44,9 @@ export function ensureBrickPipelineUIState(
       makeInitialBrickPipelineUIState();
 
     const modComponentFormState =
-      selectGetModComponentFormStateByModComponentId({ editor: state })(
-        modComponentId,
-      );
+      selectGetModComponentFormStateByModComponentId({
+        editor: castEditorState(state),
+      })(modComponentId);
     const pipeline = modComponentFormState?.modComponent.brickPipeline;
 
     assertNotNullish(
