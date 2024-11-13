@@ -228,7 +228,7 @@ jobs:
       - name: Merge blob reports
         # Provide `--yes` for knip. Even though playwright will be available via @playwright/test, knip doesn't
         #   associate it with the playwright command
-        run: PLAYWRIGHT_JSON_OUTPUT_NAME=./applications/browser-extension/playwright-report/results.json npx --yes playwright merge-reports --reporter=html,json ./applications/browser-extension/blob-reports
+        run: PLAYWRIGHT_HTML_OUTPUT_DIR=./applications/browser-extension/playwright-report PLAYWRIGHT_JSON_OUTPUT_NAME=./applications/browser-extension/playwright-report/results.json npx --yes playwright merge-reports --reporter=html,json ./applications/browser-extension/blob-reports
       - name: Password protect merged Playwright report
         if: always()
         shell: bash
