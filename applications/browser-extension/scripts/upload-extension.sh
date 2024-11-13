@@ -17,6 +17,7 @@ BUILD_FILENAME="${BUILD_PATH##*/}"
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
 : "${AWS_DEFAULT_REGION?Need to set AWS_DEFAULT_REGION}"
 
+# Ensure we only zip up the dist dir (exclude the applications and browser-extension directories)
 cd applications/browser-extension
 zip -r "../../$BUILD_FILENAME" dist -x '*.map'
 cd -
