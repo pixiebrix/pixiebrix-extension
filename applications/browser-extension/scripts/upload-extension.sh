@@ -17,5 +17,8 @@ BUILD_FILENAME="${BUILD_PATH##*/}"
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
 : "${AWS_DEFAULT_REGION?Need to set AWS_DEFAULT_REGION}"
 
-zip -r "$BUILD_FILENAME" applications/browser-extension/dist -x '*.map'
+cd applications/browser-extension
+zip -r "../../$BUILD_FILENAME" dist -x '*.map'
+cd -
+
 aws s3 cp "$BUILD_FILENAME" "s3://pixiebrix-extension-builds/$BUILD_PATH" --no-progress
