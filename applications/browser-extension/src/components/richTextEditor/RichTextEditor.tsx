@@ -34,15 +34,6 @@ interface ImageWithAssetDatabaseOptions extends ImageOptions {
   assetDatabaseId: UUID | null;
 }
 
-const ImageWithAssetDatabase = Image.extend<ImageWithAssetDatabaseOptions>({
-  addOptions() {
-    return {
-      ...this.parent?.(),
-      assetDatabaseId: null,
-    };
-  },
-});
-
 const RichTextEditor: React.FunctionComponent<EditorProps> = ({
   assetDatabaseId,
   ...props
@@ -55,7 +46,14 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = ({
         Link.extend({ inclusive: false }).configure({ openOnClick: false }),
         ...(assetDatabaseId
           ? [
-              ImageWithAssetDatabase.configure({
+              Image.extend<ImageWithAssetDatabaseOptions>({
+                addOptions() {
+                  return {
+                    ...this.parent?.(),
+                    assetDatabaseId: null,
+                  };
+                },
+              }).configure({
                 assetDatabaseId,
                 inline: true,
                 HTMLAttributes: { style: "max-width: 100%" },
