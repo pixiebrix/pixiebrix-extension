@@ -37,28 +37,28 @@ jobs:
           RELEASE_CHANNEL: stable
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
-      - run: bash scripts/upload-sourcemaps.sh
+      - run: bash applications/browser-extension/scripts/upload-sourcemaps.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       - name: Delete local sourcemaps
-        run: find dist -name '*.map' -delete
+        run: find applications/browser-extension/dist -name '*.map' -delete
       - name: Save store extension
         uses: actions/upload-artifact@v4
         with:
           name: build-for-store
-          path: dist
+          path: applications/browser-extension/dist
           retention-days: 30
           if-no-files-found: error
       - name: Create production version
-        run: npx dot-json@1.3.0 dist/manifest.json key '${{ env.CHROME_MANIFEST_KEY }}'
+        run: npx dot-json@1.3.0 applications/browser-extension/dist/manifest.json key '${{ env.CHROME_MANIFEST_KEY }}'
       - name: Save production extension
         uses: actions/upload-artifact@v4
         with:
           name: build-production
-          path: dist
+          path: applications/browser-extension/dist
           retention-days: 30
           if-no-files-found: error
 
