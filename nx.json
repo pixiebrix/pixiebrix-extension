@@ -10,6 +10,7 @@
       "cache": true
     },
     "lint": {
+      "dependsOn": ["^build:typecheck"],
       "cache": true
     },
     "build:typecheck": {
