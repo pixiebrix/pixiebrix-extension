@@ -48,8 +48,10 @@ import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
 import {
-  AssetPreUpload,
+  type Asset,
+  type AssetPreUpload,
   transformAssetPreUploadResponse,
+  transformAssetResponse,
 } from "@/data/model/Asset";
 
 export const appApi = createApi({
@@ -523,14 +525,14 @@ export const appApi = createApi({
       {
         databaseId: UUID;
         assetId: UUID;
-        asset: Partial<Asset>;
+        isUploaded: Asset["isUploaded"];
       }
     >({
-      query({ databaseId, assetId, asset }) {
+      query({ databaseId, assetId, isUploaded }) {
         return {
           url: API_PATHS.ASSET(databaseId, assetId),
           method: "patch",
-          data: asset,
+          data: { is_uploaded: isUploaded },
         };
       },
       invalidatesTags(result, error, { assetId }) {
@@ -539,6 +541,7 @@ export const appApi = createApi({
           { type: "Asset", id: "LIST" },
         ];
       },
+      transformResponse: transformAssetResponse,
     }),
   }),
 });

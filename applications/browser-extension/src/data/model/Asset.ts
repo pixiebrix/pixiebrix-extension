@@ -30,23 +30,34 @@ export type Asset = {
 
 export type AssetPreUpload = {
   asset: Asset;
-  uploadUrl: string;
+  uploadUrl: URL;
   fields: Record<string, string>;
 };
+
+export function transformAssetResponse(
+  response: components["schemas"]["Asset"],
+): Asset {
+  return {
+    id: validateUUID(response.id),
+    // @ts-expect-error -- TODO: these don't seem to be actually optional, how have we dealt with this in the past?
+    downloadUrl: new URL(response.download_url),
+    // @ts-expect-error -- TODO: see above
+    filename: response.filename,
+    // @ts-expect-error -- TODO: see above
+    isUploaded: response.is_uploaded,
+    // @ts-expect-error -- TODO: see above
+    updatedAt: new Date(response.updated_at),
+    // @ts-expect-error -- TODO: see above
+    createdAt: new Date(response.created_at),
+  };
+}
 
 export function transformAssetPreUploadResponse(
   response: components["schemas"]["AssetPreUpload"],
 ): AssetPreUpload {
   return {
-    asset: {
-      id: validateUUID(response.asset.id),
-      downloadUrl: new URL(response.asset.download_url),
-      filename: response.asset.filename,
-      isUploaded: response.asset.is_uploaded,
-      updatedAt: new Date(response.asset.updated_at),
-      createdAt: new Date(response.asset.created_at),
-    },
-    uploadUrl: response.upload_url,
+    asset: transformAssetResponse(response.asset),
+    uploadUrl: new URL(response.upload_url),
     // @ts-expect-error -- the type of fields in swagger is wrong (TODO make a ticket for this)
     fields: response.fields as Record<string, string>,
   };

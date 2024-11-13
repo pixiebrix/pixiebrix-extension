@@ -82,14 +82,14 @@ export const s3UploadApi = createApi({
 const useUploadAsset: () => (
   databaseId: UUID,
   file: File,
-) => Promise<string> = () => {
+) => Promise<URL> = () => {
   const [createAssetPreUpload] = useCreateAssetPreUploadMutation();
   const [updateAsset] = useUpdateAssetMutation();
   const [uploadToS3] = s3UploadApi.useUploadToS3Mutation();
 
   return async (databaseId: UUID, file: File) => {
     const {
-      asset: { id: assetId },
+      asset: { id: assetId, downloadUrl },
       uploadUrl,
       fields,
     } = await createAssetPreUpload({
@@ -100,16 +100,15 @@ const useUploadAsset: () => (
     assertNotNullish(assetId, "Expected assetId to be defined");
 
     await uploadToS3({
-      url: uploadUrl,
+      url: uploadUrl.href,
       fields,
       file,
     }).unwrap();
 
-    const { download_url: downloadUrl } = await updateAsset({
+    await updateAsset({
       databaseId,
       assetId,
-      // TODO: create transformer for this endpoint/remove snakecase
-      asset: { is_uploaded: true },
+      isUploaded: true,
     }).unwrap();
 
     assertNotNullish(downloadUrl, "Expected downloadUrl to be defined");
