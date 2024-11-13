@@ -43,7 +43,7 @@ export function getInvalidPath(
     }
   }
 
-  throw new Error("Expected invalid path");
+  return { invalidPath: "", values: {} };
 }
 
 /**
