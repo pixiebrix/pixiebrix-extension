@@ -86,7 +86,7 @@ export type ModalDefinition =
   | { type: ModalKey.SAVE_AS_NEW_MOD; data: EmptyObject }
   | {
       type: ModalKey.SAVE_MOD_VERSION;
-      data: { modId: RegistryId; sourceModDefinition: ModDefinition };
+      data: { packageId: UUID; sourceModDefinition: ModDefinition };
     }
   | {
       type: ModalKey.CREATE_MOD;

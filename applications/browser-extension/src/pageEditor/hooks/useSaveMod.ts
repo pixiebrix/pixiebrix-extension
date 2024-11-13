@@ -22,22 +22,9 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import type { EditablePackageMetadata } from "@/types/contract";
-import type { ModDefinition } from "@/types/modDefinitionTypes";
-import { assertNotNullish, type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { type AppDispatch } from "@/pageEditor/store/store";
-
-/** @internal */
-export function isModEditable(
-  editablePackages: EditablePackageMetadata[],
-  // Nullishable because the user might lose access to the mod while they were editing it (the mod or a mod component)
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
-  modDefinition: Nullishable<ModDefinition>,
-): boolean {
-  const modId = modDefinition?.metadata.id;
-  return modId != null && editablePackages.some((x) => x.name === modId);
-}
 
 /**
  * Returns a callback to show the appropriate save modal based on whether:
@@ -107,7 +94,11 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         return;
       }
 
-      if (!isModEditable(editablePackages, sourceModDefinition)) {
+      // Registry edit endpoints use package surrogate id
+      const packageId = editablePackages.find((x) => x.name === sourceModId)
+        ?.id;
+
+      if (packageId == null) {
         dispatch(editorActions.showSaveAsNewModModal());
 
         return;
@@ -115,7 +106,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
 
       dispatch(
         editorActions.showSaveModVersionModal({
-          modId: sourceModId,
+          packageId,
           sourceModDefinition,
         }),
       );

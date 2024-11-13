@@ -431,16 +431,16 @@ export const editorSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        modId: RegistryId;
+        packageId: UUID;
         sourceModDefinition: ModDefinition;
       }>,
     ) {
-      const { modId, sourceModDefinition } = payload;
+      const { packageId, sourceModDefinition } = payload;
 
       state.visibleModal = {
         type: ModalKey.SAVE_MOD_VERSION,
         data: {
-          modId,
+          packageId,
           // Cast required due to draft/immutable shenanigans with RJSF uiSchema
           sourceModDefinition: sourceModDefinition as Draft<ModDefinition>,
         },

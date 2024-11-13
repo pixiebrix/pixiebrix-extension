@@ -58,10 +58,7 @@ import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForS
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import {
-  useGetEditablePackagesQuery,
-  useUpdateModDefinitionMutation,
-} from "@/data/service/api";
+import { useUpdateModDefinitionMutation } from "@/data/service/api";
 import { type AppDispatch } from "@/pageEditor/store/store";
 
 type SaveVersionFormValues = {
@@ -120,7 +117,6 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
   const dispatch = useDispatch<AppDispatch>();
   const isMounted = useIsMounted();
 
-  const { data: editablePackages = [] } = useGetEditablePackagesQuery();
   const [updateModDefinitionOnServer] = useUpdateModDefinitionMutation();
 
   const getDraftModComponentsForMod = useSelector(
@@ -136,7 +132,8 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
     modalData,
     "SaveModVersionModalBody rendered without modal data set",
   );
-  const { modId, sourceModDefinition } = modalData;
+  const { packageId, sourceModDefinition } = modalData;
+  const modId = sourceModDefinition.metadata.id;
 
   const formSchema = useFormSchema(modId);
   const initialFormState = useInitialFormState(modId);
@@ -161,16 +158,6 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         dirtyModVariablesDefinition: draftModState.variablesDefinition,
       });
 
-      const packageId = editablePackages.find(
-        // Bricks endpoint uses "name" instead of id
-        (x) => x.name === modId,
-      )?.id;
-
-      assertNotNullish(
-        packageId,
-        "Package ID is required to upsert a mod definition",
-      );
-
       const upsertResponse = await updateModDefinitionOnServer({
         packageId,
         modDefinition: unsavedModDefinition,
@@ -193,6 +180,10 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
       });
 
       onHide();
+
+      notify.success({
+        message: "Saved mod",
+      });
     } catch (error) {
       if (isSpecificError(error, DataIntegrityError)) {
         dispatch(editorActions.showSaveDataIntegrityErrorModal());
@@ -229,6 +220,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         label="Message"
         id="save-mod-modal-message"
         as="textarea"
+        placeholder="Fix bug XYZ... Added features XYZ..."
         description="A short description of the changes to the mod. If you provide a message, you must increment the version."
         showUntouchedErrors
       />

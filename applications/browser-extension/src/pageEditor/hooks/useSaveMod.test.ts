@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { renderHook } from "@/pageEditor/testHelpers";
-import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { validateRegistryId } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
@@ -43,7 +43,6 @@ import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { act } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { array } from "cooky-cutter";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -334,32 +333,5 @@ describe("useSaveMod", () => {
     );
     expect(notify.success).not.toHaveBeenCalled();
     expect(notify.error).not.toHaveBeenCalled();
-  });
-});
-
-describe("isModEditable", () => {
-  test("returns true if mod is in editable packages", () => {
-    const mod = defaultModDefinitionFactory();
-    const editablePackages = [
-      editablePackageMetadataFactory(),
-      editablePackageMetadataFactory({
-        name: mod.metadata.id,
-      }),
-    ];
-
-    expect(isModEditable(editablePackages, mod)).toBe(true);
-  });
-
-  test("returns false if mod is not in editable packages", () => {
-    const mod = defaultModDefinitionFactory();
-    const editablePackages = array(editablePackageMetadataFactory, 1)();
-
-    expect(isModEditable(editablePackages, mod)).toBe(false);
-  });
-
-  test("returns false if mod is null", () => {
-    const editablePackages = array(editablePackageMetadataFactory, 1)();
-
-    expect(isModEditable(editablePackages, null)).toBe(false);
   });
 });
