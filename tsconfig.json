@@ -1,10 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
-  "compileOnSave": false, // Could this replace the need for our watch commands?
+  "compileOnSave": false,
   "files": [], // intentionally empty
   "references": [
-    // UPDATED BY PROJECT GENERATORS
     // All projects in the repository
+    // TODO: add @nx/js plugin which will automatically update these paths
     {
       "path": "./applications/browser-extension"
     },

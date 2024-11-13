@@ -10,7 +10,7 @@
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
     "build": "nx build",
-    "build:typecheck": "nx build:typecheck",
+    "build:typecheck": "nx run-many -t build:typecheck",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
     "dead-code:prod": "npm run dead-code -- --production",
