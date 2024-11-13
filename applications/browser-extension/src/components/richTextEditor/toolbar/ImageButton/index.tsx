@@ -78,7 +78,6 @@ const ImageButton: React.FunctionComponent = () => {
           ? !editor.can().chain().focus().setImage({ src: "" }).run()
           : true
       }
-      active={editor.isActive("bold")}
       aria-label="Insert Image"
     >
       <FontAwesomeIcon icon={faImage} />
