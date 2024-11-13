@@ -68,7 +68,7 @@ jobs:
           attempt_delay: 15000
           attempt_limit: 40
       - name: Build the extension
-        run: npm run build:webpack --workspace=applications/browser-extension
+        run: npm run build
       - name: Run end to end tests
         # Xvfb is required to run the tests in headed mode. Headed mode is required to run tests for browser extensions
         # in Playwright, see https://playwright.dev/docs/ci#running-headed

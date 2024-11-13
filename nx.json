@@ -13,6 +13,7 @@
       "cache": true
     },
     "build:typecheck": {
+      "dependsOn": ["^build:typecheck"],
       "cache": true
     }
   },
