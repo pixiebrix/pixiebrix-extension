@@ -22,6 +22,7 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 */
 
 // We only use this package for its types. URLPattern is Chrome 95+
+// See https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1199
 /// <reference types="urlpattern-polyfill" />
 
 // Improve standard type library https://www.totaltypescript.com/ts-reset
