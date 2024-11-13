@@ -16,13 +16,25 @@
  */
 
 import React from "react";
-import { useCurrentEditor } from "@tiptap/react";
+import { type Editor, useCurrentEditor } from "@tiptap/react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useUploadAsset from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 import { validateUUID } from "@/types/helpers";
+
+const getAssetDatabaseId = (editor: Editor) => {
+  const imageExtension = editor.options.extensions.find(
+    (extension) => extension.name === "image",
+  );
+
+  if (!imageExtension?.options.assetDatabaseId) {
+    return null;
+  }
+
+  return validateUUID(imageExtension.options.assetDatabaseId);
+};
 
 const ImageButton: React.FunctionComponent = () => {
   const uploadAsset = useUploadAsset();
@@ -32,15 +44,10 @@ const ImageButton: React.FunctionComponent = () => {
     "ImageButton must be used within a TipTap editor context",
   );
 
-  const imageExtension = editor.options.extensions.find(
-    (extension) => extension.name === "image",
-  );
-
-  if (!imageExtension?.options.assetDatabaseId) {
+  const assetDatabaseId = getAssetDatabaseId(editor);
+  if (!assetDatabaseId) {
     return null;
   }
-
-  const assetDatabaseId = validateUUID(imageExtension.options.assetDatabaseId);
 
   const openFilePicker = async () => {
     const input = document.createElement("input");

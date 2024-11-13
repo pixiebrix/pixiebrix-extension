@@ -57,6 +57,7 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = ({
           ? [
               ImageWithAssetDatabase.configure({
                 assetDatabaseId,
+                inline: true,
                 HTMLAttributes: { style: "max-width: 100%" },
               }),
             ]
