@@ -203,7 +203,7 @@ const sidebarSlice = createSlice({
             -- Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
             See: https://github.com/immerjs/immer/issues/839 */
             // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
-            initialEventKey ?? defaultEventKey(state, state.closedTabs);
+            (initialEventKey ?? defaultEventKey(state, state.closedTabs));
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...

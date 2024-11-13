@@ -64,6 +64,14 @@ module.exports = {
       "error",
       { ignore: ["eslint-enable"] },
     ],
+    "react-hooks/exhaustive-deps": [
+      "error",
+      {
+        // Can't add useAsyncEffect to the additionalHooks property because rule complains about passing
+        // `async` methods to hooks. (Because it's technically non-deterministic in execution order)
+        // https://github.com/facebook/react/blob/main/packages/eslint-plugin-react-hooks/README.md#advanced-configuration
+      },
+    ],
     "jest/valid-title": [
       "error",
       {
