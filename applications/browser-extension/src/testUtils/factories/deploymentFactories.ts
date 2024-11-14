@@ -31,6 +31,7 @@ const deploymentPackageFactory = define<Deployment["package"]>({
   name: "Test Starter Brick",
   version: (n: number) => normalizeSemVerString(`1.0.${n}`),
   package_id: (n: number) => validateRegistryId(`test/starter-brick-${n}`),
+  updated_by: {},
 });
 
 export const deploymentFactory = define<Deployment>({

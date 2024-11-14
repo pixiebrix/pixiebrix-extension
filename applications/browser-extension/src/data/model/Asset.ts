@@ -20,6 +20,13 @@ import { validateUUID } from "@/types/helpers";
 import { type components } from "@/types/swagger";
 import { RequiredDeep } from "type-fest";
 
+export type AssetResponse = Required<
+  components["schemas"]["AssetPreUpload"]["asset"]
+>;
+export type AssetPreUploadResponse = RequiredDeep<
+  components["schemas"]["AssetPreUpload"]
+>;
+
 export type Asset = {
   id: UUID;
   downloadUrl: URL;
@@ -35,9 +42,7 @@ export type AssetPreUpload = {
   fields: Record<string, string>;
 };
 
-export function transformAssetResponse(
-  response: Required<components["schemas"]["AssetPreUpload"]["asset"]>,
-): Asset {
+export function transformAssetResponse(response: AssetResponse): Asset {
   return {
     id: validateUUID(response.id),
     downloadUrl: new URL(response.download_url),
@@ -49,7 +54,7 @@ export function transformAssetResponse(
 }
 
 export function transformAssetPreUploadResponse(
-  response: RequiredDeep<components["schemas"]["AssetPreUpload"]>,
+  response: AssetPreUploadResponse,
 ): AssetPreUpload {
   return {
     asset: transformAssetResponse(response.asset),
