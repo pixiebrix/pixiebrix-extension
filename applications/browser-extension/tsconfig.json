@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "composite": false,
     "declaration": false,
+    "noEmit": true,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
