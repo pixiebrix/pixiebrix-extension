@@ -97,8 +97,6 @@ const useUploadAsset: () => (
       filename: file.name,
     }).unwrap();
 
-    assertNotNullish(assetId, "Expected assetId to be defined");
-
     await uploadToS3({
       url: uploadUrl.href,
       fields,
@@ -110,8 +108,6 @@ const useUploadAsset: () => (
       assetId,
       isUploaded: true,
     }).unwrap();
-
-    assertNotNullish(downloadUrl, "Expected downloadUrl to be defined");
 
     return downloadUrl;
   };
