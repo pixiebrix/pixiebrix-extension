@@ -33,11 +33,7 @@ import {
 import type React from "react";
 import { createSitePattern, SITES_PATTERN } from "@/permissions/patterns";
 import { type Except } from "type-fest";
-import {
-  normalizeSemVerString,
-  uuidv4,
-  validateRegistryId,
-} from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type BrickPipeline, type ReaderConfig } from "@/bricks/types";
 import { hasInnerStarterBrickRef } from "@/registry/hydrateInnerDefinitions";
 import { normalizePipelineForEditor } from "./pipelineMapping";
@@ -64,6 +60,7 @@ import { normalizeAvailability } from "@/bricks/available";
 import { registry } from "@/background/messenger/api";
 
 import { type DraftModState } from "@/pageEditor/store/editor/pageEditorTypes";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 export interface WizardStep {
   step: string;

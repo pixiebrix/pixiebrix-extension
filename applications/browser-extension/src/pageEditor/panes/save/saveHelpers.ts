@@ -23,7 +23,6 @@ import {
 } from "@/types/registryTypes";
 import {
   isInnerDefinitionRegistryId,
-  normalizeSemVerString,
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
@@ -64,6 +63,7 @@ import {
   isModComponentFormState,
 } from "@/pageEditor/utils";
 import type { Except } from "type-fest";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.

@@ -17,12 +17,12 @@
 
 import { define } from "cooky-cutter";
 import { type ModActionsEnabled, type ModViewItem } from "@/types/modTypes";
-import { normalizeSemVerString } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
 import {
   autoUUIDSequence,
   registryIdFactory,
 } from "@/testUtils/factories/stringFactories";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 export const modViewItemFactory = define<ModViewItem>({
   activatedModVersion: normalizeSemVerString("1.0.0"),

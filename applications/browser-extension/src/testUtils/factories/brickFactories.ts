@@ -23,7 +23,6 @@ import {
   registryIdSequence,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { normalizeSemVerString } from "@/types/helpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
@@ -32,6 +31,7 @@ import type { Reader } from "@/types/bricks/readerTypes";
 import type { PackageConfigDetail } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 export const brickFactory = define<Brick>({
   id: registryIdSequence,

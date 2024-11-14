@@ -18,9 +18,7 @@
 import React, { useCallback, useRef } from "react";
 import {
   isInnerDefinitionRegistryId,
-  normalizeSemVerString,
   PACKAGE_REGEX,
-  testIsSemVerString,
   validateRegistryId,
 } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
@@ -66,6 +64,10 @@ import useIsMounted from "@/hooks/useIsMounted";
 import useCreateModFromUnsavedMod from "@/pageEditor/hooks/useCreateModFromUnsavedMod";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { DataIntegrityError } from "@/pageEditor/hooks/useBuildAndValidateMod";
+import {
+  normalizeSemVerString,
+  testIsSemVerString,
+} from "@/types/semVerHelpers";
 
 /**
  * Hook to get the initial form state for the Create Mod modal.

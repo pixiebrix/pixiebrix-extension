@@ -18,10 +18,10 @@
 import buildGetModVersionStatus from "@/extensionConsole/pages/mods/utils/buildGetModVersionStatus";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { normalizeSemVerString } from "@/types/helpers";
 import { mapModInstanceToUnavailableMod } from "@/utils/modUtils";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { modInstanceFactory } from "@/testUtils/factories/modInstanceFactories";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 describe("buildGetModVersionStatus", () => {
   it("handles no activated mod components", () => {

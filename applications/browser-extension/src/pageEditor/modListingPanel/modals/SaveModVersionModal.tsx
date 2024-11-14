@@ -16,7 +16,6 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import { testIsSemVerString } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getModalDataSelector,
@@ -57,19 +56,30 @@ import { Events } from "@/telemetry/events";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { useUpdateModDefinitionMutation } from "@/data/service/api";
 import { type AppDispatch } from "@/pageEditor/store/store";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { patchIncrement, testIsSemVerString } from "@/types/semVerHelpers";
 
 type SaveVersionFormValues = {
   version: SemVerString;
   message: string;
 };
 
-function useInitialFormState(modId: RegistryId): SaveVersionFormValues {
+function useInitialFormState(
+  sourceModDefinition: ModDefinition,
+): SaveVersionFormValues {
+  const modId = sourceModDefinition.metadata.id;
   const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
   const draftState = getModDraftStateForModId(modId);
 
+  const serverVersion = sourceModDefinition.metadata.version;
+  const draftVersion = draftState.modMetadata.version;
+
   // Don't need to wrap in useMemo because only the initial render is used
   return {
-    version: draftState.modMetadata.version,
+    version:
+      draftVersion === serverVersion
+        ? patchIncrement(serverVersion)
+        : draftVersion,
     message: "",
   };
 }
@@ -91,7 +101,7 @@ function useFormSchema(modId: RegistryId) {
           )
           .test(
             "version-gte",
-            `Version must be equal to or greater than the current version: ${serverVersion}`,
+            "Version must be equal to or greater than the current version",
             (value: string) =>
               serverVersion == null || gte(value, serverVersion),
           )
@@ -115,7 +125,7 @@ function useFormSchema(modId: RegistryId) {
             },
           )
           .required(),
-        message: Yup.string(),
+        message: Yup.string().required("Message is a required field"),
       }),
     [serverVersion],
   );
@@ -146,7 +156,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
   const modId = sourceModDefinition.metadata.id;
 
   const formSchema = useFormSchema(modId);
-  const initialFormState = useInitialFormState(modId);
+  const initialFormState = useInitialFormState(sourceModDefinition);
 
   const onSubmit: OnSubmit<SaveVersionFormValues> = async (values, helpers) => {
     try {
@@ -220,10 +230,18 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
   const renderBody: RenderBody = () => (
     <Modal.Body>
       <ConnectedFieldTemplate
+        name="serverVersion"
+        label="Current Version"
+        id="save-mod-modal-server-version"
+        description="The current registry version."
+        value={sourceModDefinition.metadata.version}
+        disabled
+      />
+      <ConnectedFieldTemplate
         name="version"
-        label="Version"
+        label="New Version"
         id="save-mod-modal-version"
-        description="The new version of the mod. Must follow the MAJOR.MINOR.PATCH semantic version format."
+        description="The new version. Must follow the MAJOR.MINOR.PATCH semantic version format."
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
@@ -233,8 +251,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         as="textarea"
         rows={3}
         placeholder="Fix bug... Added feature..."
-        description="Optional: a short description of the changes to the mod. If you provide a message, you must increment the version."
-        showUntouchedErrors
+        description="A short description of the changes to the mod."
       />
     </Modal.Body>
   );

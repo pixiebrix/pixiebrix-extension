@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { testIsSemVerString, normalizeSemVerString } from "@/types/helpers";
+import {
+  normalizeSemVerString,
+  testIsSemVerString,
+} from "@/types/semVerHelpers";
 
-describe("types/helpers.ts", () => {
+describe("semverHelpers", () => {
   describe("testIsSemVerString", () => {
     it.each([
       {
