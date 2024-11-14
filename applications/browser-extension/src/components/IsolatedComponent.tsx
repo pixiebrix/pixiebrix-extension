@@ -114,6 +114,20 @@ type Props<T> = React.DetailedHTMLProps<
   noStyle?: boolean;
 };
 
+const store = configureStore({
+  reducer: {
+    [appApi.reducerPath]: appApi.reducer,
+    [s3UploadApi.reducerPath]: s3UploadApi.reducer,
+  },
+  middleware(getDefaultMiddleware) {
+    /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
+    return getDefaultMiddleware()
+      .concat(appApi.middleware)
+      .concat(s3UploadApi.middleware);
+    /* eslint-enable unicorn/prefer-spread  */
+  },
+});
+
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
  *
@@ -149,24 +163,6 @@ export default function IsolatedComponent<T>({
   const LazyComponent = useMemo(() => React.lazy(lazy), []);
 
   const stylesheetUrl = noStyle ? null : chrome.runtime.getURL(`${name}.css`);
-
-  const store = useMemo(
-    () =>
-      configureStore({
-        reducer: {
-          [appApi.reducerPath]: appApi.reducer,
-          [s3UploadApi.reducerPath]: s3UploadApi.reducer,
-        },
-        middleware(getDefaultMiddleware) {
-          /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-          return getDefaultMiddleware()
-            .concat(appApi.middleware)
-            .concat(s3UploadApi.middleware);
-          /* eslint-enable unicorn/prefer-spread  */
-        },
-      }),
-    [],
-  );
 
   return (
     // `pb-name` is used to visually identify it in the dev tools
