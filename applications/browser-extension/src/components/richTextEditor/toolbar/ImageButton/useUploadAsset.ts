@@ -93,7 +93,7 @@ const useUploadAsset: () => (
       fields,
     } = await createAssetPreUpload({
       databaseId,
-      //filename: file.name,
+      filename: file.name,
     }).unwrap();
 
     await uploadToS3({
