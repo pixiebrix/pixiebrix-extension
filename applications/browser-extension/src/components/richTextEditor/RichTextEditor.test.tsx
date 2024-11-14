@@ -2,14 +2,31 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RichTextEditor from "./RichTextEditor";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { appApi } from "@/data/service/api";
+import { s3UploadApi } from "./toolbar/ImageButton/useUploadAsset";
+
+const createTestStore = () =>
+  configureStore({
+    reducer: {
+      appApi: appApi.reducer,
+      s3UploadApi: s3UploadApi.reducer,
+    },
+  });
 
 describe("RichTextEditor", () => {
   const user = userEvent.setup({
     delay: 20,
   });
 
+  const renderWithStore = (component: React.ReactElement) => {
+    const store = createTestStore();
+    return render(<Provider store={store}>{component}</Provider>);
+  };
+
   test("applies bold formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    renderWithStore(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -20,7 +37,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies italic formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    renderWithStore(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -31,7 +48,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies underline formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    renderWithStore(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -47,7 +64,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies bold, italic and underline formatting using toolbar buttons", async () => {
-    render(<RichTextEditor />);
+    renderWithStore(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -70,7 +87,7 @@ describe("RichTextEditor", () => {
     test.each([1, 2, 3, 4, 5, 6])(
       "applies heading level %i using dropdown",
       async (level) => {
-        render(<RichTextEditor content="Hello World" />);
+        renderWithStore(<RichTextEditor content="Hello World" />);
 
         const editor = screen.getByRole("textbox");
         await user.tripleClick(editor); // Select all text
@@ -89,7 +106,7 @@ describe("RichTextEditor", () => {
     );
 
     test("converts heading back to paragraph text", async () => {
-      render(<RichTextEditor content="<h1>Hello World</h1>" />);
+      renderWithStore(<RichTextEditor content="<h1>Hello World</h1>" />);
 
       const editor = screen.getByRole("textbox");
       await user.tripleClick(editor); // Select all text
@@ -105,10 +122,15 @@ describe("RichTextEditor", () => {
 
   describe("lists", () => {
     test("applies bullet list formatting using toolbar button", async () => {
-      render(<RichTextEditor />);
+      renderWithStore(<RichTextEditor />);
 
       const editor = screen.getByRole("textbox");
       await user.type(editor, "first item");
+
+      // Open the overflow menu first
+      await user.click(
+        screen.getByRole("button", { name: "More editing options" }),
+      );
       await user.click(screen.getByRole("button", { name: "Bullet List" }));
 
       expect(editor?.innerHTML).toBe("<ul><li><p>first item</p></li></ul>");
@@ -120,10 +142,15 @@ describe("RichTextEditor", () => {
     });
 
     test("applies numbered list formatting using toolbar button", async () => {
-      render(<RichTextEditor />);
+      renderWithStore(<RichTextEditor />);
 
       const editor = screen.getByRole("textbox");
       await user.type(editor, "first item");
+
+      // Open the overflow menu first
+      await user.click(
+        screen.getByRole("button", { name: "More editing options" }),
+      );
       await user.click(screen.getByRole("button", { name: "Numbered List" }));
 
       expect(editor?.innerHTML).toBe("<ol><li><p>first item</p></li></ol>");
@@ -135,11 +162,15 @@ describe("RichTextEditor", () => {
     });
 
     test("can remove list formatting", async () => {
-      render(<RichTextEditor />);
+      renderWithStore(<RichTextEditor />);
 
       const editor = screen.getByRole("textbox");
       await user.type(editor, "list item");
 
+      // Open the overflow menu first
+      await user.click(
+        screen.getByRole("button", { name: "More editing options" }),
+      );
       await user.click(screen.getByRole("button", { name: "Bullet List" }));
       expect(editor?.innerHTML).toBe("<ul><li><p>list item</p></li></ul>");
 
@@ -149,7 +180,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies strikethrough formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    renderWithStore(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -166,7 +197,7 @@ describe("RichTextEditor", () => {
   //  User.pointer is successfully selecting the test, but Tiptap isn't seeing it
   // eslint-disable-next-line jest/no-disabled-tests -- TODO: playwright test for this when RichTextEditor is complete
   test.skip("applies link formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    renderWithStore(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "This is my link");

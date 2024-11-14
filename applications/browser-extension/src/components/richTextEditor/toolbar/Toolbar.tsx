@@ -21,8 +21,6 @@ import styles from "@/components/richTextEditor/toolbar/Toolbar.module.scss";
 import HeadingLevelDropdown from "@/components/richTextEditor/toolbar/HeadingLevelDropdown";
 import BoldButton from "@/components/richTextEditor/toolbar/BoldButton";
 import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
-import BulletedListButton from "@/components/richTextEditor/toolbar/BulletedListButton";
-import NumberedListButton from "@/components/richTextEditor/toolbar/NumberedListButton";
 // Required for font-awesome styles to be available in IsolatedComponents
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import LinkButton from "@/components/richTextEditor/toolbar/LinkButton";
