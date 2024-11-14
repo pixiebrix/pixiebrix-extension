@@ -28,7 +28,6 @@ const RichTextFields: React.FunctionComponent<{ uiOptionsPath: string }> = ({
   return (
     <SchemaField
       name={configName("database")}
-      isRequired
       schema={{
         $ref: "https://app.pixiebrix.com/schemas/database#",
         title: "Asset Database",
