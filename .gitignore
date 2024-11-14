@@ -42,6 +42,7 @@ browsers/dist
 dist
 .transpiled
 web-ext-artifacts
+*.tsbuildinfo
 
 # Other artifacts
 artifacts
