@@ -47,7 +47,10 @@ import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
-import { transformAssetPreUploadResponse } from "@/data/model/Asset";
+import {
+  AssetPreUploadResponse,
+  transformAssetPreUploadResponse,
+} from "@/data/model/Asset";
 import axios from "axios";
 import { serializeError } from "serialize-error";
 
@@ -527,7 +530,7 @@ export const appApi = createApi({
           uploadUrl,
           fields,
         } = transformAssetPreUploadResponse(
-          assetPreUploadResult.data as components["schemas"]["AssetPreUpload"],
+          assetPreUploadResult.data as AssetPreUploadResponse,
         );
 
         const formData = new FormData();

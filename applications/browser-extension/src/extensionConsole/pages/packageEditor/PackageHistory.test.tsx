@@ -53,6 +53,7 @@ describe("PackageHistory", () => {
         raw_config: "some big yaml file",
         created_at: "2024-01-24T20:55:41.263846Z" as Timestamp,
         updated_at: "2024-01-26T23:58:12.270168Z" as Timestamp,
+        updated_by: {},
       },
       {
         id: testPackageId,
@@ -61,6 +62,7 @@ describe("PackageHistory", () => {
         raw_config: "some big yaml file2",
         created_at: "2024-01-20T16:55:41.263846Z" as Timestamp,
         updated_at: "2024-01-22T18:58:12.270168Z" as Timestamp,
+        updated_by: {},
       },
     ];
 
