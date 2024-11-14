@@ -7,15 +7,16 @@
     "libraries/*"
   ],
   "scripts": {
-    "test": "nx test",
-    "lint": "nx lint",
+    "test": "nx run-many -t test",
+    "lint": "nx run-many -t lint",
     "build": "nx build",
-    "build:typecheck": "nx build:typecheck",
+    "build:typecheck": "nx run-many -t build:typecheck",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
     "dead-code:prod": "npm run dead-code -- --production",
-    "watch": "npm run watch --workspaces",
-    "watch:typescript": "npm run watch:typescript --workspaces"
+    "watch": "concurrently npm:watch:webpack npm:watch:typescript -r",
+    "watch:typescript": "tsc --build --watch --preserveWatchOutput",
+    "watch:webpack": "npm run watch:webpack --workspaces"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
@@ -27,8 +28,10 @@
   },
   "devDependencies": {
     "@sindresorhus/tsconfig": "^6.0.0",
+    "concurrently": "^9.1.0",
     "knip": "^5.36.7",
     "nx": "20.1.0",
-    "prettier": "3.3.3"
+    "prettier": "3.3.3",
+    "typescript": "^5.6.3"
   }
 }

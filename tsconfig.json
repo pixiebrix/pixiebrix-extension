@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [], // intentionally empty
+  "references": [
+    // All projects in the repository
+    // TODO: add @nx/js plugin which will automatically update these paths
+    {
+      "path": "./applications/browser-extension"
+    },
+    {
+      "path": "./libraries/utils"
+    }
+  ]
+}
