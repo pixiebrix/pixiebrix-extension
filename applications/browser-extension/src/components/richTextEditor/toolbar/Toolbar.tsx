@@ -43,11 +43,6 @@ const Toolbar: React.FunctionComponent = () => (
     </ButtonGroup>
 
     <ButtonGroup size="sm">
-      <BulletedListButton />
-      <NumberedListButton />
-    </ButtonGroup>
-
-    <ButtonGroup size="sm">
       <ToolbarOverflow />
     </ButtonGroup>
   </ButtonToolbar>

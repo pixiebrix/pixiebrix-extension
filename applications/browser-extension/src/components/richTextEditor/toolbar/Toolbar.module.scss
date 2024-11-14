@@ -44,11 +44,7 @@
 .toolbar {
   border-bottom: 1px solid #ced4da;
   display: flex;
-  justify-content: space-between;
-
-  @media (min-width: 400px) {
-    justify-content: flex-start;
-  }
+  justify-content: start;
 
   @extend .toolbarButtons;
 }
