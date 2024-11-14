@@ -36,6 +36,26 @@ interface ImageWithAssetDatabaseOptions extends ImageOptions {
   assetDatabaseId: UUID | null;
 }
 
+const CONFIGURED_EXTENSIONS = {
+  starterKit: StarterKit,
+  underline: Underline,
+  link: Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+  image(assetDatabaseId: UUID) {
+    return Image.extend<ImageWithAssetDatabaseOptions>({
+      addOptions() {
+        return {
+          ...this.parent?.(),
+          assetDatabaseId: null,
+        };
+      },
+    }).configure({
+      assetDatabaseId,
+      inline: true,
+      HTMLAttributes: { style: "max-width: 100%" },
+    });
+  },
+};
+
 const RichTextEditor: React.FunctionComponent<EditorProps> = ({
   assetDatabaseId,
   ...props
@@ -47,29 +67,21 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = ({
       <div className={styles.root}>
         <EditorProvider
           extensions={[
-            StarterKit,
-            Underline,
-            Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+            CONFIGURED_EXTENSIONS.starterKit,
+            CONFIGURED_EXTENSIONS.underline,
+            CONFIGURED_EXTENSIONS.link,
             ...(assetDatabaseId
-              ? [
-                  Image.extend<ImageWithAssetDatabaseOptions>({
-                    addOptions() {
-                      return {
-                        ...this.parent?.(),
-                        assetDatabaseId: null,
-                      };
-                    },
-                  }).configure({
-                    assetDatabaseId,
-                    inline: true,
-                    HTMLAttributes: { style: "max-width: 100%" },
-                  }),
-                ]
+              ? [CONFIGURED_EXTENSIONS.image(assetDatabaseId)]
               : []),
           ]}
           slotBefore={<Toolbar />}
           slotAfter={
-            <ErrorToast error={error} onClose={() => {setError(null)}} />
+            <ErrorToast
+              error={error}
+              onClose={() => {
+                setError(null);
+              }}
+            />
           }
           {...props}
         />
