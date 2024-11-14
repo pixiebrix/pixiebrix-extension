@@ -23,6 +23,7 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useUploadAsset from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 import { validateUUID } from "@/types/helpers";
+import {useShowError} from "@/components/richTextEditor/ErrorContext";
 
 const getAssetDatabaseId = (editor: Editor) => {
   const imageExtension = editor.options.extensions.find(
@@ -39,6 +40,8 @@ const getAssetDatabaseId = (editor: Editor) => {
 const ImageButton: React.FunctionComponent = () => {
   const uploadAsset = useUploadAsset();
   const { editor } = useCurrentEditor();
+  const { setError } = useShowError();
+
   assertNotNullish(
     editor,
     "ImageButton must be used within a TipTap editor context",
@@ -69,6 +72,8 @@ const ImageButton: React.FunctionComponent = () => {
           .run();
       } catch (error) {
         // TODO: Implement error message handling in UI
+        setError("Failed to upload image asset, try again");
+
         reportError(
           new Error("Failed to upload image asset", {
             cause: error,

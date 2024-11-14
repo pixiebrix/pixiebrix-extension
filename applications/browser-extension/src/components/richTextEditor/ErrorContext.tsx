@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,35 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  // To replicate the Bootstrap .form-control class
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  color: #495057;
-  transition:
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out;
+import { createContext, useContext } from "react";
 
-  &:focus-within {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 3.2px rgba(0, 123, 255, 0.25);
-    background-color: #fff;
-    outline: 0;
+type ErrorContextType = {
+  error: string | null;
+  setError: (error: string | null) => void;
+};
+
+const ErrorContext = createContext<ErrorContextType | null>(null);
+
+export function useShowError() {
+  const context = useContext(ErrorContext);
+  if (!context) {
+    throw new Error("useRichTextError must be used within a RichTextEditor");
   }
 
-  :global(.tiptap) {
-    padding: 6px 12px 6px 12px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  :global(.ProseMirror-focused) {
-    outline: 0;
-  }
+  return context;
 }
 
-.error {
-  color: #dc3545;
-  padding: 4px 8px;
-  font-size: 0.875rem;
-}
+export default ErrorContext;

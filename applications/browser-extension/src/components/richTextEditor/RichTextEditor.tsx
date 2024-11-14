@@ -21,9 +21,12 @@ import { StarterKit } from "@tiptap/starter-kit";
 import { Underline } from "@tiptap/extension-underline";
 import { Link } from "@tiptap/extension-link";
 import { Image, type ImageOptions } from "@tiptap/extension-image";
-import React from "react";
+import React, { useState } from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
 import { type UUID } from "@/types/stringTypes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import ErrorContext from "@/components/richTextEditor/ErrorContext";
 
 type EditorProps = EditorProviderProps & {
   // A PixieBrix asset database ID to use for uploading images. If not included, the image extension will be disabled.
@@ -37,34 +40,47 @@ interface ImageWithAssetDatabaseOptions extends ImageOptions {
 const RichTextEditor: React.FunctionComponent<EditorProps> = ({
   assetDatabaseId,
   ...props
-}: EditorProps) => (
-  <div className={styles.root}>
-    <EditorProvider
-      extensions={[
-        StarterKit,
-        Underline,
-        Link.extend({ inclusive: false }).configure({ openOnClick: false }),
-        ...(assetDatabaseId
-          ? [
-              Image.extend<ImageWithAssetDatabaseOptions>({
-                addOptions() {
-                  return {
-                    ...this.parent?.(),
-                    assetDatabaseId: null,
-                  };
-                },
-              }).configure({
-                assetDatabaseId,
-                inline: true,
-                HTMLAttributes: { style: "max-width: 100%" },
-              }),
-            ]
-          : []),
-      ]}
-      slotBefore={<Toolbar />}
-      {...props}
-    />
-  </div>
-);
+}: EditorProps) => {
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <ErrorContext.Provider value={{ error, setError }}>
+      <div className={styles.root}>
+        <EditorProvider
+          extensions={[
+            StarterKit,
+            Underline,
+            Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+            ...(assetDatabaseId
+              ? [
+                  Image.extend<ImageWithAssetDatabaseOptions>({
+                    addOptions() {
+                      return {
+                        ...this.parent?.(),
+                        assetDatabaseId: null,
+                      };
+                    },
+                  }).configure({
+                    assetDatabaseId,
+                    inline: true,
+                    HTMLAttributes: { style: "max-width: 100%" },
+                  }),
+                ]
+              : []),
+          ]}
+          slotBefore={<Toolbar />}
+          slotAfter={
+            error && (
+              <div className={styles.error}>
+                <FontAwesomeIcon icon={faExclamationCircle} /> {error}
+              </div>
+            )
+          }
+          {...props}
+        />
+      </div>
+    </ErrorContext.Provider>
+  );
+};
 
 export default RichTextEditor;

@@ -26,7 +26,6 @@ import { type BaseQueryFn } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import axios from "axios";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { serializeError } from "serialize-error";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 interface PresignedUrlRequest {
   url: string;
@@ -94,7 +93,7 @@ const useUploadAsset: () => (
       fields,
     } = await createAssetPreUpload({
       databaseId,
-      filename: file.name,
+      //filename: file.name,
     }).unwrap();
 
     await uploadToS3({
