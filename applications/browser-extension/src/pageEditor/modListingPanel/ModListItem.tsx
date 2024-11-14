@@ -51,8 +51,8 @@ const ModListItem: React.FC<
 
   const { id: modId, name: savedName, version: activatedVersion } = modMetadata;
 
-  const isModActive = activeModId === modId;
-  const isModComponentActive = activeModComponentId != null;
+  const isModComponentSelected = activeModComponentId != null;
+  const isModSelected = activeModId === modId && !isModComponentSelected;
   const isExpanded = expandedModId === modId;
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
@@ -77,15 +77,19 @@ const ModListItem: React.FC<
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
           // Set the alternate background if a mod component in this mod is active
-          [styles.modBackground ?? ""]: isModActive && isModComponentActive,
+          [styles.modBackground ?? ""]: isModSelected || isModComponentSelected,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
-        active={isModActive && !isModComponentActive}
+        active={isModSelected}
         key={modId}
         onClick={() => {
           dispatch(actions.setActiveModId(modId));
           // Collapse if the user clicks the mod item when it's already active/selected in the listing pane
-          dispatch(actions.setExpandedModId(isExpanded ? null : modId));
+          dispatch(
+            actions.setExpandedModId(
+              isExpanded && isModSelected ? null : modId,
+            ),
+          );
         }}
       >
         <span className={styles.icon}>
