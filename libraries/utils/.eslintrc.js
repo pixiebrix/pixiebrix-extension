@@ -1,10 +1,20 @@
 module.exports = {
   root: true,
-  extends: [
-    // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
-    // XXX: use exact configuration for now because applications/browser-extension has a lot of local configuration.
-    // When we bring eslint-config-pixiebrix into the monorepo, we can iterate on code sharing across configs.
-    "pixiebrix",
+  overrides: [
+    {
+      files: ["**/*.ts", "**/*.tsx"],
+      extends: [
+        // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
+        // XXX: use exact configuration for now because applications/browser-extension has a lot of local configuration.
+        // When we bring eslint-config-pixiebrix into the monorepo, we can iterate on code sharing across configs.
+        "pixiebrix",
+      ],
+
+      parserOptions: {
+        project: ["./tsconfig.*?.json"],
+        tsconfigRootDir: __dirname,
+      },
+    },
   ],
 };
 

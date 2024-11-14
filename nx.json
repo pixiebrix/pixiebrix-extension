@@ -3,16 +3,18 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["{projectRoot}/dist"],
+      "outputs": ["{workspaceRoot}/dist"],
       "cache": true
     },
     "test": {
       "cache": true
     },
     "lint": {
+      "dependsOn": ["^build:typecheck"],
       "cache": true
     },
     "build:typecheck": {
+      "dependsOn": ["^build:typecheck"],
       "cache": true
     }
   },
