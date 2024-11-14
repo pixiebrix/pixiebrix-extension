@@ -11,8 +11,6 @@ module.exports = {
       ],
 
       parserOptions: {
-        // Use the nearest tsconfig.json in its directory
-        // See https://typescript-eslint.io/blog/parser-options-project-true/#introducing-true
         project: ["./tsconfig.*?.json"],
         tsconfigRootDir: __dirname,
       },
