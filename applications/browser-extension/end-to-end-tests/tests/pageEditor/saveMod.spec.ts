@@ -116,5 +116,14 @@ test("shows error notification when updating a public mod without incrementing t
     "8203 Repro Updated",
   );
   await pageEditorPage.modListingPanel.activeModListItem.saveButton.click();
+
+  const saveDialog = pageEditorPage.getByRole("dialog");
+  await expect(saveDialog).toBeVisible();
+  await saveDialog.getByRole("textbox", { name: "New Version" }).fill("1.0.0");
+  await saveDialog
+    .getByRole("textbox", { name: "Message" })
+    .fill("Commit message");
+  await saveDialog.getByRole("button", { name: "Save" }).click();
+
   await expect(pageEditorPage.getIncrementVersionErrorToast()).toBeVisible();
 });

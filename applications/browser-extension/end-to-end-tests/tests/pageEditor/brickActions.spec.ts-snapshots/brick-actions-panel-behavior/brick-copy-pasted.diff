@@ -2,7 +2,7 @@ Index: brick-copy-pasted
 ===================================================================
 --- brick-copy-pasted
 +++ brick-copy-pasted
-@@ -6,80 +6,88 @@
+@@ -6,82 +6,90 @@
        containerSelector: span:has(> span:contains('Review in codespace'))
        isAvailable:
          allFrames: true
@@ -81,7 +81,8 @@ Index: brick-copy-pasted
    id: >-
      @extension-e2e-test-unaffiliated/brick-actions-00000000-0000-0000-0000-000000000000
    name: Mod Actions Test
-   version: 1.0.0
+-  version: 1.0.2
++  version: 1.0.3
  options:
    schema:
      properties: {}
@@ -91,3 +92,5 @@ Index: brick-copy-pasted
        - '*'
  variables:
    schema:
+     properties: {}
+     type: object

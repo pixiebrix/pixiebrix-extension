@@ -2,7 +2,10 @@ Index: updated-inputs
 ===================================================================
 --- updated-inputs
 +++ updated-inputs
-@@ -30,49 +30,60 @@
+@@ -27,52 +27,63 @@
+                   - children:
+                       - children:
+                           - config:
                                heading: h1
                                title: !nunjucks Simple Sidebar Panel
                              type: header
@@ -40,7 +43,8 @@ Index: updated-inputs
    id: >-
      @extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000
    name: Simple Sidebar Panel (Updated)
-   version: 1.0.2
+-  version: 1.0.2
++  version: 1.0.3
  options:
    schema:
 -    properties: {}
