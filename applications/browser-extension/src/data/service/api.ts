@@ -17,10 +17,15 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
-import { createApi } from "@reduxjs/toolkit/query/react";
 import {
+  createApi,
+  type FetchBaseQueryError,
+} from "@reduxjs/toolkit/query/react";
+import {
+  type ActivatedDeployment,
   type Database,
   type Deployment,
+  type DeploymentPayload,
   type EditablePackageMetadata,
   type Group,
   type MarketplaceListing,
@@ -29,10 +34,8 @@ import {
   type PackageUpsertResponse,
   type PackageVersionDeprecated,
   type PendingInvitation,
-  type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
-  type DeploymentPayload,
-  type ActivatedDeployment,
+  type RetrieveRecipeResponse,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -48,6 +51,12 @@ import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
 import { createPrivateSharing } from "@/utils/registryUtils";
+import {
+  type AssetPreUploadResponse,
+  transformAssetPreUploadResponse,
+} from "@/data/model/Asset";
+import axios from "axios";
+import { serializeError } from "serialize-error";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -69,6 +78,7 @@ export const appApi = createApi({
     "StarterBlueprints",
     "ZapierKey",
     "Deployments",
+    "Asset",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -499,6 +509,75 @@ export const appApi = createApi({
       },
       invalidatesTags: ["Deployments"],
     }),
+    uploadAsset: builder.mutation<URL, { databaseId: UUID; file: File }>({
+      async queryFn(
+        { databaseId, file },
+        { dispatch },
+        _,
+        baseQuery,
+      ): Promise<{ data: URL } | { error: unknown }> {
+        const assetPreUploadResult = await baseQuery({
+          url: API_PATHS.ASSET_PRE_UPLOAD(databaseId),
+          method: "post",
+          data: {
+            filename: file.name,
+          },
+        });
+
+        if (assetPreUploadResult.error) {
+          return { error: assetPreUploadResult.error as FetchBaseQueryError };
+        }
+
+        const {
+          asset: { id: assetId, downloadUrl },
+          uploadUrl,
+          fields,
+        } = transformAssetPreUploadResponse(
+          assetPreUploadResult.data as AssetPreUploadResponse,
+        );
+
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(fields)) {
+          formData.append(key, value);
+        }
+
+        formData.append("file", file);
+
+        try {
+          await axios.post(uploadUrl.href, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        } catch (error) {
+          if (isAxiosError(error)) {
+            error.name = "AxiosError";
+            return {
+              // Axios offers its own serialization method, but it reshapes the Error object (doesn't include the response, puts the status on the root level). `useToJSON: false` skips that.
+              error: serializeError(error, { useToJSON: false }),
+            };
+          }
+
+          return {
+            error: serializeError(error),
+          };
+        }
+
+        const updateAssetResult = await baseQuery({
+          url: API_PATHS.ASSET(databaseId, assetId),
+          method: "patch",
+          data: { is_uploaded: true },
+        });
+
+        if (updateAssetResult.error) {
+          return {
+            error: updateAssetResult.error as FetchBaseQueryError,
+          };
+        }
+
+        return { data: downloadUrl };
+      },
+    }),
   }),
 });
 
@@ -530,5 +609,6 @@ export const {
   useGetDeploymentsQuery,
   useCreateUserDeploymentMutation,
   useDeleteUserDeploymentMutation,
+  useUploadAssetMutation,
   util,
 } = appApi;

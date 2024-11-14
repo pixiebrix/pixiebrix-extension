@@ -157,6 +157,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
               propertySchema.oneOf = [{ const: "" }];
             }
           }
+
+          if (value[UI_WIDGET] === "richText") {
+            propertySchema.readOnly = true;
+          }
         }
       }),
     [rjsfSchema, activeField],

@@ -39,16 +39,16 @@
     border: none;
     box-shadow: none;
   }
+
+  :global(.heading-level__control--is-disabled) {
+    background-color: transparent;
+  }
 }
 
 .toolbar {
   border-bottom: 1px solid #ced4da;
   display: flex;
-  justify-content: space-between;
-
-  @media (min-width: 400px) {
-    justify-content: flex-start;
-  }
+  justify-content: start;
 
   @extend .toolbarButtons;
 }

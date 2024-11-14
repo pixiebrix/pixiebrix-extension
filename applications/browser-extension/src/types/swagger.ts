@@ -231,7 +231,7 @@ export interface paths {
     delete: operations["destroyUserDatabase"];
     options?: never;
     head?: never;
-    patch: operations["updateUserDatabase"];
+    patch: operations["partialUpdateUserDatabase"];
     trace?: never;
   };
   "/api/databases/{id}/permissions/": {
@@ -2225,10 +2225,10 @@ export interface components {
       owner_field?: string | null;
       user?: string;
       /**
-       * @default Record
+       * @default Key-Value
        * @enum {string}
        */
-      kind: "Record" | "Asset";
+      type: "Key-Value" | "Asset";
       /** Format: date-time */
       readonly last_write_at?: Timestamp;
       readonly num_records?: number;
@@ -2339,10 +2339,10 @@ export interface components {
       owner_field?: string | null;
       user?: string;
       /**
-       * @default Record
+       * @default Key-Value
        * @enum {string}
        */
-      kind: "Record" | "Asset";
+      type: "Key-Value" | "Asset";
       /** Format: date-time */
       readonly last_write_at?: Timestamp;
       readonly num_records?: number;
@@ -3334,7 +3334,9 @@ export interface components {
       };
       /** Format: uri */
       upload_url: string;
-      fields: string;
+      fields: {
+        [key: string]: unknown;
+      };
     };
     DeploymentMessage: {
       /** Format: email */
@@ -4011,7 +4013,7 @@ export interface operations {
       };
     };
   };
-  updateUserDatabase: {
+  partialUpdateUserDatabase: {
     parameters: {
       query?: never;
       header?: never;

@@ -23,6 +23,9 @@ import React, { Suspense, useMemo } from "react";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import isolatedComponentList from "./isolatedComponentList";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { appApi } from "@/data/service/api";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
@@ -110,6 +113,17 @@ type Props<T> = React.DetailedHTMLProps<
   noStyle?: boolean;
 };
 
+const store = configureStore({
+  reducer: {
+    [appApi.reducerPath]: appApi.reducer,
+  },
+  middleware(getDefaultMiddleware) {
+    /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
+    return getDefaultMiddleware().concat(appApi.middleware);
+    /* eslint-enable unicorn/prefer-spread  */
+  },
+});
+
 /**
  * Isolate component loaded via React.lazy() in a shadow DOM, including its styles.
  *
@@ -151,8 +165,10 @@ export default function IsolatedComponent<T>({
     <EmotionShadowRoot mode={MODE} pb-name={name} {...props}>
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
-        {/* Must call the factory on each render to pick up changes to the component props */}
-        <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
+        <Provider store={store}>
+          {/* Must call the factory on each render to pick up changes to the component props */}
+          <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
+        </Provider>
       </Stylesheets>
     </EmotionShadowRoot>
   );

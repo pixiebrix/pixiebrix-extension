@@ -1,7 +1,42 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RichTextEditor from "./RichTextEditor";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { appApi } from "@/data/service/api";
+import { API_PATHS } from "@/data/service/urlPaths";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import { uuidv4 } from "@/types/helpers";
+
+const axiosMock = new MockAdapter(axios);
+
+const createTestStore = () =>
+  configureStore({
+    reducer: {
+      appApi: appApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(appApi.middleware),
+  });
+
+const customRender = (ui: React.ReactElement, options = {}) =>
+  render(ui, { wrapper: ({ children }: { children: React.ReactNode }) => (<Provider store={createTestStore()}>{children}</Provider>
+    ), ...options });
+
+jest.mock(
+  "@/components/richTextEditor/toolbar/ImageButton/useFilePicker",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+      async pickFile() {
+        return new File(["test"], "test.png", { type: "image/png" });
+      },
+      isFilePickerOpen: false,
+    })),
+  }),
+);
 
 describe("RichTextEditor", () => {
   const user = userEvent.setup({
@@ -9,7 +44,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies bold formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    customRender(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -20,7 +55,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies italic formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    customRender(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -31,7 +66,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies underline formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    customRender(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -47,7 +82,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies bold, italic and underline formatting using toolbar buttons", async () => {
-    render(<RichTextEditor />);
+    customRender(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -70,7 +105,7 @@ describe("RichTextEditor", () => {
     test.each([1, 2, 3, 4, 5, 6])(
       "applies heading level %i using dropdown",
       async (level) => {
-        render(<RichTextEditor content="Hello World" />);
+        customRender(<RichTextEditor content="Hello World" />);
 
         const editor = screen.getByRole("textbox");
         await user.tripleClick(editor); // Select all text
@@ -89,7 +124,7 @@ describe("RichTextEditor", () => {
     );
 
     test("converts heading back to paragraph text", async () => {
-      render(<RichTextEditor content="<h1>Hello World</h1>" />);
+      customRender(<RichTextEditor content="<h1>Hello World</h1>" />);
 
       const editor = screen.getByRole("textbox");
       await user.tripleClick(editor); // Select all text
@@ -105,10 +140,15 @@ describe("RichTextEditor", () => {
 
   describe("lists", () => {
     test("applies bullet list formatting using toolbar button", async () => {
-      render(<RichTextEditor />);
+      customRender(<RichTextEditor />);
 
       const editor = screen.getByRole("textbox");
       await user.type(editor, "first item");
+
+      // Open the overflow menu first
+      await user.click(
+        screen.getByRole("button", { name: "More editing options" }),
+      );
       await user.click(screen.getByRole("button", { name: "Bullet List" }));
 
       expect(editor?.innerHTML).toBe("<ul><li><p>first item</p></li></ul>");
@@ -120,10 +160,15 @@ describe("RichTextEditor", () => {
     });
 
     test("applies numbered list formatting using toolbar button", async () => {
-      render(<RichTextEditor />);
+      customRender(<RichTextEditor />);
 
       const editor = screen.getByRole("textbox");
       await user.type(editor, "first item");
+
+      // Open the overflow menu first
+      await user.click(
+        screen.getByRole("button", { name: "More editing options" }),
+      );
       await user.click(screen.getByRole("button", { name: "Numbered List" }));
 
       expect(editor?.innerHTML).toBe("<ol><li><p>first item</p></li></ol>");
@@ -135,11 +180,15 @@ describe("RichTextEditor", () => {
     });
 
     test("can remove list formatting", async () => {
-      render(<RichTextEditor />);
+      customRender(<RichTextEditor />);
 
       const editor = screen.getByRole("textbox");
       await user.type(editor, "list item");
 
+      // Open the overflow menu first
+      await user.click(
+        screen.getByRole("button", { name: "More editing options" }),
+      );
       await user.click(screen.getByRole("button", { name: "Bullet List" }));
       expect(editor?.innerHTML).toBe("<ul><li><p>list item</p></li></ul>");
 
@@ -149,7 +198,7 @@ describe("RichTextEditor", () => {
   });
 
   test("applies strikethrough formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    customRender(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "regular");
@@ -166,7 +215,7 @@ describe("RichTextEditor", () => {
   //  User.pointer is successfully selecting the test, but Tiptap isn't seeing it
   // eslint-disable-next-line jest/no-disabled-tests -- TODO: playwright test for this when RichTextEditor is complete
   test.skip("applies link formatting using toolbar button", async () => {
-    render(<RichTextEditor />);
+    customRender(<RichTextEditor />);
 
     const editor = screen.getByRole("textbox");
     await user.type(editor, "This is my link");
@@ -187,5 +236,48 @@ describe("RichTextEditor", () => {
     expect(
       screen.getByRole("textbox", { name: /newurl/i }),
     ).toBeInTheDocument();
+  });
+
+  test("uploads and inserts image using toolbar button", async () => {
+    const databaseId = uuidv4();
+    const assetId = uuidv4();
+
+    const file = new File(["test"], "test.png", { type: "image/png" });
+    const mockDownloadUrl = new URL("https://example.com/test.png");
+    const mockUploadUrl = new URL("https://storage-upload.example.com");
+
+    axiosMock.onPost(API_PATHS.ASSET_PRE_UPLOAD(databaseId)).reply(200, {
+      asset: {
+        id: assetId,
+        download_url: mockDownloadUrl.href,
+        filename: file.name,
+        is_uploaded: false,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      },
+      upload_url: mockUploadUrl.href,
+      fields: {
+        key: "test-key",
+        policy: "test-policy",
+      },
+    }).onPost(mockUploadUrl.href).reply(200).onPatch(API_PATHS.ASSET(databaseId, assetId)).reply(200, {
+      id: assetId,
+      download_url: mockDownloadUrl.href,
+      filename: file.name,
+      is_uploaded: true,
+      updated_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    });
+
+    customRender(<RichTextEditor assetDatabaseId={databaseId} />);
+
+    await user.click(screen.getByRole("button", { name: "Insert Image" }));
+
+    await waitFor(() => {
+      const editor = screen.getByRole("textbox");
+      expect(editor?.innerHTML).toBe(
+        `<p><img style="max-width: 100%" src="${mockDownloadUrl.href}" alt="" draggable="true"><img class="ProseMirror-separator" alt=""><br class="ProseMirror-trailingBreak"></p>`,
+      );
+    });
   });
 });
