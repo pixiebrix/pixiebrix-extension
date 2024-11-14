@@ -51,6 +51,7 @@ import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel"
 import { initialSidebarState } from "@/store/sidebar/initialState";
 import removeFormPanel from "@/store/sidebar/thunks/removeFormPanel";
 import { type ModComponentRef } from "@/types/modComponentTypes";
+import castSidebarState from "@/pageEditor/store/castState";
 
 function findNextActiveKey(
   state: SidebarState,
@@ -202,12 +203,12 @@ const sidebarSlice = createSlice({
             -- Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
             See: https://github.com/immerjs/immer/issues/839 */
             // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
-            initialEventKey ?? defaultEventKey(state, state.closedTabs);
+            (initialEventKey ?? defaultEventKey(state, state.closedTabs));
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
       // Calling selectTab with a stale event key shouldn't change the current tab
-      if (eventKeyExists(state, action.payload)) {
+      if (eventKeyExists(castSidebarState(state), action.payload)) {
         state.activeKey = action.payload;
         state.closedTabs[action.payload] = false;
       }
@@ -220,7 +221,10 @@ const sidebarSlice = createSlice({
 
       const entry = remove(state.forms, (form) => form.nonce === nonce)[0];
 
-      fixActiveTabOnRemoveInPlace(state, entry);
+      fixActiveTabOnRemoveInPlace(
+        castSidebarState(state),
+        entry as FormPanelEntry,
+      );
     },
     invalidatePanels(state) {
       for (const panel of state.panels) {
@@ -268,7 +272,7 @@ const sidebarSlice = createSlice({
     activatePanel(state, { payload }: PayloadAction<ActivatePanelOptions>) {
       state.pendingActivePanel = null;
 
-      const visiblePanelCount = getVisiblePanelCount(state);
+      const visiblePanelCount = getVisiblePanelCount(castSidebarState(state));
       const isModLauncherOnlyTabVisible =
         visiblePanelCount === 1 &&
         !state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)];
@@ -285,7 +289,7 @@ const sidebarSlice = createSlice({
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
       }
 
-      const next = findNextActiveKey(state, payload);
+      const next = findNextActiveKey(castSidebarState(state), payload);
 
       if (next) {
         state.activeKey = next;
@@ -316,7 +320,10 @@ const sidebarSlice = createSlice({
 
       // Try fulfilling the pendingActivePanel request
       if (state.pendingActivePanel) {
-        const next = findNextActiveKey(state, state.pendingActivePanel);
+        const next = findNextActiveKey(
+          castSidebarState(state),
+          state.pendingActivePanel,
+        );
         if (next) {
           state.activeKey = next;
           state.pendingActivePanel = null;
@@ -325,8 +332,11 @@ const sidebarSlice = createSlice({
       }
 
       // If a panel is no longer available, reset the current tab to a valid tab.
-      if (!eventKeyExists(state, state.activeKey)) {
-        state.activeKey = defaultEventKey(state, state.closedTabs);
+      if (!eventKeyExists(castSidebarState(state), state.activeKey)) {
+        state.activeKey = defaultEventKey(
+          castSidebarState(state),
+          state.closedTabs,
+        );
       }
     },
     showModActivationPanel(
@@ -343,25 +353,28 @@ const sidebarSlice = createSlice({
       const { modActivationPanel: entry, closedTabs } = state;
       state.modActivationPanel = null;
 
-      if (getVisiblePanelCount(state) === 0) {
+      if (getVisiblePanelCount(castSidebarState(state)) === 0) {
         closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
-      fixActiveTabOnRemoveInPlace(state, entry);
+      fixActiveTabOnRemoveInPlace(castSidebarState(state), entry);
     },
     closeTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = true;
 
       const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
       if (
-        getVisiblePanelCount(state) === 0 &&
+        getVisiblePanelCount(castSidebarState(state)) === 0 &&
         action.payload !== modLauncherEventKey
       ) {
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
       if (state.activeKey === action.payload) {
-        state.activeKey = defaultEventKey(state, state.closedTabs);
+        state.activeKey = defaultEventKey(
+          castSidebarState(state),
+          state.closedTabs,
+        );
       }
     },
     openTab(state, action: PayloadAction<string>) {
@@ -383,7 +396,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, forms } = action.payload;
 
           state.forms = castDraft(forms);
-          fixActiveTabOnRemoveInPlace(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(castSidebarState(state), removedEntry);
         }
       })
       .addCase(addTemporaryPanel.fulfilled, (state, action) => {
@@ -398,7 +411,7 @@ const sidebarSlice = createSlice({
           const { removedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemoveInPlace(state, removedEntry);
+          fixActiveTabOnRemoveInPlace(castSidebarState(state), removedEntry);
         }
       })
       .addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
@@ -406,7 +419,7 @@ const sidebarSlice = createSlice({
           const { resolvedEntry, temporaryPanels } = action.payload;
 
           state.temporaryPanels = castDraft(temporaryPanels);
-          fixActiveTabOnRemoveInPlace(state, resolvedEntry);
+          fixActiveTabOnRemoveInPlace(castSidebarState(state), resolvedEntry);
         }
       });
   },

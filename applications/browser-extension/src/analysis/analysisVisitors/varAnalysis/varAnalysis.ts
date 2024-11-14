@@ -225,7 +225,7 @@ function setVarsFromSchema({
       const nodePath = [...parentPath, key];
 
       const existence =
-        existenceOverride ?? required?.includes(key)
+        (existenceOverride ?? required?.includes(key))
           ? VarExistence.DEFINITELY
           : VarExistence.MAYBE;
 
@@ -254,7 +254,7 @@ function setVarsFromSchema({
       });
     } else if (propertySchema.type === "array") {
       const existence =
-        existenceOverride ?? required?.includes(key)
+        (existenceOverride ?? required?.includes(key))
           ? VarExistence.DEFINITELY
           : VarExistence.MAYBE;
 
@@ -295,7 +295,7 @@ function setVarsFromSchema({
         source,
         path: [...parentPath, key],
         existence:
-          existenceOverride ?? required?.includes(key)
+          (existenceOverride ?? required?.includes(key))
             ? VarExistence.DEFINITELY
             : VarExistence.MAYBE,
       });

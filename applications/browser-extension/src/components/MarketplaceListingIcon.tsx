@@ -69,7 +69,7 @@ const MarketplaceListingIcon: React.FC<{
       color={
         inheritColor
           ? "inherit"
-          : listing?.icon_color ?? DEFAULT_TEXT_ICON_COLOR
+          : (listing?.icon_color ?? DEFAULT_TEXT_ICON_COLOR)
       }
       className={faIconClass}
       size={size}

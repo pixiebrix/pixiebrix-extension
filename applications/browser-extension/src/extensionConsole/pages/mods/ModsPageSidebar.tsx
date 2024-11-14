@@ -210,7 +210,13 @@ const ModsPageSidebar: React.VoidFunctionComponent<ModsPageSidebarProps> = ({
     if (debouncedSearchInput) {
       setActiveTab(MODS_PAGE_TABS.all);
     }
-  }, [globalFilter, debouncedSearchInput, setActiveTab, setGlobalFilter]);
+  }, [
+    globalFilter,
+    debouncedSearchInput,
+    setActiveTab,
+    setSearchQuery,
+    setGlobalFilter,
+  ]);
 
   return (
     <div className={styles.root}>

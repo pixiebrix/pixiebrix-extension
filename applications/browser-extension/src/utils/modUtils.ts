@@ -214,8 +214,10 @@ export function normalizeModDefinition<
   T extends UnsavedModDefinition = UnsavedModDefinition,
 >(definition: T): T {
   return produce(definition, (draft) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type error due to nested readonly string array
-    draft.options = normalizeModOptionsDefinition(draft.options) as any;
+    draft.options = normalizeModOptionsDefinition(
+      draft.options as ModDefinition["options"] | null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type error due to nested readonly string array
+    ) as any;
     draft.variables ??= emptyModVariablesDefinitionFactory();
     draft.definitions = mapValues(
       draft.definitions ?? {},

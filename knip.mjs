@@ -128,6 +128,7 @@ const knipConfig = {
         // Browser environment types
         "@types/chrome",
         "@types/dom-navigation",
+        "@types/trusted-types",
         // Provides require.context, etc.
         "@types/webpack-env",
         // Used by src/contrib/google/sheets/core/types.ts

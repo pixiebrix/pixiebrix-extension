@@ -13,6 +13,7 @@ exports[`CodeEditorWidget renders the AceEditor 1`] = `
       <textarea
         aria-autocomplete="both"
         aria-haspopup="false"
+        aria-label="Cursor at row 1"
         autocapitalize="off"
         autocorrect="off"
         class="ace_text-input"
