@@ -42,6 +42,9 @@ const ImageButton: React.FunctionComponent = () => {
   const [uploadAsset] = useUploadAssetMutation();
   const { editor } = useCurrentEditor();
   const { setError } = useShowError();
+  const { pickFile, isFilePickerOpen } = useFilePicker({
+    accept: "image/png, image/jpeg, image/gif",
+  });
 
   assertNotNullish(
     editor,
@@ -49,8 +52,12 @@ const ImageButton: React.FunctionComponent = () => {
   );
 
   const assetDatabaseId = getAssetDatabaseId(editor);
+  if (!assetDatabaseId) {
+    return null;
+  }
 
-  const uploadAndInsertImage = async (file: File) => {
+  const uploadAndInsertImage = async () => {
+    const file = await pickFile();
     try {
       const downloadUrl = await uploadAsset({
         databaseId: assetDatabaseId,
@@ -72,19 +79,10 @@ const ImageButton: React.FunctionComponent = () => {
     }
   };
 
-  const { pickFile, isFilePickerOpen } = useFilePicker({
-    accept: "image/png, image/jpeg, image/gif",
-    onFileSelect: uploadAndInsertImage,
-  });
-
-  if (!assetDatabaseId) {
-    return null;
-  }
-
   return (
     <Button
       variant="default"
-      onClick={pickFile}
+      onClick={uploadAndInsertImage}
       disabled={
         isFilePickerOpen ||
         (editor.isEditable

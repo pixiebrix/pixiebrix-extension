@@ -25,10 +25,9 @@ jest.mock(
   "@/components/richTextEditor/toolbar/ImageButton/useFilePicker",
   () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(({ onFileSelect }) => ({
+    default: jest.fn().mockImplementation(() => ({
         async pickFile() {
-          const file = new File(["test"], "test.png", { type: "image/png" });
-          await onFileSelect(file);
+          return new File(["test"], "test.png", { type: "image/png" });
         },
         isFilePickerOpen: false,
       })),

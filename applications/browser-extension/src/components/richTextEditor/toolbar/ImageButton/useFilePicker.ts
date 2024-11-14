@@ -15,40 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {useState} from "react";
+import { useState } from "react";
 
 interface UseFilePickerOptions {
   accept: string;
-  onFileSelect: (file: File) => Promise<void>;
 }
 
-function useFilePicker({ accept, onFileSelect }: UseFilePickerOptions) {
+function useFilePicker({ accept }: UseFilePickerOptions) {
   const [isFilePickerOpen, setIsFilePickerOpen] = useState(false);
 
-  const pickFile = async () => {
-    setIsFilePickerOpen(true);
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = accept;
+  const pickFile = async (): Promise<File> => {
+    if (isFilePickerOpen) {
+      throw new Error("File picker is already open");
+    }
 
-    const handleFileSelection = async (event: Event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) {
+    return new Promise((resolve, reject) => {
+      setIsFilePickerOpen(true);
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = accept;
+
+      const handleFileSelection = (event: Event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
         setIsFilePickerOpen(false);
-        return;
-      }
 
-      await onFileSelect(file);
-      setIsFilePickerOpen(false);
-    };
+        if (!file) {
+          reject(new Error("No file selected"));
+          return;
+        }
 
-    input.addEventListener("change", handleFileSelection);
-    input.addEventListener("cancel", () => {
-      setIsFilePickerOpen(false);
+        resolve(file);
+      };
+
+      const handleCancel = () => {
+        setIsFilePickerOpen(false);
+        reject(new Error("File selection cancelled"));
+      };
+
+      input.addEventListener("change", handleFileSelection);
+      input.addEventListener("cancel", handleCancel);
+
+      input.click();
+      input.remove();
     });
-
-    input.click();
-    input.remove();
   };
 
   return { pickFile, isFilePickerOpen };
