@@ -25,6 +25,9 @@ import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { type AppDispatch } from "@/pageEditor/store/store";
+import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
  * Returns a callback to show the appropriate save modal based on whether:
@@ -33,34 +36,23 @@ import { type AppDispatch } from "@/pageEditor/store/store";
  */
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    data: modDefinitions,
-    isLoading: isModDefinitionsLoading,
-    error: modDefinitionsError,
-  } = useAllModDefinitions();
+  const modDefinitionsQuery = useAllModDefinitions();
+  const editablePackagesQuery = useGetEditablePackagesQuery();
 
-  const { data: editablePackages, isLoading: isEditablePackagesLoading } =
-    useGetEditablePackagesQuery();
+  const registryQuery = useMergeAsyncState(
+    modDefinitionsQuery,
+    editablePackagesQuery,
+    (
+      modDefinitions: ModDefinition[],
+      editablePackages: EditablePackageMetadata[],
+    ) => ({
+      modDefinitions,
+      editablePackages,
+    }),
+  );
 
   return useCallback(
     async (sourceModId: RegistryId) => {
-      if (modDefinitionsError) {
-        notify.error({
-          message: "Error loading mod definitions",
-          error: modDefinitionsError,
-        });
-
-        return;
-      }
-
-      if (isModDefinitionsLoading || isEditablePackagesLoading) {
-        notify.error({
-          message: "Mod definitions not loaded yet. Try again.",
-        });
-
-        return;
-      }
-
       if (isInnerDefinitionRegistryId(sourceModId)) {
         dispatch(
           editorActions.showCreateModModal({
@@ -72,14 +64,25 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         return;
       }
 
-      assertNotNullish(
-        modDefinitions,
-        "saveMod called without modDefinitions loaded",
-      );
-      assertNotNullish(
-        editablePackages,
-        "saveMod called without editablePackages loaded",
-      );
+      if (registryQuery.isError) {
+        notify.error({
+          message: "Error loading mod definitions",
+          error: registryQuery.error,
+        });
+
+        return;
+      }
+
+      if (!registryQuery.isSuccess) {
+        notify.error({
+          message: "Mod definitions not loaded yet. Try again.",
+        });
+
+        return;
+      }
+
+      assertNotNullish(registryQuery.data, "Expected data");
+      const { modDefinitions, editablePackages } = registryQuery.data;
 
       const sourceModDefinition = modDefinitions.find(
         (x) => x.metadata.id === sourceModId,
@@ -95,8 +98,9 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
       }
 
       // Registry edit endpoints use package surrogate id
-      const packageId = editablePackages.find((x) => x.name === sourceModId)
-        ?.id;
+      const packageId = editablePackages.find(
+        (x) => x.name === sourceModId,
+      )?.id;
 
       if (packageId == null) {
         dispatch(editorActions.showSaveAsNewModModal());
@@ -111,14 +115,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         }),
       );
     },
-    [
-      dispatch,
-      isEditablePackagesLoading,
-      isModDefinitionsLoading,
-      editablePackages,
-      modDefinitions,
-      modDefinitionsError,
-    ],
+    [dispatch, registryQuery],
   );
 }
 

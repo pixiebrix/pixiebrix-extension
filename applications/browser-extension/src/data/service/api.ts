@@ -47,6 +47,7 @@ import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
+import { createPrivateSharing } from "@/utils/registryUtils";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -264,14 +265,12 @@ export const appApi = createApi({
     }),
     updateModDefinition: builder.mutation<
       PackageUpsertResponse,
-      { packageId: UUID; modDefinition: UnsavedModDefinition }
+      { packageId: UUID; modDefinition: UnsavedModDefinition; message?: string }
     >({
-      query({ packageId, modDefinition }) {
+      query({ packageId, modDefinition, message }) {
         const config = dumpBrickYaml(modDefinition);
-        const sharing = (modDefinition as ModDefinition).sharing ?? {
-          public: false,
-          organizations: [],
-        };
+        const sharing =
+          (modDefinition as ModDefinition).sharing ?? createPrivateSharing();
 
         return {
           url: API_PATHS.BRICK(packageId),
@@ -282,6 +281,7 @@ export const appApi = createApi({
             config,
             kind: DefinitionKinds.MOD,
             public: sharing.public,
+            message,
             organizations: sharing.organizations,
           },
         };

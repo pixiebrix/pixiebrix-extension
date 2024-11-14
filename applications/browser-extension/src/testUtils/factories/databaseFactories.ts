@@ -27,4 +27,6 @@ export const databaseFactory = define<Database>({
   name: (n: number) => `Test Database ${n}`,
   created_at: timestampFactory,
   last_write_at: timestampFactory,
+  // TODO: change after https://github.com/pixiebrix/pixiebrix-app/pull/5981
+  kind: "Record",
 });

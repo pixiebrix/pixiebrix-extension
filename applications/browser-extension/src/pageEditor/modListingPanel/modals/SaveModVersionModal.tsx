@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { testIsSemVerString } from "@/types/helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -37,10 +37,7 @@ import * as Yup from "yup";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ModalLayout from "@/components/ModalLayout";
-import {
-  ModalKey,
-  type ModMetadataFormState,
-} from "@/pageEditor/store/editor/pageEditorTypes";
+import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "@/hooks/useIsMounted";
@@ -48,7 +45,7 @@ import { isSpecificError } from "@/errors/errorHelpers";
 import useBuildAndValidateMod, {
   DataIntegrityError,
 } from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { gt } from "semver";
+import { gt, gte } from "semver";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import {
   isModComponentFormState,
@@ -70,6 +67,7 @@ function useInitialFormState(modId: RegistryId): SaveVersionFormValues {
   const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
   const draftState = getModDraftStateForModId(modId);
 
+  // Don't need to wrap in useMemo because only the initial render is used
   return {
     version: draftState.modMetadata.version,
     message: "",
@@ -81,34 +79,46 @@ function useFormSchema(modId: RegistryId) {
   const serverVersion = modDefinition?.metadata.version;
   assertNotNullish(serverVersion, "Expected version");
 
-  return Yup.object({
-    version: Yup.string()
-      .test(
-        "semver",
-        "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => testIsSemVerString(value, { allowLeadingV: false }),
-      )
-      .test(
-        "increment",
-        "You must increment the version number when providing a message.",
-        (value: string, testContext) => {
-          if (
-            // Only enforce
-            isNullOrBlank(testContext.parent.message) ||
-            // Backend also performs a check
-            serverVersion == null ||
-            // Let other rule catch for better message
-            testIsSemVerString(value, { allowLeadingV: false })
-          ) {
-            return true;
-          }
+  return useMemo(
+    () =>
+      Yup.object({
+        version: Yup.string()
+          .test(
+            "semver",
+            "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
+            (value: string) =>
+              testIsSemVerString(value, { allowLeadingV: false }),
+          )
+          .test(
+            "version-gte",
+            `Version must be equal to or greater than the current version: ${serverVersion}`,
+            (value: string) =>
+              serverVersion == null || gte(value, serverVersion),
+          )
+          .test(
+            "version-message",
+            // FIXME: this check is not working
+            "You must increment the version number when providing a message.",
+            (value: string, testContext) => {
+              if (
+                // Only enforce if message is provided
+                isNullOrBlank(testContext.parent.message) ||
+                // Backend also performs a check
+                serverVersion == null ||
+                // Let other rule catch for better message
+                testIsSemVerString(value, { allowLeadingV: false })
+              ) {
+                return true;
+              }
 
-          return gt(value, serverVersion);
-        },
-      )
-      .required(),
-    message: Yup.string(),
-  });
+              return gt(value, serverVersion);
+            },
+          )
+          .required(),
+        message: Yup.string(),
+      }),
+    [serverVersion],
+  );
 }
 
 const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
@@ -138,7 +148,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
   const formSchema = useFormSchema(modId);
   const initialFormState = useInitialFormState(modId);
 
-  const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
+  const onSubmit: OnSubmit<SaveVersionFormValues> = async (values, helpers) => {
     try {
       const draftModComponents = getDraftModComponentsForMod(modId);
       const draftModState = getModDraftStateForModId(modId);
@@ -161,6 +171,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
       const upsertResponse = await updateModDefinitionOnServer({
         packageId,
         modDefinition: unsavedModDefinition,
+        message: values.message,
       }).unwrap();
 
       await dispatch(
@@ -220,8 +231,9 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         label="Message"
         id="save-mod-modal-message"
         as="textarea"
-        placeholder="Fix bug XYZ... Added features XYZ..."
-        description="A short description of the changes to the mod. If you provide a message, you must increment the version."
+        rows={3}
+        placeholder="Fix bug... Added feature..."
+        description="Optional: a short description of the changes to the mod. If you provide a message, you must increment the version."
         showUntouchedErrors
       />
     </Modal.Body>
