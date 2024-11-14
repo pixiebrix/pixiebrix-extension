@@ -14,7 +14,9 @@
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
     "dead-code:prod": "npm run dead-code -- --production",
-    "watch": "npm run watch --workspaces"
+    "watch": "concurrently npm:watch:webpack npm:watch:typescript -r",
+    "watch:typescript": "tsc --build --watch --preserveWatchOutput",
+    "watch:webpack": "npm run watch:webpack --workspaces"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",
@@ -28,6 +30,7 @@
     "@sindresorhus/tsconfig": "^6.0.0",
     "knip": "^5.36.7",
     "nx": "20.1.0",
-    "prettier": "3.3.3"
+    "prettier": "3.3.3",
+    "concurrently": "^9.1.0"
   }
 }
