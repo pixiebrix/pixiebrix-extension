@@ -35,6 +35,10 @@ const knipConfig = {
         "prettier",
       ],
     },
+    "libraries/*": {
+      entry: "src/*.ts!",
+      project: "**/*.ts",
+    },
     "applications/browser-extension": {
       entry: [
         // ! suffix files are included in production mode

@@ -80,7 +80,7 @@ jobs:
           node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run build:webpack --workspace=applications/browser-extension
+      - run: npm run build
         env:
           MV: 3
           RELEASE_CHANNEL: stable
@@ -151,7 +151,7 @@ jobs:
           node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run build:typecheck --workspaces
+      - run: npm run build:typecheck
 
   lint:
     runs-on: ubuntu-latest

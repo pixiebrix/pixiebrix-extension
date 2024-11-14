@@ -10,13 +10,13 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "outDir": null,
-    "declaration": false,
+    "declaration": true,
+    "composite": true,
 
     // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "strictFunctionTypes": false,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,
     "noUnusedParameters": false
-  },
-  "exclude": ["node_modules"]
+  }
 }
