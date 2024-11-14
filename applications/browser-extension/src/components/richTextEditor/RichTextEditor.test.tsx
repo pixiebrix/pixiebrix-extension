@@ -251,6 +251,7 @@ describe("RichTextEditor", () => {
 
     const file = new File(["test"], "test.png", { type: "image/png" });
     const mockDownloadUrl = new URL("https://example.com/test.png");
+    const mockUploadUrl = new URL("https://storage-upload.example.com");
 
     axiosMock.onPost(API_PATHS.ASSET_PRE_UPLOAD(databaseId)).reply(200, {
       asset: {
@@ -261,14 +262,14 @@ describe("RichTextEditor", () => {
         updated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
       },
-      upload_url: "https://storage-upload.example.com",
+      upload_url: mockUploadUrl.href,
       fields: {
         key: "test-key",
         policy: "test-policy",
       },
     });
 
-    axiosMock.onPost("https://storage-upload.example.com").reply(200);
+    axiosMock.onPost(mockUploadUrl.href).reply(200);
 
     // Mock the asset update request
     axiosMock.onPatch(API_PATHS.ASSET(databaseId, assetId)).reply(200, {
@@ -287,7 +288,7 @@ describe("RichTextEditor", () => {
     await waitFor(() => {
       const editor = screen.getByRole("textbox");
       expect(editor?.innerHTML).toBe(
-        `<p><img src="${mockDownloadUrl.href}" alt=""></p>`,
+        `<p><img style="max-width: 100%" src="${mockDownloadUrl.href}" alt="" draggable="true"><img class="ProseMirror-separator" alt=""><br class="ProseMirror-trailingBreak"></p>`
       );
     });
   });
