@@ -67,7 +67,19 @@ function useInitialFormState(
 ): SaveVersionFormValues {
   const modId = sourceModDefinition.metadata.id;
   const getModDraftStateForModId = useSelector(selectGetModDraftStateForModId);
-  const draftState = getModDraftStateForModId(modId);
+
+  let draftState;
+
+  try {
+    draftState = getModDraftStateForModId(modId);
+  } catch {
+    // If the user edits the mod metadata/options/variables but has not clicked into a mod component, there's a render
+    // during the mod instance reactivate where getModDraftStateForModId will throw
+    return {
+      version: sourceModDefinition.metadata.version,
+      message: "",
+    };
+  }
 
   const serverVersion = sourceModDefinition.metadata.version;
   const draftVersion = draftState.modMetadata.version;

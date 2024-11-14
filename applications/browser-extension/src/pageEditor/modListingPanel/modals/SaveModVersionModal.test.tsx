@@ -173,7 +173,7 @@ describe("SaveModVersionModal", () => {
     await fillMessageAndSave();
 
     expect(notify.error).not.toHaveBeenCalled();
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
+    expect(notify.success).toHaveBeenCalledWith({ message: "Saved mod" });
   });
 
   it("preserves original options if no dirty options", async () => {
@@ -207,7 +207,7 @@ describe("SaveModVersionModal", () => {
     await fillMessageAndSave();
 
     // Assert error first to assist with debugging failures
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
+    expect(notify.success).toHaveBeenCalledWith({ message: "Saved mod" });
 
     const yamlConfig = (
       JSON.parse(
@@ -259,7 +259,7 @@ describe("SaveModVersionModal", () => {
 
     // Assert error first to assist with debugging failures
     expect(notify.error).not.toHaveBeenCalled();
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
+    expect(notify.success).toHaveBeenCalledWith({ message: "Saved mod" });
 
     const yamlConfig = (
       JSON.parse(
