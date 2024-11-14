@@ -22,13 +22,23 @@ import CustomFormComponent, {
   type CustomFormComponentProps,
 } from "@/bricks/renderers/CustomFormComponent";
 import { type Schema } from "@/types/schemaTypes";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { appApi } from "@/data/service/api";
 
 describe("RichTextWidget", () => {
   const user = userEvent.setup({
-    // 20ms delay between key presses to allow the editor state to update
-    // before the next key press
     delay: 20,
   });
+
+  const createTestStore = () =>
+    configureStore({
+      reducer: {
+        appApi: appApi.reducer,
+      },
+      middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(appApi.middleware),
+    });
 
   const createSchema = (properties: Record<string, any>): Schema => ({
     type: "object",
@@ -48,15 +58,19 @@ describe("RichTextWidget", () => {
   }: Pick<CustomFormComponentProps, "schema" | "uiSchema" | "formData"> & {
     onSubmit?: jest.Mock;
   }) => {
+    const store = createTestStore();
+
     render(
-      <CustomFormComponent
-        schema={schema}
-        formData={formData}
-        uiSchema={uiSchema}
-        submitCaption="Submit"
-        autoSave={false}
-        onSubmit={onSubmit}
-      />,
+      <Provider store={store}>
+        <CustomFormComponent
+          schema={schema}
+          formData={formData}
+          uiSchema={uiSchema}
+          submitCaption="Submit"
+          autoSave={false}
+          onSubmit={onSubmit}
+        />
+      </Provider>,
     );
     return { onSubmit };
   };

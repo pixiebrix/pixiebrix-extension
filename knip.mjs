@@ -159,6 +159,7 @@ const knipConfig = {
         "@tiptap/react",
         "@tiptap/extension-underline",
         "@tiptap/extension-link",
+        "@tiptap/extension-image",
 
         // False positives flagged in --production checks.
         // In non-production runs, these entries are flagged as unnecessary ignoreDependencies entries

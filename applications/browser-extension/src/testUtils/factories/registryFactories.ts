@@ -72,5 +72,6 @@ export const packageVersionDeprecatedFactory = define<PackageVersionDeprecated>(
     >(({ config }) => dumpBrickYaml(config), "config"),
     created_at: timestampFactory,
     updated_at: timestampFactory,
+    updated_by: {},
   },
 );

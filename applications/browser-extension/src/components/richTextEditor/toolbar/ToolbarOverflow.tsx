@@ -24,11 +24,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup, Overlay, Popover } from "react-bootstrap";
 import styles from "@/components/richTextEditor/toolbar/Toolbar.module.scss";
+import BulletedListButton from "@/components/richTextEditor/toolbar/BulletedListButton";
+import NumberedListButton from "@/components/richTextEditor/toolbar/NumberedListButton";
 
 const OverflowPopover = () => (
   <ButtonGroup size="sm">
     <UnderlineButton />
     <StrikethroughButton />
+    <BulletedListButton />
+    <NumberedListButton />
     <HorizontalRuleButton />
     <RemoveTextFormattingButton />
   </ButtonGroup>
