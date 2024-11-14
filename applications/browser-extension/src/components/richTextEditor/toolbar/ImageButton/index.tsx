@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { type Editor, useCurrentEditor } from "@tiptap/react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,6 +24,7 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 import { validateUUID } from "@/types/helpers";
 import { useShowError } from "@/components/richTextEditor/ErrorContext";
 import { useUploadAssetMutation } from "@/data/service/api";
+import useFilePicker from "@/components/richTextEditor/toolbar/ImageButton/useFilePicker";
 
 const getAssetDatabaseId = (editor: Editor) => {
   const imageExtension = editor.options.extensions.find(
@@ -38,7 +39,6 @@ const getAssetDatabaseId = (editor: Editor) => {
 };
 
 const ImageButton: React.FunctionComponent = () => {
-  const [isFilePickerOpen, setIsFilePickerOpen] = useState(false);
   const [uploadAsset] = useUploadAssetMutation();
   const { editor } = useCurrentEditor();
   const { setError } = useShowError();
@@ -49,58 +49,42 @@ const ImageButton: React.FunctionComponent = () => {
   );
 
   const assetDatabaseId = getAssetDatabaseId(editor);
+
+  const uploadAndInsertImage = async (file: File) => {
+    try {
+      const downloadUrl = await uploadAsset({
+        databaseId: assetDatabaseId,
+        file,
+      }).unwrap();
+
+      editor
+        .chain()
+        .focus()
+        .setImage({ src: downloadUrl.href, alt: "" })
+        .run();
+    } catch (error) {
+      setError("Failed to upload image, try again");
+      reportError(
+        new Error("Failed to upload image asset", {
+          cause: error,
+        }),
+      );
+    }
+  };
+
+  const { pickFile, isFilePickerOpen } = useFilePicker({
+    accept: "image/png, image/jpeg, image/gif",
+    onFileSelect: uploadAndInsertImage,
+  });
+
   if (!assetDatabaseId) {
     return null;
   }
 
-  const openFilePicker = async () => {
-    setIsFilePickerOpen(true);
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/png, image/jpeg, image/gif";
-
-    const handleFileSelection = async (event: Event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) {
-        setIsFilePickerOpen(false);
-        return;
-      }
-
-      try {
-        const downloadUrl = await uploadAsset({
-          databaseId: assetDatabaseId,
-          file,
-        }).unwrap();
-        editor
-          .chain()
-          .focus()
-          .setImage({ src: downloadUrl.href, alt: "" })
-          .run();
-      } catch (error) {
-        setError("Failed to upload image, try again");
-        reportError(
-          new Error("Failed to upload image asset", {
-            cause: error,
-          }),
-        );
-      } finally {
-        setIsFilePickerOpen(false);
-      }
-    };
-
-    input.addEventListener("change", handleFileSelection);
-    input.addEventListener("cancel", () => {
-      setIsFilePickerOpen(false);
-    });
-
-    input.click();
-    input.remove();
-  };
-
   return (
     <Button
       variant="default"
-      onClick={openFilePicker}
+      onClick={pickFile}
       disabled={
         isFilePickerOpen ||
         (editor.isEditable

@@ -1,17 +1,44 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RichTextEditor from "./RichTextEditor";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
+import { databaseFactory } from "@/testUtils/factories/databaseFactories";
+import { API_PATHS } from "@/data/service/urlPaths";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import { uuidv4 } from "@/types/helpers";
+
+const axiosMock = new MockAdapter(axios);
 
 const createTestStore = () =>
   configureStore({
     reducer: {
       appApi: appApi.reducer,
     },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(appApi.middleware),
   });
+
+// Add this mock at the top of the file with the other mocks
+jest.mock(
+  "@/components/richTextEditor/toolbar/ImageButton/useFilePicker",
+  () => ({
+    __esModule: true,
+    default: jest.fn().mockImplementation(({ onFileSelect }) => {
+      // Immediately trigger the file selection when pickFile is called
+      return {
+        pickFile: async () => {
+          const file = new File(["test"], "test.png", { type: "image/png" });
+          await onFileSelect(file);
+        },
+        isFilePickerOpen: false,
+      };
+    }),
+  }),
+);
 
 describe("RichTextEditor", () => {
   const user = userEvent.setup({
@@ -216,5 +243,52 @@ describe("RichTextEditor", () => {
     expect(
       screen.getByRole("textbox", { name: /newurl/i }),
     ).toBeInTheDocument();
+  });
+
+  test("uploads and inserts image using toolbar button", async () => {
+    const { id: databaseId } = databaseFactory({ kind: "Asset" });
+    const assetId = uuidv4();
+
+    const file = new File(["test"], "test.png", { type: "image/png" });
+    const mockDownloadUrl = new URL("https://example.com/test.png");
+
+    axiosMock.onPost(API_PATHS.ASSET_PRE_UPLOAD(databaseId)).reply(200, {
+      asset: {
+        id: assetId,
+        download_url: mockDownloadUrl.href,
+        filename: file.name,
+        is_uploaded: false,
+        updated_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+      },
+      upload_url: "https://storage-upload.example.com",
+      fields: {
+        key: "test-key",
+        policy: "test-policy",
+      },
+    });
+
+    axiosMock.onPost("https://storage-upload.example.com").reply(200);
+
+    // Mock the asset update request
+    axiosMock.onPatch(API_PATHS.ASSET(databaseId, assetId)).reply(200, {
+      id: assetId,
+      download_url: mockDownloadUrl.href,
+      filename: file.name,
+      is_uploaded: true,
+      updated_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    });
+
+    renderWithStore(<RichTextEditor assetDatabaseId={databaseId} />);
+
+    await user.click(screen.getByRole("button", { name: "Insert Image" }));
+
+    await waitFor(() => {
+      const editor = screen.getByRole("textbox");
+      expect(editor?.innerHTML).toBe(
+        `<p><img src="${mockDownloadUrl.href}" alt=""></p>`,
+      );
+    });
   });
 });

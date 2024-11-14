@@ -25,7 +25,7 @@ import ItalicButton from "@/components/richTextEditor/toolbar/ItalicButton";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import LinkButton from "@/components/richTextEditor/toolbar/LinkButton";
 import ToolbarOverflow from "@/components/richTextEditor/toolbar/ToolbarOverflow";
-import ImageButton from "@/components/richTextEditor/toolbar/ImageButton";
+import ImageButton from "@/components/richTextEditor/toolbar/ImageButton"
 
 const Toolbar: React.FunctionComponent = () => (
   <ButtonToolbar
