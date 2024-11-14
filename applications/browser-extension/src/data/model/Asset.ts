@@ -18,7 +18,7 @@
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
 import { type components } from "@/types/swagger";
-import { RequiredDeep } from "type-fest";
+import { type RequiredDeep } from "type-fest";
 
 export type AssetResponse = Required<
   components["schemas"]["AssetPreUpload"]["asset"]
@@ -42,7 +42,7 @@ export type AssetPreUpload = {
   fields: Record<string, string>;
 };
 
-export function transformAssetResponse(response: AssetResponse): Asset {
+function transformAssetResponse(response: AssetResponse): Asset {
   return {
     id: validateUUID(response.id),
     downloadUrl: new URL(response.download_url),

@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
-import { createApi, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { createApi, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import {
   type Database,
   type Deployment,
@@ -48,7 +48,7 @@ import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
 import {
-  AssetPreUploadResponse,
+  type AssetPreUploadResponse,
   transformAssetPreUploadResponse,
 } from "@/data/model/Asset";
 import axios from "axios";
