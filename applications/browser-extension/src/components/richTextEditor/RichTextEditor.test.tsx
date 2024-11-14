@@ -260,12 +260,7 @@ describe("RichTextEditor", () => {
         key: "test-key",
         policy: "test-policy",
       },
-    });
-
-    axiosMock.onPost(mockUploadUrl.href).reply(200);
-
-    // Mock the asset update request
-    axiosMock.onPatch(API_PATHS.ASSET(databaseId, assetId)).reply(200, {
+    }).onPost(mockUploadUrl.href).reply(200).onPatch(API_PATHS.ASSET(databaseId, assetId)).reply(200, {
       id: assetId,
       download_url: mockDownloadUrl.href,
       filename: file.name,
