@@ -23,6 +23,7 @@
   transition:
     border-color 0.15s ease-in-out,
     box-shadow 0.15s ease-in-out;
+  position: relative;
 
   &:focus-within {
     border-color: #80bdff;
@@ -46,4 +47,7 @@
   color: #dc3545;
   padding: 4px 8px;
   font-size: 0.875rem;
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
 }
