@@ -5,7 +5,6 @@ import RichTextEditor from "./RichTextEditor";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
-import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { API_PATHS } from "@/data/service/urlPaths";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -22,21 +21,17 @@ const createTestStore = () =>
       getDefaultMiddleware().concat(appApi.middleware),
   });
 
-// Add this mock at the top of the file with the other mocks
 jest.mock(
   "@/components/richTextEditor/toolbar/ImageButton/useFilePicker",
   () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(({ onFileSelect }) => {
-      // Immediately trigger the file selection when pickFile is called
-      return {
-        pickFile: async () => {
+    default: jest.fn().mockImplementation(({ onFileSelect }) => ({
+        async pickFile() {
           const file = new File(["test"], "test.png", { type: "image/png" });
           await onFileSelect(file);
         },
         isFilePickerOpen: false,
-      };
-    }),
+      })),
   }),
 );
 
@@ -246,7 +241,7 @@ describe("RichTextEditor", () => {
   });
 
   test("uploads and inserts image using toolbar button", async () => {
-    const { id: databaseId } = databaseFactory({ kind: "Asset" });
+    const databaseId = uuidv4();
     const assetId = uuidv4();
 
     const file = new File(["test"], "test.png", { type: "image/png" });
