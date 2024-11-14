@@ -86,7 +86,7 @@ const ImageButton: React.FunctionComponent = () => {
     };
 
     input.addEventListener("change", handleFileSelection);
-    input.addEventListener("cancel", () => setIsFilePickerOpen(false));
+    input.addEventListener("cancel", () => {setIsFilePickerOpen(false)});
 
     input.click();
     input.remove();

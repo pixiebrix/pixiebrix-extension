@@ -69,7 +69,7 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = ({
           ]}
           slotBefore={<Toolbar />}
           slotAfter={
-            <ErrorToast error={error} onClose={() => setError(null)} />
+            <ErrorToast error={error} onClose={() => {setError(null)}} />
           }
           {...props}
         />
