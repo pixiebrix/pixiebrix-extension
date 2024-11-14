@@ -19,6 +19,7 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
+  selectEditorModalVisibilities,
   selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
@@ -131,6 +132,10 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     [dispatch],
   );
 
+  const { isSaveModVersionModalVisible } = useSelector(
+    selectEditorModalVisibilities,
+  );
+
   const renderBody: RenderBody = ({ values }) => (
     <IntegrationsSliceModIntegrationsContextAdapter>
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
@@ -190,7 +195,8 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     <Container className={cx(styles.root, "max-750 ml-0")}>
       <AsyncStateGate state={modDefinitionQuery}>
         {() => (
-          <ErrorBoundary>
+          // Remount on save mod version modal visibility changing, because the version can be updated from the modal
+          <ErrorBoundary key={String(isSaveModVersionModalVisible)}>
             <Form
               validationSchema={editModSchema}
               initialValues={initialFormState}

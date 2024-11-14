@@ -81,8 +81,9 @@ const ModEditorPane: React.VFC = () => {
   ];
 
   return (
-    // Only need to remount on activeModId change because the sub-tabs mount/unmount on selection and there's
-    // no Redux actions that'd update the values while the forms are mounted
+    // Only need to remount the entire layout on activeModId change (which resets the selected tab).
+    // The sub-tabs mount/unmount on selection. Individual panels should listen for modals that might invalidate
+    // their form state. For example, the SaveModVersionModal updates the mod version
     <div className={styles.root} data-testid="modEditorPane">
       <EditorTabLayout key={activeModId} tabs={tabItems} />
     </div>
