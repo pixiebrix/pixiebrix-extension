@@ -76,7 +76,10 @@ function useInitialFormState(
   return {
     version:
       draftVersion === serverVersion
-        ? patchIncrement(serverVersion)
+        ? // In the future, could be smarter here and increment major/minor version on:
+          // - Major changes: known breaking changes (e.g., a new required mod option, a new integration configuration)
+          // - Minor changes: new features, e.g., a new mod component
+          patchIncrement(serverVersion)
         : draftVersion,
     message: "",
   };

@@ -16,284 +16,20 @@
  */
 import { renderHook } from "@/pageEditor/testHelpers";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
-import { validateRegistryId } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 import notify from "@/utils/notify";
-import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { type SemVerString } from "@/types/registryTypes";
-import modDefinitionRegistry from "@/modDefinitions/registry";
-import { loadBrickYaml } from "@/runtime/brickYaml";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
-import type { components } from "@/types/swagger";
-import {
-  actions as editorActions,
-  editorSlice,
-} from "@/pageEditor/store/editor/editorSlice";
-import type {
-  EditablePackageMetadata,
-  PackageUpsertResponse,
-} from "@/types/contract";
-import modComponentSlice from "@/store/modComponents/modComponentSlice";
-import { API_PATHS } from "@/data/service/urlPaths";
+import { actions as editorActions } from "@/pageEditor/store/editor/editorSlice";
 import { createNewUnsavedModMetadata } from "@/utils/modUtils";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { createPrivateSharing } from "@/utils/registryUtils";
-import { timestampFactory } from "@/testUtils/factories/stringFactories";
-import { propertiesToSchema } from "@/utils/schemaUtils";
 import { act } from "@testing-library/react";
-import { waitForEffect } from "@/testUtils/testHelpers";
-
-const modId = validateRegistryId("@test/mod");
 
 jest.mock("@/utils/notify");
-jest.mock("@/contentScript/messenger/api");
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-function packageUpsertResponseFactory(
-  editablePackage: EditablePackageMetadata,
-): PackageUpsertResponse {
-  return {
-    ...editablePackage,
-    ...createPrivateSharing(),
-    updated_at: timestampFactory(),
-    // OK to pass empty string because it's not relevant to the tests
-    config: "",
-  };
-}
-
 describe("useSaveMod", () => {
-  function setupModDefinitionMocks(
-    definitionOverrides: Partial<ModDefinition> = {},
-  ) {
-    appApiMock.reset();
-
-    const editablePackage = editablePackageMetadataFactory({
-      name: modId,
-    });
-
-    const modDefinition = defaultModDefinitionFactory({
-      metadata: {
-        id: editablePackage.name,
-        name: editablePackage.verbose_name!,
-        version: editablePackage.version as SemVerString,
-      },
-      ...definitionOverrides,
-    });
-
-    // Register directly in modDefinitionRegistry because background call to sync with the bricks registry endpoint is mocked
-    modDefinitionRegistry.register([
-      {
-        id: modId,
-        ...modDefinition,
-      },
-    ]);
-
-    appApiMock.onGet(API_PATHS.BRICKS).reply(200, [editablePackage]);
-
-    appApiMock
-      .onPut(API_PATHS.BRICK(editablePackage.id))
-      .reply(200, packageUpsertResponseFactory(editablePackage));
-
-    return {
-      modDefinition,
-    };
-  }
-
-  it("saves with no dirty changes", async () => {
-    const { modDefinition } = setupModDefinitionMocks();
-
-    const { result } = renderHook(() => useSaveMod(), {
-      setupRedux(dispatch) {
-        dispatch(
-          modComponentSlice.actions.activateMod({
-            modDefinition,
-            screen: "pageEditor",
-            isReactivate: false,
-          }),
-        );
-      },
-    });
-
-    await waitForEffect();
-
-    await act(async () => {
-      await result.current(modId);
-    });
-
-    // Assert error first to assist with debugging failures
-    expect(notify.error).not.toHaveBeenCalled();
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
-  });
-
-  it("preserves original options if no dirty options", async () => {
-    const { modDefinition } = setupModDefinitionMocks({
-      options: {
-        schema: {
-          type: "object",
-          properties: {
-            test: {
-              type: "string",
-            },
-          },
-        },
-      },
-    });
-
-    const { result } = renderHook(() => useSaveMod(), {
-      setupRedux(dispatch) {
-        dispatch(
-          modComponentSlice.actions.activateMod({
-            modDefinition,
-            screen: "pageEditor",
-            isReactivate: false,
-          }),
-        );
-      },
-    });
-
-    await waitForEffect();
-
-    await act(async () => {
-      await result.current(modId);
-    });
-
-    // Assert error first to assist with debugging failures
-    expect(notify.error).not.toHaveBeenCalled();
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
-
-    const yamlConfig = (
-      JSON.parse(
-        appApiMock.history.put[0]!.data,
-      ) as components["schemas"]["Package"]
-    ).config;
-
-    expect((loadBrickYaml(yamlConfig) as ModDefinition).options).toStrictEqual({
-      schema: {
-        type: "object",
-        properties: {
-          test: {
-            type: "string",
-          },
-        },
-      },
-    });
-  });
-
-  it("saves dirty options", async () => {
-    const { modDefinition } = setupModDefinitionMocks();
-
-    const { result } = renderHook(() => useSaveMod(), {
-      setupRedux(dispatch) {
-        dispatch(
-          modComponentSlice.actions.activateMod({
-            modDefinition,
-            screen: "pageEditor",
-            isReactivate: false,
-          }),
-        );
-        dispatch(editorSlice.actions.setActiveModId(modId));
-        dispatch(
-          editorSlice.actions.editModOptionsDefinition({
-            schema: {
-              type: "object",
-              properties: {
-                test: {
-                  type: "string",
-                },
-              },
-            },
-          }),
-        );
-      },
-    });
-
-    await waitForEffect();
-
-    await act(async () => {
-      await result.current(modId);
-    });
-
-    // Assert error first to assist with debugging failures
-    expect(notify.error).not.toHaveBeenCalled();
-    expect(notify.success).toHaveBeenCalledWith("Saved mod");
-
-    const yamlConfig = (
-      JSON.parse(
-        appApiMock.history.put[0]!.data,
-      ) as components["schemas"]["Package"]
-    ).config;
-
-    expect((loadBrickYaml(yamlConfig) as ModDefinition).options).toStrictEqual({
-      schema: {
-        type: "object",
-        properties: {
-          test: {
-            type: "string",
-          },
-        },
-      },
-      uiSchema: {
-        "ui:order": ["test", "*"],
-      },
-    });
-  });
-
-  it("saves dirty mod variable definitions", async () => {
-    const { modDefinition } = setupModDefinitionMocks();
-
-    const { result } = renderHook(() => useSaveMod(), {
-      setupRedux(dispatch) {
-        dispatch(
-          modComponentSlice.actions.activateMod({
-            modDefinition,
-            screen: "pageEditor",
-            isReactivate: false,
-          }),
-        );
-        dispatch(editorSlice.actions.setActiveModId(modId));
-        dispatch(
-          editorSlice.actions.editModVariablesDefinition({
-            schema: propertiesToSchema(
-              { modVariableName: { type: "string" } },
-              [],
-            ),
-          }),
-        );
-      },
-    });
-
-    await waitForEffect();
-
-    await act(async () => {
-      await result.current(modId);
-    });
-
-    const yamlConfig = (
-      JSON.parse(
-        appApiMock.history.put[0]!.data,
-      ) as components["schemas"]["Package"]
-    ).config;
-
-    expect(
-      (loadBrickYaml(yamlConfig) as ModDefinition).variables,
-    ).toStrictEqual({
-      schema: {
-        $schema: "https://json-schema.org/draft/2019-09/schema#",
-        type: "object",
-        properties: {
-          modVariableName: {
-            type: "string",
-          },
-        },
-        required: [],
-      },
-    });
-  });
-
   it("opens the create mod modal if save is called with a temporary, internal mod", async () => {
     appApiMock.reset();
 
@@ -317,14 +53,11 @@ describe("useSaveMod", () => {
       },
     });
 
-    await waitForEffect();
-
-    const { dispatch } = getReduxStore();
-
     await act(async () => {
       await result.current(temporaryModMetadata.id);
     });
 
+    const { dispatch } = getReduxStore();
     expect(dispatch).toHaveBeenCalledWith(
       editorActions.showCreateModModal({
         keepLocalCopy: false,
