@@ -11,8 +11,8 @@
       <excludeFolder url="file://$MODULE_DIR$/.playwright-report" />
       <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/dist" />
       <excludeFolder url="file://$MODULE_DIR$/applications/browser-extension/node_modules" />
-      <excludeFolder url="file://$MODULE_DIR$/libraries/utils/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/.nx" />
+      <excludeFolder url="file://$MODULE_DIR$/libraries/util-debug/coverage" />
       <excludePattern pattern="applications/browser-extension/report.html" />
     </content>
     <orderEntry type="inheritedJdk" />

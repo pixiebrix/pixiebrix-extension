@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc/libraries/utils",
+    "outDir": "../../dist/out-tsc/libraries/util-debug",
     "types": ["jest", "node"]
   },
   "include": [
