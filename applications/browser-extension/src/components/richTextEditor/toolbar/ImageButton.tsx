@@ -21,9 +21,9 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
-import useUploadAsset from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 import { validateUUID } from "@/types/helpers";
 import { useShowError } from "@/components/richTextEditor/ErrorContext";
+import { useUploadAssetMutation } from "@/data/service/api";
 
 const getAssetDatabaseId = (editor: Editor) => {
   const imageExtension = editor.options.extensions.find(
@@ -39,7 +39,7 @@ const getAssetDatabaseId = (editor: Editor) => {
 
 const ImageButton: React.FunctionComponent = () => {
   const [isFilePickerOpen, setIsFilePickerOpen] = useState(false);
-  const uploadAsset = useUploadAsset();
+  const [uploadAsset] = useUploadAssetMutation();
   const { editor } = useCurrentEditor();
   const { setError } = useShowError();
 
@@ -67,7 +67,10 @@ const ImageButton: React.FunctionComponent = () => {
       }
 
       try {
-        const downloadUrl = await uploadAsset(assetDatabaseId, file);
+        const downloadUrl = await uploadAsset({
+          databaseId: assetDatabaseId,
+          file,
+        }).unwrap();
         editor
           .chain()
           .focus()
@@ -86,7 +89,9 @@ const ImageButton: React.FunctionComponent = () => {
     };
 
     input.addEventListener("change", handleFileSelection);
-    input.addEventListener("cancel", () => {setIsFilePickerOpen(false)});
+    input.addEventListener("cancel", () => {
+      setIsFilePickerOpen(false);
+    });
 
     input.click();
     input.remove();

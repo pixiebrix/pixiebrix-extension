@@ -5,13 +5,11 @@ import RichTextEditor from "./RichTextEditor";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
-import { s3UploadApi } from "./toolbar/ImageButton/useUploadAsset";
 
 const createTestStore = () =>
   configureStore({
     reducer: {
       appApi: appApi.reducer,
-      s3UploadApi: s3UploadApi.reducer,
     },
   });
 

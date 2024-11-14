@@ -25,7 +25,6 @@ import { type Schema } from "@/types/schemaTypes";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
-import { s3UploadApi } from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 
 describe("RichTextWidget", () => {
   const user = userEvent.setup({
@@ -36,7 +35,6 @@ describe("RichTextWidget", () => {
     configureStore({
       reducer: {
         appApi: appApi.reducer,
-        s3UploadApi: s3UploadApi.reducer,
       },
       middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(appApi.middleware),

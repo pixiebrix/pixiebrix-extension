@@ -26,7 +26,6 @@ import isolatedComponentList from "./isolatedComponentList";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { appApi } from "@/data/service/api";
-import { s3UploadApi } from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 
 const MODE = process.env.SHADOW_DOM as "open" | "closed";
 
@@ -117,13 +116,10 @@ type Props<T> = React.DetailedHTMLProps<
 const store = configureStore({
   reducer: {
     [appApi.reducerPath]: appApi.reducer,
-    [s3UploadApi.reducerPath]: s3UploadApi.reducer,
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware()
-      .concat(appApi.middleware)
-      .concat(s3UploadApi.middleware);
+    return getDefaultMiddleware().concat(appApi.middleware);
     /* eslint-enable unicorn/prefer-spread  */
   },
 });
