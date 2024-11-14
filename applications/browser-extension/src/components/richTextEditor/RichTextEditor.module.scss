@@ -44,10 +44,29 @@
 }
 
 .error {
+  display: flex !important;
+  align-items: center;
   color: #dc3545;
   padding: 4px 8px;
   font-size: 0.875rem;
   position: absolute;
   bottom: 4px;
   left: 4px;
+
+  :global(.btn) {
+    margin-left: 8px;
+    color: #dc3545;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+
+    &:focus,
+    &:active,
+    &:hover,
+    &:active:focus {
+      color: #dc3545;
+      background-color: transparent;
+      box-shadow: none !important;
+    }
+  }
 }

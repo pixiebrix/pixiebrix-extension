@@ -25,9 +25,12 @@ import React, { useState } from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
 import { type UUID } from "@/types/stringTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationCircle,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import ErrorContext from "@/components/richTextEditor/ErrorContext";
-import { Toast } from "react-bootstrap";
+import { Button, Toast } from "react-bootstrap";
 
 type EditorProps = EditorProviderProps & {
   // A PixieBrix asset database ID to use for uploading images. If not included, the image extension will be disabled.
@@ -71,7 +74,22 @@ const RichTextEditor: React.FunctionComponent<EditorProps> = ({
           ]}
           slotBefore={<Toolbar />}
           slotAfter={
-              <Toast show={Boolean(error)} onClose={() => {setError(null)}} className={styles.error} autohide><FontAwesomeIcon icon={faExclamationCircle} /> {error}</Toast>
+            <Toast
+              show={Boolean(error)}
+              onClose={() => {
+                setError(null);
+              }}
+              className={styles.error}
+              autohide
+              animation={false}
+              delay={5000}
+            >
+              <FontAwesomeIcon className="mr-2" icon={faExclamationCircle} />{" "}
+              {error}
+              <Button variant="outline-danger" onClick={() => setError(null)}>
+                <FontAwesomeIcon icon={faTimes} />
+              </Button>
+            </Toast>
           }
           {...props}
         />

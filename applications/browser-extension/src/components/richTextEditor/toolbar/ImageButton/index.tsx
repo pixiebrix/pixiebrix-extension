@@ -23,7 +23,7 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useUploadAsset from "@/components/richTextEditor/toolbar/ImageButton/useUploadAsset";
 import { validateUUID } from "@/types/helpers";
-import {useShowError} from "@/components/richTextEditor/ErrorContext";
+import { useShowError } from "@/components/richTextEditor/ErrorContext";
 
 const getAssetDatabaseId = (editor: Editor) => {
   const imageExtension = editor.options.extensions.find(
@@ -71,9 +71,7 @@ const ImageButton: React.FunctionComponent = () => {
           .setImage({ src: downloadUrl.href, alt: "" })
           .run();
       } catch (error) {
-        // TODO: Implement error message handling in UI
-        setError("Failed to upload image asset, try again");
-
+        setError("Failed to upload image, try again");
         reportError(
           new Error("Failed to upload image asset", {
             cause: error,
