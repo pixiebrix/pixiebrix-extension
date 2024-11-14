@@ -36,7 +36,7 @@ const knipConfig = {
       ],
     },
     "libraries/*": {
-      entry: "src/*.ts",
+      entry: "src/*.ts!",
       project: "**/*.ts",
     },
     "applications/browser-extension": {
