@@ -231,7 +231,7 @@ export interface paths {
     delete: operations["destroyUserDatabase"];
     options?: never;
     head?: never;
-    patch: operations["updateUserDatabase"];
+    patch: operations["partialUpdateUserDatabase"];
     trace?: never;
   };
   "/api/databases/{id}/permissions/": {
@@ -2187,6 +2187,7 @@ export interface components {
       /** @default false */
       public: boolean;
       organizations?: string[];
+      message?: string;
       /** Format: date-time */
       readonly updated_at?: Timestamp;
       /** @description Human-readable name */
@@ -2202,6 +2203,14 @@ export interface components {
       readonly created_at?: Timestamp;
       /** Format: date-time */
       updated_at?: Timestamp;
+      updated_by: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        /** Format: email */
+        email?: string;
+      };
+      /** @description Optional commit/changelog message for version */
+      message?: string;
     };
     Database: {
       /** Format: uuid */
@@ -2285,6 +2294,14 @@ export interface components {
         readonly created_at?: Timestamp;
         /** Format: date-time */
         updated_at?: Timestamp;
+        updated_by: {
+          /** Format: uuid */
+          readonly id?: UUID;
+          /** Format: email */
+          email?: string;
+        };
+        /** @description Optional commit/changelog message for version */
+        message?: string;
       };
       package_version: string;
       user?: string;
@@ -2393,6 +2410,14 @@ export interface components {
         readonly created_at?: Timestamp;
         /** Format: date-time */
         updated_at?: Timestamp;
+        updated_by: {
+          /** Format: uuid */
+          readonly id?: UUID;
+          /** Format: email */
+          email?: string;
+        };
+        /** @description Optional commit/changelog message for version */
+        message?: string;
       };
       readonly bindings?: {
         /** Format: uuid */
@@ -3309,7 +3334,9 @@ export interface components {
       };
       /** Format: uri */
       upload_url: string;
-      fields: string;
+      fields: {
+        [key: string]: unknown;
+      };
     };
     DeploymentMessage: {
       /** Format: email */
@@ -3431,6 +3458,14 @@ export interface components {
       readonly created_at?: Timestamp;
       /** Format: date-time */
       updated_at?: Timestamp;
+      updated_by: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        /** Format: email */
+        email?: string;
+      };
+      /** @description Optional commit/changelog message for version */
+      message?: string;
     };
   };
   responses: never;
@@ -3978,7 +4013,7 @@ export interface operations {
       };
     };
   };
-  updateUserDatabase: {
+  partialUpdateUserDatabase: {
     parameters: {
       query?: never;
       header?: never;

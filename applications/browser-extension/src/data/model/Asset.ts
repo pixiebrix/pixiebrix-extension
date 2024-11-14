@@ -18,6 +18,7 @@
 import { type UUID } from "@/types/stringTypes";
 import { validateUUID } from "@/types/helpers";
 import { type components } from "@/types/swagger";
+import { RequiredDeep } from "type-fest";
 
 export type Asset = {
   id: UUID;
@@ -35,30 +36,24 @@ export type AssetPreUpload = {
 };
 
 export function transformAssetResponse(
-  response: components["schemas"]["Asset"],
+  response: Required<components["schemas"]["AssetPreUpload"]["asset"]>,
 ): Asset {
   return {
     id: validateUUID(response.id),
-    // @ts-expect-error -- TODO: these don't seem to be actually optional, how have we dealt with this in the past?
     downloadUrl: new URL(response.download_url),
-    // @ts-expect-error -- TODO: see above
     filename: response.filename,
-    // @ts-expect-error -- TODO: see above
     isUploaded: response.is_uploaded,
-    // @ts-expect-error -- TODO: see above
     updatedAt: new Date(response.updated_at),
-    // @ts-expect-error -- TODO: see above
     createdAt: new Date(response.created_at),
   };
 }
 
 export function transformAssetPreUploadResponse(
-  response: components["schemas"]["AssetPreUpload"],
+  response: RequiredDeep<components["schemas"]["AssetPreUpload"]>,
 ): AssetPreUpload {
   return {
     asset: transformAssetResponse(response.asset),
     uploadUrl: new URL(response.upload_url),
-    // @ts-expect-error -- the type of fields in swagger is wrong (TODO make a ticket for this)
     fields: response.fields as Record<string, string>,
   };
 }
