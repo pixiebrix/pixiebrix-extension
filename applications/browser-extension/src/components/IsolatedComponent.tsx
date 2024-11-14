@@ -170,6 +170,7 @@ export default function IsolatedComponent<T>({
       <style>{cssText}</style>
       <Stylesheets href={stylesheetUrl ?? []}>
         <Provider store={store}>
+          {/* Must call the factory on each render to pick up changes to the component props */}
           <Suspense fallback={null}>{factory(LazyComponent)}</Suspense>
         </Provider>
       </Stylesheets>
