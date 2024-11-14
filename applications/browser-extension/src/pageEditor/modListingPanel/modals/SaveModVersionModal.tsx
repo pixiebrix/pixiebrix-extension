@@ -34,17 +34,16 @@ import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import * as Yup from "yup";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ModalLayout from "@/components/ModalLayout";
 import { ModalKey } from "@/pageEditor/store/editor/pageEditorTypes";
-import { type RegistryId, type SemVerString } from "@/types/registryTypes";
+import { type SemVerString } from "@/types/registryTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import useIsMounted from "@/hooks/useIsMounted";
 import { isSpecificError } from "@/errors/errorHelpers";
 import useBuildAndValidateMod, {
   DataIntegrityError,
 } from "@/pageEditor/hooks/useBuildAndValidateMod";
-import { gt, gte } from "semver";
+import { gte } from "semver";
 import { ensureModComponentFormStatePermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import {
   isModComponentFormState,
@@ -53,7 +52,6 @@ import {
 import updateReduxForSavedModDefinition from "@/pageEditor/hooks/updateReduxForSavedModDefinition";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { isNullOrBlank } from "@/utils/stringUtils";
 import { useUpdateModDefinitionMutation } from "@/data/service/api";
 import { type AppDispatch } from "@/pageEditor/store/store";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -84,47 +82,35 @@ function useInitialFormState(
   };
 }
 
-function useFormSchema(modId: RegistryId) {
-  const { data: modDefinition } = useOptionalModDefinition(modId);
-  const serverVersion = modDefinition?.metadata.version;
-  assertNotNullish(serverVersion, "Expected version");
+function useFormSchema(sourceModDefinition: ModDefinition) {
+  const serverVersion = sourceModDefinition.metadata.version;
 
   return useMemo(
     () =>
       Yup.object({
         version: Yup.string()
-          .test(
-            "semver",
-            "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-            (value: string) =>
-              testIsSemVerString(value, { allowLeadingV: false }),
-          )
-          .test(
-            "version-gte",
-            "Version must be equal to or greater than the current version",
-            (value: string) =>
-              serverVersion == null || gte(value, serverVersion),
-          )
-          .test(
-            "version-message",
-            // FIXME: this check is not working
-            "You must increment the version number when providing a message.",
-            (value: string, testContext) => {
-              if (
-                // Only enforce if message is provided
-                isNullOrBlank(testContext.parent.message) ||
-                // Backend also performs a check
-                serverVersion == null ||
-                // Let other rule catch for better message
-                testIsSemVerString(value, { allowLeadingV: false })
-              ) {
-                return true;
-              }
+          .test(function (value) {
+            if (value == null) {
+              return true;
+            }
 
-              return gt(value, serverVersion);
-            },
-          )
-          .required(),
+            if (!testIsSemVerString(value)) {
+              return this.createError({
+                message:
+                  "New Version must follow the X.Y.Z semantic version format",
+              });
+            }
+
+            if (!gte(value, serverVersion)) {
+              return this.createError({
+                message:
+                  "New Version must be greater than or equal to the current registry version",
+              });
+            }
+
+            return true;
+          })
+          .required("New Version is a required field"),
         message: Yup.string().required("Message is a required field"),
       }),
     [serverVersion],
@@ -155,7 +141,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
   const { packageId, sourceModDefinition } = modalData;
   const modId = sourceModDefinition.metadata.id;
 
-  const formSchema = useFormSchema(modId);
+  const formSchema = useFormSchema(sourceModDefinition);
   const initialFormState = useInitialFormState(sourceModDefinition);
 
   const onSubmit: OnSubmit<SaveVersionFormValues> = async (values, helpers) => {
@@ -233,7 +219,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         name="serverVersion"
         label="Current Version"
         id="save-mod-modal-server-version"
-        description="The current registry version."
+        description="The current registry version"
         value={sourceModDefinition.metadata.version}
         disabled
       />
@@ -241,7 +227,7 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         name="version"
         label="New Version"
         id="save-mod-modal-version"
-        description="The new version. Must follow the MAJOR.MINOR.PATCH semantic version format."
+        description="The new version. Must follow the MAJOR.MINOR.PATCH semantic version format"
         showUntouchedErrors
       />
       <ConnectedFieldTemplate
@@ -250,8 +236,8 @@ const SaveModVersionModalBody: React.VFC<{ onHide: () => void }> = ({
         id="save-mod-modal-message"
         as="textarea"
         rows={3}
-        placeholder="Fix bug... Added feature..."
-        description="A short description of the changes to the mod."
+        placeholder="Fixed bug... Added feature..."
+        description="A short description of the changes to the mod"
       />
     </Modal.Body>
   );
