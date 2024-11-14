@@ -56,7 +56,7 @@ const ImageButton: React.FunctionComponent = () => {
     return null;
   }
 
-  const uploadAndInsertImage = async () => {
+  const pickAndInsertImage = async () => {
     const file = await pickFile();
     try {
       const downloadUrl = await uploadAsset({
@@ -82,7 +82,7 @@ const ImageButton: React.FunctionComponent = () => {
   return (
     <Button
       variant="default"
-      onClick={uploadAndInsertImage}
+      onClick={pickAndInsertImage}
       disabled={
         isFilePickerOpen ||
         (editor.isEditable
