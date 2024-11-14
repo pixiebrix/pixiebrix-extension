@@ -2,6 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "composite": false,
+    "declaration": false,
+    "noEmit": true,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
@@ -10,5 +13,12 @@
     },
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
+  "references": [
+    // All project dependencies
+    // TODO: add @nx/js plugin which will automatically update these paths
+    {
+      "path": "../../libraries/utils"
+    }
+  ],
   "exclude": ["venv", "dist", "node_modules"]
 }
