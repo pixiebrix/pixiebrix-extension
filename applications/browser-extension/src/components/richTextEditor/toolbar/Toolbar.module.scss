@@ -39,6 +39,10 @@
     border: none;
     box-shadow: none;
   }
+
+  :global(.heading-level__control--is-disabled) {
+    background-color: transparent;
+  }
 }
 
 .toolbar {

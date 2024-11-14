@@ -30,6 +30,7 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   options,
 }) => {
   const { database } = options;
+
   return (
     <RichTextEditor
       onUpdate={({ editor }) => {
