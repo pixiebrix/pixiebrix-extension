@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { type Editor, useCurrentEditor } from "@tiptap/react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,6 +38,7 @@ const getAssetDatabaseId = (editor: Editor) => {
 };
 
 const ImageButton: React.FunctionComponent = () => {
+  const [isFilePickerOpen, setIsFilePickerOpen] = useState(false);
   const uploadAsset = useUploadAsset();
   const { editor } = useCurrentEditor();
   const { setError } = useShowError();
@@ -53,13 +54,15 @@ const ImageButton: React.FunctionComponent = () => {
   }
 
   const openFilePicker = async () => {
+    setIsFilePickerOpen(true);
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/png, image/jpeg, image/gif";
 
-    input.addEventListener("change", async (event) => {
+    const handleFileSelection = async (event: Event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file) {
+        setIsFilePickerOpen(false);
         return;
       }
 
@@ -77,8 +80,13 @@ const ImageButton: React.FunctionComponent = () => {
             cause: error,
           }),
         );
+      } finally {
+        setIsFilePickerOpen(false);
       }
-    });
+    };
+
+    input.addEventListener("change", handleFileSelection);
+    input.addEventListener("cancel", () => setIsFilePickerOpen(false));
 
     input.click();
     input.remove();
@@ -89,9 +97,10 @@ const ImageButton: React.FunctionComponent = () => {
       variant="default"
       onClick={openFilePicker}
       disabled={
-        editor.isEditable
+        isFilePickerOpen ||
+        (editor.isEditable
           ? !editor.can().chain().focus().setImage({ src: "" }).run()
-          : true
+          : true)
       }
       aria-label="Insert Image"
     >
