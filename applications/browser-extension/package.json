@@ -314,5 +314,18 @@
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{workspaceRoot}/dist"
+        ],
+        "cache": true,
+        "dependsOn": [
+          "^build"
+        ]
+      }
+    }
   }
 }
