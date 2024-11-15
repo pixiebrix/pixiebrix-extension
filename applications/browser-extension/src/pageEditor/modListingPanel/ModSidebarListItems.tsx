@@ -77,25 +77,33 @@ const ModSidebarListItems: React.FunctionComponent = () => {
     ],
   );
 
-  const listItems = filteredSidebarItems.map((sidebarItem) => {
-    const { modMetadata, modComponents } = sidebarItem;
+  const listItems = useMemo(
+    () =>
+      filteredSidebarItems.map((sidebarItem) => {
+        const { modMetadata, modComponents } = sidebarItem;
 
-    return (
-      <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
-        {modComponents.map((modComponentSidebarItem) => (
-          <ModComponentListItem
-            key={getDraftModComponentId(modComponentSidebarItem)}
-            modComponentSidebarItem={modComponentSidebarItem}
-            availableActivatedModComponentIds={
-              availableActivatedModComponentIds
-            }
-            availableDraftModComponentIds={availableDraftModComponentIds}
-            isNested
-          />
-        ))}
-      </ModListItem>
-    );
-  });
+        return (
+          <ModListItem key={modMetadata.id} modMetadata={modMetadata}>
+            {modComponents.map((modComponentSidebarItem) => (
+              <ModComponentListItem
+                key={getDraftModComponentId(modComponentSidebarItem)}
+                modComponentSidebarItem={modComponentSidebarItem}
+                availableActivatedModComponentIds={
+                  availableActivatedModComponentIds
+                }
+                availableDraftModComponentIds={availableDraftModComponentIds}
+                isNested
+              />
+            ))}
+          </ModListItem>
+        );
+      }),
+    [
+      availableActivatedModComponentIds,
+      availableDraftModComponentIds,
+      filteredSidebarItems,
+    ],
+  );
 
   return (
     <>

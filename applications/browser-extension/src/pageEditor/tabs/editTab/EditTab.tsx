@@ -64,7 +64,7 @@ const EditTab: React.FC<{
 
   function copyBrick(instanceId: UUID) {
     // eslint-disable-next-line security/detect-object-injection -- UUID
-    const brickToCopy = pipelineMap[instanceId]?.blockConfig;
+    const brickToCopy = pipelineMap?.[instanceId]?.blockConfig;
     if (brickToCopy) {
       dispatch(actions.copyBrickConfig(brickToCopy));
     }

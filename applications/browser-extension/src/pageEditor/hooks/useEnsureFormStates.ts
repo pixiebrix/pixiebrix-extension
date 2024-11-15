@@ -18,7 +18,7 @@
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import {
-  selectCurrentModId,
+  selectActiveModId,
   selectGetUntouchedActivatedModComponentsForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,13 +30,13 @@ import { useEffect } from "react";
  */
 function useEnsureFormStates(): void {
   const dispatch = useDispatch();
-  const currentModId = useSelector(selectCurrentModId);
+  const activeModId = useSelector(selectActiveModId);
   const getUntouchedActivatedModComponentsForMod = useSelector(
     selectGetUntouchedActivatedModComponentsForMod,
   );
 
-  const untouchedModComponents = currentModId
-    ? getUntouchedActivatedModComponentsForMod(currentModId)
+  const untouchedModComponents = activeModId
+    ? getUntouchedActivatedModComponentsForMod(activeModId)
     : null;
 
   useEffect(() => {

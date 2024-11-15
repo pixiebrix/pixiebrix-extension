@@ -88,6 +88,10 @@ export const migrations: MigrationManifest = {
   13: (state: EditorStateMigratedV12 & PersistedState) =>
     // Added findInModOptionsByModId to EditorStateSynced
     resetEditorStateSynced(state),
+  14: (state: EditorStateMigratedV12 & PersistedState) =>
+    // Reset synced state to resolve issues from requiring an
+    // activeModId to have an activeModComponentId
+    resetEditorStateSynced(state),
 };
 
 export function migrateIntegrationDependenciesV1toV2(

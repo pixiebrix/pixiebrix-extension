@@ -116,6 +116,14 @@ function useCreateModFromUnsavedMod(): UseCreateModFromUnsavedModReturn {
         if (activeModId === unsavedModId) {
           // If the mod list item is selected, reselect the mod item using the new id
           dispatch(editorActions.setActiveModId(newModId));
+          // Preserve the activeModComponentId if there is one
+          if (activeModComponentFormState?.uuid) {
+            dispatch(
+              editorActions.setActiveModComponentId(
+                activeModComponentFormState.uuid,
+              ),
+            );
+          }
         } else if (
           activeModComponentFormState?.modMetadata.id === unsavedModId
         ) {

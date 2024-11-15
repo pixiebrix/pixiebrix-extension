@@ -73,9 +73,9 @@ export const selectActiveNodeInfo = createSelector(
 const activeModComponentNodeInfoSelector = createSelector(
   selectActiveBrickPipelineUIState,
   (_state: EditorRootState, instanceId: UUID) => instanceId,
-  (uiState: BrickPipelineUIState, instanceId: UUID) =>
+  (uiState, instanceId) =>
     // eslint-disable-next-line security/detect-object-injection -- using a node uuid
-    uiState.pipelineMap[instanceId],
+    uiState?.pipelineMap[instanceId],
 );
 
 export const selectActiveModComponentNodeInfo =
@@ -103,13 +103,13 @@ export const selectActiveNodeEventData = createSelector(
 
 export const selectPipelineMap = createSelector(
   selectActiveBrickPipelineUIState,
-  (uiState: BrickPipelineUIState) => uiState?.pipelineMap,
+  (uiState) => uiState?.pipelineMap,
 );
 
 export const selectCollapsedNodes = createSelector(
   selectActiveBrickPipelineUIState,
-  (brickPipelineUIState: BrickPipelineUIState) =>
-    Object.entries(brickPipelineUIState.nodeUIStates)
+  (brickPipelineUIState) =>
+    Object.entries(brickPipelineUIState?.nodeUIStates ?? {})
       .map(([nodeId, { collapsed }]) => (collapsed ? nodeId : null))
       .filter((nodeId) => nodeId != null),
 );
@@ -117,7 +117,7 @@ export const selectCollapsedNodes = createSelector(
 const parentNodeInfoSelector = createSelector(
   selectActiveBrickPipelineUIState,
   (_state: EditorRootState, nodeId: UUID) => nodeId,
-  (brickPipelineUIState: BrickPipelineUIState, nodeId: UUID) => {
+  (brickPipelineUIState, nodeId) => {
     if (brickPipelineUIState == null) {
       return null;
     }

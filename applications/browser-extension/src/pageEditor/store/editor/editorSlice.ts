@@ -39,7 +39,7 @@ import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,
   selectActiveModComponentFormState,
-  selectCurrentModId,
+  selectActiveModId,
   selectGetModComponentFormStateByModComponentId,
   selectGetModComponentFormStatesForMod,
   selectModComponentFormStates,
@@ -349,15 +349,16 @@ export const editorSlice = createSlice({
     ///
 
     /**
-     * Activate the mod with the given id. Expands the mod listing pane item if not already expanded
+     * Select the mod with the given id. Expands the mod listing pane item if not already expanded
      * @see toggleExpandedModId
      */
     setActiveModId(state, action: PayloadAction<RegistryId>) {
       const modId = action.payload;
 
       state.error = null;
-      state.activeModComponentId = null;
       state.activeModId = modId;
+
+      state.activeModComponentId = null;
 
       if (state.expandedModId !== modId) {
         state.expandedModId = modId;
@@ -995,12 +996,12 @@ export const editorSlice = createSlice({
     setDataPanelTabFindQuery(state, action: PayloadAction<{ query: string }>) {
       const { query } = action.payload;
 
-      const currentModId = selectCurrentModId({
+      const activeModId = selectActiveModId({
         editor: castEditorState(state),
       });
-      assertNotNullish(currentModId, "Expected currentModId");
+      assertNotNullish(activeModId, "Expected activeModId");
 
-      state.findInModQueryByModId[currentModId] = { query };
+      state.findInModQueryByModId[activeModId] = { query };
     },
 
     /**
@@ -1106,7 +1107,7 @@ export const persistEditorConfig: PersistConfig<EditorState> = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 13,
+  version: 14,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
   blacklist: Object.keys(initialEphemeralState),
 };

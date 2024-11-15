@@ -18,15 +18,15 @@
 import type { AnyAction, Dispatch, Middleware } from "@reduxjs/toolkit";
 import { type EditorRootState } from "@/pageEditor/store/editor/pageEditorTypes";
 import {
-  selectActiveModComponentId,
+  selectActiveModComponentFormState,
   selectActiveModId,
   selectAllDeletedModComponentIds,
-  selectCurrentModId,
   selectExpandedModId,
   selectModComponentFormStates,
 } from "@/pageEditor/store/editor/editorSelectors";
 import type { EmptyObject } from "type-fest";
 import { uniqBy } from "lodash";
+import { isInternalRegistryId } from "@/utils/registryUtils";
 
 class InvariantViolationError extends Error {
   override name = "InvariantViolationError";
@@ -48,17 +48,28 @@ class InvariantViolationError extends Error {
 // XXX: in production, should we be attempting to auto-fix these invariants?
 export function assertEditorInvariants(state: EditorRootState): void {
   // Assert that a mod and mod component item cannot be selected at the same time
-  if (selectActiveModId(state) && selectActiveModComponentId(state)) {
+  const activeModId = selectActiveModId(state);
+  const activeModComponent = selectActiveModComponentFormState(state);
+
+  if (
+    activeModId &&
+    activeModComponent &&
+    activeModId !== activeModComponent?.modMetadata.id &&
+    // When saving, the activeModId and activeModComponent.modMetadata.id aren't updated at the same time.
+    !isInternalRegistryId(activeModId)
+  ) {
+    // Should we dispatch(actions.setActiveModComponentId(null))
+    // Would need to change the behavior of the action to handle null
     throw new InvariantViolationError(
-      "activeModId and activeModComponentId are both set",
+      "activeModComponent is not a part of the activeMod",
     );
   }
 
   // Assert that the expanded mod must correspond to the selected mod or mod component
   const expandedModId = selectExpandedModId(state);
-  if (expandedModId && selectCurrentModId(state) !== expandedModId) {
+  if (expandedModId && activeModId !== expandedModId) {
     throw new InvariantViolationError(
-      "expandedModId does not match active mod/mod component",
+      "expandedModId does not match active mod",
     );
   }
 
