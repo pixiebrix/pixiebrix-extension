@@ -2,7 +2,7 @@ Index: add-trigger-starter-brick-to-mod
 ===================================================================
 --- add-trigger-starter-brick-to-mod
 +++ add-trigger-starter-brick-to-mod
-@@ -91,80 +91,88 @@
+@@ -91,101 +91,109 @@
          - '@pixiebrix/document-context'
          - element: '@pixiebrix/html/element'
        reportMode: once
@@ -91,3 +91,25 @@ Index: add-trigger-starter-brick-to-mod
      id: extensionPoint4
      label: Sidebar Panel
      permissions:
+       origins: []
+       permissions: []
+     services: {}
+ kind: recipe
+ metadata:
+   description: Created by playwright test for adding starter bricks to a mod
+   id: >-
+     @extension-e2e-test-unaffiliated/new-mod-00000000-0000-0000-0000-000000000000
+   name: New Mod
+-  version: 1.0.4
++  version: 1.0.5
+ options:
+   schema:
+     properties: {}
+     type: object
+   uiSchema:
+     ui:order:
+       - '*'
+ variables:
+   schema:
+     properties: {}
+     type: object

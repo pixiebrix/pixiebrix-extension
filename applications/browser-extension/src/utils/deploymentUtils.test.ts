@@ -23,11 +23,7 @@ import {
   mergeDeploymentIntegrationDependencies,
   selectActivatedDeployments,
 } from "./deploymentUtils";
-import {
-  uuidv4,
-  validateRegistryId,
-  normalizeSemVerString,
-} from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
@@ -52,6 +48,7 @@ import {
   teamDeploymentMetadataFactory,
 } from "@/testUtils/factories/modInstanceFactories";
 import { mapActivatedModComponentsToModInstance } from "@/store/modComponents/modInstanceUtils";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 describe("makeUpdatedFilter", () => {
   test.each([[{ restricted: true }, { restricted: false }]])(

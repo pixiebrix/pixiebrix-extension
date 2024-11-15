@@ -124,7 +124,9 @@ describe("ModVersionHistory", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Version History requires mod write permission"),
+        screen.getByText(
+          "Viewing Version History requires mod write permission",
+        ),
       ).toBeInTheDocument();
     });
 

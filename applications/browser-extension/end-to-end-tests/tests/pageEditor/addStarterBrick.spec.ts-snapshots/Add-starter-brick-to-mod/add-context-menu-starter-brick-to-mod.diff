@@ -101,7 +101,8 @@ Index: add-context-menu-starter-brick-to-mod
    id: >-
      @extension-e2e-test-unaffiliated/new-mod-00000000-0000-0000-0000-000000000000
    name: New Mod
-   version: 1.0.0
+-  version: 1.0.1
++  version: 1.0.2
  options:
    schema:
      properties: {}

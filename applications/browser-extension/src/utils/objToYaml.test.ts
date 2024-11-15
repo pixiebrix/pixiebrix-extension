@@ -16,8 +16,8 @@
  */
 
 import { brickToYaml } from "./objToYaml";
-import { normalizeSemVerString } from "@/types/helpers";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 describe("brickToYaml", () => {
   test("serializes arbitrary object", () => {

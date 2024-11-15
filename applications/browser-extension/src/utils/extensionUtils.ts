@@ -20,8 +20,8 @@ import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";
-import { normalizeSemVerString } from "@/types/helpers";
 import { type SemVerString } from "@/types/registryTypes";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";

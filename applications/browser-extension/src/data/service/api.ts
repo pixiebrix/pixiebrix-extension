@@ -17,10 +17,15 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { DefinitionKinds, type RegistryId } from "@/types/registryTypes";
-import { createApi, type FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import {
+  createApi,
+  type FetchBaseQueryError,
+} from "@reduxjs/toolkit/query/react";
+import {
+  type ActivatedDeployment,
   type Database,
   type Deployment,
+  type DeploymentPayload,
   type EditablePackageMetadata,
   type Group,
   type MarketplaceListing,
@@ -29,10 +34,8 @@ import {
   type PackageUpsertResponse,
   type PackageVersionDeprecated,
   type PendingInvitation,
-  type RetrieveRecipeResponse,
   type RemoteIntegrationConfig,
-  type DeploymentPayload,
-  type ActivatedDeployment,
+  type RetrieveRecipeResponse,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -47,6 +50,7 @@ import { type Me, transformMeResponse } from "@/data/model/Me";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import { API_PATHS } from "@/data/service/urlPaths";
 import { type Team, transformTeamResponse } from "@/data/model/Team";
+import { createPrivateSharing } from "@/utils/registryUtils";
 import {
   type AssetPreUploadResponse,
   transformAssetPreUploadResponse,
@@ -271,14 +275,12 @@ export const appApi = createApi({
     }),
     updateModDefinition: builder.mutation<
       PackageUpsertResponse,
-      { packageId: UUID; modDefinition: UnsavedModDefinition }
+      { packageId: UUID; modDefinition: UnsavedModDefinition; message?: string }
     >({
-      query({ packageId, modDefinition }) {
+      query({ packageId, modDefinition, message }) {
         const config = dumpBrickYaml(modDefinition);
-        const sharing = (modDefinition as ModDefinition).sharing ?? {
-          public: false,
-          organizations: [],
-        };
+        const sharing =
+          (modDefinition as ModDefinition).sharing ?? createPrivateSharing();
 
         return {
           url: API_PATHS.BRICK(packageId),
@@ -289,6 +291,7 @@ export const appApi = createApi({
             config,
             kind: DefinitionKinds.MOD,
             public: sharing.public,
+            message,
             organizations: sharing.organizations,
           },
         };

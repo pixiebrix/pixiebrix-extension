@@ -21,7 +21,8 @@ import {
   PlatformCapabilityNotAvailableError,
 } from "@/platform/capabilities";
 import { PlatformBase } from "@/platform/platformBase";
-import { normalizeSemVerString } from "@/types/helpers";
+
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 /**
  * A platform protocol with no available capabilities.

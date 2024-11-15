@@ -32,6 +32,7 @@ export const selectEditorModalVisibilities = createSelector(
       isMoveCopyToModVisible: type === ModalKey.MOVE_COPY_TO_MOD,
       isSaveAsNewModModalVisible: type === ModalKey.SAVE_AS_NEW_MOD,
       isCreateModModalVisible: type === ModalKey.CREATE_MOD,
+      isSaveModVersionModalVisible: type === ModalKey.SAVE_MOD_VERSION,
       isAddBlockModalVisible: type === ModalKey.ADD_BRICK,
       isSaveDataIntegrityErrorModalVisible:
         type === ModalKey.SAVE_DATA_INTEGRITY_ERROR,

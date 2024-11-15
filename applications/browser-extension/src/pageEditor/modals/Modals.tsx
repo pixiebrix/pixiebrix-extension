@@ -15,18 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import React from "react";
+import AddBrickModal from "@/pageEditor/modals/addBrickModal/AddBrickModal";
 import CreateModModal from "@/pageEditor/modListingPanel/modals/CreateModModal";
 import MoveOrCopyToModModal from "@/pageEditor/modListingPanel/modals/MoveOrCopyToModModal";
 import SaveAsNewModModal from "@/pageEditor/modListingPanel/modals/SaveAsNewModModal";
 import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
+import SaveModVersionModal from "@/pageEditor/modListingPanel/modals/SaveModVersionModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
     <MoveOrCopyToModModal />
     <SaveAsNewModModal />
     <CreateModModal />
+    <SaveModVersionModal />
     <AddBrickModal />
     <SaveDataIntegrityErrorModal />
   </>

@@ -59,7 +59,7 @@ const SaveAsNewModModal: React.FC = () => {
           onClick={() => {
             assertNotNullish(modId, "Expected selected mod");
             dispatch(
-              // Don't keep the old mod actived
+              // Don't keep the old mod activated
               actions.showCreateModModal({
                 keepLocalCopy: false,
                 sourceModId: modId,

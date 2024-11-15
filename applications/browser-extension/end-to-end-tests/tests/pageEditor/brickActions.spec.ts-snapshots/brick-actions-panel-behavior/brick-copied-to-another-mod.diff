@@ -77,7 +77,8 @@ Index: brick-copied-to-another-mod
    id: >-
      @extension-e2e-test-unaffiliated/simple-sidebar-panel-00000000-0000-0000-0000-000000000000
    name: Simple Sidebar Panel
-   version: 1.0.0
+-  version: 1.0.0
++  version: 1.0.1
  options:
    schema:
      properties: {}

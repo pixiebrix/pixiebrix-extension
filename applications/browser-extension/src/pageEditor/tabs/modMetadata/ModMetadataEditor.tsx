@@ -19,6 +19,7 @@ import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveModId,
+  selectEditorModalVisibilities,
   selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { Card, Container } from "react-bootstrap";
@@ -28,10 +29,7 @@ import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./ModMetadataEditor.module.scss";
 import { object, string } from "yup";
-import {
-  isInnerDefinitionRegistryId,
-  testIsSemVerString,
-} from "@/types/helpers";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
 import Alert from "@/components/Alert";
 import { createSelector } from "@reduxjs/toolkit";
@@ -48,6 +46,7 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { UI_PATHS } from "@/data/service/urlPaths";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { selectModInstanceMap } from "@/store/modComponents/modInstanceSelectors";
+import { testIsSemVerString } from "@/types/semVerHelpers";
 
 // TODO: This should be yup.SchemaOf<ModMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -133,6 +132,10 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     [dispatch],
   );
 
+  const { isSaveModVersionModalVisible } = useSelector(
+    selectEditorModalVisibilities,
+  );
+
   const renderBody: RenderBody = ({ values }) => (
     <IntegrationsSliceModIntegrationsContextAdapter>
       <Effect values={values} onChange={updateRedux} delayMillis={100} />
@@ -192,7 +195,8 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
     <Container className={cx(styles.root, "max-750 ml-0")}>
       <AsyncStateGate state={modDefinitionQuery}>
         {() => (
-          <ErrorBoundary>
+          // Remount on save mod version modal visibility changing, because the version can be updated from the modal
+          <ErrorBoundary key={String(isSaveModVersionModalVisible)}>
             <Form
               validationSchema={editModSchema}
               initialValues={initialFormState}
