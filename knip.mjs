@@ -36,8 +36,10 @@ const knipConfig = {
       ],
     },
     "libraries/*": {
-      entry: "src/*.ts!",
-      project: "**/*.ts",
+      // ! suffix files are included in production mode
+      entry: "src/index.ts!",
+      project: ["src/**/*.ts!"],
+      ignore: ["src/lib/globals.d.ts"],
     },
     "applications/browser-extension": {
       entry: [

@@ -9,7 +9,7 @@
       "path": "./applications/browser-extension"
     },
     {
-      "path": "./libraries/utils"
+      "path": "./libraries/util-debug"
     }
   ]
 }

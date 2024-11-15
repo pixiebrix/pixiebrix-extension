@@ -1,16 +1,18 @@
 {
-  "name": "@pixiebrix/utils",
+  "name": "@pixiebrix/util-debug",
   "version": "1.0.0",
-  "description": "PixieBrix Utility Library",
+  "description": "PixieBrix Debug Utility Library",
   "scripts": {
     "test": "TZ=UTC jest",
+    "test:ci": "TZ=UTC jest",
     "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
     "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
     "build": "tsc --build",
     "build:typecheck": "tsc --build"
   },
-  "license": "AGPL-3.0",
-  "repository": "https://github.com/pixiebrix/pixiebrix-extension",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "sideEffects": false,
   "dependencies": {
     "formik": "^2.4.6"
   },
