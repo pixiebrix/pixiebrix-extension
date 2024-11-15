@@ -162,6 +162,7 @@ test("load mod definitions and save one", async () => {
     API_PATHS.REGISTRY_BRICKS,
   ]);
 
+  // Try to avoid "Mod definitions not loaded yet. Try again." race in the useSaveMod hook
   await waitFor(async () => {
     expect(screen.queryByText("Not Fetching")).not.toBeInTheDocument();
   });
