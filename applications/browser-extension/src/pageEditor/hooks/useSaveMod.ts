@@ -31,7 +31,7 @@ import { type EditablePackageMetadata } from "@/types/contract";
 
 /**
  * Returns a callback to show the appropriate save modal based on whether:
- * - The mod have been saved yet
+ * - The mod has been saved yet
  * - The user has edit permissions for the mod
  */
 function useSaveMod(): (modId: RegistryId) => Promise<void> {
@@ -81,6 +81,7 @@ function useSaveMod(): (modId: RegistryId) => Promise<void> {
         return;
       }
 
+      // Must be available because of the isSuccess check. But Typescript can't infer that.
       assertNotNullish(registryQuery.data, "Expected data");
       const { modDefinitions, editablePackages } = registryQuery.data;
 
