@@ -44,7 +44,7 @@ interface TableProps<
   actions?: Actions;
   initialPageSize?: number;
   rowProps?: (row: UnknownObject) => RowProps;
-  showSearchFilter: boolean;
+  showSearchFilter?: boolean;
 
   /**
    * Force the table to show a specific record. This can be a function that returns true for the record to show, or
@@ -57,6 +57,11 @@ interface TableProps<
    * tables mounted, this will cause an infinite history loop.
    */
   syncURL?: boolean;
+
+  /**
+   * Message to display when there are no records to show.
+   */
+  emptyMessage?: string;
 }
 
 const SearchFilter: React.FunctionComponent<{
@@ -143,7 +148,8 @@ function PaginatedTable<
   initialPageSize = 10,
   syncURL = false,
   rowProps,
-  showSearchFilter,
+  emptyMessage = "No records found.",
+  showSearchFilter = true,
   forceShowRecord,
 }: TableProps<Row, Actions>): React.ReactElement {
   const history = useHistory();
@@ -299,7 +305,7 @@ function PaginatedTable<
         {rows.length === 0 && (
           <tr>
             <td colSpan={5} className="text-muted">
-              No records found.
+              {emptyMessage}
             </td>
           </tr>
         )}
