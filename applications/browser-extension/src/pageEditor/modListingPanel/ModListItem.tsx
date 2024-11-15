@@ -53,6 +53,7 @@ const ModListItem: React.FC<
 
   const isModComponentSelected = activeModComponentId != null;
   const isModSelected = activeModId === modId && !isModComponentSelected;
+  const hasModBackground = activeModId === modId && isModComponentSelected;
   const isExpanded = expandedModId === modId;
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
@@ -76,8 +77,8 @@ const ModListItem: React.FC<
         eventKey={modId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          // Set the alternate background if a mod component in this mod is active
-          [styles.modBackground ?? ""]: isModSelected || isModComponentSelected,
+          // Set the alternate background for the mod if a mod component in this mod is active
+          [styles.modBackground ?? ""]: hasModBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isModSelected}
