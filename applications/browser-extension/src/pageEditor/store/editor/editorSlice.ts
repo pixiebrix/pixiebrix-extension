@@ -34,7 +34,7 @@ import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, compact, get, pull, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
-import { getInvalidPath } from "@pixiebrix/utils/src/debugUtils";
+import { getInvalidPath } from "@pixiebrix/util-debug";
 import {
   selectActiveBrickConfigurationUIState,
   selectActiveBrickPipelineUIState,

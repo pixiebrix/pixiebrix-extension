@@ -17,7 +17,7 @@
     // All project dependencies
     // TODO: add @nx/js plugin which will automatically update these paths
     {
-      "path": "../../libraries/utils"
+      "path": "../../libraries/util-debug"
     }
   ],
   "exclude": ["venv", "dist", "node_modules"]

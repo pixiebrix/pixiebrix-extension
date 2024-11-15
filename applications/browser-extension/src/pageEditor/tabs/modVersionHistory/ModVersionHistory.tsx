@@ -123,6 +123,31 @@ function useModPackageVersionsQuery(modId: RegistryId): AsyncState<{
   }, [modId, editablePackage, packageVersionsQuery, editablePackagesQuery]);
 }
 
+const PackageVersionRow: React.VFC<{ version: PackageVersionDeprecated }> = ({
+  version,
+}) => {
+  const email = version.updated_by?.email;
+
+  return (
+    <tr>
+      <td>{version.version}</td>
+      <td>{dateFormat.format(Date.parse(version.updated_at))}</td>
+      <td>
+        {email ? (
+          <a href={`mailto:${email}`}>{email}</a>
+        ) : (
+          <span className="text-muted">Unknown</span>
+        )}
+      </td>
+      <td>
+        {version.message ?? (
+          <span className="text-muted">No message provided</span>
+        )}
+      </td>
+    </tr>
+  );
+};
+
 const ModVersionHistory: React.FC = () => {
   const modId = useSelector(selectActiveModId);
 

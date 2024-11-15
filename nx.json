@@ -7,6 +7,11 @@
       "cache": true
     },
     "test": {
+      "dependsOn": ["^build:typecheck"],
+      "cache": true
+    },
+    "test:ci": {
+      "dependsOn": ["^build:typecheck"],
       "cache": true
     },
     "lint": {
