@@ -50,7 +50,7 @@ export type Database = components["schemas"]["Database"];
 // TODO remove in https://github.com/pixiebrix/pixiebrix-extension/issues/7692
 export type PackageVersionDeprecated = SetRequired<
   components["schemas"]["PackageVersionDeprecated"],
-  "updated_at" | "created_at" | "id"
+  "updated_at" | "created_at" | "id" | "version"
 >;
 
 export type PendingInvitation = components["schemas"]["PendingInvitation"];
