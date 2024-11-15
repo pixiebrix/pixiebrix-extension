@@ -11,7 +11,6 @@
     "test:ci": "nx run-many -t test:ci",
     "lint": "nx run-many -t lint",
     "build": "nx build",
-    "build:typecheck": "nx typecheck",
     "typecheck": "nx typecheck",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
