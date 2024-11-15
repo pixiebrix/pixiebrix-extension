@@ -24,7 +24,7 @@
           "targetName": "typecheck"
         },
         "build": {
-          "targetName": "tsc:build",
+          "targetName": "build",
           "configName": "tsconfig.lib.json"
         }
       }
