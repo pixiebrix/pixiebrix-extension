@@ -33,6 +33,8 @@ const knipConfig = {
       ignoreDependencies: [
         // Provided for use in IDE. See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/9503
         "prettier",
+        // Used in local nx development commands (like generators)
+        "@swc/helpers",
       ],
     },
     "libraries/*": {

@@ -1,28 +1,33 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["{workspaceRoot}/dist"],
-      "cache": true
-    },
     "test": {
-      "dependsOn": ["^build:typecheck"],
+      "dependsOn": ["typecheck"],
       "cache": true
     },
     "test:ci": {
-      "dependsOn": ["^build:typecheck"],
+      "dependsOn": ["typecheck"],
       "cache": true
     },
     "lint": {
-      "dependsOn": ["^build:typecheck"],
-      "cache": true
-    },
-    "build:typecheck": {
-      "dependsOn": ["^build:typecheck"],
+      "dependsOn": ["typecheck"],
       "cache": true
     }
   },
   "defaultBase": "main",
-  "defaultProject": "@pixiebrix/extension"
+  "defaultProject": "@pixiebrix/extension",
+  "plugins": [
+    {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json"
+        }
+      }
+    }
+  ]
 }

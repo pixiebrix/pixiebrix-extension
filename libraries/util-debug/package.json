@@ -6,9 +6,7 @@
     "test": "TZ=UTC jest",
     "test:ci": "TZ=UTC jest",
     "lint": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
-    "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
-    "build": "tsc --build",
-    "build:typecheck": "tsc --build"
+    "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet"
   },
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",

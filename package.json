@@ -11,7 +11,7 @@
     "test:ci": "nx run-many -t test:ci",
     "lint": "nx run-many -t lint",
     "build": "nx build",
-    "build:typecheck": "nx run-many -t build:typecheck",
+    "typecheck": "nx typecheck",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
     "dead-code:base": "knip --config knip.mjs --tags=-knip",
     "dead-code:prod": "npm run dead-code -- --production",
@@ -28,7 +28,11 @@
     "npm": "10.5.0"
   },
   "devDependencies": {
+    "@nx/js": "^20.1.0",
     "@sindresorhus/tsconfig": "^6.0.0",
+    "@swc-node/register": "~1.9.1",
+    "@swc/core": "~1.5.7",
+    "@swc/helpers": "~0.5.11",
     "concurrently": "^9.1.0",
     "knip": "^5.36.7",
     "nx": "20.1.0",
