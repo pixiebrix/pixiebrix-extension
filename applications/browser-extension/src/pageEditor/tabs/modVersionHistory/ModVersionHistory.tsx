@@ -33,9 +33,11 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { dateFormat } from "@/utils/stringUtils";
 import { mergeAsyncState, valueToAsyncState } from "@/utils/asyncStateUtils";
 import { isInternalRegistryId } from "@/utils/registryUtils";
-import type { Column } from "react-table";
+import type { Column, Row } from "react-table";
 import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { MemoryRouter } from "react-router";
+import { firstBy } from "thenby";
+import { compare } from "semver";
 
 type TableColumn = Column<PackageVersionDeprecated>;
 
@@ -43,10 +45,15 @@ const COLUMNS: TableColumn[] = [
   {
     Header: "Version",
     accessor: "version",
+    sortDescFirst: true,
+    sortType(rowA, rowB, columnId) {
+      return compare(rowA.original.version, rowB.original.version);
+    },
   },
   {
     Header: "Timestamp",
     accessor: "updated_at",
+    sortDescFirst: true,
     Cell({ value }) {
       return <>{dateFormat.format(Date.parse(value))}</>;
     },
@@ -54,6 +61,9 @@ const COLUMNS: TableColumn[] = [
   {
     Header: "Updated By",
     accessor: "updated_by",
+    sortType: firstBy(
+      (x: Row<PackageVersionDeprecated>) => x.original.updated_by?.email ?? "",
+    ),
     Cell({ value }) {
       const { email } = value ?? {};
       return email ? (
@@ -66,6 +76,7 @@ const COLUMNS: TableColumn[] = [
   {
     Header: "Message",
     accessor: "message",
+    disableSortBy: true,
     Cell({ value }) {
       return value ? (
         <>{value}</>
@@ -123,32 +134,7 @@ function useModPackageVersionsQuery(modId: RegistryId): AsyncState<{
   }, [modId, editablePackage, packageVersionsQuery, editablePackagesQuery]);
 }
 
-const PackageVersionRow: React.VFC<{ version: PackageVersionDeprecated }> = ({
-  version,
-}) => {
-  const email = version.updated_by?.email;
-
-  return (
-    <tr>
-      <td>{version.version}</td>
-      <td>{dateFormat.format(Date.parse(version.updated_at))}</td>
-      <td>
-        {email ? (
-          <a href={`mailto:${email}`}>{email}</a>
-        ) : (
-          <span className="text-muted">Unknown</span>
-        )}
-      </td>
-      <td>
-        {version.message ?? (
-          <span className="text-muted">No message provided</span>
-        )}
-      </td>
-    </tr>
-  );
-};
-
-const ModVersionHistory: React.FC = () => {
+const ModVersionHistory: React.VFC = () => {
   const modId = useSelector(selectActiveModId);
 
   assertNotNullish(modId, "No active mod id");
