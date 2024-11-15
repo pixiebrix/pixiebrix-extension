@@ -21,9 +21,9 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { Logger } from "@/types/loggerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { RunArgs } from "@/types/runtimeTypes";
-import { normalizeSemVerString } from "@/types/helpers";
 import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 import type { RegistryProtocol } from "@/platform/platformTypes/registryProtocol";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods

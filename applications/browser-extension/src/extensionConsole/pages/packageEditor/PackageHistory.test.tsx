@@ -27,6 +27,8 @@ import { render } from "@/extensionConsole/testHelpers";
 import { type Package, type PackageVersionDeprecated } from "@/types/contract";
 import { type Timestamp } from "@/types/stringTypes";
 import { DefinitionKinds } from "@/types/registryTypes";
+import { packageVersionDeprecatedFactory } from "@/testUtils/factories/registryFactories";
+import { validateTimestamp } from "@/utils/timeUtils";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -46,24 +48,22 @@ describe("PackageHistory", () => {
 
   it("renders select components for choosing versions and displays the diff", async () => {
     const testVersions: PackageVersionDeprecated[] = [
-      {
+      packageVersionDeprecatedFactory({
         id: testPackageId,
         version: "1.0.1",
         config: {},
         raw_config: "some big yaml file",
-        created_at: "2024-01-24T20:55:41.263846Z" as Timestamp,
-        updated_at: "2024-01-26T23:58:12.270168Z" as Timestamp,
-        updated_by: {},
-      },
-      {
+        created_at: validateTimestamp("2024-01-24T20:55:41.263846Z"),
+        updated_at: validateTimestamp("2024-01-26T23:58:12.270168Z"),
+      }),
+      packageVersionDeprecatedFactory({
         id: testPackageId,
         version: "1.0.0",
         config: {},
         raw_config: "some big yaml file2",
-        created_at: "2024-01-20T16:55:41.263846Z" as Timestamp,
-        updated_at: "2024-01-22T18:58:12.270168Z" as Timestamp,
-        updated_by: {},
-      },
+        created_at: validateTimestamp("2024-01-20T16:55:41.263846Z"),
+        updated_at: validateTimestamp("2024-01-22T18:58:12.270168Z"),
+      }),
     ];
 
     const testPackage: Package = {

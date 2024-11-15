@@ -79,7 +79,8 @@ Index: brick-added
    id: >-
      @extension-e2e-test-unaffiliated/brick-actions-00000000-0000-0000-0000-000000000000
    name: Mod Actions Test
-   version: 1.0.0
+-  version: 1.0.0
++  version: 1.0.1
  options:
    schema:
      properties: {}

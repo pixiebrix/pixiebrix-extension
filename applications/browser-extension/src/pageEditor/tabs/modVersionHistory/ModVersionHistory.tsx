@@ -71,6 +71,31 @@ function useModPackageVersionsQuery(
   }, [modId, editablePackage, packageVersionsQuery, editablePackagesQuery]);
 }
 
+const PackageVersionRow: React.VFC<{ version: PackageVersionDeprecated }> = ({
+  version,
+}) => {
+  const email = version.updated_by?.email;
+
+  return (
+    <tr>
+      <td>{version.version}</td>
+      <td>{dateFormat.format(Date.parse(version.updated_at))}</td>
+      <td>
+        {email ? (
+          <a href={`mailto:${email}`}>{email}</a>
+        ) : (
+          <span className="text-muted">Unknown</span>
+        )}
+      </td>
+      <td>
+        {version.message ?? (
+          <span className="text-muted">No message provided</span>
+        )}
+      </td>
+    </tr>
+  );
+};
+
 const ModVersionHistory: React.FC = () => {
   const modId = useSelector(selectActiveModId);
 
@@ -90,22 +115,19 @@ const ModVersionHistory: React.FC = () => {
                   <thead>
                     <tr>
                       <th>Version</th>
-                      <th>Created At</th>
+                      <th>Timestamp</th>
+                      <th>Updated By</th>
+                      <th>Message</th>
                     </tr>
                   </thead>
                   <tbody>
                     {typeof data === "object" ? (
                       data.map((version) => (
-                        <tr key={version.id}>
-                          <td>{version.version}</td>
-                          <td>
-                            {dateFormat.format(Date.parse(version.updated_at))}
-                          </td>
-                        </tr>
+                        <PackageVersionRow key={version.id} version={version} />
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={2} className="text-muted">
+                        <td colSpan={4} className="text-muted">
                           {data}
                         </td>
                       </tr>

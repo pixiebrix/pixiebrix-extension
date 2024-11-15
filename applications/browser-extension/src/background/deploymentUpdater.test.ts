@@ -19,7 +19,7 @@ import {
   getModComponentState,
   saveModComponentState,
 } from "@/store/modComponents/modComponentStorage";
-import { uuidv4, normalizeSemVerString } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";
 import {
@@ -68,6 +68,7 @@ import {
 } from "@/contentScript/messenger/api";
 import { adapter } from "@/pageEditor/starterBricks/adapter";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 TEST_setContext("background");
 

@@ -31,14 +31,10 @@ import modComponentSlice from "@/store/modComponents/modComponentSlice";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AsyncState } from "@/types/sliceTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
-
-jest.mock("@/contentScript/messenger/api");
-jest.mock("@/components/ConfirmationModal", () => ({
-  ...jest.requireActual("@/components/ConfirmationModal"),
-  useModals: () => ({
-    showConfirmation: jest.fn().mockResolvedValue(true),
-  }),
-}));
+import AsyncButton from "@/components/AsyncButton";
+import userEvent from "@testing-library/user-event";
+import { screen } from "@testing-library/react";
+import SaveModVersionModal from "@/pageEditor/modListingPanel/modals/SaveModVersionModal";
 
 beforeAll(() => {
   appApiMock.reset();
@@ -106,15 +102,6 @@ test("load mod definitions and save one", async () => {
     // Track if re-fetching of the mod definitions by the registry has been called
     const calledRefetch = React.useRef(false);
 
-    if (!isFetching && allModDefinitions!.length > 0 && !calledSave.current) {
-      // The saveMod action involves
-      // - preparing a mod for saving
-      // - calling RTK Query mutation
-      // - saving the mod to the server
-      void saveMod(modDefinitionId);
-      calledSave.current = true;
-    }
-
     useEffect(() => {
       if (calledSave.current && calledRefetch.current && !isFetching) {
         fetchingSavingPromise.resolve();
@@ -127,6 +114,19 @@ test("load mod definitions and save one", async () => {
 
     return (
       <div>
+        <SaveModVersionModal />
+        <AsyncButton
+          onClick={async () => {
+            // The saveMod action involves
+            // - preparing a mod for saving
+            // - calling RTK Query mutation
+            // - saving the mod to the server
+            calledSave.current = true;
+            await saveMod(modDefinitionId);
+          }}
+        >
+          Save Mod
+        </AsyncButton>
         {isFetching ? "Fetching" : "Not Fetching"}
         {`Got ${allModDefinitions!.length} mod definitions`}
         {calledSave.current ? "Called Save" : "Not Called Save"}
@@ -146,6 +146,29 @@ test("load mod definitions and save one", async () => {
     },
   });
 
+  expect(appApiMock.history.get.map((x) => x.url)).toEqual([
+    // `useAllModDefinitions` in TestComponent
+    API_PATHS.REGISTRY_BRICKS,
+  ]);
+
+  await userEvent.click(
+    await screen.findByRole("button", { name: "Save Mod" }),
+  );
+
+  expect(appApiMock.history.get.map((x) => x.url)).toEqual([
+    API_PATHS.REGISTRY_BRICKS,
+    // `useSaveMod` re-fetches definitions/editable packages
+    API_PATHS.BRICKS,
+    API_PATHS.REGISTRY_BRICKS,
+  ]);
+
+  await userEvent.type(
+    await screen.findByRole("textbox", { name: "Message" }),
+    "Test Message",
+  );
+
+  await userEvent.click(await screen.findByRole("button", { name: "Save" }));
+
   // Let the registry and the RTK Query to load and update a mod definition
   await act(async () => fetchingSavingPromise.promise);
 
@@ -153,12 +176,12 @@ test("load mod definitions and save one", async () => {
     API_PATHS.REGISTRY_BRICKS,
     API_PATHS.BRICKS,
     API_PATHS.REGISTRY_BRICKS,
+    // Saving causes definitions/editable packages to be re-fetched
+    API_PATHS.REGISTRY_BRICKS,
     API_PATHS.BRICKS,
   ]);
 
-  // Validate the config sent to server
-  const validationResult = await validateSchema(
-    resultModDefinition.config as string,
-  );
-  expect(validationResult).toEqual({});
+  await expect(
+    validateSchema(resultModDefinition.config as string),
+  ).resolves.toStrictEqual({});
 });

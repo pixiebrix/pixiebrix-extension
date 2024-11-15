@@ -23,8 +23,8 @@ import { render } from "@/pageEditor/testHelpers";
 import { Accordion, ListGroup } from "react-bootstrap";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { normalizeSemVerString } from "@/types/helpers";
 import { API_PATHS } from "@/data/service/urlPaths";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 describe("ModListItem", () => {
   it("renders expanded", async () => {

@@ -15,16 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { coerce as semVerCoerce, valid as semVerValid } from "semver";
-import { startsWith } from "lodash";
-
 import { type TimedSequence, type UUID } from "@/types/stringTypes";
 import { v4, validate } from "uuid";
-import {
-  INNER_SCOPE,
-  type RegistryId,
-  type SemVerString,
-} from "@/types/registryTypes";
+import { INNER_SCOPE, type RegistryId } from "@/types/registryTypes";
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
@@ -123,60 +116,4 @@ export function validateRegistryId(id: string | undefined): RegistryId {
   console.debug("Invalid registry id: %s", id);
 
   throw new Error("Invalid registry id");
-}
-
-/**
- * @param value The string to normalize
- * @param allowLeadingV If `true`, a leading `v` is allowed. This results in a semver string that is not actually valid
- * @param coerce If `true`, the string will be coerced to a valid semver string. See https://www.npmjs.com/package/semver#coercion
- * @returns A normalized semver string
- */
-export function normalizeSemVerString(
-  value: string,
-  // Default to `false` to be stricter.
-  {
-    allowLeadingV = false,
-    coerce = false,
-  }: { allowLeadingV?: boolean; coerce?: boolean } = {},
-): SemVerString {
-  if (value == null) {
-    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
-    // we can remove this check as strictNullChecks will check the call site
-    return value as SemVerString;
-  }
-
-  if (testIsSemVerString(value, { allowLeadingV, coerce })) {
-    if (coerce) {
-      const coerced = semVerValid(semVerCoerce(value));
-      if (value.startsWith("v")) {
-        return `v${coerced}` as SemVerString;
-      }
-
-      return coerced as SemVerString;
-    }
-
-    return value;
-  }
-
-  console.debug("Invalid semver %s", value);
-
-  throw new TypeError("Invalid semantic version");
-}
-
-export function testIsSemVerString(
-  value: string,
-  // FIXME: the SemVerString type wasn't intended to support a leading `v`. See documentation
-  // Default to `false` to be stricter.
-  {
-    allowLeadingV = false,
-    coerce = false,
-  }: { allowLeadingV?: boolean; coerce?: boolean } = {},
-): value is SemVerString {
-  const _value = coerce ? semVerCoerce(value) : value;
-
-  if (semVerValid(_value) != null) {
-    return allowLeadingV || !startsWith(value, "v");
-  }
-
-  return false;
 }

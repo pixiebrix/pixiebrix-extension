@@ -55,6 +55,11 @@ export const editablePackageMetadataFactory = define<EditablePackageMetadata>({
   _editableBrickBrand: undefined as never,
 });
 
+export const userSlimFactory = define<PackageVersionDeprecated["updated_by"]>({
+  id: autoUUIDSequence,
+  email: (n: number) => `user${n}@example.com`,
+});
+
 /**
  * @deprecated see https://github.com/pixiebrix/pixiebrix-extension/issues/7692
  */
@@ -72,6 +77,6 @@ export const packageVersionDeprecatedFactory = define<PackageVersionDeprecated>(
     >(({ config }) => dumpBrickYaml(config), "config"),
     created_at: timestampFactory,
     updated_at: timestampFactory,
-    updated_by: {},
+    updated_by: userSlimFactory,
   },
 );

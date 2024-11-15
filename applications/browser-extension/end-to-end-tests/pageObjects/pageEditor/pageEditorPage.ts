@@ -120,6 +120,16 @@ export class PageEditorPage extends BasePageObject {
     //  cleaned up after the test. Future work is adding affordance to clean up saved
     //  mods, with an option to avoid cleanup for certain mods.
     await this.modListingPanel.activeModListItem.saveButton.click();
+
+    // Since 2.2.1, Page Editor shows commit message dialog when saving an existing mod
+    const saveDialog = this.getByRole("dialog");
+    await expect(saveDialog).toBeVisible();
+    await saveDialog
+      .getByRole("textbox", { name: "Message" })
+      .fill("Commit message");
+    await saveDialog.getByRole("button", { name: "Save" }).click();
+    await expect(saveDialog).toBeHidden();
+
     await expect(
       this.page.getByRole("status").filter({ hasText: "Saved mod" }),
     ).toBeVisible();

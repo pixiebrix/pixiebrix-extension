@@ -2225,10 +2225,10 @@ export interface components {
       owner_field?: string | null;
       user?: string;
       /**
-       * @default Record
+       * @default Key-Value
        * @enum {string}
        */
-      kind: "Record" | "Asset";
+      type: "Key-Value" | "Asset";
       /** Format: date-time */
       readonly last_write_at?: Timestamp;
       readonly num_records?: number;
@@ -2339,10 +2339,10 @@ export interface components {
       owner_field?: string | null;
       user?: string;
       /**
-       * @default Record
+       * @default Key-Value
        * @enum {string}
        */
-      kind: "Record" | "Asset";
+      type: "Key-Value" | "Asset";
       /** Format: date-time */
       readonly last_write_at?: Timestamp;
       readonly num_records?: number;

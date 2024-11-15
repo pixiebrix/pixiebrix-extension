@@ -19,10 +19,12 @@ import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type Deployment } from "@/types/contract";
 import { type ActivatableDeployment } from "@/types/deploymentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { validateRegistryId, normalizeSemVerString } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { validateTimestamp } from "@/utils/timeUtils";
+import { userSlimFactory } from "@/testUtils/factories/registryFactories";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
@@ -31,7 +33,7 @@ const deploymentPackageFactory = define<Deployment["package"]>({
   name: "Test Starter Brick",
   version: (n: number) => normalizeSemVerString(`1.0.${n}`),
   package_id: (n: number) => validateRegistryId(`test/starter-brick-${n}`),
-  updated_by: {},
+  updated_by: userSlimFactory,
 });
 
 export const deploymentFactory = define<Deployment>({

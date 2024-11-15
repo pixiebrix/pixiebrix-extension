@@ -38,8 +38,9 @@ import { migrateIntegrationDependenciesV1toV2 } from "@/store/editorMigrations";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { type Nullishable } from "@/utils/nullishUtils";
 import { type ActivatedModComponentV2 } from "@/types/modComponentTypes";
-import { normalizeSemVerString, validateRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 import { getUserScope } from "@/auth/authUtils";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- This is never mutated
 const migrations: MigrationManifest = {

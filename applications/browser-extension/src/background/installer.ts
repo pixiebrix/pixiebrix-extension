@@ -42,8 +42,8 @@ import {
 } from "@/utils/extensionUtils";
 import { oncePerSession } from "@/mv3/SessionStorage";
 import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
-import { normalizeSemVerString } from "@/types/helpers";
 import { type SemVerString } from "@/types/registryTypes";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.

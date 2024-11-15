@@ -50,14 +50,11 @@ import { isStarterBrickDefinitionLike } from "@/starterBricks/types";
 import { normalizeStarterBrickDefinitionProp } from "@/starterBricks/starterBrickUtils";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type SetRequired } from "type-fest";
-import {
-  normalizeSemVerString,
-  uuidv4,
-  validateRegistryId,
-} from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { nowTimestamp } from "@/utils/timeUtils";
 import { type ModInstance } from "@/types/modInstanceTypes";
 import { createPrivateSharing } from "@/utils/registryUtils";
+import { normalizeSemVerString } from "@/types/semVerHelpers";
 
 /**
  * Returns the ModComponentRef for a given mod component.

@@ -9,7 +9,7 @@ options:
 metadata:
   id: >-
     @extension-e2e-test-unaffiliated/new-mod-00000000-0000-0000-0000-000000000000
-  version: 1.0.0
+  version: 1.0.1
   name: New Mod
   description: Created by playwright test for adding starter bricks to a mod
 variables:
