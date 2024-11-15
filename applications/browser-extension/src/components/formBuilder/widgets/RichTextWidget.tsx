@@ -28,6 +28,7 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   disabled,
   readonly,
   options,
+  value
 }) => {
   const { database } = options;
 
@@ -45,6 +46,7 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
       }}
       editable={!(disabled || readonly)}
       assetDatabaseId={validateUUID(database)}
+      content={typeof value === "string" ? value : ""}
     />
   );
 };

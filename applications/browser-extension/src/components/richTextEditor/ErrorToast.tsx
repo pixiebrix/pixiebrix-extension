@@ -35,10 +35,12 @@ const ErrorToast: React.FC<ErrorToastProps> = ({ error, onClose }) => (
     animation={false}
     delay={5000}
   >
+    <span>
     <FontAwesomeIcon className="mr-2" icon={faExclamationCircle} /> {error}
     <Button variant="outline-danger" onClick={onClose}>
       <FontAwesomeIcon icon={faTimes} />
     </Button>
+      </span>
   </Toast>
 );
 

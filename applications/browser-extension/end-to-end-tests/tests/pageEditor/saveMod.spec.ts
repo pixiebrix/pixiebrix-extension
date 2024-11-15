@@ -52,7 +52,6 @@ test("can save a new trigger mod", async ({
 
 test("#9349: can save new mod with multiple components", async ({
   page,
-  extensionId,
   newPageEditorPage,
 }) => {
   await page.goto("/");

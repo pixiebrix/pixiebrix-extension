@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/store/editor/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import {
-  selectCurrentModId,
+  selectActiveModId,
   selectEditorModalVisibilities,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
@@ -32,7 +32,7 @@ const SaveAsNewModModal: React.FC = () => {
     selectEditorModalVisibilities,
   );
 
-  const modId = useSelector(selectCurrentModId);
+  const modId = useSelector(selectActiveModId);
   const { data: mod, isFetching } = useOptionalModDefinition(modId);
   const modName = mod?.metadata?.name ?? "this mod";
 

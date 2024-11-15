@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getModalDataSelector,
   selectActiveModComponentFormState,
-  selectCurrentModId,
+  selectActiveModId,
   selectEditorModalVisibilities,
   selectModMetadataMap,
 } from "@/pageEditor/store/editor/editorSelectors";
@@ -140,8 +140,8 @@ const CreateModModalBody: React.FC<{ onHide: () => void }> = ({ onHide }) => {
   const dispatch = useDispatch();
   const isMounted = useIsMounted();
 
-  const currentModId = useSelector(selectCurrentModId);
-  assertNotNullish(currentModId, "Expected mod or mod component to be active");
+  const activeModId = useSelector(selectActiveModId);
+  assertNotNullish(activeModId, "Expected mod or mod component to be active");
 
   const activeModComponentFormState = useSelector(
     selectActiveModComponentFormState,
@@ -158,11 +158,11 @@ const CreateModModalBody: React.FC<{ onHide: () => void }> = ({ onHide }) => {
   const { createModFromComponent } = useCreateModFromModComponent();
 
   const { data: modDefinition, isFetching: isModDefinitionFetching } =
-    useOptionalModDefinition(currentModId);
+    useOptionalModDefinition(activeModId);
 
   const formSchema = useFormSchema();
 
-  const initialFormState = useInitialFormState(currentModId);
+  const initialFormState = useInitialFormState(activeModId);
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     if (isModDefinitionFetching) {
@@ -187,10 +187,10 @@ const CreateModModalBody: React.FC<{ onHide: () => void }> = ({ onHide }) => {
       ) {
         // Handle "Save As" case where the mod is unsaved or the user no longer has access to the mod definition
         assertNotNullish(
-          currentModId,
+          activeModId,
           "Expected mod to be selected in the editor",
         );
-        await createModFromUnsavedMod(currentModId, values);
+        await createModFromUnsavedMod(activeModId, values);
       } else {
         await createModFromMod(modDefinition, values, modalData);
       }
