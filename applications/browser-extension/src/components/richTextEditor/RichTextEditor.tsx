@@ -29,7 +29,7 @@ import ErrorToast from "@/components/richTextEditor/ErrorToast";
 
 type EditorProps = EditorProviderProps & {
   // A PixieBrix asset database ID to use for uploading images. If not included, the image extension will be disabled.
-  assetDatabaseId?: UUID;
+  assetDatabaseId?: UUID | null;
 };
 
 interface ImageWithAssetDatabaseOptions extends ImageOptions {

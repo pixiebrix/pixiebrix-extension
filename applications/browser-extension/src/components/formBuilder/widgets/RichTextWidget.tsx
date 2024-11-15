@@ -18,7 +18,7 @@
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
 import RichTextEditor from "@/components/richTextEditor/RichTextEditor";
-import { validateUUID } from "@/types/helpers";
+import {isUUID} from "@/types/helpers";
 
 const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
   id,
@@ -45,7 +45,7 @@ const RichTextWidget: React.FunctionComponent<WidgetProps> = ({
         onBlur(id, editor.getHTML());
       }}
       editable={!(disabled || readonly)}
-      assetDatabaseId={validateUUID(database)}
+      assetDatabaseId={typeof database === "string" && isUUID(database) ? database : null}
       content={typeof value === "string" ? value : ""}
     />
   );
