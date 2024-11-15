@@ -62,6 +62,7 @@ const HeadingLevelDropdown: React.FunctionComponent = () => {
       aria-label="Heading Level"
       value={currentLevelOption}
       onChange={handleChange}
+      isDisabled={!editor.isEditable}
       maxMenuHeight={100}
       classNamePrefix="heading-level"
     />

@@ -15,17 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define } from "cooky-cutter";
-import { type Database } from "@/types/contract";
-import {
-  timestampFactory,
-  uuidSequence,
-} from "@/testUtils/factories/stringFactories";
+import { createContext, useContext } from "react";
 
-export const databaseFactory = define<Database>({
-  id: uuidSequence,
-  name: (n: number) => `Test Database ${n}`,
-  created_at: timestampFactory,
-  last_write_at: timestampFactory,
-  kind: "Record",
-});
+type ErrorContextType = {
+  error: string | null;
+  setError: (error: string | null) => void;
+};
+
+const ErrorContext = createContext<ErrorContextType | null>(null);
+
+export function useShowError() {
+  const context = useContext(ErrorContext);
+  if (!context) {
+    throw new Error("useRichTextError must be used within a RichTextEditor");
+  }
+
+  return context;
+}
+
+export default ErrorContext;

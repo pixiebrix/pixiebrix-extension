@@ -231,7 +231,7 @@ export interface paths {
     delete: operations["destroyUserDatabase"];
     options?: never;
     head?: never;
-    patch: operations["updateUserDatabase"];
+    patch: operations["partialUpdateUserDatabase"];
     trace?: never;
   };
   "/api/databases/{id}/permissions/": {
@@ -280,6 +280,38 @@ export interface paths {
     options?: never;
     head?: never;
     patch?: never;
+    trace?: never;
+  };
+  "/api/databases/{database_pk}/assets/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["listAssets"];
+    put?: never;
+    post: operations["createAssetPreUpload"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/databases/{database_pk}/assets/{id}/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["retrieveAsset"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations["partialUpdateAsset"];
     trace?: never;
   };
   "/api/databases/{database_pk}/references/": {
@@ -970,6 +1002,38 @@ export interface paths {
     put?: never;
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/organizations/{organization_pk}/serviceaccounts/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["listServiceAccounts"];
+    put?: never;
+    post: operations["createServiceAccountWithToken"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/organizations/{organization_pk}/serviceaccounts/{id}/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["retrieveServiceAccount"];
+    put?: never;
+    post?: never;
+    delete: operations["destroyServiceAccount"];
     options?: never;
     head?: never;
     patch?: never;
@@ -2003,8 +2067,13 @@ export interface components {
       actor: {
         /** Format: uuid */
         readonly id?: UUID;
+        readonly name?: string;
         /** Format: email */
         email?: string;
+        readonly service_account?: boolean;
+        readonly deployment_key_account?: boolean;
+        /** Format: date-time */
+        date_joined?: Timestamp;
       };
       target_object: {
         id: string;
@@ -2118,6 +2187,7 @@ export interface components {
       /** @default false */
       public: boolean;
       organizations?: string[];
+      message?: string;
       /** Format: date-time */
       readonly updated_at?: Timestamp;
       /** @description Human-readable name */
@@ -2133,6 +2203,14 @@ export interface components {
       readonly created_at?: Timestamp;
       /** Format: date-time */
       updated_at?: Timestamp;
+      updated_by: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        /** Format: email */
+        email?: string;
+      };
+      /** @description Optional commit/changelog message for version */
+      message?: string;
     };
     Database: {
       /** Format: uuid */
@@ -2146,6 +2224,11 @@ export interface components {
       /** @description Field indicating the record owner */
       owner_field?: string | null;
       user?: string;
+      /**
+       * @default Record
+       * @enum {string}
+       */
+      kind: "Record" | "Asset";
       /** Format: date-time */
       readonly last_write_at?: Timestamp;
       readonly num_records?: number;
@@ -2178,6 +2261,20 @@ export interface components {
       /** Format: date-time */
       readonly created_at?: Timestamp;
     };
+    Asset: {
+      /** Format: uuid */
+      readonly id?: UUID;
+      /** Format: uri */
+      readonly download_url?: string;
+      /** @description The original filename. Note this is different than the cloud storage filename. */
+      filename?: string;
+      /** @description True if the file is uploaded to cloud storage */
+      is_uploaded?: boolean;
+      /** Format: date-time */
+      readonly created_at?: Timestamp;
+      /** Format: date-time */
+      readonly updated_at?: Timestamp;
+    };
     Deployment: {
       /** Format: uuid */
       readonly id?: UUID;
@@ -2197,6 +2294,14 @@ export interface components {
         readonly created_at?: Timestamp;
         /** Format: date-time */
         updated_at?: Timestamp;
+        updated_by: {
+          /** Format: uuid */
+          readonly id?: UUID;
+          /** Format: email */
+          email?: string;
+        };
+        /** @description Optional commit/changelog message for version */
+        message?: string;
       };
       package_version: string;
       user?: string;
@@ -2233,6 +2338,11 @@ export interface components {
       /** @description Field indicating the record owner */
       owner_field?: string | null;
       user?: string;
+      /**
+       * @default Record
+       * @enum {string}
+       */
+      kind: "Record" | "Asset";
       /** Format: date-time */
       readonly last_write_at?: Timestamp;
       readonly num_records?: number;
@@ -2300,6 +2410,14 @@ export interface components {
         readonly created_at?: Timestamp;
         /** Format: date-time */
         updated_at?: Timestamp;
+        updated_by: {
+          /** Format: uuid */
+          readonly id?: UUID;
+          /** Format: email */
+          email?: string;
+        };
+        /** @description Optional commit/changelog message for version */
+        message?: string;
       };
       readonly bindings?: {
         /** Format: uuid */
@@ -2402,7 +2520,11 @@ export interface components {
       last_occurrence_timestamp: Timestamp;
       message: string;
       occurrence_count: number;
-      people_count: number;
+      users: {
+        /** Format: uuid */
+        id: UUID;
+        email: string;
+      }[];
       step_label: string | null;
       user_agent_extension_version: string;
     };
@@ -2461,7 +2583,7 @@ export interface components {
         readonly updated_at?: Timestamp;
       }[];
       /** Format: date-time */
-      readonly last_active_at?: Timestamp;
+      readonly last_active_at?: Timestamp | null;
     };
     GroupPackagePermission: {
       /** Format: uuid */
@@ -2776,6 +2898,8 @@ export interface components {
         /** Format: date-time */
         readonly created_at?: Timestamp;
       }[];
+      /** Format: date-time */
+      readonly last_active_at?: Timestamp | null;
     };
     Organization: {
       /** Format: uuid */
@@ -2801,6 +2925,8 @@ export interface components {
           id: UUID;
           name: string;
         }[];
+        /** Format: date-time */
+        readonly last_active_at?: Timestamp | null;
       }[];
       scope?: string | null;
       /** @enum {integer} */
@@ -2850,6 +2976,23 @@ export interface components {
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
       };
+    };
+    ServiceAccount: {
+      /** Format: uuid */
+      readonly id?: UUID;
+      name: string;
+      /**
+       * @default 4
+       * @enum {integer}
+       */
+      role: 1 | 2 | 3 | 4 | 5;
+      /** Format: date-time */
+      created_at?: Timestamp;
+      /**
+       * Format: date-time
+       * @description The last time the user was active. Currently only set for service accounts.
+       */
+      last_active_at?: Timestamp | null;
     };
     DeploymentKey: {
       /** Format: uuid */
@@ -3174,6 +3317,27 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    AssetPreUpload: {
+      asset: {
+        /** Format: uuid */
+        readonly id?: UUID;
+        /** Format: uri */
+        readonly download_url?: string;
+        /** @description The original filename. Note this is different than the cloud storage filename. */
+        filename?: string;
+        /** @description True if the file is uploaded to cloud storage */
+        is_uploaded?: boolean;
+        /** Format: date-time */
+        readonly created_at?: Timestamp;
+        /** Format: date-time */
+        readonly updated_at?: Timestamp;
+      };
+      /** Format: uri */
+      upload_url: string;
+      fields: {
+        [key: string]: unknown;
+      };
+    };
     DeploymentMessage: {
       /** Format: email */
       recipient: string;
@@ -3205,6 +3369,24 @@ export interface components {
       } | null;
     };
     Onboarding: Record<string, never>;
+    ServiceAccountWithToken: {
+      /** Format: uuid */
+      readonly id?: UUID;
+      name: string;
+      /**
+       * @default 4
+       * @enum {integer}
+       */
+      role: 1 | 2 | 3 | 4 | 5;
+      /** Format: date-time */
+      created_at?: Timestamp;
+      /**
+       * Format: date-time
+       * @description The last time the user was active. Currently only set for service accounts.
+       */
+      last_active_at?: Timestamp | null;
+      readonly token?: string;
+    };
     ProvisionedAccount: {
       /** Format: email */
       email: string;
@@ -3276,129 +3458,14 @@ export interface components {
       readonly created_at?: Timestamp;
       /** Format: date-time */
       updated_at?: Timestamp;
-    };
-    MeV1_0: {
-      readonly flags?: string[];
-      /** Format: uuid */
-      readonly id?: UUID;
-      scope?: string | null;
-      /** Format: email */
-      email?: string;
-      readonly name?: string;
-      readonly organization?: {
+      updated_by: {
         /** Format: uuid */
         readonly id?: UUID;
-        name: string;
-        scope?: string | null;
-        readonly is_enterprise?: boolean;
-        readonly control_room?: {
-          /** Format: uuid */
-          readonly id?: UUID;
-          /**
-           * Format: uri
-           * @description The Control Room URL
-           */
-          url: string;
-        };
-        readonly theme?: {
-          show_sidebar_logo?: boolean;
-          /**
-           * Format: uri
-           * @description The image URL of a custom logo. Image format must be SVG or PNG.
-           */
-          logo?: string | null;
-          /**
-           * Format: uri
-           * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
-           */
-          toolbar_icon?: string | null;
-        };
+        /** Format: email */
+        email?: string;
       };
-      readonly organization_memberships?: {
-        /** Format: uuid */
-        organization: UUID;
-        organization_name: string;
-        /** @enum {integer} */
-        role: 1 | 2 | 3 | 4 | 5;
-        scope: string | null;
-        /** @description True if user is a manager of one or more team deployments */
-        readonly is_deployment_manager?: boolean;
-        control_room: {
-          /** Format: uuid */
-          readonly id?: UUID;
-          /**
-           * Format: uri
-           * @description The Control Room URL
-           */
-          url: string;
-        };
-      }[];
-      readonly group_memberships?: {
-        /** Format: uuid */
-        id: UUID;
-        name: string;
-      }[];
-      readonly partner_principals?: {
-        /**
-         * Format: int64
-         * @description AA unique identifier used to interact with the Control Room user via the AA API
-         */
-        control_room_user_id: number;
-        /** Format: uri */
-        readonly control_room_url?: string;
-      }[];
-      readonly is_onboarded?: boolean;
-      readonly milestones?: {
-        key: string;
-        /** @description Optional additional information to provide context about the Milestone. */
-        metadata?: {
-          [key: string]: unknown;
-        } | null;
-      }[];
-      /** @description True if the account is an organization API service account */
-      service_account?: boolean;
-      /** @description True if the account is an organization API deployment key account */
-      deployment_key_account?: boolean;
-      /** @description True if the account is an automated/manual test account */
-      test_account?: boolean;
-      readonly partner?: {
-        /** Format: uuid */
-        readonly id?: UUID;
-        name: string;
-        readonly theme?: string;
-        /** Format: uri */
-        documentation_url?: string | null;
-      };
-      readonly enforce_update_millis?: number;
-      readonly telemetry_organization?: {
-        /** Format: uuid */
-        readonly id?: UUID;
-        name: string;
-        scope?: string | null;
-        readonly is_enterprise?: boolean;
-        readonly control_room?: {
-          /** Format: uuid */
-          readonly id?: UUID;
-          /**
-           * Format: uri
-           * @description The Control Room URL
-           */
-          url: string;
-        };
-        readonly theme?: {
-          show_sidebar_logo?: boolean;
-          /**
-           * Format: uri
-           * @description The image URL of a custom logo. Image format must be SVG or PNG.
-           */
-          logo?: string | null;
-          /**
-           * Format: uri
-           * @description The image URL of the icon displayed in the browser toolbar. Image format must be PNG.
-           */
-          toolbar_icon?: string | null;
-        };
-      };
+      /** @description Optional commit/changelog message for version */
+      message?: string;
     };
   };
   responses: never;
@@ -3946,7 +4013,7 @@ export interface operations {
       };
     };
   };
-  updateUserDatabase: {
+  partialUpdateUserDatabase: {
     parameters: {
       query?: never;
       header?: never;
@@ -4182,6 +4249,118 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  listAssets: {
+    parameters: {
+      query?: {
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+      };
+      header?: never;
+      path: {
+        database_pk: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/databases/{database_pk}/assets/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/databases/{database_pk}/assets/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/databases/{database_pk}/assets/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/databases/{database_pk}/assets/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["Asset"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Asset"][];
+        };
+      };
+    };
+  };
+  createAssetPreUpload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        database_pk: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["AssetPreUpload"];
+        "application/x-www-form-urlencoded": components["schemas"]["AssetPreUpload"];
+        "multipart/form-data": components["schemas"]["AssetPreUpload"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["AssetPreUpload"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["AssetPreUpload"];
+        };
+      };
+    };
+  };
+  retrieveAsset: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        database_pk: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["Asset"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Asset"];
+        };
+      };
+    };
+  };
+  partialUpdateAsset: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        database_pk: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["Asset"];
+        "application/x-www-form-urlencoded": components["schemas"]["Asset"];
+        "multipart/form-data": components["schemas"]["Asset"];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["Asset"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["Asset"];
+        };
       };
     };
   };
@@ -6340,6 +6519,109 @@ export interface operations {
           "application/json; version=1.0": components["schemas"]["UserDetail"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["UserDetail"];
         };
+      };
+    };
+  };
+  listServiceAccounts: {
+    parameters: {
+      query?: {
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+      };
+      header?: never;
+      path: {
+        organization_pk: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/serviceaccounts/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/serviceaccounts/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/serviceaccounts/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/organizations/{organization_pk}/serviceaccounts/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["ServiceAccount"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAccount"][];
+        };
+      };
+    };
+  };
+  createServiceAccountWithToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        organization_pk: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ServiceAccountWithToken"];
+        "application/x-www-form-urlencoded": components["schemas"]["ServiceAccountWithToken"];
+        "multipart/form-data": components["schemas"]["ServiceAccountWithToken"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["ServiceAccountWithToken"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAccountWithToken"];
+        };
+      };
+    };
+  };
+  retrieveServiceAccount: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json; version=2.0": components["schemas"]["ServiceAccount"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["ServiceAccount"];
+        };
+      };
+    };
+  };
+  destroyServiceAccount: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        organization_pk: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

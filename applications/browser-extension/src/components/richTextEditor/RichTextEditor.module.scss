@@ -23,6 +23,7 @@
   transition:
     border-color 0.15s ease-in-out,
     box-shadow 0.15s ease-in-out;
+  position: relative;
 
   &:focus-within {
     border-color: #80bdff;
@@ -39,5 +40,36 @@
 
   :global(.ProseMirror-focused) {
     outline: 0;
+  }
+}
+
+.error {
+  color: #dc3545;
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+
+  span {
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.btn) {
+    margin-left: 8px;
+    color: #dc3545;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+
+    &:focus,
+    &:active,
+    &:hover,
+    &:active:focus {
+      color: #dc3545;
+      background-color: transparent;
+      box-shadow: none !important;
+    }
   }
 }

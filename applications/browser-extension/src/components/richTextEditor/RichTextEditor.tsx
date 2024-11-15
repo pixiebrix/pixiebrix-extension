@@ -20,23 +20,74 @@ import { EditorProvider, type EditorProviderProps } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Underline } from "@tiptap/extension-underline";
 import { Link } from "@tiptap/extension-link";
-import React from "react";
+import { Image, type ImageOptions } from "@tiptap/extension-image";
+import React, { useState } from "react";
 import Toolbar from "@/components/richTextEditor/toolbar/Toolbar";
+import { type UUID } from "@/types/stringTypes";
+import ErrorContext from "@/components/richTextEditor/ErrorContext";
+import ErrorToast from "@/components/richTextEditor/ErrorToast";
 
-const RichTextEditor: React.FunctionComponent<EditorProviderProps> = (
-  props: EditorProviderProps,
-) => (
-  <div className={styles.root}>
-    <EditorProvider
-      extensions={[
-        StarterKit,
-        Underline,
-        Link.extend({ inclusive: false }).configure({ openOnClick: false }),
-      ]}
-      slotBefore={<Toolbar />}
-      {...props}
-    />
-  </div>
-);
+type EditorProps = EditorProviderProps & {
+  // A PixieBrix asset database ID to use for uploading images. If not included, the image extension will be disabled.
+  assetDatabaseId?: UUID;
+};
+
+interface ImageWithAssetDatabaseOptions extends ImageOptions {
+  assetDatabaseId: UUID | null;
+}
+
+const CONFIGURED_EXTENSIONS = {
+  starterKit: StarterKit,
+  underline: Underline,
+  link: Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+  image(assetDatabaseId: UUID) {
+    return Image.extend<ImageWithAssetDatabaseOptions>({
+      addOptions() {
+        return {
+          ...this.parent?.(),
+          assetDatabaseId: null,
+        };
+      },
+    }).configure({
+      assetDatabaseId,
+      inline: true,
+      HTMLAttributes: { style: "max-width: 100%" },
+    });
+  },
+};
+
+const RichTextEditor: React.FunctionComponent<EditorProps> = ({
+  assetDatabaseId,
+  ...props
+}: EditorProps) => {
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <ErrorContext.Provider value={{ error, setError }}>
+      <div className={styles.root}>
+        <EditorProvider
+          extensions={[
+            CONFIGURED_EXTENSIONS.starterKit,
+            CONFIGURED_EXTENSIONS.underline,
+            CONFIGURED_EXTENSIONS.link,
+            ...(assetDatabaseId
+              ? [CONFIGURED_EXTENSIONS.image(assetDatabaseId)]
+              : []),
+          ]}
+          slotBefore={<Toolbar />}
+          slotAfter={
+            <ErrorToast
+              error={error}
+              onClose={() => {
+                setError(null);
+              }}
+            />
+          }
+          {...props}
+        />
+      </div>
+    </ErrorContext.Provider>
+  );
+};
 
 export default RichTextEditor;

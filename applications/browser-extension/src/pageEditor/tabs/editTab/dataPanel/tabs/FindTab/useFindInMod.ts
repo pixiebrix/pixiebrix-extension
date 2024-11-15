@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import {
-  selectCurrentModId,
+  selectActiveModId,
   selectGetModComponentFormStatesForMod,
 } from "@/pageEditor/store/editor/editorSelectors";
 import { useMemo } from "react";
@@ -40,14 +40,14 @@ function useFindInMod(
   // Find/search depends on all mod components having form states with instanceIds assigned
   useEnsureFormStates();
 
-  const currentModId = useSelector(selectCurrentModId);
-  assertNotNullish(currentModId, "Expected currentModId");
+  const activeModId = useSelector(selectActiveModId);
+  assertNotNullish(activeModId, "Expected activeModId");
 
   const getModComponentFormStatesForMod = useSelector(
     selectGetModComponentFormStatesForMod,
   );
 
-  const modComponentFormStates = getModComponentFormStatesForMod(currentModId);
+  const modComponentFormStates = getModComponentFormStatesForMod(activeModId);
 
   const fuse = useAsyncState(async () => {
     const items = await SearchIndexVisitor.collectItems(modComponentFormStates);

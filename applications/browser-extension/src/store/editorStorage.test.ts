@@ -91,6 +91,7 @@ describe("editorStorage", () => {
       "persist:editor",
       {
         ...targetEditorState,
+        activeModId: null,
         // When the mod's form states are added, they become active. On remove the active/expanded props are reset
         activeModComponentId: null,
         expandedModId: null,

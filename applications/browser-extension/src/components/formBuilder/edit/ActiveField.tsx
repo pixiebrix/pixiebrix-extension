@@ -3,7 +3,6 @@ import {
   type SelectStringOption,
   type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
-import FieldEditor from "./fieldEditor/FieldEditor";
 import {
   moveStringInArray,
   getNormalizedUiOrder,
@@ -13,6 +12,7 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import LayoutWidget from "@/components/LayoutWidget";
 import { findLast } from "lodash";
 import { type FormikErrors } from "formik";
+import FieldEditor from "@/components/formBuilder/edit/fieldEditor/FieldEditor";
 
 export const ActiveField: React.FC<{
   name: string;

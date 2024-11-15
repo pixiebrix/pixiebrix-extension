@@ -23,13 +23,11 @@ import { selectModInstances } from "@/store/modComponents/modInstanceSelectors";
 import mapModDefinitionToModMetadata from "@/modDefinitions/util/mapModDefinitionToModMetadata";
 import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 import {
-  selectActiveModComponentFormState,
   selectGetModComponentFormStateByModComponentId,
   selectIsModComponentDirtyById,
   selectModComponentFormStates,
   selectNotDeletedActivatedModComponents,
 } from "@/pageEditor/store/editor/editorSelectors/editorModComponentSelectors";
-import { selectActiveModId } from "@/pageEditor/store/editor/editorSelectors/editorNavigationSelectors";
 import type { ModMetadata } from "@/types/modComponentTypes";
 import type { UUID } from "@/types/stringTypes";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -38,19 +36,6 @@ import {
   collectModOptionsArgs,
   collectModVariablesDefinition,
 } from "@/store/modComponents/modComponentUtils";
-
-/**
- * Select the mod id associated with the selected mod package or mod component. Should be used if the caller doesn't
- * need to know if the mod item or one of its components is selected.
- * @see selectActiveModId
- * @see selectExpandedModId
- */
-export const selectCurrentModId = createSelector(
-  selectActiveModId,
-  selectActiveModComponentFormState,
-  (activeModId, activeModComponentFormState) =>
-    activeModId ?? activeModComponentFormState?.modMetadata.id,
-);
 
 ///
 /// MOD METADATA

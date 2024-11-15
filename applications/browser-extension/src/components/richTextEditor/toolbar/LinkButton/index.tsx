@@ -83,6 +83,7 @@ const LinkButton: React.FunctionComponent = () => {
         variant="default"
         active={editor.isActive("link")}
         aria-label="Link"
+        disabled={!editor.isEditable}
         onClick={() => {
           if (editor.state.selection.empty && !showPopover) {
             return;
