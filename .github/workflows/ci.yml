@@ -151,7 +151,7 @@ jobs:
           node-version-file: applications/browser-extension/package.json
           cache: npm
       - run: npm ci
-      - run: npm run build:typecheck
+      - run: npm run typecheck
 
   lint:
     runs-on: ubuntu-latest
