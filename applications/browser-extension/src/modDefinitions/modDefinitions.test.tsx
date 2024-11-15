@@ -33,7 +33,7 @@ import { type AsyncState } from "@/types/sliceTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 import AsyncButton from "@/components/AsyncButton";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import SaveModVersionModal from "@/pageEditor/modListingPanel/modals/SaveModVersionModal";
 
 beforeAll(() => {
@@ -161,6 +161,10 @@ test("load mod definitions and save one", async () => {
     API_PATHS.BRICKS,
     API_PATHS.REGISTRY_BRICKS,
   ]);
+
+  await waitFor(async () => {
+    expect(screen.queryByText("Not Fetching")).not.toBeInTheDocument();
+  });
 
   await userEvent.type(
     await screen.findByRole("textbox", { name: "Message" }),
