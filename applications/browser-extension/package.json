@@ -4,6 +4,7 @@
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "TZ=UTC jest",
+    "test:ci": "TZ=UTC jest --coverage",
     "test:watch": "TZ=UTC jest --watchAll",
     "test:e2e": "playwright test",
     "test:e2e:debug": "PWDEBUG=console playwright test",
