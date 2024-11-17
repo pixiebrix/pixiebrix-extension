@@ -151,21 +151,27 @@ test("load mod definitions and save one", async () => {
     API_PATHS.REGISTRY_BRICKS,
   ]);
 
+  // Avoid race where mod definitions/editable package queries aren't loaded in the useSaveMod hook yet
+  await waitFor(async () => {
+    expect(screen.queryByText("Not Fetching")).not.toBeInTheDocument();
+  });
+
+  expect(appApiMock.history.get.map((x) => x.url)).toEqual([
+    API_PATHS.REGISTRY_BRICKS,
+    // `useSaveMod` hook fetches editable packages
+    API_PATHS.BRICKS,
+  ]);
+
   await userEvent.click(
     await screen.findByRole("button", { name: "Save Mod" }),
   );
 
   expect(appApiMock.history.get.map((x) => x.url)).toEqual([
     API_PATHS.REGISTRY_BRICKS,
-    // `useSaveMod` re-fetches definitions/editable packages
     API_PATHS.BRICKS,
+    // `useSaveMod` re-fetches definitions/editable packages
     API_PATHS.REGISTRY_BRICKS,
   ]);
-
-  // Try to avoid "Mod definitions not loaded yet. Try again." race in the useSaveMod hook
-  await waitFor(async () => {
-    expect(screen.queryByText("Not Fetching")).not.toBeInTheDocument();
-  });
 
   await userEvent.type(
     await screen.findByRole("textbox", { name: "Message" }),
