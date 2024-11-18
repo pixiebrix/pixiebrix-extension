@@ -33,7 +33,7 @@ import { type AsyncState } from "@/types/sliceTypes";
 import { API_PATHS } from "@/data/service/urlPaths";
 import AsyncButton from "@/components/AsyncButton";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import SaveModVersionModal from "@/pageEditor/modListingPanel/modals/SaveModVersionModal";
 
 beforeAll(() => {
@@ -151,14 +151,25 @@ test("load mod definitions and save one", async () => {
     API_PATHS.REGISTRY_BRICKS,
   ]);
 
+  // Avoid race where mod definitions/editable package queries aren't loaded in the useSaveMod hook yet
+  await waitFor(async () => {
+    expect(screen.queryByText("Not Fetching")).not.toBeInTheDocument();
+  });
+
+  expect(appApiMock.history.get.map((x) => x.url)).toEqual([
+    API_PATHS.REGISTRY_BRICKS,
+    // `useSaveMod` hook fetches editable packages
+    API_PATHS.BRICKS,
+  ]);
+
   await userEvent.click(
     await screen.findByRole("button", { name: "Save Mod" }),
   );
 
   expect(appApiMock.history.get.map((x) => x.url)).toEqual([
     API_PATHS.REGISTRY_BRICKS,
-    // `useSaveMod` re-fetches definitions/editable packages
     API_PATHS.BRICKS,
+    // `useSaveMod` re-fetches definitions/editable packages
     API_PATHS.REGISTRY_BRICKS,
   ]);
 
