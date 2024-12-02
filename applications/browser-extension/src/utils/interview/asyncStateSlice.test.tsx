@@ -17,8 +17,7 @@
 
 import React from "react";
 import useAsyncState from "@/hooks/useAsyncState";
-import { render, screen } from "@testing-library/react";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { render, screen, waitFor } from "@testing-library/react";
 import { Provider, useSelector } from "react-redux";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
@@ -79,8 +78,11 @@ describe("asyncStateSlice", () => {
         <ValueComponent />
       </Provider>,
     );
-    await waitForEffect();
-    expect(asyncMock).toHaveBeenCalledOnce();
+
+    await waitFor(() => {
+      expect(asyncMock).toHaveBeenCalledOnce();
+    });
+
     expect(screen.getByTestId("data")).toHaveTextContent("42");
     expect(screen.getByTestId("greeting")).toHaveTextContent("Hello");
   });
@@ -92,9 +94,10 @@ describe("asyncStateSlice", () => {
         <ValueComponent />
       </Provider>,
     );
-    await waitForEffect();
 
     // FIXME: called 2 times because it's called once per component
-    expect(asyncMock).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      expect(asyncMock).toHaveBeenCalledOnce();
+    });
   });
 });
