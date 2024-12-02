@@ -58,9 +58,10 @@ const dummySlice = createSlice({
  * Create a Redux store for use in the tests.
  */
 function createTestStore() {
+  // Add your reducer(s) and/or middleware here.
+  // We've included a dummy slice in the skeleton because Redux throws exception if no reducer is provided
   return configureStore({
     reducer: {
-      // Add your reducer(s) here. Using a dummy slice because Redux throws exception if no reducer is provided
       dummySlice: dummySlice.reducer,
     },
   });
